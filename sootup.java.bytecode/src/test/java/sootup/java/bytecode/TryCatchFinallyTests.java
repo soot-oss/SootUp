@@ -15,12 +15,14 @@ import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
-public class TryWithResourcesFinallyTests {
+public class TryCatchFinallyTests {
 
-  Path classFilePath = Paths.get("../shared-test-resources/bugfixes/TryWithResourcesFinally.class");
+
 
   @Test
-  public void test() {
+  public void testTryWithResourcesFinally() {
+    Path classFilePath = Paths.get("../shared-test-resources/bugfixes/TryWithResourcesFinally.class");
+
     AnalysisInputLocation inputLocation =
         new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
             classFilePath, "", SourceType.Application);
@@ -29,6 +31,21 @@ public class TryWithResourcesFinallyTests {
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .parseMethodSignature("<TryWithResourcesFinally: void test0(java.lang.AutoCloseable)>");
+    List<Trap> traps = view.getMethod(methodSignature).get().getBody().getTraps();
+  }
+
+  @Test
+  public void testNestedTryCatchFinally() {
+    Path classFilePath = Paths.get("../shared-test-resources/bugfixes/NestedTryCatchFinally.class");
+
+    AnalysisInputLocation inputLocation =
+            new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+                    classFilePath, "", SourceType.Application);
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+
+    MethodSignature methodSignature =
+            view.getIdentifierFactory()
+                    .parseMethodSignature("<NestedTryCatchFinally: java.lang.String test0(java.io.File)>");
     List<Trap> traps = view.getMethod(methodSignature).get().getBody().getTraps();
   }
 }
