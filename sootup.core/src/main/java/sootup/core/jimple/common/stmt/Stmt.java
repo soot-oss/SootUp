@@ -27,7 +27,6 @@ import sootup.core.jimple.basic.EquivTo;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.visitor.Acceptor;
@@ -60,10 +59,6 @@ public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
 
   void toString(@Nonnull StmtPrinter up);
 
-  boolean containsInvokeExpr();
-
-  AbstractInvokeExpr getInvokeExpr();
-
   boolean containsArrayRef();
 
   JArrayRef getArrayRef();
@@ -75,4 +70,8 @@ public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
   StmtPositionInfo getPositionInfo();
 
   Stmt withNewUse(@Nonnull Value oldUse, @Nonnull Value newUse);
+
+  boolean isInvokableStmt();
+
+  InvokableStmt asInvokableStmt();
 }

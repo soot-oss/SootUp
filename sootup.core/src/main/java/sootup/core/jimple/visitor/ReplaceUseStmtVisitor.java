@@ -58,7 +58,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
-    Expr invokeExpr = stmt.getInvokeExpr();
+    Expr invokeExpr = stmt.getInvokeExpr().get();
     exprVisitor.init(oldUse, newUse);
     invokeExpr.accept(exprVisitor);
 

@@ -14,7 +14,7 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
@@ -142,8 +142,8 @@ public class IntraFlowAnalysis {
     HeapContainerQuery hcq = this.utility.getHCQ(heap);
     Set<LocalVarNode> inParams = hcq.getInParamsToCSFields();
     MethodPAG srcmpag = pag.getMethodPAG(method);
-    for (final Stmt s : srcmpag.getInvokeStmts()) {
-      AbstractInvokeExpr ie = s.getInvokeExpr();
+    for (final InvokableStmt s : srcmpag.getInvokeStmts()) {
+      AbstractInvokeExpr ie = s.getInvokeExpr().get();
       if (!(ie instanceof AbstractInstanceInvokeExpr)) {
         continue;
       }

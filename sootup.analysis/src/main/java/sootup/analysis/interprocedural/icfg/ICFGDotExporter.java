@@ -72,8 +72,9 @@ public class ICFGDotExporter {
       for (BasicBlock<?> block : blocks) {
         List<Stmt> stmts = block.getStmts();
         for (Stmt stmt : stmts) {
-          if (stmt.containsInvokeExpr()) {
-            MethodSignature target = stmt.getInvokeExpr().getMethodSignature();
+          if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
+            MethodSignature target =
+                stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature();
             int hashCode = stmt.hashCode();
             calls.put(hashCode, target);
             // compute all the classes that are made to the subclasses as well
@@ -112,7 +113,7 @@ public class ICFGDotExporter {
     if (!callGraph.containsMethod(source) || !callGraph.containsMethod(target)) {
       return Collections.emptySet();
     }
-    return callGraph.callsFrom(source).stream()
+    return callGraph.callTargetsFrom(source).stream()
         .filter(
             methodSignature ->
                 !methodSignature.equals(target)

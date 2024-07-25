@@ -46,7 +46,7 @@ public class CallGraphDifference {
   private List<Pair<MethodSignature, MethodSignature>> constructEdges(CallGraph cg) {
     List<Pair<MethodSignature, MethodSignature>> cgEdges = new ArrayList<>();
     for (MethodSignature srcNode : cg.getMethodSignatures()) {
-      Set<MethodSignature> outNodes = cg.callsFrom(srcNode);
+      Set<MethodSignature> outNodes = cg.callTargetsFrom(srcNode);
       for (MethodSignature targetNode : outNodes) {
         cgEdges.add(new MutablePair<>(srcNode, targetNode));
       }
