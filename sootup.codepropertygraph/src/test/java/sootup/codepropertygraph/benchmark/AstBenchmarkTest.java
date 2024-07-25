@@ -1,10 +1,11 @@
-package sootup.codepropertygraph.ast;
+package sootup.codepropertygraph.benchmark;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
-import sootup.codepropertygraph.CpgTestSuiteBase;
+import sootup.codepropertygraph.BenchmarkTestSuiteBase;
+import sootup.codepropertygraph.ast.AstCreator;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.MethodModifier;
@@ -15,7 +16,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 
-public class AstMinimalTest extends CpgTestSuiteBase {
+public class AstBenchmarkTest extends BenchmarkTestSuiteBase {
   private final ClassType ifElseStatementClass = getClassType("IfElseStatement");
   private final ClassType tryCatchFinallyClass = getClassType("TryCatchFinally");
   private final ClassType switchCaseStatement = getClassType("SwitchCaseStatement");

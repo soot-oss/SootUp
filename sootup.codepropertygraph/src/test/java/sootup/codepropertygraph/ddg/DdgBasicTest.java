@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import sootup.codepropertygraph.CpgTestSuiteBase;
+import sootup.codepropertygraph.BenchmarkTestSuiteBase;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.core.model.SootMethod;
 
-public class DdgBasicTest extends CpgTestSuiteBase {
+public class DdgBasicTest extends BenchmarkTestSuiteBase {
   @Test
   public void testDdgForReassignment() {
     String methodName = "calculate";

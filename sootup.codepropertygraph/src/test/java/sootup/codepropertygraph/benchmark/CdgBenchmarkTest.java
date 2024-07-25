@@ -1,237 +1,222 @@
-package sootup.codepropertygraph.cpg;
+package sootup.codepropertygraph.benchmark;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import sootup.codepropertygraph.CpgTestSuiteBase;
-import sootup.codepropertygraph.ast.AstCreator;
+import sootup.codepropertygraph.BenchmarkTestSuiteBase;
 import sootup.codepropertygraph.cdg.CdgCreator;
-import sootup.codepropertygraph.cfg.CfgCreator;
-import sootup.codepropertygraph.ddg.DdgCreator;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 
-public class CpgMinimalTest extends CpgTestSuiteBase {
+public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
   private final ClassType ifElseStatementClass = getClassType("IfElseStatement");
   private final ClassType tryCatchFinallyClass = getClassType("TryCatchFinally");
   private final ClassType switchCaseStatement = getClassType("SwitchCaseStatement");
 
   @Test
-  public void testCpgForIfStatement() {
+  public void testCdgForIfStatement() {
     String methodName = "ifStatement";
     MethodSignature methodSignature =
         getMethodSignature(
             ifElseStatementClass, methodName, "int", Collections.singletonList("int"));
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForIfElseStatement() {
+  public void testCdgForIfElseStatement() {
     String methodName = "ifElseStatement";
     MethodSignature methodSignature =
         getMethodSignature(
             ifElseStatementClass, methodName, "int", Collections.singletonList("int"));
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForIfElseIfStatement() {
+  public void testCdgForIfElseIfStatement() {
     String methodName = "ifElseIfStatement";
     MethodSignature methodSignature =
         getMethodSignature(
             ifElseStatementClass, methodName, "int", Collections.singletonList("int"));
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForIfElseCascadingStatement() {
-    String methodName = "ifElseCascadingStatement";
-    MethodSignature methodSignature =
-        getMethodSignature(
-            ifElseStatementClass, methodName, "int", Collections.singletonList("int"));
-
-    assertCpgMethod(methodSignature);
-  }
-
-  @Test
-  public void testCpgForIfElseCascadingElseIfStatement() {
+  public void testCdgForIfElseCascadingElseIfStatement() {
     String methodName = "ifElseCascadingElseIfStatement";
     MethodSignature methodSignature =
         getMethodSignature(
             ifElseStatementClass, methodName, "int", Collections.singletonList("int"));
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForIfElseCascadingElseIfInElseStatement() {
+  public void testCdgForIfElseCascadingElseIfInElseStatement() {
     String methodName = "ifElseCascadingElseIfInElseStatement";
     MethodSignature methodSignature =
         getMethodSignature(
             ifElseStatementClass, methodName, "int", Collections.singletonList("int"));
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForTryCatch() {
+  public void testCdgForTryCatch() {
     String methodName = "tryCatch";
     MethodSignature methodSignature =
         getMethodSignature(tryCatchFinallyClass, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForTryCatchNested() {
+  public void testCdgForTryCatchNested() {
     String methodName = "tryCatchNested";
     MethodSignature methodSignature =
         getMethodSignature(tryCatchFinallyClass, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForTryCatchFinallyNested() {
+  public void testCdgForTryCatchFinallyNested() {
     String methodName = "tryCatchFinallyNested";
     MethodSignature methodSignature =
         getMethodSignature(tryCatchFinallyClass, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForTryCatchFinallyNestedInFinally() {
+  public void testCdgForTryCatchFinallyNestedInFinally() {
     String methodName = "tryCatchFinallyNestedInFinally";
     MethodSignature methodSignature =
         getMethodSignature(tryCatchFinallyClass, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForTryCatchFinallyCombined() {
+  public void testCdgForTryCatchFinallyCombined() {
     String methodName = "tryCatchFinallyCombined";
     MethodSignature methodSignature =
         getMethodSignature(tryCatchFinallyClass, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForTryCatchFinallyNestedInCatch() {
+  public void testCdgForTryCatchFinallyNestedInCatch() {
     String methodName = "tryCatchFinallyNestedInCatch";
     MethodSignature methodSignature =
         getMethodSignature(tryCatchFinallyClass, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForTryCatchFinally() {
+  public void testCdgForTryCatchFinally() {
     String methodName = "tryCatchFinally";
     MethodSignature methodSignature =
         getMethodSignature(tryCatchFinallyClass, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForTryCatchNestedInCatch() {
+  public void testCdgForTryCatchNestedInCatch() {
     String methodName = "tryCatchNestedInCatch";
     MethodSignature methodSignature =
         getMethodSignature(tryCatchFinallyClass, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForTryCatchCombined() {
+  public void testCdgForTryCatchCombined() {
     String methodName = "tryCatchCombined";
     MethodSignature methodSignature =
         getMethodSignature(tryCatchFinallyClass, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForSwitchCaseGroupedTargetsDefault() {
+  public void testCdgForSwitchCaseGroupedTargetsDefault() {
     String methodName = "switchCaseGroupedTargetsDefault";
     MethodSignature methodSignature =
         getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForSwitchWithSwitch() {
+  public void testCdgForSwitchWithSwitch() {
     String methodName = "switchWithSwitch";
     MethodSignature methodSignature =
         getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForSwitchCaseStatementInt() {
+  public void testCdgForSwitchCaseStatementInt() {
     String methodName = "switchCaseStatementInt";
     MethodSignature methodSignature =
         getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForSwitchCaseGroupedTargets() {
+  public void testCdgForSwitchCaseGroupedTargets() {
     String methodName = "switchCaseGroupedTargets";
     MethodSignature methodSignature =
         getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForSwitchCaseStatementEnum() {
+  public void testCdgForSwitchCaseStatementEnum() {
     String methodName = "switchCaseStatementEnum";
     MethodSignature methodSignature =
         getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForSwitchCaseStatementCaseIncludingIf() {
+  public void testCdgForSwitchCaseStatementCaseIncludingIf() {
     String methodName = "switchCaseStatementCaseIncludingIf";
     MethodSignature methodSignature =
         getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
   @Test
-  public void testCpgForSwitchCaseWithoutDefault() {
+  public void testCdgForSwitchCaseWithoutDefault() {
     String methodName = "switchCaseWithoutDefault";
     MethodSignature methodSignature =
         getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
 
-    assertCpgMethod(methodSignature);
+    assertCdgMethod(methodSignature);
   }
 
-  private void assertCpgMethod(MethodSignature methodSignature) {
+  private void assertCdgMethod(MethodSignature methodSignature) {
     Optional<? extends SootMethod> method = getMinimalTestSuiteMethod(methodSignature);
     assertTrue(method.isPresent());
 
-    PropertyGraph cpgGraph =
-        (new CpgCreator(new AstCreator(), new CfgCreator(), new CdgCreator(), new DdgCreator()))
-            .createCpg(method.get());
+    PropertyGraph cdgGraph = (new CdgCreator()).createGraph(method.get());
 
-    System.out.println(cpgGraph.toDotGraph());
+    System.out.println(cdgGraph.toDotGraph());
   }
 }

@@ -15,11 +15,11 @@ import sootup.java.core.views.JavaView;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
-public class CpgTestSuiteBase {
-  private JavaView minimalTsView;
-  private JimpleView testResourcesView;
+public class BenchmarkTestSuiteBase {
+  private final JavaView minimalTsView;
+  private final JimpleView testResourcesView;
 
-  public CpgTestSuiteBase() {
+  public BenchmarkTestSuiteBase() {
     String MINIMAL_TEST_SUITE_DIR = "../shared-test-resources/miniTestSuite/java6/binary";
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
