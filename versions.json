@@ -1,13 +1,5 @@
 [
   {
-    "version": "feature_InvokesCG_preview",
-    "title": "PR Preview feature_InvokesCG",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "develop",
     "title": "develop",
     "aliases": []
