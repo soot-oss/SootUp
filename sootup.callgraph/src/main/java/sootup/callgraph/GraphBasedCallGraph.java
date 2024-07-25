@@ -237,6 +237,12 @@ public class GraphBasedCallGraph implements MutableCallGraph {
         new ArrayList<>(entryMethods));
   }
 
+  @Nonnull
+  @Override
+  public CallGraphDifference diff(@Nonnull CallGraph callGraph) {
+    return new CallGraphDifference(this, callGraph);
+  }
+
   /**
    * it returns the vertex of the graph that describes the given method signature in the call graph.
    *

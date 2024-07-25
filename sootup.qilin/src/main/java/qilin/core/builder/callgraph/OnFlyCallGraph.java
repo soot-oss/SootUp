@@ -37,6 +37,8 @@ import qilin.core.pag.ContextMethod;
 import qilin.util.DataFactory;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
+import sootup.callgraph.CallGraph;
+import sootup.callgraph.CallGraphDifference;
 import sootup.callgraph.MutableCallGraph;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -109,7 +111,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
     Set<Edge> edgesToRemove = new HashSet<>();
     for (QueueReader<Edge> edgeRdr = listener(); edgeRdr.hasNext(); ) {
       Edge e = edgeRdr.next();
-      if (e.srcUnit() == u) {
+      if (e != null && e.srcUnit() == u) {
         e.remove();
         removeEdge(e, false);
         edgesToRemove.add(e);
@@ -451,6 +453,12 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   @Nonnull
   @Override
   public MutableCallGraph copy() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Nonnull
+  @Override
+  public CallGraphDifference diff(@Nonnull CallGraph callGraph) {
     throw new UnsupportedOperationException();
   }
 

@@ -427,8 +427,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private void convertIincInsn(@Nonnull IincInsnNode insn) {
     Local local = getOrCreateLocal(insn.var);
     addReadOperandAssignments(local);
-    JAddExpr add = Jimple.newAddExpr(local, IntConstant.getInstance(insn.incr));
-    setStmt(insn, Jimple.newAssignStmt(local, add, getStmtPositionInfo()));
+    if (!insnToStmt.containsKey(insn)) {
+      JAddExpr add = Jimple.newAddExpr(local, IntConstant.getInstance(insn.incr));
+      setStmt(insn, Jimple.newAssignStmt(local, add, getStmtPositionInfo()));
+    }
   }
 
   private void convertConstInsn(@Nonnull InsnNode insn) {
@@ -717,7 +719,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       /*
        * We can ignore NOP instructions, but for completeness, we handle them
        */
-      setStmt(insn, Jimple.newNopStmt(getStmtPositionInfo()));
+      if (!insnToStmt.containsKey(insn)) {
+        insnToStmt.put(insn, Jimple.newNopStmt(getStmtPositionInfo()));
+      }
     } else if (op >= ACONST_NULL && op <= DCONST_1) {
       convertConstInsn(insn);
     } else if (op >= IALOAD && op <= SALOAD) {
@@ -748,7 +752,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else if (op >= IRETURN && op <= ARETURN) {
       convertReturnInsn(insn);
     } else if (op == RETURN) {
-      setStmt(insn, Jimple.newReturnVoidStmt(getStmtPositionInfo()));
+      if (!insnToStmt.containsKey(insn)) {
+        setStmt(insn, Jimple.newReturnVoidStmt(getStmtPositionInfo()));
+      }
     } else if (op == ATHROW) {
       OperandMerging merging = operandStack.getOrCreateMerging(insn);
       Operand opr = operandStack.pop();
@@ -820,79 +826,89 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private void convertJumpInsn(@Nonnull JumpInsnNode insn) {
     int op = insn.getOpcode();
     if (op == GOTO) {
-      BranchingStmt gotoStmt = Jimple.newGotoStmt(getStmtPositionInfo());
-      stmtsThatBranchToLabel.put(gotoStmt, insn.label);
-      setStmt(insn, gotoStmt);
+      if (!insnToStmt.containsKey(insn)) {
+        BranchingStmt gotoStmt = Jimple.newGotoStmt(getStmtPositionInfo());
+        stmtsThatBranchToLabel.put(gotoStmt, insn.label);
+        setStmt(insn, gotoStmt);
+      }
       return;
     }
     /* must be ifX insn */
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
-    Operand val = operandStack.pop();
-    Immediate v = val.toImmediate();
-    AbstractConditionExpr cond;
+    if (!insnToStmt.containsKey(insn)) {
+      Operand val = operandStack.pop();
+      Immediate v = val.toImmediate();
+      AbstractConditionExpr cond;
 
-    if (op >= IF_ICMPEQ && op <= IF_ACMPNE) {
-      Operand val1 = operandStack.pop();
-      merging.mergeInputs(val, val1);
-      Immediate v1 = val1.toImmediate();
-      switch (op) {
-        case IF_ICMPEQ:
-        case IF_ACMPEQ:
-          cond = Jimple.newEqExpr(v1, v);
-          break;
-        case IF_ICMPNE:
-        case IF_ACMPNE:
-          cond = Jimple.newNeExpr(v1, v);
-          break;
-        case IF_ICMPLT:
-          cond = Jimple.newLtExpr(v1, v);
-          break;
-        case IF_ICMPGE:
-          cond = Jimple.newGeExpr(v1, v);
-          break;
-        case IF_ICMPGT:
-          cond = Jimple.newGtExpr(v1, v);
-          break;
-        case IF_ICMPLE:
-          cond = Jimple.newLeExpr(v1, v);
-          break;
-        default:
-          throw new UnsupportedOperationException("Unknown if op: " + op);
+      if (op >= IF_ICMPEQ && op <= IF_ACMPNE) {
+        Operand val1 = operandStack.pop();
+        merging.mergeInputs(val, val1);
+        Immediate v1 = val1.toImmediate();
+        switch (op) {
+          case IF_ICMPEQ:
+          case IF_ACMPEQ:
+            cond = Jimple.newEqExpr(v1, v);
+            break;
+          case IF_ICMPNE:
+          case IF_ACMPNE:
+            cond = Jimple.newNeExpr(v1, v);
+            break;
+          case IF_ICMPLT:
+            cond = Jimple.newLtExpr(v1, v);
+            break;
+          case IF_ICMPGE:
+            cond = Jimple.newGeExpr(v1, v);
+            break;
+          case IF_ICMPGT:
+            cond = Jimple.newGtExpr(v1, v);
+            break;
+          case IF_ICMPLE:
+            cond = Jimple.newLeExpr(v1, v);
+            break;
+          default:
+            throw new UnsupportedOperationException("Unknown if op: " + op);
+        }
+      } else {
+        merging.mergeInputs(val);
+        switch (op) {
+          case IFEQ:
+            cond = Jimple.newEqExpr(v, IntConstant.getInstance(0));
+            break;
+          case IFNE:
+            cond = Jimple.newNeExpr(v, IntConstant.getInstance(0));
+            break;
+          case IFLT:
+            cond = Jimple.newLtExpr(v, IntConstant.getInstance(0));
+            break;
+          case IFGE:
+            cond = Jimple.newGeExpr(v, IntConstant.getInstance(0));
+            break;
+          case IFGT:
+            cond = Jimple.newGtExpr(v, IntConstant.getInstance(0));
+            break;
+          case IFLE:
+            cond = Jimple.newLeExpr(v, IntConstant.getInstance(0));
+            break;
+          case IFNULL:
+            cond = Jimple.newEqExpr(v, NullConstant.getInstance());
+            break;
+          case IFNONNULL:
+            cond = Jimple.newNeExpr(v, NullConstant.getInstance());
+            break;
+          default:
+            throw new UnsupportedOperationException("Unknown if op: " + op);
+        }
       }
+      BranchingStmt ifStmt = Jimple.newIfStmt(cond, getStmtPositionInfo());
+      stmtsThatBranchToLabel.put(ifStmt, insn.label);
+      setStmt(insn, ifStmt);
     } else {
-      merging.mergeInputs(val);
-      switch (op) {
-        case IFEQ:
-          cond = Jimple.newEqExpr(v, IntConstant.getInstance(0));
-          break;
-        case IFNE:
-          cond = Jimple.newNeExpr(v, IntConstant.getInstance(0));
-          break;
-        case IFLT:
-          cond = Jimple.newLtExpr(v, IntConstant.getInstance(0));
-          break;
-        case IFGE:
-          cond = Jimple.newGeExpr(v, IntConstant.getInstance(0));
-          break;
-        case IFGT:
-          cond = Jimple.newGtExpr(v, IntConstant.getInstance(0));
-          break;
-        case IFLE:
-          cond = Jimple.newLeExpr(v, IntConstant.getInstance(0));
-          break;
-        case IFNULL:
-          cond = Jimple.newEqExpr(v, NullConstant.getInstance());
-          break;
-        case IFNONNULL:
-          cond = Jimple.newNeExpr(v, NullConstant.getInstance());
-          break;
-        default:
-          throw new UnsupportedOperationException("Unknown if op: " + op);
+      if (op >= IF_ICMPEQ && op <= IF_ACMPNE) {
+        merging.mergeInputs(operandStack.pop(), operandStack.pop());
+      } else {
+        merging.mergeInputs(operandStack.pop());
       }
     }
-    BranchingStmt ifStmt = Jimple.newIfStmt(cond, getStmtPositionInfo());
-    stmtsThatBranchToLabel.put(ifStmt, insn.label);
-    setStmt(insn, ifStmt);
   }
 
   private void convertLdcInsn(@Nonnull LdcInsnNode insn) {
@@ -1069,7 +1085,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       operandStack.pushDual(opr);
     } else if (returnType != VoidType.getInstance()) {
       operandStack.push(opr);
-    } else {
+    } else if (!insnToStmt.containsKey(insn)) {
       JInvokeStmt stmt =
           Jimple.newInvokeStmt((AbstractInvokeExpr) opr.value, getStmtPositionInfo());
       setStmt(insn, stmt);
@@ -1129,7 +1145,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       operandStack.pushDual(opr);
     } else if (!(returnType instanceof VoidType)) {
       operandStack.push(opr);
-    } else {
+    } else if (!insnToStmt.containsKey(insn)) {
       JInvokeStmt stmt =
           Jimple.newInvokeStmt((AbstractInvokeExpr) opr.value, getStmtPositionInfo());
       setStmt(insn, stmt);
@@ -1235,13 +1251,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     merging.mergeInputs(opr);
     Local local = getOrCreateLocal(insn.var);
     AbstractDefinitionStmt as;
-    if (opr.stackLocal == null || opr.stackLocal == local) {
+    if (opr.stackLocal == null) {
       // Can skip creating a new stack local for the operand
       // and store the value in the local directly.
       as = Jimple.newAssignStmt(local, opr.value, getStmtPositionInfo());
+      // TODO check that this works correctly with the merging
       opr.stackLocal = local;
       setStmt(opr.insn, as);
-    } else {
+    } else if (opr.stackLocal != local) {
       as = Jimple.newAssignStmt(local, opr.toImmediate(), getStmtPositionInfo());
       setStmt(insn, as);
     }
@@ -1261,7 +1278,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       convertVarStoreInsn(insn);
     } else if (op == RET) {
       /* we handle it, even though it should be removed */
-      setStmt(insn, Jimple.newRetStmt(getOrCreateLocal(insn.var), getStmtPositionInfo()));
+      if (!insnToStmt.containsKey(insn)) {
+        setStmt(insn, Jimple.newRetStmt(getOrCreateLocal(insn.var), getStmtPositionInfo()));
+      }
     } else {
       throw new UnsupportedOperationException("Unknown var op: " + op);
     }
