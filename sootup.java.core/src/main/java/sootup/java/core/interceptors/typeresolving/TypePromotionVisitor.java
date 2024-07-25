@@ -26,6 +26,7 @@ import java.util.Collection;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
@@ -60,7 +61,7 @@ public class TypePromotionVisitor extends TypeChecker {
     /* Note: When visiting function parameters, we may encounter constant values such as strings ("abc") or integers (2).
       These constants are not instances of the Local class and should be handled accordingly.
     */
-    if (!(value instanceof Local)) {
+    if (!(value instanceof Constant)) {
       return;
     }
     AugEvalFunction evalFunction = getFuntion();
