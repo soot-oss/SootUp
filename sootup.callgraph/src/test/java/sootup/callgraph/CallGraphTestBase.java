@@ -1067,7 +1067,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
       algorithm.initialize();
       fail("Runtime Exception not thrown, when no main methods are defined.");
     } catch (RuntimeException e) {
-      System.out.println(e.getMessage());
       assertEquals(
           e.getMessage(),
           "No main method is present in the input programs. initialize() method can be used if only one main method exists in the input program and that should be used as entry point for call graph. \n Please specify entry point as a parameter to initialize method.");

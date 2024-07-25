@@ -209,6 +209,4 @@ public interface CallGraph {
    */
   @Nonnull
   CallGraphDifference diff(@Nonnull CallGraph callGraph);
-
-
 }
