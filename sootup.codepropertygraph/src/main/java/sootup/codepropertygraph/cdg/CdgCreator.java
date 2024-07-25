@@ -23,9 +23,8 @@ public class CdgCreator {
     StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
     PostDominanceFinder postDominanceFinder = new PostDominanceFinder(stmtGraph);
 
-    Iterator<BasicBlock<?>> iterator = stmtGraph.getBlockIterator();
-    while (iterator.hasNext()) {
-      BasicBlock<?> currBlock = iterator.next();
+    List<? extends BasicBlock<?>> blocks = stmtGraph.getBlocksSorted();
+    for (BasicBlock<?> currBlock : blocks) {
       for (BasicBlock<?> frontierBlock : postDominanceFinder.getDominanceFrontiers(currBlock)) {
         StmtGraphNode sourceNode = new StmtGraphNode(frontierBlock.getTail());
         for (Stmt srcStmt : currBlock.getStmts()) {
