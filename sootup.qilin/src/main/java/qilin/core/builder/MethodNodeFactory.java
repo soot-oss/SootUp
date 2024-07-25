@@ -51,6 +51,7 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.ref.JThisRef;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
@@ -131,9 +132,9 @@ public class MethodNodeFactory {
 
   /** Adds the edges required for this statement to the graph. */
   public final void handleStmt(Stmt s) {
-    if (s.containsInvokeExpr()) {
-      mpag.addCallStmt(s);
-      handleInvokeStmt(s);
+    if (s.isInvokableStmt() && s.asInvokableStmt().containsInvokeExpr()) {
+      mpag.addCallStmt(s.asInvokableStmt());
+      handleInvokeStmt(s.asInvokableStmt());
     } else {
       handleIntraStmt(s);
     }
@@ -143,8 +144,8 @@ public class MethodNodeFactory {
    * Adds the edges required for this statement to the graph. Add throw stmt if the invoke method
    * throws an Exception.
    */
-  protected void handleInvokeStmt(Stmt s) {
-    AbstractInvokeExpr ie = s.getInvokeExpr();
+  protected void handleInvokeStmt(InvokableStmt s) {
+    AbstractInvokeExpr ie = s.getInvokeExpr().get();
     int numArgs = ie.getArgCount();
     for (int i = 0; i < numArgs; i++) {
       Value arg = ie.getArg(i);

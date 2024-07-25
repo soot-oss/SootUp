@@ -28,7 +28,6 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
@@ -66,30 +65,13 @@ public abstract class AbstractStmt implements Stmt {
   @Nonnull
   public Stream<Value> getUsesAndDefs() {
     Optional<LValue> def = getDef();
-    if (def.isPresent()) {
-      return Stream.concat(getUses(), Stream.of(def.get()));
-    }
-    return getUses();
+    return def.map(lValue -> Stream.concat(getUses(), Stream.of(lValue))).orElseGet(this::getUses);
   }
 
   /** Returns the amount of unexceptional successors the Stmt needs to have in the StmtGraph. */
   @Override
   public int getExpectedSuccessorCount() {
     return 1;
-  }
-
-  @Override
-  public boolean containsInvokeExpr() {
-    return false;
-  }
-
-  /**
-   * This method must only be used for Stmts which contain an InvokeExpr (JInvokeStmt; possible in
-   * JAssignStmt) check via containsInvokExpr().
-   */
-  @Override
-  public AbstractInvokeExpr getInvokeExpr() {
-    throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
   }
 
   @Override
@@ -143,5 +125,28 @@ public abstract class AbstractStmt implements Stmt {
       return this;
     }
     return visitor.getResult();
+  }
+
+  /**
+   * Checks if the statement is an invokable statement, this means it either contains an invoke
+   * expression or causes a static initializer call
+   *
+   * @return true if the Object is an instance of {@link InvokableStmt}, otherwise false
+   */
+  @Override
+  public boolean isInvokableStmt() {
+    return this instanceof InvokableStmt;
+  }
+
+  /**
+   * Transforms the statement to an {@link InvokableStmt} if it is possible. if not it will throw an
+   * Exception. Before this method is used {@link #isInvokableStmt} should be called to prevent
+   * exceptions
+   *
+   * @return the typecast of this to InvokableStmt
+   */
+  @Override
+  public InvokableStmt asInvokableStmt() {
+    return (InvokableStmt) this;
   }
 }

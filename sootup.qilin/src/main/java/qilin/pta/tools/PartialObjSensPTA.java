@@ -153,7 +153,7 @@ public abstract class PartialObjSensPTA extends StagedPTA {
         }
       }
       for (final Stmt s : srcmpag.getInvokeStmts()) {
-        AbstractInvokeExpr ie = s.getInvokeExpr();
+        AbstractInvokeExpr ie = s.asInvokableStmt().getInvokeExpr().get();
         int numArgs = ie.getArgCount();
         for (int i = 0; i < numArgs; i++) {
           Value arg = ie.getArg(i);

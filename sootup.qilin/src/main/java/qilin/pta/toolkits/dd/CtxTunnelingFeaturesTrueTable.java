@@ -94,7 +94,7 @@ public class CtxTunnelingFeaturesTrueTable {
         }
       } else if (unit instanceof JInvokeStmt) {
         JInvokeStmt invokeStmt = (JInvokeStmt) unit;
-        AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
+        AbstractInvokeExpr expr = invokeStmt.asInvokableStmt().getInvokeExpr().get();
         if (expr instanceof JStaticInvokeExpr) {
           this.f[17] = true;
         } else if (expr instanceof JVirtualInvokeExpr || expr instanceof JInterfaceInvokeExpr) {

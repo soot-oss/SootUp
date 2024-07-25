@@ -158,7 +158,7 @@ public abstract class AbstractMVFG {
 
     // add invoke edges
     for (final Stmt s : srcmpag.getInvokeStmts()) {
-      AbstractInvokeExpr ie = s.getInvokeExpr();
+      AbstractInvokeExpr ie = s.asInvokableStmt().getInvokeExpr().get();
       int numArgs = ie.getArgCount();
       Value[] args = new Value[numArgs];
       for (int i = 0; i < numArgs; i++) {

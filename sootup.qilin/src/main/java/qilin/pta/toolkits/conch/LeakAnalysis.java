@@ -27,7 +27,7 @@ import qilin.core.PTA;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
 
 /*
@@ -133,7 +133,7 @@ public class LeakAnalysis extends AbstractPAG {
             Edge edge = it.next();
             SootMethod srcMethod = edge.src();
             MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
-            Stmt invokeStmt = edge.srcUnit();
+            InvokableStmt invokeStmt = edge.srcUnit();
             if (targetState == DFA.State.F) { // ret.f* = heap
               // add S -new-> r summary edge for symbolic heaps.
               VarNode ret = (VarNode) targetNode;
@@ -154,7 +154,7 @@ public class LeakAnalysis extends AbstractPAG {
             Edge edge = it.next();
             SootMethod srcMethod = edge.src();
             MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
-            Stmt invokeStmt = edge.srcUnit();
+            InvokableStmt invokeStmt = edge.srcUnit();
             VarNode aj = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pj);
             // a param reach end state.
             if (targetState == DFA.State.B && sourceNode != targetNode) { // pi.f* = pj, pi != pj.
@@ -185,7 +185,7 @@ public class LeakAnalysis extends AbstractPAG {
             Edge edge = it.next();
             SootMethod srcMethod = edge.src();
             MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
-            Stmt invokeStmt = edge.srcUnit();
+            InvokableStmt invokeStmt = edge.srcUnit();
             VarNode ai = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pi);
             VarNode r = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, retOrThrow);
             if (r != null && ai != null) {

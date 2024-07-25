@@ -40,6 +40,7 @@ import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -68,7 +69,7 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  Collection<Stmt> transformClassForName(Stmt s) {
+  Collection<Stmt> transformClassForName(InvokableStmt s) {
     // <java.lang.Class: java.lang.Class forName(java.lang.String)>
     // <java.lang.Class: java.lang.Class forName(java.lang.String,boolean,java.lang.ClassLoader)>
     Collection<Stmt> ret = DataFactory.createSet();
@@ -94,7 +95,7 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  protected Collection<Stmt> transformClassNewInstance(Stmt s) {
+  protected Collection<Stmt> transformClassNewInstance(InvokableStmt s) {
     // <java.lang.Class: java.lang.Object newInstance()>
     if (!(s instanceof JAssignStmt)) {
       return Collections.emptySet();
@@ -126,7 +127,7 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  protected Collection<Stmt> transformContructorNewInstance(Stmt s) {
+  protected Collection<Stmt> transformConstructorNewInstance(InvokableStmt s) {
     // <java.lang.reflect.Constructor: java.lang.Object newInstance(java.lang.Object[])>
     if (!(s instanceof JAssignStmt)) {
       return Collections.emptySet();
@@ -137,7 +138,7 @@ public class TamiflexModel extends ReflectionModel {
         reflectionMap.getOrDefault(ReflectionKind.ConstructorNewInstance, Collections.emptyMap());
     if (constructorNewInstances.containsKey(s)) {
       Collection<String> constructorSignatures = constructorNewInstances.get(s);
-      AbstractInvokeExpr iie = s.getInvokeExpr();
+      AbstractInvokeExpr iie = s.asInvokableStmt().getInvokeExpr().get();
       Value args = iie.getArg(0);
       JArrayRef arrayRef =
           JavaJimple.getInstance().newArrayRef((Local) args, IntConstant.getInstance(0));
@@ -163,14 +164,14 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  protected Collection<Stmt> transformMethodInvoke(Stmt s) {
+  protected Collection<Stmt> transformMethodInvoke(InvokableStmt s) {
     // <java.lang.reflect.Method: java.lang.Object invoke(java.lang.Object,java.lang.Object[])>
     Collection<Stmt> ret = DataFactory.createSet();
     Map<Stmt, Set<String>> methodInvokes =
         reflectionMap.getOrDefault(ReflectionKind.MethodInvoke, Collections.emptyMap());
     if (methodInvokes.containsKey(s)) {
       Collection<String> methodSignatures = methodInvokes.get(s);
-      AbstractInvokeExpr iie = s.getInvokeExpr();
+      AbstractInvokeExpr iie = s.getInvokeExpr().get();
       Value base = iie.getArg(0);
       Value args = iie.getArg(1);
       Local arg = null;
@@ -213,14 +214,14 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  protected Collection<Stmt> transformFieldSet(Stmt s) {
+  protected Collection<Stmt> transformFieldSet(InvokableStmt s) {
     // <java.lang.reflect.Field: void set(java.lang.Object,java.lang.Object)>
     Collection<Stmt> ret = DataFactory.createSet();
     Map<Stmt, Set<String>> fieldSets =
         reflectionMap.getOrDefault(ReflectionKind.FieldSet, Collections.emptyMap());
     if (fieldSets.containsKey(s)) {
       Collection<String> fieldSignatures = fieldSets.get(s);
-      AbstractInvokeExpr iie = s.getInvokeExpr();
+      AbstractInvokeExpr iie = s.getInvokeExpr().get();
       Value base = iie.getArg(0);
       Value rValue = iie.getArg(1);
       for (String fieldSignature : fieldSignatures) {
@@ -243,7 +244,7 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  protected Collection<Stmt> transformFieldGet(Stmt s) {
+  protected Collection<Stmt> transformFieldGet(InvokableStmt s) {
     // <java.lang.reflect.Field: java.lang.Object get(java.lang.Object)>
     Collection<Stmt> ret = DataFactory.createSet();
     Map<Stmt, Set<String>> fieldGets =
@@ -251,7 +252,7 @@ public class TamiflexModel extends ReflectionModel {
     if (fieldGets.containsKey(s) && s instanceof JAssignStmt) {
       Collection<String> fieldSignatures = fieldGets.get(s);
       LValue lvalue = ((JAssignStmt) s).getLeftOp();
-      AbstractInvokeExpr iie = s.getInvokeExpr();
+      AbstractInvokeExpr iie = s.getInvokeExpr().get();
       Value base = iie.getArg(0);
       for (String fieldSignature : fieldSignatures) {
         FieldSignature fieldSig =
@@ -275,7 +276,7 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  protected Collection<Stmt> transformArrayNewInstance(Stmt s) {
+  protected Collection<Stmt> transformArrayNewInstance(InvokableStmt s) {
     // <java.lang.reflect.Array: java.lang.Object newInstance(java.lang.Class,int)>
     Collection<Stmt> ret = DataFactory.createSet();
     Map<Stmt, Set<String>> mappedToArrayTypes =
@@ -294,9 +295,9 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  Collection<Stmt> transformArrayGet(Stmt s) {
+  Collection<Stmt> transformArrayGet(InvokableStmt s) {
     Collection<Stmt> ret = DataFactory.createSet();
-    AbstractInvokeExpr iie = s.getInvokeExpr();
+    AbstractInvokeExpr iie = s.getInvokeExpr().get();
     Value base = iie.getArg(0);
     if (s instanceof JAssignStmt) {
       LValue lvalue = ((JAssignStmt) s).getLeftOp();
@@ -319,9 +320,9 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  Collection<Stmt> transformArraySet(Stmt s) {
+  Collection<Stmt> transformArraySet(InvokableStmt s) {
     Collection<Stmt> ret = DataFactory.createSet();
-    AbstractInvokeExpr iie = s.getInvokeExpr();
+    AbstractInvokeExpr iie = s.getInvokeExpr().get();
     Value base = iie.getArg(0);
     if (base.getType() instanceof ArrayType) {
       Value from = iie.getArg(2);
@@ -436,8 +437,9 @@ public class TamiflexModel extends ReflectionModel {
     for (SootMethod sm : sourceMethods) {
       Body body = PTAUtils.getMethodBody(sm);
       for (Stmt stmt : body.getStmts()) {
-        if (stmt.containsInvokeExpr()) {
-          String methodSig = stmt.getInvokeExpr().getMethodSignature().toString();
+        if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
+          String methodSig =
+              stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature().toString();
           if (matchReflectionKind(kind, methodSig)) {
             potential.add(stmt);
           }
