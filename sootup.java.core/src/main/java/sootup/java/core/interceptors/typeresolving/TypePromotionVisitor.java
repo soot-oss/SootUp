@@ -59,6 +59,7 @@ public class TypePromotionVisitor extends TypeChecker {
 
     /* Note: When visiting function parameters, we may encounter constant values such as strings ("abc") or integers (2).
       These constants are not instances of the Local class and should be handled accordingly.
+      Skipping non-Local instances may lead to over-approximation and potential inaccuracies; revisit if issues arise.
     */
     if (!(value instanceof Local)) {
       return;
