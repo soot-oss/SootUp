@@ -1,8 +1,8 @@
 name: Download Random JARs from Maven
 
 on:
-  push:
-    branches: [ develop ]
+  workflow_dispatch:
+
 jobs:
   download-jars:
     runs-on: ubuntu-latest
