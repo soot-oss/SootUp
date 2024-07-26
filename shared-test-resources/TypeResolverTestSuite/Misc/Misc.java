@@ -87,6 +87,11 @@ public class Misc {
 
   private static void useBoolean(boolean b) {}
 
+  public static void testStringDefaultMethodsTest(){
+    String someString = "Some String";
+    boolean a = someString.contains("abc");
+  }
+
   public static void arrayTest() {
     {
       double[] a = new double[1];

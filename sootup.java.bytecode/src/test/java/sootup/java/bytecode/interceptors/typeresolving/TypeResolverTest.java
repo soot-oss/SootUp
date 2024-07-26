@@ -38,6 +38,8 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   String baseDir = "../shared-test-resources/TypeResolverTestSuite/";
   Type objectType = new JavaClassType("Object", new JavaPackageName("java.lang"));
+  Type stringType = new JavaClassType("String", new JavaPackageName("java.lang"));
+  Type charSequenceType = new JavaClassType("CharSequence", new JavaPackageName("java.lang"));
 
   @BeforeEach
   public void setup() {
@@ -282,17 +284,25 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
         new Local("#l0", ArrayType.createArrayType(PrimitiveType.getDouble(), 1)));
   }
 
+  @Test
+  public void testStringDefaultMethodsTest() {
+    final Body body = getMiscBody("testStringDefaultMethodsTest");
+    assertLocals(
+        body,
+        new Local("#l0", charSequenceType),
+        new Local("l0", stringType),
+        new Local("l1", PrimitiveType.getBoolean()));
+  }
+
   private void assertLocals(Body body, Local... locals) {
     assertEquals(new HashSet<>(Arrays.asList(locals)), body.getLocals());
   }
 
   private Body getMiscBody(String name) {
-    final JavaView view =
-        new JavaView(
-            new JavaClassPathAnalysisInputLocation(
-                baseDir + "Misc/",
-                SourceType.Library,
-                Collections.singletonList(new TypeAssigner())));
+    JavaClassPathAnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            baseDir + "Misc/", SourceType.Library, Collections.singletonList(new TypeAssigner()));
+    final JavaView view = new JavaView(Arrays.asList(inputLocation));
 
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
