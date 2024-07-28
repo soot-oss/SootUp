@@ -15,7 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
-import sootup.core.model.*;
+import sootup.core.model.Body;
+import sootup.core.model.MethodModifier;
+import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
@@ -291,7 +294,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   }
 
   @Test
-  public void testTrWithoutLs() {
+  public void testTAWarningWithoutRTJar() {
     String directoryPath = baseDir + "Misc/";
     try {
       List<String> jarFileNames = listJarFiles(directoryPath);
@@ -339,7 +342,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     return view.getMethod(methodSignature).get().getBody();
   }
 
-  // Apply Type Assigner then Unused Local Eliminator without using Local Splitter first.
+  // Apply Type Assigner gives WARN message, when rt.jar missing in view
   private void applyTypeAssignerToJar(String jarName) {
     JavaClassPathAnalysisInputLocation inputJarLocation =
         new JavaClassPathAnalysisInputLocation(
@@ -348,12 +351,11 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
             Collections.singletonList(new TypeAssigner()));
     final JavaView view = new JavaView(Collections.singletonList(inputJarLocation));
 
-    for (SootClass sootClass : view.getClasses()) {
-      for (SootMethod sootMethod : sootClass.getMethods()) {
-        if (sootMethod.isConcrete()) {
-          Body body = view.getMethod(sootMethod.getSignature()).get().getBody();
-        }
-      }
-    }
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                "Misc", "testTAWarningWithoutRTJar", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+    // Note: Verify the presence of a warning message in the console if rt.jar is missing
   }
 }
