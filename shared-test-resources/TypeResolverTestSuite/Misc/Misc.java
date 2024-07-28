@@ -1,3 +1,5 @@
+import java.util.Date;
+
 public class Misc {
   public static void arraysMixedAssignment() {
     int[] a = new int[7];
@@ -68,6 +70,35 @@ public class Misc {
     {
       int a = 2;
     }
+  }
+
+  public static void testTaAndLnsWithoutLS() {
+    int a = 10, c;
+    try {
+      a = 8 / 0;
+      int b = a + 2;
+      c = a;
+    } catch (ArithmeticException ex) {
+    }
+    System.out.println(a);
+  }
+
+  public static void testTaAndLnsWithoutLS1() {
+    try {
+      Object v = 5.00;
+      long b = ((Number) v).longValue();
+    } catch (Exception ex) {
+    }
+  }
+
+  public Object testTaAndLnsWithoutLS2(Date date) {
+    Date newDate = date;
+    if (date == null) {
+      return null;
+    } else if (date == newDate){
+      throw new IllegalArgumentException("Exception");
+    }
+    return newDate;
   }
 
   public static void dependentAugmentedInteger1Promotion() {
