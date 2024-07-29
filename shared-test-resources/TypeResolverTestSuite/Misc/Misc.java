@@ -80,7 +80,7 @@ public class Misc {
       c = a;
     } catch (ArithmeticException ex) {
     }
-    System.out.println(a);
+    a++;
   }
 
   public static void testTaAndLnsWithoutLS1() {

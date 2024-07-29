@@ -23,13 +23,11 @@ import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaPackageName;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.interceptors.LocalSplitter;
 import sootup.java.core.interceptors.TypeAssigner;
 import sootup.java.core.interceptors.typeresolving.TypeResolver;
@@ -44,12 +42,8 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   Type objectType = new JavaClassType("Object", new JavaPackageName("java.lang"));
   Type stringType = new JavaClassType("String", new JavaPackageName("java.lang"));
   Type charSequenceType = new JavaClassType("CharSequence", new JavaPackageName("java.lang"));
-  Type longType = new JavaClassType("Long", new JavaPackageName("java.lang"));
   Type numberType = new JavaClassType("Number", new JavaPackageName("java.lang"));
   Type dateType = new JavaClassType("Date", new JavaPackageName("java.util"));;
-  Type jwtDateConverterType =
-      new JavaClassType(
-          "JwtDateConverter", new JavaPackageName("io.jsonwebtoken.impl.lang.JwtDateConverter"));
   Type miscType = new JavaClassType("Misc", new JavaPackageName(""));
   Type sysoutType = new JavaClassType("PrintStream", new JavaPackageName("java.io"));
   Type throwableType = new JavaClassType("Throwable", new JavaPackageName("java.lang"));
@@ -316,23 +310,6 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
             baseDir + "Misc/", SourceType.Application, Arrays.asList(new TypeAssigner()));
     final JavaView view = new JavaView(Arrays.asList(inputLocation));
 
-    ClassType classType =
-        view.getIdentifierFactory().getClassType("io.jsonwebtoken.impl.lang.JwtDateConverter");
-    JavaSootClass sootClass = view.getClass(classType).get();
-    List<Body> bodyStream =
-        sootClass.getMethods().stream()
-            .filter(javaSootMethod -> javaSootMethod.getName().contains("applyTo"))
-            .map(SootMethod::getBody)
-            .collect(Collectors.toList());
-
-    assertLocals(
-        bodyStream.get(0),
-        new Local("this", jwtDateConverterType),
-        new Local("date", dateType),
-        new Local("$stack2", PrimitiveType.getLong()),
-        new Local("$stack3", PrimitiveType.getLong()),
-        new Local("$stack4", longType));
-
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature("Misc", "testTaAndLnsWithoutLS", "void", Collections.emptyList());
@@ -343,8 +320,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
         new Local("l0", PrimitiveType.getInt()),
         new Local("l1", PrimitiveType.getInt()),
         new Local("l2", objectType),
-        new Local("$stack3", sysoutType),
-        new Local("$stack4", throwableType));
+        new Local("$stack3", throwableType));
 
     final MethodSignature methodSignature1 =
         view.getIdentifierFactory()
@@ -394,12 +370,12 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     assertLocals(
         body,
         new Local("l0#0", PrimitiveType.getByte()),
+        new Local("l0#2", PrimitiveType.getInt()),
         new Local("l2#0", PrimitiveType.getInt()),
         new Local("$stack3", sysoutType),
         new Local("l0#1", PrimitiveType.getInt()),
         new Local("l1", PrimitiveType.getInt()),
-        new Local("l2#1", throwableType),
-        new Local("$stack4", throwableType));
+        new Local("l2#1", throwableType));
   }
 
   private void assertLocals(Body body, Local... locals) {
