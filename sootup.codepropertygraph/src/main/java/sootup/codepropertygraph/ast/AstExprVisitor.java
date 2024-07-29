@@ -228,31 +228,28 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
   }
 
   private void handleInvokeExpr(AbstractInvokeExpr expr) {
-    ExprGraphNode exprNode = new ExprGraphNode(expr);
-    graphBuilder.addEdge(new InvokeAstEdge(parentNode, exprNode));
-
     // Handle base for specific types of invoke expressions
     if (expr instanceof JInterfaceInvokeExpr) {
       JInterfaceInvokeExpr interfaceInvokeExpr = (JInterfaceInvokeExpr) expr;
       ImmediateGraphNode baseNode = new ImmediateGraphNode(interfaceInvokeExpr.getBase());
 
-      graphBuilder.addEdge(new BaseAstEdge(exprNode, baseNode));
+      graphBuilder.addEdge(new BaseAstEdge(parentNode, baseNode));
     } else if (expr instanceof JSpecialInvokeExpr) {
       JSpecialInvokeExpr specialInvokeExpr = (JSpecialInvokeExpr) expr;
       ImmediateGraphNode baseNode = new ImmediateGraphNode(specialInvokeExpr.getBase());
 
-      graphBuilder.addEdge(new BaseAstEdge(exprNode, baseNode));
+      graphBuilder.addEdge(new BaseAstEdge(parentNode, baseNode));
     } else if (expr instanceof JVirtualInvokeExpr) {
       JVirtualInvokeExpr virtualInvokeExpr = (JVirtualInvokeExpr) expr;
       ImmediateGraphNode baseNode = new ImmediateGraphNode(virtualInvokeExpr.getBase());
 
-      graphBuilder.addEdge(new BaseAstEdge(exprNode, baseNode));
+      graphBuilder.addEdge(new BaseAstEdge(parentNode, baseNode));
     }
 
     // Handle arguments
     for (Immediate arg : expr.getArgs()) {
       ImmediateGraphNode argAstEdge = new ImmediateGraphNode(arg);
-      graphBuilder.addEdge(new ArgAstEdge(exprNode, argAstEdge));
+      graphBuilder.addEdge(new ArgAstEdge(parentNode, argAstEdge));
     }
   }
 }

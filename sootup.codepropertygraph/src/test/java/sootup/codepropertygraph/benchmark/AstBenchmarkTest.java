@@ -19,7 +19,9 @@ import sootup.core.types.VoidType;
 public class AstBenchmarkTest extends BenchmarkTestSuiteBase {
   private final ClassType ifElseStatementClass = getClassType("IfElseStatement");
   private final ClassType tryCatchFinallyClass = getClassType("TryCatchFinally");
-  private final ClassType switchCaseStatement = getClassType("SwitchCaseStatement");
+  private final ClassType switchCaseStatementClass = getClassType("SwitchCaseStatement");
+  private final ClassType whileLoopClass = getClassType("WhileLoop");
+
 
   @Test
   public void testAstForIfStatement() {
@@ -257,7 +259,7 @@ public class AstBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testAstForSwitchCaseGroupedTargetsDefault() {
     String methodName = "switchCaseGroupedTargetsDefault";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertAstMethod(
         methodSignature,
@@ -272,7 +274,7 @@ public class AstBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testAstForSwitchWithSwitch() {
     String methodName = "switchWithSwitch";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertAstMethod(
         methodSignature,
@@ -287,7 +289,7 @@ public class AstBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testAstForSwitchCaseStatementInt() {
     String methodName = "switchCaseStatementInt";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertAstMethod(
         methodSignature,
@@ -302,7 +304,7 @@ public class AstBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testAstForSwitchCaseGroupedTargets() {
     String methodName = "switchCaseGroupedTargets";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertAstMethod(
         methodSignature,
@@ -317,7 +319,7 @@ public class AstBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testAstForSwitchCaseStatementEnum() {
     String methodName = "switchCaseStatementEnum";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertAstMethod(
         methodSignature,
@@ -332,7 +334,7 @@ public class AstBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testAstForSwitchCaseStatementCaseIncludingIf() {
     String methodName = "switchCaseStatementCaseIncludingIf";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertAstMethod(
         methodSignature,
@@ -347,7 +349,7 @@ public class AstBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testAstForSwitchCaseWithoutDefault() {
     String methodName = "switchCaseWithoutDefault";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertAstMethod(
         methodSignature,
@@ -356,6 +358,21 @@ public class AstBenchmarkTest extends BenchmarkTestSuiteBase {
         Collections.emptyList(),
         null,
         VoidType.getInstance());
+  }
+
+  @Test
+  public void testAstForWhileLoop() {
+    String methodName = "whileLoop";
+    MethodSignature methodSignature =
+            getMethodSignature(whileLoopClass, methodName, "void", Collections.emptyList());
+
+    assertAstMethod(
+            methodSignature,
+            methodName,
+            EnumSet.of(MethodModifier.PUBLIC),
+            Collections.emptyList(),
+            null,
+            VoidType.getInstance());
   }
 
   private void assertAstMethod(

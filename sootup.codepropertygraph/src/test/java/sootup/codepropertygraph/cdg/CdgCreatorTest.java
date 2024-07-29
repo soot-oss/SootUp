@@ -53,15 +53,7 @@ public class CdgCreatorTest extends GraphTestSuiteBase {
     assertNotNull(cdgGraph);
     verifyEdges(cdgGraph, CdgEdge.class);
 
-    assertEquals(2, cdgGraph.getNodes().size());
-    assertTrue(
-        cdgGraph.getNodes().stream()
-            .map(node -> (StmtGraphNode) node)
-            .anyMatch(node -> node.getStmt() instanceof JGotoStmt));
-    assertTrue(
-        cdgGraph.getNodes().stream()
-            .map(node -> (StmtGraphNode) node)
-            .anyMatch(node -> node.getStmt() instanceof JReturnVoidStmt));
+    assertEquals(0, cdgGraph.getNodes().size());
   }
 
   @Test

@@ -15,7 +15,8 @@ import sootup.core.types.ClassType;
 public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
   private final ClassType ifElseStatementClass = getClassType("IfElseStatement");
   private final ClassType tryCatchFinallyClass = getClassType("TryCatchFinally");
-  private final ClassType switchCaseStatement = getClassType("SwitchCaseStatement");
+  private final ClassType switchCaseStatementClass = getClassType("SwitchCaseStatement");
+  private final ClassType whileLoopClass = getClassType("WhileLoop");
 
   @Test
   public void testCdgForIfStatement() {
@@ -152,7 +153,7 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testCdgForSwitchCaseGroupedTargetsDefault() {
     String methodName = "switchCaseGroupedTargetsDefault";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertCdgMethod(methodSignature);
   }
@@ -161,7 +162,7 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testCdgForSwitchWithSwitch() {
     String methodName = "switchWithSwitch";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertCdgMethod(methodSignature);
   }
@@ -170,7 +171,7 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testCdgForSwitchCaseStatementInt() {
     String methodName = "switchCaseStatementInt";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertCdgMethod(methodSignature);
   }
@@ -179,7 +180,7 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testCdgForSwitchCaseGroupedTargets() {
     String methodName = "switchCaseGroupedTargets";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertCdgMethod(methodSignature);
   }
@@ -188,7 +189,7 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testCdgForSwitchCaseStatementEnum() {
     String methodName = "switchCaseStatementEnum";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertCdgMethod(methodSignature);
   }
@@ -197,7 +198,7 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testCdgForSwitchCaseStatementCaseIncludingIf() {
     String methodName = "switchCaseStatementCaseIncludingIf";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
 
     assertCdgMethod(methodSignature);
   }
@@ -206,7 +207,16 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
   public void testCdgForSwitchCaseWithoutDefault() {
     String methodName = "switchCaseWithoutDefault";
     MethodSignature methodSignature =
-        getMethodSignature(switchCaseStatement, methodName, "void", Collections.emptyList());
+        getMethodSignature(switchCaseStatementClass, methodName, "void", Collections.emptyList());
+
+    assertCdgMethod(methodSignature);
+  }
+
+  @Test
+  public void testCdgForWhileLoop() {
+    String methodName = "whileLoop";
+    MethodSignature methodSignature =
+        getMethodSignature(whileLoopClass, methodName, "void", Collections.emptyList());
 
     assertCdgMethod(methodSignature);
   }

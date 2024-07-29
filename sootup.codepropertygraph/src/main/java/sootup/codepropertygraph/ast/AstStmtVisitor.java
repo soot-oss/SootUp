@@ -5,6 +5,8 @@ import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.*;
 import sootup.codepropertygraph.propertygraph.nodes.*;
 import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.common.expr.AbstractConditionExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.ref.Ref;
 import sootup.core.jimple.common.stmt.*;
@@ -49,8 +51,11 @@ class AstStmtVisitor extends AbstractStmtVisitor<Void> {
     } else if (stmt.getRightOp() instanceof Ref) {
       graphBuilder.addEdge(new RightOpAstEdge(stmtNode, new RefGraphNode((Ref) stmt.getRightOp())));
     } else {
-      graphBuilder.addEdge(
-          new RightOpAstEdge(stmtNode, new ExprGraphNode((Expr) stmt.getRightOp())));
+      Expr rightOp = (Expr) stmt.getRightOp();
+      ExprGraphNode rightOpNode = new ExprGraphNode(rightOp);
+      graphBuilder.addEdge(new RightOpAstEdge(stmtNode, rightOpNode));
+      rightOp.accept(new AstExprVisitor(graphBuilder, rightOpNode));
+
     }
   }
 
@@ -58,7 +63,11 @@ class AstStmtVisitor extends AbstractStmtVisitor<Void> {
   public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
-    addExprNode(stmtNode, stmt.getInvokeExpr());
+
+    AbstractInvokeExpr invokeExpr = stmt.getInvokeExpr();
+    ExprGraphNode invokeExprNode = new ExprGraphNode(invokeExpr);
+    graphBuilder.addEdge(new InvokeAstEdge(stmtNode, invokeExprNode));
+    invokeExpr.accept(new AstExprVisitor(graphBuilder, invokeExprNode));
   }
 
   @Override
@@ -74,7 +83,11 @@ class AstStmtVisitor extends AbstractStmtVisitor<Void> {
   public void caseIfStmt(@Nonnull JIfStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
-    addExprNode(stmtNode, stmt.getCondition());
+
+    AbstractConditionExpr condition = stmt.getCondition();
+    ExprGraphNode exprNode = new ExprGraphNode(condition);
+    graphBuilder.addEdge(new ConditionAstEdge(stmtNode, exprNode));
+    condition.accept(new AstExprVisitor(graphBuilder, exprNode));
   }
 
   @Override

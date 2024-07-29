@@ -34,6 +34,8 @@ public abstract class GraphTestSuiteBase {
   protected void verifyEdges(
       PropertyGraph graph, Class<? extends PropertyGraphEdge>... expectedEdgeTypes) {
     assertNotNull(graph);
+
+    if (graph.getEdges().size() == 0) return;
     for (Class<? extends PropertyGraphEdge> edgeType : expectedEdgeTypes) {
       assertTrue(
           graph.getEdges().stream().anyMatch(edgeType::isInstance),

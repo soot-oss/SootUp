@@ -9,6 +9,6 @@ public class Op2AstEdge extends AbstAstEdge {
 
   @Override
   public String getLabel() {
-    return "ast_op1";
+    return "ast_op2";
   }
 }
