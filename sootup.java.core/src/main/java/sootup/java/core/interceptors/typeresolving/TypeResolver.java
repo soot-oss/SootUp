@@ -344,7 +344,8 @@ public class TypeResolver {
       return Type.createArrayType(elementType, 1);
     } else if (type instanceof NullType || type instanceof BottomType || type instanceof TopType) {
       // Convert `null`/`BottomType`/`TopType` types to `java.lang.Object`.
-      // Top Type can show up when in a simple try-catch block, least common ancestor is determined as TopType for int and ArithmeticException
+      // Top Type can show up when in a simple try-catch block, least common ancestor is determined
+      // as TopType for int and ArithmeticException
       // `null` can show up when a variable never gets a non-null value assigned to it.
       // `BottomType` can show up when a variable only every gets assigned from "impossible"
       // operations, e.g., indexing into `null`, or never gets assigned at all.

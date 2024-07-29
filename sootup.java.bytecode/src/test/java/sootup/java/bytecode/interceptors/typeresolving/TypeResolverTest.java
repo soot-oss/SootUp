@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -30,13 +27,9 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.Utils;
-import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaPackageName;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.interceptors.Aggregator;
-import sootup.java.core.interceptors.LocalNameStandardizer;
 import sootup.java.core.interceptors.LocalSplitter;
 import sootup.java.core.interceptors.TypeAssigner;
 import sootup.java.core.interceptors.typeresolving.TypeResolver;
@@ -54,11 +47,14 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   Type longType = new JavaClassType("Long", new JavaPackageName("java.lang"));
   Type numberType = new JavaClassType("Number", new JavaPackageName("java.lang"));
   Type dateType = new JavaClassType("Date", new JavaPackageName("java.util"));;
-  Type jwtDateConverterType = new JavaClassType("JwtDateConverter", new JavaPackageName("io.jsonwebtoken.impl.lang.JwtDateConverter"));
+  Type jwtDateConverterType =
+      new JavaClassType(
+          "JwtDateConverter", new JavaPackageName("io.jsonwebtoken.impl.lang.JwtDateConverter"));
   Type miscType = new JavaClassType("Misc", new JavaPackageName(""));
   Type sysoutType = new JavaClassType("PrintStream", new JavaPackageName("java.io"));
   Type throwableType = new JavaClassType("Throwable", new JavaPackageName("java.lang"));
-  Type illegalArgumentType = new JavaClassType("IllegalArgumentException", new JavaPackageName("java.lang"));
+  Type illegalArgumentType =
+      new JavaClassType("IllegalArgumentException", new JavaPackageName("java.lang"));
 
   @BeforeEach
   public void setup() {
@@ -314,83 +310,96 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   }
 
   @Test
-  public void testTaAndLnsWithoutLS(){
-    AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(
-            baseDir + "Misc/",
-            SourceType.Application,
-            Arrays.asList(new TypeAssigner()));
+  public void testTaAndLnsWithoutLS() {
+    AnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            baseDir + "Misc/", SourceType.Application, Arrays.asList(new TypeAssigner()));
     final JavaView view = new JavaView(Arrays.asList(inputLocation));
 
-    ClassType classType = view.getIdentifierFactory().getClassType("io.jsonwebtoken.impl.lang.JwtDateConverter");
+    ClassType classType =
+        view.getIdentifierFactory().getClassType("io.jsonwebtoken.impl.lang.JwtDateConverter");
     JavaSootClass sootClass = view.getClass(classType).get();
-    List<Body> bodyStream = sootClass.getMethods().stream().filter(javaSootMethod -> javaSootMethod.getName().contains("applyTo")).map(SootMethod::getBody).collect(Collectors.toList());
+    List<Body> bodyStream =
+        sootClass.getMethods().stream()
+            .filter(javaSootMethod -> javaSootMethod.getName().contains("applyTo"))
+            .map(SootMethod::getBody)
+            .collect(Collectors.toList());
 
-    assertLocals(bodyStream.get(0),
-            new Local("this", jwtDateConverterType),
-            new Local("date", dateType),
-            new Local("$stack2", PrimitiveType.getLong()),
-            new Local("$stack3", PrimitiveType.getLong()),
-            new Local("$stack4", longType));
+    assertLocals(
+        bodyStream.get(0),
+        new Local("this", jwtDateConverterType),
+        new Local("date", dateType),
+        new Local("$stack2", PrimitiveType.getLong()),
+        new Local("$stack3", PrimitiveType.getLong()),
+        new Local("$stack4", longType));
 
     final MethodSignature methodSignature =
-            view.getIdentifierFactory()
-                    .getMethodSignature("Misc", "testTaAndLnsWithoutLS", "void", Collections.emptyList());
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "testTaAndLnsWithoutLS", "void", Collections.emptyList());
     final Body body = view.getMethod(methodSignature).get().getBody();
 
-    assertLocals(body,
-            new Local("l0", PrimitiveType.getInt()),
-            new Local("l1", PrimitiveType.getInt()),
-            new Local("l2", objectType),
-            new Local("$stack3", sysoutType),
-            new Local("$stack4", throwableType));
+    assertLocals(
+        body,
+        new Local("l0", PrimitiveType.getInt()),
+        new Local("l1", PrimitiveType.getInt()),
+        new Local("l2", objectType),
+        new Local("$stack3", sysoutType),
+        new Local("$stack4", throwableType));
 
     final MethodSignature methodSignature1 =
-            view.getIdentifierFactory()
-                    .getMethodSignature("Misc", "testTaAndLnsWithoutLS1", "void", Collections.emptyList());
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "testTaAndLnsWithoutLS1", "void", Collections.emptyList());
     final Body body1 = view.getMethod(methodSignature1).get().getBody();
 
-    assertLocals(body1,
-            new Local("l0", objectType),
-            new Local("l1", PrimitiveType.getLong()),
-            new Local("$stack3", numberType),
-            new Local("$stack4", throwableType));
+    assertLocals(
+        body1,
+        new Local("l0", objectType),
+        new Local("l1", PrimitiveType.getLong()),
+        new Local("$stack3", numberType),
+        new Local("$stack4", throwableType));
 
     final MethodSignature methodSignature2 =
-            view.getIdentifierFactory()
-                    .getMethodSignature("Misc", "testTaAndLnsWithoutLS2", "java.lang.Object", Collections.singletonList("java.util.Date"));
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                "Misc",
+                "testTaAndLnsWithoutLS2",
+                "java.lang.Object",
+                Collections.singletonList("java.util.Date"));
     final Body body2 = view.getMethod(methodSignature2).get().getBody();
 
     assertLocals(
-            body2,
-            new Local("this", miscType),
-            new Local("l1", dateType),
-            new Local("#l0", illegalArgumentType),
-            new Local("#l1", throwableType),
-            new Local("l2", dateType),
-            new Local("$stack3", objectType));
+        body2,
+        new Local("this", miscType),
+        new Local("l1", dateType),
+        new Local("#l0", illegalArgumentType),
+        new Local("#l1", throwableType),
+        new Local("l2", dateType),
+        new Local("$stack3", objectType));
   }
 
   @Test
-  public void testTaAndLnsWithLS(){
-    AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(
+  public void testTaAndLnsWithLS() {
+    AnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
             baseDir + "Misc/",
             SourceType.Application,
-            Arrays.asList(new LocalSplitter(),new TypeAssigner()));
+            Arrays.asList(new LocalSplitter(), new TypeAssigner()));
     final JavaView view = new JavaView(Arrays.asList(inputLocation));
 
     final MethodSignature methodSignature =
-            view.getIdentifierFactory()
-                    .getMethodSignature("Misc", "testTaAndLnsWithoutLS", "void", Collections.emptyList());
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "testTaAndLnsWithoutLS", "void", Collections.emptyList());
     final Body body = view.getMethod(methodSignature).get().getBody();
 
-    assertLocals(body,
-            new Local("l0#0", PrimitiveType.getByte()),
-            new Local("l2#0", PrimitiveType.getInt()),
-            new Local("$stack3", sysoutType),
-            new Local("l0#1", PrimitiveType.getInt()),
-            new Local("l1", PrimitiveType.getInt()),
-            new Local("l2#1", throwableType),
-            new Local("$stack4", throwableType));
+    assertLocals(
+        body,
+        new Local("l0#0", PrimitiveType.getByte()),
+        new Local("l2#0", PrimitiveType.getInt()),
+        new Local("$stack3", sysoutType),
+        new Local("l0#1", PrimitiveType.getInt()),
+        new Local("l1", PrimitiveType.getInt()),
+        new Local("l2#1", throwableType),
+        new Local("$stack4", throwableType));
   }
 
   private void assertLocals(Body body, Local... locals) {
