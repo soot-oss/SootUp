@@ -23,6 +23,7 @@ package sootup.core.types;
  */
 
 import javax.annotation.Nonnull;
+import sootup.core.jimple.visitor.AbstractTypeVisitor;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.TypeVisitor;
 
@@ -63,24 +64,60 @@ public abstract class Type implements Acceptor<TypeVisitor> {
   }
 
   public static int getValueBitSize(Type type) {
-    // TODO: ms: make use of the typevisitor to get O(1)
-    if (type instanceof PrimitiveType.BooleanType) {
-      return 1;
+    BitSizeVisitor visitor = new BitSizeVisitor();
+    type.accept(visitor);
+    return visitor.getResult().intValue();
+  }
+
+  private static class BitSizeVisitor extends AbstractTypeVisitor<Integer> {
+    @Override
+    public void caseBooleanType() {
+      setResult(Integer.valueOf(1));
     }
-    if (type instanceof PrimitiveType.ByteType) {
-      return 8;
+
+    @Override
+    public void caseByteType() {
+      setResult(Integer.valueOf(8));
     }
-    if (type instanceof PrimitiveType.ShortType || type instanceof PrimitiveType.CharType) {
-      return 16;
+
+    @Override
+    public void caseShortType() {
+      setResult(Integer.valueOf(16));
     }
-    if (type instanceof PrimitiveType.IntType || type instanceof PrimitiveType.FloatType) {
-      return 32;
+
+    @Override
+    public void caseCharType() {
+      setResult(Integer.valueOf(16));
     }
-    if (type instanceof PrimitiveType.LongType
-        || type instanceof PrimitiveType.DoubleType
-        || type instanceof ClassType) {
-      return 64;
+
+    @Override
+    public void caseIntType() {
+      setResult(Integer.valueOf(32));
     }
-    return 0;
+
+    @Override
+    public void caseFloatType() {
+      setResult(Integer.valueOf(32));
+    }
+
+    @Override
+    public void caseLongType() {
+      setResult(Integer.valueOf(64));
+    }
+
+    @Override
+    public void caseDoubleType() {
+      setResult(Integer.valueOf(64));
+    }
+
+    @Override
+    public void caseClassType(@Nonnull ClassType classType) {
+      setResult(Integer.valueOf(64));
+    }
+
+    @Override
+    public void defaultCaseType() {
+      setResult(Integer.valueOf(0));
+    }
   }
 }
