@@ -1,19 +1,20 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
@@ -24,9 +25,11 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.Utils;
+import sootup.java.bytecode.MemoryAppender;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaPackageName;
 import sootup.java.core.interceptors.TypeAssigner;
+import sootup.java.core.interceptors.typeresolving.AugEvalFunction;
 import sootup.java.core.interceptors.typeresolving.TypeResolver;
 import sootup.java.core.interceptors.typeresolving.types.TopType;
 import sootup.java.core.types.JavaClassType;
@@ -34,6 +37,8 @@ import sootup.java.core.views.JavaView;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class TypeResolverTest extends TypeAssignerTestSuite {
+
+  MemoryAppender memoryAppender;
 
   String baseDir = "../shared-test-resources/TypeResolverTestSuite/";
   Type objectType = new JavaClassType("Object", new JavaPackageName("java.lang"));
@@ -295,35 +300,27 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   @Test
   public void testTAWarningWithoutRTJar() {
-    String directoryPath = baseDir + "Misc/";
-    try {
-      List<String> jarFileNames = listJarFiles(directoryPath);
-      jarFileNames.forEach(
-          jarFile -> {
-            System.out.println("Applying Type Assigner to jar " + jarFile);
-            applyTypeAssignerToJar(jarFile);
-          });
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
 
-  public static List<String> listJarFiles(String directoryPath) throws IOException {
-    try (Stream<Path> paths = Files.walk(Paths.get(directoryPath))) {
-      return paths
-          .filter(Files::isRegularFile)
-          .filter(path -> path.toString().toLowerCase().endsWith(".jar"))
-          .sorted(
-              (path1, path2) -> {
-                try {
-                  return Long.compare(Files.size(path1), Files.size(path2));
-                } catch (IOException e) {
-                  throw new RuntimeException(e);
-                }
-              })
-          .map(path -> path.getFileName().toString())
-          .collect(Collectors.toList());
-    }
+    Logger logger = (Logger) LoggerFactory.getLogger(AugEvalFunction.class);
+    memoryAppender = new MemoryAppender();
+    memoryAppender.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
+    logger.setLevel(Level.WARN);
+    logger.addAppender(memoryAppender);
+    memoryAppender.start();
+
+    final Body body = getMiscBody("testTAWarningWithoutRTJar");
+    assertThat(body.getStmts().size()).isGreaterThan(1);
+
+    String expectedWarnMessage1 =
+        "The path from 'java.lang.Exception' to java.lang.Throwable cannot be found! Are you certain you don't want to include rt.jar? Including rt.jar could provide additional classes and resources that might be necessary for full functionality.";
+    String expectedWarnMessage2 =
+        "The path from 'java.lang.RuntimeException' to java.lang.Throwable cannot be found! Are you certain you don't want to include rt.jar? Including rt.jar could provide additional classes and resources that might be necessary for full functionality.";
+
+    assertThat(memoryAppender.contains(expectedWarnMessage1, Level.WARN)).isTrue();
+    assertThat(memoryAppender.contains(expectedWarnMessage2, Level.WARN)).isTrue();
+    assertThat(memoryAppender.countEventsForLogger(AugEvalFunction.class.getName())).isEqualTo(2);
+    assertThat(memoryAppender.search(expectedWarnMessage1, Level.WARN).size()).isEqualTo(1);
+    assertThat(memoryAppender.search(expectedWarnMessage2, Level.WARN).size()).isEqualTo(1);
   }
 
   private void assertLocals(Body body, Local... locals) {
@@ -340,22 +337,5 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
         view.getIdentifierFactory()
             .getMethodSignature("Misc", name, "void", Collections.emptyList());
     return view.getMethod(methodSignature).get().getBody();
-  }
-
-  // Apply Type Assigner gives WARN message, when rt.jar missing in view
-  private void applyTypeAssignerToJar(String jarName) {
-    JavaClassPathAnalysisInputLocation inputJarLocation =
-        new JavaClassPathAnalysisInputLocation(
-            baseDir + "Misc/" + jarName,
-            SourceType.Library,
-            Collections.singletonList(new TypeAssigner()));
-    final JavaView view = new JavaView(Collections.singletonList(inputJarLocation));
-
-    final MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature(
-                "Misc", "testTAWarningWithoutRTJar", "void", Collections.emptyList());
-    final Body body = view.getMethod(methodSignature).get().getBody();
-    // Note: Verify the presence of a warning message in the console if rt.jar is missing
   }
 }
