@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
@@ -28,6 +29,7 @@ import sootup.core.util.Utils;
 import sootup.java.bytecode.MemoryAppender;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaPackageName;
+import sootup.java.core.interceptors.LocalSplitter;
 import sootup.java.core.interceptors.TypeAssigner;
 import sootup.java.core.interceptors.typeresolving.AugEvalFunction;
 import sootup.java.core.interceptors.typeresolving.TypeResolver;
@@ -44,6 +46,13 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   Type objectType = new JavaClassType("Object", new JavaPackageName("java.lang"));
   Type stringType = new JavaClassType("String", new JavaPackageName("java.lang"));
   Type charSequenceType = new JavaClassType("CharSequence", new JavaPackageName("java.lang"));
+  Type numberType = new JavaClassType("Number", new JavaPackageName("java.lang"));
+  Type dateType = new JavaClassType("Date", new JavaPackageName("java.util"));;
+  Type miscType = new JavaClassType("Misc", new JavaPackageName(""));
+  Type sysoutType = new JavaClassType("PrintStream", new JavaPackageName("java.io"));
+  Type throwableType = new JavaClassType("Throwable", new JavaPackageName("java.lang"));
+  Type illegalArgumentType =
+      new JavaClassType("IllegalArgumentException", new JavaPackageName("java.lang"));
 
   @BeforeEach
   public void setup() {
@@ -321,6 +330,81 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     assertThat(memoryAppender.countEventsForLogger(AugEvalFunction.class.getName())).isEqualTo(2);
     assertThat(memoryAppender.search(expectedWarnMessage1, Level.WARN).size()).isEqualTo(1);
     assertThat(memoryAppender.search(expectedWarnMessage2, Level.WARN).size()).isEqualTo(1);
+  }
+
+  @Test
+  public void testTaAndLnsWithoutLS() {
+    AnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            baseDir + "Misc/", SourceType.Application, Arrays.asList(new TypeAssigner()));
+    final JavaView view = new JavaView(Arrays.asList(inputLocation));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "testTaAndLnsWithoutLS", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+
+    assertLocals(
+        body,
+        new Local("l0", PrimitiveType.getInt()),
+        new Local("l1", PrimitiveType.getInt()),
+        new Local("l2", objectType),
+        new Local("$stack3", throwableType));
+
+    final MethodSignature methodSignature1 =
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "testTaAndLnsWithoutLS1", "void", Collections.emptyList());
+    final Body body1 = view.getMethod(methodSignature1).get().getBody();
+
+    assertLocals(
+        body1,
+        new Local("l0", objectType),
+        new Local("l1", PrimitiveType.getLong()),
+        new Local("$stack3", numberType),
+        new Local("$stack4", throwableType));
+
+    final MethodSignature methodSignature2 =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                "Misc",
+                "testTaAndLnsWithoutLS2",
+                "java.lang.Object",
+                Collections.singletonList("java.util.Date"));
+    final Body body2 = view.getMethod(methodSignature2).get().getBody();
+
+    assertLocals(
+        body2,
+        new Local("this", miscType),
+        new Local("l1", dateType),
+        new Local("#l0", illegalArgumentType),
+        new Local("#l1", throwableType),
+        new Local("l2", dateType),
+        new Local("$stack3", objectType));
+  }
+
+  @Test
+  public void testTaAndLnsWithLS() {
+    AnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            baseDir + "Misc/",
+            SourceType.Application,
+            Arrays.asList(new LocalSplitter(), new TypeAssigner()));
+    final JavaView view = new JavaView(Arrays.asList(inputLocation));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "testTaAndLnsWithoutLS", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+
+    assertLocals(
+        body,
+        new Local("l0#0", PrimitiveType.getByte()),
+        new Local("l0#2", PrimitiveType.getInt()),
+        new Local("l2#0", PrimitiveType.getInt()),
+        new Local("$stack3", sysoutType),
+        new Local("l0#1", PrimitiveType.getInt()),
+        new Local("l1", PrimitiveType.getInt()),
+        new Local("l2#1", throwableType));
   }
 
   private void assertLocals(Body body, Local... locals) {
