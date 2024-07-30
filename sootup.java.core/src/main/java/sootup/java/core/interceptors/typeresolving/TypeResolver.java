@@ -47,6 +47,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.core.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.core.interceptors.typeresolving.types.BottomType;
+import sootup.java.core.interceptors.typeresolving.types.TopType;
 import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08 */
@@ -341,8 +342,10 @@ public class TypeResolver {
     if (type instanceof ArrayType) {
       Type elementType = convertUnderspecifiedType(((ArrayType) type).getElementType());
       return Type.createArrayType(elementType, 1);
-    } else if (type instanceof NullType || type instanceof BottomType) {
-      // Convert `null`/`BottomType` types to `java.lang.Object`.
+    } else if (type instanceof NullType || type instanceof BottomType || type instanceof TopType) {
+      // Convert `null`/`BottomType`/`TopType` types to `java.lang.Object`.
+      // Top Type can show up when in a simple try-catch block, least common ancestor is determined
+      // as TopType for int and ArithmeticException
       // `null` can show up when a variable never gets a non-null value assigned to it.
       // `BottomType` can show up when a variable only every gets assigned from "impossible"
       // operations, e.g., indexing into `null`, or never gets assigned at all.
