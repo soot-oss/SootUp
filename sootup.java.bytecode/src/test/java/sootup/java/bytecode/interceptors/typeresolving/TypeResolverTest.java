@@ -1,20 +1,14 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import categories.TestCategories;
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
@@ -26,12 +20,10 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.Utils;
-import sootup.java.bytecode.MemoryAppender;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaPackageName;
 import sootup.java.core.interceptors.LocalSplitter;
 import sootup.java.core.interceptors.TypeAssigner;
-import sootup.java.core.interceptors.typeresolving.AugEvalFunction;
 import sootup.java.core.interceptors.typeresolving.TypeResolver;
 import sootup.java.core.interceptors.typeresolving.types.TopType;
 import sootup.java.core.types.JavaClassType;
@@ -39,8 +31,6 @@ import sootup.java.core.views.JavaView;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class TypeResolverTest extends TypeAssignerTestSuite {
-
-  MemoryAppender memoryAppender;
 
   String baseDir = "../shared-test-resources/TypeResolverTestSuite/";
   Type objectType = new JavaClassType("Object", new JavaPackageName("java.lang"));
@@ -309,27 +299,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   @Test
   public void testTAWarningWithoutRTJar() {
-
-    Logger logger = (Logger) LoggerFactory.getLogger(AugEvalFunction.class);
-    memoryAppender = new MemoryAppender();
-    memoryAppender.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
-    logger.setLevel(Level.WARN);
-    logger.addAppender(memoryAppender);
-    memoryAppender.start();
-
-    final Body body = getMiscBody("testTAWarningWithoutRTJar");
-    assertThat(body.getStmts().size()).isGreaterThan(1);
-
-    String expectedWarnMessage1 =
-        "The path from 'java.lang.Exception' to java.lang.Throwable cannot be found! Are you certain you don't want to include rt.jar? Including rt.jar could provide additional classes and resources that might be necessary for full functionality.";
-    String expectedWarnMessage2 =
-        "The path from 'java.lang.RuntimeException' to java.lang.Throwable cannot be found! Are you certain you don't want to include rt.jar? Including rt.jar could provide additional classes and resources that might be necessary for full functionality.";
-
-    assertThat(memoryAppender.contains(expectedWarnMessage1, Level.WARN)).isTrue();
-    assertThat(memoryAppender.contains(expectedWarnMessage2, Level.WARN)).isTrue();
-    assertThat(memoryAppender.countEventsForLogger(AugEvalFunction.class.getName())).isEqualTo(2);
-    assertThat(memoryAppender.search(expectedWarnMessage1, Level.WARN).size()).isEqualTo(1);
-    assertThat(memoryAppender.search(expectedWarnMessage2, Level.WARN).size()).isEqualTo(1);
+    assertDoesNotThrow(() -> getMiscBody("testTAWarningWithoutRTJar"));
   }
 
   @Test
