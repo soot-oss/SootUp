@@ -1,4 +1,4 @@
-package sootup.codepropertygraph.propertygraph.utils;
+package sootup.codepropertygraph.propertygraph.util;
 
 import sootup.codepropertygraph.propertygraph.AstPropertyGraph;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;

@@ -7,7 +7,7 @@ import sootup.codepropertygraph.propertygraph.edges.PropertyGraphEdge;
 import sootup.codepropertygraph.propertygraph.nodes.MethodGraphNode;
 import sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode;
 import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
-import sootup.codepropertygraph.propertygraph.utils.PropertyGraphToDotConverter;
+import sootup.codepropertygraph.propertygraph.util.PropertyGraphToDotConverter;
 
 public final class StmtMethodPropertyGraph implements PropertyGraph {
   private final String name;
