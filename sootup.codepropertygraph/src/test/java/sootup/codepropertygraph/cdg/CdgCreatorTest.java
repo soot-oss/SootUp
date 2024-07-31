@@ -20,9 +20,7 @@ import sootup.core.jimple.common.expr.JEqExpr;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.PrimitiveType;
-import sootup.java.core.types.JavaClassType;
 
 public class CdgCreatorTest extends GraphTestSuiteBase {
 
@@ -126,7 +124,6 @@ public class CdgCreatorTest extends GraphTestSuiteBase {
 
   private SootMethod createSwitchStmtMethod() {
     MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
-    Local a = Jimple.newLocal("a", PrimitiveType.IntType.getInstance());
     JSwitchStmt switchStmt =
         Jimple.newTableSwitchStmt(IntConstant.getInstance(23), 1, 2, new SimpleStmtPositionInfo(1));
 
@@ -152,36 +149,4 @@ public class CdgCreatorTest extends GraphTestSuiteBase {
     return createSootMethod(stmtGraph, "switchStmtMethod");
   }
 
-  private SootMethod createNormalStmtMethod() {
-    MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
-
-    Local a = Jimple.newLocal("a", PrimitiveType.IntType.getInstance());
-    JAssignStmt assignStmt =
-        Jimple.newAssignStmt(a, IntConstant.getInstance(1), new SimpleStmtPositionInfo(1));
-    JReturnStmt returnStmt = new JReturnStmt(a, new SimpleStmtPositionInfo(2));
-
-    stmtGraph.addBlock(Arrays.asList(assignStmt, returnStmt));
-    stmtGraph.setStartingStmt(assignStmt);
-
-    return createSootMethod(stmtGraph, "normalStmtMethod");
-  }
-
-  private SootMethod createExceptionalEdgesMethod() {
-    MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
-    JThrowStmt throwStmt =
-        new JThrowStmt(
-            Jimple.newLocal("exception", PrimitiveType.IntType.getInstance()),
-            StmtPositionInfo.getNoStmtPositionInfo());
-    JReturnVoidStmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
-
-    stmtGraph.addBlock(Collections.singletonList(throwStmt));
-    stmtGraph.addBlock(Collections.singletonList(returnStmt));
-    stmtGraph.setStartingStmt(throwStmt);
-    stmtGraph.addExceptionalEdge(
-        throwStmt,
-        new JavaClassType("CustomException", new PackageName("cdg.exceptions")),
-        returnStmt);
-
-    return createSootMethod(stmtGraph, "exceptionalEdgesMethod");
-  }
 }

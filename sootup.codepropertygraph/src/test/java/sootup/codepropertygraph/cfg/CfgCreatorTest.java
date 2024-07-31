@@ -12,11 +12,9 @@ import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.expr.JEqExpr;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.SootMethod;
@@ -105,24 +103,6 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
     }
   }
 
-  private SootMethod createIfStmtMethod() {
-    MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
-    Local a = Jimple.newLocal("a", PrimitiveType.IntType.getInstance());
-    Local b = Jimple.newLocal("b", PrimitiveType.IntType.getInstance());
-    JIfStmt ifStmt = Jimple.newIfStmt(new JEqExpr(a, b), new SimpleStmtPositionInfo(1));
-    JReturnVoidStmt trueStmt = Jimple.newReturnVoidStmt(new SimpleStmtPositionInfo(2));
-    JReturnVoidStmt falseStmt = Jimple.newReturnVoidStmt(new SimpleStmtPositionInfo(3));
-
-    stmtGraph.addBlock(Collections.singletonList(ifStmt));
-    stmtGraph.addBlock(Collections.singletonList(trueStmt));
-    stmtGraph.addBlock(Collections.singletonList(falseStmt));
-    stmtGraph.setStartingStmt(ifStmt);
-    stmtGraph.putEdge(ifStmt, JIfStmt.TRUE_BRANCH_IDX, trueStmt);
-    stmtGraph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, falseStmt);
-
-    return createSootMethod(stmtGraph, "ifStmtMethod");
-  }
-
   private SootMethod createGotoStmtMethod() {
     MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
     JReturnVoidStmt targetStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
@@ -138,7 +118,6 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
 
   private SootMethod createSwitchStmtMethod() {
     MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
-    Local a = Jimple.newLocal("a", PrimitiveType.IntType.getInstance());
     JSwitchStmt switchStmt =
         Jimple.newTableSwitchStmt(IntConstant.getInstance(23), 1, 2, new SimpleStmtPositionInfo(1));
 
