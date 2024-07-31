@@ -1,7 +1,8 @@
 name: Download Random JARs from Maven
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ develop ]
 
 jobs:
   download-jars:
