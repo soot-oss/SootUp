@@ -5,15 +5,24 @@ import sootup.codepropertygraph.cdg.CdgCreator;
 import sootup.codepropertygraph.cfg.CfgCreator;
 import sootup.codepropertygraph.ddg.DdgCreator;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
-import sootup.codepropertygraph.propertygraph.utils.PropertyGraphsMerger;
+import sootup.codepropertygraph.propertygraph.util.PropertyGraphsMerger;
 import sootup.core.model.SootMethod;
 
+/** This class is responsible for creating the Code Property Graph (CPG) for a given Soot method. */
 public class CpgCreator {
   private final AstCreator astCreator;
   private final CfgCreator cfgCreator;
   private final CdgCreator cdgCreator;
   private final DdgCreator ddgCreator;
 
+  /**
+   * Constructs a CPG creator with the specified creators for AST, CFG, CDG, and DDG.
+   *
+   * @param astCreator the AST creator
+   * @param cfgCreator the CFG creator
+   * @param cdgCreator the CDG creator
+   * @param ddgCreator the DDG creator
+   */
   public CpgCreator(
       AstCreator astCreator, CfgCreator cfgCreator, CdgCreator cdgCreator, DdgCreator ddgCreator) {
     this.astCreator = astCreator;
@@ -22,6 +31,12 @@ public class CpgCreator {
     this.ddgCreator = ddgCreator;
   }
 
+  /**
+   * Creates the CPG for the given Soot method.
+   *
+   * @param method the Soot method
+   * @return the CPG
+   */
   public PropertyGraph createCpg(SootMethod method) {
     PropertyGraph cpgGraph = astCreator.createGraph(method);
     cpgGraph = PropertyGraphsMerger.mergeGraphs(cpgGraph, cfgCreator.createGraph(method));

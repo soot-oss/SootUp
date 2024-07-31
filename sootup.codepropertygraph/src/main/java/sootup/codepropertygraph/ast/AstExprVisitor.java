@@ -8,10 +8,17 @@ import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.visitor.AbstractExprVisitor;
 
+/** Visitor for expressions in the AST. */
 class AstExprVisitor extends AbstractExprVisitor<Void> {
   private final PropertyGraph.Builder graphBuilder;
   private final PropertyGraphNode parentNode;
 
+  /**
+   * Constructs an AST expression visitor.
+   *
+   * @param graphBuilder the property graph builder
+   * @param parentNode the parent node
+   */
   AstExprVisitor(PropertyGraph.Builder graphBuilder, PropertyGraphNode parentNode) {
     this.graphBuilder = graphBuilder;
     this.parentNode = parentNode;
@@ -23,6 +30,7 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
   }
 
+  // Handle binary operations
   @Override
   public void caseAddExpr(@Nonnull JAddExpr expr) {
     handleBinopExpr(expr);
@@ -123,6 +131,7 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
     handleBinopExpr(expr);
   }
 
+  // Handle invocation expressions
   @Override
   public void caseStaticInvokeExpr(@Nonnull JStaticInvokeExpr expr) {
     handleInvokeExpr(expr);
@@ -148,6 +157,7 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
     handleInvokeExpr(expr);
   }
 
+  // Handle casting expressions
   @Override
   public void caseCastExpr(@Nonnull JCastExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
@@ -157,6 +167,7 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
     graphBuilder.addEdge(new SingleOpAstEdge(exprNode, opNode));
   }
 
+  // Handle instanceof expressions
   @Override
   public void caseInstanceOfExpr(@Nonnull JInstanceOfExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
@@ -166,6 +177,7 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
     graphBuilder.addEdge(new SingleOpAstEdge(exprNode, opNode));
   }
 
+  // Handle new array expressions
   @Override
   public void caseNewArrayExpr(@Nonnull JNewArrayExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
@@ -191,16 +203,19 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
   }
 
+  // Handle length expressions
   @Override
   public void caseLengthExpr(@Nonnull JLengthExpr expr) {
     handleUnopExpr(expr);
   }
 
+  // Handle negation expressions
   @Override
   public void caseNegExpr(@Nonnull JNegExpr expr) {
     handleUnopExpr(expr);
   }
 
+  // Handle phi expressions
   @Override
   public void casePhiExpr(@Nonnull JPhiExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
@@ -211,6 +226,7 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
     }
   }
 
+  // Helper methods to handle different types of expressions
   private void handleBinopExpr(AbstractBinopExpr expr) {
     ImmediateGraphNode op1Node = new ImmediateGraphNode(expr.getOp1());
     graphBuilder.addEdge(new Op1AstEdge(parentNode, op1Node));

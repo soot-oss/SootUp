@@ -9,7 +9,18 @@ import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.SootMethod;
 
+/**
+ * This class is responsible for creating the Control Flow Graph (CFG) property graph for a given
+ * Soot method.
+ */
 public class CfgCreator {
+
+  /**
+   * Creates the CFG property graph for the given Soot method.
+   *
+   * @param method the Soot method
+   * @return the CFG property graph
+   */
   public PropertyGraph createGraph(SootMethod method) {
     PropertyGraph.Builder graphBuilder = new StmtMethodPropertyGraph.Builder();
     graphBuilder.setName("cfg_" + method.getName());
@@ -41,6 +52,15 @@ public class CfgCreator {
     return graphBuilder.build();
   }
 
+  /**
+   * Creates an edge between the source and destination nodes based on the type of statement.
+   *
+   * @param currStmt the current statement
+   * @param successorIndex the index of the successor
+   * @param sourceNode the source node
+   * @param destinationNode the destination node
+   * @return the created edge
+   */
   private AbstCfgEdge createEdge(
       Stmt currStmt, int successorIndex, StmtGraphNode sourceNode, StmtGraphNode destinationNode) {
     if (currStmt instanceof JIfStmt) {

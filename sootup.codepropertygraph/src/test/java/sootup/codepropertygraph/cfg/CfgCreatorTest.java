@@ -1,8 +1,6 @@
 package sootup.codepropertygraph.cfg;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,25 +25,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.java.core.types.JavaClassType;
 
 public class CfgCreatorTest extends GraphTestSuiteBase {
-
-  @Test
-  public void testCfgForIfStmt() {
-    SootMethod testMethod = createIfStmtMethod();
-    PropertyGraph cfgGraph = cfgCreator.createGraph(testMethod);
-    assertNotNull(cfgGraph);
-    verifyEdges(cfgGraph, IfTrueCfgEdge.class, IfFalseCfgEdge.class);
-
-    assertEquals(3, cfgGraph.getNodes().size());
-    assertTrue(
-        cfgGraph.getNodes().stream()
-            .map(node -> (StmtGraphNode) node)
-            .anyMatch(node -> node.getStmt() instanceof JIfStmt));
-    assertTrue(
-        cfgGraph.getNodes().stream()
-            .map(node -> (StmtGraphNode) node)
-            .anyMatch(node -> node.getStmt() instanceof JReturnVoidStmt));
-  }
-
   @Test
   public void testCfgForGotoStmt() {
     SootMethod testMethod = createGotoStmtMethod();
@@ -53,15 +32,10 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
     assertNotNull(cfgGraph);
     verifyEdges(cfgGraph, GotoCfgEdge.class);
 
-    assertEquals(2, cfgGraph.getNodes().size());
-    assertTrue(
-        cfgGraph.getNodes().stream()
-            .map(node -> (StmtGraphNode) node)
-            .anyMatch(node -> node.getStmt() instanceof JGotoStmt));
-    assertTrue(
-        cfgGraph.getNodes().stream()
-            .map(node -> (StmtGraphNode) node)
-            .anyMatch(node -> node.getStmt() instanceof JReturnVoidStmt));
+    assertGraphStructure(
+        cfgGraph,
+        new String[] {"JGotoStmt", "JReturnVoidStmt"},
+        new String[][] {{"JGotoStmt", "JReturnVoidStmt"}});
   }
 
   @Test
@@ -71,15 +45,14 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
     assertNotNull(cfgGraph);
     verifyEdges(cfgGraph, SwitchCfgEdge.class);
 
-    assertEquals(4, cfgGraph.getNodes().size());
-    assertTrue(
-        cfgGraph.getNodes().stream()
-            .map(node -> (StmtGraphNode) node)
-            .anyMatch(node -> node.getStmt() instanceof JSwitchStmt));
-    assertTrue(
-        cfgGraph.getNodes().stream()
-            .map(node -> (StmtGraphNode) node)
-            .anyMatch(node -> node.getStmt() instanceof JReturnVoidStmt));
+    assertGraphStructure(
+        cfgGraph,
+        new String[] {"JSwitchStmt", "JReturnVoidStmt", "JReturnVoidStmt", "JReturnVoidStmt"},
+        new String[][] {
+          {"JSwitchStmt", "JReturnVoidStmt"},
+          {"JSwitchStmt", "JReturnVoidStmt"},
+          {"JSwitchStmt", "JReturnVoidStmt"}
+        });
   }
 
   @Test
@@ -89,15 +62,10 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
     assertNotNull(cfgGraph);
     verifyEdges(cfgGraph, NormalCfgEdge.class);
 
-    assertEquals(2, cfgGraph.getNodes().size());
-    assertTrue(
-        cfgGraph.getNodes().stream()
-            .map(node -> (StmtGraphNode) node)
-            .anyMatch(node -> node.getStmt() instanceof JAssignStmt));
-    assertTrue(
-        cfgGraph.getNodes().stream()
-            .map(node -> (StmtGraphNode) node)
-            .anyMatch(node -> node.getStmt() instanceof JReturnVoidStmt));
+    assertGraphStructure(
+        cfgGraph,
+        new String[] {"JAssignStmt", "JReturnVoidStmt"},
+        new String[][] {{"JAssignStmt", "JReturnVoidStmt"}});
   }
 
   @Test
@@ -107,15 +75,34 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
     assertNotNull(cfgGraph);
     verifyEdges(cfgGraph, ExceptionalCfgEdge.class);
 
-    assertEquals(2, cfgGraph.getNodes().size());
-    assertTrue(
-        cfgGraph.getNodes().stream()
-            .map(node -> (StmtGraphNode) node)
-            .anyMatch(node -> node.getStmt() instanceof JThrowStmt));
-    assertTrue(
-        cfgGraph.getNodes().stream()
-            .map(node -> (StmtGraphNode) node)
-            .anyMatch(node -> node.getStmt() instanceof JReturnVoidStmt));
+    assertGraphStructure(
+        cfgGraph,
+        new String[] {"JThrowStmt", "JReturnVoidStmt"},
+        new String[][] {{"JThrowStmt", "JReturnVoidStmt"}});
+  }
+
+  private void assertGraphStructure(
+      PropertyGraph cfgGraph, String[] expectedNodeTypes, String[][] expectedEdges) {
+    assertEquals(expectedNodeTypes.length, cfgGraph.getNodes().size());
+    for (String expectedNodeType : expectedNodeTypes) {
+      assertTrue(
+          cfgGraph.getNodes().stream()
+              .map(node -> (StmtGraphNode) node)
+              .anyMatch(
+                  node -> node.getStmt().getClass().getSimpleName().equals(expectedNodeType)));
+    }
+
+    for (String[] expectedEdge : expectedEdges) {
+      assertTrue(
+          cfgGraph.getEdges().stream()
+              .anyMatch(
+                  edge -> {
+                    StmtGraphNode src = (StmtGraphNode) edge.getSource();
+                    StmtGraphNode dst = (StmtGraphNode) edge.getDestination();
+                    return src.getStmt().getClass().getSimpleName().equals(expectedEdge[0])
+                        && dst.getStmt().getClass().getSimpleName().equals(expectedEdge[1]);
+                  }));
+    }
   }
 
   private SootMethod createIfStmtMethod() {

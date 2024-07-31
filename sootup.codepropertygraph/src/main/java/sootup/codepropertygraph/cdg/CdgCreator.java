@@ -11,7 +11,17 @@ import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
+/**
+ * This class is responsible for creating the Control Dependence Graph (CDG) property graph for a given Soot method.
+ */
 public class CdgCreator {
+
+  /**
+   * Creates the CDG property graph for the given Soot method.
+   *
+   * @param method the Soot method
+   * @return the CDG property graph
+   */
   public PropertyGraph createGraph(SootMethod method) {
     PropertyGraph.Builder graphBuilder = new StmtMethodPropertyGraph.Builder();
     graphBuilder.setName("cdg_" + method.getName());

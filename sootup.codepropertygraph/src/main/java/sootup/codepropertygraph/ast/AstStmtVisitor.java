@@ -14,48 +14,52 @@ import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
-import sootup.core.model.Body;
 
+/** Visitor for statements in the AST. */
 class AstStmtVisitor extends AbstractStmtVisitor<Void> {
   private final PropertyGraph.Builder graphBuilder;
   private final PropertyGraphNode parentNode;
-  private final Body body;
 
-  AstStmtVisitor(PropertyGraph.Builder graphBuilder, PropertyGraphNode parentNode, Body body) {
+  /**
+   * Constructs an AST statement visitor.
+   *
+   * @param graphBuilder the property graph builder
+   * @param parentNode the parent node
+   */
+  AstStmtVisitor(PropertyGraph.Builder graphBuilder, PropertyGraphNode parentNode) {
     this.graphBuilder = graphBuilder;
     this.parentNode = parentNode;
-    this.body = body;
-  }
-
-  private void addExprNode(PropertyGraphNode parent, Expr expr) {
-    ExprGraphNode exprNode = new ExprGraphNode(expr);
-    graphBuilder.addEdge(new ExprAstEdge(parent, exprNode));
-    expr.accept(new AstExprVisitor(graphBuilder, exprNode));
   }
 
   @Override
   public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
-    if (stmt.getLeftOp() instanceof Immediate) {
-      graphBuilder.addEdge(
-          new LeftOpAstEdge(stmtNode, new ImmediateGraphNode((Immediate) stmt.getLeftOp())));
-    } else if (stmt.getLeftOp() instanceof Ref) {
-      graphBuilder.addEdge(new LeftOpAstEdge(stmtNode, new RefGraphNode((Ref) stmt.getLeftOp())));
-    } else {
-      graphBuilder.addEdge(new LeftOpAstEdge(stmtNode, new ExprGraphNode((Expr) stmt.getLeftOp())));
-    }
-    if (stmt.getRightOp() instanceof Immediate) {
-      graphBuilder.addEdge(
-          new RightOpAstEdge(stmtNode, new ImmediateGraphNode((Immediate) stmt.getRightOp())));
-    } else if (stmt.getRightOp() instanceof Ref) {
-      graphBuilder.addEdge(new RightOpAstEdge(stmtNode, new RefGraphNode((Ref) stmt.getRightOp())));
-    } else {
-      Expr rightOp = (Expr) stmt.getRightOp();
-      ExprGraphNode rightOpNode = new ExprGraphNode(rightOp);
-      graphBuilder.addEdge(new RightOpAstEdge(stmtNode, rightOpNode));
-      rightOp.accept(new AstExprVisitor(graphBuilder, rightOpNode));
 
+    PropertyGraphNode leftOpNode = createOperandNode(stmt.getLeftOp());
+    graphBuilder.addEdge(new LeftOpAstEdge(stmtNode, leftOpNode));
+
+    PropertyGraphNode rightOpNode = createOperandNode(stmt.getRightOp());
+    graphBuilder.addEdge(new RightOpAstEdge(stmtNode, rightOpNode));
+  }
+
+  /**
+   * Creates a property graph node for the given operand.
+   *
+   * @param operand the operand
+   * @return the property graph node
+   */
+  private PropertyGraphNode createOperandNode(Object operand) {
+    if (operand instanceof Immediate) {
+      return new ImmediateGraphNode((Immediate) operand);
+    } else if (operand instanceof Ref) {
+      return new RefGraphNode((Ref) operand);
+    } else if (operand instanceof Expr) {
+      ExprGraphNode exprNode = new ExprGraphNode((Expr) operand);
+      ((Expr) operand).accept(new AstExprVisitor(graphBuilder, exprNode));
+      return exprNode;
+    } else {
+      throw new IllegalArgumentException("Unknown operand type: " + operand.getClass());
     }
   }
 
@@ -148,11 +152,6 @@ class AstStmtVisitor extends AbstractStmtVisitor<Void> {
 
     ImmediateGraphNode switchKeyNode = new ImmediateGraphNode(stmt.getKey());
     graphBuilder.addEdge(new SwitchKeyAstEdge(stmtNode, switchKeyNode));
-
-    stmt.getTargetStmts(body)
-        .forEach(
-            target ->
-                graphBuilder.addEdge(new SwitchTargetAstEdge(stmtNode, new StmtGraphNode(target))));
   }
 
   @Override

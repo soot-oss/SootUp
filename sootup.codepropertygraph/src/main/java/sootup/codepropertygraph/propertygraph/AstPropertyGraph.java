@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import sootup.codepropertygraph.propertygraph.edges.PropertyGraphEdge;
 import sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode;
-import sootup.codepropertygraph.propertygraph.utils.PropertyGraphToDotConverter;
+import sootup.codepropertygraph.propertygraph.util.PropertyGraphToDotConverter;
 
 public final class AstPropertyGraph implements PropertyGraph {
   private final String name;
