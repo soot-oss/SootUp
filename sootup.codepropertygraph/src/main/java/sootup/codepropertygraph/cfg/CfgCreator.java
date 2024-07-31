@@ -4,7 +4,7 @@ package sootup.codepropertygraph.cfg;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) <YEAR> <AUTHOR>
+ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
