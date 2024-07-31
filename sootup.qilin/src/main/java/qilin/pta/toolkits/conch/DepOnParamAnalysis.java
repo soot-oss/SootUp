@@ -28,8 +28,8 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
 /*
@@ -119,7 +119,7 @@ public class DepOnParamAnalysis extends AbstractPAG {
             SootMethod srcMethod = edge.src();
             MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
             MethodNodeFactory srcnf = srcmpag.nodeFactory();
-            Stmt invokeStmt = edge.srcUnit();
+            InvokableStmt invokeStmt = edge.srcUnit();
             if (invokeStmt instanceof JAssignStmt) {
               JAssignStmt assignStmt = (JAssignStmt) invokeStmt;
 

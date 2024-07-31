@@ -49,6 +49,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   protected LoadingCache<Body, StmtGraph<?>> bodyToStmtGraph =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
           new CacheLoader<Body, StmtGraph<?>>() {
+            @Nonnull
             @Override
             public StmtGraph<?> load(@Nonnull Body body) {
               return makeGraph(body);
@@ -59,6 +60,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   protected LoadingCache<SootMethod, List<Value>> methodToParameterRefs =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
           new CacheLoader<SootMethod, List<Value>>() {
+            @Nonnull
             @Override
             public List<Value> load(@Nonnull SootMethod m) {
               return new ArrayList<>(m.getBody().getParameterLocals());
@@ -69,6 +71,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   protected LoadingCache<SootMethod, Set<Stmt>> methodToCallsFromWithin =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
           new CacheLoader<SootMethod, Set<Stmt>>() {
+            @Nonnull
             @Override
             public Set<Stmt> load(@Nonnull SootMethod m) {
               return getCallsFromWithinMethod(m);
@@ -185,7 +188,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public boolean isCallStmt(Stmt stmt) {
-    return stmt.containsInvokeExpr();
+    return stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr();
   }
 
   @Override

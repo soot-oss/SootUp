@@ -23,7 +23,10 @@ package sootup.java.bytecode.frontend;
 import java.util.ArrayList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 
 /**
  * This class tracks the inputs and outputs for an instruction.
@@ -35,6 +38,8 @@ import sootup.core.jimple.basic.Local;
  * @author Aaloan Miftah
  */
 final class OperandMerging {
+  @Nonnull private final AbstractInsnNode insn;
+
   /**
    * Keep track of the result of the instruction. The output might get a stack local assigned when
    * it is used as a local or immediate. When another branch produces the output and calls
@@ -53,7 +58,8 @@ final class OperandMerging {
    *
    * @param src source the merging belongs to.
    */
-  OperandMerging(@Nonnull AsmMethodSource src) {
+  OperandMerging(@Nonnull AbstractInsnNode insn, @Nonnull AsmMethodSource src) {
+    this.insn = insn;
     this.src = src;
   }
 
@@ -151,6 +157,8 @@ final class OperandMerging {
 
       // Didn't find any pre-allocated stack local from any operand.
       // So create a new stack local.
+      // TODO use a special case when the statement is an assignment to a local since in that case
+      //  we can use the local directly instead of creating a new stack local
       if (stack == null) {
         stack = src.newStackLocal();
       }
@@ -161,6 +169,28 @@ final class OperandMerging {
         prevOp.changeStackLocal(stack);
       }
       newOp.changeStackLocal(stack);
+
+      // TODO `in.get(0)` is weird because of the index?
+      // TODO make it more obvious that this is only run the first time
+      // replace the operand in the statement that *started* the merge
+      ReplaceUseStmtVisitor replaceUseStmtVisitor =
+          new ReplaceUseStmtVisitor(inputOperands.get(0)[i].value, stack);
+      // TODO how to handle the same value being in the the statement multiple times but only one
+      //  time because of the operand? (Something like `System.out.println(operand, "hello")` with
+      //  the operand also having the value "two")
+      //  this might require a callback(?) to change the statement; alternative we could do the
+      //  merging *before* constructing the statement and then replace the statement if it differs
+      //  from an already existing one
+      //  This actually works right now because the `ReplaceUseExprVisitor` only checks object
+      //  equality meaning the
+      //  two instances of the constant are different and only the correct instance is replaced
+      Stmt oldStatement = this.src.getStmt(this.insn);
+      // TODO `oldStatement` might not exist when a STORE instruction was used to set the
+      //  stackLocal
+      if (oldStatement != null) {
+        oldStatement.accept(replaceUseStmtVisitor);
+        this.src.replaceStmt(oldStatement, replaceUseStmtVisitor.getResult());
+      }
     }
 
     inputOperands.add(oprs);

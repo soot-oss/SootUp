@@ -81,8 +81,8 @@ public class SimplifiedEvaluator implements IEvaluator {
       // All the statements in the method
       for (Stmt st : PTAUtils.getMethodBody(sm).getStmts()) {
         // virtual calls
-        if (st.containsInvokeExpr()) {
-          AbstractInvokeExpr ie = st.getInvokeExpr();
+        if (st.isInvokableStmt() && st.asInvokableStmt().containsInvokeExpr()) {
+          AbstractInvokeExpr ie = st.asInvokableStmt().getInvokeExpr().get();
           if (!(ie instanceof JStaticInvokeExpr)) {
             // Virtual, Special or Instance
             // have to check target soot method, cannot just

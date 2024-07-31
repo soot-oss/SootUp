@@ -8,7 +8,7 @@ import qilin.pta.toolkits.zipper.Global;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
 
 public class ObjectFlowGraph implements IObjectFlowGraph {
@@ -112,14 +112,14 @@ public class ObjectFlowGraph implements IObjectFlowGraph {
     pta.getCallGraph()
         .forEach(
             e -> {
-              Stmt callsite = e.srcStmt();
+              InvokableStmt callsite = e.srcStmt();
               SootMethod caller = e.src();
               if (caller != null) {
                 SootMethod callee = e.tgt();
                 if (!callee.isStatic()) {
                   MethodNodeFactory calleeNF = pta.getPag().getMethodPAG(callee).nodeFactory();
                   LocalVarNode thisVar = (LocalVarNode) calleeNF.caseThis();
-                  AbstractInvokeExpr ie = callsite.getInvokeExpr();
+                  AbstractInvokeExpr ie = callsite.getInvokeExpr().get();
                   Value base = null;
                   if (ie instanceof AbstractInstanceInvokeExpr) {
                     AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;

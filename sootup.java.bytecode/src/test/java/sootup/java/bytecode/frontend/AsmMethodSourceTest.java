@@ -79,4 +79,21 @@ public class AsmMethodSourceTest {
             + "return;",
         method.getBody().getStmtGraph().toString().trim());
   }
+
+  @Test
+  public void testConditionalStringConcat() {
+    JavaClassPathAnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            "src/test/resources/frontend", SourceType.Application, Collections.emptyList());
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+
+    JavaSootMethod method =
+        view.getMethod(
+                JavaIdentifierFactory.getInstance()
+                    .parseMethodSignature("<ConditionalStringConcat: void method(boolean)>"))
+            .get();
+
+    assert !method.getBody().getStmts().stream()
+        .anyMatch(s -> s.toString().contains(" append(java.lang.String)>(\"ghi\")"));
+  }
 }

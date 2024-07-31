@@ -74,7 +74,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
-    handleInvokeExpr(stmt.getInvokeExpr(), stmt);
+    handleInvokeExpr(stmt.getInvokeExpr().get(), stmt);
   }
 
   @Override

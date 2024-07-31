@@ -96,12 +96,12 @@ public class NewValidator implements BodyValidator {
         continue;
       }
       if (!newStmt.equals(curStmt)) {
-        if (curStmt.containsInvokeExpr()) {
-          AbstractInvokeExpr expr = curStmt.getInvokeExpr();
+        if (curStmt.isInvokableStmt() && curStmt.asInvokableStmt().containsInvokeExpr()) {
+          AbstractInvokeExpr expr = curStmt.asInvokableStmt().getInvokeExpr().get();
           if (!(expr instanceof JSpecialInvokeExpr)) {
             exception.add(
                 new ValidationException(
-                    curStmt.getInvokeExpr(),
+                    expr,
                     "<init> Method calls may only be used with specialinvoke.")); // At least we
             // found an initializer, so we return true...
             return true;
@@ -109,7 +109,7 @@ public class NewValidator implements BodyValidator {
           if (!(curStmt instanceof JInvokeStmt)) {
             exception.add(
                 new ValidationException(
-                    curStmt.getInvokeExpr(),
+                    expr,
                     "<init> methods may only be called with invoke statements.")); // At least we
             // found an initializer, so we return true...
             return true;

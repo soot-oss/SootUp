@@ -85,8 +85,8 @@ public class TypeClientStat implements AbstractStat {
       // All the statements in the method
       for (Stmt st : PTAUtils.getMethodBody(sm).getStmts()) {
         // virtual calls
-        if (st.containsInvokeExpr()) {
-          AbstractInvokeExpr ie = st.getInvokeExpr();
+        if (st.isInvokableStmt() && st.asInvokableStmt().containsInvokeExpr()) {
+          AbstractInvokeExpr ie = st.asInvokableStmt().getInvokeExpr().get();
           if (ie instanceof JStaticInvokeExpr) {
             totalStaticCalls++;
           } else { // Virtual, Special or Instance

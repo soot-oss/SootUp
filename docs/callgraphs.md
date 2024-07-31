@@ -177,3 +177,17 @@ Spark requires an initial call graph to begin with. You can use one of the call 
     ```
 
 -->
+## Qilin Pointer Analysis
+
+Qilin builds a call graph on the fly with the pointer analysis.
+You can construct a call graph with Qilin as follows:
+
+==="SootUp"
+
+```java
+String MAINCLASS = "dacapo.antlr.Main"; // just an example
+PTAPattern ptaPattern = new PTAPattern("insens"); // "2o"=>2OBJ, "1c"=>1CFA, etc.
+PTA pta = PTAFactory.createPTA(ptaPattern, view, MAINCLASS);
+pta.run();
+CallGraph cg = pta.getCallGraph();
+```

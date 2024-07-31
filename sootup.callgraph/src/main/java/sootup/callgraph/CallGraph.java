@@ -22,12 +22,78 @@ package sootup.callgraph;
  * #L%
  */
 
+import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.signatures.MethodSignature;
 
 /** The interface of all implemented call graph data structures */
 public interface CallGraph {
+
+  class Call {
+    @Nonnull private final MethodSignature sourceMethodSignature;
+    @Nonnull private final MethodSignature targetMethodSignature;
+    @Nonnull private final InvokableStmt invokableStmt;
+
+    public Call(
+        @Nonnull MethodSignature sourceMethodSignature,
+        @Nonnull MethodSignature targetMethodSignature,
+        @Nonnull InvokableStmt invokableStmt) {
+      this.sourceMethodSignature = sourceMethodSignature;
+      this.invokableStmt = invokableStmt;
+      this.targetMethodSignature = targetMethodSignature;
+    }
+
+    @Nonnull
+    public MethodSignature getSourceMethodSignature() {
+      return sourceMethodSignature;
+    }
+
+    @Nonnull
+    public MethodSignature getTargetMethodSignature() {
+      return targetMethodSignature;
+    }
+
+    @Nonnull
+    public InvokableStmt getInvokableStmt() {
+      return invokableStmt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+
+      Call call = (Call) o;
+      return sourceMethodSignature.equals(call.sourceMethodSignature)
+          && targetMethodSignature.equals(call.targetMethodSignature)
+          && invokableStmt.equals(call.invokableStmt);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = sourceMethodSignature.hashCode();
+      result = 31 * result + targetMethodSignature.hashCode();
+      result = 31 * result + invokableStmt.hashCode();
+      return result;
+    }
+
+    @Override
+    public String toString() {
+      return "Call:"
+          + sourceMethodSignature
+          + " -> "
+          + targetMethodSignature
+          + " via "
+          + invokableStmt
+          + ";";
+    }
+  }
 
   /**
    * This method returns method signatures in the call graph. A method signature is a node in the
@@ -46,7 +112,7 @@ public interface CallGraph {
    * @return a set of method signatures that are reached by a direct outgoing edge in the call graph
    */
   @Nonnull
-  Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod);
+  Set<MethodSignature> callTargetsFrom(@Nonnull MethodSignature sourceMethod);
 
   /**
    * This method returns all method signatures that call a given method signature. It returns the
@@ -57,7 +123,28 @@ public interface CallGraph {
    *     graph
    */
   @Nonnull
-  Set<MethodSignature> callsTo(@Nonnull MethodSignature targetMethod);
+  Set<MethodSignature> callSourcesTo(@Nonnull MethodSignature targetMethod);
+
+  /**
+   * This method returns all method signatures that are called by a given method signature. It
+   * returns the targets of outgoing edges of the given node (method signature) in the call graph
+   *
+   * @param sourceMethod the method signature of the requested node in the call graph
+   * @return a set of method signatures that are reached by a direct outgoing edge in the call graph
+   */
+  @Nonnull
+  Set<Call> callsFrom(@Nonnull MethodSignature sourceMethod);
+
+  /**
+   * This method returns all method signatures that call a given method signature. It returns the
+   * sources of incoming edges of the given node (method signature) in the call graph
+   *
+   * @param targetMethod the method signature of the requested node in the call graph
+   * @return a set of method signatures that reach the targetMethod by a direct edge in the call
+   *     graph
+   */
+  @Nonnull
+  Set<Call> callsTo(@Nonnull MethodSignature targetMethod);
 
   /**
    * This method checks if a given method signature is a node in the call graph.
@@ -74,10 +161,22 @@ public interface CallGraph {
    *
    * @param sourceMethod it defines the source node in the call graph
    * @param targetMethod it defines the target node in the call graph
+   * @param invokableStmt it defines the invoke stmt of the call
    * @return true if the edge is contained in the call graph, otherwise it will be false.
    */
   boolean containsCall(
-      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
+      @Nonnull MethodSignature sourceMethod,
+      @Nonnull MethodSignature targetMethod,
+      InvokableStmt invokableStmt);
+
+  /**
+   * This method checks if an edge is contained in the call graph. The edge is defined by a source
+   * and target method signature which can be nodes in the call graph
+   *
+   * @param call it defines the requested call in the call graph
+   * @return true if the edge is contained in the call graph, otherwise it will be false.
+   */
+  boolean containsCall(@Nonnull Call call);
 
   /**
    * This method counts every edge in the call graph.
@@ -96,4 +195,18 @@ public interface CallGraph {
    */
   @Nonnull
   MutableCallGraph copy();
+
+  /**
+   * This method returns all entry methods of the call graph
+   *
+   * @return a list of method signatures of entry points of the call graph
+   */
+  List<MethodSignature> getEntryMethods();
+
+  /**
+   * This method compares the difference between the current call graph and call graph passed into
+   * the argument.
+   */
+  @Nonnull
+  CallGraphDifference diff(@Nonnull CallGraph callGraph);
 }

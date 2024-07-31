@@ -45,8 +45,8 @@ import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -89,8 +89,8 @@ public final class PTAUtils {
         LocalVarNode thisRef = (LocalVarNode) srcmpag.nodeFactory().caseThis();
         final PointsToSet other = pta.reachingObjects(thisRef).toCIPointsToSet();
 
-        for (final Stmt s : srcmpag.getInvokeStmts()) {
-          AbstractInvokeExpr ie = s.getInvokeExpr();
+        for (final InvokableStmt s : srcmpag.getInvokeStmts()) {
+          AbstractInvokeExpr ie = s.getInvokeExpr().get();
           if (ie instanceof JStaticInvokeExpr) {
             for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(s); it.hasNext(); ) {
               Edge e = it.next();
@@ -122,8 +122,8 @@ public final class PTAUtils {
       LocalVarNode thisRef = (LocalVarNode) srcmpag.nodeFactory().caseThis();
       final Set<AllocNode> other = pts.computeIfAbsent(thisRef, k -> new HashSet<>());
 
-      for (final Stmt s : srcmpag.getInvokeStmts()) {
-        AbstractInvokeExpr ie = s.getInvokeExpr();
+      for (final InvokableStmt s : srcmpag.getInvokeStmts()) {
+        AbstractInvokeExpr ie = s.getInvokeExpr().get();
         if (ie instanceof JStaticInvokeExpr) {
           for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(s); it.hasNext(); ) {
             Edge e = it.next();
@@ -364,9 +364,10 @@ public final class PTAUtils {
     return false;
   }
 
-  public static LocalVarNode paramToArg(PAG pag, Stmt invokeStmt, MethodPAG srcmpag, VarNode pi) {
+  public static LocalVarNode paramToArg(
+      PAG pag, InvokableStmt invokeStmt, MethodPAG srcmpag, VarNode pi) {
     MethodNodeFactory srcnf = srcmpag.nodeFactory();
-    AbstractInvokeExpr ie = invokeStmt.getInvokeExpr();
+    AbstractInvokeExpr ie = invokeStmt.getInvokeExpr().get();
     Parm mPi = (Parm) pi.getVariable();
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
     LocalVarNode receiver;

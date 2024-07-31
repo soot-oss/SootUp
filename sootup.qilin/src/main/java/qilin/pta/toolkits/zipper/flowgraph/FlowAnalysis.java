@@ -148,7 +148,7 @@ public class FlowAnalysis {
               .forEach(
                   vcs -> {
                     Stmt callsiteStmt = vcs.getUnit();
-                    AbstractInvokeExpr invo = callsiteStmt.getInvokeExpr();
+                    AbstractInvokeExpr invo = callsiteStmt.asInvokableStmt().getInvokeExpr().get();
                     if (!(invo instanceof AbstractInstanceInvokeExpr)) {
                       return;
                     }

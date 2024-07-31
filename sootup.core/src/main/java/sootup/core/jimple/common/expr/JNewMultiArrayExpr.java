@@ -120,7 +120,7 @@ public final class JNewMultiArrayExpr implements Expr {
   @Override
   @Nonnull
   public Stream<Value> getUses() {
-    return Stream.concat(sizes.stream(), sizes.stream().flatMap(size -> size.getUses()));
+    return Stream.concat(sizes.stream(), sizes.stream().flatMap(Value::getUses));
   }
 
   @Nonnull
@@ -142,5 +142,9 @@ public final class JNewMultiArrayExpr implements Expr {
   @Nonnull
   public JNewMultiArrayExpr withSizes(@Nonnull List<Immediate> sizes) {
     return new JNewMultiArrayExpr(baseType, sizes);
+  }
+
+  public boolean isArrayOfPrimitives() {
+    return baseType.isArrayTypeOfPrimitives();
   }
 }

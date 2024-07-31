@@ -54,16 +54,15 @@ public final class JUshrExpr extends AbstractIntLongBinopExpr {
     Value op2 = getOp2();
 
     if (Type.isIntLikeType(op2.getType())) {
-      return UnknownType.getInstance();
-    }
 
-    if (Type.isIntLikeType(op1.getType())) {
-      return PrimitiveType.getInt();
+      if (Type.isIntLikeType(op1.getType())) {
+        return PrimitiveType.getInt();
+      }
+      final PrimitiveType.LongType longType = PrimitiveType.getLong();
+      if (op1.getType() == longType) {
+        return longType;
+      }
     }
-    if (op1.getType().equals(PrimitiveType.getLong())) {
-      return PrimitiveType.getLong();
-    }
-
     return UnknownType.getInstance();
   }
 
