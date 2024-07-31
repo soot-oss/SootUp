@@ -22,6 +22,7 @@ package sootup.codepropertygraph.ast;
  * #L%
  */
 
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.*;
@@ -90,10 +91,14 @@ class AstStmtVisitor extends AbstractStmtVisitor<Void> {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
-    AbstractInvokeExpr invokeExpr = stmt.getInvokeExpr();
-    ExprGraphNode invokeExprNode = new ExprGraphNode(invokeExpr);
-    graphBuilder.addEdge(new InvokeAstEdge(stmtNode, invokeExprNode));
-    invokeExpr.accept(new AstExprVisitor(graphBuilder, invokeExprNode));
+    Optional<AbstractInvokeExpr> invokeStmtOpt = stmt.getInvokeExpr();
+
+    if (invokeStmtOpt.isPresent()) {
+      AbstractInvokeExpr invokeExpr = invokeStmtOpt.get();
+      ExprGraphNode invokeExprNode = new ExprGraphNode(invokeExpr);
+      graphBuilder.addEdge(new InvokeAstEdge(stmtNode, invokeExprNode));
+      invokeExpr.accept(new AstExprVisitor(graphBuilder, invokeExprNode));
+    }
   }
 
   @Override

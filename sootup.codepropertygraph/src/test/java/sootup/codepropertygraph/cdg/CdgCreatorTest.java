@@ -148,5 +148,4 @@ public class CdgCreatorTest extends GraphTestSuiteBase {
 
     return createSootMethod(stmtGraph, "switchStmtMethod");
   }
-
 }

@@ -34,7 +34,8 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
 /**
- * This class is responsible for creating the Control Dependence Graph (CDG) property graph for a given Soot method.
+ * This class is responsible for creating the Control Dependence Graph (CDG) property graph for a
+ * given Soot method.
  */
 public class CdgCreator {
 
