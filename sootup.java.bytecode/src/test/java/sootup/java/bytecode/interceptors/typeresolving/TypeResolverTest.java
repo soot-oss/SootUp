@@ -1,15 +1,9 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import categories.TestCategories;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -301,6 +295,11 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
         new Local("#l0", charSequenceType),
         new Local("l0", stringType),
         new Local("l1", PrimitiveType.getBoolean()));
+  }
+
+  @Test
+  public void testTAWarningWithoutRTJar() {
+    assertDoesNotThrow(() -> getMiscBody("testTAWarningWithoutRTJar"));
   }
 
   @Test
