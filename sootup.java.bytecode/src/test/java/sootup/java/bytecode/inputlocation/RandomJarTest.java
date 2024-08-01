@@ -1,7 +1,10 @@
 package sootup.java.bytecode.inputlocation;
 
 import categories.TestCategories;
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collection;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -14,38 +17,81 @@ public class RandomJarTest {
 
   private final String jarPath = System.getProperty("jarPath", "");
 
-  public ArrayList<TestMetrics> testMetricsList = new ArrayList<>();
-
   @Test
   public void testJar() {
-    System.out.println("Testing jar...");
-    AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(jarPath);
-    JavaView view = new JavaView(inputLocation);
-    String exception = "No Exceptions :)";
-    Collection<JavaSootClass> classes;
-    long time_taken_for_classes = 0;
-    long number_of_methods = 0;
-    long time_taken_for_methods = 0;
-    long number_of_classes = 0;
+    System.out.println("Jar file parameter is: " + jarPath);
     try {
-      long start = System.currentTimeMillis();
-      classes = getClasses(view);
-      number_of_classes = classes.size();
-      time_taken_for_classes = System.currentTimeMillis() - start;
-      start = System.currentTimeMillis();
-      number_of_methods = getMethods(classes);
-      time_taken_for_methods = System.currentTimeMillis() - start;
+      AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(jarPath);
+      JavaView view = new JavaView(inputLocation);
+      String exception = "No Exceptions :)";
+      Collection<JavaSootClass> classes;
+      long time_taken_for_classes = 0;
+      long number_of_methods = 0;
+      long time_taken_for_methods = 0;
+      long number_of_classes = 0;
+      try {
+        long start = System.currentTimeMillis();
+        classes = getClasses(view);
+        number_of_classes = classes.size();
+        time_taken_for_classes = System.currentTimeMillis() - start;
+        start = System.currentTimeMillis();
+        number_of_methods = getMethods(classes);
+        time_taken_for_methods = System.currentTimeMillis() - start;
+      } catch (Exception e) {
+        exception = e.getMessage();
+      } finally {
+        writeTestMetrics(
+            new TestMetrics(
+                jarPath.substring(jarPath.lastIndexOf("/") + 1),
+                number_of_classes,
+                number_of_methods,
+                time_taken_for_classes,
+                time_taken_for_methods,
+                exception));
+      }
     } catch (Exception e) {
-      exception = e.getMessage();
+      writeTestMetrics(
+          new TestMetrics(
+              jarPath.substring(jarPath.lastIndexOf("/") + 1),
+              -1,
+              -1,
+              -1,
+              -1,
+              "Could not create JavaClassPathAnalysisInputLocation"));
     }
-    testMetricsList.add(
-        new TestMetrics(
-            jarPath,
-            number_of_classes,
-            number_of_methods,
-            time_taken_for_classes,
-            time_taken_for_methods,
-            exception));
+  }
+
+  public void writeTestMetrics(TestMetrics testMetrics) {
+    String file_name = "jar_test.csv";
+    File file = new File(file_name);
+    boolean fileExists = file.exists();
+
+    try (FileWriter fw = new FileWriter(file, true); // Append mode
+        PrintWriter writer = new PrintWriter(fw)) {
+
+      // Write the header if the file doesn't exist
+      if (!fileExists) {
+        writer.println(
+            "jar_name,number_of_classes,number_of_methods,time_taken_for_classes,time_taken_for_methods,exception");
+      }
+
+      // Write each metric to the file
+      writer.println(
+          testMetrics.getJar_name()
+              + ","
+              + testMetrics.getNumberOfClasses()
+              + ","
+              + testMetrics.getNumber_of_methods()
+              + ","
+              + testMetrics.getTime_taken_for_classes()
+              + ","
+              + testMetrics.getTime_taken_for_classes()
+              + ","
+              + testMetrics.getException());
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private Collection<JavaSootClass> getClasses(JavaView view) {
@@ -85,6 +131,30 @@ public class RandomJarTest {
       this.time_taken_for_classes = time_taken_for_classes;
       this.time_taken_for_methods = time_taken_for_methods;
       this.exception = exception;
+    }
+
+    String getJar_name() {
+      return jar_name;
+    }
+
+    long getNumberOfClasses() {
+      return number_of_classes;
+    }
+
+    long getNumber_of_methods() {
+      return number_of_methods;
+    }
+
+    long getTime_taken_for_classes() {
+      return time_taken_for_classes;
+    }
+
+    long getTime_taken_for_methods() {
+      return time_taken_for_methods;
+    }
+
+    String getException() {
+      return exception;
     }
   }
 }

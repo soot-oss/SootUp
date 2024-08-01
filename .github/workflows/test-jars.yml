@@ -29,6 +29,13 @@ jobs:
           name: jars
           path: downloaded_jars/
 
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-package: 'jdk'
+          java-version: '8'
+
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -43,9 +50,14 @@ jobs:
 
       - name: Run tests on downloaded JARs
         run: |
-          for jar in downloaded_jars/*.jar; do
+          for jar in ${{ github.workspace }}/downloaded_jars/*.jar; do
             echo "Testing $jar"
-            cd sootup.java.bytecode
-            echo "Now inside the bytecode module...."
-            mvn test -pl=sootup.java.bytecode -Dtest=inputlocation.RandomJarTest -DjarPath="$jar"
+            mvn clean test -Dtest=sootup.java.bytecode.inputlocation.RandomJarTest -DjarPath="$jar" -pl sootup.java.bytecode
           done
+
+      - name: Upload the Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: jar_test_csv
+          path: sootup.java.bytecode/jar_test.csv
+
