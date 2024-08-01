@@ -1,9 +1,7 @@
 name: Download Random JARs from Maven
 
 on:
-  push:
-    branches: [ develop ]
-
+  workflow_dispatch:
 jobs:
   download-jars:
     runs-on: ubuntu-latest
@@ -34,12 +32,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Verify Maven
-        run: mvn -v
+      - name: Install Maven
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y maven
+
+      - name: Run Maven
+        run: |
+          mvn clean install -DskipTests
 
       - name: Run tests on downloaded JARs
         run: |
           for jar in downloaded_jars/*.jar; do
             echo "Testing $jar"
-            mvn -Dtest=sootup.java.bytecode.inputlocation.RandomJarTest test -DjarPath="$jar" || true
+            cd sootup.java.bytecode
+            echo "Now inside the bytecode module...."
+            mvn test -pl=sootup.java.bytecode -Dtest=inputlocation.RandomJarTest -DjarPath="$jar"
           done

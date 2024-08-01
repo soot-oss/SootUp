@@ -10,7 +10,7 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
-public class RandomJarTest extends AnalysisInputLocationTest {
+public class RandomJarTest {
 
   private final String jarPath = System.getProperty("jarPath", "");
 
