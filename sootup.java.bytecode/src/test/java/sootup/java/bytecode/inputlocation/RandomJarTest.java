@@ -19,6 +19,9 @@ public class RandomJarTest {
 
   @Test
   public void testJar() {
+    if(jarPath.isEmpty()) {
+      return;
+    }
     System.out.println("Jar file parameter is: " + jarPath);
     try {
       AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(jarPath);
