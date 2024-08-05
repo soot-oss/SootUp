@@ -31,7 +31,7 @@ import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.visitor.AbstractExprVisitor;
 
 /** Visitor for expressions in the AST. */
-class AstExprVisitor extends AbstractExprVisitor<Void> {
+class AstExprVisitor extends AbstractExprVisitor {
   private final PropertyGraph.Builder graphBuilder;
   private final PropertyGraphNode parentNode;
 
