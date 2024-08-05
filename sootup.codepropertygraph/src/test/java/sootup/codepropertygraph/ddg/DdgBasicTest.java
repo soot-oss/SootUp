@@ -23,6 +23,5 @@ public class DdgBasicTest extends BenchmarkTestSuiteBase {
     assertTrue(method.isPresent());
 
     PropertyGraph ddgGraph = (new DdgCreator()).createGraph(method.get());
-    System.out.println(ddgGraph.toDotGraph());
   }
 }
