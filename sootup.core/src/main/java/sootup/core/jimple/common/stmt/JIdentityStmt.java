@@ -78,8 +78,9 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Falls
   }
 
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseIdentityStmt(this);
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseIdentityStmt(this);
+    return v;
   }
 
   @Override

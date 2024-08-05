@@ -40,8 +40,9 @@ public final class JOrExpr extends AbstractIntLongBinopExpr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
     v.caseOrExpr(this);
+    return v;
   }
 
   @Nonnull

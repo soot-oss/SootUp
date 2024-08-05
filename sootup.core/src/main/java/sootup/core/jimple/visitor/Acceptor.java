@@ -31,5 +31,5 @@ public interface Acceptor<V extends Visitor> {
    *
    * @param v
    */
-  void accept(@Nonnull V v);
+  <X extends V> V accept(@Nonnull X v);
 }

@@ -31,7 +31,17 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 
-public class InstantiateClassValueVisitor extends AbstractValueVisitor<ClassType> {
+public class InstantiateClassValueVisitor extends AbstractValueVisitor {
+
+  protected ClassType result = null;
+
+  public ClassType getResult() {
+    return result;
+  }
+
+  protected void setResult(ClassType result) {
+    this.result = result;
+  }
 
   public void init() {
     setResult(null);

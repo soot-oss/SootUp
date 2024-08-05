@@ -30,7 +30,7 @@ import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
 
 /** @author Markus Schmidt */
-public abstract class AbstractValueVisitor<V> extends AbstractVisitor<V> implements ValueVisitor {
+public abstract class AbstractValueVisitor implements ValueVisitor, Visitor {
 
   @Override
   public void caseBooleanConstant(@Nonnull BooleanConstant constant) {

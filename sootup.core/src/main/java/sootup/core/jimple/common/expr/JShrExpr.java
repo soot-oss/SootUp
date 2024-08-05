@@ -44,8 +44,9 @@ public final class JShrExpr extends AbstractIntLongBinopExpr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
     v.caseShrExpr(this);
+    return v;
   }
 
   @Nonnull

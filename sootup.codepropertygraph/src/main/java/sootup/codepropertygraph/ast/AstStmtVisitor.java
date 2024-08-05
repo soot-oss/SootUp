@@ -39,7 +39,7 @@ import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
 
 /** Visitor for statements in the AST. */
-class AstStmtVisitor extends AbstractStmtVisitor<Void> {
+class AstStmtVisitor extends AbstractStmtVisitor {
   private final PropertyGraph.Builder graphBuilder;
   private final PropertyGraphNode parentNode;
 

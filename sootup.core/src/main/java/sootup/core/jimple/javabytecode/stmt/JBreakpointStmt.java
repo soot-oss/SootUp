@@ -48,8 +48,9 @@ public final class JBreakpointStmt extends AbstractStmt implements FallsThroughS
   }
 
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseBreakpointStmt(this);
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseBreakpointStmt(this);
+    return v;
   }
 
   @Override
