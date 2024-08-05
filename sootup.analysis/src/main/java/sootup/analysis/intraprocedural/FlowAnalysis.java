@@ -453,7 +453,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
         Orderer.newUniverse(
             graph,
             isForward ? AnalysisDirection.FORWARD : AnalysisDirection.BACKWARD,
-                entryInitialFlow());
+            entryInitialFlow());
     initFlow(universe, inFlow, outFlow);
 
     Queue<Entry<A>> q = UniverseSortedPriorityQueue.of(universe);
