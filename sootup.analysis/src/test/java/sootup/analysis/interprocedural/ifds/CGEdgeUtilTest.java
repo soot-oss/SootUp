@@ -122,7 +122,9 @@ public class CGEdgeUtilTest {
                 }
 
                 @Override
-                public void accept(@Nonnull ExprVisitor exprVisitor) {}
+                public ExprVisitor accept(@Nonnull ExprVisitor exprVisitor) {
+                  return exprVisitor;
+                }
               };
           CGEdgeUtil.findCallGraphEdgeType(jNewInvoke);
         });
