@@ -91,8 +91,8 @@ public final class JInstanceOfExpr implements Expr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
-    v.caseInstanceOfExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseInstanceOfExpr(this);
+    return v;
   }
 
   @Nonnull

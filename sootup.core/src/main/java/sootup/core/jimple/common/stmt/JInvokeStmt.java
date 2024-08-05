@@ -76,8 +76,9 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
   }
 
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseInvokeStmt(this);
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseInvokeStmt(this);
+    return v;
   }
 
   @Override

@@ -74,8 +74,8 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
-    v.caseVirtualInvokeExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseVirtualInvokeExpr(this);
+    return v;
   }
 
   @Override

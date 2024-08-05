@@ -40,8 +40,8 @@ public final class JCmpgExpr extends AbstractIntBinopExpr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
-    v.caseCmpgExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseCmpgExpr(this);
+    return v;
   }
 
   @Nonnull

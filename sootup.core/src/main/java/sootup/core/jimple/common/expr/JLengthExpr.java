@@ -67,8 +67,8 @@ public final class JLengthExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
-    v.caseLengthExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseLengthExpr(this);
+    return v;
   }
 
   @Nonnull

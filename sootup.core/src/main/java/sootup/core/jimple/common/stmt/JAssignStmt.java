@@ -225,8 +225,9 @@ public final class JAssignStmt extends AbstractDefinitionStmt
    * @see de.upb.sootup.jimple.common.stmt.AbstractStmt#accept(de.upb.sootup.jimple.visitor.Visitor)
    */
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseAssignStmt(this);
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseAssignStmt(this);
+  return v;
   }
 
   @Override

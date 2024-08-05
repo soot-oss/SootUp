@@ -171,8 +171,8 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
-    v.caseDynamicInvokeExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseDynamicInvokeExpr(this);
+    return v;
   }
 
   /** Returns a list args of type Value. */

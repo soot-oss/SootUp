@@ -108,9 +108,9 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseSwitchStmt(this);
-  }
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseSwitchStmt(this);
+    return v;}
 
   /** Amount of labels +1 for default handler */
   public int getValueCount() {

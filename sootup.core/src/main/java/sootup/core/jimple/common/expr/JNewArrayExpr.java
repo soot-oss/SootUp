@@ -119,8 +119,8 @@ public final class JNewArrayExpr implements Expr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
-    v.caseNewArrayExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseNewArrayExpr(this);
+    return v;
   }
 
   @Nonnull

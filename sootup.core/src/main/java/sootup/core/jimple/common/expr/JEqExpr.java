@@ -40,8 +40,8 @@ public final class JEqExpr extends AbstractConditionExpr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
-    v.caseEqExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseEqExpr(this);
+    return v;
   }
 
   @Nonnull

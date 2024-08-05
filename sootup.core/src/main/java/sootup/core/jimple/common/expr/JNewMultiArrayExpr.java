@@ -130,8 +130,8 @@ public final class JNewMultiArrayExpr implements Expr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
-    v.caseNewMultiArrayExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseNewMultiArrayExpr(this);
+    return v;
   }
 
   @Nonnull

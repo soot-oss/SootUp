@@ -76,8 +76,8 @@ public final class JNewExpr implements Expr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
-    v.caseNewExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseNewExpr(this);
+    return v;
   }
 
   @Nonnull

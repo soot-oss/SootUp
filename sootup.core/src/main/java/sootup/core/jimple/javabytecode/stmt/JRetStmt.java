@@ -70,9 +70,9 @@ public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
   }
 
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseRetStmt(this);
-  }
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseRetStmt(this);
+    return v;}
 
   @Override
   public boolean fallsThrough() {

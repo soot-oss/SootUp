@@ -157,8 +157,9 @@ public class MethodHandle implements Constant {
   }
 
   @Override
-  public void accept(@Nonnull ConstantVisitor v) {
-    v.caseMethodHandle(this);
+    public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  v.caseMethodHandle(this);
+    return v;
   }
 
   @Override

@@ -55,9 +55,9 @@ public final class JReturnStmt extends AbstractStmt {
   }
 
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseReturnStmt(this);
-  }
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseReturnStmt(this);
+    return v;}
 
   @Override
   public boolean fallsThrough() {

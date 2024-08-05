@@ -40,8 +40,8 @@ public final class JSubExpr extends AbstractFloatBinopExpr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
-    v.caseSubExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseSubExpr(this);
+    return v;
   }
 
   @Nonnull

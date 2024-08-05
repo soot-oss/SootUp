@@ -64,8 +64,10 @@ public final class JStaticFieldRef extends JFieldRef implements LValue {
   }
 
   @Override
-  public void accept(@Nonnull RefVisitor v) {
+    public <V extends RefVisitor> V accept(@Nonnull V v) {
+
     v.caseStaticFieldRef(this);
+    return v;
   }
 
   @Nonnull

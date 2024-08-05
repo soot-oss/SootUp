@@ -75,8 +75,8 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
-    v.caseSpecialInvokeExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseSpecialInvokeExpr(this);
+    return v;
   }
 
   @Override

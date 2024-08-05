@@ -40,8 +40,8 @@ public final class JGeExpr extends AbstractConditionExpr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
-    v.caseGeExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseGeExpr(this);
+    return v;
   }
 
   @Nonnull

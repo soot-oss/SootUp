@@ -170,9 +170,9 @@ public class FloatConstant implements RealConstant<FloatConstant> {
   }
 
   @Override
-  public void accept(@Nonnull ConstantVisitor v) {
-    v.caseFloatConstant(this);
-  }
+    public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  v.caseFloatConstant(this);
+    return v;}
 
   public float getValue() {
     return value;
