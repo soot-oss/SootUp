@@ -71,7 +71,8 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseStaticInvokeExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+    v.caseStaticInvokeExpr(this);
     return v;
   }
 

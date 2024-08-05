@@ -110,7 +110,8 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
   @Override
   public <V extends StmtVisitor> V accept(@Nonnull V v) {
     v.caseSwitchStmt(this);
-    return v;}
+    return v;
+  }
 
   /** Amount of labels +1 for default handler */
   public int getValueCount() {

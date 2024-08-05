@@ -38,13 +38,14 @@ import sootup.core.jimple.javabytecode.stmt.*;
  *
  * @author Zun Wang
  */
-public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
+public class ReplaceUseStmtVisitor extends AbstractStmtVisitor {
 
-  @Nonnull private final Value oldUse;
-  @Nonnull private final Value newUse;
+  @Nonnull protected final Value oldUse;
+  @Nonnull protected final Value newUse;
 
   final ReplaceUseExprVisitor exprVisitor = new ReplaceUseExprVisitor();
   final ReplaceUseRefVisitor refVisitor = new ReplaceUseRefVisitor();
+  protected Stmt result = null;
 
   public ReplaceUseStmtVisitor(@Nonnull Value oldUse, @Nonnull Value newUse) {
     this.oldUse = oldUse;
@@ -195,5 +196,13 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   public void defaultCaseStmt(@Nonnull Stmt stmt) {
     setResult(stmt);
+  }
+
+  public Stmt getResult() {
+    return result;
+  }
+
+  protected void setResult(Stmt result) {
+    this.result = result;
   }
 }

@@ -177,9 +177,10 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
   }
 
   @Override
-    public <V extends ConstantVisitor> V accept(@Nonnull V v) {
-  v.caseDoubleConstant(this);
-    return v;}
+  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+    v.caseDoubleConstant(this);
+    return v;
+  }
 
   /**
    * Checks if passed argument is instance of expected class.

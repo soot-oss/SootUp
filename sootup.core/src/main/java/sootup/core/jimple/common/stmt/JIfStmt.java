@@ -94,7 +94,8 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
   @Override
   public <V extends StmtVisitor> V accept(@Nonnull V v) {
     v.caseIfStmt(this);
-    return v;}
+    return v;
+  }
 
   @Override
   public boolean fallsThrough() {

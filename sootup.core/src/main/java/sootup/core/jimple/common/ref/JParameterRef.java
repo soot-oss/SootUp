@@ -91,10 +91,11 @@ public final class JParameterRef implements IdentityRef {
   }
 
   @Override
-    public <V extends RefVisitor> V accept(@Nonnull V v) {
+  public <V extends RefVisitor> V accept(@Nonnull V v) {
 
     v.caseParameterRef(this);
-    return v;}
+    return v;
+  }
 
   @Nonnull
   public JParameterRef withParamType(@Nonnull Type paramType) {

@@ -59,7 +59,8 @@ public final class JEnterMonitorStmt extends AbstractStmt implements FallsThroug
   @Override
   public <V extends StmtVisitor> V accept(@Nonnull V v) {
     v.caseEnterMonitorStmt(this);
-    return v;}
+    return v;
+  }
 
   @Override
   public boolean fallsThrough() {

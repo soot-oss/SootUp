@@ -40,7 +40,8 @@ public final class JAddExpr extends AbstractFloatBinopExpr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseAddExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+    v.caseAddExpr(this);
     return v;
   }
 

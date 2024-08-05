@@ -178,9 +178,10 @@ public class ClassConstant implements Constant {
   }
 
   @Override
-    public <V extends ConstantVisitor> V accept(@Nonnull V v) {
-  v.caseClassConstant(this);
-    return v;}
+  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+    v.caseClassConstant(this);
+    return v;
+  }
 
   @Override
   public String toString() {

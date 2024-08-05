@@ -66,7 +66,8 @@ public class JGotoStmt extends AbstractStmt implements BranchingStmt {
   @Override
   public <V extends StmtVisitor> V accept(@Nonnull V v) {
     v.caseGotoStmt(this);
-    return v;}
+    return v;
+  }
 
   @Override
   public boolean fallsThrough() {

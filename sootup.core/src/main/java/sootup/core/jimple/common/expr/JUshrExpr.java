@@ -43,7 +43,8 @@ public final class JUshrExpr extends AbstractIntLongBinopExpr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseUshrExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+    v.caseUshrExpr(this);
     return v;
   }
 

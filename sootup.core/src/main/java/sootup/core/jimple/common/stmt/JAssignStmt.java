@@ -227,7 +227,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt
   @Override
   public <V extends StmtVisitor> V accept(@Nonnull V v) {
     v.caseAssignStmt(this);
-  return v;
+    return v;
   }
 
   @Override

@@ -40,7 +40,8 @@ public final class JNeExpr extends AbstractConditionExpr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseNeExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+    v.caseNeExpr(this);
     return v;
   }
 

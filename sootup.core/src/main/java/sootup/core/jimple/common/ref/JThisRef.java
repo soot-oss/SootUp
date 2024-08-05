@@ -72,7 +72,7 @@ public final class JThisRef implements IdentityRef {
   }
 
   @Override
-    public <V extends RefVisitor> V accept(@Nonnull V v) {
+  public <V extends RefVisitor> V accept(@Nonnull V v) {
 
     v.caseThisRef(this);
     return v;

@@ -171,9 +171,10 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
   }
 
   @Override
-    public <V extends ConstantVisitor> V accept(@Nonnull V v) {
-  v.caseIntConstant(this);
-    return v;}
+  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+    v.caseIntConstant(this);
+    return v;
+  }
 
   public int getValue() {
     return value;

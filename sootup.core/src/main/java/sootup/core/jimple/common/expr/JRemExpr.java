@@ -40,7 +40,8 @@ public final class JRemExpr extends AbstractFloatBinopExpr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseRemExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+    v.caseRemExpr(this);
     return v;
   }
 

@@ -56,9 +56,10 @@ public class StringConstant implements Constant {
   }
 
   @Override
-    public <V extends ConstantVisitor> V accept(@Nonnull V v) {
-  v.caseStringConstant(this);
-    return v;}
+  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+    v.caseStringConstant(this);
+    return v;
+  }
 
   @Override
   public String toString() {

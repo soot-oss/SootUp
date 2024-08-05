@@ -96,7 +96,8 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseInterfaceInvokeExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+    v.caseInterfaceInvokeExpr(this);
     return v;
   }
 

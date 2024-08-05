@@ -39,10 +39,11 @@ import sootup.core.jimple.common.expr.*;
  *
  * @author Zun Wang
  */
-public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
+public class ReplaceUseExprVisitor extends AbstractExprVisitor {
 
-  private Value oldUse;
-  private Value newUse;
+  protected Value oldUse;
+  protected Value newUse;
+  protected Expr result = null;
 
   // TODO: [ms] is this (phiBlock) really a necessary field?
   BasicBlock<?> phiBlock = null;
@@ -527,5 +528,13 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
 
   public void errorHandler(@Nonnull Expr expr) {
     defaultCaseExpr(expr);
+  }
+
+  public Expr getResult() {
+    return result;
+  }
+
+  protected void setResult(Expr result) {
+    this.result = result;
   }
 }

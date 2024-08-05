@@ -195,7 +195,8 @@ public final class JPhiExpr implements Expr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.casePhiExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+    v.casePhiExpr(this);
     return v;
   }
 }

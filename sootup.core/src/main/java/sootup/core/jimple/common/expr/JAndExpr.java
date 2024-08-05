@@ -40,7 +40,8 @@ public final class JAndExpr extends AbstractIntLongBinopExpr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {    v.caseAndExpr(this);
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+    v.caseAndExpr(this);
     return v;
   }
 

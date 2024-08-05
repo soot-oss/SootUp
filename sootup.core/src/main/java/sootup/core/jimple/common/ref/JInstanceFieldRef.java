@@ -73,10 +73,11 @@ public final class JInstanceFieldRef extends JFieldRef {
   }
 
   @Override
-    public <V extends RefVisitor> V accept(@Nonnull V v) {
+  public <V extends RefVisitor> V accept(@Nonnull V v) {
 
     v.caseInstanceFieldRef(this);
-    return v;}
+    return v;
+  }
 
   @Override
   public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
