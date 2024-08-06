@@ -96,4 +96,33 @@ public class AsmMethodSourceTest {
     assert !method.getBody().getStmts().stream()
         .anyMatch(s -> s.toString().contains(" append(java.lang.String)>(\"ghi\")"));
   }
+
+  @Test
+  public void testDebugNameCollision() {
+    JavaClassPathAnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            "../shared-test-resources/bugfixes/", SourceType.Application, Collections.emptyList());
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+
+    JavaSootMethod method =
+        view.getMethod(
+                JavaIdentifierFactory.getInstance()
+                    .parseMethodSignature("<Issue875_DebugNames: void foo()>"))
+            .get();
+
+    assertEquals(
+        "this := @this: Issue875_DebugNames;\n"
+            + "alpha = 1;\n"
+            + "$stack2 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack2.<java.io.PrintStream: void println(int)>(alpha);\n"
+            + "beta = 2;\n"
+            + "$stack3 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack3.<java.io.PrintStream: void println(int)>(beta);\n"
+            + "gamma = 3;\n"
+            + "$stack4 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack4.<java.io.PrintStream: void println(int)>(gamma);\n"
+            + "\n"
+            + "return;",
+        method.getBody().getStmtGraph().toString().trim());
+  }
 }
