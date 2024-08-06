@@ -37,9 +37,6 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 ### Feedback and Feature Requests
 For feedback and feature requests, best create appropriate [issues](../../issues).
 
-### Collaboration
-You want to collaborate? Please read our [coding guidelines and the contributors notice](../../wiki/contribution-to-SootUp).
-
 
 ## Publications
 [the SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) explains further details and the design decision behind SootUp.  
