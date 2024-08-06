@@ -113,14 +113,40 @@ public class AsmMethodSourceTest {
     assertEquals(
         "this := @this: Issue875_DebugNames;\n"
             + "alpha = 1;\n"
-            + "$stack2 = <java.lang.System: java.io.PrintStream out>;\n"
-            + "virtualinvoke $stack2.<java.io.PrintStream: void println(int)>(alpha);\n"
-            + "beta = 2;\n"
-            + "$stack3 = <java.lang.System: java.io.PrintStream out>;\n"
-            + "virtualinvoke $stack3.<java.io.PrintStream: void println(int)>(beta);\n"
-            + "gamma = 3;\n"
+            + "l2 = 666.0;\n"
             + "$stack4 = <java.lang.System: java.io.PrintStream out>;\n"
-            + "virtualinvoke $stack4.<java.io.PrintStream: void println(int)>(gamma);\n"
+            + "virtualinvoke $stack4.<java.io.PrintStream: void println(int)>(alpha);\n"
+            + "$stack5 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack5.<java.io.PrintStream: void println(double)>(trouble);\n"
+            + "beta = 2;\n"
+            + "$stack6 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack6.<java.io.PrintStream: void println(int)>(beta);\n"
+            + "gamma = 3;\n"
+            + "$stack7 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack7.<java.io.PrintStream: void println(int)>(gamma);\n"
+            + "\n"
+            + "return;",
+        method.getBody().getStmtGraph().toString().trim());
+  }
+
+  @Test
+  public void testParameterName() {
+    JavaClassPathAnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            "../shared-test-resources/bugfixes/", SourceType.Application, Collections.emptyList());
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+
+    JavaSootMethod method =
+        view.getMethod(
+                JavaIdentifierFactory.getInstance()
+                    .parseMethodSignature("<Issue875_DebugNames: void cafe(boolean)>"))
+            .get();
+
+    assertEquals(
+        "this := @this: Issue875_DebugNames;\n"
+            + "centralPerk := @parameter0: boolean;\n"
+            + "$stack2 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack2.<java.io.PrintStream: void println(boolean)>(centralPerk);\n"
             + "\n"
             + "return;",
         method.getBody().getStmtGraph().toString().trim());

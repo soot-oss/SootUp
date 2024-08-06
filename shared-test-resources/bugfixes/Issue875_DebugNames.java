@@ -4,7 +4,9 @@ public class Issue875_DebugNames {
 
         {
             int alpha = 1;
+            double trouble = 666;
             System.out.println(alpha);
+            System.out.println(trouble);
         }
 
         {
@@ -17,6 +19,10 @@ public class Issue875_DebugNames {
             System.out.println(gamma);
         }
 
+    }
+
+    void cafe(boolean centralPerk){
+        System.out.println(centralPerk);
     }
 
 }

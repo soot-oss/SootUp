@@ -78,6 +78,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   // + "java.lang.String,java.lang.invoke.MethodType,java.lang.Object[])>";
 
   /* -state fields- */
+  private int maxParameterLocalIdx;
   private int nextLocal;
   private List<JavaLocal> locals;
   private LinkedListMultimap<BranchingStmt, LabelNode> stmtsThatBranchToLabel;
@@ -182,7 +183,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Body.BodyBuilder bodyBuilder = Body.builder(graph);
     bodyBuilder.setModifiers(AsmUtil.getMethodModifiers(access));
 
-    List<Stmt> preambleStmts = buildPreambleLocals(bodyBuilder);
+    final List<Stmt> preambleStmts = buildPreambleLocals(bodyBuilder);
 
     /* convert instructions */
     try {
@@ -202,7 +203,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     // add converted insn as stmts into the graph
     try {
-      arrangeStmts(graph, bodyBuilder, preambleStmts);
+      arrangeStmts(graph, preambleStmts);
     } catch (Exception e) {
       throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
@@ -277,26 +278,22 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Nonnull
   private String determineLocalName(int idx) {
-    if (localVariables != null) {
-      for (LocalVariableNode lvn : localVariables) {
-        if (lvn.index == idx) {
-          // TODO: take into consideration in which range this name is valid ->lvn.start/end
-          return lvn.name;
-        }
-      }
-      /* usually reached for try-catch blocks */
-    }
     return "l" + idx;
   }
 
   private JavaLocal createUniqueLocal(@Nonnull String nameCandidate, @Nonnull Type type) {
+    nameCandidate = createUniqueLocalName(nameCandidate);
+    return JavaJimple.newLocal(nameCandidate, type, Collections.emptyList());
+  }
+
+  private String createUniqueLocalName(@Nonnull String nameCandidate) {
     // check for collisions with the same local names in other scopes
     // this can happen when different scopes use the same name for a
     // different variable (and having a different local idx, were we are able distinguish)
     for (int i = 1; localNameExists(nameCandidate); i++) {
       nameCandidate = nameCandidate + "_" + i;
     }
-    return JavaJimple.newLocal(nameCandidate, type, Collections.emptyList());
+    return nameCandidate;
   }
 
   private boolean localNameExists(String nameCandidate) {
@@ -1287,6 +1284,23 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   private void convertLabel(@Nonnull LabelNode ln) {
+
+    // TODO: update Local name index
+    if (localVariables != null) {
+      // ms: TODO: localVariableNames seems to be ordered by start - maybe keep track of current
+      // position to increase performance?
+      for (LocalVariableNode localVariable : localVariables) {
+        // parameterLocals are already created
+        if (localVariable.index >= maxParameterLocalIdx) {
+          if (localVariable.start == ln) {
+            JavaLocal local =
+                createUniqueLocal(localVariable.name, AsmUtil.toJimpleType(localVariable.desc));
+            locals.set(localVariable.index, local);
+          }
+        }
+      }
+    }
+
     if (startTrapHandler.containsKey(ln)) {
       activeTrapHandlers.add(startTrapHandler.get(ln));
     }
@@ -1428,72 +1442,94 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       operandStack.setOperandStack(
           new ArrayList<>(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1)));
       activeTrapHandlers = edge.getActiveTrapHandlers();
+      label:
       do {
         int type = insn.getType();
-        if (type == FIELD_INSN) {
-          convertFieldInsn((FieldInsnNode) insn);
-        } else if (type == IINC_INSN) {
-          convertIincInsn((IincInsnNode) insn);
-        } else if (type == INSN) {
-          convertInsn((InsnNode) insn);
-          int op = insn.getOpcode();
-          if ((op >= IRETURN && op <= RETURN) || op == ATHROW) {
+        switch (type) {
+          case FIELD_INSN:
+            convertFieldInsn((FieldInsnNode) insn);
             break;
-          }
-        } else if (type == INT_INSN) {
-          convertIntInsn((IntInsnNode) insn);
-        } else if (type == LDC_INSN) {
-          convertLdcInsn((LdcInsnNode) insn);
-        } else if (type == JUMP_INSN) {
-          JumpInsnNode jmp = (JumpInsnNode) insn;
-          convertJumpInsn(jmp);
-          int op = jmp.getOpcode();
-          if (op == JSR) {
-            throw new UnsupportedOperationException("JSR!");
-          }
-          if (op != GOTO) {
-            /* ifX opcode, i.e. two successors */
-            AbstractInsnNode next = insn.getNext();
-            addEdges(edges, worklist, insn, next, Collections.singletonList(jmp.label));
-          } else {
-            addEdges(edges, worklist, insn, jmp.label, Collections.emptyList());
-          }
-          break;
-        } else if (type == LOOKUPSWITCH_INSN) {
-          LookupSwitchInsnNode swtch = (LookupSwitchInsnNode) insn;
-          convertLookupSwitchInsn(swtch);
-          LabelNode dflt = swtch.dflt;
-          addEdges(edges, worklist, insn, dflt, swtch.labels);
-          break;
-        } else if (type == METHOD_INSN) {
-          convertMethodInsn((MethodInsnNode) insn);
-        } else if (type == INVOKE_DYNAMIC_INSN) {
-          convertInvokeDynamicInsn((InvokeDynamicInsnNode) insn);
-        } else if (type == MULTIANEWARRAY_INSN) {
-          convertMultiANewArrayInsn((MultiANewArrayInsnNode) insn);
-        } else if (type == TABLESWITCH_INSN) {
-          TableSwitchInsnNode swtch = (TableSwitchInsnNode) insn;
-          convertTableSwitchInsn(swtch);
-          LabelNode dflt = swtch.dflt;
-          addEdges(edges, worklist, insn, dflt, swtch.labels);
-          break;
-        } else if (type == TYPE_INSN) {
-          convertTypeInsn((TypeInsnNode) insn);
-        } else if (type == VAR_INSN) {
-          if (insn.getOpcode() == RET) {
-            throw new UnsupportedOperationException("RET!");
-          }
-          convertVarInsn((VarInsnNode) insn);
-        } else if (type == LABEL) {
-          convertLabel((LabelNode) insn);
-        } else if (type == LINE) {
-          convertLine((LineNumberNode) insn);
-        } else
-        //noinspection StatementWithEmptyBody
-        if (type == FRAME) {
-          // we can ignore it
-        } else {
-          throw new RuntimeException("Unknown instruction type: " + type);
+          case IINC_INSN:
+            convertIincInsn((IincInsnNode) insn);
+            break;
+          case INSN:
+            {
+              convertInsn((InsnNode) insn);
+              int op = insn.getOpcode();
+              if ((op >= IRETURN && op <= RETURN) || op == ATHROW) {
+                break label;
+              }
+              break;
+            }
+          case INT_INSN:
+            convertIntInsn((IntInsnNode) insn);
+            break;
+          case LDC_INSN:
+            convertLdcInsn((LdcInsnNode) insn);
+            break;
+          case JUMP_INSN:
+            {
+              JumpInsnNode jmp = (JumpInsnNode) insn;
+              convertJumpInsn(jmp);
+              int op = jmp.getOpcode();
+              if (op == JSR) {
+                throw new UnsupportedOperationException("JSR!");
+              }
+              if (op != GOTO) {
+                /* ifX opcode, i.e. two successors */
+                AbstractInsnNode next = insn.getNext();
+                addEdges(edges, worklist, insn, next, Collections.singletonList(jmp.label));
+              } else {
+                addEdges(edges, worklist, insn, jmp.label, Collections.emptyList());
+              }
+              break label;
+            }
+          case TABLESWITCH_INSN:
+            {
+              TableSwitchInsnNode swtch = (TableSwitchInsnNode) insn;
+              convertTableSwitchInsn(swtch);
+              LabelNode dflt = swtch.dflt;
+              addEdges(edges, worklist, insn, dflt, swtch.labels);
+              break label;
+            }
+          case LOOKUPSWITCH_INSN:
+            {
+              LookupSwitchInsnNode swtch = (LookupSwitchInsnNode) insn;
+              convertLookupSwitchInsn(swtch);
+              LabelNode dflt = swtch.dflt;
+              addEdges(edges, worklist, insn, dflt, swtch.labels);
+              break label;
+            }
+          case METHOD_INSN:
+            convertMethodInsn((MethodInsnNode) insn);
+            break;
+          case INVOKE_DYNAMIC_INSN:
+            convertInvokeDynamicInsn((InvokeDynamicInsnNode) insn);
+            break;
+          case MULTIANEWARRAY_INSN:
+            convertMultiANewArrayInsn((MultiANewArrayInsnNode) insn);
+            break;
+          case TYPE_INSN:
+            convertTypeInsn((TypeInsnNode) insn);
+            break;
+          case VAR_INSN:
+            if (insn.getOpcode() == RET) {
+              throw new UnsupportedOperationException("RET!");
+            }
+            convertVarInsn((VarInsnNode) insn);
+            break;
+          case LABEL:
+            convertLabel((LabelNode) insn);
+            break;
+          case LINE:
+            convertLine((LineNumberNode) insn);
+            break;
+            //noinspection StatementWithEmptyBody
+          case FRAME:
+            // we can ignore it
+            break;
+          default:
+            throw new RuntimeException("Unknown instruction type: " + type);
         }
       } while ((insn = insn.getNext()) != null);
     } while (!worklist.isEmpty());
@@ -1595,10 +1631,28 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // add parameter Locals
     for (int i = 0; i < methodSignature.getParameterTypes().size(); i++) {
       Type parameterType = methodSignature.getParameterTypes().get(i);
+      // ms: TODO: performance - cache this in a appropriate datastructure
+
+      String parameterLocalName = null;
+      if (localVariables != null) {
+        // ms: we assumed localVariableNames are ordered by startLabel
+        for (LocalVariableNode localVariable : localVariables) {
+          if (localVariable.index == localIdx) {
+            parameterLocalName = createUniqueLocalName(localVariable.name);
+            break;
+          }
+        }
+      }
+      if (parameterLocalName == null) {
+        parameterLocalName = determineLocalName(localIdx);
+      }
+
+      // final String parameterLocalName = parameters == null ? determineLocalName(localIdx) :
+      // createUniqueLocalName(parameters.get(i).name);
       // [BH] parameterlocals do not exist yet -> create with annotation
       JavaLocal local =
           JavaJimple.newLocal(
-              determineLocalName(localIdx),
+              parameterLocalName,
               parameterType,
               AsmUtil.createAnnotationUsage(
                   invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));
@@ -1615,7 +1669,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         localIdx++;
       }
     }
-
+    maxParameterLocalIdx = localIdx;
     return preambleBlock;
   }
 
@@ -1649,8 +1703,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   /** all Instructions are converted. Now they can be arranged into the StmtGraph. */
-  private void arrangeStmts(
-      MutableBlockStmtGraph graph, Body.BodyBuilder bodyBuilder, List<Stmt> preambleStmts) {
+  private void arrangeStmts(MutableBlockStmtGraph graph, List<Stmt> preambleStmts) {
 
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
@@ -1659,7 +1712,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     List<List<Stmt>> blockStmtList = new ArrayList<>();
     List<Stmt> currentStmtList =
         preambleStmts.isEmpty()
-            ? new ArrayList<>()
+            ? new ArrayList<>(instructions.size())
             : preambleStmts; // so we can refer to that list later on
 
     // (n, n+1) := (from, to)
