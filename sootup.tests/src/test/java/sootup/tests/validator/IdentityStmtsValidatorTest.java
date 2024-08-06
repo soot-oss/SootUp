@@ -33,10 +33,6 @@ public class IdentityStmtsValidatorTest {
 
     ClassType classTypeFieldRefValidator =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {

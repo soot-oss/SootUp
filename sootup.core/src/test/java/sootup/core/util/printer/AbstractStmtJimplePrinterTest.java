@@ -54,10 +54,6 @@ public class AbstractStmtJimplePrinterTest {
 
   private ClassType generateClass(String name, PackageName pckg) {
     return new ClassType() {
-      @Override
-      public boolean isBuiltInClass() {
-        return false;
-      }
 
       @Override
       public String getFullyQualifiedName() {

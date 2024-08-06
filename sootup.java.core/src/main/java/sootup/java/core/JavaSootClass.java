@@ -235,8 +235,4 @@ public class JavaSootClass extends SootClass {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withPosition(position), sourceType);
   }
-
-  public boolean isJavaLibraryClass() {
-    return this.classSignature.isBuiltInClass();
-  }
 }
