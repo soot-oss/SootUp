@@ -52,10 +52,6 @@ public class MethodHandleTest {
 
     ClassType classType =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {

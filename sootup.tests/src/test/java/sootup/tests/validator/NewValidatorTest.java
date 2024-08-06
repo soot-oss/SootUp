@@ -34,10 +34,6 @@ public class NewValidatorTest {
 
     ClassType classTypeNewValidator =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {

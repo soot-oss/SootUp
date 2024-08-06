@@ -36,7 +36,6 @@ import sootup.core.signatures.Signature;
  * @author Markus Schmidt
  */
 public abstract class ClassType extends ReferenceType implements Signature {
-  public abstract boolean isBuiltInClass();
 
   public abstract String getFullyQualifiedName();
 

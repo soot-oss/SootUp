@@ -156,10 +156,6 @@ public class TestUtil {
    */
   public static ClassType createDummyClassType() {
     return new ClassType() {
-      @Override
-      public boolean isBuiltInClass() {
-        return false;
-      }
 
       @Override
       public String getFullyQualifiedName() {
