@@ -29,6 +29,7 @@ import qilin.util.Pair;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
@@ -70,7 +71,7 @@ public class Conch extends AbstractConch {
     for (Stmt unit : cmpag.getInvokeStmts()) {
       if (unit instanceof JInvokeStmt) {
         JInvokeStmt invokeStmt = (JInvokeStmt) unit;
-        AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
+        AbstractInvokeExpr expr = invokeStmt.getInvokeExpr().get();
         if (expr instanceof JSpecialInvokeExpr) {
           JSpecialInvokeExpr iie = (JSpecialInvokeExpr) expr;
           Value base = iie.getBase();
@@ -95,7 +96,7 @@ public class Conch extends AbstractConch {
     for (Stmt unit : cmpag.getInvokeStmts()) {
       if (unit instanceof JInvokeStmt) {
         JInvokeStmt invokeStmt = (JInvokeStmt) unit;
-        AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
+        AbstractInvokeExpr expr = invokeStmt.getInvokeExpr().get();
         if (expr instanceof JSpecialInvokeExpr) {
           JSpecialInvokeExpr iie = (JSpecialInvokeExpr) expr;
           Value base = iie.getBase();
@@ -131,11 +132,11 @@ public class Conch extends AbstractConch {
       Set<Node> params, SootMethod curr, SootMethod caller) {
     MethodPAG cmpag = pag.getMethodPAG(caller);
     Set<Node> ret = new HashSet<>();
-    for (Stmt stmt : cmpag.getInvokeStmts()) {
-      if (!(stmt.getInvokeExpr() instanceof JSpecialInvokeExpr)) {
+    for (InvokableStmt stmt : cmpag.getInvokeStmts()) {
+      if (!(stmt.getInvokeExpr().get() instanceof JSpecialInvokeExpr)) {
         continue;
       }
-      MethodSignature methodSig = stmt.getInvokeExpr().getMethodSignature();
+      MethodSignature methodSig = stmt.getInvokeExpr().get().getMethodSignature();
       Optional<? extends SootMethod> otarget = pta.getView().getMethod(methodSig);
       if (otarget.isPresent() && otarget.get().equals(curr)) {
         for (Node n : params) {

@@ -32,10 +32,6 @@ public class LocalsValidatorTest {
 
     ClassType classTypeCheckInitValidator =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {

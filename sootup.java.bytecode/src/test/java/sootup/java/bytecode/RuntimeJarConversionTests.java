@@ -24,7 +24,7 @@ import sootup.java.core.views.JavaView;
 
 @Tag("Java8")
 public class RuntimeJarConversionTests {
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   @Test
   public void testJarWithDefaultInterceptors() {
@@ -61,7 +61,6 @@ public class RuntimeJarConversionTests {
             .peek(
                 javaSootMethod -> {
                   try {
-                    System.out.println(javaSootMethod.getSignature());
                     javaSootMethod.getBody();
                   } catch (Exception e) {
                     e.printStackTrace();

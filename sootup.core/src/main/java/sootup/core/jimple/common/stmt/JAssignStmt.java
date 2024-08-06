@@ -44,19 +44,26 @@ package sootup.core.jimple.common.stmt;
  * #Value%
  */
 
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.Expr;
+import sootup.core.jimple.common.expr.JNewArrayExpr;
+import sootup.core.jimple.common.expr.JNewExpr;
+import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.ConcreteRef;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
+import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** Represents the assignment of one value to another */
-public final class JAssignStmt extends AbstractDefinitionStmt implements FallsThroughStmt {
+public final class JAssignStmt extends AbstractDefinitionStmt
+    implements FallsThroughStmt, InvokableStmt {
 
   @Nonnull final LValue leftOp;
   @Nonnull final Value rightOp;
@@ -101,17 +108,38 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements FallsTh
     return getRightOp() instanceof AbstractInvokeExpr;
   }
 
+  @Override
+  public boolean invokesStaticInitializer() {
+    if (getInvokeExpr().isPresent() && getInvokeExpr().get() instanceof JStaticInvokeExpr) {
+      return true;
+    }
+    Value rightOp = getRightOp();
+    if (rightOp instanceof JStaticFieldRef || getLeftOp() instanceof JStaticFieldRef) {
+      return true;
+    }
+    if (rightOp instanceof JNewExpr) {
+      return true;
+    }
+    if (rightOp instanceof JNewMultiArrayExpr) {
+      return !((JNewMultiArrayExpr) rightOp).isArrayOfPrimitives();
+    }
+    if (rightOp instanceof JNewArrayExpr) {
+      return !((JNewArrayExpr) rightOp).isArrayOfPrimitives();
+    }
+    return false;
+  }
+
   /*
    * (non-Javadoc)
    *
    * @see de.upb.sootup.jimple.common.stmt.AbstractStmt#getInvokeExpr()
    */
   @Override
-  public AbstractInvokeExpr getInvokeExpr() {
+  public Optional<AbstractInvokeExpr> getInvokeExpr() {
     if (!containsInvokeExpr()) {
-      throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
+      return Optional.empty();
     }
-    return (AbstractInvokeExpr) getRightOp();
+    return Optional.of((AbstractInvokeExpr) getRightOp());
   }
 
   /*
@@ -197,8 +225,9 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements FallsTh
    * @see de.upb.sootup.jimple.common.stmt.AbstractStmt#accept(de.upb.sootup.jimple.visitor.Visitor)
    */
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseAssignStmt(this);
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseAssignStmt(this);
+    return v;
   }
 
   @Override

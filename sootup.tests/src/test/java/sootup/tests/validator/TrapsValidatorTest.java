@@ -31,10 +31,6 @@ public class TrapsValidatorTest {
 
     ClassType classTypeCheckInitValidator =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {

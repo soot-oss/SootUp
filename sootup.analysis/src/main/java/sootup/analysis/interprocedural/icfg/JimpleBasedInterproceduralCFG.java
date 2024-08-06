@@ -40,6 +40,8 @@ import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -71,7 +73,9 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         @Override
         public Collection<SootMethod> load(Stmt stmt) {
           ArrayList<SootMethod> res = new ArrayList<>();
-          MethodSignature methodSignature = stmt.getInvokeExpr().getMethodSignature();
+          if (!stmt.isInvokableStmt() && !stmt.asInvokableStmt().containsInvokeExpr()) return res;
+          MethodSignature methodSignature =
+              stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature();
           Optional<? extends SootMethod> smOpt = view.getMethod(methodSignature);
           if (smOpt.isPresent()) {
             SootMethod sm = smOpt.get();
@@ -99,7 +103,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
           ArrayList<Stmt> res = new ArrayList<>();
           // only retain callers that are explicit call sites or
           // Thread.start()
-          Set<MethodSignature> callsToMethod = cg.callsTo(method.getSignature());
+          Set<MethodSignature> callsToMethod = cg.callSourcesTo(method.getSignature());
           for (MethodSignature methodSignature : callsToMethod) {
             Stmt stmt = filterEdgeAndGetCallerStmt(methodSignature);
             if (stmt != null) {
@@ -179,7 +183,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         signatureToStmtGraph.put(methodSignature, stmtGraph);
       }
     }
-    callGraph.callsFrom(methodSignature).stream()
+    callGraph.callTargetsFrom(methodSignature).stream()
         .filter(methodSignature1 -> !visitedMethods.contains(methodSignature1))
         .forEach(
             nextMethodSignature ->
@@ -219,12 +223,13 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         final SootMethod method = methodOpt.get();
         if (method.hasBody()) {
           for (Stmt s : method.getBody().getStmtGraph().getNodes()) {
-            if (s.containsInvokeExpr()) {
+            // TODO: Consider calls to clinit methods caused by static fields
+            // Assignment statements without invokeExpressions
+            if (s instanceof InvokableStmt && ((InvokableStmt) s).containsInvokeExpr()) {
+              AbstractInvokeExpr expr = ((InvokableStmt) s).getInvokeExpr().get();
               CalleeMethodSignature callee =
                   new CalleeMethodSignature(
-                      s.getInvokeExpr().getMethodSignature(),
-                      CGEdgeUtil.findCallGraphEdgeType(s.getInvokeExpr()),
-                      s);
+                      expr.getMethodSignature(), CGEdgeUtil.findCallGraphEdgeType(expr), s);
               callEdges.add(new ImmutablePair<>(caller, callee));
             }
           }

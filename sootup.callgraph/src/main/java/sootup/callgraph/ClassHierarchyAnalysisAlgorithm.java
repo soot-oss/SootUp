@@ -30,6 +30,7 @@ import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -71,13 +72,18 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
    * called in the invoke expression.
    *
    * @param method the method object that contains the given invoke expression in the body.
-   * @param invokeExpr it contains the call which is resolved.
+   * @param invokableStmt it contains the call which is resolved.
    * @return a stream containing all reachable method signatures after applying the CHA call graph
    *     algorithm
    */
   @Override
   @Nonnull
-  protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
+  protected Stream<MethodSignature> resolveCall(SootMethod method, InvokableStmt invokableStmt) {
+    Optional<AbstractInvokeExpr> optInvokeExpr = invokableStmt.getInvokeExpr();
+    if (!optInvokeExpr.isPresent()) {
+      return Stream.empty();
+    }
+    AbstractInvokeExpr invokeExpr = optInvokeExpr.get();
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
     if ((invokeExpr instanceof JDynamicInvokeExpr)) {
       return Stream.empty();

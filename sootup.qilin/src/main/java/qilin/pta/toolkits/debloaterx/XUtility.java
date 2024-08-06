@@ -14,7 +14,7 @@ import qilin.util.queue.QueueReader;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -224,8 +224,8 @@ public class XUtility {
       if (tgtM.isStatic() || !PTAUtils.hasBody(tgtM)) {
         continue;
       }
-      final Stmt s = edge.srcStmt();
-      AbstractInvokeExpr ie = s.getInvokeExpr();
+      final InvokableStmt s = edge.srcStmt();
+      AbstractInvokeExpr ie = s.getInvokeExpr().get();
       if (ie instanceof AbstractInstanceInvokeExpr) {
         AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
         Local base = iie.getBase();

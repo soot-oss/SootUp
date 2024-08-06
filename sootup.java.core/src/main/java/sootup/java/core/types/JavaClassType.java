@@ -28,7 +28,6 @@ import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-import sootup.java.core.signatures.ModulePackageName;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
 public class JavaClassType extends ClassType {
@@ -120,16 +119,5 @@ public class JavaClassType extends ClassType {
   @Nonnull
   public PackageName getPackageName() {
     return packageName;
-  }
-
-  public boolean isBuiltInClass() {
-    PackageName packageName = getPackageName();
-    if (packageName instanceof ModulePackageName) {
-      // if java modules (>= java9) are used: use JrtFileSystem for explicit.. otherwise use the
-      // following heuristic
-      String moduleName = ((ModulePackageName) packageName).getModuleSignature().toString();
-      return moduleName.startsWith("java.") || moduleName.startsWith("jdk.");
-    }
-    return LIBRARY_CLASS_PATTERN.matcher(packageName.getName()).find();
   }
 }

@@ -25,7 +25,7 @@ package sootup.core.jimple.visitor;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.common.constant.*;
 
-public class AbstractConstantVisitor<V> extends AbstractVisitor<V> implements ConstantVisitor {
+public class AbstractConstantVisitor implements ConstantVisitor, Visitor {
 
   @Override
   public void caseBooleanConstant(@Nonnull BooleanConstant constant) {

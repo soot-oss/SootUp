@@ -54,6 +54,11 @@ public abstract class AbstractFlowAnalysis<F> {
   @Nonnull
   protected abstract F newInitialFlow();
 
+  /** Returns the initial flow value for entry/ exit graph nodes. */
+  protected F entryInitialFlow() {
+    return newInitialFlow();
+  }
+
   /** Determines whether <code>entryInitialFlow()</code> is applied to trap handlers. */
   // FIXME: [ms] implement as an option
   protected boolean treatTrapHandlersAsEntries() {

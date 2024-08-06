@@ -87,8 +87,9 @@ public final class JNegExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
     v.caseNegExpr(this);
+    return v;
   }
 
   @Nonnull

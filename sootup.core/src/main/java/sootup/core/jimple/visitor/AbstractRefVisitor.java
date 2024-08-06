@@ -25,7 +25,7 @@ package sootup.core.jimple.visitor;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.common.ref.*;
 
-public abstract class AbstractRefVisitor<V> extends AbstractVisitor<V> implements RefVisitor {
+public abstract class AbstractRefVisitor implements RefVisitor, Visitor {
 
   @Override
   public void caseStaticFieldRef(@Nonnull JStaticFieldRef ref) {

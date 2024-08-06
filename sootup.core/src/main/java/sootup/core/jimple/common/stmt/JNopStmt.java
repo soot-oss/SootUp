@@ -47,8 +47,9 @@ public final class JNopStmt extends AbstractStmt implements FallsThroughStmt {
   }
 
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseNopStmt(this);
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseNopStmt(this);
+    return v;
   }
 
   @Override

@@ -1,0 +1,35 @@
+public super class codepropertygraph.Reassignment extends java.lang.Object
+{
+    public void calculate()
+    {
+        codepropertygraph.Reassignment $l0;
+        unknown $l1, $l2, $l3, $l4, $stack5;
+
+
+        $l0 := @this: codepropertygraph.Reassignment;
+        $l1 = 5;
+        $l2 = 10;
+        $l3 = 15;
+        $l1 = $l1 + $l2;
+        $l2 = $l1 - $l3;
+        $l3 = $l2 * 2;
+        $l4 = $l1;
+        $l1 = $l3 + $l4;
+        $l2 = $l4 - $l1;
+        $stack5 = $l1 + $l2;
+        $l3 = $stack5 + $l4;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        codepropertygraph.Reassignment $l0;
+
+
+        $l0 := @this: codepropertygraph.Reassignment;
+        specialinvoke $l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}

@@ -33,8 +33,8 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
 
@@ -295,9 +295,9 @@ public class Selectx {
 
       // add invoke edges
       MethodNodeFactory srcnf = srcmpag.nodeFactory();
-      for (final Stmt s : srcmpag.getInvokeStmts()) {
+      for (final InvokableStmt s : srcmpag.getInvokeStmts()) {
         CallSite callSite = new CallSite(s);
-        AbstractInvokeExpr ie = s.getInvokeExpr();
+        AbstractInvokeExpr ie = s.getInvokeExpr().get();
         int numArgs = ie.getArgCount();
         Value[] args = new Value[numArgs];
         for (int i = 0; i < numArgs; i++) {

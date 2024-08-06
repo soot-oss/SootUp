@@ -34,6 +34,7 @@ import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -74,7 +75,8 @@ public class CopyPropagator implements BodyInterceptor {
         AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
         Value rhs = defStmt.getRightOp();
         // if rhs is a constant, then replace use, if it is possible
-        if (rhs instanceof Constant && !stmt.containsInvokeExpr()) {
+        if (rhs instanceof Constant
+            && !((stmt instanceof InvokableStmt) && ((InvokableStmt) stmt).containsInvokeExpr())) {
           replaceUse(stmtGraph, stmt, use, rhs);
         }
 

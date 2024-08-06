@@ -35,10 +35,11 @@ import sootup.core.jimple.common.ref.Ref;
  *
  * @author Zun Wang
  */
-public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
+public class ReplaceUseRefVisitor extends AbstractRefVisitor {
 
-  private Value oldUse;
-  private Value newUse;
+  protected Value oldUse;
+  protected Value newUse;
+  protected Ref result = null;
 
   public ReplaceUseRefVisitor() {}
 
@@ -70,5 +71,13 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
   @Override
   public void defaultCaseRef(@Nonnull Ref ref) {
     setResult(ref);
+  }
+
+  public Ref getResult() {
+    return result;
+  }
+
+  protected void setResult(Ref result) {
+    this.result = result;
   }
 }

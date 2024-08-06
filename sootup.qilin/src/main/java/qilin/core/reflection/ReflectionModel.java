@@ -28,6 +28,7 @@ import qilin.util.PTAUtils;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -76,8 +77,8 @@ public abstract class ReflectionModel {
     this.ptaScene = ptaScene;
   }
 
-  private Collection<Stmt> transform(Stmt s) {
-    AbstractInvokeExpr ie = s.getInvokeExpr();
+  private Collection<Stmt> transform(InvokableStmt s) {
+    AbstractInvokeExpr ie = s.getInvokeExpr().get();
     switch (ie.getMethodSignature().toString()) {
       case sigForName:
       case sigForName2:
@@ -85,7 +86,7 @@ public abstract class ReflectionModel {
       case sigClassNewInstance:
         return transformClassNewInstance(s);
       case sigConstructorNewInstance:
-        return transformContructorNewInstance(s);
+        return transformConstructorNewInstance(s);
       case sigMethodInvoke:
         return transformMethodInvoke(s);
       case sigFieldSet:
@@ -112,8 +113,8 @@ public abstract class ReflectionModel {
     Body body = PTAUtils.getMethodBody(m);
     List<Stmt> units = body.getStmts();
     for (final Stmt u : units) {
-      if (u.containsInvokeExpr()) {
-        newUnits.put(u, transform(u));
+      if (u.isInvokableStmt() && u.asInvokableStmt().containsInvokeExpr()) {
+        newUnits.put(u, transform(u.asInvokableStmt()));
       }
     }
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
@@ -136,21 +137,21 @@ public abstract class ReflectionModel {
     PTAUtils.updateMethodBody(m, builder.build());
   }
 
-  abstract Collection<Stmt> transformClassForName(Stmt s);
+  abstract Collection<Stmt> transformClassForName(InvokableStmt s);
 
-  abstract Collection<Stmt> transformClassNewInstance(Stmt s);
+  abstract Collection<Stmt> transformClassNewInstance(InvokableStmt s);
 
-  abstract Collection<Stmt> transformContructorNewInstance(Stmt s);
+  abstract Collection<Stmt> transformConstructorNewInstance(InvokableStmt s);
 
-  abstract Collection<Stmt> transformMethodInvoke(Stmt s);
+  abstract Collection<Stmt> transformMethodInvoke(InvokableStmt s);
 
-  abstract Collection<Stmt> transformFieldSet(Stmt s);
+  abstract Collection<Stmt> transformFieldSet(InvokableStmt s);
 
-  abstract Collection<Stmt> transformFieldGet(Stmt s);
+  abstract Collection<Stmt> transformFieldGet(InvokableStmt s);
 
-  abstract Collection<Stmt> transformArrayNewInstance(Stmt s);
+  abstract Collection<Stmt> transformArrayNewInstance(InvokableStmt s);
 
-  abstract Collection<Stmt> transformArrayGet(Stmt s);
+  abstract Collection<Stmt> transformArrayGet(InvokableStmt s);
 
-  abstract Collection<Stmt> transformArraySet(Stmt s);
+  abstract Collection<Stmt> transformArraySet(InvokableStmt s);
 }
