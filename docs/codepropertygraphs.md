@@ -1,8 +1,13 @@
-Code Property Graphs (CPGs) are a representation of program code that combines different code representations into a single graph. This unified representation includes abstract syntax trees (ASTs), control flow graphs (CFGs), control dependence graphs (CDGs), and data dependence graphs (DDGs). CPGs enable comprehensive analysis, which makes them a powerful tool for detecting vulnerabilities and understanding code structure. For further details, refer to this [thesis](#).
+Code Property Graphs (CPGs) are a representation of program code that combines different code representations into a
+single graph. This unified representation includes abstract syntax trees (ASTs), control flow graphs (CFGs), control
+dependence graphs (CDGs), and data dependence graphs (DDGs). CPGs enable comprehensive analysis, which makes them a
+powerful tool for detecting vulnerabilities and understanding code structure. For further details, refer to
+this [thesis](#).
 
 ## Usage Example
 
-In this example, we will demonstrate how to create a CPG for a vulnerable Java method and use it to identify a potential vulnerability.
+In this example, we will demonstrate how to create a CPG for a vulnerable Java method and use it to identify a potential
+vulnerability.
 
 ### Vulnerable Java Code
 
@@ -22,42 +27,105 @@ Let's assume we have the following vulnerable Java code in a file named `Vulnera
 
 ### Step 1: Obtain a SootMethod
 
-First, we assume we have a `SootMethod` for the `vulnerableMethod`. For instructions on how to obtain a `SootMethod`, refer to the [basic setup example](examples.md).
+First, we assume we have a `SootMethod` for the `vulnerableMethod`. For instructions on how to obtain a `SootMethod`,
+refer to [Retrieving a Method](getting-started.md#retrieving-a-method).
 
 ### Step 2: Create the CPG
 
-We can create the CPG or its components using the creators:
+We can create the CPG subgraphs using the creators.
 
-=== "SootUp"
+=== "AST"
 
     ```java
-    import sootup.codepropertygraph.ast.AstCreator;
-    import sootup.codepropertygraph.cfg.CfgCreator;
-    import sootup.codepropertygraph.cdg.CdgCreator;
-    import sootup.codepropertygraph.ddg.DdgCreator;
-    import sootup.codepropertygraph.cpg.CpgCreator;
-    import sootup.codepropertygraph.propertygraph.PropertyGraph;
-    import sootup.core.model.SootMethod;
+    public class AstExample {
     
+        public static void main(String[] args) {
+            // Assuming `sootMethod` is obtained from the setup step
+            SootMethod vulnerableMethod = getVulnerableMethod();
+    
+            // Create the AST subgraph
+            AstCreator astCreator = new AstCreator();
+            PropertyGraph astGraph = astCreator.createGraph(vulnerableMethod);
+    
+            // Print the DOT representation of the AST
+            System.out.println(astGraph.toDotGraph());
+        }
+    }
+    ```
+
+=== "CFG"
+
+    ```java
+    public class CfgExample {
+    
+        public static void main(String[] args) {
+            // Assuming `sootMethod` is obtained from the setup step
+            SootMethod vulnerableMethod = getVulnerableMethod();
+
+            // Create the CFG subgraph         
+            CfgCreator cfgCreator = new CfgCreator();
+            PropertyGraph cfgGraph = cfgCreator.createGraph(vulnerableMethod);
+    
+            // Print the DOT representation of the CFG
+            System.out.println(cfgGraph.toDotGraph());
+        }
+    }
+    ```
+
+=== "CDG"
+
+    ```java
+    public class CdgExample {
+    
+        public static void main(String[] args) {
+            // Assuming `sootMethod` is obtained from the setup step
+            SootMethod vulnerableMethod = getVulnerableMethod();
+    
+            // Create the CDG subgraph
+            CdgCreator cdgCreator = new CdgCreator();
+            PropertyGraph cdgGraph = cdgCreator.createGraph(vulnerableMethod);
+    
+            // Print the DOT representation of the CDG
+            System.out.println(cdgGraph.toDotGraph());
+        }
+    }
+    ```
+
+=== "DDG"
+
+    ```java
+    public class DdgExample {
+    
+        public static void main(String[] args) {
+            // Assuming `sootMethod` is obtained from the setup step
+            SootMethod vulnerableMethod = getVulnerableMethod();
+    
+            // Create the DDG subgraph
+            DdgCreator ddgCreator = new DdgCreator();
+            PropertyGraph ddgGraph = ddgCreator.createGraph(vulnerableMethod);
+    
+            // Print the DOT representation of the DDG
+            System.out.println(ddgGraph.toDotGraph());
+        }
+    }
+    ```
+
+We can create the combined CPG graph using the `CpgCreator`.
+
+=== "CPG"
+
+    ```java
     public class CpgExample {
     
         public static void main(String[] args) {
             // Assuming `sootMethod` is obtained from the setup step
             SootMethod vulnerableMethod = getVulnerableMethod();
     
-            // Create individual graphs
             AstCreator astCreator = new AstCreator();
-            PropertyGraph astGraph = astCreator.createGraph(vulnerableMethod);
-    
             CfgCreator cfgCreator = new CfgCreator();
-            PropertyGraph cfgGraph = cfgCreator.createGraph(vulnerableMethod);
-    
             CdgCreator cdgCreator = new CdgCreator();
-            PropertyGraph cdgGraph = cdgCreator.createGraph(vulnerableMethod);
-    
             DdgCreator ddgCreator = new DdgCreator();
-            PropertyGraph ddgGraph = ddgCreator.createGraph(vulnerableMethod);
-    
+            
             // Create the combined CPG
             CpgCreator cpgCreator = new CpgCreator(astCreator, cfgCreator, cdgCreator, ddgCreator);
             PropertyGraph cpg = cpgCreator.createCpg(vulnerableMethod);
@@ -70,14 +138,12 @@ We can create the CPG or its components using the creators:
 
 ### Step 3: Analyzing the CPG
 
-With the CPG created, you can now analyze it for vulnerabilities. For example, you can check for potential injection vulnerabilities by analyzing data flow dependencies.
+With the CPG created, you can now analyze it for vulnerabilities. For example, you can check for potential injection
+vulnerabilities by analyzing data flow dependencies.
 
 === "SootUp"
 
     ```java
-    import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
-    import sootup.codepropertygraph.propertygraph.edges.DdgEdge;
-    
     public class VulnerabilityAnalysis {
     
         public static void main(String[] args) {
@@ -103,6 +169,7 @@ With the CPG created, you can now analyze it for vulnerabilities. For example, y
     }
     ```
 
-In this example, we check for data flow dependencies between the `userInput` variable and any `System.out.println` calls, which could indicate a potential injection vulnerability.
+In this example, we check for data flow dependencies between the `userInput` variable and any `println`
+calls, which could indicate a potential injection vulnerability.
 
 Similarly, we can define our own queries to detect specific patterns that identify common vulnerabilities.
