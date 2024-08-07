@@ -8,14 +8,6 @@
     }
   },
   {
-    "version": "fix_logo_preview",
-    "title": "PR Preview fix_logo",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "develop",
     "title": "develop",
     "aliases": []
