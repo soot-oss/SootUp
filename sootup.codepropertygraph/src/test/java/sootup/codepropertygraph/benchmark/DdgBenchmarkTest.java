@@ -442,6 +442,7 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"15\" [label=\"virtualinvoke $stack6.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"16\" [label=\"virtualinvoke $stack8.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"1\" -> \"13\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"10\" -> \"14\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"2\" -> \"14\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"3\" -> \"11\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"4\" -> \"15\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
@@ -450,7 +451,6 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"7\" -> \"15\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"8\" -> \"13\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"9\" -> \"16\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"10\" -> \"14\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "}\n";
   }
 
@@ -488,14 +488,6 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"27\" [label=\"virtualinvoke $stack6.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"28\" [label=\"virtualinvoke $stack8.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"1\" -> \"22\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"2\" -> \"23\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"3\" -> \"18\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"4\" -> \"24\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"5\" -> \"25\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"6\" -> \"26\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"7\" -> \"27\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"8\" -> \"20\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"9\" -> \"28\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"10\" -> \"19\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"11\" -> \"22\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"12\" -> \"23\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
@@ -504,7 +496,15 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"15\" -> \"25\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"16\" -> \"24\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"17\" -> \"26\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"2\" -> \"23\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"20\" -> \"21\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"3\" -> \"18\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"4\" -> \"24\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"5\" -> \"25\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"6\" -> \"26\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"7\" -> \"27\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"8\" -> \"20\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"9\" -> \"28\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "}\n";
   }
 
@@ -558,14 +558,6 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"43\" [label=\"virtualinvoke $stack7.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"44\" [label=\"virtualinvoke $stack9.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"1\" -> \"31\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"2\" -> \"34\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"3\" -> \"35\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"4\" -> \"28\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"5\" -> \"36\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"6\" -> \"29\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"7\" -> \"37\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"8\" -> \"38\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"9\" -> \"39\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"10\" -> \"30\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"11\" -> \"40\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"12\" -> \"41\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
@@ -576,6 +568,7 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"17\" -> \"37\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"18\" -> \"34\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"19\" -> \"38\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"2\" -> \"34\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"20\" -> \"42\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"21\" -> \"41\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"22\" -> \"36\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
@@ -584,7 +577,14 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"25\" -> \"35\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"26\" -> \"39\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"27\" -> \"43\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"3\" -> \"35\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"31\" -> \"33\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"4\" -> \"28\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"5\" -> \"36\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"6\" -> \"29\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"7\" -> \"37\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"8\" -> \"38\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"9\" -> \"39\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "}\n";
   }
 
@@ -614,6 +614,10 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"19\" [label=\"virtualinvoke $stack7.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"20\" [label=\"virtualinvoke $stack9.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"1\" -> \"16\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"10\" -> \"18\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"11\" -> \"19\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"12\" -> \"17\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"14\" -> \"15\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"2\" -> \"17\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"3\" -> \"18\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"4\" -> \"14\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
@@ -622,10 +626,6 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"7\" -> \"20\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"8\" -> \"20\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"9\" -> \"16\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"10\" -> \"18\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"11\" -> \"19\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"12\" -> \"17\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"14\" -> \"15\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "}\n";
   }
 
@@ -663,14 +663,6 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"27\" [label=\"virtualinvoke $stack6.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"28\" [label=\"virtualinvoke $stack8.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"1\" -> \"22\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"2\" -> \"23\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"3\" -> \"18\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"4\" -> \"24\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"5\" -> \"25\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"6\" -> \"26\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"7\" -> \"27\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"8\" -> \"20\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"9\" -> \"28\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"10\" -> \"19\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"11\" -> \"24\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"12\" -> \"23\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
@@ -679,7 +671,15 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"15\" -> \"26\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"16\" -> \"22\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"17\" -> \"25\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"2\" -> \"23\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"20\" -> \"21\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"3\" -> \"18\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"4\" -> \"24\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"5\" -> \"25\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"6\" -> \"26\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"7\" -> \"27\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"8\" -> \"20\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"9\" -> \"28\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "}\n";
   }
 
@@ -709,6 +709,10 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"19\" [label=\"virtualinvoke $stack7.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"20\" [label=\"virtualinvoke $stack9.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"1\" -> \"16\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"10\" -> \"18\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"11\" -> \"19\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"12\" -> \"17\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"14\" -> \"15\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"2\" -> \"17\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"3\" -> \"18\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"4\" -> \"14\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
@@ -717,10 +721,6 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"7\" -> \"20\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"8\" -> \"20\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"9\" -> \"16\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"10\" -> \"18\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"11\" -> \"19\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"12\" -> \"17\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"14\" -> \"15\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "}\n";
   }
 
@@ -746,6 +746,7 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"15\" [label=\"virtualinvoke $stack8.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"16\" [label=\"virtualinvoke $stack9.&lt;java.io.PrintStream: void println(java.lang.String)&gt;(l1)\", fillcolor=\"lightblue\"];\n"
         + "	\"1\" -> \"13\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
+        + "	\"10\" -> \"16\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"2\" -> \"12\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"3\" -> \"14\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"4\" -> \"11\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
@@ -754,7 +755,6 @@ public class DdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"7\" -> \"15\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"8\" -> \"13\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "	\"9\" -> \"14\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
-        + "	\"10\" -> \"16\"[label=\"ddg_next\", color=\"firebrick\", fontcolor=\"firebrick\"];\n"
         + "}\n";
   }
 

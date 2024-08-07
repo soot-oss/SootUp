@@ -49,13 +49,7 @@ public class BenchmarkTestSuiteBase {
     return minimalTsView.getMethod(methodSignature);
   }
 
-  protected Optional<? extends SootMethod> getTestResourcesMethod(
-      String className, String methodName) {
-    ClassType appClass = testResourcesView.getIdentifierFactory().getClassType(className);
-    MethodSignature methodSignature =
-        testResourcesView
-            .getIdentifierFactory()
-            .getMethodSignature(appClass, methodName, "void", Collections.emptyList());
+  protected Optional<? extends SootMethod> getTestResourcesMethod(MethodSignature methodSignature) {
     return testResourcesView.getMethod(methodSignature);
   }
 }
