@@ -1,3 +1,22 @@
+### Dependencies
+
+=== "Maven"
+    ```maven
+    <dependency>
+    <groupId>org.soot-oss</groupId>
+    <artifactId>sootup.codepropertygraph</artifactId>
+    <version>{{ git_latest_release }}</version>
+    </dependency>
+    ```
+
+=== "Gradle"
+
+    ```groovy
+    compile "org.soot-oss:sootup.codepropertygraph:{{ git_latest_release }}"
+    ```
+
+
+
 Code Property Graphs (CPGs) are a representation of program code that combines different code representations into a
 single graph. This unified representation includes abstract syntax trees (ASTs), control flow graphs (CFGs), control
 dependence graphs (CDGs), and data dependence graphs (DDGs). CPGs enable comprehensive analysis, which makes them a
