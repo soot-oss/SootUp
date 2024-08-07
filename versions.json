@@ -10,7 +10,10 @@
   {
     "version": "feature_addCpgTests_preview",
     "title": "PR Preview feature_addCpgTests",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "develop",
