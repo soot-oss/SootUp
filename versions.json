@@ -10,7 +10,10 @@
   {
     "version": "fix_logo_preview",
     "title": "PR Preview fix_logo",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "develop",
