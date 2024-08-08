@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import sootup.core.types.*;
 
 /** @author Markus Schmidt */
-public abstract class AbstractTypeVisitor<V> extends AbstractVisitor<V> implements TypeVisitor {
+public abstract class AbstractTypeVisitor implements TypeVisitor, Visitor {
 
   @Override
   public void caseBooleanType() {

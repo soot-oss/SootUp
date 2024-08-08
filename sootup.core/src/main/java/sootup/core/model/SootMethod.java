@@ -212,11 +212,6 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     return isPublic() && isStatic() && idf.isMainSubSignature(getSignature().getSubSignature());
   }
 
-  /** We rely on the JDK class recognition to decide if a method is JDK method. */
-  public boolean isBuiltInMethod() {
-    return getSignature().getDeclClassType().isBuiltInClass();
-  }
-
   /**
    * Returns the declaration of this method, as used at the top of textual body representations
    * (before the {}'s containing the code for representation.)

@@ -143,7 +143,7 @@ public class JimpleComparator {
 
   public boolean caseInvokeStmt(JInvokeStmt stmt, Object o) {
     return (o instanceof JInvokeStmt)
-        && stmt.getInvokeExpr().equivTo(((JInvokeStmt) o).getInvokeExpr(), this);
+        && stmt.getInvokeExpr().get().equivTo(((JInvokeStmt) o).getInvokeExpr().get(), this);
   }
 
   public boolean caseAssignStmt(JAssignStmt stmt, Object o) {

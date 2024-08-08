@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.*;
 
-public abstract class AbstractStmtVisitor<V> extends AbstractVisitor<V> implements StmtVisitor {
+public abstract class AbstractStmtVisitor implements StmtVisitor, Visitor {
 
   @Override
   public void caseBreakpointStmt(@Nonnull JBreakpointStmt stmt) {

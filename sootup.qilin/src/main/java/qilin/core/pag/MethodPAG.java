@@ -29,6 +29,7 @@ import qilin.util.queue.QueueReader;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
@@ -44,7 +45,7 @@ public class MethodPAG {
   private final ChunkedQueue<Node> internalEdges = new ChunkedQueue<>();
   private final QueueReader<Node> internalReader = internalEdges.reader();
   private final Set<SootMethod> clinits = DataFactory.createSet();
-  private final Collection<Stmt> invokeStmts = DataFactory.createSet();
+  private final Collection<InvokableStmt> invokeStmts = DataFactory.createSet();
   public Body body;
 
   /**
@@ -81,11 +82,11 @@ public class MethodPAG {
     return nodeFactory;
   }
 
-  public Collection<Stmt> getInvokeStmts() {
+  public Collection<InvokableStmt> getInvokeStmts() {
     return invokeStmts;
   }
 
-  public boolean addCallStmt(Stmt unit) {
+  public boolean addCallStmt(InvokableStmt unit) {
     return this.invokeStmts.add(unit);
   }
 

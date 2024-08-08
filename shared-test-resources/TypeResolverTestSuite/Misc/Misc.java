@@ -1,3 +1,5 @@
+import java.util.Date;
+
 public class Misc {
   public static void arraysMixedAssignment() {
     int[] a = new int[7];
@@ -70,6 +72,35 @@ public class Misc {
     }
   }
 
+  public static void testTaAndLnsWithoutLS() {
+    int a = 10, c;
+    try {
+      a = 8 / 0;
+      int b = a + 2;
+      c = a;
+    } catch (ArithmeticException ex) {
+    }
+    a++;
+  }
+
+  public static void testTaAndLnsWithoutLS1() {
+    try {
+      Object v = 5.00;
+      long b = ((Number) v).longValue();
+    } catch (Exception ex) {
+    }
+  }
+
+  public Object testTaAndLnsWithoutLS2(Date date) {
+    Date newDate = date;
+    if (date == null) {
+      return null;
+    } else if (date == newDate){
+      throw new IllegalArgumentException("Exception");
+    }
+    return newDate;
+  }
+
   public static void dependentAugmentedInteger1Promotion() {
     int a = 65537;
     {
@@ -87,6 +118,11 @@ public class Misc {
 
   private static void useBoolean(boolean b) {}
 
+  public static void testStringDefaultMethodsTest(){
+    String someString = "Some String";
+    boolean a = someString.contains("abc");
+  }
+
   public static void arrayTest() {
     {
       double[] a = new double[1];
@@ -95,5 +131,45 @@ public class Misc {
     {
       String a = "";
     }
+  }
+
+  public static void testTAWarningWithoutRTJar() throws Throwable {
+    Integer a = null;
+
+    try {
+      a = 8 / 0;
+      int b = a + 2;
+      if (b > 6) {
+        throw new IncorrectOperationException("custom exception");
+      } else {
+        throw new IncorrectFileNameException("custom exception");
+      }
+    } catch (IncorrectOperationException | IncorrectFileNameException var4) {
+      Exception ex = var4;
+      System.out.println(ex);
+      Throwable e = ex;
+      throw e;
+    } catch (Throwable var5) {
+      Throwable ex = var5;
+      System.out.println(ex);
+      throw new IncorrectOperationException("custom exception", ex);
+    }
+  }
+
+}
+
+class IncorrectOperationException extends RuntimeException {
+  public IncorrectOperationException(String errorMessage, Throwable t) {
+    super(errorMessage, t);
+  }
+
+  public IncorrectOperationException(String errorMessage) {
+    super(errorMessage);
+  }
+}
+
+class IncorrectFileNameException extends Exception {
+  public IncorrectFileNameException(String errorMessage) {
+    super(errorMessage);
   }
 }

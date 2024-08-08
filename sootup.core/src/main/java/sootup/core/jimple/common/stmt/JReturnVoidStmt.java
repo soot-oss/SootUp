@@ -47,8 +47,9 @@ public final class JReturnVoidStmt extends AbstractStmt {
   }
 
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseReturnVoidStmt(this);
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseReturnVoidStmt(this);
+    return v;
   }
 
   @Override

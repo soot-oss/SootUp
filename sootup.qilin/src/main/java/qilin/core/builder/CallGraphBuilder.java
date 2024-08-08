@@ -41,6 +41,7 @@ import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -54,7 +55,7 @@ import sootup.core.types.UnknownType;
 public class CallGraphBuilder {
   private static final ClassType clRunnable = PTAUtils.getClassType("java.lang.Runnable");
   protected final Map<VarNode, Collection<VirtualCallSite>> receiverToSites;
-  protected final Map<SootMethod, Map<Object, Stmt>> methodToInvokeStmt;
+  protected final Map<SootMethod, Map<Object, InvokableStmt>> methodToInvokeStmt;
   protected final Set<ContextMethod> reachMethods;
   private ChunkedQueue<ContextMethod> rmQueue;
 
@@ -177,7 +178,11 @@ public class CallGraphBuilder {
   }
 
   private void addVirtualEdge(
-      ContextMethod caller, Stmt callStmt, SootMethod callee, Kind kind, AllocNode receiverNode) {
+      ContextMethod caller,
+      InvokableStmt callStmt,
+      SootMethod callee,
+      Kind kind,
+      AllocNode receiverNode) {
     Context tgtContext = pta.createCalleeCtx(caller, receiverNode, new CallSite(callStmt), callee);
     ContextMethod cstarget = pta.parameterize(callee, tgtContext);
     handleCallEdge(new Edge(caller, callStmt, cstarget, kind));
@@ -187,7 +192,7 @@ public class CallGraphBuilder {
   }
 
   public void injectCallEdge(Object heapOrType, ContextMethod callee, Kind kind) {
-    Map<Object, Stmt> stmtMap =
+    Map<Object, InvokableStmt> stmtMap =
         methodToInvokeStmt.computeIfAbsent(callee.method(), k -> DataFactory.createMap());
     if (!stmtMap.containsKey(heapOrType)) {
       AbstractInvokeExpr ie =
@@ -203,7 +208,8 @@ public class CallGraphBuilder {
     }
   }
 
-  public void addStaticEdge(ContextMethod caller, Stmt callStmt, SootMethod calleem, Kind kind) {
+  public void addStaticEdge(
+      ContextMethod caller, InvokableStmt callStmt, SootMethod calleem, Kind kind) {
     Context typeContext = pta.createCalleeCtx(caller, null, new CallSite(callStmt), calleem);
     ContextMethod callee = pta.parameterize(calleem, typeContext);
     handleCallEdge(new Edge(caller, callStmt, callee, kind));
@@ -247,7 +253,7 @@ public class CallGraphBuilder {
     MethodNodeFactory srcnf = srcmpag.nodeFactory();
     MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
     SootMethod tgtmtd = tgtmpag.getMethod();
-    AbstractInvokeExpr ie = s.getInvokeExpr();
+    AbstractInvokeExpr ie = s.asInvokableStmt().getInvokeExpr().get();
     // add arg --> param edges.
     int numArgs = ie.getArgCount();
     for (int i = 0; i < numArgs; i++) {

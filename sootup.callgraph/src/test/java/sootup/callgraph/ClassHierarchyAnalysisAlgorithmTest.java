@@ -148,27 +148,91 @@ public class ClassHierarchyAnalysisAlgorithmTest
             "void",
             Collections.emptyList());
 
-    assertFalse(cg.containsCall(mainMethodSignature, constructorA));
-    assertTrue(cg.containsCall(mainMethodSignature, constructorB));
-    assertTrue(cg.containsCall(mainMethodSignature, constructorC));
-    assertFalse(cg.containsCall(mainMethodSignature, constructorD));
-    assertTrue(cg.containsCall(mainMethodSignature, constructorE));
+    assertFalse(
+        cg.containsCall(
+            mainMethodSignature,
+            constructorA,
+            getInvokableStmt(mainMethodSignature, constructorB)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            constructorB,
+            getInvokableStmt(mainMethodSignature, constructorB)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            constructorC,
+            getInvokableStmt(mainMethodSignature, constructorC)));
+
+    assertFalse(
+        cg.containsCall(
+            mainMethodSignature,
+            constructorD,
+            getInvokableStmt(mainMethodSignature, constructorC)));
+
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            constructorE,
+            getInvokableStmt(mainMethodSignature, constructorE)));
 
     assertFalse(cg.containsMethod(staticMethodA));
-    assertTrue(cg.containsCall(mainMethodSignature, staticMethodB));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            staticMethodB,
+            getInvokableStmt(mainMethodSignature, staticMethodB)));
     assertFalse(cg.containsMethod(staticMethodC));
     assertFalse(cg.containsMethod(staticMethodD));
     assertFalse(cg.containsMethod(staticMethodE));
 
-    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodA));
-    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodB));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            virtualMethodA,
+            getInvokableStmt(mainMethodSignature, virtualMethodA)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            virtualMethodB,
+            getInvokableStmt(mainMethodSignature, virtualMethodA)));
     assertFalse(cg.containsMethod(virtualMethodC));
-    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodD));
-    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodE));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            virtualMethodD,
+            getInvokableStmt(mainMethodSignature, virtualMethodA)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            virtualMethodE,
+            getInvokableStmt(mainMethodSignature, virtualMethodA)));
 
-    assertTrue(cg.containsCall(mainMethodSignature, clinitObject));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            clinitObject,
+            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorB.getDeclClassType())));
 
-    assertEquals(9, cg.callsFrom(mainMethodSignature).size());
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            clinitObject,
+            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorC.getDeclClassType())));
+
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            clinitObject,
+            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorE.getDeclClassType())));
+
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            clinitObject,
+            getInvokableStmt(mainMethodSignature, staticMethodB)));
+
+    assertEquals(12, cg.callsFrom(mainMethodSignature).size());
 
     assertEquals(1, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());
@@ -184,50 +248,5 @@ public class ClassHierarchyAnalysisAlgorithmTest
     assertEquals(0, cg.callsFrom(virtualMethodB).size());
     assertEquals(0, cg.callsFrom(virtualMethodD).size());
     assertEquals(0, cg.callsFrom(virtualMethodE).size());
-
-    assertEquals(
-        cg.toString().replace("\n", "").replace("\t", ""),
-        "GraphBasedCallGraph(14):"
-            + "<example1.A: void <init>()>:"
-            + "to <java.lang.Object: void <init>()>"
-            + "from <example1.B: void <init>()>"
-            + "from <example1.D: void <init>()>"
-            + "from <example1.E: void <init>()>"
-            + "<example1.A: void virtualDispatch()>:"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.B: void <init>()>:"
-            + "to <example1.A: void <init>()>"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.B: void staticDispatch(java.lang.Object)>:"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.B: void virtualDispatch()>:"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.C: void <init>()>:"
-            + "to <example1.D: void <init>()>"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.D: void <init>()>:"
-            + "to <example1.A: void <init>()>"
-            + "from <example1.C: void <init>()>"
-            + "<example1.D: void virtualDispatch()>:"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.E: void <init>()>:"
-            + "to <example1.A: void <init>()>"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.E: void virtualDispatch()>:"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.Example: void main(java.lang.String[])>:"
-            + "to <example1.A: void virtualDispatch()>"
-            + "to <example1.B: void <init>()>"
-            + "to <example1.B: void staticDispatch(java.lang.Object)>"
-            + "to <example1.B: void virtualDispatch()>"
-            + "to <example1.C: void <init>()>"
-            + "to <example1.D: void virtualDispatch()>"
-            + "to <example1.E: void <init>()>"
-            + "to <example1.E: void virtualDispatch()>"
-            + "to <java.lang.Object: void <clinit>()>"
-            + "<java.lang.Object: void <clinit>()>:"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<java.lang.Object: void <init>()>:"
-            + "from <example1.A: void <init>()>");
   }
 }

@@ -8,7 +8,7 @@ import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
 
 /**
@@ -31,7 +31,7 @@ public final class Edge implements Invalidable {
    * The unit at which the call occurs; may be null for calls not occurring at a specific statement
    * (eg. calls in native code)
    */
-  private Stmt srcUnit;
+  private InvokableStmt srcUnit;
 
   /**
    * The kind of edge. Note: kind should not be tested by other classes; instead, accessors such as
@@ -41,15 +41,17 @@ public final class Edge implements Invalidable {
 
   private boolean invalid = false;
 
-  public Edge(ContextMethod src, Stmt srcUnit, ContextMethod tgt, Kind kind) {
+  public Edge(ContextMethod src, InvokableStmt srcUnit, ContextMethod tgt, Kind kind) {
+
     this.src = src;
     this.srcUnit = srcUnit;
     this.tgt = tgt;
     this.kind = kind;
   }
 
-  public Edge(ContextMethod src, Stmt srcUnit, ContextMethod tgt) {
-    this.kind = ieToKind(srcUnit.getInvokeExpr());
+  public Edge(ContextMethod src, InvokableStmt srcUnit, ContextMethod tgt) {
+
+    this.kind = ieToKind(srcUnit.getInvokeExpr().get());
     this.src = src;
     this.srcUnit = srcUnit;
     this.tgt = tgt;
@@ -67,11 +69,11 @@ public final class Edge implements Invalidable {
     return src;
   }
 
-  public Stmt srcUnit() {
+  public InvokableStmt srcUnit() {
     return srcUnit;
   }
 
-  public Stmt srcStmt() {
+  public InvokableStmt srcStmt() {
     return srcUnit;
   }
 

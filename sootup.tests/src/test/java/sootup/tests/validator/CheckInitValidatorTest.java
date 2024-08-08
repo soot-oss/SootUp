@@ -33,10 +33,6 @@ public class CheckInitValidatorTest {
 
     ClassType classTypeCheckInitValidator =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {

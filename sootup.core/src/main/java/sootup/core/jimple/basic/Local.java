@@ -154,8 +154,9 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
   }
 
   @Override
-  public void accept(@Nonnull ImmediateVisitor v) {
+  public <V extends ImmediateVisitor> V accept(@Nonnull V v) {
     v.caseLocal(this);
+    return v;
   }
 
   @Nonnull

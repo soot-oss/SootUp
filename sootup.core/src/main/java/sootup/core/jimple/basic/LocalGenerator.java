@@ -83,7 +83,8 @@ public class LocalGenerator {
     return this.parameterLocals.get(index);
   }
 
-  private static class NamingSwitch extends AbstractTypeVisitor<StringBuilder> {
+  private static class NamingSwitch extends AbstractTypeVisitor {
+    protected StringBuilder result = null;
     private int tempInt = 0;
     private int tempBoolean = 0;
     private int tempLong = 0;
@@ -170,6 +171,14 @@ public class LocalGenerator {
     @Override
     public void defaultCaseType() {
       throw new IllegalStateException("Unhandled Type of Local variable to Generate!");
+    }
+
+    public StringBuilder getResult() {
+      return result;
+    }
+
+    protected void setResult(StringBuilder result) {
+      this.result = result;
     }
   }
 
