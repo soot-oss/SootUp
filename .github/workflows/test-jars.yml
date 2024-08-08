@@ -1,7 +1,9 @@
 name: Download Random JARs from Maven
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 1' # '0' : 0th minute, '9' : Hour (9 AM) '*' : Day of the month '*' : Month '1' : Day of the week (0 is sunday, 1 is monday)
+  workflow_dispatch: # Manual trigger of this action
 jobs:
   download-jars:
     runs-on: ubuntu-latest
