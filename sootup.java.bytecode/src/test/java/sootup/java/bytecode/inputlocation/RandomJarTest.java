@@ -19,7 +19,7 @@ public class RandomJarTest {
 
   @Test
   public void testJar() {
-    if(jarPath.isEmpty()) {
+    if (jarPath.isEmpty()) {
       return;
     }
     System.out.println("Jar file parameter is: " + jarPath);
