@@ -33,11 +33,6 @@ public class JimpleTrapValidatorTest {
     ClassType classTypeJimpleTrapValidator =
         new ClassType() {
           @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
-
-          @Override
           public String getFullyQualifiedName() {
             return "jimple.TrapsValidator";
           }
