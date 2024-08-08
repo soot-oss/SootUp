@@ -7,7 +7,7 @@ print('Job Starting')
 BASE_URL = "https://search.maven.org/solrsearch/select"
 DOWNLOAD_URL_TEMPLATE = "https://repo1.maven.org/maven2/{group}/{artifact}/{version}/{artifact}-{version}.jar"
 OUTPUT_DIR = "downloaded_jars"
-NUM_JARS = 1
+NUM_JARS = 100
 MAX_SIZE_MB = 5 * 1024 * 1024  # 5MB in bytes
 
 # Ensure output directory exists
@@ -19,6 +19,7 @@ def construct_download_url(group, artifact, version):
     group_path = group.replace('.', '/')
     return DOWNLOAD_URL_TEMPLATE.format(group=group_path, artifact=artifact, version=version)
 
+
 def download_file(url, output_path):
     response = requests.get(url, stream=True)
     response.raise_for_status()
@@ -26,9 +27,10 @@ def download_file(url, output_path):
     if total_size > MAX_SIZE_MB:
         return False
     with open(output_path, 'wb') as file:
-        for data in response.iter_content(1024):
-            file.write(data)
-            return True
+        for chunk in response.iter_content(chunk_size=1024):
+            if chunk:  # filter out keep-alive new chunks
+                file.write(chunk)
+        return True
 
 
 # Function to get a random artifact from Maven Central
@@ -46,9 +48,6 @@ def get_random_artifact():
         return None
     return docs[0]
 
-
-# Directory to store downloaded JARs
-os.makedirs('jars', exist_ok=True)
 
 downloaded_count = 0
 # Download 100 random JARs
