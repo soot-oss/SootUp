@@ -6,13 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import categories.TestCategories;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
@@ -58,8 +59,12 @@ public class RecordTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts());
     List<JDynamicInvokeExpr> dynamicInvokes =
         method.getBody().getStmts().stream()
-            .filter(Stmt::containsInvokeExpr)
-            .map(Stmt::getInvokeExpr)
+            .filter(stmt -> stmt instanceof InvokableStmt)
+            .map(stmt -> (InvokableStmt) stmt)
+            .filter(InvokableStmt::containsInvokeExpr)
+            .map(InvokableStmt::getInvokeExpr)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .filter(abstractInvokeExpr -> abstractInvokeExpr instanceof JDynamicInvokeExpr)
             .map(abstractInvokeExpr -> (JDynamicInvokeExpr) abstractInvokeExpr)
             .collect(Collectors.toList());

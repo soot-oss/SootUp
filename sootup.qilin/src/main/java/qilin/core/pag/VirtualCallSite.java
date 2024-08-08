@@ -21,7 +21,7 @@ package qilin.core.pag;
 import java.util.Objects;
 import qilin.core.builder.callgraph.Kind;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.signatures.MethodSubSignature;
 
 /**
@@ -38,7 +38,7 @@ public class VirtualCallSite extends CallSite {
 
   public VirtualCallSite(
       VarNode recNode,
-      Stmt stmt,
+      InvokableStmt stmt,
       ContextMethod container,
       AbstractInstanceInvokeExpr iie,
       MethodSubSignature subSig,

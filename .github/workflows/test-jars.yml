@@ -1,0 +1,63 @@
+name: Download Random JARs from Maven
+
+on:
+  workflow_dispatch:
+jobs:
+  download-jars:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run:
+          pip install requests
+
+      - name: Download random JARs
+        run: |
+          python .github/download_jars.py
+
+      - name: Upload JARs
+        uses: actions/upload-artifact@v3
+        with:
+          name: jars
+          path: downloaded_jars/
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-package: 'jdk'
+          java-version: '8'
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Maven
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y maven
+
+      - name: Run Maven
+        run: |
+          mvn clean install -DskipTests
+
+      - name: Run tests on downloaded JARs
+        run: |
+          for jar in ${{ github.workspace }}/downloaded_jars/*.jar; do
+            echo "Testing $jar"
+            mvn clean test -Dtest=sootup.java.bytecode.inputlocation.RandomJarTest -DjarPath="$jar" -pl sootup.java.bytecode
+          done
+
+      - name: Upload the Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: jar_test_csv
+          path: sootup.java.bytecode/jar_test.csv
+

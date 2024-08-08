@@ -217,10 +217,6 @@ public class Utils {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  public static void generateJimpleForTest(@Nonnull SootMethod m) {
-    System.out.println(generateJimpleForTest(m.getBody()));
-  }
-
   /** Helper for writing tests . */
   public static String generateJimpleForTest(@Nonnull Body b) {
     ArrayList<String> arr = filterJimple(Utils.bodyStmtsAsStrings(b).stream());

@@ -108,8 +108,9 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public void accept(@Nonnull TypeVisitor v) {
+    public <V extends TypeVisitor> V accept(@Nonnull V v) {
       v.caseByteType();
+      return v;
     }
   }
 
@@ -125,8 +126,9 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public void accept(@Nonnull TypeVisitor v) {
+    public <V extends TypeVisitor> V accept(@Nonnull V v) {
       v.caseShortType();
+      return v;
     }
   }
 
@@ -146,8 +148,9 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public void accept(@Nonnull TypeVisitor v) {
+    public <V extends TypeVisitor> V accept(@Nonnull V v) {
       v.caseIntType();
+      return v;
     }
   }
 
@@ -163,8 +166,9 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public void accept(@Nonnull TypeVisitor v) {
+    public <V extends TypeVisitor> V accept(@Nonnull V v) {
       v.caseDoubleType();
+      return v;
     }
   }
 
@@ -180,8 +184,9 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public void accept(@Nonnull TypeVisitor v) {
+    public <V extends TypeVisitor> V accept(@Nonnull V v) {
       v.caseLongType();
+      return v;
     }
   }
 
@@ -197,8 +202,9 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public void accept(@Nonnull TypeVisitor v) {
+    public <V extends TypeVisitor> V accept(@Nonnull V v) {
       v.caseFloatType();
+      return v;
     }
   }
 
@@ -214,8 +220,9 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public void accept(@Nonnull TypeVisitor v) {
+    public <V extends TypeVisitor> V accept(@Nonnull V v) {
       v.caseCharType();
+      return v;
     }
   }
 
@@ -235,8 +242,9 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public void accept(@Nonnull TypeVisitor v) {
+    public <V extends TypeVisitor> V accept(@Nonnull V v) {
       v.caseBooleanType();
+      return v;
     }
   }
 }

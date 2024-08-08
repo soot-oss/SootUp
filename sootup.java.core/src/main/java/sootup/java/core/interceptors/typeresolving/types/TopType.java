@@ -49,8 +49,11 @@ public class TopType extends Type {
   private TopType() {}
 
   @Override
-  public void accept(@Nonnull TypeVisitor typeVisitor) {
-    typeVisitor.defaultCaseType();
+  public <V extends TypeVisitor> V accept(@Nonnull V typeVisitor) {
+    /*typeVisitor.defaultCaseType();
+    return typeVisitor;
+    */
+    throw new UnsupportedOperationException();
   }
 
   @Override

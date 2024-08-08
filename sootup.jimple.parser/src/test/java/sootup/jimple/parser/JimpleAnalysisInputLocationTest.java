@@ -19,10 +19,6 @@ public class JimpleAnalysisInputLocationTest {
 
     ClassType onlyClassNameType =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {
@@ -42,10 +38,6 @@ public class JimpleAnalysisInputLocationTest {
 
     final ClassType classType =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {
@@ -65,10 +57,6 @@ public class JimpleAnalysisInputLocationTest {
 
     final ClassType classTypeFake =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {

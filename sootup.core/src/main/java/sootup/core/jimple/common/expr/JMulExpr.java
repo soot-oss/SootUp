@@ -40,8 +40,9 @@ public final class JMulExpr extends AbstractFloatBinopExpr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
     v.caseMulExpr(this);
+    return v;
   }
 
   @Nonnull

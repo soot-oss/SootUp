@@ -26,9 +26,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import sootup.callgraph.CallGraph.Call;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
@@ -45,21 +47,6 @@ import sootup.core.views.View;
  * instantiated subclasses as call targets and CHA considers all subclasses.
  */
 public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
-
-  /**
-   * This private class is used to save reachable calls. Because every method is only processed
-   * once, ignored calls are saved to include them at a later time if their class is instantiated at
-   * a later time.
-   */
-  protected static class Call {
-    @Nonnull final MethodSignature source;
-    @Nonnull final MethodSignature target;
-
-    protected Call(@Nonnull MethodSignature source, @Nonnull MethodSignature target) {
-      this.source = source;
-      this.target = target;
-    }
-  }
 
   @Nonnull protected Set<ClassType> instantiatedClasses = Collections.emptySet();
   @Nonnull protected Map<ClassType, List<Call>> ignoredCalls = Collections.emptyMap();
@@ -128,14 +115,19 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * expression.
    *
    * @param sourceMethod the method object that contains the given invoke expression in the body.
-   * @param invokeExpr it contains the call which is resolved.
+   * @param invokableStmt the statement containing the call which is resolved.
    * @return a stream containing all reachable method signatures after applying the RTA call graph
    *     algorithm
    */
   @Override
   @Nonnull
   protected Stream<MethodSignature> resolveCall(
-      SootMethod sourceMethod, AbstractInvokeExpr invokeExpr) {
+      SootMethod sourceMethod, InvokableStmt invokableStmt) {
+    Optional<AbstractInvokeExpr> optInvokeExpr = invokableStmt.getInvokeExpr();
+    if (!optInvokeExpr.isPresent()) {
+      return Stream.empty();
+    }
+    AbstractInvokeExpr invokeExpr = optInvokeExpr.get();
     MethodSignature resolveBaseMethodSignature = invokeExpr.getMethodSignature();
     Stream<MethodSignature> result = Stream.of(resolveBaseMethodSignature);
 
@@ -151,10 +143,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       if (instantiatedClasses.contains(resolveBaseMethodSignature.getDeclClassType())) {
         return Stream.concat(
             Stream.of(concreteBaseMethod.getSignature()),
-            resolveAllCallTargets(sourceMethod.getSignature(), resolveBaseMethodSignature));
+            resolveAllCallTargets(
+                sourceMethod.getSignature(), resolveBaseMethodSignature, invokableStmt));
       } else {
-        saveIgnoredCall(sourceMethod.getSignature(), resolveBaseMethodSignature);
-        return resolveAllCallTargets(sourceMethod.getSignature(), resolveBaseMethodSignature);
+        saveIgnoredCall(sourceMethod.getSignature(), resolveBaseMethodSignature, invokableStmt);
+        return resolveAllCallTargets(
+            sourceMethod.getSignature(), resolveBaseMethodSignature, invokableStmt);
       }
     }
   }
@@ -167,11 +161,14 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * @param source the method which contains call
    * @param resolveBaseMethodSignature the base of the resolving. All subtypes of the declaring
    *     class are analyzed as potential targets
+   * @param invokableStmt the statement causing the call
    * @return a stream of all method signatures of instantiated classes that can be resolved as
    *     target from the given base method signature.
    */
   private Stream<MethodSignature> resolveAllCallTargets(
-      MethodSignature source, MethodSignature resolveBaseMethodSignature) {
+      MethodSignature source,
+      MethodSignature resolveBaseMethodSignature,
+      InvokableStmt invokableStmt) {
     return view.getTypeHierarchy()
         .subtypesOf(resolveBaseMethodSignature.getDeclClassType())
         .map(
@@ -182,7 +179,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
               if (instantiatedClasses.contains(classType)) {
                 return resolveConcreteDispatch(view, method);
               } else {
-                saveIgnoredCall(source, method);
+                saveIgnoredCall(source, method, invokableStmt);
                 return Optional.<MethodSignature>empty();
               }
             })
@@ -196,11 +193,13 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    *
    * @param source the source method of the call
    * @param target the target method of the call
+   * @param invokableStmt the statement causing the call
    */
-  private void saveIgnoredCall(MethodSignature source, MethodSignature target) {
+  private void saveIgnoredCall(
+      MethodSignature source, MethodSignature target, InvokableStmt invokableStmt) {
     ClassType notInstantiatedClass = target.getDeclClassType();
     List<Call> calls = ignoredCalls.get(notInstantiatedClass);
-    Call ignoredCall = new Call(source, target);
+    Call ignoredCall = new Call(source, target, invokableStmt);
     if (calls == null) {
       calls = new ArrayList<>();
       ignoredCalls.put(notInstantiatedClass, calls);
@@ -254,19 +253,16 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       newEdges.forEach(
           call -> {
             MethodSignature concreteTarget =
-                resolveConcreteDispatch(view, call.target).orElse(null);
+                resolveConcreteDispatch(view, call.getTargetMethodSignature()).orElse(null);
             if (concreteTarget == null) {
               return;
             }
-            if (cg.containsMethod(concreteTarget)) {
-              // method is already analyzed or is in the work list, simply add the call
-              cg.addCall(call.source, concreteTarget);
-            } else {
-              // new target method found that has to be analyzed
-              cg.addMethod(concreteTarget);
-              cg.addCall(call.source, concreteTarget);
-              workList.push(concreteTarget);
-            }
+            addCallToCG(
+                call.getSourceMethodSignature(),
+                concreteTarget,
+                call.getInvokableStmt(),
+                cg,
+                workList);
           });
       // can be removed because the instantiated class will be considered in future resolves
       ignoredCalls.remove(classType);

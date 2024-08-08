@@ -55,8 +55,9 @@ public final class JThrowStmt extends AbstractStmt {
   }
 
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseThrowStmt(this);
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseThrowStmt(this);
+    return v;
   }
 
   @Override

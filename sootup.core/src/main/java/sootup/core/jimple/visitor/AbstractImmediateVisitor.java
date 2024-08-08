@@ -27,8 +27,7 @@ import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.constant.Constant;
 
-public class AbstractImmediateVisitor<V> extends AbstractConstantVisitor<V>
-    implements ImmediateVisitor {
+public class AbstractImmediateVisitor extends AbstractConstantVisitor implements ImmediateVisitor {
 
   @Override
   public void caseLocal(@Nonnull Local local) {

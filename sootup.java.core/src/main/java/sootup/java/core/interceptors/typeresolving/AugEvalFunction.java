@@ -24,6 +24,8 @@ package sootup.java.core.interceptors.typeresolving;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Immediate;
@@ -46,6 +48,8 @@ import sootup.java.core.interceptors.typeresolving.types.TopType;
 
 /** @author Zun Wang */
 public class AugEvalFunction {
+
+  private static final Logger logger = LoggerFactory.getLogger(AugEvalFunction.class);
 
   private final ClassType stringClassType;
   private final ClassType classClassType;
@@ -248,9 +252,12 @@ public class AugEvalFunction {
       final Optional<? extends ClassType> superclassOpt =
           view.getClass(exceptionType).flatMap(SootClass::getSuperclass);
       if (!superclassOpt.isPresent()) {
-        // TODO: ms: don't fail completely.. work as far as information exists and warn.
-        throw new IllegalStateException(
-            "The path from '" + exceptionType + "' to java.lang.Throwable cannot be found!");
+        // Note: We have progressed as far as the available information allows.
+        logger.warn(
+            "The path from '"
+                + exceptionType
+                + "' to java.lang.Throwable cannot be found! Are you certain you don't want to include rt.jar? Including rt.jar could provide additional classes and resources that might be necessary for full functionality.");
+        break;
       }
 
       ClassType superType = superclassOpt.get();

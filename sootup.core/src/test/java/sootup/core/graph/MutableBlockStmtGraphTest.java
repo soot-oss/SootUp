@@ -35,10 +35,6 @@ public class MutableBlockStmtGraphTest {
 
   private ClassType throwableSig =
       new ClassType() {
-        @Override
-        public boolean isBuiltInClass() {
-          return true;
-        }
 
         @Override
         public String getFullyQualifiedName() {
@@ -58,10 +54,6 @@ public class MutableBlockStmtGraphTest {
 
   private ClassType ioExceptionSig =
       new ClassType() {
-        @Override
-        public boolean isBuiltInClass() {
-          return true;
-        }
 
         @Override
         public String getFullyQualifiedName() {
@@ -564,10 +556,6 @@ public class MutableBlockStmtGraphTest {
   public void testTrapAggregation() {
     final ClassType exception1 =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {
@@ -587,10 +575,6 @@ public class MutableBlockStmtGraphTest {
 
     final ClassType exception2 =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {

@@ -240,7 +240,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     for (JAssignStmt assignStmt : postProcess) {
       // Transform it into a simple invoke
       Stmt newInvoke =
-          Jimple.newInvokeStmt(assignStmt.getInvokeExpr(), assignStmt.getPositionInfo());
+          Jimple.newInvokeStmt(assignStmt.getInvokeExpr().get(), assignStmt.getPositionInfo());
       stmtGraph.replaceNode(assignStmt, newInvoke);
       builder.removeDefLocalsOf(assignStmt);
     }

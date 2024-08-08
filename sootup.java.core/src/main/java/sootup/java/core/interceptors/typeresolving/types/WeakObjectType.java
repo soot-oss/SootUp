@@ -48,7 +48,7 @@ public class WeakObjectType extends JavaClassType {
   }
 
   @Override
-  public void accept(@Nonnull TypeVisitor v) {
-    // todo: weak objects type case
+  public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    throw new UnsupportedOperationException();
   }
 }

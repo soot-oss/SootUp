@@ -23,18 +23,14 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 
 ## SootUp improvements 
 #### (compared to its predecessor [Soot](https://github.com/soot-oss/soot).)
-- [x] New improved API (without Globals/Singletons)
-- [x] Fully-Parallelizable Architecture
-- [x] Enables lazy loading of classes (no interleaved loading of used/dependent classes anymore)
-- [x] Fail early strategy - input validation while constructing/building objects
-- [x] Up-to-Date (i.e. Java8!) Sourcecode Frontend (Beware: Cannot handle try-catch inputs, yet!)
-- [x] Full Java 21 Support for Bytecode
-- [x] Multiple Views (no single static Scene anymore)
-- [x] Immutable Jimple IR Objects and Graphs
-- [ ] Incremental Updates of Program Representation
-
-## SootUp Roadmap
-See our [Todo list](https://github.com/soot-oss/SootUp/wiki/TODOs).
+- New improved API (without Globals/Singletons)
+- Fully-Parallelizable Architecture
+- Enables lazy loading of classes (no interleaved loading of used/dependent classes anymore)
+- Fail early strategy - input validation while constructing/building objects
+- Up-to-Date (i.e. Java8!) Sourcecode Frontend (Beware: Cannot handle try-catch inputs, yet!)
+- Full Java 21 Support for Bytecode
+- Multiple Views (no single static Scene anymore)
+- Immutable Jimple IR Objects and Graphs
 
 ## Feel free to improve Soot!
 

@@ -34,10 +34,6 @@ public class FieldRefValidatorTest {
 
     ClassType classTypeFieldRefValidator =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {

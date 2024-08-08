@@ -31,6 +31,7 @@ import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.ArrayType;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -73,7 +74,7 @@ public final class JNewArrayExpr implements Expr {
 
   @Override
   public String toString() {
-    return (Jimple.NEWARRAY + " (") + baseType.toString() + ")" + "[" + size.toString() + "]";
+    return (Jimple.NEWARRAY + " (") + baseType + ")" + "[" + size + "]";
   }
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
@@ -118,8 +119,9 @@ public final class JNewArrayExpr implements Expr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
     v.caseNewArrayExpr(this);
+    return v;
   }
 
   @Nonnull
@@ -130,5 +132,15 @@ public final class JNewArrayExpr implements Expr {
   @Nonnull
   public JNewArrayExpr withSize(@Nonnull Immediate size) {
     return new JNewArrayExpr(baseType, size, identifierFactory);
+  }
+
+  public boolean isArrayOfPrimitives() {
+    if (baseType instanceof PrimitiveType) {
+      return true;
+    }
+    if (baseType instanceof ArrayType) {
+      return ((ArrayType) baseType).isArrayTypeOfPrimitives();
+    }
+    return false;
   }
 }

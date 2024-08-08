@@ -88,8 +88,10 @@ public final class JArrayRef implements ConcreteRef, LValue {
   }
 
   @Override
-  public void accept(@Nonnull RefVisitor v) {
+  public <V extends RefVisitor> V accept(@Nonnull V v) {
+
     v.caseArrayRef(this);
+    return v;
   }
 
   @Nonnull

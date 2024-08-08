@@ -570,8 +570,8 @@ public class PAG {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     int localCount = body.getLocalCount();
     for (Stmt s : body.getStmts()) {
-      if (s.containsInvokeExpr()) {
-        AbstractInvokeExpr invokeExpr = s.getInvokeExpr();
+      if (s.isInvokableStmt() && s.asInvokableStmt().containsInvokeExpr()) {
+        AbstractInvokeExpr invokeExpr = s.asInvokableStmt().getInvokeExpr().get();
         if (invokeExpr instanceof JStaticInvokeExpr) {
           JStaticInvokeExpr sie = (JStaticInvokeExpr) invokeExpr;
           String sig = sie.getMethodSignature().toString();

@@ -81,7 +81,8 @@ public class MethodType implements Constant {
   }
 
   @Override
-  public void accept(@Nonnull ConstantVisitor v) {
+  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
     v.caseMethodType(this);
+    return v;
   }
 }

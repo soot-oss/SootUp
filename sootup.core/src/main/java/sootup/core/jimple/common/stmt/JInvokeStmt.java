@@ -21,17 +21,19 @@ package sootup.core.jimple.common.stmt;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A method call */
-public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt {
+public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt, InvokableStmt {
 
   @Nonnull private final AbstractInvokeExpr invokeExpr;
 
@@ -47,6 +49,11 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt 
   }
 
   @Override
+  public boolean invokesStaticInitializer() {
+    return invokeExpr instanceof JStaticInvokeExpr;
+  }
+
+  @Override
   public String toString() {
     return invokeExpr.toString();
   }
@@ -58,8 +65,8 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt 
 
   @Override
   @Nonnull
-  public AbstractInvokeExpr getInvokeExpr() {
-    return invokeExpr;
+  public Optional<AbstractInvokeExpr> getInvokeExpr() {
+    return Optional.of(invokeExpr);
   }
 
   @Nonnull
@@ -69,8 +76,9 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt 
   }
 
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseInvokeStmt(this);
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseInvokeStmt(this);
+    return v;
   }
 
   @Override
@@ -100,6 +108,6 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt 
 
   @Nonnull
   public JInvokeStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JInvokeStmt(getInvokeExpr(), positionInfo);
+    return new JInvokeStmt(getInvokeExpr().get(), positionInfo);
   }
 }
