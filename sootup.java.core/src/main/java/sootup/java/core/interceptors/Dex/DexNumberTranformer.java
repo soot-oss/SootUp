@@ -125,7 +125,7 @@ public class DexNumberTranformer extends DexTransformer {
               new AbstractStmtVisitor() {
                 @Override
                 public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
-                  AbstractInvokeExpr e = stmt.getInvokeExpr();
+                  AbstractInvokeExpr e = stmt.getInvokeExpr().get();
                   usedAsFloatingPoint = examineInvokeExpr(e, l);
                 }
 

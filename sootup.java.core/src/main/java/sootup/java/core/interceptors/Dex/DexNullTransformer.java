@@ -129,7 +129,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
 
           @Override
           public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
-            AbstractInvokeExpr e = stmt.getInvokeExpr();
+            AbstractInvokeExpr e = stmt.getInvokeExpr().get();
             usedAsObject = examineInvokeExpr(e);
             doBreak = true;
           }
@@ -372,8 +372,8 @@ public class DexNullTransformer extends AbstractNullTransformer {
     final NullConstant nullConstant = NullConstant.getInstance();
     for (Stmt stmt : builder.getStmts()) {
       stmt.accept(inlinedZeroValues);
-      if (stmt.containsInvokeExpr()) {
-        AbstractInvokeExpr invExpr = stmt.getInvokeExpr();
+      if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
+        AbstractInvokeExpr invExpr = stmt.asInvokableStmt().getInvokeExpr().get();
         for (int i = 0; i < invExpr.getArgCount(); i++) {
           if (isObject(invExpr.getMethodSignature().getParameterTypes().get(i))) {
             if (invExpr.getArg(i) instanceof IntConstant) {
