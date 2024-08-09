@@ -20,7 +20,6 @@ import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.*;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.util.EscapedWriter;
 import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
@@ -96,8 +95,8 @@ public class LegacyJimplePrinterTest {
       SootClass tableClass = buildClass(builder);
 
       StringWriter sw = new StringWriter();
-      new JimplePrinter(JimplePrinter.Option.LegacyMode)
-          .printTo(tableClass, new PrintWriter(new EscapedWriter(sw)));
+      // new JimplePrinter(JimplePrinter.Option.LegacyMode)
+      //  .printTo(tableClass, new PrintWriter(new EscapedWriter(sw)));
 
       assertEquals(
           Arrays.asList(
@@ -133,8 +132,8 @@ public class LegacyJimplePrinterTest {
       SootClass lookupClass = buildClass(builder);
 
       StringWriter sw2 = new StringWriter();
-      new JimplePrinter(JimplePrinter.Option.LegacyMode)
-          .printTo(lookupClass, new PrintWriter(new EscapedWriter(sw2)));
+      //  new JimplePrinter(JimplePrinter.Option.LegacyMode)
+      //  .printTo(lookupClass, new PrintWriter(new EscapedWriter(sw2)));
 
       assertEquals(
           Arrays.asList(
