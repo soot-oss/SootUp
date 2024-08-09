@@ -180,32 +180,35 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
 
       JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
       StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
-      fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singleton(binDir));
+      try {
+        fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singleton(binDir));
 
-      File[] files = new File[srcFiles.size()];
-      srcFiles.stream().map(Path::toFile).collect(Collectors.toList()).toArray(files);
-      Iterable<? extends JavaFileObject> javaFileObjects = fileManager.getJavaFileObjects(files);
+        File[] files = new File[srcFiles.size()];
+        srcFiles.stream().map(Path::toFile).collect(Collectors.toList()).toArray(files);
+        Iterable<? extends JavaFileObject> javaFileObjects = fileManager.getJavaFileObjects(files);
 
-      try (Writer writer = new StringWriter()) {
-        JavaCompiler.CompilationTask task =
-            compiler.getTask(writer, fileManager, null, null, null, javaFileObjects);
+        try (Writer writer = new StringWriter()) {
+          JavaCompiler.CompilationTask task =
+                  compiler.getTask(writer, fileManager, null, null, null, javaFileObjects);
 
-        if (task.call()) {
+          if (task.call()) {
           /* collect all generated .class files
           Set<JavaFileObject.Kind> clazzType = Collections.singleton(JavaFileObject.Kind.CLASS);
           for (JavaFileObject jfo : fileManager.list(location, "", clazzType, true)) {
             compiledFiles.add(Paths.get(jfo.toUri()));
           }*/
-          if (!binDirCreated) {
-            // update modified timestamp of bin/
-            Files.setLastModifiedTime(binDirpath, FileTime.fromMillis(currentTimeMillis()));
+            if (!binDirCreated) {
+              // update modified timestamp of bin/
+              Files.setLastModifiedTime(binDirpath, FileTime.fromMillis(currentTimeMillis()));
+            }
+            return binDir.toPath();
+          } else {
+            throw new IllegalArgumentException("Could not compile the given input.\n " + writer);
           }
-          return binDir.toPath();
-        } else {
-          throw new IllegalArgumentException("Could not compile the given input.\n " + writer);
         }
+      }finally{
+        fileManager.close();
       }
-
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

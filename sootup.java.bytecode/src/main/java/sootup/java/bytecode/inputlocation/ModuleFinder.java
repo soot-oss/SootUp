@@ -21,6 +21,7 @@ package sootup.java.bytecode.inputlocation;
  * #L%
  */
 import java.io.File;
+import java.io.InputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -279,19 +280,19 @@ public class ModuleFinder {
   @Nonnull
   public static String createModuleNameForAutomaticModule(@Nonnull Path path) {
     // check if Automatic-Module-Name header exists in manifest file and use it if exists
-    try {
-      JarFile jar = new JarFile(path.toFile());
-
+    try(JarFile jar = new JarFile(path.toFile())) {
       final String file = "META-INF/MANIFEST.MF";
       JarEntry entry = (JarEntry) jar.getEntry(file);
       if (entry != null) {
-        Manifest manifest = new Manifest(jar.getInputStream(entry));
+        try (InputStream jarStream = jar.getInputStream(entry)){
+        Manifest manifest = new Manifest(jarStream);
         Attributes attr = manifest.getMainAttributes();
 
         String automaticModuleName = attr.getValue("Automatic-Module-Name");
         if (automaticModuleName != null) {
           return automaticModuleName;
         }
+      }
       }
     } catch (IOException ignored) {
     }
