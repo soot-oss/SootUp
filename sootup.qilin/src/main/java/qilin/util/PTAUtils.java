@@ -296,8 +296,7 @@ public final class PTAUtils {
 
   public static String findMainFromMetaInfo(String appPath) {
     String mainClass = null;
-    try {
-      JarFile jar = new JarFile(appPath);
+    try(JarFile jar = new JarFile(appPath)) {
       Enumeration<JarEntry> allEntries = jar.entries();
       while (allEntries.hasMoreElements()) {
         JarEntry entry = allEntries.nextElement();

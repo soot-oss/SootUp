@@ -97,7 +97,7 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
 
     try (final Stream<Path> walk = Files.walk(path)) {
       return walk.filter(filePath -> PathUtils.hasExtension(filePath, FileType.JIMPLE))
-          .flatMap(
+          .<SootClassSource>flatMap(
               p -> {
                 String fullyQualifiedName =
                     FilenameUtils.removeExtension(

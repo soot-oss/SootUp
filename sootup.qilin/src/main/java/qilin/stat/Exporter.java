@@ -202,7 +202,6 @@ public class Exporter {
           }
         }
       }
-      writer.flush();
       writer.close();
     } catch (Exception e) {
       e.printStackTrace();
@@ -217,14 +216,16 @@ public class Exporter {
       mfile.delete();
       mfile.createNewFile();
       BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
-      for (Edge edge : ciCallGraph) {
-        String srcSig = Util.stripQuotes(edge.src().getSignature().toString());
-        String dstSig = Util.stripQuotes(edge.tgt().getSignature().toString());
-        String str = edge.srcStmt() + " in method " + srcSig + "\t" + dstSig + "\n";
-        writer.write(str);
+      try {
+        for (Edge edge : ciCallGraph) {
+          String srcSig = Util.stripQuotes(edge.src().getSignature().toString());
+          String dstSig = Util.stripQuotes(edge.tgt().getSignature().toString());
+          String str = edge.srcStmt() + " in method " + srcSig + "\t" + dstSig + "\n";
+          writer.write(str);
+        }
+      }finally{
+        writer.close();
       }
-      writer.flush();
-      writer.close();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -279,24 +280,26 @@ public class Exporter {
       mfile.delete();
       mfile.createNewFile();
       BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
-      for (LocalVarNode lvn : lvns) {
-        String varName = getDoopVarName(lvn);
-        final Set<AllocNode> callocSites = new HashSet<>();
-        PointsToSet cpts = pta.reachingObjects(lvn).toCIPointsToSet();
-        for (Iterator<AllocNode> it = cpts.iterator(); it.hasNext(); ) {
-          AllocNode heap = it.next();
-          callocSites.add(heap);
-        }
-        for (AllocNode heap : callocSites) {
-          String str = heap.getNewExpr() + "\t" + varName + "\n";
-          if (heap.getMethod() != null) {
-            str = heap.getMethod() + "/" + heap.getNewExpr() + "\t" + varName + "\n";
+      try {
+        for (LocalVarNode lvn : lvns) {
+          String varName = getDoopVarName(lvn);
+          final Set<AllocNode> callocSites = new HashSet<>();
+          PointsToSet cpts = pta.reachingObjects(lvn).toCIPointsToSet();
+          for (Iterator<AllocNode> it = cpts.iterator(); it.hasNext(); ) {
+            AllocNode heap = it.next();
+            callocSites.add(heap);
           }
-          writer.write(str);
+          for (AllocNode heap : callocSites) {
+            String str = heap.getNewExpr() + "\t" + varName + "\n";
+            if (heap.getMethod() != null) {
+              str = heap.getMethod() + "/" + heap.getNewExpr() + "\t" + varName + "\n";
+            }
+            writer.write(str);
+          }
         }
+      }finally {
+        writer.close();
       }
-      writer.flush();
-      writer.close();
     } catch (Exception e) {
       e.printStackTrace();
     }

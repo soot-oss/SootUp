@@ -111,7 +111,9 @@ public class WalaJavaClassProvider implements ClassProvider {
     try {
       // add Jars to scope
       for (String libJar : libPath) {
-        scope.addToScope(ClassLoaderReference.Primordial, new JarFile(libJar));
+        JarFile jar = new JarFile(libJar);
+        scope.addToScope(ClassLoaderReference.Primordial, jar);
+        jar.close();
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -137,7 +139,9 @@ public class WalaJavaClassProvider implements ClassProvider {
       scope.setLoaderImpl(
           ClassLoaderReference.Application, "com.ibm.wala.dalvik.classLoader.WDexClassLoaderImpl");
       // add androidJar and apkPath to scope
-      scope.addToScope(ClassLoaderReference.Primordial, new JarFile(androidJar));
+      JarFile andriodFile = new JarFile(androidJar);
+      scope.addToScope(ClassLoaderReference.Primordial, andriodFile);
+      andriodFile.close();
       scope.addToScope(ClassLoaderReference.Application, DexFileModule.make(new File(apkPath)));
       setExclusions(exclusionFilePath);
       factory = new ECJClassLoaderFactory(scope.getExclusions());
@@ -205,8 +209,9 @@ public class WalaJavaClassProvider implements ClassProvider {
       // add standard libraries to scope
       String[] stdlibs = WalaProperties.getJ2SEJarFiles();
       for (String stdlib : stdlibs) {
-
-        scope.addToScope(ClassLoaderReference.Primordial, new JarFile(stdlib));
+        JarFile stringJar = new JarFile(stdlib);
+        scope.addToScope(ClassLoaderReference.Primordial, stringJar);
+        stringJar.close();
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -338,8 +343,8 @@ public class WalaJavaClassProvider implements ClassProvider {
     File exclusionFile = new File(exclusionFilePath);
     if (exclusionFile.isFile()) {
       FileOfClasses classes;
-      try {
-        classes = new FileOfClasses(Files.newInputStream(exclusionFile.toPath()));
+      try (InputStream fileStream = Files.newInputStream(exclusionFile.toPath())) {
+        classes = new FileOfClasses(fileStream);
         scope.setExclusions(classes);
       } catch (IOException e) {
         e.printStackTrace();
