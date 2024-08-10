@@ -28,6 +28,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
@@ -61,6 +63,8 @@ import sootup.core.util.printer.JimplePrinter;
  * @author Markus Schmidt
  */
 public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stmt> {
+
+  private static final Logger logger = LoggerFactory.getLogger(StmtGraph.class);
 
   public abstract Stmt getStartingStmt();
 
@@ -203,7 +207,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
           for (Stmt target : successors) {
             if (target == stmt) {
-              throw new IllegalStateException(stmt + ": a Stmt cannot branch to itself.");
+              logger.warn(stmt + " Stmt contains a loop or Stmt branches to itself");
             }
           }
 
