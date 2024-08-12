@@ -91,12 +91,6 @@
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.qilin</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.soot-oss</groupId>
             <artifactId>sootup.codepropertygraph</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
