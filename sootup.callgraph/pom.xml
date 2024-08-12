@@ -16,30 +16,25 @@
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.core</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.java.core</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.java.bytecode</artifactId>
-			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.java.sourcecode</artifactId>
-			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-				<groupId>org.soot-oss</groupId>
-				<artifactId>sootup.jimple.parser</artifactId>
-				<version>${project.version}</version>
-				<scope>test</scope>
+			<groupId>org.soot-oss</groupId>
+			<artifactId>sootup.jimple.parser</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>

@@ -17,7 +17,6 @@
     <dependency>
         <groupId>org.soot-oss</groupId>
         <artifactId>sootup.core</artifactId>
-        <version>${project.version}</version>
     </dependency>
 
     </dependencies>

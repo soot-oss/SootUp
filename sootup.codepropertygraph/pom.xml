@@ -36,7 +36,6 @@
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.analysis</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
