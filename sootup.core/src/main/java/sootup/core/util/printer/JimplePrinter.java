@@ -136,6 +136,10 @@ public class JimplePrinter {
       */
 
       EnumSet<ClassModifier> modifiers = EnumSet.copyOf(cl.getModifiers());
+      // Jimple parser in Soot gives error with super keyword in class modifiers
+      if (options.contains(Option.LegacyMode)) {
+        modifiers.remove(ClassModifier.SUPER);
+      }
       // remove unwanted modifier combinations
       if (cl.isInterface() && ClassModifier.isAbstract(modifiers)) {
         modifiers.remove(ClassModifier.ABSTRACT);
