@@ -204,13 +204,6 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
         }
 
         if (stmt instanceof BranchingStmt) {
-
-          for (Stmt target : successors) {
-            if (target == stmt) {
-              logger.warn(stmt + " Stmt contains a loop or Stmt branches to itself");
-            }
-          }
-
           if (stmt instanceof JSwitchStmt) {
             if (successorCount != ((JSwitchStmt) stmt).getValueCount()) {
               throw new IllegalStateException(
