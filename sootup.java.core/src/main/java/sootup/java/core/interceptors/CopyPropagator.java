@@ -34,7 +34,6 @@ import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
-import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -61,13 +60,14 @@ public class CopyPropagator implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
     for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
-      for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+      Stmt newStmt = stmt;
+      for (Iterator<Value> iterator = newStmt.getUses().iterator(); iterator.hasNext(); ) {
         Value use = iterator.next();
         if (!(use instanceof Local)) {
           continue;
         }
 
-        List<Stmt> defsOfUse = ((Local) use).getDefsForLocalUse(stmtGraph, stmt);
+        List<Stmt> defsOfUse = ((Local) use).getDefsForLocalUse(stmtGraph, newStmt);
         if (!isPropatabable(defsOfUse)) {
           continue;
         }
@@ -75,9 +75,8 @@ public class CopyPropagator implements BodyInterceptor {
         AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
         Value rhs = defStmt.getRightOp();
         // if rhs is a constant, then replace use, if it is possible
-        if (rhs instanceof Constant
-            && !((stmt instanceof InvokableStmt) && ((InvokableStmt) stmt).containsInvokeExpr())) {
-          replaceUse(stmtGraph, stmt, use, rhs);
+        if (rhs instanceof Constant) {
+          newStmt = replaceUse(stmtGraph, newStmt, use, rhs);
         }
 
         // if rhs is a cast expr with a ref type and its op is 0 (IntConstant or LongConstant)
@@ -86,25 +85,27 @@ public class CopyPropagator implements BodyInterceptor {
           Value op = ((JCastExpr) rhs).getOp();
 
           if (zeroIntConstInstance.equals(op) || zeroLongConstInstance.equals(op)) {
-            replaceUse(stmtGraph, stmt, use, NullConstant.getInstance());
+            newStmt = replaceUse(stmtGraph, newStmt, use, NullConstant.getInstance());
           }
         }
         // if rhs is a local, then replace use, if it is possible
         else if (rhs instanceof Local && !rhs.equivTo(use)) {
-          replaceUse(stmtGraph, stmt, use, rhs);
+          newStmt = replaceUse(stmtGraph, newStmt, use, rhs);
         }
       }
     }
   }
 
-  private void replaceUse(
+  private Stmt replaceUse(
       @Nonnull MutableStmtGraph graph, @Nonnull Stmt stmt, @Nonnull Value use, @Nonnull Value rhs) {
     if (!use.equivTo(rhs)) { // TODO: ms: check if rhs!=use would be enough
       Stmt newStmt = stmt.withNewUse(use, rhs);
       if (newStmt != stmt) {
         graph.replaceNode(stmt, newStmt);
       }
+      return newStmt;
     }
+    return stmt;
   }
 
   private boolean isPropatabable(@Nonnull List<Stmt> defsOfUse) {
