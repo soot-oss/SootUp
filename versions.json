@@ -8,14 +8,6 @@
     }
   },
   {
-    "version": "feature_addCpgTests_preview",
-    "title": "PR Preview feature_addCpgTests",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "develop",
     "title": "develop",
     "aliases": []
