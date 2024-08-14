@@ -22,8 +22,9 @@ package sootup.java.core.interceptors;
  */
 
 import com.google.common.collect.Lists;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
@@ -61,8 +62,8 @@ public class CopyPropagator implements BodyInterceptor {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
     for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       Stmt newStmt = stmt;
-      for (Iterator<Value> iterator = newStmt.getUses().iterator(); iterator.hasNext(); ) {
-        Value use = iterator.next();
+      Set<Value> valueList = newStmt.getUses().collect(Collectors.toSet());
+      for (Value use : valueList) {
         if (!(use instanceof Local)) {
           continue;
         }
