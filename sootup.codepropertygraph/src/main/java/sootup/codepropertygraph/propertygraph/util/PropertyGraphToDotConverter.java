@@ -64,12 +64,12 @@ public class PropertyGraphToDotConverter {
           String.format("\t\"%s\" [label=\"%s\", fillcolor=\"%s\"];\n", nodeId, label, color));
     }
 
-    // Sort edges by a consistent property
+    // Sort edges by the IDs of the source and destination nodes
     List<PropertyGraphEdge> sortedEdges =
         graph.getEdges().stream()
             .sorted(
-                Comparator.comparing((PropertyGraphEdge edge) -> edge.getSource().toString())
-                    .thenComparing(edge -> edge.getDestination().toString())
+                Comparator.comparing((PropertyGraphEdge edge) -> nodeIds.get(edge.getSource()))
+                    .thenComparing(edge -> nodeIds.get(edge.getDestination()))
                     .thenComparing(PropertyGraphEdge::getLabel))
             .collect(Collectors.toList());
 

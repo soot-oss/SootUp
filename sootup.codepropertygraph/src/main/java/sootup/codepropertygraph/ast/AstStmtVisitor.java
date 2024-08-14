@@ -28,6 +28,7 @@ import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.*;
 import sootup.codepropertygraph.propertygraph.nodes.*;
 import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.Expr;
@@ -72,7 +73,7 @@ class AstStmtVisitor extends AbstractStmtVisitor {
    * @param operand the operand
    * @return the property graph node
    */
-  private PropertyGraphNode createOperandNode(Object operand) {
+  private PropertyGraphNode createOperandNode(Value operand) {
     if (operand instanceof Immediate) {
       return new ImmediateGraphNode((Immediate) operand);
     } else if (operand instanceof Ref) {
