@@ -27,7 +27,10 @@
             <artifactId>sootup.java.sourcecode</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>de.upb.cs.swt</groupId>
             <artifactId>heros</artifactId>
