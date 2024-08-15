@@ -23,7 +23,7 @@ package sootup.callgraph;
  */
 
 import java.util.*;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -60,12 +60,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractCallGraphAlgorithm.class);
 
-  private BiFunction<SootMethod, InvokableStmt, Boolean> boundFunction;
+  private BiPredicate<SootMethod, InvokableStmt> boundFunction;
 
   @Nonnull protected final View view;
 
-  protected AbstractCallGraphAlgorithm(@Nonnull View view) {
-    this.view = view;
+  protected AbstractCallGraphAlgorithm(@Nonnull View view)
+  {
+      this.view = view;
+      this.boundFunction = (method, statement) -> true;
   }
 
   /**
@@ -235,7 +237,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .map(Stmt::asInvokableStmt)
         .forEach(
             stmt ->
-                 (boundFunction == null || Boolean.TRUE.equals(boundFunction.apply(sourceMethod, stmt)) ? resolveCall(sourceMethod, stmt) : Stream.<MethodSignature> empty())
+                 (boundFunction.test(sourceMethod, stmt) ? resolveCall(sourceMethod, stmt) : Stream.<MethodSignature> empty())
                     .forEach(
                         targetMethod ->
                             addCallToCG(
@@ -593,7 +595,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /**
    * @return the bound function, see @setBoundFunction
    */
-  public BiFunction<SootMethod, InvokableStmt, Boolean> getBoundFunction()
+  public BiPredicate<SootMethod, InvokableStmt> getBoundFunction()
   {
       return boundFunction;
   }
@@ -606,8 +608,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * cost.
    * 
    * @param boundFunction */
-  public void setBoundFunction(BiFunction<SootMethod, InvokableStmt, Boolean> boundFunction)
+  public void setBoundFunction(BiPredicate<SootMethod, InvokableStmt> boundFunction)
   {
-      this.boundFunction = boundFunction;
+      this.boundFunction = boundFunction == null ?  (method, statement) -> true : boundFunction;
   }
 }

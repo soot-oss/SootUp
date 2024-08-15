@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ public class CallGraphTest {
       return loadCallGraph(null);
   }
 
-  CallGraph loadCallGraph(BiFunction<SootMethod, InvokableStmt, Boolean> boundFunction)
+  CallGraph loadCallGraph(BiPredicate<SootMethod, InvokableStmt> boundFunction)
   {
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
