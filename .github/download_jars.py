@@ -60,7 +60,12 @@ def get_metadata():
             return json.load(file)
     elif os.path.isdir(metadata_path):
         raise IsADirectoryError(f"{metadata_path} is a directory, not a file.")
-    return {"jars": []}
+    else:
+        os.makedirs(os.path.dirname(metadata_path), exist_ok=True)
+        # Create the file with an empty array
+        with open(metadata_path, 'w') as file:
+            json.dump({"jars": []}, file, indent=4)
+        return {"jars": []}
 
 
 def save_metadata(data):

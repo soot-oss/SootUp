@@ -60,9 +60,6 @@ jobs:
           java-package: 'jdk'
           java-version: '8'
 
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - name: Install Maven
         run: |
           sudo apt-get update
@@ -74,8 +71,8 @@ jobs:
 
       - name: List directory contents
         run: |
-            ls -l
-            ls -l ${{ github.workspace }}/downloaded_jars
+          ls -l
+          ls -l ${{ github.workspace }}/downloaded_jars
 
       - name: Run tests on downloaded JARs
         run: |
@@ -89,4 +86,73 @@ jobs:
         with:
           name: jar_test_csv
           path: sootup.java.bytecode/jar_test.csv
+
+      - name: List directory contents
+        run: |
+          echo "Listing contents of sootup.java.bytecode"
+          ls -la sootup.java.bytecode
+
+      - name: Set branch name with timestamp
+        id: set_branch_name
+        run: |
+          # Get the current week number and timestamp
+          week_number=$(date +%U)
+          timestamp=$(date +%Y%m%d%H%M%S)
+          branch_name="failed-jars-branch-week-${week_number}-${timestamp}"
+          echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
+
+      - name: Check for jar_failure.csv
+        id: check_file
+        if: ${{ hashFiles('sootup.java.bytecode/jar_failure.csv') != '' }}
+        run: |
+          echo "jar_failure.csv exists"
+          # Read all jar_names from the CSV and store them in an environment variable
+          jar_names=$(awk -F, 'NR>1 {print $1}' sootup.java.bytecode/jar_failure.csv | paste -sd "," -)
+          echo "JAR_NAMES=${jar_names}" >> $GITHUB_ENV
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Create new branch and prepare files
+        if: env.JAR_NAMES != ''
+        run: |
+          # Create a branch named `failed-jars-branch`
+          git checkout -b ${{ env.BRANCH_NAME }}  
+          echo 'New Branch Checked Out'  
+          # Create the directory to move files into
+          mkdir -p failed_jars
+          echo 'New Directory Created'  
+          # Add jar_failure.csv to the new directory
+          git add sootup.java.bytecode/jar_failure.csv
+          echo 'CSV file Added to git'
+          # Add files listed in jar_failure.csv to Git
+          IFS=',' read -r -a jar_array <<< "$JAR_NAMES"
+          for jar_name in "${jar_array[@]}"; do
+            echo "Adding files related to JAR_NAME=${jar_name}"
+            find . -type f -name "*${jar_name}*" -exec git add -f {} \;
+          done
+
+      - name: Move files and commit changes
+        if: env.JAR_NAMES != ''
+        run: |
+          # Move jar files listed in jar_failure.csv
+          git mv sootup.java.bytecode/jar_failure.csv failed_jars/
+          echo 'jar_failure.csv moved to the branch'
+          # Move other files listed in jar_failure.csv
+          IFS=',' read -r -a jar_array <<< "$JAR_NAMES"
+          for jar_name in "${jar_array[@]}"; do
+              echo "Moving files related to JAR_NAME=${jar_name}"
+              find . -type f -name "*${jar_name}*" -not -path "./failed_jars/*" -exec git mv {} failed_jars/ \;
+          done
+          # Commit and push changes
+          git add .
+          git commit -m "Move failed jars and jar_failure.csv to failed_jars directory"
+          git push origin ${{ env.BRANCH_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
 

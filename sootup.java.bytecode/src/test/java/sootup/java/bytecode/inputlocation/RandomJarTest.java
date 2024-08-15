@@ -17,6 +17,8 @@ public class RandomJarTest {
 
   private final String jarPath = System.getProperty("jarPath", "");
 
+  private boolean isTestFailure = false;
+
   @Test
   public void testJar() {
     if (jarPath.isEmpty()) {
@@ -40,17 +42,25 @@ public class RandomJarTest {
         start = System.currentTimeMillis();
         number_of_methods = getMethods(classes);
         time_taken_for_methods = System.currentTimeMillis() - start;
+        throw new RuntimeException("Test failed");
       } catch (Exception e) {
         exception = e.getMessage();
+        isTestFailure = true;
       } finally {
-        writeTestMetrics(
-            new TestMetrics(
-                jarPath.substring(jarPath.lastIndexOf("/") + 1),
-                number_of_classes,
-                number_of_methods,
-                time_taken_for_classes,
-                time_taken_for_methods,
-                exception));
+        if (!isTestFailure) {
+          writeTestMetrics(
+              new TestMetrics(
+                  jarPath.substring(jarPath.lastIndexOf("/") + 1),
+                  number_of_classes,
+                  number_of_methods,
+                  time_taken_for_classes,
+                  time_taken_for_methods,
+                  exception));
+        } else {
+          writeFailureMetrics(
+              new TestMetrics(
+                  jarPath.substring(jarPath.lastIndexOf("/") + 1), -1, -1, -1, -1, exception));
+        }
       }
     } catch (Exception e) {
       writeTestMetrics(
@@ -91,6 +101,26 @@ public class RandomJarTest {
               + testMetrics.getTime_taken_for_classes()
               + ","
               + testMetrics.getException());
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void writeFailureMetrics(TestMetrics testMetrics) {
+    String file_name = "jar_failure.csv";
+    File file = new File(file_name);
+    boolean fileExists = file.exists();
+    try (FileWriter fw = new FileWriter(file, true); // Append mode
+        PrintWriter writer = new PrintWriter(fw)) {
+
+      // Write the header if the file doesn't exist
+      if (!fileExists) {
+        writer.println("jar_name,exception");
+      }
+
+      // Write each metric to the file
+      writer.println(testMetrics.getJar_name() + "," + testMetrics.getException());
 
     } catch (IOException e) {
       e.printStackTrace();
