@@ -15,7 +15,10 @@
   {
     "version": "1021-bug-copypropagator-not-propagating-constant-to-sout-binary-expressions-if-condition_preview",
     "title": "PR Preview 1021-bug-copypropagator-not-propagating-constant-to-sout-binary-expressions-if-condition",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "v1.3.0",
