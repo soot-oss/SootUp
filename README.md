@@ -32,13 +32,11 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 - Multiple Views (no single static Scene anymore)
 - Immutable Jimple IR Objects and Graphs
 
-## Feel free to improve Soot!
+## Feel free to improve SootUp!
 
-### Feedback and Feature Requests
-For feedback and feature requests, best create appropriate [issues](../../issues).
-
-### Collaboration
-You want to collaborate? Please read our [coding guidelines and the contributors notice](../../wiki/contribution-to-SootUp).
+### Contributing
+For feedback and feature requests, best create appropriate [issues](../../issues).  
+For questions and clarification, please use the [discussions](../../discussions).
 
 
 ## Publications
