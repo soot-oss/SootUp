@@ -4,8 +4,6 @@ import Util.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import org.jf.dexlib2.dexbacked.DexBackedDexFile;
-import org.jf.dexlib2.dexbacked.reference.DexBackedTypeReference;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.MultiDexContainer;
@@ -60,19 +58,6 @@ public class DexLibWrapper {
       for (ClassDef defItem : dexFile.getClasses()) {
         String forClassName = DexUtil.dottedClassName(defItem.getType());
         classesToDefItems.put(forClassName, new ClassInformation(dexEntry, defItem));
-      }
-    }
-
-    // It is important to first resolve the classes, otherwise we will
-    // produce an error during type resolution.
-    for (MultiDexContainer.DexEntry<? extends DexFile> dexEntry : dexFiles) {
-      final DexFile dexFile = dexEntry.getDexFile();
-      if (dexFile instanceof DexBackedDexFile) {
-        for (DexBackedTypeReference typeRef : ((DexBackedDexFile) dexFile).getTypeReferences()) {
-          String t = typeRef.getType();
-          // TODO Still now did not find the usecase for this, but according to Soot it was said
-          // this case can happen, let's see.....
-        }
       }
     }
   }

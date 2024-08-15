@@ -469,7 +469,6 @@ public class DexBody {
     storeResultLocal = Jimple.newLocal(freshLocalName("$stack"), unknownType);
     locals.add(storeResultLocal);
     // process ByteCode instructions
-    final DexFile dexFile = dexEntry.getDexFile();
     int prevLineNumber = -1;
     for (DexLibAbstractInstruction instruction : instructions) {
       if (dangling != null) {

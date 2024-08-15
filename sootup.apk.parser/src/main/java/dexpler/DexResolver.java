@@ -1,11 +1,11 @@
 package dexpler;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class DexResolver {
-  protected Map<File, DexLibWrapper> cache = new TreeMap<File, DexLibWrapper>();
+  protected Map<File, DexLibWrapper> cache = new HashMap<>();
 
   private static DexResolver instance;
 
