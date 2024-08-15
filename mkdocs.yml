@@ -22,6 +22,7 @@ nav:
       - TypeHierarchy: typehierarchy.md
       - Callgraphs: callgraphs.md
       - BuiltIn Analyses: builtin-analyses.md
+      - Code Property Graphs: codepropertygraphs.md
 
   - How to..:
       - Write a Dataflow analysis: write_analyses.md

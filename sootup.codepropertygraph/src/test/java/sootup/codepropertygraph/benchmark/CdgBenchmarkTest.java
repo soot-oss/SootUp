@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.codepropertygraph.BenchmarkTestSuiteBase;
 import sootup.codepropertygraph.cdg.CdgCreator;
@@ -15,6 +16,7 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 
+@Tag("Java8")
 public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
   private final ClassType IfElseStatement = getClassType("IfElseStatement");
   private final ClassType TryCatchFinally = getClassType("TryCatchFinally");
@@ -338,12 +340,12 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"5\" [label=\"l2 = 11\", fillcolor=\"lightblue\"];\n"
         + "	\"6\" [label=\"l2 = 12\", fillcolor=\"lightblue\"];\n"
         + "	\"7\" [label=\"l2 = 3\", fillcolor=\"lightblue\"];\n"
+        + "	\"3\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"3\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"4\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"4\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"3\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"4\" -> \"5\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"4\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"3\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "}\n";
   }
 
@@ -366,11 +368,11 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"4\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"4\" -> \"8\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"4\" -> \"9\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"5\" -> \"10\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"5\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"6\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"6\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"6\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"10\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "}\n";
   }
 
@@ -390,13 +392,13 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"9\" [label=\"l2 = 22\", fillcolor=\"lightblue\"];\n"
         + "	\"10\" [label=\"l2 = 23\", fillcolor=\"lightblue\"];\n"
         + "	\"4\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"4\" -> \"9\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"4\" -> \"10\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"4\" -> \"9\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"5\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"6\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"5\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"5\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"6\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"6\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"6\" -> \"8\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "}\n";
   }
@@ -518,18 +520,18 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"15\" -> \"8\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"15\" -> \"9\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"16\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"16\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"16\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"16\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"16\" -> \"10\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"16\" -> \"14\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"16\" -> \"15\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"16\" -> \"17\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"17\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"17\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"16\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"16\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"16\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"17\" -> \"11\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"17\" -> \"12\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"17\" -> \"13\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"17\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"17\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "}\n";
   }
 
@@ -607,17 +609,17 @@ public class CdgBenchmarkTest extends BenchmarkTestSuiteBase {
         + "	\"10\" [label=\"l2 = 2\", fillcolor=\"lightblue\"];\n"
         + "	\"11\" [label=\"l2 = 3\", fillcolor=\"lightblue\"];\n"
         + "	\"12\" [label=\"switch(l1) \\{     case 1:     case 2:     case 3:     default:  \\}\", fillcolor=\"lightblue\"];\n"
-        + "	\"5\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"8\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"5\" -> \"9\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"12\" -> \"1\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"12\" -> \"10\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"12\" -> \"11\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"12\" -> \"2\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"12\" -> \"5\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"12\" -> \"6\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "	\"12\" -> \"7\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"12\" -> \"10\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
-        + "	\"12\" -> \"11\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"5\" -> \"3\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"5\" -> \"4\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"5\" -> \"8\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
+        + "	\"5\" -> \"9\"[label=\"cdg_next\", color=\"dodgerblue4\", fontcolor=\"dodgerblue4\"];\n"
         + "}\n";
   }
 
