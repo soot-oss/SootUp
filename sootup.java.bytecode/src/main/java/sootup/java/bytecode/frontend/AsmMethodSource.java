@@ -251,7 +251,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private Object resolveAnnotationsInDefaultValue(Object a) {
     if (a instanceof AnnotationNode) {
-      return AsmUtil.createAnnotationUsage(Collections.singletonList((AnnotationNode) a));
+      return AsmUtil.createAnnotationUsage((AnnotationNode) a);
     }
 
     if (a instanceof ArrayList) {

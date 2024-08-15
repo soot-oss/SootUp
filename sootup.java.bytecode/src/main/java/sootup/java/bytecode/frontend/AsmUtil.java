@@ -51,7 +51,6 @@ import sootup.java.core.ConstantUtil;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.ModuleModifier;
 import sootup.java.core.language.JavaJimple;
-import sootup.java.core.types.AnnotationType;
 import sootup.java.core.types.JavaClassType;
 
 public final class AsmUtil {
@@ -298,6 +297,11 @@ public final class AsmUtil {
         .reduce("", String::concat);
   }
 
+  public static AnnotationUsage createAnnotationUsage(AnnotationNode annotationNode) {
+    /* actually, we could move the inner loop's code (see below) here */
+    return createAnnotationUsage(Collections.singletonList(annotationNode)).iterator().next();
+  }
+
   public static Iterable<AnnotationUsage> createAnnotationUsage(
       List<AnnotationNode> invisibleParameterAnnotation) {
     if (invisibleParameterAnnotation == null) {
@@ -323,9 +327,7 @@ public final class AsmUtil {
 
             paramMap.put(annotationName, createAnnotationUsage(annotationValueList));
           } else if (annotationValue instanceof AnnotationNode) {
-            paramMap.put(
-                annotationName,
-                createAnnotationUsage(Collections.singletonList((AnnotationNode) annotationValue)));
+            paramMap.put(annotationName, createAnnotationUsage((AnnotationNode) annotationValue));
           } else {
             if (annotationValue instanceof ArrayList) {
               paramMap.put(
@@ -339,8 +341,8 @@ public final class AsmUtil {
         }
       }
 
-      AnnotationType at =
-          JavaIdentifierFactory.getInstance().getAnnotationType(AsmUtil.toQualifiedName(e.desc));
+      JavaClassType at =
+          JavaIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(e.desc));
       annotationUsages.add(new AnnotationUsage(at, paramMap));
     }
 

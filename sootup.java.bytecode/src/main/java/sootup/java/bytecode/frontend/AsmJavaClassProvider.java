@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,6 @@ import sootup.core.inputlocation.FileType;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.types.AnnotationType;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.types.ModuleJavaClassType;
 
@@ -85,7 +85,7 @@ public class AsmJavaClassProvider implements ClassProvider {
       logger.warn("Can not create ClassSource from a module info descriptor! path:" + sourcePath);
       return Optional.empty();
     } else {
-      if (klassType instanceof AnnotationType) {
+      if ((classNode.access & Opcodes.ACC_ANNOTATION) == Opcodes.ACC_ANNOTATION) {
         return Optional.of(
             new AsmAnnotationClassSource(analysisInputLocation, sourcePath, klassType, classNode));
       }
