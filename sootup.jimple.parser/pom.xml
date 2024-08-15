@@ -73,5 +73,10 @@
             <artifactId>junit-jupiter-api</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
     </dependencies>
 </project>
