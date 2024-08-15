@@ -22,6 +22,7 @@ package sootup.java.core.interceptors;
  */
 
 import com.google.common.collect.Lists;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -91,7 +92,48 @@ public class CopyPropagator implements BodyInterceptor {
         }
         // if rhs is a local, then replace use, if it is possible
         else if (rhs instanceof Local && !rhs.equivTo(use)) {
-          newStmt = replaceUse(stmtGraph, newStmt, use, rhs);
+          Local m = (Local) rhs;
+          if (use != m) {
+            Integer defCount = m.getDefs(stmtGraph.getStmts()).size();
+            if (defCount == null || defCount == 0) {
+              throw new RuntimeException("Variable " + m + " used without definition!");
+            } else if (defCount == 1) {
+              newStmt = replaceUse(stmtGraph, newStmt, use, rhs);
+              continue;
+            }
+
+            List<Stmt> path = stmtGraph.getExtendedBasicBlockPathBetween(defStmt, newStmt);
+            if (path == null) {
+              // no path in the extended basic block
+              continue;
+            }
+            {
+              boolean isRedefined = false;
+              Iterator<Stmt> pathIt = path.iterator();
+              // Skip first node
+              pathIt.next();
+              // Make sure that m is not redefined along path
+              while (pathIt.hasNext()) {
+                Stmt s = (Stmt) pathIt.next();
+                if (newStmt == s) {
+                  // Don't look at the last statement
+                  // since it is evaluated after the uses.
+                  break;
+                }
+                if (s instanceof AbstractDefinitionStmt) {
+                  if (((AbstractDefinitionStmt) s).getLeftOp() == m) {
+                    isRedefined = true;
+                    break;
+                  }
+                }
+              }
+
+              if (isRedefined) {
+                continue;
+              }
+            }
+            newStmt = replaceUse(stmtGraph, newStmt, use, rhs);
+          }
         }
       }
     }

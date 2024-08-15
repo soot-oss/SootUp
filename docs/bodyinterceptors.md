@@ -101,7 +101,9 @@ Obviously, the code segment<code>l2 = 2; l3 = 3;</code>is unreachable. It will b
 
 ### CopyPropagator
 
-CopyPropagator is a<code>BodyInterceptor</code>that supports the global copy propagation and constant propagation. 
+CopyPropagator is a<code>BodyInterceptor</code>that supports the global copy propagation and constant propagation.
+
+Refer [Sreekala, S. K. and Vineeth Kumar Paleri. “Copy Propagation subsumes Constant Propagation.” ArXiv abs/2207.03894 (2022): n. pag.](https://arxiv.org/pdf/2207.03894)
 
 Example for global copy propagation:
 
