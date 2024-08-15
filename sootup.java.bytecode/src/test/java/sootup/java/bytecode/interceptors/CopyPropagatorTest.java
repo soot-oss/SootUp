@@ -1,5 +1,6 @@
 package sootup.java.bytecode.interceptors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
@@ -375,6 +376,6 @@ public class CopyPropagatorTest {
             .get();
 
     Body body = sootMethod.getBody();
-    System.out.println(body);
+    assertFalse(body.toString().isEmpty());
   }
 }
