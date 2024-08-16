@@ -72,8 +72,11 @@ public class Util {
         mfile.createNewFile();
       }
       FileWriter writer = new FileWriter(mfile);
-      writer.write(content);
-      writer.close();
+      try {
+        writer.write(content);
+      } finally {
+        writer.close();
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
