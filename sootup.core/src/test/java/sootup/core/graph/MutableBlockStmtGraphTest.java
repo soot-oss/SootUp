@@ -1029,4 +1029,41 @@ public class MutableBlockStmtGraphTest {
     assertEquals(1, graph.successors(stmt1).size());
     assertTrue(graph.successors(stmt1).contains(stmt2));
   }
+
+  @Test
+  public void testRemoveTrap() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+
+    // Create statements and exception handler
+    FallsThroughStmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    FallsThroughStmt stmt2 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    Stmt handlerStmt =
+        new JIdentityStmt(
+            new Local("ex", throwableSig),
+            new JCaughtExceptionRef(throwableSig),
+            StmtPositionInfo.getNoStmtPositionInfo());
+
+    // Add blocks to the graph (not just nodes)
+    graph.addBlock(Collections.singletonList(stmt1)); // Block for stmt1
+    graph.addBlock(Collections.singletonList(stmt2)); // Block for stmt2
+
+    // Set starting statement
+    graph.setStartingStmt(stmt1);
+
+    // Add an exceptional edge, simulating a trap
+    graph.addExceptionalEdge(stmt1, throwableSig, handlerStmt);
+
+    // Verify the exceptional edge (trap) is present
+    List<Trap> traps = graph.buildTraps();
+    assertEquals(1, traps.size());
+    assertEquals(stmt1, traps.get(0).getBeginStmt());
+    assertEquals(handlerStmt, traps.get(0).getHandlerStmt());
+
+    // Remove the trap
+    graph.removeTrap(traps.get(0));
+
+    // Verify the trap is removed
+    traps = graph.buildTraps();
+    assertEquals(0, traps.size());
+  }
 }
