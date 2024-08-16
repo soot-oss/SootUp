@@ -36,13 +36,16 @@
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.analysis</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.jimple.parser</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
         </dependency>
     </dependencies>
 </project>
