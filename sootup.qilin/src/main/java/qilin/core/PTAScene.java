@@ -95,13 +95,11 @@ public class PTAScene {
   }
 
   public Collection<SootClass> getApplicationClasses() {
-    Collection<? extends SootClass> classes = view.getClasses();
-    return classes.stream().filter(SootClass::isApplicationClass).collect(Collectors.toSet());
+    return view.getClasses().filter(SootClass::isApplicationClass).collect(Collectors.toSet());
   }
 
   public Collection<SootClass> getLibraryClasses() {
-    Collection<? extends SootClass> classes = view.getClasses();
-    return classes.stream().filter(SootClass::isLibraryClass).collect(Collectors.toSet());
+    return view.getClasses().filter(SootClass::isLibraryClass).collect(Collectors.toSet());
   }
 
   public boolean containsMethod(String methodSignature) {
@@ -117,7 +115,7 @@ public class PTAScene {
   }
 
   public Collection<? extends SootClass> getClasses() {
-    return view.getClasses();
+    return view.getClasses().collect(Collectors.toList());
   }
 
   public Collection<SootClass> getPhantomClasses() {

@@ -2,7 +2,6 @@ package sootup.java.bytecode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import categories.TestCategories;
 import java.util.Collections;
 import org.junit.jupiter.api.Disabled;
@@ -29,7 +28,7 @@ public class Soot1580Test {
 
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
-    assertEquals(91, view.getClasses().size());
+    assertEquals(91, view.getClasses().count());
 
     ClassType clazzType =
         JavaIdentifierFactory.getInstance().getClassType("cn.jpush.android.data.f");

@@ -195,7 +195,7 @@ public class AggregatorTest {
     assertTrue(view.getClass(classType).isPresent());
 
     for (JavaSootMethod javaSootMethod :
-        view.getClasses().stream().findFirst().get().getMethods()) {
+        view.getClasses().findFirst().get().getMethods()) {
       final Body body = javaSootMethod.getBody();
     }
   }
@@ -216,7 +216,7 @@ public class AggregatorTest {
     assertTrue(view.getClass(classType).isPresent());
 
     for (JavaSootMethod javaSootMethod :
-        view.getClasses().stream().findFirst().get().getMethods()) {
+        view.getClasses().findFirst().get().getMethods()) {
       final Body body = javaSootMethod.getBody();
     }
   }

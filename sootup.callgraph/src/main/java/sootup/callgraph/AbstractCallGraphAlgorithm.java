@@ -447,11 +447,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   public MethodSignature findMainMethod() {
     Set<SootClass> classes = new HashSet<>(); /* Set to track the classes to check */
-    for (SootClass aClass : view.getClasses()) {
-      if (!aClass.isLibraryClass()) {
-        classes.add(aClass);
-      }
-    }
+    classes.addAll(view.getClasses().filter(aClass -> !aClass.isLibraryClass()).collect(Collectors.toSet()));
 
     Collection<SootMethod> mainMethods = new HashSet<>(); /* Set to store the methods */
     for (SootClass aClass : classes) {

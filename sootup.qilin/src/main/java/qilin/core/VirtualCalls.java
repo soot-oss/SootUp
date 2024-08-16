@@ -44,7 +44,7 @@ public class VirtualCalls {
 
   public VirtualCalls(View view) {
     this.view = view;
-    this.typeToVtbl = DataFactory.createMap(view.getClasses().size());
+    this.typeToVtbl = DataFactory.createMap((int) view.getClasses().count());
   }
 
   public SootMethod resolveSpecial(

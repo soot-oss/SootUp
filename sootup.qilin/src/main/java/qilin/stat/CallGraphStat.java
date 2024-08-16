@@ -18,7 +18,6 @@
 
 package qilin.stat;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -31,7 +30,6 @@ import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.ContextMethod;
 import qilin.core.pag.ContextVarNode;
 import qilin.core.pag.LocalVarNode;
-import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 
 public class CallGraphStat implements AbstractStat {
@@ -70,10 +68,7 @@ public class CallGraphStat implements AbstractStat {
 
   private void init() {
     // stat method numbers
-    Collection<? extends SootClass> clazzs = pta.getView().getClasses();
-    for (SootClass clazz : clazzs) {
-      allMethods += clazz.getMethods().size();
-    }
+    allMethods += pta.getView().getClasses().map(clazz -> clazz.getMethods().size()).reduce(0, Integer::sum);
     //
     OnFlyCallGraph csCallGraph = pta.getCgb().getCallGraph();
     CSCallEdges = csCallGraph.size();

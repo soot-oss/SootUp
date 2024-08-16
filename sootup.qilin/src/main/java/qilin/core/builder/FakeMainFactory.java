@@ -348,10 +348,7 @@ public class FakeMainFactory extends ArtificialMethod {
     /** Returns a list of all static initializers. */
     public List<SootMethod> clinits() {
       List<SootMethod> ret = new ArrayList<>();
-      Collection<? extends SootClass> classes = view.getClasses();
-      for (SootClass cl : classes) {
-        addMethod(ret, cl, sigClinit);
-      }
+      view.getClasses().forEach(cl -> addMethod(ret, cl, sigClinit));
       return ret;
     }
 
