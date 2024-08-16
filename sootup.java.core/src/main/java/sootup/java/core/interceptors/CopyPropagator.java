@@ -36,7 +36,6 @@ import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
-import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
