@@ -108,6 +108,7 @@ public class Utils {
           compiler.getTask(
               null, fileManager, null, null, null, fileManager.getJavaFileObjects(javaName));
       if (!task.call()) {
+        fileManager.close();
         throw new IllegalArgumentException("could not compile source file.");
       }
 
@@ -122,7 +123,7 @@ public class Utils {
         // pathOfCreatedClass.toFile().deleteOnExit();
         compiledResults.add(pathOfCreatedClass);
       }
-
+      fileManager.close();
       return compiledResults;
 
     } catch (IOException e) {
