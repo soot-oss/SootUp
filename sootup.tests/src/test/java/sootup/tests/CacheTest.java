@@ -49,7 +49,7 @@ public class CacheTest {
     view.getClass(utilsOperationClassType);
     assertEquals(2, view.getCachedClassesCount());
 
-    view.getClasses();
+    view.getClasses().count();
     assertEquals(6, view.getCachedClassesCount());
   }
 
@@ -72,7 +72,7 @@ public class CacheTest {
     assertEquals(1, view.getCachedClassesCount());
 
     JavaView newView = new JavaView(inputLocations, new LRUCacheProvider());
-    newView.getClasses();
+    newView.getClasses().count();
     assertEquals(6, newView.getCachedClassesCount());
   }
 }
