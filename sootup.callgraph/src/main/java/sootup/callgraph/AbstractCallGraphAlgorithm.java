@@ -26,7 +26,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import org.jgrapht.alg.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
@@ -450,21 +449,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     Collection<SootMethod> mainMethods =
         view.getClasses()
             .filter(aClass -> !aClass.isLibraryClass())
-            .flatMap(
-                aClass -> aClass.getMethods().stream().map(method -> new Pair<>(aClass, method)))
+            .flatMap(aClass -> aClass.getMethods().stream())
             .filter(
-                pair ->
-                    pair.getSecond().isStatic()
-                        && pair.getSecond()
-                            .getSignature()
-                            .equals(
-                                JavaIdentifierFactory.getInstance()
-                                    .getMethodSignature(
-                                        pair.getFirst().getType(),
-                                        "main",
-                                        "void",
-                                        Collections.singletonList("java.lang.String[]"))))
-            .map(pair -> pair.getSecond())
+                method ->
+                    method.isStatic()
+                        && JavaIdentifierFactory.getInstance()
+                            .isMainSubSignature(method.getSignature().getSubSignature()))
             .collect(Collectors.toSet());
 
     if (mainMethods.size() > 1) {
