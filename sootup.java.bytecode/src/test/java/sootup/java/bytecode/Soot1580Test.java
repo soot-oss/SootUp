@@ -2,6 +2,7 @@ package sootup.java.bytecode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import categories.TestCategories;
 import java.util.Collections;
 import org.junit.jupiter.api.Disabled;

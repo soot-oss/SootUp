@@ -68,7 +68,8 @@ public class CallGraphStat implements AbstractStat {
 
   private void init() {
     // stat method numbers
-    allMethods += pta.getView().getClasses().map(clazz -> clazz.getMethods().size()).reduce(0, Integer::sum);
+    allMethods +=
+        pta.getView().getClasses().map(clazz -> clazz.getMethods().size()).reduce(0, Integer::sum);
     //
     OnFlyCallGraph csCallGraph = pta.getCgb().getCallGraph();
     CSCallEdges = csCallGraph.size();
