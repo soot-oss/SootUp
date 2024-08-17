@@ -61,7 +61,7 @@ public class FieldRefValidatorTest {
 
     classes = new HashSet<>(); // Set to track the classes to check
 
-    jimpleView.getClasses().filter(aClass -> !aClass.isLibraryClass()).forEach(classes::add);
+    jimpleView.getClasses().forEach(classes::add);
   }
 
   @Test
