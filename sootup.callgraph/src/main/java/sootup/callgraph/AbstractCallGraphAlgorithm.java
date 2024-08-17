@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import org.jgrapht.alg.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
@@ -446,27 +447,25 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return - MethodSignature of main method.
    */
   public MethodSignature findMainMethod() {
-    Set<SootClass> classes = new HashSet<>(); /* Set to track the classes to check */
-    classes.addAll(
-        view.getClasses().filter(aClass -> !aClass.isLibraryClass()).collect(Collectors.toSet()));
-
-    Collection<SootMethod> mainMethods = new HashSet<>(); /* Set to store the methods */
-    for (SootClass aClass : classes) {
-      for (SootMethod method : aClass.getMethods()) {
-        if (method.isStatic()
-            && method
-                .getSignature()
-                .equals(
-                    JavaIdentifierFactory.getInstance()
-                        .getMethodSignature(
-                            aClass.getType(),
-                            "main",
-                            "void",
-                            Collections.singletonList("java.lang.String[]")))) {
-          mainMethods.add(method);
-        }
-      }
-    }
+    Collection<SootMethod> mainMethods =
+        view.getClasses()
+            .filter(aClass -> !aClass.isLibraryClass())
+            .flatMap(
+                aClass -> aClass.getMethods().stream().map(method -> new Pair<>(aClass, method)))
+            .filter(
+                pair ->
+                    pair.getSecond().isStatic()
+                        && pair.getSecond()
+                            .getSignature()
+                            .equals(
+                                JavaIdentifierFactory.getInstance()
+                                    .getMethodSignature(
+                                        pair.getFirst().getType(),
+                                        "main",
+                                        "void",
+                                        Collections.singletonList("java.lang.String[]"))))
+            .map(pair -> pair.getSecond())
+            .collect(Collectors.toSet());
 
     if (mainMethods.size() > 1) {
       throw new RuntimeException(
