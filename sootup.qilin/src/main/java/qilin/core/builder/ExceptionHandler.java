@@ -40,7 +40,7 @@ public class ExceptionHandler {
   public ExceptionHandler(PTA pta) {
     this.pta = pta;
     this.pag = pta.getPag();
-    this.throwNodeToSites = DataFactory.createMap(pta.getView().getClasses().size());
+    this.throwNodeToSites = DataFactory.createMap((int) pta.getView().getClasses().count());
   }
 
   public Collection<ExceptionThrowSite> throwSitesLookUp(VarNode throwNode) {

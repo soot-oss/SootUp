@@ -148,7 +148,8 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
 
     // getClasses
     List<String> collectedClassesWPrintBody9 =
-        view_9.getClasses().stream()
+        view_9
+            .getClasses()
             .map(c -> c.getMethod(printBodyMethodSubSig))
             .filter(Optional::isPresent)
             .map(m -> m.get().getBody().toString())
@@ -157,7 +158,8 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
     assertTrue(collectedClassesWPrintBody9.get(0).contains("java 9"));
 
     List<String> collectedClassesWPrintBody10 =
-        view_10.getClasses().stream()
+        view_10
+            .getClasses()
             .map(c -> c.getMethod(printBodyMethodSubSig))
             .filter(Optional::isPresent)
             .map(m -> m.get().getBody().toString())
