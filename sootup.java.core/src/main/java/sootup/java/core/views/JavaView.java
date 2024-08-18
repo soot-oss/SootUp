@@ -22,11 +22,10 @@ package sootup.java.core.views;
  * #L%
  */
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
@@ -82,20 +81,17 @@ public class JavaView extends AbstractView {
   /** Resolves all classes that are part of the view and stores them in the cache. */
   @Override
   @Nonnull
-  public synchronized Collection<JavaSootClass> getClasses() {
+  public synchronized Stream<JavaSootClass> getClasses() {
     if (isFullyResolved && cache instanceof FullCache) {
-      return cache.getClasses().stream()
-          .map(clazz -> (JavaSootClass) clazz)
-          .collect(Collectors.toList());
+      return cache.getClasses().stream().map(clazz -> (JavaSootClass) clazz);
     }
 
-    Collection<JavaSootClass> resolvedClasses =
+    Stream<JavaSootClass> resolvedClasses =
         inputLocations.stream()
             .flatMap(location -> location.getClassSources(this).stream())
             .map(this::buildClassFrom)
             .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toList());
+            .map(Optional::get);
 
     isFullyResolved = true;
 

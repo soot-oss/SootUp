@@ -2,10 +2,10 @@ package sootup.java.core.views;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
@@ -71,12 +71,12 @@ public class JavaViewTest {
 
   @Disabled
   public void testResolveAll() {
-    Collection<JavaSootClass> classes = this.view.getClasses();
+    Stream<JavaSootClass> classes = this.view.getClasses();
 
-    assertEquals(classes.size(), this.signatures.size());
+    assertEquals(classes.count(), this.signatures.size());
 
     assertEquals(
-        classes.stream()
+        classes
             .map(AbstractClass::getType)
             .sorted(Comparator.comparing(Type::toString))
             .collect(Collectors.toList()),
