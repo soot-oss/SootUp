@@ -194,8 +194,7 @@ public class AggregatorTest {
     final ClassType classType = view.getIdentifierFactory().getClassType("Issue739_Aggregator");
     assertTrue(view.getClass(classType).isPresent());
 
-    for (JavaSootMethod javaSootMethod :
-        view.getClasses().stream().findFirst().get().getMethods()) {
+    for (JavaSootMethod javaSootMethod : view.getClasses().findFirst().get().getMethods()) {
       final Body body = javaSootMethod.getBody();
     }
   }
@@ -215,8 +214,7 @@ public class AggregatorTest {
     final ClassType classType = view.getIdentifierFactory().getClassType("Issue911_Aggregator");
     assertTrue(view.getClass(classType).isPresent());
 
-    for (JavaSootMethod javaSootMethod :
-        view.getClasses().stream().findFirst().get().getMethods()) {
+    for (JavaSootMethod javaSootMethod : view.getClasses().findFirst().get().getMethods()) {
       final Body body = javaSootMethod.getBody();
     }
   }

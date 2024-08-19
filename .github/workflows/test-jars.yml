@@ -1,0 +1,90 @@
+name: Download Random JARs from Maven
+
+on:
+  workflow_dispatch:
+jobs:
+  download-jars:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run:
+          pip install requests
+
+      - name: Download Metadata
+        id: download-metadata
+        uses: actions/download-artifact@v3
+        with:
+          name: metadata
+          path: metadata
+        continue-on-error: true # Allows workflow to continue even if the artifact metadata is not found (obviously it will not be found for the first run)
+
+      - name: Create empty metadata file
+        if: failure() # This runs if the previous step failed
+        run: |
+          echo '{"jars":[]}' > metadata/metadata.json
+
+      - name: Download random JARs
+        id: download
+        run: |
+          python .github/download_jars.py
+        env:
+          METADATA_PATH: metadata/metadata.json
+
+      - name: Upload JARs
+        uses: actions/upload-artifact@v3
+        with:
+          name: jars
+          path: downloaded_jars/
+
+      - name: Upload Metadata
+        uses: actions/upload-artifact@v3
+        with:
+          name: metadata
+          path: metadata/metadata.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-package: 'jdk'
+          java-version: '8'
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Maven
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y maven
+
+      - name: Run Maven
+        run: |
+          mvn clean install -DskipTests
+
+      - name: List directory contents
+        run: |
+            ls -l
+            ls -l ${{ github.workspace }}/downloaded_jars
+
+      - name: Run tests on downloaded JARs
+        run: |
+          for jar in $(ls ${{ github.workspace }}/downloaded_jars/*.jar); do
+            echo "Testing $jar"
+            mvn test -Dtest=sootup.java.bytecode.inputlocation.RandomJarTest -DjarPath="$jar" -pl sootup.java.bytecode
+          done
+
+      - name: Upload the Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: jar_test_csv
+          path: sootup.java.bytecode/jar_test.csv
+
