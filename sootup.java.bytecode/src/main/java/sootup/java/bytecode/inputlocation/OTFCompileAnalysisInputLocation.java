@@ -179,8 +179,7 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
       }
 
       JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-      StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
-      try {
+      try(StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null)){
         fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singleton(binDir));
 
         File[] files = new File[srcFiles.size()];
@@ -206,8 +205,6 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
             throw new IllegalArgumentException("Could not compile the given input.\n " + writer);
           }
         }
-      } finally {
-        fileManager.close();
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
