@@ -71,9 +71,9 @@ public class Util {
         System.out.println(file);
         mfile.createNewFile();
       }
-      try(FileWriter writer = new FileWriter(mfile)){
+      try (FileWriter writer = new FileWriter(mfile)) {
         writer.write(content);
-      } 
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }

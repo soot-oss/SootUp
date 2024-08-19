@@ -215,7 +215,7 @@ public class Exporter {
       File mfile = new File(finalPath);
       mfile.delete();
       mfile.createNewFile();
-      try(BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true))){
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true))) {
         for (Edge edge : ciCallGraph) {
           String srcSig = Util.stripQuotes(edge.src().getSignature().toString());
           String dstSig = Util.stripQuotes(edge.tgt().getSignature().toString());
