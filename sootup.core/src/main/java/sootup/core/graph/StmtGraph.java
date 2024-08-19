@@ -679,7 +679,11 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    */
   @Nonnull
   public Collection<Stmt> getLabeledStmts() {
-    return getBlocks().stream().map(BasicBlock::getHead).collect(Collectors.toSet());
+    BasicBlock<?> startingStmt = getStartingStmtBlock();
+    return getBlocks().stream()
+        .filter(block -> block != startingStmt || !block.getPredecessors().isEmpty())
+        .map(BasicBlock::getHead)
+        .collect(Collectors.toList());
   }
 
   @Override
