@@ -446,30 +446,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return - MethodSignature of main method.
    */
   public MethodSignature findMainMethod() {
-    Set<SootClass> classes = new HashSet<>(); /* Set to track the classes to check */
-    for (SootClass aClass : view.getClasses()) {
-      if (!aClass.isLibraryClass()) {
-        classes.add(aClass);
-      }
-    }
-
-    Collection<SootMethod> mainMethods = new HashSet<>(); /* Set to store the methods */
-    for (SootClass aClass : classes) {
-      for (SootMethod method : aClass.getMethods()) {
-        if (method.isStatic()
-            && method
-                .getSignature()
-                .equals(
-                    JavaIdentifierFactory.getInstance()
-                        .getMethodSignature(
-                            aClass.getType(),
-                            "main",
-                            "void",
-                            Collections.singletonList("java.lang.String[]")))) {
-          mainMethods.add(method);
-        }
-      }
-    }
+    Collection<SootMethod> mainMethods =
+        view.getClasses()
+            .filter(aClass -> !aClass.isLibraryClass())
+            .flatMap(aClass -> aClass.getMethods().stream())
+            .filter(
+                method ->
+                    method.isStatic()
+                        && JavaIdentifierFactory.getInstance()
+                            .isMainSubSignature(method.getSignature().getSubSignature()))
+            .collect(Collectors.toSet());
 
     if (mainMethods.size() > 1) {
       throw new RuntimeException(

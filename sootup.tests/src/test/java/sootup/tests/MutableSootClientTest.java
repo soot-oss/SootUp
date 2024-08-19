@@ -54,10 +54,10 @@ public class MutableSootClientTest {
    */
   @Test
   public void classRemovalTest() {
-    int classesBeforeSize = mv.getClasses().size();
+    long classesBeforeSize = mv.getClasses().count();
     ClassType classType = mv.getIdentifierFactory().getClassType("utils.Operations");
     mv.removeClass(classType);
-    int classesAfterSize = mv.getClasses().size();
+    long classesAfterSize = mv.getClasses().count();
 
     assertEquals(classesBeforeSize, classesAfterSize + 1);
   }
@@ -85,9 +85,9 @@ public class MutableSootClientTest {
             Collections.emptySet(),
             Collections.emptySet());
 
-    int classesBeforeSize = mv.getClasses().size();
+    long classesBeforeSize = mv.getClasses().count();
     mv.addClass(newClass.buildClass(SourceType.Application));
-    int classesAfterSize = mv.getClasses().size();
+    long classesAfterSize = mv.getClasses().count();
 
     assertEquals(classesBeforeSize, classesAfterSize - 1);
   }
