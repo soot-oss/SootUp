@@ -679,9 +679,28 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    */
   @Nonnull
   public Collection<Stmt> getLabeledStmts() {
-    BasicBlock<?> startingStmt = getStartingStmtBlock();
     return getBlocks().stream()
-        .filter(block -> block != startingStmt || !block.getPredecessors().isEmpty())
+        .filter(
+            block -> {
+              List<BasicBlock<?>> predecessors = (List<BasicBlock<?>>) block.getPredecessors();
+              if (predecessors.size() > 1) {
+                return true;
+              }
+              if (predecessors.size() == 1) {
+                BasicBlock<?> singlePredecessorBlock = predecessors.get(0);
+                if (singlePredecessorBlock.getTail() instanceof JIfStmt) {
+                  if (singlePredecessorBlock.getSuccessors().get(JIfStmt.TRUE_BRANCH_IDX)
+                      == block) {
+                    return true;
+                  }
+                  // did the exceptions change?
+                  return !singlePredecessorBlock
+                      .getExceptionalSuccessors()
+                      .equals(block.getExceptionalSuccessors());
+                }
+              }
+              return false;
+            })
         .map(BasicBlock::getHead)
         .collect(Collectors.toList());
   }
