@@ -688,7 +688,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
               }
               if (predecessors.size() == 1) {
                 BasicBlock<?> singlePredecessorBlock = predecessors.get(0);
-                if (singlePredecessorBlock.getTail() instanceof JIfStmt) {
+                Stmt tailStmt = singlePredecessorBlock.getTail();
+                if (tailStmt instanceof JIfStmt) {
                   if (singlePredecessorBlock.getSuccessors().get(JIfStmt.TRUE_BRANCH_IDX)
                       == block) {
                     return true;
@@ -697,6 +698,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
                   return !singlePredecessorBlock
                       .getExceptionalSuccessors()
                       .equals(block.getExceptionalSuccessors());
+                } else {
+                  return tailStmt instanceof BranchingStmt;
                 }
               }
               return false;
