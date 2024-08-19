@@ -96,7 +96,7 @@ public class CopyPropagator implements BodyInterceptor {
           if (use != m) {
             Integer defCount = m.getDefs(stmtGraph.getStmts()).size();
             if (defCount == 0) {
-              throw new RuntimeException("Variable " + m + " used without definition!");
+              throw new IllegalStateException("Local `" + m + "' is used without a definition!");
             } else if (defCount == 1) {
               newStmt = replaceUse(stmtGraph, newStmt, use, rhs);
               continue;
