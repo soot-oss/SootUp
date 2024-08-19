@@ -26,16 +26,16 @@ Standardize Jimple appearance
     [BodyTransformer](https://github.com/soot-oss/soot/blob/develop/src/main/java/soot/BodyTransformer.java)
 
 
-### LocalSplitter
+## LocalSplitter
 
-LocalSplitter is a<code>BodyInterceptor</code>that attempts to identify and separate uses of a local variable (as definition) that are independent of each other by renaming local variables.
+LocalSplitter is a`BodyInterceptor`that attempts to identify and separate uses of a local variable (as definition) that are independent of each other by renaming local variables.
 
 
 Example 1: 
 
 ![LocalSplitter Example_1](assets/figures/LocalSplitter%20Example_1.png)
 
-As shown in the example above, the local variable<code>l1</code>is defined twice. It can be split up into two new local variables: <code>l1#1</code> and <code>l1#2</code> because the both definitions are independent of each other. 
+As shown in the example above, the local variable`l1`is defined twice. It can be split up into two new local variables: `l1#1` and `l1#2` because the both definitions are independent of each other. 
 
 
 
@@ -46,64 +46,73 @@ Example 2:
 
 ![LocalSplitter Example_2](assets/figures/LocalSplitter%20Example_2.png)
 
-In the second example, the local variable<code>l2</code>is defined thrice. But it cannot be split up into three new local variables as in the first example, because its definitions in the if-branches are not independent of each other. Therefore, it can only be split up into two local variables as shown in the figure.
+In the second example, the local variable`l2`is defined thrice. But it cannot be split up into three new local variables as in the first example, because its definitions in the if-branches are not independent of each other. Therefore, it can only be split up into two local variables as shown in the figure.
 
 
 
-### LocalPacker
+## LocalPacker
 
-LocalPacker is a<code>BodyInterceptor</code>that attempts to minimize the number of local variables which are used in body by reusing them, when it is possible. It corresponds to the inverse body transformation of LocalSplitter. Note: Every local variable's type should be assigned before running LocalPacker.
+LocalPacker is a`BodyInterceptor`that attempts to minimize the number of local variables which are used in body by reusing them, when it is possible. It corresponds to the inverse body transformation of LocalSplitter. Note: Every local variable's type should be assigned before running LocalPacker.
 
 Example:
 
 ![LocalPacker Example](assets/figures/LocalPacker%20Example.png)
 
-In the given example above, the local variables<code>l1</code>,<code>l3</code>are summarized to be one local variable<code>l1</code>, because they have the same type without interference with each other. Likewise, the local variables<code>l2</code>,<code>l4</code>and<code>l5</code>are summarized to be another local variable<code>l2</code>. Although the local variable<code>l0</code>doesn't interfere any other local variables, it cannot be summed up with other local variables because of its distinctive type.
+In the given example above, the local variables`l1`,`l3`are summarized to be one local variable`l1`, because they have the same type without interference with each other. Likewise, the local variables`l2`,`l4`and`l5`are summarized to be another local variable`l2`. Although the local variable`l0`doesn't interfere any other local variables, it cannot be summed up with other local variables because of its distinctive type.
 
 
 
-### TrapTightener
+## TrapTightener
 **WIP - currently not available!**
 
-TrapTightener is a<code>BodyInterceptor</code>that shrinks the protected area covered by each Trap in a Body. 
+TrapTightener is a`BodyInterceptor`that shrinks the protected area covered by each Trap in a Body. 
 
 Example:
 
 ![TrapTightener Example](assets/figures/TrapTightener%20Example.png)
 
-We assume in the example above that only the<code>Stmt</code>:<code>l2 := 2</code>might throw an exception caught by the<code>Trap</code>which is labeled with<code>label3</code>. In the jimple body before running the TrapTightener, the protected area covered by the Trap contains three<code>Stmts</code>:<code>l1 := 1; l2 := 2; l2 := 3</code>. But an exception could only arise at the<code>Stmt</code>:<code>l2 := 2</code>. After the implementation of TrapTightener, we will get a contractible protected area which contains only the<code>Stmt</code>that might throw an exception, namely the<code>Stmt</code>:<code>l2 := 2</code>.
+We assume in the example above that only the`Stmt`:`l2 := 2`might throw an exception caught by the`Trap`which is labeled with`label3`. In the jimple body before running the TrapTightener, the protected area covered by the Trap contains three`Stmts`:`l1 := 1; l2 := 2; l2 := 3`. But an exception could only arise at the`Stmt`:`l2 := 2`. After the implementation of TrapTightener, we will get a contractible protected area which contains only the`Stmt`that might throw an exception, namely the`Stmt`:`l2 := 2`.
 
 
 
-### EmptySwitchEliminator
+## EmptySwitchEliminator
 
-EmptySwitchEliminator is a<code>BodyInterceptor</code>that removes empty switch statements which contain only the default case.
+EmptySwitchEliminator is a`BodyInterceptor`that removes empty switch statements which contain only the default case.
 
 Example: 
 
 ![EmptySwitchEliminator Example](assets/figures/EmptySwitchEliminator%20Example.png)
 
-As shown in the example above, the switch statement in the jimple body always takes the default action. After running EmptySwitchEliminator, the switch statement is replaced with a<code>GotoStmt</code>to the default case.
+As shown in the example above, the switch statement in the jimple body always takes the default action. After running EmptySwitchEliminator, the switch statement is replaced with a`GotoStmt`to the default case.
 
 
 
-### UnreachableCodeEliminator
+## UnreachableCodeEliminator
 
-UnreachableCodeEliminator is a<code>BodyInterceptor</code>that removes all unreachable statements.
+UnreachableCodeEliminator is a`BodyInterceptor`that removes all unreachable statements.
 
 Example: 
 
 ![UnreachableCodeEliminator Example](assets/figures/UnreachableCodeEliminator%20Example.png)
 
-Obviously, the code segment<code>l2 = 2; l3 = 3;</code>is unreachable. It will be removed after running the UreachableCodeEliminator.
+Obviously, the code segment`l2 = 2; l3 = 3;`is unreachable. It will be removed after running the UreachableCodeEliminator.
 
 
 
-### CopyPropagator
+## CopyPropagator
 
-CopyPropagator is a<code>BodyInterceptor</code>that supports the global copy propagation and constant propagation.
+CopyPropagator is a `BodyInterceptor` that supports copy propagation and constant propagation.
 
-Refer [Sreekala, S. K. and Vineeth Kumar Paleri. “Copy Propagation subsumes Constant Propagation.” ArXiv abs/2207.03894 (2022): n. pag.](https://arxiv.org/pdf/2207.03894)
+!!! abstract "CopyPropagator"
+
+    "Definition 3[Copy Propagation]: The use of a variable y in the statement z=x+y occurring at a point
+    p can be replaced by a variable w if every path from the entry node to point p contains the same
+    definition y=w, for the variable y, and after the definition prior to reaching p, there is no redefinition to
+    the variable y and no redefinition to the variable w."
+
+    [Sreekala, S. K. and Vineeth Kumar Paleri. “Copy Propagation subsumes Constant Propagation.” ArXiv abs/2207.03894 (2022): n. pag.](https://arxiv.org/pdf/2207.03894)
+
+
 
 Example for global copy propagation:
 
@@ -117,12 +126,12 @@ a = b;
 c = use(a); // a, b, c are local variables
 ```
 
-According to the copy propagation's definition, the statement<code>c = use(a)</code>can be replaced with<code>c = use(b)</code>iff both conditions are met: 
+According to the copy propagation's definition, the statement`c = use(a)`can be replaced with`c = use(b)`iff both conditions are met: 
 
-* <code>a</code>is defined only one time on all the paths from<code>a = b</code>to<code>c = use(a)</code>.
-* There are no definitions of<code>b</code>on any path from<code>a = b</code>to<code>c = use(a)</code>.
+* `a`is defined only one time on all the paths from`a = b`to`c = use(a)`.
+* There are no definitions of`b`on any path from`a = b`to`c = use(a)`.
 
-In the example for global copy propagation, the first used<code>l1</code>is replaced with<code>l0</code>, but the second used<code>l1</code>cannot be replaced with<code>l3</code>, because the second condition is not satisfied.
+In the example for global copy propagation, the first used`l1`is replaced with`l0`, but the second used`l1`cannot be replaced with`l3`, because the second condition is not satisfied.
 
 Example for constant propagation:
 
@@ -136,13 +145,13 @@ a = const;
 b = use(a); // a, b are local variables, const is a constant
 ```
 
-After perfoming the constant propagation, the statement<code>b = use(a)</code>can be replaced with<code>b = use(const)</code>iff<code>a</code>is not redefined on any of the paths from<code>a = const</code>to<code>b = use(a)</code>.
+After perfoming the constant propagation, the statement`b = use(a)`can be replaced with`b = use(const)`iff`a`is not redefined on any of the paths from`a = const`to`b = use(a)`.
 
-Therefore, the first used<code>l1</code>in the second example can be replaced with the constant<code>1</code>, but the second used<code>l1</code>cannot be replaced with the constant<code>2</code>, because<code>l1</code>is redefined on the path from<code>l1 = 2</code>to<code>l4 = use(l1)</code>.  However, it can be replaced with local variable<code>l2</code>, because the both conditions of copy propagation are met. 
+Therefore, the first used`l1`in the second example can be replaced with the constant`1`, but the second used`l1`cannot be replaced with the constant`2`, because`l1`is redefined on the path from`l1 = 2`to`l4 = use(l1)`.  However, it can be replaced with local variable`l2`, because the both conditions of copy propagation are met. 
 
-### LocalNameStandardizer
+## LocalNameStandardizer
 
-LocalNameStandardizer is a<code>BodyInterceptor</code>that assigns a generic name to each local variable. Firstly, it will sort the local variables' order alphabetically by the string representation of their type. If there are two local variables with the same type, then the LocalNameStandardizer will use the sequence of their occurrence in jimple body to determine their order.  Each assigned name consists of two parts:
+LocalNameStandardizer is a`BodyInterceptor`that assigns a generic name to each local variable. Firstly, it will sort the local variables' order alphabetically by the string representation of their type. If there are two local variables with the same type, then the LocalNameStandardizer will use the sequence of their occurrence in jimple body to determine their order.  Each assigned name consists of two parts:
 
 * A letter to imply the local variable's type
 * A digit to imply the local variable's order
@@ -164,9 +173,9 @@ The following table shows the letter corresponding to each type:
 | reference | r |
 
 
-### StaticSingleAssignmentFormer
+## StaticSingleAssignmentFormer
 
-StaticSingleAssignmentFormer is a<code>BodyInterceptor</code>that transforms jimple body into SSA form, so that each local variable is assigned exactly once and defined before its first use.
+StaticSingleAssignmentFormer is a`BodyInterceptor`that transforms jimple body into SSA form, so that each local variable is assigned exactly once and defined before its first use.
 
 Example:
 
@@ -174,4 +183,4 @@ Example:
 
 ![SSA Example_2](assets/figures/SSA%20Example_2.png)
 
-In the given example, the StaticSingleAssignmentFormer assigns each<code>IdentityStmt</code>and<code>AssignStmt</code>to a new local variable . And each use uses the local variable which is most recently defined. Sometimes, it is impossible to determine the most recently defined local variable for a use in a join block. In this case, the StaticSingleAssignmentFormer will insert a<code>PhiStmt</code>in the front of the join block to merge all most recently defined local variables and assign them a new local variable.
+In the given example, the StaticSingleAssignmentFormer assigns each`IdentityStmt`and`AssignStmt`to a new local variable . And each use uses the local variable which is most recently defined. Sometimes, it is impossible to determine the most recently defined local variable for a use in a join block. In this case, the StaticSingleAssignmentFormer will insert a`PhiStmt`in the front of the join block to merge all most recently defined local variables and assign them a new local variable.
