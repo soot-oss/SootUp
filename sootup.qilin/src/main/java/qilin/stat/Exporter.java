@@ -215,18 +215,15 @@ public class Exporter {
       File mfile = new File(finalPath);
       mfile.delete();
       mfile.createNewFile();
-      BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
-      try {
+      try(BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true))){
         for (Edge edge : ciCallGraph) {
           String srcSig = Util.stripQuotes(edge.src().getSignature().toString());
           String dstSig = Util.stripQuotes(edge.tgt().getSignature().toString());
           String str = edge.srcStmt() + " in method " + srcSig + "\t" + dstSig + "\n";
           writer.write(str);
         }
-      } finally {
-        writer.close();
       }
-    } catch (Exception e) {
+    } catch (IOException e) {
       e.printStackTrace();
     }
   }
