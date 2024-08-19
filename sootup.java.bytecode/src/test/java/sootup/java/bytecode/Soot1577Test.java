@@ -26,8 +26,8 @@ public class Soot1577Test {
 
     JavaView view = new JavaView(inputLocation);
 
-    assertEquals(1, view.getClasses().size());
+    assertEquals(1, view.getClasses().count());
 
-    view.getClasses().stream().findFirst().get().getMethods().forEach(SootMethod::getBody);
+    view.getClasses().findFirst().get().getMethods().forEach(SootMethod::getBody);
   }
 }
