@@ -6,10 +6,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Set;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.SootMethod;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
@@ -137,7 +140,13 @@ public class RandomJarTest {
 
   private long getMethods(Collection<JavaSootClass> classes) {
     try {
-      return classes.stream().map(JavaSootClass::getMethods).mapToLong(Collection::size).sum();
+      int numberof_methods = 0;
+      for (JavaSootClass clazz : classes) {
+        Set<JavaSootMethod> methods = clazz.getMethods();
+        numberof_methods += methods.size();
+        methods.forEach(SootMethod::getBody);
+      }
+      return numberof_methods;
     } catch (Exception e) {
       throw new RuntimeException("Error while getting class list", e);
     }

@@ -96,9 +96,8 @@ jobs:
         id: set_branch_name
         run: |
           # Get the current week number and timestamp
-          week_number=$(date +%U)
-          timestamp=$(date +%Y%m%d%H%M%S)
-          branch_name="failed-jars-branch-week-${week_number}-${timestamp}"
+          current_date=$(date +%Y%m%d)
+          branch_name="failed-jars-branch-${current_date}"
           echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
 
       - name: Check for jar_failure.csv
