@@ -76,8 +76,6 @@ public class DexBody {
 
   protected List<Trap> traps;
 
-  protected Set<ReTypeableInstruction> instructionsToRetype;
-
   LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap = LinkedListMultimap.create();
 
   protected class RegDbgEntry {
@@ -137,7 +135,6 @@ public class DexBody {
 
     instructions = new ArrayList<>();
     instructionAtAddress = new HashMap<>();
-    instructionsToRetype = new HashSet<>();
     localDebugs = ArrayListMultimap.create();
 
     extractDexInstructions(code);
@@ -211,15 +208,6 @@ public class DexBody {
       address--;
     }
     return i;
-  }
-
-  /**
-   * Add a retypeable instruction to this body.
-   *
-   * @param i the retypeable instruction.
-   */
-  public void addRetype(ReTypeableInstruction i) {
-    instructionsToRetype.add(i);
   }
 
   public Local getStoreResultLocal() {
@@ -498,10 +486,6 @@ public class DexBody {
     //    dangling = null;
     //    tries = null;
     //    parameterNames.clear();
-
-    for (ReTypeableInstruction reTypeableInstruction : instructionsToRetype) {
-      //                reTypeableInstruction.retype(this);
-    }
   }
 
   private void addBranchingMap(List<DexLibAbstractInstruction> instructions) {
@@ -587,8 +571,6 @@ public class DexBody {
                 String.format(
                     "First instruction of trap handler unit not MoveException but %s",
                     instruction.getClass().getName()));
-          } else {
-            ((MoveExceptionInstruction) instruction).setRealType(this, type);
           }
           Stmt handlerStmt;
           if (instruction.getStmt() instanceof JNopStmt || endStmt instanceof JNopStmt) {
