@@ -215,7 +215,8 @@ public class Exporter {
       File mfile = new File(finalPath);
       mfile.delete();
       mfile.createNewFile();
-      try (BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true))) {
+      try (FileWriter fw = new FileWriter(mfile, true);
+          BufferedWriter writer = new BufferedWriter(fw)) {
         for (Edge edge : ciCallGraph) {
           String srcSig = Util.stripQuotes(edge.src().getSignature().toString());
           String dstSig = Util.stripQuotes(edge.tgt().getSignature().toString());
@@ -276,8 +277,8 @@ public class Exporter {
       File mfile = new File(finalPath);
       mfile.delete();
       mfile.createNewFile();
-      BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
-      try {
+      try (FileWriter out = new FileWriter(mfile, true);
+          BufferedWriter writer = new BufferedWriter(out); ) {
         for (LocalVarNode lvn : lvns) {
           String varName = getDoopVarName(lvn);
           final Set<AllocNode> callocSites = new HashSet<>();
@@ -294,8 +295,6 @@ public class Exporter {
             writer.write(str);
           }
         }
-      } finally {
-        writer.close();
       }
     } catch (Exception e) {
       e.printStackTrace();
