@@ -38,6 +38,15 @@ sootup.analysis.interprocedural.ide
 sootup.analysis.interprocedural.ifds
 sootup.analysis.intraprocedural
 sootup.callgraph
+sootup.codepropertygraph.ast
+sootup.codepropertygraph.cdg
+sootup.codepropertygraph.cfg
+sootup.codepropertygraph.cpg
+sootup.codepropertygraph.ddg
+sootup.codepropertygraph.propertygraph
+sootup.codepropertygraph.propertygraph.edges
+sootup.codepropertygraph.propertygraph.nodes
+sootup.codepropertygraph.propertygraph.util
 sootup.core
 sootup.core.cache
 sootup.core.cache.provider
