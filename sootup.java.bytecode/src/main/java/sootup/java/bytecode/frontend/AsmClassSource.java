@@ -37,6 +37,7 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.core.util.Modifiers;
 import sootup.java.core.*;
 import sootup.java.core.types.JavaClassType;
 
@@ -120,7 +121,7 @@ class AsmClassSource extends JavaSootClassSource {
                   new ArrayList<>(AsmUtil.asmIdToSignature(methodSource.exceptions));
 
               String methodName = methodSource.name;
-              EnumSet<MethodModifier> modifiers = AsmUtil.getMethodModifiers(methodSource.access);
+              EnumSet<MethodModifier> modifiers = Modifiers.getMethodModifiers(methodSource.access);
               List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc);
               Type retType = sigTypes.remove(sigTypes.size() - 1);
 
@@ -157,7 +158,7 @@ class AsmClassSource extends JavaSootClassSource {
 
   @Nonnull
   public EnumSet<ClassModifier> resolveModifiers() {
-    return AsmUtil.getClassModifiers(classNode.access);
+    return Modifiers.getClassModifiers(classNode.access);
   }
 
   @Nonnull

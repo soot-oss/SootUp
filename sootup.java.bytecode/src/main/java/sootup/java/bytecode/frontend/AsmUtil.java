@@ -42,9 +42,7 @@ import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.common.constant.ClassConstant;
-import sootup.core.model.ClassModifier;
 import sootup.core.model.FieldModifier;
-import sootup.core.model.MethodModifier;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
@@ -100,30 +98,6 @@ public final class AsmUtil {
       str = str.substring(1, endpos);
     }
     return str.replace('/', '.');
-  }
-
-  public static EnumSet<ClassModifier> getClassModifiers(int access) {
-    EnumSet<ClassModifier> modifierEnumSet = EnumSet.noneOf(ClassModifier.class);
-
-    // add all modifiers for which (access & ABSTRACT) =! 0
-    for (ClassModifier modifier : ClassModifier.values()) {
-      if ((access & modifier.getBytecode()) != 0) {
-        modifierEnumSet.add(modifier);
-      }
-    }
-    return modifierEnumSet;
-  }
-
-  public static EnumSet<MethodModifier> getMethodModifiers(int access) {
-    EnumSet<MethodModifier> modifierEnumSet = EnumSet.noneOf(MethodModifier.class);
-
-    // add all modifiers for which (access & ABSTRACT) =! 0
-    for (MethodModifier modifier : MethodModifier.values()) {
-      if ((access & modifier.getBytecode()) != 0) {
-        modifierEnumSet.add(modifier);
-      }
-    }
-    return modifierEnumSet;
   }
 
   public static EnumSet<FieldModifier> getFieldModifiers(int access) {

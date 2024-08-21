@@ -52,6 +52,7 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
+import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.jimple.basic.JavaLocal;
@@ -180,7 +181,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     /* build body (add stmts, locals, traps, etc.) */
     final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     Body.BodyBuilder bodyBuilder = Body.builder(graph);
-    bodyBuilder.setModifiers(AsmUtil.getMethodModifiers(access));
+    bodyBuilder.setModifiers(Modifiers.getMethodModifiers(access));
 
     List<Stmt> preambleStmts = buildPreambleLocals(bodyBuilder);
 
