@@ -456,8 +456,8 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
             if (file.exists()) {
               // compare contents -> does it contain the extracted war already?
               int readBytesExistingFile;
-              try (final BufferedInputStream bis =
-                  new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+              try (InputStream fis = Files.newInputStream(file.toPath());
+                  final BufferedInputStream bis = new BufferedInputStream(fis)) {
                 byte[] bisBuf = new byte[4096];
                 while ((readBytesZip = zis.read(incomingValues)) != -1) {
                   if (extractedSize > maxAllowedBytesToExtract) {
@@ -483,8 +483,8 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
               }
 
             } else {
-              try (BufferedOutputStream bos =
-                  new BufferedOutputStream(Files.newOutputStream(file.toPath()))) {
+              try (OutputStream fos = Files.newOutputStream(file.toPath());
+                  BufferedOutputStream bos = new BufferedOutputStream(fos); ) {
                 while ((readBytesZip = zis.read(incomingValues)) != -1) {
                   if (extractedSize > maxAllowedBytesToExtract) {
                     throw new RuntimeException(

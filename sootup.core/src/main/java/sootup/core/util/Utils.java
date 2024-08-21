@@ -102,30 +102,30 @@ public class Utils {
       List<Path> compiledResults = new ArrayList<>();
       // compile the `.java` file to a `.class` file
       JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-      StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
-      fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singleton(path.toFile()));
-      JavaCompiler.CompilationTask task =
-          compiler.getTask(
-              null, fileManager, null, null, null, fileManager.getJavaFileObjects(javaName));
-      if (!task.call()) {
-        fileManager.close();
-        throw new IllegalArgumentException("could not compile source file.");
-      }
+      try (StandardJavaFileManager fileManager =
+          compiler.getStandardFileManager(null, null, null)) {
+        fileManager.setLocation(
+            StandardLocation.CLASS_OUTPUT, Collections.singleton(path.toFile()));
+        JavaCompiler.CompilationTask task =
+            compiler.getTask(
+                null, fileManager, null, null, null, fileManager.getJavaFileObjects(javaName));
+        if (!task.call()) {
+          throw new IllegalArgumentException("could not compile source file.");
+        }
 
-      //  collect files
-      for (JavaFileObject jfo :
-          fileManager.list(
-              StandardLocation.CLASS_OUTPUT,
-              "",
-              Collections.singleton(JavaFileObject.Kind.CLASS),
-              true)) {
-        Path pathOfCreatedClass = Paths.get(jfo.getName());
-        // pathOfCreatedClass.toFile().deleteOnExit();
-        compiledResults.add(pathOfCreatedClass);
+        //  collect files
+        for (JavaFileObject jfo :
+            fileManager.list(
+                StandardLocation.CLASS_OUTPUT,
+                "",
+                Collections.singleton(JavaFileObject.Kind.CLASS),
+                true)) {
+          Path pathOfCreatedClass = Paths.get(jfo.getName());
+          // pathOfCreatedClass.toFile().deleteOnExit();
+          compiledResults.add(pathOfCreatedClass);
+        }
+        return compiledResults;
       }
-      fileManager.close();
-      return compiledResults;
-
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
