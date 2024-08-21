@@ -12,7 +12,6 @@ import org.jf.dexlib2.iface.DexFile;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.ClassModifier;
-import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
@@ -20,7 +19,7 @@ import sootup.core.util.Modifiers;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 
-public class ApkAnalysisInputLocation<J extends SootClass> implements AnalysisInputLocation {
+public class ApkAnalysisInputLocation implements AnalysisInputLocation {
 
   Path apk_path;
 

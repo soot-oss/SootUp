@@ -372,17 +372,20 @@ public class DexNullTransformer extends AbstractNullTransformer {
     final NullConstant nullConstant = NullConstant.getInstance();
     for (Stmt stmt : builder.getStmts()) {
       stmt.accept(inlinedZeroValues);
-      if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
-        AbstractInvokeExpr invExpr = stmt.asInvokableStmt().getInvokeExpr().get();
-        for (int i = 0; i < invExpr.getArgCount(); i++) {
-          if (isObject(invExpr.getMethodSignature().getParameterTypes().get(i))) {
-            if (invExpr.getArg(i) instanceof IntConstant) {
-              IntConstant iconst = (IntConstant) invExpr.getArg(i);
-              assert iconst.getValue() == 0;
-              if (invExpr instanceof AbstractInstanceInvokeExpr) {
-                invExpr =
-                    ((AbstractInstanceInvokeExpr) invExpr)
-                        .withArgs(Collections.singletonList(nullConstant));
+      if (stmt.isInvokableStmt()) {
+        InvokableStmt invokableStmt = stmt.asInvokableStmt();
+        if (invokableStmt.containsInvokeExpr()) {
+          AbstractInvokeExpr invExpr = invokableStmt.getInvokeExpr().get();
+          for (int i = 0; i < invExpr.getArgCount(); i++) {
+            if (isObject(invExpr.getMethodSignature().getParameterTypes().get(i))) {
+              if (invExpr.getArg(i) instanceof IntConstant) {
+                IntConstant iconst = (IntConstant) invExpr.getArg(i);
+                assert iconst.getValue() == 0;
+                if (invExpr instanceof AbstractInstanceInvokeExpr) {
+                  invExpr =
+                      ((AbstractInstanceInvokeExpr) invExpr)
+                          .withArgs(Collections.singletonList(nullConstant));
+                }
               }
             }
           }

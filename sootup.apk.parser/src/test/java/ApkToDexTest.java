@@ -20,8 +20,8 @@ public class ApkToDexTest {
   @Test
   public void testDexClassSource() {
     String apk_path = "resources/FlowSensitivity1.apk";
-    ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
-        new ApkAnalysisInputLocation<>(
+    ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
+        new ApkAnalysisInputLocation(
             Paths.get(apk_path), "", DexBodyInterceptors.Default.bodyInterceptors());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     String className = "android.support.v7.widget.PopupMenu";
@@ -54,8 +54,8 @@ public class ApkToDexTest {
   @Test
   public void loadAnApk() {
     String apk_path = "resources/FlowSensitivity1.apk";
-    ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
-        new ApkAnalysisInputLocation<>(
+    ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
+        new ApkAnalysisInputLocation(
             Paths.get(apk_path), "", DexBodyInterceptors.Default.bodyInterceptors());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     List<JavaSootClass> classes;
@@ -73,8 +73,8 @@ public class ApkToDexTest {
   @Test
   public void loadOneClass() {
     String apk_path = "resources/FlowSensitivity1.apk";
-    ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
-        new ApkAnalysisInputLocation<>(
+    ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
+        new ApkAnalysisInputLocation(
             Paths.get(apk_path), "", DexBodyInterceptors.Default.bodyInterceptors());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     String className = "android.support.v4.app.FragmentState$1";
