@@ -32,7 +32,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.types.PrimitiveType;
 
-/** @author Markus Schmidt & Linghui Luo */
+/** @author Markus Schmidt, Linghui Luo */
 @Tag("Java8")
 public class JExitMonitorStmtTest {
 
