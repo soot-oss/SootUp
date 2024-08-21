@@ -58,8 +58,8 @@ public class ApkToDexTest {
         new ApkAnalysisInputLocation<>(
             Paths.get(apk_path), "", DexBodyInterceptors.Default.bodyInterceptors());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
-    Collection<JavaSootClass> classes;
-    classes = view.getClasses();
+    List<JavaSootClass> classes;
+    classes = view.getClasses().collect(Collectors.toList());
     int methodsSize = 0;
     for (JavaSootClass javaSootClass : classes) {
       Set<JavaSootMethod> methods = javaSootClass.getMethods();
