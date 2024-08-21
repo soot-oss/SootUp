@@ -60,7 +60,7 @@ public class LocalSplitterTest {
 
     // ~200_000 methods
     view.getClasses()
-        .parallelStream()
+        .parallel()
         .flatMap(clazz -> clazz.getMethods().stream())
         .filter(method -> !method.isAbstract() && !method.isNative())
         .forEach(SootMethod::getBody);

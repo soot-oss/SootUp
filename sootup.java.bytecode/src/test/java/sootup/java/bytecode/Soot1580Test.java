@@ -29,7 +29,7 @@ public class Soot1580Test {
 
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
-    assertEquals(91, view.getClasses().size());
+    assertEquals(91, view.getClasses().count());
 
     ClassType clazzType =
         JavaIdentifierFactory.getInstance().getClassType("cn.jpush.android.data.f");

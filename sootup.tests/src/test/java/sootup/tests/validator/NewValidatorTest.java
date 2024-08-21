@@ -61,11 +61,7 @@ public class NewValidatorTest {
 
     classes = new HashSet<>(); // Set to track the classes to check
 
-    for (SootClass aClass : view.getClasses()) {
-      if (!aClass.isLibraryClass()) {
-        classes.add(aClass);
-      }
-    }
+    view.getClasses().forEach(classes::add);
   }
 
   @Test
