@@ -205,9 +205,8 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   }
 
   public static boolean isMultiReleaseJar(Path path) {
-    try {
-      FileInputStream inputStream = new FileInputStream(path.toFile());
-      JarInputStream jarStream = new JarInputStream(inputStream);
+    try (FileInputStream inputStream = new FileInputStream(path.toFile());
+        JarInputStream jarStream = new JarInputStream(inputStream)) {
       Manifest mf = jarStream.getManifest();
 
       if (mf == null) {

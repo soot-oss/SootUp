@@ -22,8 +22,8 @@ package sootup.core.views;
  * #L%
  */
 
-import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
 import sootup.core.model.SootClass;
@@ -44,7 +44,7 @@ public interface View {
 
   /** Return all classes in the view. */
   @Nonnull
-  Collection<? extends SootClass> getClasses();
+  Stream<? extends SootClass> getClasses();
 
   /**
    * Return a class with given signature.

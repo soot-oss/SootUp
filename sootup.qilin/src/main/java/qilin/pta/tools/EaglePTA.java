@@ -71,58 +71,57 @@ public class EaglePTA extends PartialObjSensPTA {
     final char EOL = '\n';
     String insensVarFile = "InsensitiveVar.facts";
     String insensHeapFile = "InsensitiveHeap.facts";
-    PrintWriter varWriter = new PrintWriter(insensVarFile);
-    PrintWriter heapWriter = new PrintWriter(insensHeapFile);
-    partialResults.forEach(
-        (k, v) -> {
-          if (v > 0) {
-            return;
-          }
-          if (k instanceof AllocNode) {
-            AllocNode heap = (AllocNode) k;
-            if (heap.getMethod() == null) {
+    try (PrintWriter varWriter = new PrintWriter(insensVarFile);
+        PrintWriter heapWriter = new PrintWriter(insensHeapFile)) {
+      partialResults.forEach(
+          (k, v) -> {
+            if (v > 0) {
               return;
             }
-            String newExpr = heap.getNewExpr().toString();
-            if (heap.getNewExpr() instanceof JNewArrayExpr) {
-              JNewArrayExpr nae = (JNewArrayExpr) heap.getNewExpr();
-              newExpr = "new " + nae.getBaseType() + "[]";
-            }
-            String heapSig = heap.getMethod().toString() + "/" + newExpr;
-            heapWriter.write(heapSig);
-            heapWriter.write(EOL);
-          } else if (k instanceof LocalVarNode) {
-            LocalVarNode lvn = (LocalVarNode) k;
-            Object variable = lvn.getVariable();
-            String varName = variable.toString();
-            if (variable instanceof Parm) {
-              Parm parm = (Parm) variable;
-              if (parm.isThis()) {
-                varName = "@this";
-              } else if (parm.isReturn()) {
+            if (k instanceof AllocNode) {
+              AllocNode heap = (AllocNode) k;
+              if (heap.getMethod() == null) {
                 return;
-              } else if (parm.isThrowRet()) {
+              }
+              String newExpr = heap.getNewExpr().toString();
+              if (heap.getNewExpr() instanceof JNewArrayExpr) {
+                JNewArrayExpr nae = (JNewArrayExpr) heap.getNewExpr();
+                newExpr = "new " + nae.getBaseType() + "[]";
+              }
+              String heapSig = heap.getMethod().toString() + "/" + newExpr;
+              heapWriter.write(heapSig);
+              heapWriter.write(EOL);
+            } else if (k instanceof LocalVarNode) {
+              LocalVarNode lvn = (LocalVarNode) k;
+              Object variable = lvn.getVariable();
+              String varName = variable.toString();
+              if (variable instanceof Parm) {
+                Parm parm = (Parm) variable;
+                if (parm.isThis()) {
+                  varName = "@this";
+                } else if (parm.isReturn()) {
+                  return;
+                } else if (parm.isThrowRet()) {
+                  return;
+                } else {
+                  varName = "@parameter" + parm.getIndex();
+                }
+              } else if (variable instanceof Local) {
+
+              } else if (variable instanceof Stmt) {
+                return;
+              } else if (variable instanceof Expr) {
+                return;
+              } else if (variable instanceof Pair) {
                 return;
               } else {
-                varName = "@parameter" + parm.getIndex();
+                return;
               }
-            } else if (variable instanceof Local) {
-
-            } else if (variable instanceof Stmt) {
-              return;
-            } else if (variable instanceof Expr) {
-              return;
-            } else if (variable instanceof Pair) {
-              return;
-            } else {
-              return;
+              String varSig = lvn.getMethod().toString() + "/" + varName;
+              varWriter.write(varSig);
+              varWriter.write(EOL);
             }
-            String varSig = lvn.getMethod().toString() + "/" + varName;
-            varWriter.write(varSig);
-            varWriter.write(EOL);
-          }
-        });
-    varWriter.close();
-    heapWriter.close();
+          });
+    }
   }
 }

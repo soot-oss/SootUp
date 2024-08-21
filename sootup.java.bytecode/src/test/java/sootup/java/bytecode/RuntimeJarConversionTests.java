@@ -34,7 +34,7 @@ public class RuntimeJarConversionTests {
 
   private static void convertInputLocation(AnalysisInputLocation inputLocation) {
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
-    long classesCount = view.getClasses().size();
+    long classesCount = view.getClasses().count();
     if (debug) {
       System.out.println("classes: " + classesCount);
     }
@@ -42,7 +42,7 @@ public class RuntimeJarConversionTests {
     long[] progress = {0};
 
     long count =
-        view.getClasses().stream()
+        view.getClasses()
             .peek(
                 c -> {
                   if (!debug) {

@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
 import sootup.core.cache.ClassCache;
@@ -77,8 +78,8 @@ public class JimpleView extends AbstractView {
 
   @Override
   @Nonnull
-  public synchronized Collection<SootClass> getClasses() {
-    return getAbstractClassSources();
+  public synchronized Stream<SootClass> getClasses() {
+    return getAbstractClassSources().stream();
   }
 
   @Nonnull

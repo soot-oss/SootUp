@@ -72,7 +72,7 @@ public class CallGraphBuilder {
     this.ptaScene = pta.getScene();
     ptaScene.setCallGraph(new OnFlyCallGraph());
     this.virtualCalls = new VirtualCalls(ptaScene.getView());
-    receiverToSites = DataFactory.createMap(ptaScene.getView().getClasses().size());
+    receiverToSites = DataFactory.createMap((int) ptaScene.getView().getClasses().count());
     methodToInvokeStmt = DataFactory.createMap();
     reachMethods = DataFactory.createSet();
     calledges = DataFactory.createSet();
