@@ -23,6 +23,7 @@ package sootup.callgraph;
  */
 
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -59,10 +60,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractCallGraphAlgorithm.class);
 
+  private BiPredicate<SootMethod, InvokableStmt> boundFunction;
+
   @Nonnull protected final View view;
 
-  protected AbstractCallGraphAlgorithm(@Nonnull View view) {
-    this.view = view;
+  protected AbstractCallGraphAlgorithm(@Nonnull View view)
+  {
+      this.view = view;
+      this.boundFunction = (method, statement) -> true;
   }
 
   /**
@@ -232,7 +237,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .map(Stmt::asInvokableStmt)
         .forEach(
             stmt ->
-                resolveCall(sourceMethod, stmt)
+                 (boundFunction.test(sourceMethod, stmt) ? resolveCall(sourceMethod, stmt) : Stream.<MethodSignature> empty())
                     .forEach(
                         targetMethod ->
                             addCallToCG(
@@ -571,5 +576,26 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             + sig.getDeclClassType().getClassName()
             + " and in its superclasses and interfaces");
     return Optional.empty();
+  }
+
+  /**
+   * @return the bound function, see @setBoundFunction
+   */
+  public BiPredicate<SootMethod, InvokableStmt> getBoundFunction()
+  {
+      return boundFunction;
+  }
+
+  /** Set a bound function to prune the call graph. The bound function accepts the source method and
+   * an InvokableStatement, which is in the source method's body, and determines if the call from
+   * the source method to the invocation target shall be added into the call graph.
+   * 
+   * This allows building an pruned & potentially incomplete call graph, with lower memory / CPU
+   * cost.
+   * 
+   * @param boundFunction */
+  public void setBoundFunction(BiPredicate<SootMethod, InvokableStmt> boundFunction)
+  {
+      this.boundFunction = boundFunction == null ?  (method, statement) -> true : boundFunction;
   }
 }
