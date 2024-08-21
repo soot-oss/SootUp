@@ -1,5 +1,6 @@
 package main;
 
+import com.google.common.io.ByteStreams;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pxb.android.axml.AxmlReader;
@@ -80,7 +80,7 @@ public class AndroidVersionInfo {
           }
         };
     try {
-      AxmlReader xmlReader = new AxmlReader(IOUtils.toByteArray(manifestIS));
+      AxmlReader xmlReader = new AxmlReader(ByteStreams.toByteArray(manifestIS));
       xmlReader.accept(axmlVisitor);
     } catch (Exception e) {
     }
