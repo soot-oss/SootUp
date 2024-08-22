@@ -7,7 +7,6 @@ import sootup.java.core.views.JavaView;
 public abstract class BaseFixJarsTest {
   String failedJarsPath = "../failed_jars";
 
-
   public String getJarPath(String jarName) {
     return failedJarsPath + "/" + jarName;
   }
@@ -31,10 +30,11 @@ public abstract class BaseFixJarsTest {
 
   public void assertJar(JavaView javaView) {
     try {
-      javaView.getClasses()
-              .flatMap(clazz -> clazz.getMethods().stream())
-              .filter(SootMethod::hasBody)
-              .forEach(SootMethod::getBody);
+      javaView
+          .getClasses()
+          .flatMap(clazz -> clazz.getMethods().stream())
+          .filter(SootMethod::hasBody)
+          .forEach(SootMethod::getBody);
     } catch (Exception e) {
       e.printStackTrace();
     }

@@ -62,7 +62,7 @@ public class RandomJarTest {
   }
 
   @Test
-  public void writeFile(){
+  public void writeFile() {
     System.out.println("This Test is written");
     new TestWriter().writeTestFile();
   }
