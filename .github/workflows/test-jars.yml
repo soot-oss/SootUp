@@ -78,8 +78,10 @@ jobs:
         run: |
           for jar in $(ls ${{ github.workspace }}/downloaded_jars/*.jar); do
             echo "Testing $jar"
-            mvn test -Dtest=sootup.java.bytecode.inputlocation.RandomJarTest -DjarPath="$jar" -pl sootup.java.bytecode
+            mvn test -Dtest=sootup.java.bytecode.inputlocation.RandomJarTest#testJar -DjarPath="$jar" -pl sootup.java.bytecode
           done
+          echo 'Writing contents to the file'
+          mvn test -Dtest=sootup.java.bytecode.inputlocation.FixJarHelperTest -pl sootup.java.bytecode
 
       - name: Upload the Artifact
         uses: actions/upload-artifact@v3
@@ -114,6 +116,10 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
+      - name: Git Status
+        run: |
+          git status
+
       - name: Create new branch and prepare files
         if: env.JAR_NAMES != ''
         run: |
@@ -125,6 +131,7 @@ jobs:
           echo 'New Directory Created'  
           # Add jar_failure.csv to the new directory
           git add sootup.java.bytecode/jar_failure.csv
+          git add sootup.java.bytecode/src/test/java/sootup/java/bytecode/inputlocation/FixJars.java
           echo 'CSV file Added to git'
           # Add files listed in jar_failure.csv to Git
           IFS=',' read -r -a jar_array <<< "$JAR_NAMES"

@@ -61,6 +61,12 @@ public class RandomJarTest {
     }
   }
 
+  @Test
+  public void writeFile(){
+    System.out.println("This Test is written");
+    new TestWriter().writeTestFile();
+  }
+
   public void writeMetrics(TestMetrics testMetrics, String fileName, boolean isFailure) {
     File file = new File(fileName);
     boolean fileExists = file.exists();
@@ -121,8 +127,9 @@ public class RandomJarTest {
                           method -> {
                             try {
                               method.getBody();
+                              throw new RuntimeException();
                             } catch (Exception e) {
-                              failedMethodSignature = String.valueOf(method.getSignature());
+                              failedMethodSignature = method.getSignature().toString();
                               throw new RuntimeException(e);
                             }
                           })
