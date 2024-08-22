@@ -35,7 +35,7 @@ import sootup.core.transform.BodyInterceptor;
  * <p>Info: This only works if you are running java 8 or older. Otherwise use {@link
  * JrtFileSystemAnalysisInputLocation}.
  */
-public class DefaultRTJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
+class DefaultRTJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
 
   public DefaultRTJarAnalysisInputLocation() {
     this(SourceType.Library);

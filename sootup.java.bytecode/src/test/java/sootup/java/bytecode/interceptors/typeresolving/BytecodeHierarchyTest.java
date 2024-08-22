@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
-import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.interceptors.typeresolving.BytecodeHierarchy;
 import sootup.java.core.interceptors.typeresolving.types.BottomType;
@@ -57,7 +57,8 @@ public class BytecodeHierarchyTest {
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile);
     view =
-        new JavaView(Arrays.asList(new DefaultRTJarAnalysisInputLocation(), analysisInputLocation));
+        new JavaView(
+            Arrays.asList(new DefaultRuntimeAnalysisInputLocation(), analysisInputLocation));
 
     // create types
     IdentifierFactory factory = view.getIdentifierFactory();
