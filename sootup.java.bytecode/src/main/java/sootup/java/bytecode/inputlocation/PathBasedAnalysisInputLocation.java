@@ -374,8 +374,8 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
       Path libDir = webInfPath.resolve("lib");
       if (Files.exists(libDir)) {
-        try {
-          Files.walk(libDir)
+        try (Stream<Path> paths = Files.walk(libDir)) {
+          paths
               .filter(f -> PathUtils.hasExtension(f, FileType.JAR))
               .forEach(
                   f ->
@@ -432,7 +432,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
      */
     void extractWarFile(Path warFilePath, final Path destDirectory) {
       int extractedSize = 0;
-      try {
+      try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(warFilePath))) {
         File dest = destDirectory.toFile();
         if (!dest.exists()) {
           if (!dest.mkdir()) {
@@ -442,7 +442,6 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
           dest.deleteOnExit();
         }
 
-        ZipInputStream zis = new ZipInputStream(Files.newInputStream(warFilePath));
         ZipEntry zipEntry;
         while ((zipEntry = zis.getNextEntry()) != null) {
           Path filepath = destDirectory.resolve(zipEntry.getName());
@@ -457,45 +456,46 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
             if (file.exists()) {
               // compare contents -> does it contain the extracted war already?
               int readBytesExistingFile;
-              final BufferedInputStream bis =
-                  new BufferedInputStream(Files.newInputStream(file.toPath()));
-              byte[] bisBuf = new byte[4096];
-              while ((readBytesZip = zis.read(incomingValues)) != -1) {
-                if (extractedSize > maxAllowedBytesToExtract) {
-                  throw new RuntimeException(
-                      "The extracted warfile exceeds the size of "
-                          + maxAllowedBytesToExtract
-                          + " byte. Either the file is a big archive (-> increase PathBasedAnalysisInputLocation.WarArchiveInputLocation.maxAllowedBytesToExtract) or maybe it contains an archive bomb.");
+              try (InputStream fis = Files.newInputStream(file.toPath());
+                  final BufferedInputStream bis = new BufferedInputStream(fis)) {
+                byte[] bisBuf = new byte[4096];
+                while ((readBytesZip = zis.read(incomingValues)) != -1) {
+                  if (extractedSize > maxAllowedBytesToExtract) {
+                    throw new RuntimeException(
+                        "The extracted warfile exceeds the size of "
+                            + maxAllowedBytesToExtract
+                            + " byte. Either the file is a big archive (-> increase PathBasedAnalysisInputLocation.WarArchiveInputLocation.maxAllowedBytesToExtract) or maybe it contains an archive bomb.");
+                  }
+                  readBytesExistingFile = bis.read(bisBuf, 0, readBytesZip);
+                  if (readBytesExistingFile != readBytesZip) {
+                    throw new RuntimeException(
+                        "Can't extract File \""
+                            + file
+                            + "\" as it already exists and has a different size.");
+                  } else if (!Arrays.equals(bisBuf, incomingValues)) {
+                    throw new RuntimeException(
+                        "Can't extract File \""
+                            + file
+                            + "\" as it already exists and has a different content which we can't override.");
+                  }
+                  extractedSize += readBytesZip;
                 }
-                readBytesExistingFile = bis.read(bisBuf, 0, readBytesZip);
-                if (readBytesExistingFile != readBytesZip) {
-                  throw new RuntimeException(
-                      "Can't extract File \""
-                          + file
-                          + "\" as it already exists and has a different size.");
-                } else if (!Arrays.equals(bisBuf, incomingValues)) {
-                  throw new RuntimeException(
-                      "Can't extract File \""
-                          + file
-                          + "\" as it already exists and has a different content which we can't override.");
-                }
-                extractedSize += readBytesZip;
               }
 
             } else {
-              BufferedOutputStream bos =
-                  new BufferedOutputStream(Files.newOutputStream(file.toPath()));
-              while ((readBytesZip = zis.read(incomingValues)) != -1) {
-                if (extractedSize > maxAllowedBytesToExtract) {
-                  throw new RuntimeException(
-                      "The extracted warfile exceeds the size of "
-                          + maxAllowedBytesToExtract
-                          + " byte. Either the file is a big archive or maybe it contains an archive bomb.");
+              try (OutputStream fos = Files.newOutputStream(file.toPath());
+                  BufferedOutputStream bos = new BufferedOutputStream(fos); ) {
+                while ((readBytesZip = zis.read(incomingValues)) != -1) {
+                  if (extractedSize > maxAllowedBytesToExtract) {
+                    throw new RuntimeException(
+                        "The extracted warfile exceeds the size of "
+                            + maxAllowedBytesToExtract
+                            + " byte. Either the file is a big archive or maybe it contains an archive bomb.");
+                  }
+                  bos.write(incomingValues, 0, readBytesZip);
+                  extractedSize += readBytesZip;
                 }
-                bos.write(incomingValues, 0, readBytesZip);
-                extractedSize += readBytesZip;
               }
-              bos.close();
             }
           }
           zis.closeEntry();

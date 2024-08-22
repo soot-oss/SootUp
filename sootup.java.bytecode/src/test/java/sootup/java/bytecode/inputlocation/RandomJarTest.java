@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import java.util.Set;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -132,7 +133,7 @@ public class RandomJarTest {
 
   private Collection<JavaSootClass> getClasses(JavaView view) {
     try {
-      return view.getClasses();
+      return view.getClasses().collect(Collectors.toList());
     } catch (Exception e) {
       throw new RuntimeException("Error while getting class list", e);
     }

@@ -62,7 +62,7 @@ public class JavaSourcePathNamespaceTest {
     final JavaView view = new JavaView(inputLocation);
 
     Collection<? extends AbstractClassSource> classSources =
-        view.getClasses().stream().map(jsc -> jsc.getClassSource()).collect(Collectors.toList());
+        view.getClasses().map(jsc -> jsc.getClassSource()).collect(Collectors.toList());
 
     ClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
     Optional<ClassType> optionalFoundType =
@@ -91,11 +91,7 @@ public class JavaSourcePathNamespaceTest {
     JavaView view = new JavaView(inputLocation);
 
     Set<SootClass> classes = new HashSet<>(); // Set to track the classes to check
-    for (SootClass aClass : view.getClasses()) {
-      if (!aClass.isLibraryClass()) {
-        classes.add(aClass);
-      }
-    }
+    view.getClasses().filter(aClass -> !aClass.isLibraryClass()).forEach(classes::add);
 
     assertEquals(0, classes.size(), "User Defined class found, expected none");
   }
