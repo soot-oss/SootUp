@@ -562,7 +562,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   @Override
-  public void removeBlock(BasicBlock<?> block) {
+  public List<Stmt> removeBlock(BasicBlock<?> block) {
     Pair<Integer, MutableBasicBlock> blockOfPair = stmtToBlock.get(block.getHead());
     if (blockOfPair.getRight() != block) {
       throw new IllegalArgumentException(
@@ -573,12 +573,40 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     List<Stmt> stmts = block.getStmts();
     stmts.forEach(stmtToBlock::remove);
 
+    // remove current block from Predecessor & Successor
+    blockOf
+        .getPredecessors()
+        .forEach(
+            pred -> {
+              pred.removeFromSuccessorBlocks(blockOf);
+            });
+    blockOf
+        .getSuccessors()
+        .forEach(
+            succ -> {
+              succ.removePredecessorBlock(blockOf);
+            });
+
     // unlink block from graph
     blockOf.clearPredecessorBlocks();
     blockOf.clearSuccessorBlocks();
     blockOf.clearExceptionalSuccessorBlocks();
 
     blocks.remove(blockOf);
+    return stmts;
+  }
+
+  @Override
+  public void replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(oldStmt);
+    if (blockPair == null) {
+      // Stmt does not exist in the graph
+      throw new IllegalArgumentException("splitStmt does not exist in this block!");
+    }
+    MutableBasicBlock block = blockPair.getRight();
+    block.replaceStmt(oldStmt, newStmt);
+    stmtToBlock.remove(oldStmt);
+    stmtToBlock.put(newStmt, blockPair);
   }
 
   @Override

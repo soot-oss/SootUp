@@ -24,11 +24,12 @@ package sootup.java.core.interceptors;
 import com.google.common.collect.Lists;
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.graph.MutableBasicBlock;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.constant.*;
-import sootup.core.jimple.common.stmt.BranchingStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -50,7 +51,14 @@ public class ConditionalBranchFolder implements BodyInterceptor {
 
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
 
-    for (Stmt stmt : Lists.newArrayList(stmtGraph.getNodes())) {
+    ArrayList<Stmt> stmtsList = Lists.newArrayList(stmtGraph.getNodes());
+    List<Stmt> removedStmts = new ArrayList<>();
+    for (Stmt stmt : stmtsList) {
+      // Statements which were removed while removing nodes
+      if (removedStmts.contains(stmt)) {
+        continue;
+      }
+
       if (!(stmt instanceof JIfStmt)) {
         continue;
       }
@@ -85,7 +93,11 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         continue;
       }
 
-      final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
+      List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
+      // The successors of IfStmt have true branch at index 0 & false branch at index 1.
+      // However, in other parts of code, TRUE_BRANCH_IDX is defined as 1 & FALSE_BRANCH_IDX as 0.
+      // To maintain consistency, we need to reverse the order of the successors.
+      ifSuccessors = Lists.reverse(ifSuccessors);
       final Stmt tautologicSuccessor;
       final Stmt neverReachedSucessor;
 
@@ -102,28 +114,64 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         neverReachedSucessor = ifSuccessors.get(JIfStmt.FALSE_BRANCH_IDX);
       }
 
-      // link previous stmt with always-reached successor of the if-Stmt
-      for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
-        List<Integer> successorIdxList = stmtGraph.removeEdge(predecessor, ifStmt);
-
-        if (predecessor instanceof FallsThroughStmt) {
-          FallsThroughStmt fallsThroughPred = (FallsThroughStmt) predecessor;
-          for (Integer successorIdx : successorIdxList) {
-            stmtGraph.putEdge(fallsThroughPred, tautologicSuccessor);
-          }
+      MutableBasicBlock ifStmtBlock = (MutableBasicBlock) stmtGraph.getBlockOf(ifStmt);
+      MutableBasicBlock tautologicSuccessorBlock =
+          (MutableBasicBlock) stmtGraph.getBlockOf(tautologicSuccessor);
+      MutableBasicBlock neverReachedSucessorBlock =
+          (MutableBasicBlock) stmtGraph.getBlockOf(neverReachedSucessor);
+      List<MutableBasicBlock> firstMergePoint =
+          stmtGraph.findFirstMergePoint(tautologicSuccessorBlock, neverReachedSucessorBlock);
+      // No merge point found
+      assert firstMergePoint.size() <= 1;
+      if (firstMergePoint.isEmpty()) {
+        // get all paths from ifStmt and remove the paths which contains neverReachedSucessorBlock
+        List<List<MutableBasicBlock>> allPaths = stmtGraph.getAllPaths(ifStmtBlock);
+        System.out.println("No merge point: " + allPaths);
+        Set<MutableBasicBlock> blocksToRemove = new HashSet<>();
+        allPaths.stream()
+            .filter(path -> path.contains(neverReachedSucessorBlock))
+            .forEach(path -> blocksToRemove.addAll(path));
+        System.out.println("No merge point after filtering paths that contain NR: " + allPaths);
+        // we will remove ifStmtBlock at the end
+        blocksToRemove.remove(ifStmtBlock);
+        for (MutableBasicBlock block : blocksToRemove) {
+          List<Stmt> stmts = stmtGraph.removeBlock(block);
+          removedStmts.addAll(stmts);
+        }
+      } else {
+        MutableBasicBlock mergePoint = firstMergePoint.get(0);
+        if (mergePoint == neverReachedSucessorBlock) {
+          List<Integer> successorIdxList = stmtGraph.removeEdge(ifStmt, neverReachedSucessor);
         } else {
-          // should not be anything else than BranchingStmt.. just Stmt can have no successor
-          BranchingStmt branchingPred = (BranchingStmt) predecessor;
-          for (Integer successorIdx : successorIdxList) {
-            stmtGraph.putEdge(branchingPred, successorIdx, tautologicSuccessor);
+          List<List<MutableBasicBlock>> allPaths = stmtGraph.getAllPaths(ifStmtBlock, mergePoint);
+          System.out.println("If to Merge point: " + allPaths);
+          Set<MutableBasicBlock> blocksToRemove = new HashSet<>();
+          allPaths.stream()
+              .filter(path -> path.contains(neverReachedSucessorBlock))
+              .forEach(path -> blocksToRemove.addAll(path));
+          System.out.println("Merge point, After filtering paths that contain NR: " + allPaths);
+          // we will remove ifStmtBlock at the end
+          blocksToRemove.remove(ifStmtBlock);
+          blocksToRemove.remove(mergePoint);
+          for (MutableBasicBlock block : blocksToRemove) {
+            List<Stmt> stmts = stmtGraph.removeBlock(block);
+            removedStmts.addAll(stmts);
           }
         }
       }
 
-      stmtGraph.removeNode(ifStmt, false);
+      // replace ifStmt block
+      JGotoStmt gotoStmt = Jimple.newGotoStmt(ifStmt.getPositionInfo());
+      // ifStmtBlock.replaceStmt(ifStmt, gotoStmt);
 
-      pruneExclusivelyReachableStmts(builder, neverReachedSucessor);
+      // ifStmtBlock.replaceSuccessorBlock(neverReachedSucessorBlock, null);
+      stmtGraph.replaceStmt(ifStmt, gotoStmt);
+
+      // stmtGraph.removeStmt(ifStmt);
+      removedStmts.add(ifStmt);
+      removedStmts.add(gotoStmt);
     }
+    System.out.println("New StatementGraph" + stmtGraph);
   }
 
   private void pruneExclusivelyReachableStmts(
