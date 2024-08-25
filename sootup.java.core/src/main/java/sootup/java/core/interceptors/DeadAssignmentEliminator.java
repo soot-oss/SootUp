@@ -22,8 +22,10 @@ package sootup.java.core.interceptors;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
@@ -185,6 +187,10 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
           if (value instanceof Local) {
             Local local = (Local) value;
             Collection<Stmt> defs = allDefs.get(local);
+            if (defs.size() > 1) {
+              List<Stmt> neededDefs = new ArrayList<>(defs);
+              defs = removeDeadAssignmentsAtStmt(stmtGraph, neededDefs, stmt);
+            }
             if (defs != null) {
               deque.addAll(defs);
             }
@@ -244,5 +250,33 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       stmtGraph.replaceNode(assignStmt, newInvoke);
       builder.removeDefLocalsOf(assignStmt);
     }
+  }
+
+  private List<Stmt> removeDeadAssignmentsAtStmt(
+      StmtGraph stmtGraph, List<Stmt> defs, Stmt currStmt) {
+    // Filter out or Remove all definitions that occur after the current statement.
+    // for-loop (initializer i & i++ & if stmt has same getPositionInfo hence equality also checked)
+    defs =
+        defs.stream()
+            .filter(
+                stmt ->
+                    stmt.getPositionInfo().getStmtPosition().getFirstLine()
+                        <= currStmt.getPositionInfo().getStmtPosition().getFirstLine())
+            .collect(Collectors.toList());
+    // sort them based on line number
+    defs.sort(
+        Comparator.comparingInt(stmt -> stmt.getPositionInfo().getStmtPosition().getFirstLine()));
+    List<Stmt> neededDefs = new ArrayList<>(defs);
+    // Iterate over pairs of definitions
+    for (int i = 0; i < defs.size() - 1; i++) {
+      Stmt def1 = defs.get(i);
+      Stmt def2 = defs.get(i + 1);
+
+      // Case: Both definitions are in the same block, else ignore
+      if (stmtGraph.getBlockOf(def1) == stmtGraph.getBlockOf(def2)) {
+        neededDefs.remove(def1);
+      }
+    }
+    return neededDefs;
   }
 }
