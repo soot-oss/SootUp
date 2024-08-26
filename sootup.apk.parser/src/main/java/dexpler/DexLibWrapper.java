@@ -35,10 +35,11 @@ public class DexLibWrapper {
   /**
    * Construct a DexlibWrapper from a dex file and stores its classes referenced by their name. No
    * further process is done here.
+   *
+   * @param dexSource the dex file from which the classes are taken for jimplification
    */
   public DexLibWrapper(File dexSource) {
     try {
-      // TODO Change the api_version to some common place
       List<DexFileProvider.DexContainer<? extends DexFile>> containers =
           DexFileProvider.getInstance()
               .getDexFromSource(dexSource, DexUtil.getAndroidVersionInfo().getApi_version());

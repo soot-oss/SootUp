@@ -9,6 +9,7 @@ public class InstructionFactory {
    *
    * @param instruction the corresponding dexlib instruction
    * @param codeAddress the byte code address of the instruction
+   * @return the resolved DexLibAbstractInstruction based on the opcode and the given code address
    */
   public static DexLibAbstractInstruction fromInstruction(
       Instruction instruction, int codeAddress) {
