@@ -43,6 +43,7 @@ import sootup.core.model.MethodModifier;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
+import sootup.java.core.interceptors.reachingdefs.ReachingDefs;
 
 /**
  * This interceptor eliminates assignment statements to locals whose values are not subsequently
@@ -65,6 +66,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(stmtGraph)).getReachingDefs();
     // refactor.. why already here - getNodes as well
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
@@ -187,10 +189,12 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
           if (value instanceof Local) {
             Local local = (Local) value;
             Collection<Stmt> defs = allDefs.get(local);
-            if (defs.size() > 1) {
-              List<Stmt> neededDefs = new ArrayList<>(defs);
-              defs = removeDeadAssignmentsAtStmt(stmtGraph, neededDefs, stmt);
-            }
+            List<Stmt> reachableDefs = reachingDefs.get(stmt);
+            defs = defs.stream().filter(reachableDefs::contains).collect(Collectors.toList());
+            //            if (defs.size() > 1) {
+            //              List<Stmt> neededDefs = new ArrayList<>(defs);
+            //              defs = removeDeadAssignmentsAtStmt(stmtGraph, neededDefs, stmt);
+            //            }
             if (defs != null) {
               deque.addAll(defs);
             }
