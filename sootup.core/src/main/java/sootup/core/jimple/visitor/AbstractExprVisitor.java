@@ -25,7 +25,7 @@ package sootup.core.jimple.visitor;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.common.expr.*;
 
-public abstract class AbstractExprVisitor<V> extends AbstractVisitor<V> implements ExprVisitor {
+public abstract class AbstractExprVisitor implements ExprVisitor, Visitor {
 
   @Override
   public void caseAddExpr(@Nonnull JAddExpr expr) {

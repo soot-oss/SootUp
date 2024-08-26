@@ -59,7 +59,7 @@ public abstract class AugmentIntegerTypes {
     }
 
     @Override
-    public void accept(@Nonnull TypeVisitor v) {
+    public <V extends TypeVisitor> V accept(@Nonnull V v) {
       throw new UnsupportedOperationException();
     }
   }
@@ -78,7 +78,7 @@ public abstract class AugmentIntegerTypes {
     }
 
     @Override
-    public void accept(@Nonnull TypeVisitor v) {
+    public <V extends TypeVisitor> V accept(@Nonnull V v) {
       throw new UnsupportedOperationException();
     }
   }
@@ -97,7 +97,7 @@ public abstract class AugmentIntegerTypes {
     }
 
     @Override
-    public void accept(@Nonnull TypeVisitor v) {
+    public <V extends TypeVisitor> V accept(@Nonnull V v) {
       throw new UnsupportedOperationException();
     }
   }

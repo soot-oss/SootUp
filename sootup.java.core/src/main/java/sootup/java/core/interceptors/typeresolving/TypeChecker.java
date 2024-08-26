@@ -49,10 +49,11 @@ import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 
-public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
+public abstract class TypeChecker extends AbstractStmtVisitor {
 
   private final AugEvalFunction evalFunction;
   private final BytecodeHierarchy hierarchy;
+  protected Stmt result = null;
   private Typing typing;
   protected final Body.BodyBuilder builder;
 
@@ -348,5 +349,13 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
             + ". Selecting: "
             + sel);
     return sel;
+  }
+
+  public Stmt getResult() {
+    return result;
+  }
+
+  protected void setResult(Stmt result) {
+    this.result = result;
   }
 }

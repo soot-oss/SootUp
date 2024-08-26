@@ -34,7 +34,7 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /**
- * Represents the deprecated JVM <code>ret</code> statement (< java 1.6) - which is used in JSR
+ * Represents the deprecated JVM <code>ret</code> statement (&lt; java 1.6) - which is used in JSR
  * Context - which is deprecated as well.
  */
 public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
@@ -70,8 +70,9 @@ public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
   }
 
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseRetStmt(this);
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseRetStmt(this);
+    return v;
   }
 
   @Override

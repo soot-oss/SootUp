@@ -132,4 +132,44 @@ public class Misc {
       String a = "";
     }
   }
+
+  public static void testTAWarningWithoutRTJar() throws Throwable {
+    Integer a = null;
+
+    try {
+      a = 8 / 0;
+      int b = a + 2;
+      if (b > 6) {
+        throw new IncorrectOperationException("custom exception");
+      } else {
+        throw new IncorrectFileNameException("custom exception");
+      }
+    } catch (IncorrectOperationException | IncorrectFileNameException var4) {
+      Exception ex = var4;
+      System.out.println(ex);
+      Throwable e = ex;
+      throw e;
+    } catch (Throwable var5) {
+      Throwable ex = var5;
+      System.out.println(ex);
+      throw new IncorrectOperationException("custom exception", ex);
+    }
+  }
+
+}
+
+class IncorrectOperationException extends RuntimeException {
+  public IncorrectOperationException(String errorMessage, Throwable t) {
+    super(errorMessage, t);
+  }
+
+  public IncorrectOperationException(String errorMessage) {
+    super(errorMessage);
+  }
+}
+
+class IncorrectFileNameException extends Exception {
+  public IncorrectFileNameException(String errorMessage) {
+    super(errorMessage);
+  }
 }

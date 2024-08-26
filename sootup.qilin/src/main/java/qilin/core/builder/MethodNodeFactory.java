@@ -180,7 +180,17 @@ public class MethodNodeFactory {
   /** Adds the edges required for this statement to the graph. */
   private void handleIntraStmt(Stmt s) {
     s.accept(
-        new AbstractStmtVisitor<Object>() {
+        new AbstractStmtVisitor() {
+          protected Object result = null;
+
+          protected void setResult(Object result) {
+            this.result = result;
+          }
+
+          public Object getResult() {
+            return result;
+          }
+
           @Override
           public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
             Value l = stmt.getLeftOp();

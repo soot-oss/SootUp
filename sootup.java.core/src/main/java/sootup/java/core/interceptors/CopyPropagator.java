@@ -24,6 +24,8 @@ package sootup.java.core.interceptors;
 import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
@@ -34,7 +36,6 @@ import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
-import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -61,13 +62,14 @@ public class CopyPropagator implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
     for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
-      for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
-        Value use = iterator.next();
+      Stmt newStmt = stmt;
+      Set<Value> valueList = newStmt.getUses().collect(Collectors.toSet());
+      for (Value use : valueList) {
         if (!(use instanceof Local)) {
           continue;
         }
 
-        List<Stmt> defsOfUse = ((Local) use).getDefsForLocalUse(stmtGraph, stmt);
+        List<Stmt> defsOfUse = ((Local) use).getDefsForLocalUse(stmtGraph, newStmt);
         if (!isPropatabable(defsOfUse)) {
           continue;
         }
@@ -75,9 +77,8 @@ public class CopyPropagator implements BodyInterceptor {
         AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
         Value rhs = defStmt.getRightOp();
         // if rhs is a constant, then replace use, if it is possible
-        if (rhs instanceof Constant
-            && !((stmt instanceof InvokableStmt) && ((InvokableStmt) stmt).containsInvokeExpr())) {
-          replaceUse(stmtGraph, stmt, use, rhs);
+        if (rhs instanceof Constant) {
+          newStmt = replaceUse(stmtGraph, newStmt, use, rhs);
         }
 
         // if rhs is a cast expr with a ref type and its op is 0 (IntConstant or LongConstant)
@@ -86,25 +87,68 @@ public class CopyPropagator implements BodyInterceptor {
           Value op = ((JCastExpr) rhs).getOp();
 
           if (zeroIntConstInstance.equals(op) || zeroLongConstInstance.equals(op)) {
-            replaceUse(stmtGraph, stmt, use, NullConstant.getInstance());
+            newStmt = replaceUse(stmtGraph, newStmt, use, NullConstant.getInstance());
           }
         }
         // if rhs is a local, then replace use, if it is possible
         else if (rhs instanceof Local && !rhs.equivTo(use)) {
-          replaceUse(stmtGraph, stmt, use, rhs);
+          Local m = (Local) rhs;
+          if (use != m) {
+            Integer defCount = m.getDefs(stmtGraph.getStmts()).size();
+            if (defCount == 0) {
+              throw new IllegalStateException("Local `" + m + "' is used without a definition!");
+            } else if (defCount == 1) {
+              newStmt = replaceUse(stmtGraph, newStmt, use, rhs);
+              continue;
+            }
+
+            List<Stmt> path = stmtGraph.getExtendedBasicBlockPathBetween(defStmt, newStmt);
+            if (path == null) {
+              // no path in the extended basic block
+              continue;
+            }
+            {
+              boolean isRedefined = false;
+              Iterator<Stmt> pathIt = path.iterator();
+              // Skip first node
+              pathIt.next();
+              // Make sure that m is not redefined along path
+              while (pathIt.hasNext()) {
+                Stmt s = (Stmt) pathIt.next();
+                if (newStmt == s) {
+                  // Don't look at the last statement
+                  // since it is evaluated after the uses.
+                  break;
+                }
+                if (s instanceof AbstractDefinitionStmt) {
+                  if (((AbstractDefinitionStmt) s).getLeftOp() == m) {
+                    isRedefined = true;
+                    break;
+                  }
+                }
+              }
+
+              if (isRedefined) {
+                continue;
+              }
+            }
+            newStmt = replaceUse(stmtGraph, newStmt, use, rhs);
+          }
         }
       }
     }
   }
 
-  private void replaceUse(
+  private Stmt replaceUse(
       @Nonnull MutableStmtGraph graph, @Nonnull Stmt stmt, @Nonnull Value use, @Nonnull Value rhs) {
-    if (!use.equivTo(rhs)) { // TODO: ms: check if rhs!=use would be enough
+    if (rhs != use) {
       Stmt newStmt = stmt.withNewUse(use, rhs);
       if (newStmt != stmt) {
         graph.replaceNode(stmt, newStmt);
       }
+      return newStmt;
     }
+    return stmt;
   }
 
   private boolean isPropatabable(@Nonnull List<Stmt> defsOfUse) {

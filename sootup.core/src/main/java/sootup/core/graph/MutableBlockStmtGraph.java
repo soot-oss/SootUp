@@ -35,10 +35,7 @@ import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
-import sootup.core.jimple.common.stmt.BranchingStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
-import sootup.core.jimple.common.stmt.JIdentityStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -276,6 +273,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     if (nextStartingTrap != null || nextEndingTrap != null) {
       throw new IllegalStateException("The Traps are not iterated completely/correctly!");
+      //      System.out.println("The Traps are not iterated completely/correctly");
     }
 
     // link blocks

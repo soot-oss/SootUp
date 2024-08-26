@@ -57,8 +57,9 @@ public final class JExitMonitorStmt extends AbstractStmt implements FallsThrough
   }
 
   @Override
-  public void accept(@Nonnull StmtVisitor sw) {
-    sw.caseExitMonitorStmt(this);
+  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+    v.caseExitMonitorStmt(this);
+    return v;
   }
 
   @Override

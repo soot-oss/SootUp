@@ -32,10 +32,6 @@ public class LocalsValidatorTest {
 
     ClassType classTypeCheckInitValidator =
         new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
 
           @Override
           public String getFullyQualifiedName() {
@@ -63,11 +59,7 @@ public class LocalsValidatorTest {
 
     classes = new HashSet<>(); // Set to track the classes to check
 
-    for (SootClass aClass : jimpleView.getClasses()) {
-      if (!aClass.isLibraryClass()) {
-        classes.add(aClass);
-      }
-    }
+    jimpleView.getClasses().forEach(classes::add);
   }
 
   @Test

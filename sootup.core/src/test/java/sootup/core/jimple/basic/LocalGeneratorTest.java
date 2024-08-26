@@ -22,10 +22,6 @@ public class LocalGeneratorTest {
     final Local r0 =
         localGenerator.generateLocal(
             new ClassType() {
-              @Override
-              public boolean isBuiltInClass() {
-                return false;
-              }
 
               @Override
               public String getFullyQualifiedName() {

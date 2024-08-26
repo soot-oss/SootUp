@@ -72,7 +72,9 @@ public final class JCaughtExceptionRef implements IdentityRef {
   }
 
   @Override
-  public void accept(@Nonnull RefVisitor v) {
+  public <V extends RefVisitor> V accept(@Nonnull V v) {
+
     v.caseCaughtExceptionRef(this);
+    return v;
   }
 }

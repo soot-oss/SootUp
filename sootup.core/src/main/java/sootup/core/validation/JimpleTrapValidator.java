@@ -22,7 +22,14 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.ref.JCaughtExceptionRef;
+import sootup.core.jimple.common.stmt.JIdentityStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
@@ -42,21 +49,44 @@ public class JimpleTrapValidator implements BodyValidator {
    */
   @Override
   public List<ValidationException> validate(Body body, View view) {
-    // TODO: check copied code from old soot
-    /*
-     * Set<Unit> caughtUnits = new HashSet<Unit>(); for (Trap trap : body.getTraps()) {
-     * caughtUnits.add(trap.getHandlerUnit());
-     *
-     * if (!(trap.getHandlerUnit() instanceof IdentityStmt)) { exceptions.add(new ValidationException(trap,
-     * "Trap handler does not start with caught " + "exception reference")); } else { JIdentityStmt is = (JIdentityStmt)
-     * trap.getHandlerUnit(); if (!(is.getRightOp() instanceof CaughtExceptionRef)) { exceptions.add(new
-     * ValidationException(trap, "Trap handler does not start with caught " + "exception reference")); } } } for (Unit u :
-     * body.getUnits()) { if (u instanceof JIdentityStmt) { JIdentityStmt id = (JIdentityStmt) u; if (id.getRightOp()
-     * instanceof CaughtExceptionRef) { if (!caughtUnits.contains(id)) { exceptions.add(new ValidationException(id,
-     * "Could not find a corresponding trap using this statement as handler", "Body of methodRef " +
-     * body.getMethod().getSignature() + " contains a caught exception reference," +
-     * "but not a corresponding trap using this statement as handler")); } } } }
-     */
-    return null;
+
+    List<ValidationException> exceptions = new ArrayList<>();
+
+    Set<Stmt> caughtStmts = new HashSet<Stmt>();
+    for (Trap trap : body.getTraps()) {
+      caughtStmts.add(trap.getHandlerStmt());
+      if (!(trap.getHandlerStmt() instanceof JIdentityStmt)) {
+        exceptions.add(
+            new ValidationException(
+                trap.getHandlerStmt(),
+                "Trap handler does not start with caught " + "exception reference"));
+      } else {
+        JIdentityStmt is = (JIdentityStmt) trap.getHandlerStmt();
+        if (!(is.getRightOp() instanceof JCaughtExceptionRef)) {
+          exceptions.add(
+              new ValidationException(
+                  trap.getHandlerStmt(),
+                  "Trap handler does not start with caught " + "exception reference"));
+        }
+      }
+    }
+    for (Stmt s : body.getStmts()) {
+      if (s instanceof JIdentityStmt) {
+        JIdentityStmt id = (JIdentityStmt) s;
+        if (id.getRightOp() instanceof JCaughtExceptionRef) {
+          if (!caughtStmts.contains(id)) {
+            exceptions.add(
+                new ValidationException(
+                    id,
+                    "Could not find a corresponding trap using this statement as handler. Body of methodRef "
+                        + body.getMethodSignature()
+                        + " contains a caught exception reference,"
+                        + "but not a corresponding trap using this statement as handler"));
+          }
+        }
+      }
+    }
+
+    return exceptions;
   }
 }
