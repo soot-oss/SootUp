@@ -1,3 +1,7 @@
+unnamed package
+dexpler
+instruction
+main
 qilin
 qilin.core
 qilin.core.builder
@@ -75,6 +79,7 @@ sootup.java.bytecode.frontend
 sootup.java.bytecode.inputlocation
 sootup.java.core
 sootup.java.core.interceptors
+sootup.java.core.interceptors.Dex
 sootup.java.core.interceptors.typeresolving
 sootup.java.core.interceptors.typeresolving.types
 sootup.java.core.jimple.basic
@@ -87,3 +92,5 @@ sootup.java.sourcecode.frontend
 sootup.java.sourcecode.inputlocation
 sootup.jimple
 sootup.jimple.parser
+tag
+Util
