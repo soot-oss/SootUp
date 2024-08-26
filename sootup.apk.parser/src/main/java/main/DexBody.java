@@ -268,7 +268,8 @@ public class DexBody {
    * <p>Handles if the register number actually points to a method parameter.
    *
    * @param num the register number
-   * @throws RuntimeException
+   * @throws RuntimeException if there are no registers to access
+   * @return the register local present in the given register number
    */
   public Local getRegisterLocal(int num) {
     int totalRegisters = registerLocals.length;

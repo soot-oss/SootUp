@@ -1,11 +1,7 @@
 package instruction;
 
 import Util.DexUtil;
-import main.DexBody;
 import org.jf.dexlib2.iface.instruction.Instruction;
-import org.jf.dexlib2.iface.instruction.formats.Instruction21c;
-import org.jf.dexlib2.iface.instruction.formats.Instruction22c;
-import org.jf.dexlib2.iface.instruction.formats.Instruction23x;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
@@ -16,8 +12,6 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.signatures.FieldSignature;
-import sootup.core.types.Type;
-import sootup.core.types.UnknownType;
 
 public abstract class FieldInstruction extends DexLibAbstractInstruction {
 
@@ -51,7 +45,8 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
   /**
    * Return a static SootFieldRef for a dexlib FieldReference.
    *
-   * @param item the dexlib FieldReference.
+   * @param fref the dexlib FieldReference.
+   * @return the JFieldRef for the given field Reference
    */
   protected JFieldRef getStaticSootFieldRef(FieldReference fref) {
     return getSootFieldRef(fref, true);
@@ -60,7 +55,8 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
   /**
    * Return a SootFieldRef for a dexlib FieldReference.
    *
-   * @param item the dexlib FieldReference.
+   * @return the JFieldRef for the given field Reference
+   * @param fref the dexlib FieldReference.
    */
   protected JFieldRef getSootFieldRef(FieldReference fref) {
     return getSootFieldRef(fref, false);
@@ -70,37 +66,14 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
    * Check if the field type equals the type of the value that will be stored in the field. A cast
    * expression has to be introduced for the unequal case.
    *
+   * @param sourceValue the local (left value) to be used in the assign statement
+   * @param instanceField the reference (right value) to be used in the assign statement
    * @return assignment statement which hold a cast or not depending on the types of the operation
    */
-  protected JAssignStmt getAssignStmt(DexBody body, Local sourceValue, ConcreteRef instanceField) {
+  protected JAssignStmt getAssignStmt(Local sourceValue, ConcreteRef instanceField) {
     JAssignStmt assign;
     assign =
         Jimple.newAssignStmt(sourceValue, instanceField, StmtPositionInfo.getNoStmtPositionInfo());
     return assign;
-  }
-
-  /** Return the source register for this instruction. */
-  private int sourceRegister() {
-    // I hate smali's API ..
-    if (instruction instanceof Instruction23x) {
-      return ((Instruction23x) instruction).getRegisterA();
-    } else if (instruction instanceof Instruction22c) {
-      return ((Instruction22c) instruction).getRegisterA();
-    } else if (instruction instanceof Instruction21c) {
-      return ((Instruction21c) instruction).getRegisterA();
-    } else {
-      throw new RuntimeException("Instruction is not a instance, array or static op");
-    }
-  }
-
-  /**
-   * Return the target type for put instructions.
-   *
-   * <p>Putters should override this.
-   *
-   * @param body the body containing this instruction
-   */
-  protected Type getTargetType(DexBody body) {
-    return UnknownType.getInstance();
   }
 }

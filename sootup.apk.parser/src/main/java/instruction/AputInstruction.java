@@ -6,9 +6,6 @@ import org.jf.dexlib2.iface.instruction.formats.Instruction23x;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.types.ArrayType;
-import sootup.core.types.Type;
-import sootup.core.types.UnknownType;
 import sootup.java.core.language.JavaJimple;
 
 public class AputInstruction extends FieldInstruction {
@@ -27,23 +24,12 @@ public class AputInstruction extends FieldInstruction {
     JArrayRef jArrayRef = JavaJimple.getInstance().newArrayRef(arrayBase, index);
 
     Local sourceValue = body.getRegisterLocal(source);
-    JAssignStmt assign = getAssignStmt(body, sourceValue, jArrayRef);
+    JAssignStmt assign = getAssignStmt(sourceValue, jArrayRef);
     setStmt(assign);
     body.add(assign);
   }
 
   public AputInstruction(Instruction instruction, int codeAddress) {
     super(instruction, codeAddress);
-  }
-
-  @Override
-  protected Type getTargetType(DexBody body) {
-    Instruction23x aPutInstr = (Instruction23x) instruction;
-    Type t = body.getRegisterLocal(aPutInstr.getRegisterB()).getType();
-    if (t instanceof ArrayType) {
-      return ((ArrayType) t).getElementType();
-    } else {
-      return UnknownType.getInstance();
-    }
   }
 }
