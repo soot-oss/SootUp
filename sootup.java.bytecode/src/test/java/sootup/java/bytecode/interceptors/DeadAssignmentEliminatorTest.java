@@ -1,12 +1,17 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -16,7 +21,11 @@ import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SourceType;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.PrimitiveType;
+import sootup.core.util.Utils;
+import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.interceptors.DeadAssignmentEliminator;
 import sootup.java.core.language.JavaJimple;
@@ -25,6 +34,9 @@ import sootup.java.core.views.JavaView;
 
 @Tag("Java8")
 public class DeadAssignmentEliminatorTest {
+
+  Path classFilePath =
+      Paths.get("../shared-test-resources/bugfixes/DeadAssignmentEliminatorTest.class");
 
   /**
    *
@@ -115,6 +127,44 @@ public class DeadAssignmentEliminatorTest {
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
     assertEquals(expectedGraph.getNodes().size(), actualGraph.getNodes().size());
+  }
+
+  @Test
+  public void testDeadAssignmentEliminator() {
+    AnalysisInputLocation inputLocation =
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            classFilePath,
+            "",
+            SourceType.Application,
+            Collections.singletonList(new DeadAssignmentEliminator()));
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                "DeadAssignmentEliminatorTest", "tc1", "void", Collections.emptyList());
+    Body body = view.getMethod(methodSignature).get().getBody();
+    assertFalse(body.getStmts().isEmpty());
+    assertEquals(
+        Stream.of(
+                "DeadAssignmentEliminatorTest this",
+                "unknown $stack3, $stack4, $stack5",
+                "this := @this: DeadAssignmentEliminatorTest",
+                "l1 = 30",
+                "l2 = l1",
+                "if l2 <= 5 goto label1",
+                "l1 = 40",
+                "$stack5 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $stack5.<java.io.PrintStream: void println(int)>(l1)",
+                "label1:",
+                "$stack3 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $stack3.<java.io.PrintStream: void println(int)>(l1)",
+                "l2 = 30",
+                "$stack4 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $stack4.<java.io.PrintStream: void println(int)>(l2)",
+                "return")
+            .collect(Collectors.toList()),
+        Utils.filterJimple(body.toString()));
   }
 
   private static Body.BodyBuilder createBody(boolean essentialOption) {
