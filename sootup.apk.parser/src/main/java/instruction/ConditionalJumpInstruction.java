@@ -51,6 +51,7 @@ public abstract class ConditionalJumpInstruction extends JumpInstruction
    * @param one first immediate
    * @param other second immediate
    * @throws RuntimeException if this is not a IfTest or IfTestz instruction.
+   * @return the conditional expression statement based on the opcode fromm the given instruction
    */
   protected AbstractConditionExpr getComparisonExpr(Immediate one, Immediate other) {
     Opcode opcode = instruction.getOpcode();

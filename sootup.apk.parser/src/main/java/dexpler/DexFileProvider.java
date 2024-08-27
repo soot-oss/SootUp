@@ -53,7 +53,9 @@ public class DexFileProvider {
    * Returns all dex files found in dex source
    *
    * @param dexSource Path to a jar, apk, dex, odex or a directory containing multiple dex files
+   * @param api_version the version of the currently instrumenting APK
    * @return List of dex files derived from source
+   * @throws IOException if the dex source is not parsed properly
    */
   public List<DexContainer<? extends DexFile>> getDexFromSource(File dexSource, int api_version)
       throws IOException {
