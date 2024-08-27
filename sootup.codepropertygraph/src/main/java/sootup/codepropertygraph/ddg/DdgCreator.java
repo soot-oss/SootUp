@@ -32,6 +32,7 @@ import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.java.core.intraproceduralanalysis.ReachingDefs;
 
 /**
  * This class is responsible for creating the Data Dependence Graph (DDG) property graph for a given

@@ -43,7 +43,7 @@ import sootup.core.model.MethodModifier;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
-import sootup.java.core.interceptors.reachingdefs.ReachingDefs;
+import sootup.java.core.intraproceduralanalysis.ReachingDefs;
 
 /**
  * This interceptor eliminates assignment statements to locals whose values are not subsequently

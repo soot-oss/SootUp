@@ -1,4 +1,4 @@
-package sootup.analysis.intraprocedural;
+package sootup.java.core.intraproceduralanalysis;
 
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;

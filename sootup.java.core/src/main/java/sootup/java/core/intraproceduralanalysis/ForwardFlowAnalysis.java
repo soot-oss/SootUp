@@ -1,4 +1,4 @@
-package sootup.java.core.interceptors.reachingdefs;
+package sootup.java.core.intraproceduralanalysis;
 
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;

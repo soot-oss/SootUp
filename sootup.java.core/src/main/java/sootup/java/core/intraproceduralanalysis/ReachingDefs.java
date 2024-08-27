@@ -1,4 +1,4 @@
-package sootup.codepropertygraph.ddg;
+package sootup.java.core.intraproceduralanalysis;
 
 /*-
 * #%L
@@ -25,17 +25,16 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 import java.util.*;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import sootup.analysis.intraprocedural.ForwardFlowAnalysis;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
-class ReachingDefs {
+public class ReachingDefs {
   private final Map<Stmt, List<Stmt>> reachingDefs;
 
-  ReachingDefs(StmtGraph<? extends BasicBlock<?>> graph) {
+  public ReachingDefs(StmtGraph<? extends BasicBlock<?>> graph) {
     this.reachingDefs = new HashMap<>();
 
     ReachingDefsAnalysis analysis = new ReachingDefsAnalysis(graph);
@@ -61,7 +60,7 @@ class ReachingDefs {
     }
   }
 
-  Map<Stmt, List<Stmt>> getReachingDefs() {
+  public Map<Stmt, List<Stmt>> getReachingDefs() {
     return reachingDefs;
   }
 

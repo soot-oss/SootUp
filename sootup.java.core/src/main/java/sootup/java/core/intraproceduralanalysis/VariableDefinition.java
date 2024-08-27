@@ -1,4 +1,4 @@
-package sootup.codepropertygraph.ddg;
+package sootup.java.core.intraproceduralanalysis;
 
 /*-
 * #%L
