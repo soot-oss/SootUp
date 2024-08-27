@@ -3,9 +3,12 @@ package sootup.java.bytecode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -17,9 +20,11 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.DotExporter;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.interceptors.CopyPropagator;
 import sootup.java.core.interceptors.DeadAssignmentEliminator;
+import sootup.java.core.interceptors.TypeAssigner;
 import sootup.java.core.views.JavaView;
 
 @Tag("Java8")
@@ -120,5 +125,17 @@ public class RuntimeJarConversionTests {
   public void testExample() {
     /* Example to start quickly */
     convertMethod("<java.awt.GraphicsEnvironment: java.awt.GraphicsEnvironment createGE()>");
+  }
+
+  @Test
+  public void runTimeOfBodyInterceptorOnJar() {
+      //Note: mrjar.jar used just for test purpose, you can put any jar file.
+      String baseDir = "../shared-test-resources/multi-release-jar/mrjar.jar";
+      //List<BodyInterceptor> bodyInterceptors = BytecodeBodyInterceptors.Default.getBodyInterceptors();
+      List<BodyInterceptor> bodyInterceptors = Collections.singletonList(new TypeAssigner());
+      AbstractMap.SimpleEntry<Map<BodyInterceptor, Long>, List<BodyInterceptor>> result = Utils.wrapEachBodyInterceptorWithPerformance(bodyInterceptors);
+      AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(baseDir, SourceType.Library, result.getValue());
+      JavaView view = new JavaView(inputLocation);
+      view.getClasses().forEach(javaSootClass -> javaSootClass.getMethods().forEach(SootMethod::getBody));
   }
 }
