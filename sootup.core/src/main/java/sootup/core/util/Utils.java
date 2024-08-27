@@ -68,11 +68,9 @@ public class Utils {
     return interceptors;
   }
 
-  /**
-   * e.g. to measure Runtime (Time and Memory Usage) of every interceptor
-   */
-  public static AbstractMap.SimpleEntry<Map<BodyInterceptor, Long>, List<BodyInterceptor>> wrapEachBodyInterceptorWithPerformance(
-          @Nonnull List<BodyInterceptor> bodyInterceptors) {
+  /** e.g. to measure Runtime (Time and Memory Usage) of every interceptor */
+  public static AbstractMap.SimpleEntry<Map<BodyInterceptor, Long>, List<BodyInterceptor>>
+      wrapEachBodyInterceptorWithPerformance(@Nonnull List<BodyInterceptor> bodyInterceptors) {
     Map<BodyInterceptor, Long> runtimeMap = new HashMap<>();
     List<BodyInterceptor> interceptors = new ArrayList<>(bodyInterceptors.size() * 2 + 1);
     bodyInterceptors.stream()
@@ -81,31 +79,43 @@ public class Utils {
               AtomicReference<Long> duration = new AtomicReference<>(0L);
               // Initialize the duration for each interceptor
               runtimeMap.putIfAbsent(b, 0L);
-              BodyInterceptor bodyInterceptor = (builder, view) -> {
-                System.out.println(builder.getMethodSignature());
-                Long startTime = System.currentTimeMillis(); // Start time
-                Runtime runtime = Runtime.getRuntime();
-                Integer dataSize = 1024 * 1024;
-                Long usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
-                //System.out.println("Used Memory before" + usedMemoryBefore/dataSize + " MB");
-                try {
-                  b.interceptBody(builder, view);
-                } catch (Exception e) {
-                  throw new RuntimeException(e);
-                } finally {
-                  Long endTime = System.currentTimeMillis(); // End time
-                  duration.set(endTime - startTime); // Calculate duration
-                  System.out.println("Interceptor " + b.getClass().getSimpleName() + " took " + duration + " ms.");
-                  Long usedMemoryAfter = runtime.totalMemory() - runtime.freeMemory();
-                  System.out.println("Interceptor " + b.getClass().getSimpleName() + " used memory: " + (usedMemoryAfter - usedMemoryBefore) / dataSize + " MB");
-                  runtimeMap.merge(b, duration.get(), Long::sum);
-                  //System.out.println(runtimeMap);
-                }
-              };
+              BodyInterceptor bodyInterceptor =
+                  (builder, view) -> {
+                    System.out.println(builder.getMethodSignature());
+                    Long startTime = System.currentTimeMillis(); // Start time
+                    Runtime runtime = Runtime.getRuntime();
+                    Integer dataSize = 1024 * 1024;
+                    Long usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
+                    // System.out.println("Used Memory before" + usedMemoryBefore/dataSize + " MB");
+                    try {
+                      b.interceptBody(builder, view);
+                    } catch (Exception e) {
+                      throw new RuntimeException(e);
+                    } finally {
+                      Long endTime = System.currentTimeMillis(); // End time
+                      duration.set(endTime - startTime); // Calculate duration
+                      System.out.println(
+                          "Interceptor "
+                              + b.getClass().getSimpleName()
+                              + " took "
+                              + duration
+                              + " ms.");
+                      Long usedMemoryAfter = runtime.totalMemory() - runtime.freeMemory();
+                      System.out.println(
+                          "Interceptor "
+                              + b.getClass().getSimpleName()
+                              + " used memory: "
+                              + (usedMemoryAfter - usedMemoryBefore) / dataSize
+                              + " MB");
+                      runtimeMap.merge(b, duration.get(), Long::sum);
+                      // System.out.println(runtimeMap);
+                    }
+                  };
               return bodyInterceptor;
             })
         .forEach(interceptors::add);
-    AbstractMap.SimpleEntry<Map<BodyInterceptor, Long>, List<BodyInterceptor>> res = new AbstractMap.SimpleEntry<>(runtimeMap, interceptors);
+    AbstractMap.SimpleEntry<Map<BodyInterceptor, Long>, List<BodyInterceptor>> res =
+        new AbstractMap.SimpleEntry<>(runtimeMap, interceptors);
     return res;
   }
 
