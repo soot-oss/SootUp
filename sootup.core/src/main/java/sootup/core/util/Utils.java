@@ -28,7 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -71,52 +71,44 @@ public class Utils {
   /** e.g. to measure Runtime (Time and Memory Usage) of every interceptor */
   public static AbstractMap.SimpleEntry<Map<BodyInterceptor, Long>, List<BodyInterceptor>>
       wrapEachBodyInterceptorWithPerformance(@Nonnull List<BodyInterceptor> bodyInterceptors) {
-    Map<BodyInterceptor, Long> runtimeMap = new HashMap<>();
-    List<BodyInterceptor> interceptors = new ArrayList<>(bodyInterceptors.size() * 2 + 1);
-    bodyInterceptors.stream()
-        .map(
-            b -> {
-              AtomicReference<Long> duration = new AtomicReference<>(0L);
-              // Initialize the duration for each interceptor
-              runtimeMap.putIfAbsent(b, 0L);
-              BodyInterceptor bodyInterceptor =
-                  (builder, view) -> {
-                    System.out.println(builder.getMethodSignature());
-                    Long startTime = System.currentTimeMillis(); // Start time
-                    Runtime runtime = Runtime.getRuntime();
-                    Integer dataSize = 1024 * 1024;
-                    Long usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
-                    // System.out.println("Used Memory before" + usedMemoryBefore/dataSize + " MB");
-                    try {
-                      b.interceptBody(builder, view);
-                    } catch (Exception e) {
-                      throw new RuntimeException(e);
-                    } finally {
-                      Long endTime = System.currentTimeMillis(); // End time
-                      duration.set(endTime - startTime); // Calculate duration
-                      System.out.println(
-                          "Interceptor "
-                              + b.getClass().getSimpleName()
-                              + " took "
-                              + duration
-                              + " ms.");
-                      Long usedMemoryAfter = runtime.totalMemory() - runtime.freeMemory();
-                      System.out.println(
-                          "Interceptor "
-                              + b.getClass().getSimpleName()
-                              + " used memory: "
-                              + (usedMemoryAfter - usedMemoryBefore) / dataSize
-                              + " MB");
-                      runtimeMap.merge(b, duration.get(), Long::sum);
-                      // System.out.println(runtimeMap);
-                    }
-                  };
-              return bodyInterceptor;
-            })
-        .forEach(interceptors::add);
-    AbstractMap.SimpleEntry<Map<BodyInterceptor, Long>, List<BodyInterceptor>> res =
-        new AbstractMap.SimpleEntry<>(runtimeMap, interceptors);
-    return res;
+    ConcurrentHashMap<BodyInterceptor, Long> runtimeMap = new ConcurrentHashMap<>();
+    final int MB = 1024 * 1024;
+    Runtime runtime = Runtime.getRuntime();
+    bodyInterceptors.forEach(b -> runtimeMap.put(b, 0L));
+    List<BodyInterceptor> interceptors =
+        bodyInterceptors.stream()
+            .map(
+                b ->
+                    (BodyInterceptor)
+                        (builder, view) -> {
+                          System.out.println(builder.getMethodSignature());
+                          long startTime = System.currentTimeMillis();
+                          long usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
+                          try {
+                            b.interceptBody(builder, view);
+                          } catch (Exception e) {
+                            throw new RuntimeException(e);
+                          } finally {
+                            long duration = System.currentTimeMillis() - startTime;
+                            long usedMemoryAfter = runtime.totalMemory() - runtime.freeMemory();
+                            long memoryUsed = usedMemoryAfter - usedMemoryBefore;
+                            System.out.println(
+                                "Interceptor "
+                                    + b.getClass().getSimpleName()
+                                    + " took "
+                                    + duration
+                                    + " ms.");
+                            System.out.println(
+                                "Interceptor "
+                                    + b.getClass().getSimpleName()
+                                    + " used memory: "
+                                    + memoryUsed / MB
+                                    + " MB");
+                            runtimeMap.merge(b, duration, Long::sum);
+                          }
+                        })
+            .collect(Collectors.toList());
+    return new AbstractMap.SimpleEntry<>(runtimeMap, interceptors);
   }
 
   List<Path> compileJavaOTF(String className, String javaSourceContent) {
