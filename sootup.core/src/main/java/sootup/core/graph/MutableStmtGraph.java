@@ -54,7 +54,7 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   /** creates a whole BasicBlock with the details from the parameters */
   public abstract void addBlock(@Nonnull List<Stmt> stmts, @Nonnull Map<ClassType, Stmt> traps);
 
-  public abstract List<Stmt> removeBlock(BasicBlock<?> block);
+  public abstract void removeBlock(BasicBlock<?> block);
 
   /**
    * creates a whole BasicBlock which contains the sequence of (n-1)*fallsthrough()-stmt + optional
@@ -109,6 +109,8 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   public void setEdges(@Nonnull BranchingStmt from, @Nonnull Stmt... targets) {
     setEdges(from, Arrays.asList(targets));
   }
+
+  public abstract void unLinkNodes(@Nonnull Stmt from, @Nonnull Stmt to);
 
   /**
    * removes the current outgoing flows of "from" to "to"

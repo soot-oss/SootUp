@@ -562,7 +562,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   @Override
-  public List<Stmt> removeBlock(BasicBlock<?> block) {
+  public void removeBlock(BasicBlock<?> block) {
     Pair<Integer, MutableBasicBlock> blockOfPair = stmtToBlock.get(block.getHead());
     if (blockOfPair.getRight() != block) {
       throw new IllegalArgumentException(
@@ -573,27 +573,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     List<Stmt> stmts = block.getStmts();
     stmts.forEach(stmtToBlock::remove);
 
-    // remove current block from Predecessor & Successor
-    blockOf
-        .getPredecessors()
-        .forEach(
-            pred -> {
-              pred.removeFromSuccessorBlocks(blockOf);
-            });
-    blockOf
-        .getSuccessors()
-        .forEach(
-            succ -> {
-              succ.removePredecessorBlock(blockOf);
-            });
-
     // unlink block from graph
     blockOf.clearPredecessorBlocks();
     blockOf.clearSuccessorBlocks();
     blockOf.clearExceptionalSuccessorBlocks();
-
     blocks.remove(blockOf);
-    return stmts;
   }
 
   @Override
@@ -1302,6 +1286,24 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         }
       }
     }
+  }
+
+  @Override
+  public void unLinkNodes(@Nonnull Stmt from, @Nonnull Stmt to) {
+    Pair<Integer, MutableBasicBlock> blockOfFromPair = stmtToBlock.get(from);
+    if (blockOfFromPair == null) {
+      throw new IllegalArgumentException("stmt '" + from + "' does not exist in this StmtGraph!");
+    }
+    MutableBasicBlock blockOfFrom = blockOfFromPair.getRight();
+    Pair<Integer, MutableBasicBlock> blockOfToPair = stmtToBlock.get(to);
+    if (blockOfToPair == null) {
+      throw new IllegalArgumentException("stmt '" + to + "' does not exist in this StmtGraph!");
+    }
+    MutableBasicBlock blockOfTo = blockOfToPair.getRight();
+
+    // Unlink 2 blocks
+    blockOfFrom.removeFromSuccessorBlocks(blockOfTo);
+    blockOfTo.removePredecessorBlock(blockOfFrom);
   }
 
   @Override
