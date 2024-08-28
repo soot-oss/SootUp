@@ -13,6 +13,7 @@ import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.transform.RunTimeBodyInterceptor;
 import sootup.core.util.DotExporter;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
@@ -123,19 +124,38 @@ public class RuntimeJarConversionTests {
     convertMethod("<java.awt.GraphicsEnvironment: java.awt.GraphicsEnvironment createGE()>");
   }
 
+  /** e.g. to measure Runtime (Time and Memory Usage) of every interceptor */
   @Test
   public void runTimeOfBodyInterceptorOnJar() {
     // Note: mrjar.jar used just for test purpose, you can put any jar file.
     String baseDir = "../shared-test-resources/multi-release-jar/mrjar.jar";
-    // List<BodyInterceptor> bodyInterceptors =
+    // List<BodyInterceptor> bodyInterceptorsList =
     // BytecodeBodyInterceptors.Default.getBodyInterceptors();
-    List<BodyInterceptor> bodyInterceptors = Collections.singletonList(new TypeAssigner());
-    AbstractMap.SimpleEntry<Map<BodyInterceptor, Long>, List<BodyInterceptor>> result =
-        Utils.wrapEachBodyInterceptorWithPerformance(bodyInterceptors);
+    List<BodyInterceptor> bodyInterceptorsList = Collections.singletonList(new TypeAssigner());
+    List<RunTimeBodyInterceptor> runTimeBodyInterceptorsList = new ArrayList<>();
+    for (BodyInterceptor bodyInterceptor : bodyInterceptorsList) {
+      RunTimeBodyInterceptor runTimeBodyInterceptor = new RunTimeBodyInterceptor(bodyInterceptor);
+      runTimeBodyInterceptorsList.add(runTimeBodyInterceptor);
+    }
     AnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation(baseDir, SourceType.Library, result.getValue());
+        new JavaClassPathAnalysisInputLocation(
+            baseDir, SourceType.Library, Collections.unmodifiableList(runTimeBodyInterceptorsList));
     JavaView view = new JavaView(inputLocation);
     view.getClasses()
         .forEach(javaSootClass -> javaSootClass.getMethods().forEach(SootMethod::getBody));
+    runTimeBodyInterceptorsList.forEach(
+        runTimeBodyInterceptor -> {
+          runTimeBodyInterceptor
+              .getBiMetricMap()
+              .forEach(
+                  (key, value) ->
+                      System.out.println(
+                          key
+                              + " "
+                              + value.getRuntime()
+                              + " ms and "
+                              + value.getMemoryUsage()
+                              + " MB"));
+        });
   }
 }
