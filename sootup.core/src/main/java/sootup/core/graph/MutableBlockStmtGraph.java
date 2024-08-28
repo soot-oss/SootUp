@@ -1633,7 +1633,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   /**
-   * Removes a trap.
+   * Removes a trap from the graph and updates the control flow accordingly.
    *
    * @param trap The trap to be removed.
    * @throws IllegalArgumentException if the trap is not found in the graph.
@@ -1645,30 +1645,24 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       throw new IllegalArgumentException("The provided trap is not found in the graph.");
     }
 
-    // Remove the trap from the list
     traps.remove(trap);
 
-    // Rebuild the statement to index mapping
     Map<Stmt, Integer> stmtToIdx = rebuildStmtToIdx();
 
-    // Rebuild trap-related structures
+    // Rebuild trap-related structures to update control flow
     Map<ClassType, PriorityQueue<Trap>> overlappingTraps = new HashMap<>();
     PriorityQueue<Trap> trapStart =
         new PriorityQueue<>(Comparator.comparingInt(t -> stmtToIdx.get(t.getBeginStmt())));
     PriorityQueue<Trap> trapEnd =
         new PriorityQueue<>(Comparator.comparingInt(t -> stmtToIdx.get(t.getEndStmt())));
 
-    // Re-populate trapStart and trapEnd priority queues
     traps.forEach(
         t -> {
           trapStart.add(t);
           trapEnd.add(t);
         });
 
-    // Manage active traps and apply changes based on the removal
-    manageTrapMappings(trapStart, trapEnd, overlappingTraps, stmtToIdx);
-
-    // Ensure all exceptional edges related to the trap's exceptionType are fully removed
+    manageTrapMappings(trapStart, trapEnd, overlappingTraps);
     removeExceptionalEdgesFromGraph(trap.getExceptionType());
   }
 
@@ -1682,22 +1676,21 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         stmtToIdx.put(stmt, index++);
       }
     }
-
     return stmtToIdx;
   }
 
   private void manageTrapMappings(
       PriorityQueue<Trap> trapStart,
       PriorityQueue<Trap> trapEnd,
-      Map<ClassType, PriorityQueue<Trap>> overlappingTraps,
-      Map<Stmt, Integer> stmtToIdx) {
+      Map<ClassType, PriorityQueue<Trap>> overlappingTraps) {
+
     Map<ClassType, Trap> activeTrapMap = new HashMap<>();
 
     Trap nextStartingTrap = trapStart.poll();
     Trap nextEndingTrap = trapEnd.poll();
 
     while (nextStartingTrap != null || nextEndingTrap != null) {
-      if (nextEndingTrap != null && stmtToIdx.get(nextEndingTrap.getEndStmt()) == null) {
+      if (nextEndingTrap != null) {
         ClassType exceptionType = nextEndingTrap.getExceptionType();
         activeTrapMap.remove(exceptionType);
         overlappingTraps.remove(exceptionType);
@@ -1712,11 +1705,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       }
     }
 
-    // Apply changes directly to the control flow by updating the graph.
     updateBlockWithTraps(activeTrapMap);
   }
 
-  /** Remove all exceptional edges associated with a given exceptionType from the graph. */
   private void removeExceptionalEdgesFromGraph(ClassType exceptionType) {
     for (Map.Entry<Stmt, Integer> entry : rebuildStmtToIdx().entrySet()) {
       Stmt stmt = entry.getKey();
@@ -1724,11 +1715,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       if (blockPair != null) {
         MutableBasicBlock block = blockPair.getRight();
-        // Remove the old exceptional edge for the given exception type
-        removeExceptionalEdge(stmt, exceptionType);
 
-        // Merge the block if necessary
-        tryMergeIntoSurroundingBlocks(block);
+        if (block.getExceptionalSuccessors().containsKey(exceptionType)) {
+          removeExceptionalEdge(stmt, exceptionType);
+          tryMergeIntoSurroundingBlocks(block);
+        }
       }
     }
   }
@@ -1736,32 +1727,20 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   private void updateBlockWithTraps(Map<ClassType, Trap> activeTrapMap) {
     for (Map.Entry<ClassType, Trap> entry : activeTrapMap.entrySet()) {
       ClassType exceptionType = entry.getKey();
-      Stmt handlerStmt = entry.getValue().getHandlerStmt();
-
-      // Logic to update the block's control flow with the new trap configuration
-      applyTrapToBlocks(exceptionType, handlerStmt);
+      Trap trap = entry.getValue();
+      applyTrapToBlock(trap.getBeginStmt(), exceptionType, trap.getHandlerStmt());
     }
   }
 
-  /** Apply trap information to the relevant blocks in the graph. */
-  private void applyTrapToBlocks(ClassType exceptionType, Stmt handlerStmt) {
-    for (Map.Entry<Stmt, Integer> entry : rebuildStmtToIdx().entrySet()) {
-      Stmt stmt = entry.getKey();
-      Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(stmt);
+  private void applyTrapToBlock(Stmt beginStmt, ClassType exceptionType, Stmt handlerStmt) {
+    Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(beginStmt);
 
-      if (blockPair != null) {
-        MutableBasicBlock block = blockPair.getRight();
-        // Remove the old exceptional edge for the given exception type
-        removeExceptionalEdge(stmt, exceptionType);
+    if (blockPair != null) {
+      MutableBasicBlock block = blockPair.getRight();
 
-        // Add the new handler (if one is provided)
-        if (handlerStmt != null) {
-          addExceptionalEdge(stmt, exceptionType, handlerStmt);
-        }
-
-        // Merge the block if necessary
-        tryMergeIntoSurroundingBlocks(block);
-      }
+      removeExceptionalEdge(beginStmt, exceptionType);
+      addExceptionalEdge(beginStmt, exceptionType, handlerStmt);
+      tryMergeIntoSurroundingBlocks(block);
     }
   }
 }
