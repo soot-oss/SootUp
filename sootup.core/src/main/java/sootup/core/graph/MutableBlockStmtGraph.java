@@ -1730,12 +1730,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   private void applyTrapToBlock(Stmt beginStmt, ClassType exceptionType, Stmt handlerStmt) {
     Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(beginStmt);
 
-    if (blockPair != null) {
-      MutableBasicBlock block = blockPair.getRight();
+    if (blockPair == null) return;
 
-      removeExceptionalEdge(beginStmt, exceptionType);
-      addExceptionalEdge(beginStmt, exceptionType, handlerStmt);
-      tryMergeIntoSurroundingBlocks(block);
-    }
+    MutableBasicBlock block = blockPair.getRight();
+
+    removeExceptionalEdge(beginStmt, exceptionType);
+    addExceptionalEdge(beginStmt, exceptionType, handlerStmt);
+    tryMergeIntoSurroundingBlocks(block);
   }
 }
