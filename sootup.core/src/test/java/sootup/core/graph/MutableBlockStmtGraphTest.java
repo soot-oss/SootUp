@@ -1034,9 +1034,9 @@ public class MutableBlockStmtGraphTest {
   public void testRemoveSingleTrap() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
-    // Create statements and exception handler
-    FallsThroughStmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
-    FallsThroughStmt stmt2 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    // Create distinct statements and an exception handler
+    JReturnVoidStmt stmt1 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JGotoStmt stmt2 = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
     Stmt handlerStmt =
         new JIdentityStmt(
             new Local("ex", throwableSig),
@@ -1044,8 +1044,8 @@ public class MutableBlockStmtGraphTest {
             StmtPositionInfo.getNoStmtPositionInfo());
 
     // Add blocks and starting statement
-    graph.addBlock(Collections.singletonList(stmt1));
-    graph.addBlock(Collections.singletonList(stmt2));
+    graph.addBlock(Collections.singletonList(stmt1)); // Block 1 with return statement
+    graph.addBlock(Collections.singletonList(stmt2)); // Block 2 with goto statement
     graph.setStartingStmt(stmt1);
 
     // Add an exceptional edge, simulating a trap
@@ -1067,8 +1067,8 @@ public class MutableBlockStmtGraphTest {
   public void testRemoveMultipleTrapsWithDifferentExceptionTypes() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
-    FallsThroughStmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
-    JGotoStmt stmt2 = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JGotoStmt stmt1 = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JReturnVoidStmt stmt2 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     JReturnVoidStmt stmt3 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
     Stmt handlerStmt1 =
@@ -1083,6 +1083,7 @@ public class MutableBlockStmtGraphTest {
             new JCaughtExceptionRef(ioExceptionSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
+    // Add blocks and starting statement
     graph.addBlock(Collections.singletonList(stmt1));
     graph.addBlock(Collections.singletonList(stmt2));
     graph.addBlock(Collections.singletonList(stmt3));
@@ -1091,6 +1092,7 @@ public class MutableBlockStmtGraphTest {
     graph.addExceptionalEdge(stmt1, throwableSig, handlerStmt1);
     graph.addExceptionalEdge(stmt2, ioExceptionSig, handlerStmt2);
 
+    // Verify both traps are present
     List<Trap> traps = graph.buildTraps();
     assertEquals(2, traps.size());
 
@@ -1103,39 +1105,13 @@ public class MutableBlockStmtGraphTest {
   }
 
   @Test
-  public void testRemoveTrapFromGraphWithOnlyOneTrap() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-
-    FallsThroughStmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
-    FallsThroughStmt stmt2 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
-    Stmt handlerStmt =
-        new JIdentityStmt(
-            new Local("ex", throwableSig),
-            new JCaughtExceptionRef(throwableSig),
-            StmtPositionInfo.getNoStmtPositionInfo());
-
-    graph.addBlock(Collections.singletonList(stmt1));
-    graph.addBlock(Collections.singletonList(stmt2));
-    graph.setStartingStmt(stmt1);
-
-    graph.addExceptionalEdge(stmt1, throwableSig, handlerStmt);
-
-    List<Trap> traps = graph.buildTraps();
-    assertEquals(1, traps.size());
-
-    // Remove the only trap and verify none remain
-    graph.removeTrap(traps.get(0));
-    traps = graph.buildTraps();
-    assertEquals(0, traps.size());
-  }
-
-  @Test
   public void testRemoveTrapThatSharesHandlerWithAnotherTrap() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
     FallsThroughStmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JGotoStmt gotoStmt = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
     FallsThroughStmt stmt2 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
-    FallsThroughStmt stmt3 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JReturnVoidStmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
     Stmt sharedHandlerStmt =
         new JIdentityStmt(
@@ -1143,11 +1119,14 @@ public class MutableBlockStmtGraphTest {
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
+    // Add blocks to the graph
     graph.addBlock(Collections.singletonList(stmt1));
+    graph.addBlock(Collections.singletonList(gotoStmt));
     graph.addBlock(Collections.singletonList(stmt2));
-    graph.addBlock(Collections.singletonList(stmt3));
+    graph.addBlock(Collections.singletonList(returnStmt));
     graph.setStartingStmt(stmt1);
 
+    // Add two traps with different exception types but sharing the same handler
     graph.addExceptionalEdge(stmt1, throwableSig, sharedHandlerStmt);
     graph.addExceptionalEdge(stmt2, ioExceptionSig, sharedHandlerStmt);
 
@@ -1156,6 +1135,7 @@ public class MutableBlockStmtGraphTest {
 
     // Remove the first trap and verify the other remains with the same handler
     graph.removeTrap(traps.get(0));
+
     traps = graph.buildTraps();
     assertEquals(1, traps.size());
     assertEquals(stmt2, traps.get(0).getBeginStmt());

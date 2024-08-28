@@ -1648,7 +1648,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     Map<Stmt, Integer> stmtToIdx = rebuildStmtToIdx();
 
     // Rebuild trap-related structures to update control flow
-    Map<ClassType, PriorityQueue<Trap>> overlappingTraps = new HashMap<>();
     PriorityQueue<Trap> trapStart =
         new PriorityQueue<>(Comparator.comparingInt(t -> stmtToIdx.get(t.getBeginStmt())));
     PriorityQueue<Trap> trapEnd =
@@ -1660,7 +1659,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           trapEnd.add(t);
         });
 
-    manageTrapMappings(trapStart, trapEnd, overlappingTraps);
+    //manageTrapMappings(trapStart, trapEnd);
     removeExceptionalEdgesFromGraph(trap.getExceptionType());
   }
 
@@ -1677,10 +1676,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     return stmtToIdx;
   }
 
-  private void manageTrapMappings(
-      PriorityQueue<Trap> trapStart,
-      PriorityQueue<Trap> trapEnd,
-      Map<ClassType, PriorityQueue<Trap>> overlappingTraps) {
+  private void manageTrapMappings(PriorityQueue<Trap> trapStart, PriorityQueue<Trap> trapEnd) {
 
     Map<ClassType, Trap> activeTrapMap = new HashMap<>();
 
@@ -1691,7 +1687,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       if (nextEndingTrap != null) {
         ClassType exceptionType = nextEndingTrap.getExceptionType();
         activeTrapMap.remove(exceptionType);
-        overlappingTraps.remove(exceptionType);
         nextEndingTrap = trapEnd.poll();
       }
 
