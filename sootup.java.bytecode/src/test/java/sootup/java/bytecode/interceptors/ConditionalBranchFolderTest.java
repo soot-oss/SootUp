@@ -1,14 +1,18 @@
 package sootup.java.bytecode.interceptors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import categories.TestCategories;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -19,12 +23,15 @@ import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.util.ImmutableUtils;
 import sootup.core.util.Utils;
+import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.interceptors.ConditionalBranchFolder;
+import sootup.java.core.interceptors.CopyPropagator;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -32,6 +39,9 @@ import sootup.java.core.views.JavaView;
 /** @author Marcus Nachtigall */
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class ConditionalBranchFolderTest {
+
+  Path classFilePath =
+      Paths.get("../shared-test-resources/bugfixes/ConditionalBranchFolderTest.class");
 
   /**
    * Tests the correct deletion of an if-statement with a constant condition. Transforms from
@@ -46,9 +56,17 @@ public class ConditionalBranchFolderTest {
   public void testUnconditionalBranching() {
     Body.BodyBuilder builder = createBodyBuilder(0);
     new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
+    Body body = builder.build();
     assertEquals(
-        Arrays.asList("a = \"str\"", "b = \"str\"", "return a"),
-        Utils.bodyStmtsAsStrings(builder.build()));
+        Stream.of(
+                "java.lang.String a, b",
+                "a = \"str\"",
+                "b = \"str\"",
+                "goto label1",
+                "label1:",
+                "return b")
+            .collect(Collectors.toList()),
+        Utils.filterJimple(body.toString()));
   }
 
   /**
@@ -65,8 +83,15 @@ public class ConditionalBranchFolderTest {
     Body processedBody = builder.build();
 
     assertEquals(
-        Arrays.asList("a = \"str\"", "b = \"different string\"", "return b"),
-        Utils.bodyStmtsAsStrings(processedBody));
+        Stream.of(
+                "java.lang.String a, b",
+                "a = \"str\"",
+                "b = \"different string\"",
+                "goto label1",
+                "label1:",
+                "return a")
+            .collect(Collectors.toList()),
+        Utils.filterJimple(processedBody.toString()));
   }
 
   @Test
@@ -77,6 +102,46 @@ public class ConditionalBranchFolderTest {
     Body processedBody = builder.build();
 
     assertEquals(Utils.bodyStmtsAsStrings(originalBody), Utils.bodyStmtsAsStrings(processedBody));
+  }
+
+  @Test
+  public void testConditionalBranchFolderWithMultipleBranches() {
+    AnalysisInputLocation inputLocation =
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation
+            .ClassFileBasedAnalysisInputLocation(
+            classFilePath,
+            "",
+            SourceType.Application,
+            Arrays.asList(new CopyPropagator(), new ConditionalBranchFolder()));
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                "ConditionalBranchFolderTest", "tc1", "void", Collections.emptyList());
+    Body body = view.getMethod(methodSignature).get().getBody();
+    assertFalse(body.getStmts().isEmpty());
+    assertEquals(
+        Stream.of(
+                "ConditionalBranchFolderTest this",
+                "unknown $stack3, $stack4, l1",
+                "this := @this: ConditionalBranchFolderTest",
+                "l1 = 1",
+                "goto label1",
+                "label1:",
+                "goto label2",
+                "label2:",
+                "goto label3",
+                "label3:",
+                "$stack4 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.String)>(\"lets see\")",
+                "$stack3 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $stack3.<java.io.PrintStream: void println(java.lang.String)>(\"mid\")",
+                "goto label4",
+                "label4:",
+                "return")
+            .collect(Collectors.toList()),
+        Utils.filterJimple(body.toString()));
   }
 
   /**
