@@ -27,8 +27,6 @@ public class BodyInterceptorMetric {
   private long runtime;
   private long memoryUsage;
 
-  public BodyInterceptorMetric() {}
-
   public BodyInterceptorMetric(long runtime, long memoryUsage) {
     this.runtime = runtime;
     this.memoryUsage = memoryUsage;

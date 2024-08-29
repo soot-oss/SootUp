@@ -40,10 +40,6 @@ public class RunTimeBodyInterceptor implements BodyInterceptor {
     return biMetric;
   }
 
-  public void setBiMetric(BodyInterceptorMetric biMetric) {
-    this.biMetric = biMetric;
-  }
-
   public BodyInterceptor getBodyInterceptor() {
     return bodyInterceptor;
   }
