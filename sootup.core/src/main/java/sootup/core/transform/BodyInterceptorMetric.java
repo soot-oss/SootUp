@@ -24,29 +24,29 @@ package sootup.core.transform;
 
 public class BodyInterceptorMetric {
 
-  private Long runtime;
-  private Long memoryUsage;
+  private long runtime;
+  private long memoryUsage;
 
   public BodyInterceptorMetric() {}
 
-  public BodyInterceptorMetric(Long runtime, Long memoryUsage) {
+  public BodyInterceptorMetric(long runtime, long memoryUsage) {
     this.runtime = runtime;
     this.memoryUsage = memoryUsage;
   }
 
-  public Long getRuntime() {
+  public long getRuntime() {
     return runtime;
   }
 
-  public void setRuntime(Long runtime) {
+  public void setRuntime(long runtime) {
     this.runtime = runtime;
   }
 
-  public Long getMemoryUsage() {
+  public long getMemoryUsage() {
     return memoryUsage;
   }
 
-  public void setMemoryUsage(Long memoryUsage) {
+  public void setMemoryUsage(long memoryUsage) {
     this.memoryUsage = memoryUsage;
   }
 }

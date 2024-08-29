@@ -13,6 +13,7 @@ import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.transform.BodyInterceptorMetric;
 import sootup.core.transform.RunTimeBodyInterceptor;
 import sootup.core.util.DotExporter;
 import sootup.core.util.Utils;
@@ -131,7 +132,8 @@ public class RuntimeJarConversionTests {
     String baseDir = "../shared-test-resources/multi-release-jar/mrjar.jar";
     // List<BodyInterceptor> bodyInterceptorsList =
     // BytecodeBodyInterceptors.Default.getBodyInterceptors();
-    List<BodyInterceptor> bodyInterceptorsList = Collections.singletonList(new TypeAssigner());
+    List<BodyInterceptor> bodyInterceptorsList =
+        Arrays.asList(new TypeAssigner(), new CopyPropagator());
     List<RunTimeBodyInterceptor> runTimeBodyInterceptorsList = new ArrayList<>();
     for (BodyInterceptor bodyInterceptor : bodyInterceptorsList) {
       RunTimeBodyInterceptor runTimeBodyInterceptor = new RunTimeBodyInterceptor(bodyInterceptor);
@@ -145,17 +147,17 @@ public class RuntimeJarConversionTests {
         .forEach(javaSootClass -> javaSootClass.getMethods().forEach(SootMethod::getBody));
     runTimeBodyInterceptorsList.forEach(
         runTimeBodyInterceptor -> {
-          runTimeBodyInterceptor
-              .getBiMetricMap()
-              .forEach(
-                  (key, value) ->
-                      System.out.println(
-                          key
-                              + " "
-                              + value.getRuntime()
-                              + " ms and "
-                              + value.getMemoryUsage()
-                              + " MB"));
+          BodyInterceptorMetric biMetric = runTimeBodyInterceptor.getBiMetric();
+          System.out.println(
+              runTimeBodyInterceptor.getBodyInterceptor()
+                  + " took "
+                  + biMetric.getRuntime()
+                  + " ms.");
+          System.out.println(
+              runTimeBodyInterceptor.getBodyInterceptor()
+                  + " consumed "
+                  + biMetric.getMemoryUsage()
+                  + " MB.");
         });
   }
 }

@@ -22,15 +22,13 @@ package sootup.core.transform;
  * #L%
  */
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.Nonnull;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
 public class RunTimeBodyInterceptor implements BodyInterceptor {
 
-  private Map<BodyInterceptor, BodyInterceptorMetric> biMetricMap = new HashMap<>();
+  private BodyInterceptorMetric biMetric = new BodyInterceptorMetric(0L, 0L);
 
   private final BodyInterceptor bodyInterceptor;
 
@@ -38,12 +36,12 @@ public class RunTimeBodyInterceptor implements BodyInterceptor {
     this.bodyInterceptor = bodyInterceptor;
   }
 
-  public Map<BodyInterceptor, BodyInterceptorMetric> getBiMetricMap() {
-    return biMetricMap;
+  public BodyInterceptorMetric getBiMetric() {
+    return biMetric;
   }
 
-  public void setBiMetricMap(Map<BodyInterceptor, BodyInterceptorMetric> biMetricMap) {
-    this.biMetricMap = biMetricMap;
+  public void setBiMetric(BodyInterceptorMetric biMetric) {
+    this.biMetric = biMetric;
   }
 
   public BodyInterceptor getBodyInterceptor() {
@@ -52,9 +50,6 @@ public class RunTimeBodyInterceptor implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
-    // Initialise biMetricMap
-    BodyInterceptorMetric biMetric = new BodyInterceptorMetric(0L, 0L);
-    biMetricMap.putIfAbsent(bodyInterceptor, biMetric);
     long startTime = System.currentTimeMillis(); // Start time
     final int MB = 1024 * 1024;
     Runtime runtime = Runtime.getRuntime();
@@ -67,8 +62,7 @@ public class RunTimeBodyInterceptor implements BodyInterceptor {
     long usedMemoryAfter = runtime.totalMemory() - runtime.freeMemory();
     long memoryUsed = (usedMemoryAfter - usedMemoryBefore) / MB;
 
-    biMetric.setRuntime(biMetricMap.get(bodyInterceptor).getRuntime() + duration);
-    biMetric.setMemoryUsage(biMetricMap.get(bodyInterceptor).getMemoryUsage() + memoryUsed);
-    biMetricMap.put(bodyInterceptor, biMetric);
+    biMetric.setRuntime(biMetric.getRuntime() + duration);
+    biMetric.setMemoryUsage(biMetric.getMemoryUsage() + memoryUsed);
   }
 }
