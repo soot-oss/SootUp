@@ -46,6 +46,6 @@ public class DownloadJarAnalysisInputLocation extends ArchiveBasedAnalysisInputL
       throw new RuntimeException(e);
     }
 
-    return file.exists() ? file.toPath() : null;
+    return file.toPath();
   }
 }
