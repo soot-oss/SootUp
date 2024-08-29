@@ -65,7 +65,7 @@ public class DownloadJarAnalysisInputLocation extends ArchiveBasedAnalysisInputL
         }
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     } finally {
       if (connection != null) {
         connection.disconnect();
