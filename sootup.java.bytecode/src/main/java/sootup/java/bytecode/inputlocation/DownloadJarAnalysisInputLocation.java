@@ -44,7 +44,7 @@ public class DownloadJarAnalysisInputLocation extends ArchiveBasedAnalysisInputL
   }
 
   private static Path downloadAndConstructPath(String downloadURL) {
-    HttpURLConnection connection;
+    HttpURLConnection connection = null;
     String tempDirPath = System.getProperty("java.io.tmpdir");
     String filename = downloadURL.substring(downloadURL.lastIndexOf("/") + 1);
     File file = new File(tempDirPath, filename);
@@ -66,6 +66,10 @@ public class DownloadJarAnalysisInputLocation extends ArchiveBasedAnalysisInputL
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
+    } finally {
+      if (connection != null) {
+        connection.disconnect();
+      }
     }
 
     return file.toPath();
