@@ -3,7 +3,10 @@ package sootup.java.bytecode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiFunction;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
