@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.31">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.33">
     
     
       
@@ -424,6 +424,15 @@
   <a href="#android-bytecode" class="md-nav__link">
     <span class="md-ellipsis">
       Android Bytecode
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#android-bytecode-with-dex2jar" class="md-nav__link">
+    <span class="md-ellipsis">
+      Android Bytecode with Dex2Jar
     </span>
   </a>
   
@@ -1134,6 +1143,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#android-bytecode-with-dex2jar" class="md-nav__link">
+    <span class="md-ellipsis">
+      Android Bytecode with Dex2Jar
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#combining-multiple-analysisinputlocations" class="md-nav__link">
     <span class="md-ellipsis">
       Combining Multiple AnalysisInputLocations
@@ -1293,12 +1311,57 @@ The AnalysisInputLocation delegates the data to the <code>JavaCompiler</code> an
 </code></pre></div></td></tr></table></div>
 <h3 id="android-bytecode">Android Bytecode</h3>
 <p>File-Extensions: <code>.apk</code></p>
+<p>The <code>ApkAnalysisInputLocation</code> is the APK frontend written for Sootup</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;Banana.apk&quot;</span><span class="p">);</span>
+<span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ApkAnalysisInputLocation</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">DexBodyInterceptors</span><span class="p">.</span><span class="na">Default</span><span class="p">.</span><span class="na">bodyInterceptors</span><span class="p">());</span>
+<span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="android-bytecode-with-dex2jar">Android Bytecode with Dex2Jar</h3>
+<p>File-Extensions: <code>.apk</code></p>
 <p>The <code>ApkAnalysisInputLocation</code> currently uses dex2jar internally </p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;Banana.apk&quot;</span><span class="p">);</span>
-<span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ApkAnalysisInputLocation</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Dex2JarAnalysisInputLocation</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Dex2JarAnalysisInputLocation</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">ArchiveBasedAnalysisInputLocation</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">Dex2JarAnalysisInputLocation</span><span class="p">(</span><span class="nd">@Nonnull</span><span class="w"> </span><span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="nd">@Nullable</span><span class="w"> </span><span class="n">SourceType</span><span class="w"> </span><span class="n">srcType</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">srcType</span><span class="p">);</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">jarPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dex2jar</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">jarPath</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">dex2jar</span><span class="p">(</span><span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">apkPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">path</span><span class="p">.</span><span class="na">toAbsolutePath</span><span class="p">().</span><span class="na">toString</span><span class="p">();</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">outDir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;./tmp/&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">apkPath</span><span class="p">.</span><span class="na">lastIndexOf</span><span class="p">(</span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">apkPath</span><span class="p">.</span><span class="na">lastIndexOf</span><span class="p">(</span><span class="s">&quot;.apk&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">outputFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">outDir</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">apkPath</span><span class="p">.</span><span class="na">substring</span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;.jar&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="n">Dex2jarCmd</span><span class="p">.</span><span class="na">main</span><span class="p">(</span><span class="s">&quot;-f&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">apkPath</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;-o&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">outputFile</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">outputFile</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <div class="admonition info">
 <p class="admonition-title">A SootUp solution to directly generate Jimple is WIP!</p>
@@ -1417,7 +1480,7 @@ The AnalysisInputLocation delegates the data to the <code>JavaCompiler</code> an
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      <script src="../assets/javascripts/bundle.af256bd8.min.js"></script>
       
     
   </body>
