@@ -57,7 +57,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   @Nonnull
   @Override
   public CallGraph initialize() {
-    return constructCompleteCallGraph(view, Collections.singletonList(findMainMethod()));
+    return constructCompleteCallGraph(view, Collections.singletonList(findMainMethod(view)));
   }
 
   @Nonnull

@@ -47,7 +47,6 @@ import sootup.core.typehierarchy.HierarchyComparator;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
 
 /**
  * The AbstractCallGraphAlgorithm class is the super class of all call graph algorithm. It provides
@@ -436,24 +435,21 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /**
    * The method iterates over all classes present in view, and finds method with name main and
-   * SourceType - Library. This method is used by initialize() method used for creating call graph
-   * and the call graph is created by considering the main method as an entry point.
+   * SourceType - Application. This method is used by initialize() method used for creating call
+   * graph and the call graph is created by considering the main method as an entry point.
    *
    * <p>The method throws an exception if there is no main method in any of the classes or if there
    * are more than one main method.
    *
+   * @param view to get the view specific main method.
    * @return - MethodSignature of main method.
    */
-  public MethodSignature findMainMethod() {
+  public MethodSignature findMainMethod(View view) {
     Collection<SootMethod> mainMethods =
         view.getClasses()
             .filter(aClass -> !aClass.isLibraryClass())
             .flatMap(aClass -> aClass.getMethods().stream())
-            .filter(
-                method ->
-                    method.isStatic()
-                        && JavaIdentifierFactory.getInstance()
-                            .isMainSubSignature(method.getSignature().getSubSignature()))
+            .filter(method -> method.isStatic() && method.isMain(view.getIdentifierFactory()))
             .collect(Collectors.toSet());
 
     if (mainMethods.size() > 1) {
