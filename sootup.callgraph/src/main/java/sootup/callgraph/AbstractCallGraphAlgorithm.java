@@ -376,7 +376,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   @Nonnull
   @Override
-  public CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType) {
+  public CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull ClassType classType) {
     SootClass clazz = view.getClassOrThrow(classType);
     Set<MethodSignature> newMethodSignatures =
         clazz.getMethods().stream()
