@@ -41,7 +41,7 @@ import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.interceptors.BytecodeBodyInterceptors;
+import sootup.interceptors.BytecodeBodyInterceptors;
 
 /** e.g. to simplify creating testcases - no manual compilation step is required */
 public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {

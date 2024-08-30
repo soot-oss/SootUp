@@ -20,12 +20,12 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.Utils;
+import sootup.interceptors.LocalSplitter;
+import sootup.interceptors.TypeAssigner;
+import sootup.interceptors.typeresolving.TypeResolver;
+import sootup.interceptors.typeresolving.types.TopType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaPackageName;
-import sootup.java.core.interceptors.LocalSplitter;
-import sootup.java.core.interceptors.TypeAssigner;
-import sootup.java.core.interceptors.typeresolving.TypeResolver;
-import sootup.java.core.interceptors.typeresolving.types.TopType;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 

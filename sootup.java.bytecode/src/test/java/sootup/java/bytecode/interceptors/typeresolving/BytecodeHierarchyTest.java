@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
+import sootup.interceptors.typeresolving.BytecodeHierarchy;
+import sootup.interceptors.typeresolving.types.BottomType;
+import sootup.interceptors.typeresolving.types.TopType;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.interceptors.typeresolving.BytecodeHierarchy;
-import sootup.java.core.interceptors.typeresolving.types.BottomType;
-import sootup.java.core.interceptors.typeresolving.types.TopType;
 import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */

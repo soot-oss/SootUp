@@ -37,9 +37,9 @@ import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.core.JavaSootClassSource;
-import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.types.JavaClassType;
 
 public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {

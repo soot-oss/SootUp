@@ -12,8 +12,8 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
+import sootup.interceptors.DeadAssignmentEliminator;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.interceptors.DeadAssignmentEliminator;
 import sootup.java.core.views.JavaView;
 
 /** This example illustrates how to invoke body interceptors. */

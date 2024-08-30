@@ -20,12 +20,12 @@ import sootup.core.transform.BodyInterceptorMetric;
 import sootup.core.transform.RunTimeBodyInterceptor;
 import sootup.core.util.DotExporter;
 import sootup.core.util.Utils;
+import sootup.interceptors.BytecodeBodyInterceptors;
+import sootup.interceptors.CopyPropagator;
+import sootup.interceptors.DeadAssignmentEliminator;
+import sootup.interceptors.TypeAssigner;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.interceptors.BytecodeBodyInterceptors;
-import sootup.java.core.interceptors.CopyPropagator;
-import sootup.java.core.interceptors.DeadAssignmentEliminator;
-import sootup.java.core.interceptors.TypeAssigner;
 import sootup.java.core.views.JavaView;
 
 @Tag("Java8")
