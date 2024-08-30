@@ -87,7 +87,9 @@ public class ICFGDotExporter {
               // initializers (init and clinit), so need to compute calls to them as well
               for (MethodSignature methodSignature : stmtGraphSet.keySet()) {
                 SootMethod clintMethod =
-                    view.getMethod(methodSignature.getDeclClassType().getStaticInitializer())
+                    view.getMethod(
+                            view.getIdentifierFactory()
+                                .getStaticInitializerSignature(methodSignature.getDeclClassType()))
                         .orElse(null);
                 if (clintMethod != null) {
                   if (!calls.containsKey(stmt.hashCode())) {

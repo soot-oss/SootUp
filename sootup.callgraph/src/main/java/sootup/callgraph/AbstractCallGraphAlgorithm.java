@@ -118,7 +118,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   private Optional<MethodSignature> getSignatureOfImplementedStaticInitializer(
       ClassType classType) {
-    return view.getMethod(classType.getStaticInitializer()).map(SootClassMember::getSignature);
+    return view.getMethod(view.getIdentifierFactory().getStaticInitializerSignature(classType))
+        .map(SootClassMember::getSignature);
   }
 
   /**
@@ -329,14 +330,17 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       MutableCallGraph cg,
       Deque<MethodSignature> workList) {
     // static initializer call of class
-    view.getMethod(targetClass.getStaticInitializer())
+    view.getMethod(view.getIdentifierFactory().getStaticInitializerSignature(targetClass))
         .ifPresent(
             targetSig ->
                 addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList));
     // static initializer calls of all superclasses
     view.getTypeHierarchy()
         .superClassesOf(targetClass)
-        .map(classType -> view.getMethod(classType.getStaticInitializer()))
+        .map(
+            classType ->
+                view.getMethod(
+                    view.getIdentifierFactory().getStaticInitializerSignature(classType)))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .forEach(
