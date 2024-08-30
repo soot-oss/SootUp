@@ -1,4 +1,4 @@
-package sootup.codepropertygraph.ddg;
+package sootup.analysis.intraprocedural.reachingdefs;
 
 /*-
 * #%L
@@ -32,10 +32,10 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
-class ReachingDefs {
+public class ReachingDefs {
   private final Map<Stmt, List<Stmt>> reachingDefs;
 
-  ReachingDefs(StmtGraph<? extends BasicBlock<?>> graph) {
+  public ReachingDefs(StmtGraph<? extends BasicBlock<?>> graph) {
     this.reachingDefs = new HashMap<>();
 
     ReachingDefsAnalysis analysis = new ReachingDefsAnalysis(graph);
@@ -61,7 +61,7 @@ class ReachingDefs {
     }
   }
 
-  Map<Stmt, List<Stmt>> getReachingDefs() {
+  public Map<Stmt, List<Stmt>> getReachingDefs() {
     return reachingDefs;
   }
 
