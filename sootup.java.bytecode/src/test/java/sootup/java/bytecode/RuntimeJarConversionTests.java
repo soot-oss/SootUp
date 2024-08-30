@@ -3,6 +3,8 @@ package sootup.java.bytecode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -14,12 +16,16 @@ import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.transform.BodyInterceptorMetric;
+import sootup.core.transform.RunTimeBodyInterceptor;
 import sootup.core.util.DotExporter;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.interceptors.CopyPropagator;
 import sootup.java.core.interceptors.DeadAssignmentEliminator;
+import sootup.java.core.interceptors.TypeAssigner;
 import sootup.java.core.views.JavaView;
 
 @Tag("Java8")
@@ -120,5 +126,41 @@ public class RuntimeJarConversionTests {
   public void testExample() {
     /* Example to start quickly */
     convertMethod("<java.awt.GraphicsEnvironment: java.awt.GraphicsEnvironment createGE()>");
+  }
+
+  /** e.g. to measure Runtime (Time and Memory Usage) of every interceptor */
+  @Test
+  public void runTimeOfBodyInterceptorOnJar() {
+    // Note: mrjar.jar used just for test purpose, you can put any jar file.
+    String baseDir = "../shared-test-resources/multi-release-jar/mrjar.jar";
+    // List<BodyInterceptor> bodyInterceptorsList =
+    // BytecodeBodyInterceptors.Default.getBodyInterceptors();
+    List<BodyInterceptor> bodyInterceptorsList =
+        Arrays.asList(new TypeAssigner(), new CopyPropagator());
+    List<RunTimeBodyInterceptor> runTimeBodyInterceptorsList = new ArrayList<>();
+    for (BodyInterceptor bodyInterceptor : bodyInterceptorsList) {
+      RunTimeBodyInterceptor runTimeBodyInterceptor = new RunTimeBodyInterceptor(bodyInterceptor);
+      runTimeBodyInterceptorsList.add(runTimeBodyInterceptor);
+    }
+    AnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            baseDir, SourceType.Library, Collections.unmodifiableList(runTimeBodyInterceptorsList));
+    JavaView view = new JavaView(inputLocation);
+    view.getClasses()
+        .forEach(javaSootClass -> javaSootClass.getMethods().forEach(SootMethod::getBody));
+    runTimeBodyInterceptorsList.forEach(
+        runTimeBodyInterceptor -> {
+          BodyInterceptorMetric biMetric = runTimeBodyInterceptor.getBiMetric();
+          System.out.println(
+              runTimeBodyInterceptor.getBodyInterceptor()
+                  + " took "
+                  + biMetric.getRuntime()
+                  + " ms.");
+          System.out.println(
+              runTimeBodyInterceptor.getBodyInterceptor()
+                  + " consumed "
+                  + biMetric.getMemoryUsage()
+                  + " MB.");
+        });
   }
 }
