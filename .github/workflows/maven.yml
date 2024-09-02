@@ -86,6 +86,10 @@ jobs:
       - name: License Headers
         run: mvn -B org.codehaus.mojo:license-maven-plugin:check-file-header -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
+      # create javadoc html to lint it
+      - name: Check Javadoc
+        run: mvn -B javadoc:aggregate -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
   JDK8:
     needs: Compilation
     runs-on: ubuntu-latest
@@ -256,10 +260,10 @@ jobs:
           name: coverage-exec
 
       - name: merge coverage reports
-        run:  mvn -ntp jacoco:merge@merge-results
+        run:  mvn -ntp jacoco:merge@merge-results  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: aggregate coverage reports across java versions
-        run: mvn -ntp jacoco:report-aggregate@generate-coverage-report
+        run: mvn -ntp jacoco:report-aggregate@generate-coverage-report  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: upload aggregated coverage artifact
         uses: actions/upload-artifact@v3
