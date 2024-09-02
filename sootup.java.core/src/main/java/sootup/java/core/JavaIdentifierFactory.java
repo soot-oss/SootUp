@@ -58,32 +58,13 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   public static final MethodSubSignature STATIC_INITIALIZER =
       new MethodSubSignature("<clinit>", Collections.emptyList(), VoidType.getInstance());
 
-  @Override
-  public boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
-    return methodSubSignature.equals(STATIC_INITIALIZER);
-  }
+  @Nonnull
+  private static final Pattern SOOT_FIELD_SUB_SIGNATURE_PATTERN =
+      Pattern.compile("^(?<type>[^\\s]+)\\s+(?<field>.+)$");
 
-  @Override
-  public boolean isConstructorSignature(@Nonnull MethodSignature methodSignature) {
-    return isConstructorSubSignature(methodSignature.getSubSignature());
-  }
-
-  @Override
-  public boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
-    return methodSubSignature.getName().equals("<init>")
-        && methodSubSignature.getType() == VoidType.getInstance();
-  }
-
-  @Override
-  public boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
-    if (methodSubSignature.getName().equals("main")) {
-      final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
-      if (parameterTypes.size() == 1) {
-        return parameterTypes.get(0).toString().equals("java.lang.String[]");
-      }
-    }
-    return false;
-  }
+  @Nonnull
+  private static final Pattern JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN =
+      Pattern.compile("^#(?<field>[^(]+):(?<type>.+)$");
 
   /** Caches the created PackageNames for packages. */
   @Nonnull
@@ -621,14 +602,6 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   @Nonnull
-  private static final Pattern SOOT_FIELD_SUB_SIGNATURE_PATTERN =
-      Pattern.compile("^(?<type>[^\\s]+)\\s+(?<field>.+)$");
-
-  @Nonnull
-  private static final Pattern JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN =
-      Pattern.compile("^#(?<field>[^(]+):(?<type>.+)$");
-
-  @Nonnull
   private static IllegalArgumentException createInvalidFieldSubSignatureException() {
     return new IllegalArgumentException(
         "Invalid field sub-signature.\n\n"
@@ -680,5 +653,37 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     }
 
     return getFieldSubSignature(fieldName, getType(typeName));
+  }
+
+  @Override
+  public MethodSignature getStaticInitializerSignature(ClassType declaringClassSignature) {
+    return getMethodSignature(declaringClassSignature, STATIC_INITIALIZER);
+  }
+
+  @Override
+  public boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.equals(STATIC_INITIALIZER);
+  }
+
+  @Override
+  public boolean isConstructorSignature(@Nonnull MethodSignature methodSignature) {
+    return isConstructorSubSignature(methodSignature.getSubSignature());
+  }
+
+  @Override
+  public boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.getName().equals("<init>")
+        && methodSubSignature.getType() == VoidType.getInstance();
+  }
+
+  @Override
+  public boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    if (methodSubSignature.getName().equals("main")) {
+      final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
+      if (parameterTypes.size() == 1) {
+        return parameterTypes.get(0).toString().equals("java.lang.String[]");
+      }
+    }
+    return false;
   }
 }

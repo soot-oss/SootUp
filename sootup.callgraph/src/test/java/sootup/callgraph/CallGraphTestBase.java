@@ -395,11 +395,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   public void testClinitCallEntryPoint() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccep.Class");
     MethodSignature targetMethod =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("ccep.Class"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccep.Class"));
     assertTrue(cg.getEntryMethods().contains(targetMethod));
   }
 
@@ -407,11 +404,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   public void testClinitCallProcessed() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccp.Class");
     MethodSignature sourceMethod =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("ccp.Class"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccp.Class"));
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("ccp.Class"), "method", "int", Collections.emptyList());
@@ -423,11 +417,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   public void testClinitCallConstructor() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccc.Class");
     MethodSignature targetMethod =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("ccc.DirectType"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccc.DirectType"));
 
     assertTrue(
         cg.containsCall(
@@ -437,11 +428,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
                 mainMethodSignature, identifierFactory.getClassType("ccc.DirectType"))));
 
     MethodSignature arrayMethod =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("ccc.ArrayType"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccc.ArrayType"));
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
@@ -450,11 +438,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
                 mainMethodSignature, identifierFactory.getClassType("ccc.ArrayType"))));
 
     MethodSignature arrayDimMethod =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("ccc.ArrayDimType"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccc.ArrayDimType"));
 
     assertTrue(
         cg.containsCall(
@@ -464,11 +449,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
                 mainMethodSignature, identifierFactory.getClassType("ccc.ArrayDimType"))));
 
     MethodSignature arrayInArrayMethod =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("ccc.ArrayInArrayType"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccc.ArrayInArrayType"));
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
@@ -481,21 +463,15 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   public void testClinitCallSuperConstructor() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccsc.Class");
     MethodSignature targetMethod =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("ccsc.Clinit"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccsc.Clinit"));
     InvokableStmt invokedStmt =
         getInvokableStmtNonInvokeExpr(
             mainMethodSignature, identifierFactory.getClassType("ccsc.Clinit"));
     assertTrue(cg.containsCall(mainMethodSignature, targetMethod, invokedStmt));
     MethodSignature targetMethod2 =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("ccsc.SuperClinit"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccsc.SuperClinit"));
     assertTrue(cg.containsCall(mainMethodSignature, targetMethod2, invokedStmt));
   }
 
@@ -503,11 +479,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   public void testClinitStaticMethodCall() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccsmc.Class");
     MethodSignature targetMethod =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("ccsmc.Clinit"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccsmc.Clinit"));
     MethodSignature targetMethodInvoked =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("ccsmc.Clinit"),
@@ -525,11 +498,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   public void testClinitStaticField() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccsf.Class");
     MethodSignature targetMethod =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("ccsf.Clinit"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccsf.Clinit"));
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
@@ -1211,15 +1181,10 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   private void checkClinit(
       CallGraph cg, String clinitClassName, int index, boolean left, MethodSignature ms) {
     ClassType clinitClass = identifierFactory.getClassType(clinitClassName);
-    MethodSignature clinitMethod =
-        identifierFactory.getMethodSignature(
-            clinitClass, "<clinit>", "void", Collections.emptyList());
+    MethodSignature clinitMethod = identifierFactory.getStaticInitializerSignature(clinitClass);
     MethodSignature clinitObject =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("java.lang.Object"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("java.lang.Object"));
     InvokableStmt invokeStmt;
     if (ms == null) {
       invokeStmt = getInvokableStmtNonInvokeExpr(mainMethodSignature, clinitClass, left, index);
