@@ -16,7 +16,7 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - Provides parsing and serialization of the Jimple IR.
 
 ## Getting started
-[Documentation](https://soot-oss.github.io/SootUp/) and usage examples are available on Github pages.
+[Documentation](https://soot-oss.github.io/SootUp/) and usage examples are available on [Examples](https://github.com/soot-oss/SootUp-Examples).
 Check the [Javadocs](https://soot-oss.github.io/SootUp/apidocs).
 Do you have questions? Feel free to start a [Discussion](https://github.com/soot-oss/SootUp/discussions).
 

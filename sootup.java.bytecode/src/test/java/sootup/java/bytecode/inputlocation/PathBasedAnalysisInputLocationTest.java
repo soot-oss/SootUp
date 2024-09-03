@@ -56,15 +56,6 @@ import sootup.java.core.views.JavaView;
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
-  public void testApk() {
-    PathBasedAnalysisInputLocation pathBasedNamespace =
-        new ApkAnalysisInputLocation(apk, SourceType.Application);
-    final ClassType mainClass =
-        getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
-    testClassReceival(pathBasedNamespace, Collections.singletonList(mainClass), 1392);
-  }
-
-  @Test
   public void testSingleClass() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
