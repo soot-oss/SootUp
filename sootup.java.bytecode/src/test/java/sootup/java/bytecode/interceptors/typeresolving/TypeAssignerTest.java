@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.util.Utils;
-import sootup.java.core.interceptors.TypeAssigner;
+import sootup.interceptors.TypeAssigner;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class TypeAssignerTest extends TypeAssignerTestSuite {

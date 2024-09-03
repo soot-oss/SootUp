@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
-import sootup.java.core.interceptors.typeresolving.PrimitiveHierarchy;
-import sootup.java.core.interceptors.typeresolving.types.AugmentIntegerTypes;
-import sootup.java.core.interceptors.typeresolving.types.BottomType;
+import sootup.interceptors.typeresolving.PrimitiveHierarchy;
+import sootup.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.interceptors.typeresolving.types.BottomType;
 
 /** @author Zun Wang */
 @Tag(TestCategories.JAVA_8_CATEGORY)

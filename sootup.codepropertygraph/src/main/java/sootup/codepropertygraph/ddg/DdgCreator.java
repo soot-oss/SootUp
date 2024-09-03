@@ -25,6 +25,7 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import sootup.analysis.intraprocedural.ReachingDefs;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.StmtMethodPropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.DdgEdge;
@@ -32,7 +33,6 @@ import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
-import sootup.java.core.intraproceduralanalysis.ReachingDefs;
 
 /**
  * This class is responsible for creating the Data Dependence Graph (DDG) property graph for a given

@@ -19,8 +19,8 @@ import sootup.core.model.Position;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
+import sootup.interceptors.LocalLivenessAnalyser;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.interceptors.LocalLivenessAnalyser;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 

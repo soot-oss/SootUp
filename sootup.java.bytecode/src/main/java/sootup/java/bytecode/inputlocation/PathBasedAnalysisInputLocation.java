@@ -28,9 +28,9 @@ import sootup.core.types.ClassType;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
+import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.core.*;
-import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.types.JavaClassType;
 
 /*-
