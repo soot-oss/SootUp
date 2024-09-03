@@ -160,8 +160,27 @@ public class ConditionalBranchFolderTest {
             .getMethodSignature(
                 "ConditionalBranchFolderTest", "tc2", "void", Collections.emptyList());
     Body body = view.getMethod(methodSignature).get().getBody();
-    System.out.println(body.getStmtGraph());
-    assertFalse(body.getStmts().isEmpty());
+    assertEquals(5, body.getStmtGraph().getBlocks().size());
+
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
+    assertEquals(
+        Stream.of(
+                "this := @this: ConditionalBranchFolderTest",
+                "l1 = 1",
+                "label1:",
+                "goto label2",
+                "label2:",
+                "$stack3 = new java.lang.Exception",
+                "specialinvoke $stack3.<java.lang.Exception: void <init>(java.lang.String)>(\"True\")",
+                "throw $stack3",
+                "label3:",
+                "$stack4 := @caughtexception",
+                "l2 = $stack4",
+                "virtualinvoke $stack4.<java.lang.Exception: void printStackTrace()>()",
+                "return",
+                "catch java.lang.Exception from label1 to label3 with label3")
+            .collect(Collectors.toList()),
+        actualStmts);
   }
 
   /**

@@ -495,10 +495,12 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   /** Iterates over the blocks */
   protected class BlockGraphIterator implements Iterator<BasicBlock<?>> {
 
-    @Nonnull private final ArrayDeque<BasicBlock<?>> trapHandlerBlocks = new ArrayDeque<>();
+    @Nonnull
+    private final Map<BasicBlock<?>, Deque<BasicBlock<?>>> fallsThroughSequences = new HashMap<>();
 
-    @Nonnull private final ArrayDeque<BasicBlock<?>> nestedBlocks = new ArrayDeque<>();
-    @Nonnull private final ArrayDeque<BasicBlock<?>> otherBlocks = new ArrayDeque<>();
+    @Nullable private BasicBlock<?> fallsTroughWorklist = null;
+    @Nonnull private final ArrayDeque<BasicBlock<?>> trapHandlerBlocks = new ArrayDeque<>();
+    @Nonnull private final ArrayDeque<BasicBlock<?>> branchingBlockWorklist = new ArrayDeque<>();
     @Nonnull private final Set<BasicBlock<?>> iteratedBlocks;
 
     public BlockGraphIterator() {
@@ -508,32 +510,84 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       if (startingStmt != null) {
         final BasicBlock<?> startingBlock = getStartingStmtBlock();
         updateFollowingBlocks(startingBlock);
-        nestedBlocks.addFirst(startingBlock);
+        fallsTroughWorklist = startingBlock;
       }
+    }
+
+    protected Deque<BasicBlock<?>> calculateFallsThroughSequence(@Nonnull BasicBlock<?> param) {
+      Deque<BasicBlock<?>> basicBlockSequence = fallsThroughSequences.get(param);
+      if (basicBlockSequence != null) {
+        return basicBlockSequence;
+      }
+
+      Deque<BasicBlock<?>> list = new ArrayDeque<>();
+
+      BasicBlock<?> continousBlockSequenceHeadCandidate = param;
+      // TODO: [ms] looks ugly.. simplify readability of the loop!
+      // find the leader of the Block Sequence (connected via FallsthroughStmts)
+      while (true) {
+        list.addFirst(continousBlockSequenceHeadCandidate);
+        final List<? extends BasicBlock<?>> itPreds =
+            continousBlockSequenceHeadCandidate.getPredecessors();
+        BasicBlock<?> continousBlockTailCandidate = continousBlockSequenceHeadCandidate;
+        final Optional<? extends BasicBlock<?>> fallsthroughPredOpt =
+            itPreds.stream()
+                .filter(
+                    b ->
+                        b.getTail().fallsThrough()
+                            && b.getSuccessors().get(0) == continousBlockTailCandidate)
+                .findAny();
+        if (!fallsthroughPredOpt.isPresent()) {
+          break;
+        }
+        BasicBlock<?> predecessorBlock = fallsthroughPredOpt.get();
+        if (predecessorBlock.getTail().fallsThrough()
+            && predecessorBlock.getSuccessors().get(0) == continousBlockSequenceHeadCandidate) {
+          continousBlockSequenceHeadCandidate = predecessorBlock;
+        } else {
+          break;
+        }
+      }
+
+      // iterate to the end of the sequence
+      BasicBlock<?> continousBlockSequenceTailCandidate = param;
+      while (continousBlockSequenceTailCandidate.getTail().fallsThrough()) {
+        continousBlockSequenceTailCandidate =
+            continousBlockSequenceTailCandidate.getSuccessors().get(0);
+        list.addLast(continousBlockSequenceTailCandidate);
+      }
+
+      // cache calculated sequence for every block in the sequence
+      for (BasicBlock<?> basicBlock : list) {
+        fallsThroughSequences.put(basicBlock, list);
+      }
+      return list;
     }
 
     @Nullable
     private BasicBlock<?> retrieveNextBlock() {
       BasicBlock<?> nextBlock;
       do {
-        if (!nestedBlocks.isEmpty()) {
-          nextBlock = nestedBlocks.pollFirst();
+        if (fallsTroughWorklist != null) {
+          nextBlock = fallsTroughWorklist;
+          fallsTroughWorklist = null;
+        } else if (!branchingBlockWorklist.isEmpty()) {
+          nextBlock = branchingBlockWorklist.pollFirst();
         } else if (!trapHandlerBlocks.isEmpty()) {
           nextBlock = trapHandlerBlocks.pollFirst();
-        } else if (!otherBlocks.isEmpty()) {
-          nextBlock = otherBlocks.pollFirst();
         } else {
+          /* Fallback mode */
           Collection<? extends BasicBlock<?>> blocks = getBlocks();
           if (iteratedBlocks.size() < blocks.size()) {
             // graph is not connected! iterate/append all not connected blocks at the end in no
             // particular order.
             for (BasicBlock<?> block : blocks) {
               if (!iteratedBlocks.contains(block)) {
-                nestedBlocks.addLast(block);
+                branchingBlockWorklist.addLast(block);
               }
             }
-            if (!nestedBlocks.isEmpty()) {
-              return nestedBlocks.pollFirst();
+            if (!branchingBlockWorklist.isEmpty()) {
+              return branchingBlockWorklist.pollFirst();
             }
           }
 
@@ -560,71 +614,35 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     private void updateFollowingBlocks(BasicBlock<?> currentBlock) {
       // collect traps
       final Stmt tailStmt = currentBlock.getTail();
-      for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> entry :
-          currentBlock.getExceptionalSuccessors().entrySet()) {
-        BasicBlock<?> trapHandlerBlock = entry.getValue();
+      for (BasicBlock<?> trapHandlerBlock : currentBlock.getExceptionalSuccessors().values()) {
         trapHandlerBlocks.addLast(trapHandlerBlock);
-        nestedBlocks.addFirst(trapHandlerBlock);
       }
 
       final List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
+      final int endIdx;
+      if (tailStmt.fallsThrough()) {
+        // handle the falls-through successor
+        assert (fallsTroughWorklist == null);
+        fallsTroughWorklist = successors.get(0);
+        endIdx = 1;
+      } else {
+        endIdx = 0;
+      }
 
-      for (int i = successors.size() - 1; i >= 0; i--) {
-        if (i == 0 && tailStmt.fallsThrough()) {
-          // non-branching successors i.e. not a BranchingStmt or is the first successor (i.e. its
-          // false successor) of
-          // JIfStmt
-          nestedBlocks.addFirst(successors.get(0));
+      // handle the branching successor(s)
+      for (int i = successors.size() - 1; i >= endIdx; i--) {
+        // find the leader/beginning block of a continuous sequence of Blocks (connected via
+        // FallsThroughStmts)
+        final BasicBlock<?> successorBlock = successors.get(i);
+
+        Deque<BasicBlock<?>> blockSequence = calculateFallsThroughSequence(successorBlock);
+        boolean isSequenceTailExceptionFree =
+            blockSequence.getLast().getExceptionalSuccessors().isEmpty();
+
+        if (isSequenceTailExceptionFree) {
+          branchingBlockWorklist.addLast(blockSequence.getFirst());
         } else {
-
-          // create the longest FallsThroughStmt sequence possible
-          final BasicBlock<?> successorBlock = successors.get(i);
-          BasicBlock<?> continousBlockLeader = successorBlock;
-          while (true) {
-            final List<? extends BasicBlock<?>> itPreds = continousBlockLeader.getPredecessors();
-
-            BasicBlock<?> continousBlockTailCandidate = continousBlockLeader;
-            final Optional<? extends BasicBlock<?>> fallsthroughPredOpt =
-                itPreds.stream()
-                    .filter(
-                        b ->
-                            b.getTail().fallsThrough()
-                                && b.getSuccessors().get(0) == continousBlockTailCandidate)
-                    .findAny();
-            if (!fallsthroughPredOpt.isPresent()) {
-              break;
-            }
-            BasicBlock<?> predecessorBlock = fallsthroughPredOpt.get();
-            if (predecessorBlock.getTail().fallsThrough()
-                && predecessorBlock.getSuccessors().get(0) == continousBlockLeader) {
-              continousBlockLeader = predecessorBlock;
-            } else {
-              break;
-            }
-          }
-
-          // find a return Stmt inside the current Block
-          Stmt succTailStmt = successorBlock.getTail();
-          boolean hasNoSuccessorStmts = !succTailStmt.fallsThrough();
-          boolean isExceptionFree = successorBlock.getExceptionalSuccessors().isEmpty();
-
-          boolean isLastStmtCandidate = hasNoSuccessorStmts && isExceptionFree;
-          // remember branching successors
-          if (tailStmt instanceof JGotoStmt) {
-            if (isLastStmtCandidate) {
-              nestedBlocks.removeFirstOccurrence(currentBlock);
-              otherBlocks.addLast(continousBlockLeader);
-            } else {
-              otherBlocks.addFirst(continousBlockLeader);
-            }
-          } else if (!nestedBlocks.contains(continousBlockLeader)) {
-            // JSwitchStmt, JIfStmt
-            if (isLastStmtCandidate) {
-              nestedBlocks.addLast(continousBlockLeader);
-            } else {
-              nestedBlocks.addFirst(continousBlockLeader);
-            }
-          }
+          branchingBlockWorklist.addLast(blockSequence.getLast());
         }
       }
     }
@@ -636,7 +654,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       if (b != null) {
         // reinsert at FIRST position -&gt; not great for performance - but easier handling in
         // next()
-        nestedBlocks.addFirst(b);
+        branchingBlockWorklist.addFirst(b);
         hasIteratorMoreElements = true;
       } else {
         hasIteratorMoreElements = false;
