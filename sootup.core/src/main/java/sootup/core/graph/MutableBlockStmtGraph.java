@@ -727,9 +727,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     tryMergeWithSuccessorBlock(block);
   }
 
-  /**
-   * @return the successor block of block if the merge happended, if not merged: block
-   */
+  /** @return the successor block of block if the merge happended, if not merged: block */
   @Nonnull
   private MutableBasicBlock tryMergeWithSuccessorBlock(@Nonnull MutableBasicBlock block) {
     final List<MutableBasicBlock> successors = block.getSuccessors();
@@ -754,9 +752,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
-  /**
-   * @return the predecessor block of block if the merge happended, if not merged: block
-   */
+  /** @return the predecessor block of block if the merge happended, if not merged: block */
   @Nonnull
   private MutableBasicBlock tryMergeWithPredecessorBlock(@Nonnull MutableBasicBlock block) {
     final List<MutableBasicBlock> predecessors = block.getPredecessors();
@@ -1632,12 +1628,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     return traps;
   }
 
-  /**
-   * Removes a trap from the graph and updates the control flow accordingly.
-   *
-   * @param trap The trap to be removed.
-   * @throws IllegalArgumentException if the trap is not found in the graph.
-   */
+  @Override
   public void removeTrap(@Nonnull Trap trap) {
     List<Trap> traps = buildTraps();
 
@@ -1661,7 +1652,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           trapEnd.add(t);
         });
 
-    //manageTrapMappings(trapStart, trapEnd);
+    manageTrapMappings(trapStart, trapEnd);
     removeExceptionalEdgesFromGraph(trap.getExceptionType());
   }
 
