@@ -144,6 +144,26 @@ public class ConditionalBranchFolderTest {
         Utils.filterJimple(body.toString()));
   }
 
+  @Test
+  public void testConditionalBranchFolderWithTraps() {
+    AnalysisInputLocation inputLocation =
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation
+            .ClassFileBasedAnalysisInputLocation(
+            classFilePath,
+            "",
+            SourceType.Application,
+            Arrays.asList(new CopyPropagator(), new ConditionalBranchFolder()));
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                "ConditionalBranchFolderTest", "tc2", "void", Collections.emptyList());
+    Body body = view.getMethod(methodSignature).get().getBody();
+    System.out.println(body.getStmtGraph());
+    assertFalse(body.getStmts().isEmpty());
+  }
+
   /**
    * Generates the correct test {@link Body} for the corresponding test case.
    *

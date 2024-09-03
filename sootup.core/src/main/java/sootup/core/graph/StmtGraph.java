@@ -579,26 +579,25 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
           // create the longest FallsThroughStmt sequence possible
           final BasicBlock<?> successorBlock = successors.get(i);
-          BasicBlock<?> leaderOfFallsthroughBlocks = successorBlock;
+          BasicBlock<?> continousBlockLeader = successorBlock;
           while (true) {
-            final List<? extends BasicBlock<?>> itPreds =
-                leaderOfFallsthroughBlocks.getPredecessors();
+            final List<? extends BasicBlock<?>> itPreds = continousBlockLeader.getPredecessors();
 
-            BasicBlock<?> finalLeaderOfFallsthroughBlocks = leaderOfFallsthroughBlocks;
+            BasicBlock<?> continousBlockTailCandidate = continousBlockLeader;
             final Optional<? extends BasicBlock<?>> fallsthroughPredOpt =
                 itPreds.stream()
                     .filter(
                         b ->
                             b.getTail().fallsThrough()
-                                && b.getSuccessors().get(0) == finalLeaderOfFallsthroughBlocks)
+                                && b.getSuccessors().get(0) == continousBlockTailCandidate)
                     .findAny();
             if (!fallsthroughPredOpt.isPresent()) {
               break;
             }
             BasicBlock<?> predecessorBlock = fallsthroughPredOpt.get();
             if (predecessorBlock.getTail().fallsThrough()
-                && predecessorBlock.getSuccessors().get(0) == leaderOfFallsthroughBlocks) {
-              leaderOfFallsthroughBlocks = predecessorBlock;
+                && predecessorBlock.getSuccessors().get(0) == continousBlockLeader) {
+              continousBlockLeader = predecessorBlock;
             } else {
               break;
             }
@@ -606,7 +605,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
           // find a return Stmt inside the current Block
           Stmt succTailStmt = successorBlock.getTail();
-          boolean hasNoSuccessorStmts = succTailStmt.getExpectedSuccessorCount() == 0;
+          boolean hasNoSuccessorStmts = !succTailStmt.fallsThrough();
           boolean isExceptionFree = successorBlock.getExceptionalSuccessors().isEmpty();
 
           boolean isLastStmtCandidate = hasNoSuccessorStmts && isExceptionFree;
@@ -614,16 +613,16 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           if (tailStmt instanceof JGotoStmt) {
             if (isLastStmtCandidate) {
               nestedBlocks.removeFirstOccurrence(currentBlock);
-              otherBlocks.addLast(leaderOfFallsthroughBlocks);
+              otherBlocks.addLast(continousBlockLeader);
             } else {
-              otherBlocks.addFirst(leaderOfFallsthroughBlocks);
+              otherBlocks.addFirst(continousBlockLeader);
             }
-          } else if (!nestedBlocks.contains(leaderOfFallsthroughBlocks)) {
+          } else if (!nestedBlocks.contains(continousBlockLeader)) {
             // JSwitchStmt, JIfStmt
             if (isLastStmtCandidate) {
-              nestedBlocks.addLast(leaderOfFallsthroughBlocks);
+              nestedBlocks.addLast(continousBlockLeader);
             } else {
-              nestedBlocks.addFirst(leaderOfFallsthroughBlocks);
+              nestedBlocks.addFirst(continousBlockLeader);
             }
           }
         }
