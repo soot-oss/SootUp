@@ -155,6 +155,14 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   public abstract List<Trap> buildTraps();
 
   /**
+   * Removes a trap from the graph and updates the control flow accordingly.
+   *
+   * @param trap The trap to be removed.
+   * @throws IllegalArgumentException if the trap is not found in the graph.
+   */
+  public abstract void removeTrap(@Nonnull Trap trap);
+
+  /**
    * returns a Collection of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and
    * JThrowStmt)
    */
