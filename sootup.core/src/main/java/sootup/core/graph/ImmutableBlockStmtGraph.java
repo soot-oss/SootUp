@@ -143,6 +143,11 @@ public class ImmutableBlockStmtGraph
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
+  @Override
+  public void removeTrap(@Nonnull Trap trap) {
+    throw new UnsupportedOperationException("Not implemented yet!");
+  }
+
   @Nonnull
   @Override
   public Iterator<Stmt> iterator() {

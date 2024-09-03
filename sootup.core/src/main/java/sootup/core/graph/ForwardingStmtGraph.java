@@ -132,4 +132,9 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   public List<Trap> buildTraps() {
     return backingGraph.buildTraps();
   }
+
+  @Override
+  public void removeTrap(@Nonnull Trap trap) {
+    backingGraph.removeTrap(trap);
+  }
 }
