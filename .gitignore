@@ -4,6 +4,7 @@
 *.class
 !shared-test-resources/miniTestSuite/**/*.class
 !sootup.analysis.interprocedural/src/test/resources/taint/binary/*.class
+!sootup.analysis.interprocedural/src/test/resources/icfg/binary/*.class
 !sootup.callgraph/src/test/resources/callgraph/CallGraphDifference/binary/*.class
 
 # Log file
@@ -166,3 +167,4 @@ fabric.properties
 =======
 .vscode/
 .DS_Store
+
