@@ -1,6 +1,6 @@
 package sootup.apk.parser.tag;
 
-import main.Tag;
+import sootup.apk.parser.main.Tag;
 
 public class IntOpTag implements Tag {
   public static final String NAME = "IntOpTag";
