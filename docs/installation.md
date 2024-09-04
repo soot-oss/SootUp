@@ -46,7 +46,12 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.analysis</artifactId>
+            <artifactId>sootup.analysis.intraprocedural</artifactId>
+            <version>{{ git_latest_release }}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.analysis.interprocedural</artifactId>
             <version>{{ git_latest_release }}</version>
         </dependency>
         <dependency>
