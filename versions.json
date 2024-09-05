@@ -18,7 +18,10 @@
   {
     "version": "featureImproveJavaHomeIntegartion_preview",
     "title": "PR Preview featureImproveJavaHomeIntegartion",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "develop",
