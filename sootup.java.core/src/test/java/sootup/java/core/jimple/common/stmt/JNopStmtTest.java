@@ -34,7 +34,7 @@ import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.PrimitiveType;
 
-/** @author Markus Schmidt & Linghui Luo */
+/** @author Markus Schmidt, Linghui Luo */
 @Tag("Java8")
 public class JNopStmtTest {
 

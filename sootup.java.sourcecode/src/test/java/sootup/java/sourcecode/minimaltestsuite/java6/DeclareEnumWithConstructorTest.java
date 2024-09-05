@@ -36,11 +36,8 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
   }
 
   public MethodSignature getEnumConstructorSignature() {
-    return identifierFactory.getMethodSignature(
-        identifierFactory.getClassType("DeclareEnumWithConstructor$Number"),
-        "<clinit>",
-        "void",
-        Collections.emptyList());
+    return identifierFactory.getStaticInitializerSignature(
+        identifierFactory.getClassType("DeclareEnumWithConstructor$Number"));
   }
 
   public MethodSignature getEnumGetValueSignature() {
