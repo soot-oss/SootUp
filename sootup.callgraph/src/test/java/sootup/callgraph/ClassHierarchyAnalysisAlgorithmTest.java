@@ -142,11 +142,8 @@ public class ClassHierarchyAnalysisAlgorithmTest
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature clinitObject =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("java.lang.Object"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("java.lang.Object"));
 
     assertFalse(
         cg.containsCall(

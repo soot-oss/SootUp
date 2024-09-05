@@ -63,7 +63,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Nonnull
   @Override
   public CallGraph initialize() {
-    List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod());
+    List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod(view));
     return initialize(entryPoints);
   }
 

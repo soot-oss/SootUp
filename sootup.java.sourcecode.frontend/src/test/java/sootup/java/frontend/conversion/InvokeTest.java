@@ -122,9 +122,7 @@ public class InvokeTest {
     declareClassSig = identifierFactory.getClassType("InvokeStatic");
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
-            loader,
-            identifierFactory.getMethodSignature(
-                declareClassSig, "<clinit>", "void", Collections.emptyList()));
+            loader, identifierFactory.getStaticInitializerSignature(declareClassSig));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 

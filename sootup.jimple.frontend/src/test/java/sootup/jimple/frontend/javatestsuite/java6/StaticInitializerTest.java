@@ -22,8 +22,7 @@ public class StaticInitializerTest extends JimpleTestSuiteBase {
   }
 
   public MethodSignature getStaticMethodSignature() {
-    return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(), "<clinit>", "void", Collections.emptyList());
+    return identifierFactory.getStaticInitializerSignature(getDeclaredClassSignature());
   }
 
   @Test

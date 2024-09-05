@@ -70,10 +70,12 @@ public final class PTAUtils {
     return JavaIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
   }
 
+  // TODO: use isStaticInitializer from the IdentifierFactory
   public static boolean isStaticInitializer(SootMethod method) {
     return method.getName().equals("<clinit>");
   }
 
+  // TODO: use isConstructor from the IdentifierFactory
   public static boolean isConstructor(SootMethod method) {
     return method.getName().equals("<init>");
   }
