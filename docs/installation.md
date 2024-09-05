@@ -82,11 +82,13 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
     
     compile "org.soot-oss:sootup.core:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.java.core:{{ git_latest_release }}"
-    compile "org.soot-oss:sootup.java.sourcecode:{{ git_latest_release }}"
-    compile "org.soot-oss:sootup.java.bytecode:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.java.sourcecode.frontend:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.java.bytecode.frontend:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.jimple.frontend:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.apk.frontend:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.callgraph:{{ git_latest_release }}"
-    compile "org.soot-oss:sootup.analysis:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.analysis.intraprocedural:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.analysis.interprocedural:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.qilin:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.codepropertygraph:{{ git_latest_release }}"
     ```
