@@ -2,7 +2,6 @@ package sootup.java.bytecode.minimaltestsuite.java8;
 
 import categories.TestCategories;
 import java.util.Collections;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
