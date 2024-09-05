@@ -15,7 +15,7 @@ Please make sure to use Java8 to execute.
 ### Exception: Provider "jrt" not found
 ```shell
 java.lang.ExceptionInInitializerError
-	at sootup.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocationTest.getClassSource(JrtFileSystemAnalysisInputLocationTest.java:28)
+	at inputlocation.sootup.java.bytecode.frontend.JrtFileSystemAnalysisInputLocationTest.getClassSource(JrtFileSystemAnalysisInputLocationTest.java:28)
 	...
 Caused by: java.nio.file.ProviderNotFoundException: Provider "jrt" not found
 ```

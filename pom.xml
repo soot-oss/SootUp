@@ -61,11 +61,11 @@
     </scm>
     <modules>
         <module>sootup.core</module>
-        <module>sootup.jimple.parser</module>
+        <module>sootup.jimple.frontend</module>
         <module>sootup.java.core</module>
         <module>sootup.interceptors</module>
-        <module>sootup.java.bytecode</module>
-        <module>sootup.java.sourcecode</module>
+        <module>sootup.java.bytecode.frontend</module>
+        <module>sootup.java.sourcecode.frontend</module>
         <module>sootup.tests</module>
         <module>sootup.callgraph</module>
         <module>sootup.qilin</module>
@@ -73,7 +73,7 @@
         <module>sootup.analysis.intraprocedural</module>
         <module>sootup.examples</module>
         <module>sootup.report</module>
-        <module>sootup.apk.parser</module>
+        <module>sootup.apk.frontend</module>
         <module>sootup.codepropertygraph</module>
     </modules>
 
@@ -438,17 +438,17 @@
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.bytecode</artifactId>
+            <artifactId>sootup.java.bytecode.frontend</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.sourcecode</artifactId>
+            <artifactId>sootup.java.sourcecode.frontend</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.jimple.parser</artifactId>
+            <artifactId>sootup.jimple.frontend</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -471,7 +471,11 @@
             <artifactId>sootup.codepropertygraph</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.apk.frontend</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     </dependencyManagement>
 

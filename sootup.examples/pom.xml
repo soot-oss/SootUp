@@ -26,15 +26,15 @@
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.bytecode</artifactId>
+            <artifactId>sootup.java.bytecode.frontend</artifactId>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.sourcecode</artifactId>
+            <artifactId>sootup.java.sourcecode.frontend</artifactId>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.jimple.parser</artifactId>
+            <artifactId>sootup.jimple.frontend</artifactId>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>

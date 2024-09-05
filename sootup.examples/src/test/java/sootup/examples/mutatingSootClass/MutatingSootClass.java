@@ -19,7 +19,7 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType.IntType;
 import sootup.core.types.VoidType;
-import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
