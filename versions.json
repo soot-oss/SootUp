@@ -16,6 +16,11 @@
     }
   },
   {
+    "version": "featureImproveJavaHomeIntegartion_preview",
+    "title": "PR Preview featureImproveJavaHomeIntegartion",
+    "aliases": []
+  },
+  {
     "version": "develop",
     "title": "develop",
     "aliases": []
