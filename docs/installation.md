@@ -26,17 +26,22 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.sourcecode</artifactId>
+            <artifactId>sootup.java.sourcecode.frontend</artifactId>
             <version>{{ git_latest_release }}</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.bytecode</artifactId>
+            <artifactId>sootup.java.bytecode.frontend</artifactId>
             <version>{{ git_latest_release }}</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.jimple.frontend</artifactId>
+            <version>{{ git_latest_release }}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.apk.frontend</artifactId>
             <version>{{ git_latest_release }}</version>
         </dependency>
         <dependency>
