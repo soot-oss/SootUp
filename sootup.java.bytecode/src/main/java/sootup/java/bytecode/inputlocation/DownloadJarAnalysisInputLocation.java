@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
+import sootup.java.bytecode.frontend.FileUtil;
 
 /*-
  * #%L
@@ -45,9 +46,8 @@ public class DownloadJarAnalysisInputLocation extends ArchiveBasedAnalysisInputL
 
   private static Path downloadAndConstructPath(String downloadURL) {
     HttpURLConnection connection = null;
-    String tempDirPath = System.getProperty("java.io.tmpdir");
     String filename = downloadURL.substring(downloadURL.lastIndexOf("/") + 1);
-    File file = new File(tempDirPath, filename);
+    File file = new File(FileUtil.getTempDirectory().toString(), filename);
     try {
       URL url = new URL(downloadURL);
       connection = (HttpURLConnection) url.openConnection();
