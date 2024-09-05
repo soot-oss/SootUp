@@ -14,13 +14,8 @@ import sootup.java.core.JavaIdentifierFactory;
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class CossiInputTest extends MinimalBytecodeTestSuiteBase {
 
-  // FIXME: [bh] convert() in AsmMethodSource does not terminate
-  // hint: only CossiInput$CossiInputBuilder.build(...) is broken
   @Test
-  @Disabled("FIXME")
   public void test() {
-    // only care if it terminates here..
-
     SootClass clazz = loadClass(getDeclaredClassSignature());
     clazz.getMethods().forEach(SootMethod::getBody);
 
