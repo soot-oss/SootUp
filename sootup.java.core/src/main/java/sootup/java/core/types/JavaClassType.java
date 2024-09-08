@@ -43,6 +43,7 @@ public class JavaClassType extends ClassType {
   @Nonnull private final String className;
   @Nonnull private final PackageName packageName;
   private final int hashCode;
+  @Nonnull private final String toString;
 
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
@@ -60,6 +61,16 @@ public class JavaClassType extends ClassType {
     this.className = realClassName;
     this.packageName = packageName;
     this.hashCode = Objects.hashCode(className, packageName);
+    StringBuilder sb = new StringBuilder();
+    String packageNameStr = packageName.toString();
+    if (!packageNameStr.isEmpty()) {
+      sb.append(packageName);
+      if (!packageName.getName().isEmpty()) {
+        sb.append('.');
+      }
+    }
+    sb.append(className);
+    this.toString = sb.toString();
   }
 
   @Override
@@ -97,16 +108,7 @@ public class JavaClassType extends ClassType {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    String packageNameStr = packageName.toString();
-    if (!packageNameStr.isEmpty()) {
-      sb.append(packageName);
-      if (!packageName.getName().isEmpty()) {
-        sb.append('.');
-      }
-    }
-    sb.append(className);
-    return sb.toString();
+    return toString;
   }
 
   /** The simple class name. */
