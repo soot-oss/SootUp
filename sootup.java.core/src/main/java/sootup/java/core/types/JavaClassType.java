@@ -69,7 +69,7 @@ public class JavaClassType extends ClassType {
         sb.append('.');
       }
     }
-    sb.append(className);
+    sb.append(realClassName);
     this.toString = sb.toString();
   }
 
