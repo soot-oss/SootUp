@@ -162,10 +162,10 @@ public interface TypeHierarchy {
             || supertypeName.equals(jiSerializable)
             || supertypeName.equals(jlCloneable);
       } else {
-        throw new AssertionError("potentialSubtype has unexpected type");
+        throw new IllegalStateException("potentialSubtype has unexpected type");
       }
     } else {
-      throw new AssertionError("supertype has unexpected type");
+      throw new IllegalStateException("supertype has unexpected type");
     }
   }
 
@@ -201,6 +201,6 @@ public interface TypeHierarchy {
   Stream<ClassType> directlyExtendedInterfacesOf(@Nonnull ClassType type);
 
   // checks if a Type is contained int the TypeHierarchy - should return the equivalent to
-  // View.getClass(...).isPresent()
+  // View.getClass(...).isPresent() - the opposite is not true!
   boolean contains(ClassType type);
 }

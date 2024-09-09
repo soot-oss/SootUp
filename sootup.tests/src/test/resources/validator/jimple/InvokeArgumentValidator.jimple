@@ -1,0 +1,77 @@
+public class InvokeArgumentValidator extends java.lang.Object
+{
+    public void <init>()
+    {
+        InvokeArgumentValidator l0;
+
+        l0 := @this: InvokeArgumentValidator;
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void join(java.lang.Number,java.lang.String)
+    {
+       InvokeArgumentValidator l0;
+       java.lang.Number l1;
+       java.lang.String l2;
+
+
+       l0 := @this: InvokeArgumentValidator;
+       l1 := @parameter0: java.lang.Number;
+       l2 := @parameter1: java.lang.String;
+
+       return;
+    }
+
+    public void receivePrimitive(double)
+    {
+       InvokeArgumentValidator l0;
+       double l1;
+
+       l0 := @this: InvokeArgumentValidator;
+       l1 := @parameter0: double;
+
+       return;
+    }
+
+    public void testPrimitiveTypeConversion_success()
+    {
+        InvokeArgumentValidator l0;
+
+        l0 := @this: InvokeArgumentValidator;
+        virtualinvoke l0.<InvokeArgumentValidator: void receivePrimitive(double)>(1);
+
+        return;
+    }
+    
+    public void invokeArgumentValidator_success()
+    {
+        InvokeArgumentValidator l0;
+
+        l0 := @this: InvokeArgumentValidator;
+        virtualinvoke l0.<InvokeArgumentValidator: void join(java.lang.Number,java.lang.String)>(1, "hello");
+
+        return;
+    }
+
+    public void testArgumentNumber_fail()
+    {
+        InvokeArgumentValidator l0;
+
+        l0 := @this: InvokeArgumentValidator;
+        virtualinvoke l0.<InvokeArgumentValidator: void join(java.lang.Number,java.lang.String)>(1);
+
+        return;
+    }
+
+    public void testArgumentType_fail()
+    {
+        InvokeArgumentValidator l0;
+
+        l0 := @this: InvokeArgumentValidator;
+        virtualinvoke l0.<InvokeArgumentValidator: void join(java.lang.Number,java.lang.String)>("hello", 1);
+
+        return;
+    }
+}

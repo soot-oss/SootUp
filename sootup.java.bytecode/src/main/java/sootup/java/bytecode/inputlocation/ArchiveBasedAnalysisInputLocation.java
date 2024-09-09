@@ -99,8 +99,14 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
     try {
       FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
-      return getClassSourceInternal(
-          (JavaClassType) type, archiveRoot, new AsmJavaClassProvider(view));
+      JavaClassType javaClassType = null;
+
+      // FIXME: This is a temporary workaround to prevent a casting exception when passing an
+      // anonymous
+      // ClassType object e.g. from a JimpleAnalysisInputLocation
+      if (type instanceof JavaClassType) javaClassType = (JavaClassType) type;
+      else javaClassType = new JavaClassType(type.getClassName(), type.getPackageName());
+      return getClassSourceInternal(javaClassType, archiveRoot, new AsmJavaClassProvider(view));
     } catch (ExecutionException e) {
       throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
     }
