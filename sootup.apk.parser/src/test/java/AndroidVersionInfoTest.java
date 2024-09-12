@@ -3,7 +3,6 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.nio.file.Paths;
-import main.AndroidVersionInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import sootup.apk.parser.main.AndroidVersionInfo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AndroidVersionInfoTest {
