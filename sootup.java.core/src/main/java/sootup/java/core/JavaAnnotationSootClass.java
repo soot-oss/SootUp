@@ -22,6 +22,7 @@ package sootup.java.core;
  * #L%
  */
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -31,7 +32,6 @@ public class JavaAnnotationSootClass extends JavaSootClass {
 
   public JavaAnnotationSootClass(JavaSootClassSource classSource, SourceType sourceType) {
     super(classSource, sourceType);
-    getAnnotationMethods().forEach(JavaAnnotationSootMethod::getDefaultValue);
   }
 
   @Nonnull
@@ -39,5 +39,11 @@ public class JavaAnnotationSootClass extends JavaSootClass {
     return super.getMethods().stream()
         .map(method -> (JavaAnnotationSootMethod) method)
         .collect(Collectors.toSet());
+  }
+
+  @Nonnull
+  public Map<String, Object> getDefaultValues() {
+    return getAnnotationMethods().stream()
+        .collect(Collectors.toMap(method -> method.getName(), method -> method.getDefaultValue()));
   }
 }

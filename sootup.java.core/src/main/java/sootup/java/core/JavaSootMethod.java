@@ -22,9 +22,7 @@ package sootup.java.core;
  * #L%
  */
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import sootup.core.frontend.BodySource;
@@ -35,7 +33,6 @@ import sootup.core.model.Position;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.java.core.views.JavaView;
 
 public class JavaSootMethod extends SootMethod {
   @Nonnull private final Iterable<AnnotationUsage> annotations;
@@ -52,23 +49,8 @@ public class JavaSootMethod extends SootMethod {
   }
 
   @Nonnull
-  public Iterable<AnnotationUsage> getAnnotations(@Nonnull Optional<JavaView> view) {
-    resolveDefaultsForAnnotationTypes(view, annotations);
+  public Iterable<AnnotationUsage> getAnnotations() {
     return annotations;
-  }
-
-  private void resolveDefaultsForAnnotationTypes(
-      @Nonnull Optional<JavaView> view, Iterable<AnnotationUsage> annotationUsages) {
-    for (AnnotationUsage annotationUsage : annotationUsages) {
-      annotationUsage.getAnnotation().getDefaultValues(view);
-      for (Object value : annotationUsage.getValuesWithDefaults().values()) {
-        if (value instanceof ArrayList
-            && !((ArrayList<?>) value).isEmpty()
-            && ((ArrayList<?>) value).get(0) instanceof AnnotationUsage) {
-          resolveDefaultsForAnnotationTypes(view, (ArrayList<AnnotationUsage>) value);
-        }
-      }
-    }
   }
 
   @Nonnull
@@ -80,7 +62,7 @@ public class JavaSootMethod extends SootMethod {
         getSignature(),
         getModifiers(),
         exceptions,
-        getAnnotations(Optional.empty()),
+        getAnnotations(),
         getPosition());
   }
 
@@ -88,12 +70,7 @@ public class JavaSootMethod extends SootMethod {
   @Override
   public JavaSootMethod withSource(@Nonnull BodySource source) {
     return new JavaSootMethod(
-        source,
-        getSignature(),
-        getModifiers(),
-        exceptions,
-        getAnnotations(Optional.empty()),
-        getPosition());
+        source, getSignature(), getModifiers(), exceptions, getAnnotations(), getPosition());
   }
 
   @Nonnull
@@ -104,7 +81,7 @@ public class JavaSootMethod extends SootMethod {
         getSignature(),
         modifiers,
         getExceptionSignatures(),
-        getAnnotations(Optional.empty()),
+        getAnnotations(),
         getPosition());
   }
 
@@ -116,7 +93,7 @@ public class JavaSootMethod extends SootMethod {
         getSignature(),
         getModifiers(),
         thrownExceptions,
-        getAnnotations(Optional.empty()),
+        getAnnotations(),
         getPosition());
   }
 
@@ -139,7 +116,7 @@ public class JavaSootMethod extends SootMethod {
         getSignature(),
         getModifiers(),
         exceptions,
-        getAnnotations(Optional.empty()),
+        getAnnotations(),
         getPosition());
   }
 

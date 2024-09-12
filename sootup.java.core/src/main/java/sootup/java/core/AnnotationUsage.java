@@ -23,12 +23,10 @@ package sootup.java.core;
  */
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import javax.annotation.Nonnull;
-import sootup.java.core.types.AnnotationType;
+import sootup.core.types.ClassType;
 
 /**
  * This class models Annotations
@@ -37,17 +35,19 @@ import sootup.java.core.types.AnnotationType;
  */
 public class AnnotationUsage {
 
-  @Nonnull private final AnnotationType annotation;
+  @Nonnull private final ClassType annotation;
   @Nonnull private final Map<String, Object> values;
-  private Map<String, Object> valuesWithDefaults;
 
-  public AnnotationUsage(@Nonnull AnnotationType annotation, @Nonnull Map<String, Object> values) {
+  public AnnotationUsage(@Nonnull ClassType annotation, @Nonnull Map<String, Object> values) {
     this.annotation = annotation;
     this.values = values;
   }
 
+  /*
+   * Rename to getType?
+   */
   @Nonnull
-  public AnnotationType getAnnotation() {
+  public ClassType getAnnotation() {
     return annotation;
   }
 
@@ -56,22 +56,12 @@ public class AnnotationUsage {
     return Collections.unmodifiableMap(values);
   }
 
-  @Nonnull
-  public Map<String, Object> getValuesWithDefaults() {
-    if (valuesWithDefaults == null) {
-      valuesWithDefaults = new HashMap<>(annotation.getDefaultValues(Optional.empty()));
-      values.forEach((k, v) -> valuesWithDefaults.put(k, v));
-    }
-
-    return Collections.unmodifiableMap(valuesWithDefaults);
-  }
-
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("@").append(annotation);
-    if (!getValuesWithDefaults().isEmpty()) {
+    if (!values.isEmpty()) {
       sb.append("(");
-      getValuesWithDefaults().forEach((k, v) -> sb.append(k).append("=").append(v).append(","));
+      values.forEach((k, v) -> sb.append(k).append("=").append(v).append(","));
       sb.setCharAt(sb.length() - 1, ')');
     }
     return sb.toString();

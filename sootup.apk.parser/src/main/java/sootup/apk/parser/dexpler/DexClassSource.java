@@ -26,7 +26,6 @@ import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.*;
 import sootup.java.core.language.JavaJimple;
-import sootup.java.core.types.AnnotationType;
 
 public class DexClassSource extends JavaSootClassSource {
 
@@ -161,9 +160,9 @@ public class DexClassSource extends JavaSootClassSource {
         String name = element.getName();
         paramMap.put(name, convertAnnotationValue(element.getValue().getValueType()));
       }
-      AnnotationType at =
+      ClassType at =
           JavaIdentifierFactory.getInstance()
-              .getAnnotationType(DexUtil.toQualifiedName(annotation.getType()));
+              .getClassType(DexUtil.toQualifiedName(annotation.getType()));
       annotationUsage.add(new AnnotationUsage(at, paramMap));
     }
     return annotationUsage;
