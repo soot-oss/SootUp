@@ -19,7 +19,8 @@ public class TryCatchFinallyTests {
 
   @Test
   public void testTryWithResourcesFinally() {
-    Path classFilePath = Paths.get("../shared-test-resources/bugfixes/TryWithResourcesFinally.class");
+    Path classFilePath =
+        Paths.get("../shared-test-resources/bugfixes/TryWithResourcesFinally.class");
 
     AnalysisInputLocation inputLocation =
         new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
@@ -37,13 +38,13 @@ public class TryCatchFinallyTests {
     Path classFilePath = Paths.get("../shared-test-resources/bugfixes/NestedTryCatchFinally.class");
 
     AnalysisInputLocation inputLocation =
-            new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
-                    classFilePath, "", SourceType.Application);
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            classFilePath, "", SourceType.Application);
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     MethodSignature methodSignature =
-            view.getIdentifierFactory()
-                    .parseMethodSignature("<NestedTryCatchFinally: java.lang.String test0(java.io.File)>");
+        view.getIdentifierFactory()
+            .parseMethodSignature("<NestedTryCatchFinally: java.lang.String test0(java.io.File)>");
     List<Trap> traps = view.getMethod(methodSignature).get().getBody().getTraps();
   }
 }

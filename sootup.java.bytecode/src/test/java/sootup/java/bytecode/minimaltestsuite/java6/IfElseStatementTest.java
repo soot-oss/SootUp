@@ -256,29 +256,18 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l1 := @parameter0: int",
             "l2 = 0",
             "if l1 >= 42 goto label3",
-
-              "if l1 >= 42 goto label1",
-
-              "l2 = 11",
-              "goto label4",
-            
+            "if l1 >= 42 goto label1",
+            "l2 = 11",
+            "goto label4",
             "label1:",
             "if l1 <= 123 goto label2",
-
             "l2 = 12",
             "goto label4",
-
-
-
             "label2:",
             "l2 = 13",
             "goto label4",
-
-
-
             "label3:",
             "l2 = 2",
-
             "label4:",
             "return l2")
         .collect(Collectors.toList());
@@ -311,25 +300,18 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "l1 := @parameter0: int",
             "l2 = 0",
             "if l1 >= 42 goto label1",
-
-              "l2 = 1",
-              "goto label4",
-
+            "l2 = 1",
+            "goto label4",
             "label1:",
             "if l1 >= 42 goto label2",
-
-              "l2 = 21",
-              "goto label4",
-
+            "l2 = 21",
+            "goto label4",
             "label2:",
             "if l1 <= 123 goto label3",
-
-              "l2 = 22",
-              "goto label4",
-
+            "l2 = 22",
+            "goto label4",
             "label3:",
             "l2 = 23",
-
             "label4:",
             "return l2")
         .collect(Collectors.toList());
