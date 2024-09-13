@@ -1,10 +1,14 @@
-package sootup.java.core;
+package sootup.java.bytecode.frontend;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /*-
  * #%L
- * Soot - a J*va Optimization Framework
+ * Soot
  * %%
- * Copyright (C) 2020 Markus Schmidt
+ * Copyright (C) 2018-2020
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,23 +26,17 @@ package sootup.java.core;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.IdentifierFactory;
-import sootup.core.signatures.PackageName;
+public class FileUtil {
 
-/*
- * Actually, we could get rid of this class but removing it potentially breaks
- * 3rd party code. Hence, keep it for now.
- */
-public class JavaPackageName extends PackageName {
+  private static Path tempDirectory;
 
-  /**
-   * Internal: Constructs a Package Signature of a Java package. Instances should only be created by
-   * a {@link IdentifierFactory }
-   *
-   * @param packageName the package's name
-   */
-  public JavaPackageName(@Nonnull String packageName) {
-    super(packageName);
+  public static Path getTempDirectory() {
+    try {
+      return tempDirectory == null
+          ? (tempDirectory = Files.createTempDirectory("tempDir"))
+          : tempDirectory;
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

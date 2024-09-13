@@ -1,3 +1,2 @@
 @AnnotationPackage
 package dummyPackage;
-import dummyPackage.AnnotationPackage;

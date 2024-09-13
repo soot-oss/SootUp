@@ -1,58 +1,52 @@
-package sootup.java.bytecode.frontend.minimaltestsuite.java6;
+package sootup.java.bytecode.minimaltestsuite.java6;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.signatures.PackageName;
-import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
+import sootup.core.types.ClassType;
+import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
-import sootup.java.core.types.AnnotationType;
 
 @Tag("Java8")
 public class NestedAnnotationTest extends MinimalBytecodeTestSuiteBase {
 
   /**
    * The test is to check nested annotations. The annotations are of the
-   * form @MyOuterAnnotation(innerAnnotation=[@MyInnerAnnotation(secondInnerAnnotation=[@MySecondInnerAnnotation(value="second")])])
+   * form @MyOuterAnnotation(innerAnnotation=@MyInnerAnnotation(secondInnerAnnotation=@MySecondInnerAnnotation(value="second")))
    */
   @Test
   public void testNestedAnnotation() {
     JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
 
+    ClassType mySecondInnerAnnotationType =
+        identifierFactory.getClassType("MySecondInnerAnnotation");
     Map<String, Object> secondInnerAnnotationParamMap = new LinkedHashMap<>();
     secondInnerAnnotationParamMap.put(
         "value", JavaJimple.getInstance().newStringConstant("second"));
     AnnotationUsage secondInnerAnnotation =
-        new AnnotationUsage(
-            new AnnotationType("MySecondInnerAnnotation", new PackageName(""), false),
-            secondInnerAnnotationParamMap);
+        new AnnotationUsage(mySecondInnerAnnotationType, secondInnerAnnotationParamMap);
 
+    ClassType myInnerAnnotationType = identifierFactory.getClassType("MyInnerAnnotation");
     Map<String, Object> innerAnnotationParamMap = new LinkedHashMap<>();
-    innerAnnotationParamMap.put(
-        "secondInnerAnnotation", Collections.singletonList(secondInnerAnnotation));
+    innerAnnotationParamMap.put("secondInnerAnnotation", secondInnerAnnotation);
 
     AnnotationUsage innerAnnotation =
-        new AnnotationUsage(
-            new AnnotationType("MyInnerAnnotation", new PackageName(""), false),
-            innerAnnotationParamMap);
+        new AnnotationUsage(myInnerAnnotationType, innerAnnotationParamMap);
 
+    ClassType myOuterAnnotationType = identifierFactory.getClassType("MyOuterAnnotation");
     Map<String, Object> outerAnnotationParams = new LinkedHashMap<>();
-    outerAnnotationParams.put("innerAnnotation", Collections.singletonList(innerAnnotation));
+    outerAnnotationParams.put("innerAnnotation", innerAnnotation);
     AnnotationUsage outerAnnotation =
-        new AnnotationUsage(
-            new AnnotationType("MyOuterAnnotation", new PackageName(""), false),
-            outerAnnotationParams);
+        new AnnotationUsage(myOuterAnnotationType, outerAnnotationParams);
 
     ArrayList<AnnotationUsage> expectedAnnotation = new ArrayList<>();
     expectedAnnotation.add(outerAnnotation);
-    assertEquals(
-        expectedAnnotation,
-        sootClass.getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
+    assertEquals(expectedAnnotation, sootClass.getAnnotations());
     Set<? extends JavaSootMethod> methods = sootClass.getMethods();
     assertEquals(methods.size(), 1);
   }

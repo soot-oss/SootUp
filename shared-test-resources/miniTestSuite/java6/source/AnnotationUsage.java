@@ -56,6 +56,21 @@ import java.lang.annotation.Inherited;
   Class single() default Integer.class;
 }
 
+@interface AnnotationInterfaceNested {
+  OnMethod value();
+}
+
+@interface AnnotationInterfaceNested2 {
+  AnnotationInterfaceNested value() default @AnnotationInterfaceNested(@OnMethod(isDuck = true, sthBorrowed = 4711));
+}
+
+@OnClass
+@interface AnnotatedAnnotationInterface {
+  @OnMethod(sthBorrowed = -1)
+  String value() default "foobar";
+}
+
+
 @NonInheritableOnClass
 @OnClass(sthBlue=42, author = "GeorgeLucas")
 public class AnnotationUsage{

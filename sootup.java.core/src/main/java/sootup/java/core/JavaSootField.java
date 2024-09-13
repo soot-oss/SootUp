@@ -23,13 +23,11 @@ package sootup.java.core;
  */
 
 import java.util.Collections;
-import java.util.Optional;
 import javax.annotation.Nonnull;
 import sootup.core.model.FieldModifier;
 import sootup.core.model.Position;
 import sootup.core.model.SootField;
 import sootup.core.signatures.FieldSignature;
-import sootup.java.core.views.JavaView;
 
 public class JavaSootField extends SootField {
 
@@ -53,8 +51,7 @@ public class JavaSootField extends SootField {
   }
 
   @Nonnull
-  public Iterable<AnnotationUsage> getAnnotations(@Nonnull Optional<JavaView> view) {
-    annotations.forEach(e -> e.getAnnotation().getDefaultValues(view));
+  public Iterable<AnnotationUsage> getAnnotations() {
     return annotations;
   }
 

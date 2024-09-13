@@ -59,7 +59,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 import sootup.java.core.*;
-import sootup.java.core.types.AnnotationType;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.frontend.inputlocation.JavaSourcePathAnalysisInputLocation;
 
@@ -195,7 +194,7 @@ public class WalaIRToJimpleConverter {
       Set<JavaSootMethod> sootMethods,
       Position position,
       EnumSet<ClassModifier> modifiers,
-      Iterable<AnnotationType> annotations) {
+      Iterable<ClassType> annotations) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSignature = identifierFactory.getClassType(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
