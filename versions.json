@@ -2,7 +2,10 @@
   {
     "version": "remove-experimental-modules_preview",
     "title": "PR Preview remove-experimental-modules",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "issue-988-TypeAssigner_preview",
