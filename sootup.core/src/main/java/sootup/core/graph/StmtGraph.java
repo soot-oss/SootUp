@@ -22,12 +22,6 @@ package sootup.core.graph;
  */
 
 import com.google.common.collect.Iterators;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.*;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
@@ -35,6 +29,13 @@ import sootup.core.types.ClassType;
 import sootup.core.util.DotExporter;
 import sootup.core.util.EscapedWriter;
 import sootup.core.util.printer.JimplePrinter;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Interface for control flow graphs on Jimple Stmts. A StmtGraph is directed and connected (except
@@ -62,669 +63,694 @@ import sootup.core.util.printer.JimplePrinter;
  */
 public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stmt> {
 
-  public abstract Stmt getStartingStmt();
+    public abstract Stmt getStartingStmt();
 
-  public abstract BasicBlock<?> getStartingStmtBlock();
+    public abstract BasicBlock<?> getStartingStmtBlock();
 
-  /**
-   * returns the nodes in this graph in a non-deterministic order (-&gt;Set) to get the nodes in
-   * linearized, ordered manner use iterator() or getStmts.
-   */
-  @Nonnull
-  public abstract Collection<Stmt> getNodes();
+    /**
+     * returns the nodes in this graph in a non-deterministic order (-&gt;Set) to get the nodes in
+     * linearized, ordered manner use iterator() or getStmts.
+     */
+    @Nonnull
+    public abstract Collection<Stmt> getNodes();
 
-  public List<Stmt> getStmts() {
-    final ArrayList<Stmt> res = new ArrayList<>();
-    Iterators.addAll(res, iterator());
-    return res;
-  }
-
-  @Nonnull
-  public abstract Collection<? extends BasicBlock<?>> getBlocks();
-
-  @Nonnull
-  public abstract List<? extends BasicBlock<?>> getBlocksSorted();
-
-  public Iterator<BasicBlock<?>> getBlockIterator() {
-    return new BlockGraphIterator();
-  }
-
-  public abstract BasicBlock<?> getBlockOf(@Nonnull Stmt stmt);
-
-  public abstract boolean containsNode(@Nonnull Stmt node);
-
-  /**
-   * returns the ingoing flows to node as an List with no reliable/specific order and possibly
-   * duplicate entries i.e. if a JSwitchStmt has multiple cases that brnach to `node`
-   */
-  @Nonnull
-  public abstract List<Stmt> predecessors(@Nonnull Stmt node);
-
-  /** it is possible to reach traphandlers through inline code i.e. without any exceptional flow */
-  @Nonnull
-  public abstract List<Stmt> exceptionalPredecessors(@Nonnull Stmt node);
-
-  /** returns the outgoing flows of node as ordered List. The List can have duplicate entries! */
-  @Nonnull
-  public abstract List<Stmt> successors(@Nonnull Stmt node);
-
-  @Nonnull
-  public abstract Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node);
-
-  /**
-   * Collects all successors i.e. unexceptional and exceptional successors of a given stmt into a
-   * list.
-   *
-   * @param stmt in the given graph
-   * @return a list containing the unexceptional+exceptional successors of the given stmt
-   */
-  @Nonnull
-  public List<Stmt> getAllSuccessors(@Nonnull Stmt stmt) {
-    final List<Stmt> successors = successors(stmt);
-    final Map<ClassType, Stmt> exSuccessors = exceptionalSuccessors(stmt);
-    List<Stmt> allSuccessors = new ArrayList<>(successors.size() + exSuccessors.size());
-    allSuccessors.addAll(successors);
-    allSuccessors.addAll(exSuccessors.values());
-    return allSuccessors;
-  }
-
-  /** returns the amount of ingoing flows into node */
-  public abstract int inDegree(@Nonnull Stmt node);
-
-  /** returns the amount of flows that start from node */
-  public abstract int outDegree(@Nonnull Stmt node);
-
-  /** returns the amount of flows with node as source or target. */
-  public int degree(@Nonnull Stmt node) {
-    return inDegree(node) + outDegree(node);
-  }
-
-  /**
-   * returns true if there is a flow between source and target throws an Exception if at least one
-   * of the parameters is not contained in the graph.
-   */
-  public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
-
-  /**
-   * returns a (reconstructed) list of traps like the traptable in the bytecode
-   *
-   * <p>Note: if you need exceptionional flow information in more augmented with the affected
-   * blocks/stmts and not just a (reconstructed, possibly more verbose) traptable - have a look at
-   * BasicBlock.getExceptionalSuccessor()
-   */
-  public abstract List<Trap> buildTraps();
-
-  /**
-   * returns a Collection of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and
-   * JThrowStmt)
-   */
-  @Nonnull
-  public List<Stmt> getTails() {
-    return getNodes().stream()
-        .filter(stmt -> stmt.getExpectedSuccessorCount() == 0)
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * returns a Collection of all stmts in the graph that don't have an unexceptional ingoing flow or
-   * are the starting Stmt.
-   */
-  @Nonnull
-  public Collection<Stmt> getEntrypoints() {
-    final ArrayList<Stmt> stmts = new ArrayList<>();
-    stmts.add(getStartingStmt());
-    // TODO: [ms] memory/performance: instead of gettraps(): iterate through all stmts and add
-    // startingStmt+@caughtexception/predecessors().size() == 0?
-    buildTraps().stream().map(Trap::getHandlerStmt).forEach(stmts::add);
-    return stmts;
-  }
-
-  /** validates whether the each Stmt has the correct amount of outgoing flows. */
-  public void validateStmtConnectionsInGraph() {
-    try {
-
-      for (Stmt stmt : getNodes()) {
-        final List<Stmt> successors = successors(stmt);
-        final int successorCount = successors.size();
-
-        if (predecessors(stmt).isEmpty()) {
-          if (!(stmt == getStartingStmt()
-              || buildTraps().stream()
-                  .map(Trap::getHandlerStmt)
-                  .anyMatch(handler -> handler == stmt))) {
-            throw new IllegalStateException(
-                "Stmt '"
-                    + stmt
-                    + "' which is neither the StartingStmt nor a TrapHandler is missing a predecessor!");
-          }
-        }
-
-        if (stmt instanceof BranchingStmt) {
-          if (stmt instanceof JSwitchStmt) {
-            if (successorCount != ((JSwitchStmt) stmt).getValueCount()) {
-              throw new IllegalStateException(
-                  stmt
-                      + ": size of outgoing flows (i.e. "
-                      + successorCount
-                      + ") does not match the amount of JSwitchStmts case labels (i.e. "
-                      + ((JSwitchStmt) stmt).getValueCount()
-                      + ").");
-            }
-          } else if (stmt instanceof JIfStmt) {
-            if (successorCount != 2) {
-              throw new IllegalStateException(
-                  stmt + ": JIfStmt must have '2' outgoing flow but has '" + successorCount + "'.");
-            }
-          } else if (stmt instanceof JGotoStmt) {
-            if (successorCount != 1) {
-              throw new IllegalStateException(
-                  stmt + ": JGoto must have '1' outgoing flow but has '" + successorCount + "'.");
-            }
-          }
-
-        } else if (stmt instanceof JReturnStmt
-            || stmt instanceof JReturnVoidStmt
-            || stmt instanceof JThrowStmt) {
-          if (successorCount != 0) {
-            throw new IllegalStateException(
-                stmt + ": must have '0' outgoing flow but has '" + successorCount + "'.");
-          }
-        } else {
-          if (successorCount != 1) {
-            throw new IllegalStateException(
-                stmt + ": must have '1' outgoing flow but has '" + successorCount + "'.");
-          }
-        }
-      }
-
-    } catch (Exception e) {
-      final String urlToWebeditor = DotExporter.createUrlToWebeditor(this);
-      throw new IllegalStateException("visualize invalid StmtGraph: " + urlToWebeditor, e);
-    }
-  }
-
-  /**
-   * Look for a path in graph, from def to use. This path has to lie inside an extended basic block
-   * (and this property implies uniqueness.). The path returned includes from and to. FIXME: ms:
-   * explain better
-   *
-   * @param from start point for the path.
-   * @param to end point for the path.
-   * @return null if there is no such path.
-   */
-  @Nullable
-  public List<Stmt> getExtendedBasicBlockPathBetween(@Nonnull Stmt from, @Nonnull Stmt to) {
-
-    // if this holds, we're doomed to failure!!!
-    if (inDegree(to) > 1) {
-      return null;
-    }
-
-    // pathStack := list of succs lists
-    // pathStackIndex := last visited index in pathStack
-    List<Stmt> pathStack = new ArrayList<>();
-    List<Integer> pathStackIndex = new ArrayList<>();
-
-    pathStack.add(from);
-    pathStackIndex.add(0);
-
-    int psiMax = outDegree(pathStack.get(0));
-    int level = 0;
-    while (pathStackIndex.get(0) != psiMax) {
-      int p = pathStackIndex.get(level);
-
-      List<Stmt> succs = successors((pathStack.get(level)));
-      if (p >= succs.size()) {
-        // no more succs - backtrack to previous level.
-
-        pathStack.remove(level);
-        pathStackIndex.remove(level);
-
-        level--;
-        int q = pathStackIndex.get(level);
-        pathStackIndex.set(level, q + 1);
-        continue;
-      }
-
-      Stmt betweenStmt = succs.get(p);
-
-      // we win!
-      if (betweenStmt == to) {
-        pathStack.add(to);
-        return pathStack;
-      }
-
-      // check preds of betweenStmt to see if we should visit its kids.
-      if (inDegree(betweenStmt) > 1) {
-        pathStackIndex.set(level, p + 1);
-        continue;
-      }
-
-      // visit kids of betweenStmt.
-      level++;
-      pathStackIndex.add(0);
-      pathStack.add(betweenStmt);
-    }
-    return null;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == this) {
-      return true;
-    }
-
-    if (!(o instanceof StmtGraph)) {
-      return false;
-    }
-    StmtGraph<?> otherGraph = (StmtGraph<?>) o;
-
-    if (getStartingStmt() != otherGraph.getStartingStmt()) {
-      return false;
-    }
-
-    Collection<Stmt> nodes = getNodes();
-    final Collection<Stmt> otherNodes = otherGraph.getNodes();
-    if (nodes.size() != otherNodes.size()) {
-      return false;
-    }
-
-    if (!buildTraps().equals(otherGraph.buildTraps())) {
-      return false;
-    }
-
-    for (Stmt node : nodes) {
-      if (!otherNodes.contains(node)) {
-        return false;
-      }
-      final List<Stmt> successors = successors(node);
-      final List<Stmt> otherSuccessors = otherGraph.successors(node);
-      if (!successors.equals(otherSuccessors)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  @Override
-  @Nonnull
-  public Iterator<Stmt> iterator() {
-    return new BlockStmtGraphIterator();
-  }
-
-  public List<Stmt> getBranchTargetsOf(BranchingStmt fromStmt) {
-    final List<Stmt> successors = successors(fromStmt);
-    if (fromStmt instanceof JIfStmt) {
-      // remove the first successor as if its a fallsthrough stmt and not a branch target
-      return Collections.singletonList(successors.get(1));
-    }
-    return successors;
-  }
-
-  public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
-    final List<Stmt> predecessors = predecessors(targetStmt);
-    if (predecessors.size() > 1) {
-      // join node i.e. at least one is a branch
-      return true;
-    }
-
-    final Iterator<Stmt> iterator = predecessors.iterator();
-    if (iterator.hasNext()) {
-      Stmt pred = iterator.next();
-      if (pred.branches()) {
-        if (pred instanceof JIfStmt) {
-          // [ms] bounds are validated in Body
-          return getBranchTargetsOf((JIfStmt) pred).get(0) == targetStmt;
-        }
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  /** Iterates the Stmts according to the jimple output order. */
-  private class BlockStmtGraphIterator implements Iterator<Stmt> {
-
-    private final BlockGraphIterator blockIt;
-    @Nonnull private Iterator<Stmt> currentBlockIt = Collections.emptyIterator();
-
-    public BlockStmtGraphIterator() {
-      this(new BlockGraphIterator());
-    }
-
-    public BlockStmtGraphIterator(@Nonnull BlockGraphIterator blockIterator) {
-      blockIt = blockIterator;
-    }
-
-    @Override
-    public boolean hasNext() {
-      // hint: a BasicBlock has at least 1 Stmt or should not be in a StmtGraph!
-      return currentBlockIt.hasNext() || blockIt.hasNext();
-    }
-
-    @Override
-    public Stmt next() {
-      if (!currentBlockIt.hasNext()) {
-        if (!blockIt.hasNext()) {
-          throw new NoSuchElementException("Iterator has no more Stmts.");
-        }
-        BasicBlock<?> currentBlock = blockIt.next();
-        currentBlockIt = currentBlock.getStmts().iterator();
-      }
-      return currentBlockIt.next();
-    }
-  }
-
-  /** Iterates over the Blocks and collects/aggregates Trap information */
-  public class BlockGraphIteratorAndTrapAggregator extends BlockGraphIterator {
-
-    @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
-
-    Map<ClassType, Stmt> activeTraps = new HashMap<>();
-    BasicBlock<?> lastIteratedBlock; // dummy value to remove n-1 unnecessary null-checks
-
-    /*
-     * @param dummyBlock is just an empty instantiation of type V - as neither BasicBlock nor V instantiable we need a concrete object from the using subclass itclass.
-     * */
-    public BlockGraphIteratorAndTrapAggregator(V dummyBlock) {
-      super();
-      lastIteratedBlock = dummyBlock;
+    public List<Stmt> getStmts() {
+        final ArrayList<Stmt> res = new ArrayList<>();
+        Iterators.addAll(res, iterator());
+        return res;
     }
 
     @Nonnull
-    @Override
-    public BasicBlock<?> next() {
-      final BasicBlock<?> block = super.next();
+    public abstract Collection<? extends BasicBlock<?>> getBlocks();
 
-      final Map<? extends ClassType, ? extends BasicBlock<?>> currentBlocksExceptions =
-          block.getExceptionalSuccessors();
-      final Map<? extends ClassType, ? extends BasicBlock<?>> lastBlocksExceptions =
-          lastIteratedBlock.getExceptionalSuccessors();
+    @Nonnull
+    public abstract List<? extends BasicBlock<?>> getBlocksSorted();
 
-      // former trap info is not in the current blocks info -&gt; add it to the trap collection
-      lastBlocksExceptions.forEach(
-          (type, trapHandlerBlock) -> {
-            if (trapHandlerBlock != block.getExceptionalSuccessors().get(type)) {
-              final Stmt trapBeginStmt = activeTraps.remove(type);
-              if (trapBeginStmt == null) {
-                throw new IllegalStateException("Trap start for '" + type + "' is not in the Map!");
-              }
-              // trapend is exclusive!
-              collectedTraps.add(
-                  new Trap(type, trapBeginStmt, block.getHead(), trapHandlerBlock.getHead()));
-            }
-          });
+    public Iterator<BasicBlock<?>> getBlockIterator() {
+        return new BlockGraphIterator();
+    }
 
-      // is there a new trap in the current block -&gt; add it to currentTraps
-      block
-          .getExceptionalSuccessors()
-          .forEach(
-              (type, trapHandlerBlock) -> {
-                if (trapHandlerBlock != lastBlocksExceptions.get(type)) {
-                  activeTraps.put(type, block.getHead());
-                }
-              });
+    public abstract BasicBlock<?> getBlockOf(@Nonnull Stmt stmt);
 
-      lastIteratedBlock = block;
-      return block;
+    public abstract boolean containsNode(@Nonnull Stmt node);
+
+    /**
+     * returns the ingoing flows to node as an List with no reliable/specific order and possibly
+     * duplicate entries i.e. if a JSwitchStmt has multiple cases that brnach to `node`
+     */
+    @Nonnull
+    public abstract List<Stmt> predecessors(@Nonnull Stmt node);
+
+    /**
+     * it is possible to reach traphandlers through inline code i.e. without any exceptional flow
+     */
+    @Nonnull
+    public abstract List<Stmt> exceptionalPredecessors(@Nonnull Stmt node);
+
+    /**
+     * returns the outgoing flows of node as ordered List. The List can have duplicate entries!
+     */
+    @Nonnull
+    public abstract List<Stmt> successors(@Nonnull Stmt node);
+
+    @Nonnull
+    public abstract Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node);
+
+    /**
+     * Collects all successors i.e. unexceptional and exceptional successors of a given stmt into a
+     * list.
+     *
+     * @param stmt in the given graph
+     * @return a list containing the unexceptional+exceptional successors of the given stmt
+     */
+    @Nonnull
+    public List<Stmt> getAllSuccessors(@Nonnull Stmt stmt) {
+        final List<Stmt> successors = successors(stmt);
+        final Map<ClassType, Stmt> exSuccessors = exceptionalSuccessors(stmt);
+        List<Stmt> allSuccessors = new ArrayList<>(successors.size() + exSuccessors.size());
+        allSuccessors.addAll(successors);
+        allSuccessors.addAll(exSuccessors.values());
+        return allSuccessors;
     }
 
     /**
-     * for jimple serialization - this info contains only valid/useful information if all stmts are
-     * iterated i.e. hasNext() == false!
-     *
-     * @return List of Traps
+     * returns the amount of ingoing flows into node
      */
-    public List<Trap> getTraps() {
+    public abstract int inDegree(@Nonnull Stmt node);
 
-      if (hasNext()) {
-        throw new IllegalStateException("Iterator needs to be iterated completely!");
-      }
+    /**
+     * returns the amount of flows that start from node
+     */
+    public abstract int outDegree(@Nonnull Stmt node);
 
-      // check for dangling traps that are not collected as the endStmt was not visited.
-      if (!activeTraps.isEmpty()) {
-        throw new IllegalArgumentException(
-            "Invalid StmtGraph. A Trap is not created as a traps endStmt was not visited during the iteration of all Stmts.");
-      }
-      return collectedTraps;
+    /**
+     * returns the amount of flows with node as source or target.
+     */
+    public int degree(@Nonnull Stmt node) {
+        return inDegree(node) + outDegree(node);
     }
-  }
 
-  /** Iterates over the blocks */
-  protected class BlockGraphIterator implements Iterator<BasicBlock<?>> {
+    /**
+     * returns true if there is a flow between source and target throws an Exception if at least one
+     * of the parameters is not contained in the graph.
+     */
+    public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
+    /**
+     * returns a (reconstructed) list of traps like the traptable in the bytecode
+     *
+     * <p>Note: if you need exceptionional flow information in more augmented with the affected
+     * blocks/stmts and not just a (reconstructed, possibly more verbose) traptable - have a look at
+     * BasicBlock.getExceptionalSuccessor()
+     */
+    public abstract List<Trap> buildTraps();
+
+    /**
+     * returns a Collection of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and
+     * JThrowStmt)
+     */
     @Nonnull
-    private final Map<BasicBlock<?>, Deque<BasicBlock<?>>> fallsThroughSequences = new HashMap<>();
-
-    @Nullable private BasicBlock<?> fallsTroughWorklist = null;
-    @Nonnull private final ArrayDeque<BasicBlock<?>> trapHandlerBlocks = new ArrayDeque<>();
-    @Nonnull private final ArrayDeque<BasicBlock<?>> branchingBlockWorklist = new ArrayDeque<>();
-    @Nonnull private final Set<BasicBlock<?>> iteratedBlocks;
-
-    public BlockGraphIterator() {
-      final Collection<? extends BasicBlock<?>> blocks = getBlocks();
-      iteratedBlocks = new LinkedHashSet<>(blocks.size(), 1);
-      Stmt startingStmt = getStartingStmt();
-      if (startingStmt != null) {
-        final BasicBlock<?> startingBlock = getStartingStmtBlock();
-        updateFollowingBlocks(startingBlock);
-        fallsTroughWorklist = startingBlock;
-      }
+    public List<Stmt> getTails() {
+        return getNodes().stream()
+                .filter(stmt -> stmt.getExpectedSuccessorCount() == 0)
+                .collect(Collectors.toList());
     }
 
-    protected Deque<BasicBlock<?>> calculateFallsThroughSequence(@Nonnull BasicBlock<?> param) {
-      Deque<BasicBlock<?>> basicBlockSequence = fallsThroughSequences.get(param);
-      if (basicBlockSequence != null) {
-        return basicBlockSequence;
-      }
-
-      Deque<BasicBlock<?>> list = new ArrayDeque<>();
-
-      BasicBlock<?> continousBlockSequenceHeadCandidate = param;
-      // TODO: [ms] looks ugly.. simplify readability of the loop!
-      // find the leader of the Block Sequence (connected via FallsthroughStmts)
-      while (true) {
-        list.addFirst(continousBlockSequenceHeadCandidate);
-        final List<? extends BasicBlock<?>> itPreds =
-            continousBlockSequenceHeadCandidate.getPredecessors();
-        BasicBlock<?> continousBlockTailCandidate = continousBlockSequenceHeadCandidate;
-        final Optional<? extends BasicBlock<?>> fallsthroughPredOpt =
-            itPreds.stream()
-                .filter(
-                    b ->
-                        b.getTail().fallsThrough()
-                            && b.getSuccessors().get(0) == continousBlockTailCandidate)
-                .findAny();
-        if (!fallsthroughPredOpt.isPresent()) {
-          break;
-        }
-        BasicBlock<?> predecessorBlock = fallsthroughPredOpt.get();
-        if (predecessorBlock.getTail().fallsThrough()
-            && predecessorBlock.getSuccessors().get(0) == continousBlockSequenceHeadCandidate) {
-          continousBlockSequenceHeadCandidate = predecessorBlock;
-        } else {
-          break;
-        }
-      }
-
-      // iterate to the end of the sequence
-      BasicBlock<?> continousBlockSequenceTailCandidate = param;
-      while (continousBlockSequenceTailCandidate.getTail().fallsThrough()) {
-        continousBlockSequenceTailCandidate =
-            continousBlockSequenceTailCandidate.getSuccessors().get(0);
-        list.addLast(continousBlockSequenceTailCandidate);
-      }
-
-      // cache calculated sequence for every block in the sequence
-      for (BasicBlock<?> basicBlock : list) {
-        fallsThroughSequences.put(basicBlock, list);
-      }
-      return list;
+    /**
+     * returns a Collection of all stmts in the graph that don't have an unexceptional ingoing flow or
+     * are the starting Stmt.
+     */
+    @Nonnull
+    public Collection<Stmt> getEntrypoints() {
+        final ArrayList<Stmt> stmts = new ArrayList<>();
+        stmts.add(getStartingStmt());
+        // TODO: [ms] memory/performance: instead of gettraps(): iterate through all stmts and add
+        // startingStmt+@caughtexception/predecessors().size() == 0?
+        buildTraps().stream().map(Trap::getHandlerStmt).forEach(stmts::add);
+        return stmts;
     }
 
+    /**
+     * validates whether the each Stmt has the correct amount of outgoing flows.
+     */
+    public void validateStmtConnectionsInGraph() {
+        try {
+
+            for (Stmt stmt : getNodes()) {
+                final List<Stmt> successors = successors(stmt);
+                final int successorCount = successors.size();
+
+                if (predecessors(stmt).isEmpty()) {
+                    if (!(stmt == getStartingStmt()
+                            || buildTraps().stream()
+                            .map(Trap::getHandlerStmt)
+                            .anyMatch(handler -> handler == stmt))) {
+                        throw new IllegalStateException(
+                                "Stmt '"
+                                        + stmt
+                                        + "' which is neither the StartingStmt nor a TrapHandler is missing a predecessor!");
+                    }
+                }
+
+                if (stmt instanceof BranchingStmt) {
+                    if (stmt instanceof JSwitchStmt) {
+                        if (successorCount != ((JSwitchStmt) stmt).getValueCount()) {
+                            throw new IllegalStateException(
+                                    stmt
+                                            + ": size of outgoing flows (i.e. "
+                                            + successorCount
+                                            + ") does not match the amount of JSwitchStmts case labels (i.e. "
+                                            + ((JSwitchStmt) stmt).getValueCount()
+                                            + ").");
+                        }
+                    } else if (stmt instanceof JIfStmt) {
+                        if (successorCount != 2) {
+                            throw new IllegalStateException(
+                                    stmt + ": JIfStmt must have '2' outgoing flow but has '" + successorCount + "'.");
+                        }
+                    } else if (stmt instanceof JGotoStmt) {
+                        if (successorCount != 1) {
+                            throw new IllegalStateException(
+                                    stmt + ": JGoto must have '1' outgoing flow but has '" + successorCount + "'.");
+                        }
+                    }
+
+                } else if (stmt instanceof JReturnStmt
+                        || stmt instanceof JReturnVoidStmt
+                        || stmt instanceof JThrowStmt) {
+                    if (successorCount != 0) {
+                        throw new IllegalStateException(
+                                stmt + ": must have '0' outgoing flow but has '" + successorCount + "'.");
+                    }
+                } else {
+                    if (successorCount != 1) {
+                        throw new IllegalStateException(
+                                stmt + ": must have '1' outgoing flow but has '" + successorCount + "'.");
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            final String urlToWebeditor = DotExporter.createUrlToWebeditor(this);
+            throw new IllegalStateException("visualize invalid StmtGraph: " + urlToWebeditor, e);
+        }
+    }
+
+    /**
+     * Look for a path in graph, from def to use. This path has to lie inside an extended basic block
+     * (and this property implies uniqueness.). The path returned includes from and to. FIXME: ms:
+     * explain better
+     *
+     * @param from start point for the path.
+     * @param to   end point for the path.
+     * @return null if there is no such path.
+     */
     @Nullable
-    private BasicBlock<?> retrieveNextBlock() {
-      BasicBlock<?> nextBlock;
-      do {
-        if (fallsTroughWorklist != null) {
-          nextBlock = fallsTroughWorklist;
-          fallsTroughWorklist = null;
-        } else if (!branchingBlockWorklist.isEmpty()) {
-          nextBlock = branchingBlockWorklist.pollFirst();
-        } else if (!trapHandlerBlocks.isEmpty()) {
-          nextBlock = trapHandlerBlocks.pollFirst();
-        } else {
-          /* Fallback mode */
-          Collection<? extends BasicBlock<?>> blocks = getBlocks();
-          if (iteratedBlocks.size() < blocks.size()) {
-            // graph is not connected! iterate/append all not connected blocks at the end in no
-            // particular order.
-            for (BasicBlock<?> block : blocks) {
-              if (!iteratedBlocks.contains(block)) {
-                branchingBlockWorklist.addLast(block);
-              }
-            }
-            if (!branchingBlockWorklist.isEmpty()) {
-              return branchingBlockWorklist.pollFirst();
-            }
-          }
+    public List<Stmt> getExtendedBasicBlockPathBetween(@Nonnull Stmt from, @Nonnull Stmt to) {
 
-          return null;
+        // if this holds, we're doomed to failure!!!
+        if (inDegree(to) > 1) {
+            return null;
         }
 
-        // skip retrieved nextBlock if its already returned
-      } while (iteratedBlocks.contains(nextBlock));
-      return nextBlock;
+        // pathStack := list of succs lists
+        // pathStackIndex := last visited index in pathStack
+        List<Stmt> pathStack = new ArrayList<>();
+        List<Integer> pathStackIndex = new ArrayList<>();
+
+        pathStack.add(from);
+        pathStackIndex.add(0);
+
+        int psiMax = outDegree(pathStack.get(0));
+        int level = 0;
+        while (pathStackIndex.get(0) != psiMax) {
+            int p = pathStackIndex.get(level);
+
+            List<Stmt> succs = successors((pathStack.get(level)));
+            if (p >= succs.size()) {
+                // no more succs - backtrack to previous level.
+
+                pathStack.remove(level);
+                pathStackIndex.remove(level);
+
+                level--;
+                int q = pathStackIndex.get(level);
+                pathStackIndex.set(level, q + 1);
+                continue;
+            }
+
+            Stmt betweenStmt = succs.get(p);
+
+            // we win!
+            if (betweenStmt == to) {
+                pathStack.add(to);
+                return pathStack;
+            }
+
+            // check preds of betweenStmt to see if we should visit its kids.
+            if (inDegree(betweenStmt) > 1) {
+                pathStackIndex.set(level, p + 1);
+                continue;
+            }
+
+            // visit kids of betweenStmt.
+            level++;
+            pathStackIndex.add(0);
+            pathStack.add(betweenStmt);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof StmtGraph)) {
+            return false;
+        }
+        StmtGraph<?> otherGraph = (StmtGraph<?>) o;
+
+        if (getStartingStmt() != otherGraph.getStartingStmt()) {
+            return false;
+        }
+
+        Collection<Stmt> nodes = getNodes();
+        final Collection<Stmt> otherNodes = otherGraph.getNodes();
+        if (nodes.size() != otherNodes.size()) {
+            return false;
+        }
+
+        if (!buildTraps().equals(otherGraph.buildTraps())) {
+            return false;
+        }
+
+        for (Stmt node : nodes) {
+            if (!otherNodes.contains(node)) {
+                return false;
+            }
+            final List<Stmt> successors = successors(node);
+            final List<Stmt> otherSuccessors = otherGraph.successors(node);
+            if (!successors.equals(otherSuccessors)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
     @Nonnull
-    public BasicBlock<?> next() {
-      BasicBlock<?> currentBlock = retrieveNextBlock();
-      if (currentBlock == null) {
-        throw new NoSuchElementException("Iterator has no more Blocks.");
-      }
-      updateFollowingBlocks(currentBlock);
-      iteratedBlocks.add(currentBlock);
-      return currentBlock;
+    public Iterator<Stmt> iterator() {
+        return new BlockStmtGraphIterator();
     }
 
-    private void updateFollowingBlocks(BasicBlock<?> currentBlock) {
-      // collect traps
-      final Stmt tailStmt = currentBlock.getTail();
-      for (BasicBlock<?> trapHandlerBlock : currentBlock.getExceptionalSuccessors().values()) {
-        trapHandlerBlocks.addLast(trapHandlerBlock);
-      }
-
-      final List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
-      final int endIdx;
-      if (tailStmt.fallsThrough()) {
-        // handle the falls-through successor
-        assert (fallsTroughWorklist == null);
-        fallsTroughWorklist = successors.get(0);
-        endIdx = 1;
-      } else {
-        endIdx = 0;
-      }
-
-      // handle the branching successor(s)
-      for (int i = successors.size() - 1; i >= endIdx; i--) {
-        // find the leader/beginning block of a continuous sequence of Blocks (connected via
-        // FallsThroughStmts)
-        final BasicBlock<?> successorBlock = successors.get(i);
-
-        Deque<BasicBlock<?>> blockSequence = calculateFallsThroughSequence(successorBlock);
-        boolean isSequenceTailExceptionFree =
-            blockSequence.getLast().getExceptionalSuccessors().isEmpty();
-
-        if (isSequenceTailExceptionFree) {
-          branchingBlockWorklist.addLast(blockSequence.getFirst());
-        } else {
-          branchingBlockWorklist.addLast(blockSequence.getLast());
+    public List<Stmt> getBranchTargetsOf(BranchingStmt fromStmt) {
+        final List<Stmt> successors = successors(fromStmt);
+        if (fromStmt instanceof JIfStmt) {
+            // remove the first successor as if its a fallsthrough stmt and not a branch target
+            return Collections.singletonList(successors.get(1));
         }
-      }
+        return successors;
+    }
+
+    public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
+        final List<Stmt> predecessors = predecessors(targetStmt);
+        if (predecessors.size() > 1) {
+            // join node i.e. at least one is a branch
+            return true;
+        }
+
+        final Iterator<Stmt> iterator = predecessors.iterator();
+        if (iterator.hasNext()) {
+            Stmt pred = iterator.next();
+            if (pred.branches()) {
+                if (pred instanceof JIfStmt) {
+                    // [ms] bounds are validated in Body
+                    return getBranchTargetsOf((JIfStmt) pred).get(0) == targetStmt;
+                }
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Iterates the Stmts according to the jimple output order.
+     */
+    private class BlockStmtGraphIterator implements Iterator<Stmt> {
+
+        private final BlockGraphIterator blockIt;
+        @Nonnull
+        private Iterator<Stmt> currentBlockIt = Collections.emptyIterator();
+
+        public BlockStmtGraphIterator() {
+            this(new BlockGraphIterator());
+        }
+
+        public BlockStmtGraphIterator(@Nonnull BlockGraphIterator blockIterator) {
+            blockIt = blockIterator;
+        }
+
+        @Override
+        public boolean hasNext() {
+            // hint: a BasicBlock has at least 1 Stmt or should not be in a StmtGraph!
+            return currentBlockIt.hasNext() || blockIt.hasNext();
+        }
+
+        @Override
+        public Stmt next() {
+            if (!currentBlockIt.hasNext()) {
+                if (!blockIt.hasNext()) {
+                    throw new NoSuchElementException("Iterator has no more Stmts.");
+                }
+                BasicBlock<?> currentBlock = blockIt.next();
+                currentBlockIt = currentBlock.getStmts().iterator();
+            }
+            return currentBlockIt.next();
+        }
+    }
+
+    /**
+     * Iterates over the Blocks and collects/aggregates Trap information
+     */
+    public class BlockGraphIteratorAndTrapAggregator extends BlockGraphIterator {
+
+        @Nonnull
+        private final List<Trap> collectedTraps = new ArrayList<>();
+
+        Map<ClassType, Stmt> activeTraps = new HashMap<>();
+        BasicBlock<?> lastIteratedBlock; // dummy value to remove n-1 unnecessary null-checks
+
+        /*
+         * @param dummyBlock is just an empty instantiation of type V - as neither BasicBlock nor V instantiable we need a concrete object from the using subclass itclass.
+         * */
+        public BlockGraphIteratorAndTrapAggregator(V dummyBlock) {
+            super();
+            lastIteratedBlock = dummyBlock;
+        }
+
+        @Nonnull
+        @Override
+        public BasicBlock<?> next() {
+            final BasicBlock<?> block = super.next();
+
+            final Map<? extends ClassType, ? extends BasicBlock<?>> currentBlocksExceptions =
+                    block.getExceptionalSuccessors();
+            final Map<? extends ClassType, ? extends BasicBlock<?>> lastBlocksExceptions =
+                    lastIteratedBlock.getExceptionalSuccessors();
+
+            // former trap info is not in the current blocks info -&gt; add it to the trap collection
+            lastBlocksExceptions.forEach(
+                    (type, trapHandlerBlock) -> {
+                        if (trapHandlerBlock != block.getExceptionalSuccessors().get(type)) {
+                            final Stmt trapBeginStmt = activeTraps.remove(type);
+                            if (trapBeginStmt == null) {
+                                throw new IllegalStateException("Trap start for '" + type + "' is not in the Map!");
+                            }
+                            // trapend is exclusive!
+                            collectedTraps.add(
+                                    new Trap(type, trapBeginStmt, block.getHead(), trapHandlerBlock.getHead()));
+                        }
+                    });
+
+            // is there a new trap in the current block -&gt; add it to currentTraps
+            block
+                    .getExceptionalSuccessors()
+                    .forEach(
+                            (type, trapHandlerBlock) -> {
+                                if (trapHandlerBlock != lastBlocksExceptions.get(type)) {
+                                    activeTraps.put(type, block.getHead());
+                                }
+                            });
+
+            lastIteratedBlock = block;
+            return block;
+        }
+
+        /**
+         * for jimple serialization - this info contains only valid/useful information if all stmts are
+         * iterated i.e. hasNext() == false!
+         *
+         * @return List of Traps
+         */
+        public List<Trap> getTraps() {
+
+            if (hasNext()) {
+                throw new IllegalStateException("Iterator needs to be iterated completely!");
+            }
+
+            // check for dangling traps that are not collected as the endStmt was not visited.
+            if (!activeTraps.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Invalid StmtGraph. A Trap is not created as a traps endStmt was not visited during the iteration of all Stmts.");
+            }
+            return collectedTraps;
+        }
+    }
+
+
+    protected static class IteratorFrame implements Comparable<IteratorFrame>, Iterable<BasicBlock<?>> {
+        private final int weight;
+        private final Deque<BasicBlock<?>> sequence;
+
+        protected IteratorFrame(Deque<BasicBlock<?>> sequence, int weight) {
+            this.weight = weight;
+            this.sequence = sequence;
+        }
+
+        @Override
+        public int compareTo(IteratorFrame o) {
+            return Integer.compare(weight, o.weight);
+        }
+
+        public int getWeight() {
+            return weight;
+        }
+
+        public int size(){
+            return sequence.size();
+        }
+
+        @Nonnull
+        @Override
+        public Iterator<BasicBlock<?>> iterator() {
+            return sequence.iterator();
+        }
+    }
+
+    /**
+     * Iterates over the blocks
+     */
+    protected class BlockGraphIterator implements Iterator<BasicBlock<?>> {
+
+        private final PriorityQueue<IteratorFrame> worklist = new PriorityQueue<>();
+        private IteratorFrame itFrame;
+        private Iterator<BasicBlock<?>> itBlock;
+        @Nonnull
+        private final Map<BasicBlock<?>, Deque<BasicBlock<?>>> fallsThroughSequenceMap = new HashMap<>();
+        @Nonnull
+        private final Set<BasicBlock<?>> seenTargets;
+
+        public BlockGraphIterator() {
+            final Collection<? extends BasicBlock<?>> blocks = getBlocks();
+            seenTargets = new LinkedHashSet<>(blocks.size(), 1);
+            Stmt startingStmt = getStartingStmt();
+            if (startingStmt != null) {
+                final BasicBlock<?> startingBlock = getStartingStmtBlock();
+                itFrame = new IteratorFrame(calculateFallsThroughSequence(startingBlock), 0);
+                itBlock = itFrame.iterator();
+                updateFollowingBlocks(startingBlock, 0);
+            }
+        }
+
+        protected Deque<BasicBlock<?>> calculateFallsThroughSequence(@Nonnull BasicBlock<?> param) {
+            Deque<BasicBlock<?>> basicBlockSequence = fallsThroughSequenceMap.get(param);
+            if (basicBlockSequence != null) {
+                return basicBlockSequence;
+            }
+
+            Deque<BasicBlock<?>> blockSequence = new ArrayDeque<>();
+
+            BasicBlock<?> continousBlockSequenceHeadCandidate = param;
+            // TODO: [ms] looks ugly.. simplify readability of the loop!
+            // find the leader of the Block Sequence (connected via FallsthroughStmts)
+            while (true) {
+                blockSequence.addFirst(continousBlockSequenceHeadCandidate);
+                final List<? extends BasicBlock<?>> itPreds =
+                        continousBlockSequenceHeadCandidate.getPredecessors();
+                BasicBlock<?> continousBlockTailCandidate = continousBlockSequenceHeadCandidate;
+                final Optional<? extends BasicBlock<?>> fallsthroughPredOpt =
+                        itPreds.stream()
+                                .filter(
+                                        b ->
+                                                b.getTail().fallsThrough()
+                                                        && b.getSuccessors().get(0) == continousBlockTailCandidate)
+                                .findAny();
+                if (!fallsthroughPredOpt.isPresent()) {
+                    break;
+                }
+                BasicBlock<?> predecessorBlock = fallsthroughPredOpt.get();
+                if (predecessorBlock.getTail().fallsThrough()
+                        && predecessorBlock.getSuccessors().get(0) == continousBlockSequenceHeadCandidate) {
+                    continousBlockSequenceHeadCandidate = predecessorBlock;
+                } else {
+                    break;
+                }
+            }
+
+            // iterate to the end of the sequence
+            BasicBlock<?> continousBlockSequenceTailCandidate = param;
+            while (continousBlockSequenceTailCandidate.getTail().fallsThrough()) {
+                continousBlockSequenceTailCandidate =
+                        continousBlockSequenceTailCandidate.getSuccessors().get(0);
+                blockSequence.addLast(continousBlockSequenceTailCandidate);
+            }
+
+            // cache calculated sequence for every block in the sequence
+            for (BasicBlock<?> basicBlock : blockSequence) {
+                fallsThroughSequenceMap.put(basicBlock, blockSequence);
+                seenTargets.add(basicBlock);
+            }
+            return blockSequence;
+        }
+
+        @Override
+        @Nonnull
+        public BasicBlock<?> next() {
+            if(!itBlock.hasNext()){
+                itFrame = worklist.poll();
+                if (itFrame == null) {
+                    throw new NoSuchElementException("Iterator has no more Blocks.");
+                }
+                itBlock = itFrame.iterator();
+            }
+
+            BasicBlock<?> currentBlock = itBlock.next();
+            updateFollowingBlocks(currentBlock, itFrame.getWeight());
+            return currentBlock;
+        }
+
+        private void updateFollowingBlocks(BasicBlock<?> currentBlock, int currentWeight) {
+            // collect traps
+            final Stmt tailStmt = currentBlock.getTail();
+
+            final List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
+            final int endIdx = tailStmt.fallsThrough() ? 1 : 0;
+
+            // handle the branching successor(s)
+            for (int i = successors.size() - 1; i >= endIdx; i--) {
+                // find the leader/beginning block of a continuous sequence of Blocks (connected via
+                // FallsThroughStmts)
+                final BasicBlock<?> successorBlock = successors.get(i);
+
+                if( seenTargets.contains(successorBlock) ){
+                    // already added / seen
+                    continue;
+                }
+
+                Deque<BasicBlock<?>> blockSequence = calculateFallsThroughSequence(successorBlock);
+                BasicBlock<?> lastBlockOfSequence = blockSequence.getLast();
+                boolean isSequenceTailExceptionFree =
+                        lastBlockOfSequence.getExceptionalSuccessors().isEmpty();
+
+                int newWeight;
+                if (isSequenceTailExceptionFree) {
+                    if( lastBlockOfSequence.getTail() instanceof JReturnStmt || lastBlockOfSequence.getTail() instanceof JReturnVoidStmt ) {
+                        // biggest number, yet - only bigger weight if there follows another JReturn(Void)Stmt
+                        newWeight = ++currentWeight + getBlocks().size();
+                    }else{
+                        newWeight = getBlocks().size();
+                    }
+                } else {
+                    newWeight = ++currentWeight;
+                }
+                worklist.add(new IteratorFrame(blockSequence, newWeight));
+            }
+
+
+            for (BasicBlock<?> trapHandlerBlock : currentBlock.getExceptionalSuccessors().values()) {
+//                trapHandlerBlocks.addLast(trapHandlerBlock);
+                if(!seenTargets.contains(trapHandlerBlock)) {
+                    worklist.add(new IteratorFrame(calculateFallsThroughSequence(trapHandlerBlock), ++currentWeight));
+                }
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            // "assertion" that all elements are iterated
+            if (itBlock.hasNext()) {
+                return true;
+            }
+            
+            if (worklist.isEmpty()) {
+                final Collection<? extends BasicBlock<?>> blocks = getBlocks();
+                final int actualSize = blocks.size();
+                if (seenTargets.size() != actualSize) {
+                    String info =
+                            blocks.stream()
+                                    .filter(n -> !seenTargets.contains(n))
+                                    .map(BasicBlock::getStmts)
+                                    .collect(Collectors.toList())
+                                    .toString();
+                    throw new IllegalStateException(
+                            "There are "
+                                    + (actualSize - seenTargets.size())
+                                    + " Blocks that are not iterated! i.e. the StmtGraph is not connected from its startingStmt!"
+                                    + info
+                                    + DotExporter.createUrlToWebeditor(StmtGraph.this));
+                }
+
+                return false;
+            }
+            return true;
+        }
+    }
+
+    /**
+     * Returns the result of iterating through all Stmts in this body. All Stmts thus found are
+     * returned. Branching Stmts and statements which use PhiExpr will have Stmts; a Stmt contains a
+     * Stmt that is either a target of a branch or is being used as a pointer to the end of a CFG
+     * block.
+     *
+     * <p>This method was typically used for pointer patching, e.g. when the unit chain is cloned.
+     *
+     * @return A collection of all the Stmts that are targets of a BranchingStmt
+     */
+    @Nonnull
+    public Collection<Stmt> getLabeledStmts() {
+        Set<Stmt> stmtList = new HashSet<>();
+        for (Stmt stmt : getNodes()) {
+            if (stmt instanceof BranchingStmt) {
+                if (stmt instanceof JIfStmt) {
+                    stmtList.add(getBranchTargetsOf((JIfStmt) stmt).get(JIfStmt.FALSE_BRANCH_IDX));
+                } else if (stmt instanceof JGotoStmt) {
+                    // [ms] bounds are validated in Body if its a valid StmtGraph
+                    stmtList.add(getBranchTargetsOf((JGotoStmt) stmt).get(JGotoStmt.BRANCH_IDX));
+                } else if (stmt instanceof JSwitchStmt) {
+                    stmtList.addAll(getBranchTargetsOf((BranchingStmt) stmt));
+                }
+            }
+        }
+
+        for (Trap trap : buildTraps()) {
+            stmtList.add(trap.getBeginStmt());
+            stmtList.add(trap.getEndStmt());
+            stmtList.add(trap.getHandlerStmt());
+        }
+
+        return stmtList;
     }
 
     @Override
-    public boolean hasNext() {
-      final boolean hasIteratorMoreElements;
-      BasicBlock<?> b = retrieveNextBlock();
-      if (b != null) {
-        // reinsert at FIRST position -&gt; not great for performance - but easier handling in
-        // next()
-        branchingBlockWorklist.addFirst(b);
-        hasIteratorMoreElements = true;
-      } else {
-        hasIteratorMoreElements = false;
-      }
-
-      // "assertion" that all elements are iterated
-      if (!hasIteratorMoreElements) {
-        final int returnedSize = iteratedBlocks.size();
-        final Collection<? extends BasicBlock<?>> blocks = getBlocks();
-        final int actualSize = blocks.size();
-        if (returnedSize != actualSize) {
-          String info =
-              blocks.stream()
-                  .filter(n -> !iteratedBlocks.contains(n))
-                  .map(BasicBlock::getStmts)
-                  .collect(Collectors.toList())
-                  .toString();
-          throw new IllegalStateException(
-              "There are "
-                  + (actualSize - returnedSize)
-                  + " Blocks that are not iterated! i.e. the StmtGraph is not connected from its startingStmt!"
-                  + info
-                  + DotExporter.createUrlToWebeditor(StmtGraph.this));
+    public String toString() {
+        StringWriter writer = new StringWriter();
+        try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
+            new JimplePrinter().printTo(this, writerOut);
         }
-      }
-      return hasIteratorMoreElements;
+        return writer.toString();
     }
-  }
-
-  /**
-   * Returns the result of iterating through all Stmts in this body. All Stmts thus found are
-   * returned. Branching Stmts and statements which use PhiExpr will have Stmts; a Stmt contains a
-   * Stmt that is either a target of a branch or is being used as a pointer to the end of a CFG
-   * block.
-   *
-   * <p>This method was typically used for pointer patching, e.g. when the unit chain is cloned.
-   *
-   * @return A collection of all the Stmts that are targets of a BranchingStmt
-   */
-  @Nonnull
-  public Collection<Stmt> getLabeledStmts() {
-    Set<Stmt> stmtList = new HashSet<>();
-    for (Stmt stmt : getNodes()) {
-      if (stmt instanceof BranchingStmt) {
-        if (stmt instanceof JIfStmt) {
-          stmtList.add(getBranchTargetsOf((JIfStmt) stmt).get(JIfStmt.FALSE_BRANCH_IDX));
-        } else if (stmt instanceof JGotoStmt) {
-          // [ms] bounds are validated in Body if its a valid StmtGraph
-          stmtList.add(getBranchTargetsOf((JGotoStmt) stmt).get(JGotoStmt.BRANCH_IDX));
-        } else if (stmt instanceof JSwitchStmt) {
-          stmtList.addAll(getBranchTargetsOf((BranchingStmt) stmt));
-        }
-      }
-    }
-
-    for (Trap trap : buildTraps()) {
-      stmtList.add(trap.getBeginStmt());
-      stmtList.add(trap.getEndStmt());
-      stmtList.add(trap.getHandlerStmt());
-    }
-
-    return stmtList;
-  }
-
-  @Override
-  public String toString() {
-    StringWriter writer = new StringWriter();
-    try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
-      new JimplePrinter().printTo(this, writerOut);
-    }
-    return writer.toString();
-  }
 }
