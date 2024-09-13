@@ -1,4 +1,4 @@
-package sootup.java.bytecode.inputlocation;
+package sootup.java.bytecode.frontend.inputlocation;
 
 import java.io.*;
 import java.net.HttpURLConnection;
