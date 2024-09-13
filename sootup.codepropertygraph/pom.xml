@@ -20,11 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.core</artifactId>
+            <artifactId>sootup.analysis.interprocedural</artifactId>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>

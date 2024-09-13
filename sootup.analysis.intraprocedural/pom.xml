@@ -19,11 +19,6 @@
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.bytecode.frontend</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.soot-oss</groupId>
             <artifactId>sootup.java.sourcecode.frontend</artifactId>
             <scope>test</scope>
         </dependency>
