@@ -235,8 +235,6 @@ public class GraphBasedCallGraph implements MutableCallGraph {
                     }))
         .forEach(
             edge -> {
-              Vertex sourceVertex = graph.getEdgeSource(edge);
-              Vertex targetVertex = graph.getEdgeTarget(edge);
               dotFormatBuilder.append("\t").append(toDotEdge(edge)).append(";\n");
             });
 
