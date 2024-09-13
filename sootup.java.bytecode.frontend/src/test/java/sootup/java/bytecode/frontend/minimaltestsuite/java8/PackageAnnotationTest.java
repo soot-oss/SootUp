@@ -1,4 +1,4 @@
-package sootup.java.bytecode.minimaltestsuite.java8;
+package sootup.java.bytecode.frontend.minimaltestsuite.java8;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -7,7 +7,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
+import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootClass;
 

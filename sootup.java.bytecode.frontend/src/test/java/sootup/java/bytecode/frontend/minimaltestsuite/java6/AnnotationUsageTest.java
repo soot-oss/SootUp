@@ -1,4 +1,4 @@
-package sootup.java.bytecode.minimaltestsuite.java6;
+package sootup.java.bytecode.frontend.minimaltestsuite.java6;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,7 +18,7 @@ import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
+import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaAnnotationSootClass;
 import sootup.java.core.JavaIdentifierFactory;

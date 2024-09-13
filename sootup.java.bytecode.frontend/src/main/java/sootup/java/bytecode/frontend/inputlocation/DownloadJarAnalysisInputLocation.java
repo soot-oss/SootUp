@@ -11,6 +11,7 @@ import java.util.List;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.java.bytecode.frontend.FileUtil;
+import sootup.java.bytecode.frontend.inputlocation.ArchiveBasedAnalysisInputLocation;
 
 /*-
  * #%L
