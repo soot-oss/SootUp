@@ -68,7 +68,6 @@
         <module>sootup.java.sourcecode.frontend</module>
         <module>sootup.tests</module>
         <module>sootup.callgraph</module>
-        <module>sootup.qilin</module>
         <module>sootup.analysis.interprocedural</module>
         <module>sootup.analysis.intraprocedural</module>
         <module>sootup.examples</module>
@@ -159,7 +158,7 @@
                                     <goal>sign</goal>
                                 </goals>
                                 <configuration>
-                                    <!-- This is required to make sure the plugin does not stop asking for -->
+                                    <!-- This is reuired to make sure the plugin does not stop asking for -->
                                     <!-- user input on the passphrase -->
                                     <gpgArguments>
                                         <arg>--pinentry-mode</arg>
