@@ -2,98 +2,98 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/analysisinput/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/announcement/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/bodyinterceptors/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/builtin-analyses/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/callgraphs/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/codepropertygraphs/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/docguide/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/examples/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/faq/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/getting-started/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/installation/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/jimple-body/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/jimple-stmts/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/jimple-types/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/jimple-values/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/jimple/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/migrating/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/qilin/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/tool_setup/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/tools/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/typehierarchy/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/whatsnew/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/refactorModuleStructure_preview/write_analyses/</loc>
-         <lastmod>2024-09-05</lastmod>
+         <lastmod>2024-09-13</lastmod>
     </url>
 </urlset>
