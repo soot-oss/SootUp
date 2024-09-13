@@ -354,7 +354,7 @@ public class SootClass extends AbstractClass implements HasPosition {
     @Nonnull
     @Override
     public SootClass build() {
-      return new SootClass(classSource, sourceType);
+      return new SootClass(getClassSource(), getSourceType());
     }
   }
 }
