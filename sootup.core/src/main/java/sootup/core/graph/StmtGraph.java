@@ -638,10 +638,10 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
             final Stmt tailStmt = currentBlock.getTail();
 
             final List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
-            final int endIdx = tailStmt.fallsThrough() ? 1 : 0;
+            final int startIdx = tailStmt.fallsThrough() ? 1 : 0;
 
             // handle the branching successor(s)
-            for (int i = successors.size() - 1; i >= endIdx; i--) {
+            for (int i = startIdx; i < successors.size(); i++) {
                 // find the leader/beginning block of a continuous sequence of Blocks (connected via
                 // FallsThroughStmts)
                 final BasicBlock<?> successorBlock = successors.get(i);
