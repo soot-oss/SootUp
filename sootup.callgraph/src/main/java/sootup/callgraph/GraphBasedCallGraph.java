@@ -234,9 +234,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
                       return edgeTarget.methodSignature.getParameterTypes().toString();
                     }))
         .forEach(
-            edge -> {
-              dotFormatBuilder.append("\t").append(toDotEdge(edge)).append(";\n");
-            });
+            edge -> dotFormatBuilder.append("\t").append(toDotEdge(edge)).append(";\n"));
 
     return "strict digraph ObjectGraph {\n" + dotFormatBuilder + "}";
   }
