@@ -60,7 +60,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   protected static final Logger logger =
       LoggerFactory.getLogger(JimpleBasedInterproceduralCFG.class);
-  private final MethodSignature mainMethodSignature;
+  private List<MethodSignature> entryPoints;
 
   protected boolean includeReflectiveCalls;
 
@@ -140,60 +140,79 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   public JimpleBasedInterproceduralCFG(
       View view,
-      MethodSignature mainMethodSignature,
+      List<MethodSignature> entryPoints,
       boolean enableExceptions,
       boolean includeReflectiveCalls) {
     super(enableExceptions);
     this.includeReflectiveCalls = includeReflectiveCalls;
     this.view = view;
-    this.mainMethodSignature = mainMethodSignature;
+    this.entryPoints = entryPoints;
     cg = initCallGraph();
+    initializeStmtToOwner();
+  }
+
+  public JimpleBasedInterproceduralCFG(
+      CallGraph cg,
+      View view,
+      List<MethodSignature> entryPoints,
+      boolean enableExceptions,
+      boolean includeReflectiveCalls) {
+    super(enableExceptions);
+    this.includeReflectiveCalls = includeReflectiveCalls;
+    this.view = view;
+    this.entryPoints = entryPoints;
+    this.cg = cg;
     initializeStmtToOwner();
   }
 
   public String buildICFGGraph(CallGraph callGraph) {
     Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph = new LinkedHashMap<>();
-    computeAllCalls(mainMethodSignature, signatureToStmtGraph, callGraph);
+    computeAllCalls(entryPoints, signatureToStmtGraph, callGraph);
     return ICFGDotExporter.buildICFGGraph(signatureToStmtGraph, view, callGraph);
   }
 
   public void computeAllCalls(
-      MethodSignature methodSignature,
+      List<MethodSignature> entryPoints,
       Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph,
       CallGraph callGraph) {
     ArrayList<MethodSignature> visitedMethods = new ArrayList<>();
-    computeAllCalls(methodSignature, signatureToStmtGraph, callGraph, visitedMethods);
+    computeAllCalls(entryPoints, signatureToStmtGraph, callGraph, visitedMethods);
   }
 
   private void computeAllCalls(
-      MethodSignature methodSignature,
+      List<MethodSignature> entryPoints,
       Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph,
       CallGraph callGraph,
       List<MethodSignature> visitedMethods) {
-    visitedMethods.add(methodSignature);
-    final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
-    // return if the methodSignature is already added to the hashMap to avoid stackoverflow error.
-    if (signatureToStmtGraph.containsKey(methodSignature)) {
-      return;
-    }
-    if (methodOpt.isPresent()) {
-      SootMethod sootMethod = methodOpt.get();
-      if (sootMethod.hasBody()) {
-        StmtGraph<?> stmtGraph = sootMethod.getBody().getStmtGraph();
-        signatureToStmtGraph.put(methodSignature, stmtGraph);
+    visitedMethods.addAll(entryPoints);
+    for (MethodSignature methodSignature : entryPoints) {
+      final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
+      // return if the methodSignature is already added to the hashMap to avoid stackoverflow error.
+      if (signatureToStmtGraph.containsKey(methodSignature)) {
+        return;
       }
+      if (methodOpt.isPresent()) {
+        SootMethod sootMethod = methodOpt.get();
+        if (sootMethod.hasBody()) {
+          StmtGraph<?> stmtGraph = sootMethod.getBody().getStmtGraph();
+          signatureToStmtGraph.put(methodSignature, stmtGraph);
+        }
+      }
+      callGraph.callTargetsFrom(methodSignature).stream()
+          .filter(methodSignature1 -> !visitedMethods.contains(methodSignature1))
+          .forEach(
+              nextMethodSignature ->
+                  computeAllCalls(
+                      Collections.singletonList(nextMethodSignature),
+                      signatureToStmtGraph,
+                      callGraph,
+                      visitedMethods));
     }
-    callGraph.callTargetsFrom(methodSignature).stream()
-        .filter(methodSignature1 -> !visitedMethods.contains(methodSignature1))
-        .forEach(
-            nextMethodSignature ->
-                computeAllCalls(
-                    nextMethodSignature, signatureToStmtGraph, callGraph, visitedMethods));
   }
 
   private CallGraph initCallGraph() {
     CallGraphAlgorithm cga = new ClassHierarchyAnalysisAlgorithm(view);
-    return cga.initialize(Collections.singletonList(mainMethodSignature));
+    return cga.initialize(entryPoints);
   }
 
   protected void initializeStmtToOwner() {

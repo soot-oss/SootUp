@@ -64,7 +64,8 @@ public class IFDSTaintTestSetUp {
   private void runAnalysis() {
 
     JimpleBasedInterproceduralCFG icfg =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
     IFDSTaintAnalysisProblem problem = new IFDSTaintAnalysisProblem(icfg, entryMethod);
     JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> solver =
         new JimpleIFDSSolver(problem);
