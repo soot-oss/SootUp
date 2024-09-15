@@ -61,17 +61,19 @@
     </scm>
     <modules>
         <module>sootup.core</module>
-        <module>sootup.jimple.parser</module>
+        <module>sootup.jimple.frontend</module>
         <module>sootup.java.core</module>
-        <module>sootup.java.bytecode</module>
-        <module>sootup.java.sourcecode</module>
+        <module>sootup.interceptors</module>
+        <module>sootup.java.bytecode.frontend</module>
+        <module>sootup.java.sourcecode.frontend</module>
         <module>sootup.tests</module>
         <module>sootup.callgraph</module>
         <module>sootup.qilin</module>
-        <module>sootup.analysis</module>
+        <module>sootup.analysis.interprocedural</module>
+        <module>sootup.analysis.intraprocedural</module>
         <module>sootup.examples</module>
         <module>sootup.report</module>
-        <module>sootup.apk.parser</module>
+        <module>sootup.apk.frontend</module>
         <module>sootup.codepropertygraph</module>
     </modules>
 
@@ -407,6 +409,12 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.13</version>
+            <scope>test</scope>
+        </dependency>
         <!-- adds `@Nullable` and `@Nonnull` annotations -->
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -430,25 +438,44 @@
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.bytecode</artifactId>
+            <artifactId>sootup.java.bytecode.frontend</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.sourcecode</artifactId>
+            <artifactId>sootup.java.sourcecode.frontend</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.jimple.parser</artifactId>
+            <artifactId>sootup.jimple.frontend</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.analysis</artifactId>
+            <artifactId>sootup.analysis.interprocedural</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.analysis.intraprocedural</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.interceptors</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.codepropertygraph</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.apk.frontend</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     </dependencyManagement>
 

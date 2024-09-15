@@ -1,0 +1,6 @@
+package sootup.apk.frontend.main;
+
+public interface Tag {
+  /** Returns the tag name. */
+  String getName();
+}

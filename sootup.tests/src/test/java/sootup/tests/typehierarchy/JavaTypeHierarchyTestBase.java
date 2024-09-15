@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
-import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
+import sootup.java.frontend.inputlocation.JavaSourcePathAnalysisInputLocation;
 
 /** @author: Hasitha Rajapakse * */
 public abstract class JavaTypeHierarchyTestBase {
