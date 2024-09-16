@@ -24,6 +24,11 @@
     }
   },
   {
+    "version": "feature_openCallGraphData_preview",
+    "title": "PR Preview feature_openCallGraphData",
+    "aliases": []
+  },
+  {
     "version": "develop",
     "title": "develop",
     "aliases": []
