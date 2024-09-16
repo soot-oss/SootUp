@@ -117,42 +117,6 @@ JavaView view = new JavaView(inputLocation);
 ```
 
 
-### Android Bytecode with Dex2Jar
-File-Extensions: `.apk`
-
-The `ApkAnalysisInputLocation` currently uses dex2jar internally 
-
-```java
-Path path = Paths.get("Banana.apk");
-AnalysisInputLocation inputLocation = new Dex2JarAnalysisInputLocation(path);
-JavaView view = new JavaView(inputLocation);
-
-```
-
-```java
-public class Dex2JarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
-
-    public Dex2JarAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-        super(path, srcType);
-        String jarPath = dex2jar(path);
-        this.path = Paths.get(jarPath);
-    }
-
-    private String dex2jar(Path path) {
-        String apkPath = path.toAbsolutePath().toString();
-        String outDir = "./tmp/";
-        int start = apkPath.lastIndexOf(File.separator);
-        int end = apkPath.lastIndexOf(".apk");
-        String outputFile = outDir + apkPath.substring(start + 1, end) + ".jar";
-        Dex2jarCmd.main("-f", apkPath, "-o", outputFile);
-        return outputFile;
-    }
-}
-```
-
-!!! info "A SootUp solution to directly generate Jimple is WIP!"
-
-
 ### Combining Multiple AnalysisInputLocations
 But what if I want to point to multiple AnalysisInputLocations?
 
