@@ -446,7 +446,8 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
   @Override
   public void addCall(@Nonnull Call call) {
-    addCall(call.getSourceMethodSignature(),call.getTargetMethodSignature(),call.getInvokableStmt());
+    addCall(
+        call.getSourceMethodSignature(), call.getTargetMethodSignature(), call.getInvokableStmt());
   }
 
   @Nonnull
