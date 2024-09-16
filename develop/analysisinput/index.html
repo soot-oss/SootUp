@@ -1320,7 +1320,9 @@ The AnalysisInputLocation delegates the data to the <code>JavaCompiler</code> an
 </code></pre></div></td></tr></table></div>
 <h3 id="android-bytecode-with-dex2jar">Android Bytecode with Dex2Jar</h3>
 <p>File-Extensions: <code>.apk</code></p>
-<p>The <code>ApkAnalysisInputLocation</code> currently uses dex2jar internally </p>
+<p>If you prefer to use dex2jar as a base to transform android apps to jimple, you can add the code below to create your own analysis input location.
+We used the dependency de.femtopedia.dex2jar:dex2jar:2.4.22 in the given example.
+We recommend to use ApkAnalysisInputLocation</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;Banana.apk&quot;</span><span class="p">);</span>
@@ -1363,9 +1365,6 @@ The AnalysisInputLocation delegates the data to the <code>JavaCompiler</code> an
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<div class="admonition info">
-<p class="admonition-title">A SootUp solution to directly generate Jimple is WIP!</p>
-</div>
 <h3 id="combining-multiple-analysisinputlocations">Combining Multiple AnalysisInputLocations</h3>
 <p>But what if I want to point to multiple AnalysisInputLocations?</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
