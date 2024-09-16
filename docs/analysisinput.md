@@ -115,12 +115,12 @@ Path path = Paths.get("Banana.apk");
 AnalysisInputLocation inputLocation = new ApkAnalysisInputLocation(path, "", DexBodyInterceptors.Default.bodyInterceptors());
 JavaView view = new JavaView(inputLocation);
 ```
-
-
 ### Android Bytecode with Dex2Jar
 File-Extensions: `.apk`
 
-The `ApkAnalysisInputLocation` currently uses dex2jar internally 
+If you prefer to use dex2jar as a base to transform android apps to jimple, you can add the code below to create your own analysis input location.
+We used the dependency de.femtopedia.dex2jar:dex2jar:2.4.22 in the given example.
+We recommend to use ApkAnalysisInputLocation
 
 ```java
 Path path = Paths.get("Banana.apk");
@@ -149,9 +149,6 @@ public class Dex2JarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocat
     }
 }
 ```
-
-!!! info "A SootUp solution to directly generate Jimple is WIP!"
-
 
 ### Combining Multiple AnalysisInputLocations
 But what if I want to point to multiple AnalysisInputLocations?
