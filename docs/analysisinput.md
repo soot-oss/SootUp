@@ -115,7 +115,40 @@ Path path = Paths.get("Banana.apk");
 AnalysisInputLocation inputLocation = new ApkAnalysisInputLocation(path, "", DexBodyInterceptors.Default.bodyInterceptors());
 JavaView view = new JavaView(inputLocation);
 ```
+### Android Bytecode with Dex2Jar
+File-Extensions: `.apk`
 
+If you prefer to use dex2jar as a base to transform android apps to jimple, you can add the code below to create your own analysis input location.
+We used the dependency de.femtopedia.dex2jar:dex2jar:2.4.22 in the given example.
+We recommend to use ApkAnalysisInputLocation
+
+```java
+Path path = Paths.get("Banana.apk");
+AnalysisInputLocation inputLocation = new Dex2JarAnalysisInputLocation(path);
+JavaView view = new JavaView(inputLocation);
+
+```
+
+```java
+public class Dex2JarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
+
+    public Dex2JarAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+        super(path, srcType);
+        String jarPath = dex2jar(path);
+        this.path = Paths.get(jarPath);
+    }
+
+    private String dex2jar(Path path) {
+        String apkPath = path.toAbsolutePath().toString();
+        String outDir = "./tmp/";
+        int start = apkPath.lastIndexOf(File.separator);
+        int end = apkPath.lastIndexOf(".apk");
+        String outputFile = outDir + apkPath.substring(start + 1, end) + ".jar";
+        Dex2jarCmd.main("-f", apkPath, "-o", outputFile);
+        return outputFile;
+    }
+}
+```
 
 ### Combining Multiple AnalysisInputLocations
 But what if I want to point to multiple AnalysisInputLocations?
