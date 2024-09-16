@@ -39,7 +39,6 @@
         <dependency>
             <groupId>de.upb.cs.swt</groupId>
             <artifactId>heros</artifactId>
-            <version>1.2.3</version>
         </dependency>
     </dependencies>
     <repositories>
