@@ -94,6 +94,7 @@
 	      <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
         <reactorRootsTarget>${basedir}/target</reactorRootsTarget>
+        <slf4j-simple.version>2.0.5</slf4j-simple.version>
     </properties>
 
     <profiles>
