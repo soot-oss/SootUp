@@ -334,4 +334,171 @@ public class OverridingClassSource extends SootClassSource {
         position,
         delegate);
   }
+
+  /**
+   * Creates a builder for {@link OverridingClassSource}.
+   *
+   * @return a {@link OverridingClassSourceBuilder}
+   */
+  @Nonnull
+  public static MethodsStep builder() {
+    return new OverridingClassSourceBuilder();
+  }
+
+  public interface MethodsStep {
+    @Nonnull
+    BuildStep withMethods(@Nonnull Collection<SootMethod> overriddenSootMethods);
+  }
+
+  public interface FieldsStep {
+    @Nonnull
+    BuildStep withFields(@Nonnull Collection<SootField> overriddenSootFields);
+  }
+
+  public interface ModifiersStep {
+    @Nonnull
+    BuildStep withModifiers(@Nonnull Set<ClassModifier> overriddenModifiers);
+  }
+
+  public interface InterfacesStep {
+    @Nonnull
+    BuildStep withInterfaces(@Nonnull Set<ClassType> overriddenInterfaces);
+  }
+
+  public interface SuperclassStep {
+    @Nonnull
+    BuildStep withSuperclass(@Nonnull Optional<ClassType> overriddenSuperclass);
+  }
+
+  public interface OuterClassStep {
+    @Nonnull
+    BuildStep withOuterClass(@Nonnull Optional<ClassType> overriddenOuterClass);
+  }
+
+  public interface PositionStep {
+    @Nonnull
+    BuildStep withPosition(@Nullable Position position);
+  }
+
+  public interface BuildStep {
+    @Nonnull
+    OverridingClassSource build();
+  }
+
+  /** Defines a {@link OverridingClassSource} builder. */
+  public static class OverridingClassSourceBuilder
+      implements MethodsStep,
+          FieldsStep,
+          ModifiersStep,
+          InterfacesStep,
+          SuperclassStep,
+          OuterClassStep,
+          PositionStep,
+          BuildStep {
+    @Nullable private Collection<SootMethod> overriddenSootMethods;
+    @Nullable private Collection<SootField> overriddenSootFields;
+    @Nullable private Set<ClassModifier> overriddenModifiers;
+    @Nullable private Set<ClassType> overriddenInterfaces;
+    @Nullable private Optional<ClassType> overriddenSuperclass;
+    @Nullable private Optional<ClassType> overriddenOuterClass;
+    @Nullable private Position position;
+
+    @Nullable
+    public Collection<SootMethod> getMethods() {
+      return overriddenSootMethods;
+    }
+
+    @Nullable
+    public Collection<SootField> getFields() {
+      return overriddenSootFields;
+    }
+
+    @Nullable
+    public Set<ClassModifier> getModifiers() {
+      return overriddenModifiers;
+    }
+
+    @Nullable
+    public Set<ClassType> getInterfaces() {
+      return overriddenInterfaces;
+    }
+
+    @Nullable
+    public Optional<ClassType> getSuperclass() {
+      return overriddenSuperclass;
+    }
+
+    @Nullable
+    public Optional<ClassType> getOuterClass() {
+      return overriddenOuterClass;
+    }
+
+    @Nullable
+    public Position getPosition() {
+      return position;
+    }
+
+    @Override
+    @Nonnull
+    public BuildStep withMethods(@Nonnull final Collection<SootMethod> overriddenSootMethods) {
+      this.overriddenSootMethods = overriddenSootMethods;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public BuildStep withFields(@Nonnull final Collection<SootField> overriddenSootFields) {
+      this.overriddenSootFields = overriddenSootFields;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public BuildStep withModifiers(@Nonnull final Set<ClassModifier> overriddenModifiers) {
+      this.overriddenModifiers = overriddenModifiers;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public BuildStep withInterfaces(@Nonnull final Set<ClassType> overriddenInterfaces) {
+      this.overriddenInterfaces = overriddenInterfaces;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public BuildStep withSuperclass(@Nonnull final Optional<ClassType> overriddenSuperclass) {
+      this.overriddenSuperclass = overriddenSuperclass;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public BuildStep withOuterClass(@Nonnull final Optional<ClassType> overriddenOuterClass) {
+      this.overriddenOuterClass = overriddenOuterClass;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public BuildStep withPosition(@Nullable final Position position) {
+      this.position = position;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public OverridingClassSource build() {
+      return new OverridingClassSource(
+          getMethods(),
+          getFields(),
+          getModifiers(),
+          getInterfaces(),
+          getSuperclass(),
+          getOuterClass(),
+          getPosition(),
+          null);
+    }
+  }
 }
