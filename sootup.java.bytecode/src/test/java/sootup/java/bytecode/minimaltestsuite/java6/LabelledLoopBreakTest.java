@@ -46,12 +46,15 @@ public class LabelledLoopBreakTest extends MinimalBytecodeTestSuiteBase {
             "if l2 >= 5 goto label4",
             "if l1 != 1 goto label3",
             "goto label5",
+
             "label3:",
             "l2 = l2 + 1",
             "goto label2",
+
             "label4:",
             "l1 = l1 + 1",
             "goto label1",
+
             "label5:",
             "return")
         .collect(Collectors.toList());

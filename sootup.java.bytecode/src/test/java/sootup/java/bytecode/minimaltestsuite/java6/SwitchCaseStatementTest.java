@@ -153,20 +153,25 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
             "case 2: goto label3",
             "case 3: goto label4",
             "default: goto label5",
+
             "label1:",
             "l2 = 1",
             "if l1 != 666 goto label2",
             "l2 = 11",
             "goto label6",
+
             "label2:",
             "l2 = 12",
             "goto label6",
+
             "label3:",
             "l2 = 2",
             "goto label6",
+
             "label4:",
             "l2 = 3",
             "goto label6",
+
             "label5:",
             "l2 = -1",
             "label6:",
