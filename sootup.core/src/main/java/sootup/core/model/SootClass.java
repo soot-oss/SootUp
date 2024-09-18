@@ -305,15 +305,15 @@ public class SootClass extends AbstractClass implements HasPosition {
 
   public interface ClassSourceStep {
     @Nonnull
-    BuildStep withClassSource(@Nonnull SootClassSource classSource);
+    SourceTypeStep withClassSource(@Nonnull SootClassSource classSource);
   }
 
   public interface SourceTypeStep {
     @Nonnull
-    BuildStep withSourceType(@Nonnull SourceType sourceType);
+    Build withSourceType(@Nonnull SourceType sourceType);
   }
 
-  public interface BuildStep {
+  public interface Build {
     @Nonnull
     SootClass build();
   }
@@ -321,7 +321,7 @@ public class SootClass extends AbstractClass implements HasPosition {
   /**
    * Defines a {@link SootClass} builder.
    */
-  public static class SootClassBuilder implements ClassSourceStep, SourceTypeStep, BuildStep {
+  public static class SootClassBuilder implements ClassSourceStep, SourceTypeStep, Build {
     @Nullable
     private SootClassSource classSource;
     @Nullable
@@ -337,22 +337,22 @@ public class SootClass extends AbstractClass implements HasPosition {
       return sourceType;
     }
 
-    @Nonnull
     @Override
-    public BuildStep withClassSource(@Nonnull final SootClassSource classSource) {
+    @Nonnull
+    public SourceTypeStep withClassSource(@Nonnull SootClassSource classSource) {
       this.classSource = classSource;
       return this;
     }
 
-    @Nonnull
     @Override
-    public BuildStep withSourceType(@Nonnull final SourceType sourceType) {
+    @Nonnull
+    public Build withSourceType(@Nonnull SourceType sourceType) {
       this.sourceType = sourceType;
       return this;
     }
 
-    @Nonnull
     @Override
+    @Nonnull
     public SootClass build() {
       return new SootClass(getClassSource(), getSourceType());
     }
