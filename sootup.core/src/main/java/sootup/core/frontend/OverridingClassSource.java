@@ -347,40 +347,40 @@ public class OverridingClassSource extends SootClassSource {
 
   public interface MethodsStep {
     @Nonnull
-    BuildStep withMethods(@Nonnull Collection<SootMethod> overriddenSootMethods);
+    FieldsStep withMethods(@Nonnull Collection<SootMethod> overriddenSootMethods);
   }
 
   public interface FieldsStep {
     @Nonnull
-    BuildStep withFields(@Nonnull Collection<SootField> overriddenSootFields);
+    ModifiersStep withFields(@Nonnull Collection<SootField> overriddenSootFields);
   }
 
   public interface ModifiersStep {
     @Nonnull
-    BuildStep withModifiers(@Nonnull Set<ClassModifier> overriddenModifiers);
+    InterfacesStep withModifiers(@Nonnull Set<ClassModifier> overriddenModifiers);
   }
 
   public interface InterfacesStep {
     @Nonnull
-    BuildStep withInterfaces(@Nonnull Set<ClassType> overriddenInterfaces);
+    SuperclassStep withInterfaces(@Nonnull Set<ClassType> overriddenInterfaces);
   }
 
   public interface SuperclassStep {
     @Nonnull
-    BuildStep withSuperclass(@Nonnull Optional<ClassType> overriddenSuperclass);
+    OuterClassStep withSuperclass(@Nonnull Optional<ClassType> overriddenSuperclass);
   }
 
   public interface OuterClassStep {
     @Nonnull
-    BuildStep withOuterClass(@Nonnull Optional<ClassType> overriddenOuterClass);
+    PositionStep withOuterClass(@Nonnull Optional<ClassType> overriddenOuterClass);
   }
 
   public interface PositionStep {
     @Nonnull
-    BuildStep withPosition(@Nullable Position position);
+    Build withPosition(@Nullable Position position);
   }
 
-  public interface BuildStep {
+  public interface Build {
     @Nonnull
     OverridingClassSource build();
   }
@@ -394,7 +394,7 @@ public class OverridingClassSource extends SootClassSource {
           SuperclassStep,
           OuterClassStep,
           PositionStep,
-          BuildStep {
+          Build {
     @Nullable private Collection<SootMethod> overriddenSootMethods;
     @Nullable private Collection<SootField> overriddenSootFields;
     @Nullable private Set<ClassModifier> overriddenModifiers;
@@ -440,49 +440,49 @@ public class OverridingClassSource extends SootClassSource {
 
     @Override
     @Nonnull
-    public BuildStep withMethods(@Nonnull final Collection<SootMethod> overriddenSootMethods) {
+    public FieldsStep withMethods(@Nonnull Collection<SootMethod> overriddenSootMethods) {
       this.overriddenSootMethods = overriddenSootMethods;
       return this;
     }
 
     @Override
     @Nonnull
-    public BuildStep withFields(@Nonnull final Collection<SootField> overriddenSootFields) {
+    public ModifiersStep withFields(@Nonnull Collection<SootField> overriddenSootFields) {
       this.overriddenSootFields = overriddenSootFields;
       return this;
     }
 
     @Override
     @Nonnull
-    public BuildStep withModifiers(@Nonnull final Set<ClassModifier> overriddenModifiers) {
+    public InterfacesStep withModifiers(@Nonnull Set<ClassModifier> overriddenModifiers) {
       this.overriddenModifiers = overriddenModifiers;
       return this;
     }
 
     @Override
     @Nonnull
-    public BuildStep withInterfaces(@Nonnull final Set<ClassType> overriddenInterfaces) {
+    public SuperclassStep withInterfaces(@Nonnull Set<ClassType> overriddenInterfaces) {
       this.overriddenInterfaces = overriddenInterfaces;
       return this;
     }
 
     @Override
     @Nonnull
-    public BuildStep withSuperclass(@Nonnull final Optional<ClassType> overriddenSuperclass) {
+    public OuterClassStep withSuperclass(@Nonnull Optional<ClassType> overriddenSuperclass) {
       this.overriddenSuperclass = overriddenSuperclass;
       return this;
     }
 
     @Override
     @Nonnull
-    public BuildStep withOuterClass(@Nonnull final Optional<ClassType> overriddenOuterClass) {
+    public PositionStep withOuterClass(@Nonnull Optional<ClassType> overriddenOuterClass) {
       this.overriddenOuterClass = overriddenOuterClass;
       return this;
     }
 
     @Override
     @Nonnull
-    public BuildStep withPosition(@Nullable final Position position) {
+    public Build withPosition(@Nullable Position position) {
       this.position = position;
       return this;
     }
@@ -491,14 +491,15 @@ public class OverridingClassSource extends SootClassSource {
     @Nonnull
     public OverridingClassSource build() {
       return new OverridingClassSource(
-          getMethods(),
-          getFields(),
-          getModifiers(),
-          getInterfaces(),
-          getSuperclass(),
-          getOuterClass(),
-          getPosition(),
-          null);
+        getMethods(),
+        getFields(),
+        getModifiers(),
+        getInterfaces(),
+        getSuperclass(),
+        getOuterClass(),
+        getPosition(),
+        null
+      );
     }
   }
 }
