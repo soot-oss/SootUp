@@ -94,7 +94,6 @@
 	      <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
         <reactorRootsTarget>${basedir}/target</reactorRootsTarget>
-        <slf4j-simple.version>2.0.5</slf4j-simple.version>
     </properties>
 
     <profiles>
@@ -447,7 +446,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j-simple.version}</version>
+            <version>2.0.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
