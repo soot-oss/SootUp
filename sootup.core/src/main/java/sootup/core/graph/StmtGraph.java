@@ -23,7 +23,6 @@ package sootup.core.graph;
 
 import static sootup.core.jimple.common.stmt.FallsThroughStmt.FALLTSTHROUH_IDX;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -498,11 +497,9 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   protected static class IteratorFrame
       implements Comparable<IteratorFrame>, Iterable<BasicBlock<?>> {
     private final int weightSum;
-    private final int weightA;
     private final Deque<BasicBlock<?>> sequence;
 
-    protected IteratorFrame(Deque<BasicBlock<?>> sequence, int weightA, int weightSum) {
-      this.weightA = weightA;
+    protected IteratorFrame(Deque<BasicBlock<?>> sequence, int weightSum) {
       this.weightSum = weightSum;
       this.sequence = sequence;
     }
@@ -512,11 +509,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       return Integer.compare(weightSum, o.weightSum);
     }
 
-    public int getWeightA() {
-      return weightA;
-    }
-
-    public int getWeightSum() {
+    public int getWeight() {
       return weightSum;
     }
 
@@ -544,6 +537,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
     @Nonnull private final Set<BasicBlock<?>> seenTargets;
     private int iterations = 0;
+    private int minValue = 0;
+    private int maxValue = 0;
 
     public BlockGraphIterator() {
       System.out.println("==============0");
@@ -552,7 +547,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       Stmt startingStmt = getStartingStmt();
       if (startingStmt != null) {
         final BasicBlock<?> startingBlock = getStartingStmtBlock();
-        itFrame = new IteratorFrame(calculateFallsThroughSequence(startingBlock), 0, 0);
+        itFrame = new IteratorFrame(calculateFallsThroughSequence(startingBlock), 0);
         itBlock = itFrame.iterator();
         updateFollowingBlocks(startingBlock, 0);
       }
@@ -625,7 +620,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
       BasicBlock<?> currentBlock = itBlock.next();
       System.out.println(++iterations + ": ");
-      updateFollowingBlocks(currentBlock, itFrame.getWeightA());
+      updateFollowingBlocks(currentBlock, itFrame.getWeight());
       return currentBlock;
     }
 
@@ -641,41 +636,49 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
         // FallsThroughStmts)
         final BasicBlock<?> successorBlock = successors.get(i);
 
-        if (!seenTargets.contains(successorBlock)) {
-          // already added / seen
-            enqueueWeighted(currentWeight++, successorBlock);
-        }
+            enqueueWeighted(currentWeight+=getBlocks().size(), currentBlock, successorBlock);
       }
 
       for (BasicBlock<?> trapHandlerBlock : currentBlock.getExceptionalSuccessors().values()) {
-        if (!seenTargets.contains(trapHandlerBlock)) {
-          enqueueWeighted(currentWeight, trapHandlerBlock);
-        }
+          enqueueWeighted(currentWeight+=getBlocks().size(), currentBlock, trapHandlerBlock);
       }
     }
 
-    private void enqueueWeighted(int currentWeight, BasicBlock<?> successorBlock) {
+    private void enqueueWeighted(int currentWeight, BasicBlock<?> currentBlock, BasicBlock<?> successorBlock) {
+      if (seenTargets.contains(successorBlock)) {
+        return;
+      }
+
       iterations++;
       Deque<BasicBlock<?>> blockSequence = calculateFallsThroughSequence(successorBlock);
       BasicBlock<?> lastBlockOfSequence = blockSequence.getLast();
       boolean isSequenceTailExceptionFree =
           lastBlockOfSequence.getExceptionalSuccessors().isEmpty();
 
-      int newWeightA = currentWeight;
-      int categoryWeight = 0;
+
+      if(currentBlock.getTail() instanceof JIfStmt && currentBlock.getTail() instanceof JSwitchStmt){
+    //    currentWeight = minValue-getBlocks().size();
+      } else if(currentBlock.getTail() instanceof JGotoStmt){
+        // currentWeight++;
+      }
+
+
+      int categoryWeight = 2;
       if (isSequenceTailExceptionFree) {
         if (lastBlockOfSequence.getTail() instanceof JReturnStmt
             || lastBlockOfSequence.getTail() instanceof JReturnVoidStmt) {
           // biggest number, yet - only bigger weight if there follows another JReturn(Void)Stmt
-          categoryWeight = 2;
+          categoryWeight = 0;
         } else {
           categoryWeight = 1;
         }
       }
 
-      IteratorFrame frame = new IteratorFrame(blockSequence, newWeightA, -iterations + newWeightA * getBlocks().size() + categoryWeight * getBlocks().size() * getBlocks().size());
+      IteratorFrame frame = new IteratorFrame(blockSequence, (currentWeight-iterations) - categoryWeight*getBlocks().size() );
       worklist.add(frame);
-      System.out.println(frame.weightA+","+frame.weightSum + "=> " + blockSequence);
+      minValue = Math.min(frame.getWeight(), minValue);
+      maxValue = Math.max(frame.getWeight(), maxValue);
+      System.out.println("weight: " +(currentWeight-iterations)+ " it:"+iterations +  " sum:" +frame.weightSum + " :: " +currentBlock +" => " + blockSequence);
     }
 
     @Override
