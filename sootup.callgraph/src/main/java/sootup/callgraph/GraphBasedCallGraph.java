@@ -23,12 +23,8 @@ package sootup.callgraph;
  */
 
 import com.google.common.base.Preconditions;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.jgrapht.graph.DirectedPseudograph;
@@ -241,6 +237,36 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public CallGraphDifference diff(@Nonnull CallGraph callGraph) {
     return new CallGraphDifference(this, callGraph);
+  }
+
+  @Override
+  @Nonnull
+  public Set<MethodSignature> getReachableMethods() {
+    Set<MethodSignature> reachableNodes = new HashSet<>();
+    List<MethodSignature> entryMethods = getEntryMethods();
+
+    for (MethodSignature startingNode: entryMethods){
+      Deque<MethodSignature> stack = new ArrayDeque<>();
+      // add all entryMethods as reachableNodes
+      stack.push(startingNode);
+      // Traverse the call graph using DFS
+      while (!stack.isEmpty()) {
+        MethodSignature currentMethod = stack.pop();
+        if (!reachableNodes.add(currentMethod)) {
+          continue;
+        }
+        // Get the successors (i.e., called methods) of the current method
+        Set<CallGraph.Call> successors = callsFrom(currentMethod);
+
+        // Push the successors into the stack
+        for (CallGraph.Call successor : successors) {
+          if (!reachableNodes.contains(successor.getTargetMethodSignature())) {
+            stack.push(successor.getTargetMethodSignature());
+          }
+        }
+      }
+    }
+    return reachableNodes;
   }
 
   /**
