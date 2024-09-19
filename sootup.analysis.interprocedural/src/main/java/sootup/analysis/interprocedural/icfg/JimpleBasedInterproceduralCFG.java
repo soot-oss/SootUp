@@ -37,7 +37,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph;
-import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -143,7 +142,12 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
       List<MethodSignature> entryPoints,
       boolean enableExceptions,
       boolean includeReflectiveCalls) {
-    this(new ClassHierarchyAnalysisAlgorithm(view).initialize(entryPoints), view, entryPoints, enableExceptions, includeReflectiveCalls);
+    this(
+        new ClassHierarchyAnalysisAlgorithm(view).initialize(entryPoints),
+        view,
+        entryPoints,
+        enableExceptions,
+        includeReflectiveCalls);
   }
 
   public JimpleBasedInterproceduralCFG(

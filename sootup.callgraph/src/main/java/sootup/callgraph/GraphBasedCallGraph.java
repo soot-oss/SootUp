@@ -22,15 +22,13 @@ package sootup.callgraph;
  * #L%
  */
 
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import com.google.common.base.Preconditions;
-
-import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.jgrapht.graph.DirectedPseudograph;
@@ -248,7 +246,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     Set<MethodSignature> reachableNodes = new HashSet<>();
     List<MethodSignature> entryMethods = getEntryMethods();
 
-    for (MethodSignature startingNode: entryMethods){
+    for (MethodSignature startingNode : entryMethods) {
       Deque<MethodSignature> stack = new ArrayDeque<>();
       // add all entryMethods as reachableNodes
       stack.push(startingNode);
