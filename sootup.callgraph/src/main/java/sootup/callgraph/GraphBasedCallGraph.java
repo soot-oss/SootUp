@@ -211,9 +211,14 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     return "strict digraph ObjectGraph {\n" + dotFormatBuilder + "}";
   }
 
-  protected String toDotEdge(CallGraph.Call edge) {
-    Vertex sourceVertex = graph.getEdgeSource(edge);
-    Vertex targetVertex = graph.getEdgeTarget(edge);
+  /** exports a call of the call graph to an edge in a dot file
+   *
+   * @param call the data of the call
+   * @return an edge defining the call in the dot file
+   */
+  protected String toDotEdge(CallGraph.Call call) {
+    Vertex sourceVertex = graph.getEdgeSource(call);
+    Vertex targetVertex = graph.getEdgeTarget(call);
     return "\"" + sourceVertex.methodSignature + "\" -> \"" + targetVertex.methodSignature + "\";";
   }
 
@@ -296,7 +301,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   public String toString() {
     StringBuilder stringBuilder =
         new StringBuilder(this.getClass().getSimpleName() + "(" + callCount() + ")");
-    Set<MethodSignature> signatures = signatureToVertex.keySet();
+    Set<MethodSignature> signatures = getMethodSignatures();
     if (signatures.isEmpty()) {
       stringBuilder.append(" is empty");
     } else {
@@ -319,7 +324,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
                                 call ->
                                     call.getTargetMethodSignature().getParameterTypes().toString()))
                     .forEach(
-                        c -> stringBuilder.append("\tto ").append(printCaller(c)).append("\n"));
+                        c -> stringBuilder.append("\tto ").append(printCalledMethods(c)).append("\n"));
                 callsTo(method).stream()
                     .sorted(
                         Comparator.comparing(
@@ -331,18 +336,28 @@ public class GraphBasedCallGraph implements MutableCallGraph {
                                     call.getSourceMethodSignature().getParameterTypes().toString()))
                     .forEach(
                         call ->
-                            stringBuilder.append("\tfrom ").append(printCallee(call)).append("\n"));
+                            stringBuilder.append("\tfrom ").append(printCallingMethods(call)).append("\n"));
                 stringBuilder.append("\n");
               });
     }
     return stringBuilder.toString();
   }
 
-  protected String printCaller(CallGraph.Call call) {
+  /** This returns the string that is used in the toString Method to define the methods that call a specific method
+   *
+   * @param call The data of the call
+   * @return The returned String will be used in the toString method to define the methods that call a specific method
+   */
+  protected String printCallingMethods(CallGraph.Call call) {
     return call.getSourceMethodSignature().toString();
   }
 
-  protected String printCallee(CallGraph.Call call) {
+  /** This returns the string that is used in the toString Method to define the called methods
+   *
+   * @param call The data of the call
+   * @return The returned String will be used in the toString method to define the called methods
+   */
+  protected String printCalledMethods(CallGraph.Call call) {
     return call.getTargetMethodSignature().toString();
   }
 
