@@ -206,5 +206,27 @@ public class DeadAssignmentEliminatorTest {
                 "return")
             .collect(Collectors.toList()),
         Utils.filterJimple(body.toString()));
+
+    final MethodSignature methodSignature1 =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                "DeadAssignmentEliminatorTest", "tc2", "void", Collections.emptyList());
+    Body body1 = view.getMethod(methodSignature1).get().getBody();
+    assertFalse(body1.getStmts().isEmpty());
+    assertEquals(
+        Stream.of(
+                "DeadAssignmentEliminatorTest this",
+                "unknown $stack2, $stack3",
+                "this := @this: DeadAssignmentEliminatorTest",
+                "l1 = \"cde\"",
+                "$stack2 = virtualinvoke l1.<java.lang.String: int length()>()",
+                "if $stack2 <= 2 goto label1",
+                "l1 = \"if\"",
+                "label1:",
+                "$stack3 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $stack3.<java.io.PrintStream: void println(java.lang.String)>(l1)",
+                "return")
+            .collect(Collectors.toList()),
+        Utils.filterJimple(body1.toString()));
   }
 }

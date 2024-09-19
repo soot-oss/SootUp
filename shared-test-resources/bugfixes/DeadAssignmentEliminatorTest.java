@@ -13,4 +13,14 @@ public class DeadAssignmentEliminatorTest {
         temp = 30;
         System.out.println(temp);
     }
+
+    void tc2() {
+        String x = "abc";
+        x = "cde";
+        if (x.length() > 2) {
+            x = "3";
+            x = "if";
+        }
+        System.out.println(x);
+    }
 }
