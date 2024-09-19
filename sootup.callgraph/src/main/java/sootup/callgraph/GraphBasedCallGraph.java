@@ -211,7 +211,8 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     return "strict digraph ObjectGraph {\n" + dotFormatBuilder + "}";
   }
 
-  /** exports a call of the call graph to an edge in a dot file
+  /**
+   * exports a call of the call graph to an edge in a dot file
    *
    * @param call the data of the call
    * @return an edge defining the call in the dot file
@@ -324,7 +325,11 @@ public class GraphBasedCallGraph implements MutableCallGraph {
                                 call ->
                                     call.getTargetMethodSignature().getParameterTypes().toString()))
                     .forEach(
-                        c -> stringBuilder.append("\tto ").append(printCalledMethods(c)).append("\n"));
+                        c ->
+                            stringBuilder
+                                .append("\tto ")
+                                .append(printCalledMethods(c))
+                                .append("\n"));
                 callsTo(method).stream()
                     .sorted(
                         Comparator.comparing(
@@ -336,23 +341,30 @@ public class GraphBasedCallGraph implements MutableCallGraph {
                                     call.getSourceMethodSignature().getParameterTypes().toString()))
                     .forEach(
                         call ->
-                            stringBuilder.append("\tfrom ").append(printCallingMethods(call)).append("\n"));
+                            stringBuilder
+                                .append("\tfrom ")
+                                .append(printCallingMethods(call))
+                                .append("\n"));
                 stringBuilder.append("\n");
               });
     }
     return stringBuilder.toString();
   }
 
-  /** This returns the string that is used in the toString Method to define the methods that call a specific method
+  /**
+   * This returns the string that is used in the toString Method to define the methods that call a
+   * specific method
    *
    * @param call The data of the call
-   * @return The returned String will be used in the toString method to define the methods that call a specific method
+   * @return The returned String will be used in the toString method to define the methods that call
+   *     a specific method
    */
   protected String printCallingMethods(CallGraph.Call call) {
     return call.getSourceMethodSignature().toString();
   }
 
-  /** This returns the string that is used in the toString Method to define the called methods
+  /**
+   * This returns the string that is used in the toString Method to define the called methods
    *
    * @param call The data of the call
    * @return The returned String will be used in the toString method to define the called methods
