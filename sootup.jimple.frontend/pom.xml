@@ -48,16 +48,6 @@
     <dependencies>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.sourcecode.frontend</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.soot-oss</groupId>
             <artifactId>sootup.java.core</artifactId>
         </dependency>
 
@@ -65,17 +55,23 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
-            <version>4.9.3</version>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

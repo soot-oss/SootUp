@@ -19,17 +19,17 @@
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.bytecode.frontend</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.soot-oss</groupId>
             <artifactId>sootup.java.sourcecode.frontend</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

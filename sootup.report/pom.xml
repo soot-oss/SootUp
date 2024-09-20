@@ -50,73 +50,61 @@
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.core</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.java.bytecode.frontend</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.java.core</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.java.sourcecode.frontend</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.jimple.frontend</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.callgraph</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.analysis.interprocedural</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.analysis.intraprocedural</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.codepropertygraph</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.interceptors</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.apk.frontend</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.tests</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
