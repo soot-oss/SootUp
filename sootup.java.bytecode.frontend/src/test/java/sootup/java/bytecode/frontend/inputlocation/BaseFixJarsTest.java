@@ -2,7 +2,6 @@ package sootup.java.bytecode.frontend.inputlocation;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
-
 import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
