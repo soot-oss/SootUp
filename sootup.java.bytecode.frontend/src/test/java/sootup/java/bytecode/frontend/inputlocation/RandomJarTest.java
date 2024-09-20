@@ -14,7 +14,6 @@ public class RandomJarTest extends BaseFixJarsTest {
 
   @Test
   public void testJar() {
-//    jarDownloadPath = "https://repo1.maven.org/maven2/io/streamnative/stream-storage-java-kv-client/4.17.1.1/stream-storage-java-kv-client-4.17.1.1.jar";
     if (jarDownloadPath.isEmpty()) {
       return;
     }
