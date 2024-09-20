@@ -1,19 +1,24 @@
-package sootup.java.bytecode.inputlocation;
+package sootup.java.bytecode.frontend.inputlocation;
 
-import sootup.core.inputlocation.AnalysisInputLocation;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import sootup.core.model.SootMethod;
+import sootup.interceptors.BytecodeBodyInterceptors;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
 
 public abstract class BaseFixJarsTest {
-  String failedJarsPath = "../failed_jars";
 
-  public String getJarPath(String jarName) {
-    return failedJarsPath + "/" + jarName;
-  }
+  String failedMethodSignature = "";
 
-  public JavaView supplyJavaView(String jarName) {
-    AnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation(getJarPath(jarName));
+  public JavaView supplyJavaView(String jarDownloadUrl) {
+    DownloadJarAnalysisInputLocation inputLocation =
+        new DownloadJarAnalysisInputLocation(
+            jarDownloadUrl,
+            BytecodeBodyInterceptors.Default.getBodyInterceptors(),
+            Collections.emptyList());
     return new JavaView(inputLocation);
   }
 
@@ -29,14 +34,19 @@ public abstract class BaseFixJarsTest {
   }
 
   public void assertJar(JavaView javaView) {
-    try {
-      javaView
-          .getClasses()
-          .flatMap(clazz -> clazz.getMethods().stream())
-          .filter(SootMethod::hasBody)
-          .forEach(SootMethod::getBody);
-    } catch (Exception e) {
-      e.printStackTrace();
+    for (JavaSootClass clazz : javaView.getClasses().collect(Collectors.toList())) {
+      for (JavaSootMethod javaSootMethod : clazz.getMethods()) {
+        if (javaSootMethod.hasBody()) {
+          try {
+            javaSootMethod.getBody();
+            System.out.println("Time to throw Exception :)");
+            throw new RuntimeException();
+          } catch (Exception exception) {
+            failedMethodSignature = javaSootMethod.getSignature().toString();
+            throw exception;
+          }
+        }
+      }
     }
   }
 }
