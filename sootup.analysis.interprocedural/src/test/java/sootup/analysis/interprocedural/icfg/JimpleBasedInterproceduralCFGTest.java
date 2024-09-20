@@ -1,8 +1,12 @@
 package sootup.analysis.interprocedural.icfg;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.callgraph.CallGraph;
-import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
@@ -14,67 +18,53 @@ import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-import java.util.*;
-import java.util.stream.Collectors;
+@Tag("Java8")
+class JimpleBasedInterproceduralCFGTest {
 
-import static org.junit.jupiter.api.Assertions.*;
+  protected JavaView view;
+  protected MethodSignature entryMethodSignature;
+  protected SootMethod entryMethod;
 
-public class JimpleBasedInterproceduralCFGTest {
+  @Test
+  void methodToCallerStmtTest() {
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
+    inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
-    protected JavaView view;
-    protected MethodSignature entryMethodSignature;
-    protected SootMethod entryMethod;
+    view = new JavaView(inputLocations);
 
+    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+    JavaClassType mainClassSignature =
+        identifierFactory.getClassType("ICFGExampleForInvokableStmt");
 
-    @Test
-    public void methodToCallerStmtTest() {
-        List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-        inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
+    SootClass sc = view.getClass(mainClassSignature).get();
+    entryMethod =
+        sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().get();
 
-        view = new JavaView(inputLocations);
+    entryMethodSignature = entryMethod.getSignature();
 
-        JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-        JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGExampleForInvokableStmt");
+    JimpleBasedInterproceduralCFG icfg =
+        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
 
-        SootClass sc = view.getClass(mainClassSignature).get();
-        entryMethod =
-                sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().get();
+    MethodSignature sig =
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature(
+                "ICFGExampleForInvokableStmt",
+                "foo",
+                "void",
+                Collections.singletonList("java.lang.String"));
+    Optional<JavaSootMethod> methodOpt = view.getMethod(sig);
 
-        entryMethodSignature = entryMethod.getSignature();
+    assertTrue(methodOpt.isPresent());
 
-        JimpleBasedInterproceduralCFG icfg =
-                new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+    Collection<Stmt> callersOf = icfg.getCallersOf(methodOpt.get());
 
-        CallGraph callGraph = loadCallGraph(view);
-        System.out.println(callGraph.exportAsDot());
+    assertEquals(3, callersOf.size());
 
-        MethodSignature sig = JavaIdentifierFactory.getInstance().getMethodSignature("ICFGExampleForInvokableStmt", "foo", "void", Collections.singletonList("java.lang.String"));
-        Optional<JavaSootMethod> methodOpt = view.getMethod(sig);
+    Set<MethodSignature> methodSignatures =
+        callersOf.stream()
+            .map(c -> c.asInvokableStmt().getInvokeExpr().get().getMethodSignature())
+            .collect(Collectors.toSet());
 
-        assertTrue(methodOpt.isPresent());
-
-        Collection<Stmt> callersOf = icfg.getCallersOf(methodOpt.get());
-
-        assertEquals(3, callersOf.size());
-
-        callersOf.stream().forEach(System.out::println);
-
-        MethodSignature m1 = JavaIdentifierFactory.getInstance().getMethodSignature("ICFGExampleForInvokableStmt", "foo", "void", Collections.singletonList("java.lang.String"));
-
-        Set<MethodSignature> methodSignatures = callersOf.stream().map(c -> c.asInvokableStmt().getInvokeExpr().get().getMethodSignature()).collect(Collectors.toSet());
-
-        assertTrue(methodSignatures.contains(sig));
-    }
-
-    public CallGraph loadCallGraph(JavaView view) {
-        CallGraph cg =
-                new ClassHierarchyAnalysisAlgorithm(view)
-                        .initialize(Collections.singletonList(entryMethodSignature));
-        assertNotNull(cg);
-        assertTrue(
-                cg.containsMethod(entryMethodSignature),
-                entryMethodSignature + " is not found in CallGraph");
-        return cg;
-    }
-
+    assertTrue(methodSignatures.contains(sig));
+  }
 }
