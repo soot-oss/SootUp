@@ -16,31 +16,23 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
-			<artifactId>sootup.core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.soot-oss</groupId>
-			<artifactId>sootup.java.core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.soot-oss</groupId>
-			<artifactId>sootup.interceptors</artifactId>
+			<artifactId>sootup.java.sourcecode.frontend</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.java.bytecode.frontend</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.soot-oss</groupId>
-			<artifactId>sootup.java.sourcecode.frontend</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.jimple.frontend</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.callgraph</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
