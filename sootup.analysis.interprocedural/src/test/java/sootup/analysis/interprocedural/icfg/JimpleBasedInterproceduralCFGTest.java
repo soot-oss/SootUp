@@ -42,7 +42,8 @@ class JimpleBasedInterproceduralCFGTest {
     entryMethodSignature = entryMethod.getSignature();
 
     JimpleBasedInterproceduralCFG icfg =
-        new JimpleBasedInterproceduralCFG(view, Collections.singletonList(entryMethodSignature), false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
 
     MethodSignature sig =
         JavaIdentifierFactory.getInstance()
