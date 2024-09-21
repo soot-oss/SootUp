@@ -68,10 +68,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
-			<artifactId>sootup.core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.java.core</artifactId>
 		</dependency>
 		<!-- wala java source code front-end dependences -->
@@ -393,6 +389,12 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

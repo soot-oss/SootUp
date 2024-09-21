@@ -22,7 +22,9 @@ package sootup.interceptors;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import sootup.analysis.intraprocedural.reachingdefs.ReachingDefs;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.LValue;
@@ -63,6 +65,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(stmtGraph)).getReachingDefs();
     // refactor.. why already here - getNodes as well
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
@@ -84,7 +87,6 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
         // Stmt is of the form a = a which is useless
         if (lhs == rhs && lhs instanceof Local) {
-          iterator.remove();
           continue;
         }
 
@@ -185,6 +187,8 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
           if (value instanceof Local) {
             Local local = (Local) value;
             Collection<Stmt> defs = allDefs.get(local);
+            List<Stmt> reachableDefs = reachingDefs.get(stmt);
+            defs = defs.stream().filter(reachableDefs::contains).collect(Collectors.toList());
             if (defs != null) {
               deque.addAll(defs);
             }
