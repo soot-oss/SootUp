@@ -30,17 +30,13 @@ import heros.SynchronizedBy;
 import heros.ThreadSafe;
 import heros.solver.IDESolver;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -99,37 +95,10 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         @Nonnull
         @Override
         public Collection<Stmt> load(SootMethod method) {
-          ArrayList<Stmt> res = new ArrayList<>();
-          // only retain callers that are explicit call sites or
-          // Thread.start()
-          Set<MethodSignature> callsToMethod = cg.callSourcesTo(method.getSignature());
-          for (MethodSignature methodSignature : callsToMethod) {
-            Stmt stmt = filterEdgeAndGetCallerStmt(methodSignature);
-            if (stmt != null) {
-              res.add(stmt);
-            }
-          }
-          res.trimToSize();
-          return res;
-        }
-
-        @Nullable
-        private Stmt filterEdgeAndGetCallerStmt(@Nonnull MethodSignature methodSignature) {
-          Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges =
-              CGEdgeUtil.getCallEdges(view, cg);
-          for (Pair<MethodSignature, CalleeMethodSignature> callEdge : callEdges) {
-            CalleeMethodSignature callee = callEdge.getValue();
-            if (callee.getMethodSignature().equals(methodSignature)) {
-              CGEdgeUtil.CallGraphEdgeType edgeType = callee.getEdgeType();
-              if (edgeType.isExplicit()
-                  || edgeType.isFake()
-                  || edgeType.isClinit()
-                  || (includeReflectiveCalls && edgeType.isReflection())) {
-                return callee.getSourceStmt();
-              }
-            }
-          }
-          return null;
+          Set<CallGraph.Call> calls = cg.callsTo(method.getSignature());
+          Set<Stmt> callerStmts =
+              calls.stream().map(c -> c.getInvokableStmt()).collect(Collectors.toSet());
+          return callerStmts;
         }
       };
 
@@ -224,31 +193,5 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   @Override
   public Collection<Stmt> getCallersOf(@Nonnull SootMethod m) {
     return methodToCallers.getUnchecked(m);
-  }
-
-  public static Set<Pair<MethodSignature, CalleeMethodSignature>> getCallEdges(
-      @Nonnull View view, @Nonnull CallGraph cg) {
-    Set<MethodSignature> methodSigs = cg.getMethodSignatures();
-    Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
-    for (MethodSignature caller : methodSigs) {
-      Optional<? extends SootMethod> methodOpt = view.getMethod(caller);
-      if (methodOpt.isPresent()) {
-        final SootMethod method = methodOpt.get();
-        if (method.hasBody()) {
-          for (Stmt s : method.getBody().getStmtGraph().getNodes()) {
-            // TODO: Consider calls to clinit methods caused by static fields
-            // Assignment statements without invokeExpressions
-            if (s instanceof InvokableStmt && ((InvokableStmt) s).containsInvokeExpr()) {
-              AbstractInvokeExpr expr = ((InvokableStmt) s).getInvokeExpr().get();
-              CalleeMethodSignature callee =
-                  new CalleeMethodSignature(
-                      expr.getMethodSignature(), CGEdgeUtil.findCallGraphEdgeType(expr), s);
-              callEdges.add(new ImmutablePair<>(caller, callee));
-            }
-          }
-        }
-      }
-    }
-    return callEdges;
   }
 }
