@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
@@ -17,6 +19,7 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
 
+@Tag("Java8")
 public class ApkToDexTest {
 
   @Test
