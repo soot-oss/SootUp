@@ -104,11 +104,6 @@
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.qilin</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.soot-oss</groupId>
             <artifactId>sootup.tests</artifactId>
             <scope>compile</scope>
         </dependency>
