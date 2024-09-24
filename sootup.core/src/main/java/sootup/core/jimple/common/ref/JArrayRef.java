@@ -88,10 +88,10 @@ public final class JArrayRef implements ConcreteRef, LValue {
   @Nonnull
   public Type getType() {
     Type baseType = base.getType();
-    if (baseType.equals(NullType.getInstance())) {
-      return NullType.getInstance();
-    } else if (baseType instanceof ArrayType) {
+    if (baseType instanceof ArrayType) {
       return ((ArrayType) baseType).getElementType();
+    } else if (baseType.equals(NullType.getInstance())) {
+      return NullType.getInstance();
     } else {
       return UnknownType.getInstance();
     }
