@@ -37,8 +37,6 @@ public abstract class BaseFixJarsTest {
         if (javaSootMethod.hasBody()) {
           try {
             javaSootMethod.getBody();
-            System.out.println("Time to throw Exception :)");
-            throw new RuntimeException();
           } catch (Exception exception) {
             failedMethodSignature = javaSootMethod.getSignature().toString();
             throw exception;
