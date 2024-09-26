@@ -1,4 +1,4 @@
-package sootup.java.bytecode.inputlocation;
+package sootup.java.bytecode.frontend.inputlocation;
 
 import java.util.Collection;
 import java.util.List;
@@ -10,10 +10,8 @@ import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.interceptors.BytecodeBodyInterceptors;
+import sootup.interceptors.BytecodeBodyInterceptors;
 
-// Frage: müssten nicht alle Vorkommen von DefaultRT und JrtFile durch DefaultRuntime ersetzt
-// werden, wenn DefaultRT mit DefaultRuntime ersetzt wird?
 public class DefaultRuntimeAnalysisInputLocation implements AnalysisInputLocation {
 
   private final AnalysisInputLocation instance;
