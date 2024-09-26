@@ -108,27 +108,22 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   public JimpleBasedInterproceduralCFG(
       View view,
-      List<MethodSignature> entryPoints,
+      List<MethodSignature> cgEntryPoints,
       boolean enableExceptions,
       boolean includeReflectiveCalls) {
     this(
-        new ClassHierarchyAnalysisAlgorithm(view).initialize(entryPoints),
+        new ClassHierarchyAnalysisAlgorithm(view).initialize(cgEntryPoints),
         view,
-        entryPoints,
         enableExceptions,
         includeReflectiveCalls);
   }
 
   public JimpleBasedInterproceduralCFG(
-      CallGraph cg,
-      View view,
-      List<MethodSignature> entryPoints,
-      boolean enableExceptions,
-      boolean includeReflectiveCalls) {
+      CallGraph cg, View view, boolean enableExceptions, boolean includeReflectiveCalls) {
     super(enableExceptions);
     this.includeReflectiveCalls = includeReflectiveCalls;
     this.view = view;
-    this.entryPoints = entryPoints;
+    this.entryPoints = cg.getEntryMethods();
     this.cg = cg;
     initializeStmtToOwner();
   }
