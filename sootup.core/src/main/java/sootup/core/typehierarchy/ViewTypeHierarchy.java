@@ -214,7 +214,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
    * https://www.baeldung.com/cs/lowest-common-ancestor-acyclic-graph
    */
   @Override
-  public Collection<ClassType> lowestCommonAncestor(ClassType a, ClassType b) {
+  public Collection<ClassType> getLowestCommonAncestors(ClassType a, ClassType b) {
     // search in cache
     String pair = a.toString() + b.toString();
     if (lcaCache.containsKey(pair)) {

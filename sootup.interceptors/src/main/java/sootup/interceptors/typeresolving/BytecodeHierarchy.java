@@ -115,7 +115,7 @@ public class BytecodeHierarchy {
     return false;
   }
 
-  public Collection<Type> getLeastCommonAncestor(Type a, Type b) {
+  public Collection<Type> getLeastCommonAncestors(Type a, Type b) {
     Set<Type> ret = new HashSet<>();
     if (a instanceof TopType || b instanceof TopType) {
       return Collections.singleton(TopType.getInstance());
@@ -152,7 +152,7 @@ public class BytecodeHierarchy {
       if (et_a instanceof PrimitiveType || et_b instanceof PrimitiveType) {
         temp = Collections.emptySet();
       } else {
-        temp = getLeastCommonAncestor(et_a, et_b);
+        temp = getLeastCommonAncestors(et_a, et_b);
       }
       if (temp.isEmpty()) {
         ret.add(objectClassType);
@@ -177,7 +177,7 @@ public class BytecodeHierarchy {
         ret.add(objectClassType);
       }
     } else {
-      ret.addAll(typeHierarchy.lowestCommonAncestor((ClassType) a, (ClassType) b));
+      ret.addAll(typeHierarchy.getLowestCommonAncestors((ClassType) a, (ClassType) b));
     }
     return ret;
   }

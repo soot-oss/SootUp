@@ -205,5 +205,5 @@ public interface TypeHierarchy {
   // View.getClass(...).isPresent()
   boolean contains(ClassType type);
 
-  Collection<ClassType> lowestCommonAncestor(ClassType a, ClassType b);
+  Collection<ClassType> getLowestCommonAncestors(ClassType a, ClassType b);
 }
