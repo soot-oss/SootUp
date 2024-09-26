@@ -447,9 +447,20 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
           Path filepath = destDirectory.resolve(zipEntry.getName());
           final File file = filepath.toFile();
 
+          String canonicalPathStr = file.getCanonicalPath();
+          if (!canonicalPathStr.startsWith(destDirectory + File.separator)) {
+            throw new IllegalArgumentException(
+                "ZipSlip Attack Mitigated: ZipEntry points outside of the target dir: "
+                    + file.getName());
+          }
+
           file.deleteOnExit();
           if (zipEntry.isDirectory()) {
-            file.mkdir();
+            boolean mkdir = file.mkdir();
+            if (!mkdir) {
+              throw new IllegalStateException(
+                  "Could not create Directory: " + file.getAbsolutePath());
+            }
           } else {
             byte[] incomingValues = new byte[4096];
             int readBytesZip;
