@@ -22,18 +22,15 @@ package sootup.java.core;
  * #L%
  */
 
-import java.util.Collections;
-import java.util.Optional;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.PackageName;
-import sootup.java.core.views.JavaView;
 
+/*
+ * Actually, we could get rid of this class but removing it potentially breaks
+ * 3rd party code. Hence, keep it for now.
+ */
 public class JavaPackageName extends PackageName {
-
-  // if null: information is not loaded
-  @Nullable private Iterable<AnnotationUsage> annotations;
 
   /**
    * Internal: Constructs a Package Signature of a Java package. Instances should only be created by
@@ -42,33 +39,6 @@ public class JavaPackageName extends PackageName {
    * @param packageName the package's name
    */
   public JavaPackageName(@Nonnull String packageName) {
-    //noinspection ConstantConditions
-    this(packageName, null);
-  }
-
-  /*
-   * Internal: Constructs a Package Signature of a Java package. Instances should only be created by
-   * a {@link sootup.core.IdentifierFactory }
-   *
-   * @param annotations
-   * @param packageName the package's name
-   */
-  public JavaPackageName(
-      @Nonnull String packageName, @Nonnull Iterable<AnnotationUsage> annotations) {
     super(packageName);
-    this.annotations = annotations;
-  }
-
-  @Nonnull
-  public Iterable<AnnotationUsage> getAnnotations(
-      @Nonnull JavaView view, @Nonnull String packageName) {
-    if (annotations == null) {
-      Optional<JavaSootClass> sc =
-          view.getClass(
-              JavaIdentifierFactory.getInstance().getClassType(PACKAGE_INFO, packageName));
-      annotations =
-          sc.isPresent() ? (sc.get()).getAnnotations(Optional.of(view)) : Collections.emptyList();
-    }
-    return annotations;
   }
 }

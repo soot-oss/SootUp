@@ -20,32 +20,30 @@
     <dependencies>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.core</artifactId>
-            <version>${project.version}</version>
+            <artifactId>sootup.analysis.interprocedural</artifactId>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.core</artifactId>
-            <version>${project.version}</version>
+            <artifactId>sootup.java.bytecode.frontend</artifactId>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.bytecode</artifactId>
-            <version>${project.version}</version>
+            <artifactId>sootup.analysis.intraprocedural</artifactId>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.analysis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.jimple.parser</artifactId>
-            <version>${project.version}</version>
+            <artifactId>sootup.jimple.frontend</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
