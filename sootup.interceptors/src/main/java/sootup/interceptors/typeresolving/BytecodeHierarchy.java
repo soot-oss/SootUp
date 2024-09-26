@@ -22,9 +22,7 @@ package sootup.interceptors.typeresolving;
  */
 
 import java.util.*;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.*;
@@ -34,6 +32,7 @@ import sootup.interceptors.typeresolving.types.TopType;
 
 /** @author Zun Wang */
 public class BytecodeHierarchy {
+
   private final TypeHierarchy typeHierarchy;
   public final ClassType objectClassType;
   public final ClassType throwableClassType;
@@ -186,60 +185,5 @@ public class BytecodeHierarchy {
     return ancestor == objectClassType
         || (typeHierarchy.contains(ancestor)
             && typeHierarchy.subtypesOf(ancestor).anyMatch(t -> t == child));
-  }
-
-  private Set<AncestryPath> buildAncestryPaths(ClassType type) {
-    Deque<AncestryPath> pathNodeQ = new ArrayDeque<>();
-    pathNodeQ.add(new AncestryPath(type, null));
-    Set<AncestryPath> paths = new HashSet<>();
-    while (!pathNodeQ.isEmpty()) {
-      AncestryPath node = pathNodeQ.removeFirst();
-      if (!typeHierarchy.contains(node.type)) {
-        break;
-      }
-      if (node.type == objectClassType) {
-        paths.add(node);
-      } else {
-        if (typeHierarchy.isInterface(node.type)) {
-          Stream<ClassType> superInterfaces = typeHierarchy.directlyExtendedInterfacesOf(node.type);
-          Optional<ClassType> any =
-              superInterfaces
-                  .peek(
-                      superInterface -> {
-                        AncestryPath superNode = new AncestryPath(superInterface, node);
-                        pathNodeQ.add(superNode);
-                      })
-                  .findAny();
-          if (!any.isPresent()) {
-            paths.add(node);
-          }
-        } else {
-
-          typeHierarchy
-              .directlyImplementedInterfacesOf(node.type)
-              .forEach(
-                  superInterface -> {
-                    pathNodeQ.add(new AncestryPath(superInterface, node));
-                  });
-
-          Optional<ClassType> superClass = typeHierarchy.superClassOf(node.type);
-          if (superClass.isPresent()) {
-            pathNodeQ.add(new AncestryPath(superClass.get(), node));
-          }
-        }
-      }
-    }
-    return paths;
-  }
-
-  // TODO: [ms] thats a linked list.. please refactor that
-  private static class AncestryPath {
-    public AncestryPath next;
-    public ClassType type;
-
-    public AncestryPath(@Nonnull ClassType type, @Nullable AncestryPath next) {
-      this.type = type;
-      this.next = next;
-    }
   }
 }

@@ -27,8 +27,12 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleDirectedGraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.core.model.SootClass;
 import sootup.core.typehierarchy.ViewTypeHierarchy.ScanResult.Edge;
 import sootup.core.typehierarchy.ViewTypeHierarchy.ScanResult.EdgeType;
@@ -45,9 +49,11 @@ import sootup.core.views.View;
  */
 public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
+  private static final Logger logger = LoggerFactory.getLogger(ViewTypeHierarchy.class);
+
   private final Supplier<ScanResult> lazyScanResult;
   private final ClassType objectClassType;
-  private final Map<String, Set<ClassType>> lcaCache = new HashMap<>();
+  private final Map<Pair<ClassType, ClassType>, Set<ClassType>> lcaCache = new HashMap<>();
 
   /** to allow caching use Typehierarchy.fromView() to get/create the Typehierarchy. */
   public ViewTypeHierarchy(@Nonnull View view) {
@@ -195,12 +201,13 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   private Set<Vertex> findAncestors(ClassType type) {
-    Set<Vertex> ancestors = new HashSet<>();
     Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
     Vertex vertex = lazyScanResult.get().typeToVertex.get(type);
     if (vertex == null) {
-      throw new IllegalArgumentException("Could not find " + type + " in this hierarchy.");
+      logger.warn("Could not find {} in this hierarchy!", type.toString());
+      return Collections.emptySet();
     }
+    Set<Vertex> ancestors = new HashSet<>();
     for (Edge edge : graph.outgoingEdgesOf(vertex)) {
       Vertex parent = graph.getEdgeTarget(edge);
       ancestors.add(parent);
@@ -216,16 +223,24 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Collection<ClassType> getLowestCommonAncestors(ClassType a, ClassType b) {
     // search in cache
-    String pair = a.toString() + b.toString();
+    Pair<ClassType, ClassType> pair = new ImmutablePair<>(a, b);
     if (lcaCache.containsKey(pair)) {
       return lcaCache.get(pair);
     }
     Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
     Set<Vertex> ancestorsOfA = findAncestors(a);
     Set<Vertex> ancestorsOfB = findAncestors(b);
+    Set<ClassType> lcas = new HashSet<>();
+
+    if (ancestorsOfA.isEmpty() || ancestorsOfB.isEmpty()) {
+      lcas.add(objectClassType);
+      lcaCache.put(pair, lcas);
+      pair = new ImmutablePair<>(b, a);
+      lcaCache.put(pair, lcas);
+      return lcas;
+    }
     // ancestorsOfA contains now common ancestors of a and b
     ancestorsOfA.retainAll(ancestorsOfB);
-    Set<ClassType> lcas = new HashSet<>();
     boolean notLca = false;
     for (Vertex ca : ancestorsOfA) {
       Set<Edge> incomingEdges = graph.incomingEdgesOf(ca);
@@ -242,7 +257,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       }
     }
     lcaCache.put(pair, lcas);
-    pair = b.toString() + a.toString();
+    pair = new ImmutablePair<>(b, a);
     lcaCache.put(pair, lcas);
     return lcas;
   }
