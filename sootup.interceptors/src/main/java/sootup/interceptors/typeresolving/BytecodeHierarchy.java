@@ -177,43 +177,7 @@ public class BytecodeHierarchy {
         ret.add(objectClassType);
       }
     } else {
-      // if a and b are both ClassType
-      Set<AncestryPath> pathsA = buildAncestryPaths((ClassType) a);
-      Set<AncestryPath> pathsB = buildAncestryPaths((ClassType) b);
-      // TODO: [ms] implement an algorithm with better wc runtime costs.. e.g.
-      // https://www.baeldung.com/cs/tree-lowest-common-ancestor /
-      for (AncestryPath pathA : pathsA) {
-        for (AncestryPath pathB : pathsB) {
-          ClassType lcn = null;
-          while (pathA != null && pathB != null && pathA.type == pathB.type) {
-            lcn = pathA.type;
-            pathA = pathA.next;
-            pathB = pathB.next;
-          }
-          if (lcn == null) {
-            continue;
-          }
-
-          boolean isLcn = true;
-          Iterator<Type> it = ret.iterator();
-          while (it.hasNext()) {
-            Type l = it.next();
-            if (isAncestor(lcn, l)) {
-              isLcn = false;
-              break;
-            }
-            if (isAncestor(l, lcn)) {
-              it.remove();
-            }
-          }
-          if (isLcn) {
-            ret.add(lcn);
-          }
-        }
-      }
-      if (ret.isEmpty()) {
-        ret.add(objectClassType);
-      }
+      ret.addAll(typeHierarchy.lowestCommonAncestor( (ClassType)a, (ClassType) b));
     }
     return ret;
   }

@@ -47,6 +47,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   private final Supplier<ScanResult> lazyScanResult;
   private final ClassType objectClassType;
+  private final Map<String, Set<ClassType>> lcaCache = new HashMap<>();
 
   /** to allow caching use Typehierarchy.fromView() to get/create the Typehierarchy. */
   public ViewTypeHierarchy(@Nonnull View view) {
@@ -191,6 +192,59 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public boolean contains(ClassType type) {
     return lazyScanResult.get().typeToVertex.get(type) != null;
+  }
+
+  public Set<Vertex> findAncestors(ClassType type){
+    Set<Vertex> ancestors = new HashSet<>();
+    Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
+    Vertex vertex = lazyScanResult.get().typeToVertex.get(type);
+    if (vertex == null) {
+      throw new IllegalArgumentException("Could not find " + type + " in this hierarchy.");
+    }
+    for (Edge edge : graph.outgoingEdgesOf(vertex)){
+      Vertex parent = graph.getEdgeTarget(edge);
+      ancestors.add(parent);
+      ancestors.addAll(findAncestors(parent.javaClassType));
+    }
+    return ancestors;
+  }
+
+  /**
+   * This algorithm is implementation of the algorithm
+   * https://www.baeldung.com/cs/lowest-common-ancestor-acyclic-graph
+   */
+  @Override
+  public Collection<ClassType> lowestCommonAncestor(ClassType a, ClassType b) {
+    //search in cache
+    String pair = a.toString()+b.toString();
+    if(lcaCache.containsKey(pair)){
+      return lcaCache.get(pair);
+    }
+    Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
+    Set<Vertex> ancestorsOfA = findAncestors(a);
+    Set<Vertex> ancestorsOfB = findAncestors(b);
+    // ancestorsOfA contains now common ancestors of a and b
+    ancestorsOfA.retainAll(ancestorsOfB);
+    Set<ClassType> lcas = new HashSet<>();
+    boolean notLca = false;
+    for(Vertex ca : ancestorsOfA){
+      Set<Edge> incomingEdges = graph.incomingEdgesOf(ca);
+      for (Edge ie : incomingEdges){
+        if(ancestorsOfA.contains(graph.getEdgeSource(ie))){
+          notLca = true;
+          break;
+        }
+      }
+      if(notLca){
+        notLca = false;
+      }else {
+        lcas.add(ca.javaClassType);
+      }
+    }
+    lcaCache.put(pair, lcas);
+    pair = b.toString() + a.toString();
+    lcaCache.put(pair, lcas);
+    return lcas;
   }
 
   @Nonnull
