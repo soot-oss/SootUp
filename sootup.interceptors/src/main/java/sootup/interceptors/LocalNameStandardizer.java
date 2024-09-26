@@ -31,9 +31,6 @@ import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.Type;
 import sootup.core.views.View;
-import sootup.interceptors.typeresolving.types.BottomType;
-
-// https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/scalar/LocalNameStandardizer.java
 
 /** @author Zun Wang */
 public class LocalNameStandardizer implements BodyInterceptor {
@@ -67,13 +64,6 @@ public class LocalNameStandardizer implements BodyInterceptor {
       Local local = iterator.next();
       Local newLocal;
       Type type = local.getType();
-
-      if (type instanceof BottomType) {
-        // TODO: log that likely the jimple is not formed correctly
-        // TODO: handle module signatures
-        type = view.getIdentifierFactory().getClassType("java.lang.Object");
-      }
-
       newLocal = lgen.generateLocal(type);
       builder.replaceLocal(local, newLocal);
     }
