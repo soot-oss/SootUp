@@ -148,7 +148,7 @@ public class BytecodeHierarchyTest {
     assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestors(rootInterface1, rootInterface2);
-    expectedSet = Collections.singleton(object);
+    expectedSet = Collections.emptySet();
     assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestors(intArr_prim, doubleArr_prim);
