@@ -194,14 +194,14 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     return lazyScanResult.get().typeToVertex.get(type) != null;
   }
 
-  public Set<Vertex> findAncestors(ClassType type){
+  private Set<Vertex> findAncestors(ClassType type) {
     Set<Vertex> ancestors = new HashSet<>();
     Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
     Vertex vertex = lazyScanResult.get().typeToVertex.get(type);
     if (vertex == null) {
       throw new IllegalArgumentException("Could not find " + type + " in this hierarchy.");
     }
-    for (Edge edge : graph.outgoingEdgesOf(vertex)){
+    for (Edge edge : graph.outgoingEdgesOf(vertex)) {
       Vertex parent = graph.getEdgeTarget(edge);
       ancestors.add(parent);
       ancestors.addAll(findAncestors(parent.javaClassType));
@@ -215,9 +215,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
    */
   @Override
   public Collection<ClassType> lowestCommonAncestor(ClassType a, ClassType b) {
-    //search in cache
-    String pair = a.toString()+b.toString();
-    if(lcaCache.containsKey(pair)){
+    // search in cache
+    String pair = a.toString() + b.toString();
+    if (lcaCache.containsKey(pair)) {
       return lcaCache.get(pair);
     }
     Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
@@ -227,17 +227,17 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     ancestorsOfA.retainAll(ancestorsOfB);
     Set<ClassType> lcas = new HashSet<>();
     boolean notLca = false;
-    for(Vertex ca : ancestorsOfA){
+    for (Vertex ca : ancestorsOfA) {
       Set<Edge> incomingEdges = graph.incomingEdgesOf(ca);
-      for (Edge ie : incomingEdges){
-        if(ancestorsOfA.contains(graph.getEdgeSource(ie))){
+      for (Edge ie : incomingEdges) {
+        if (ancestorsOfA.contains(graph.getEdgeSource(ie))) {
           notLca = true;
           break;
         }
       }
-      if(notLca){
+      if (notLca) {
         notLca = false;
-      }else {
+      } else {
         lcas.add(ca.javaClassType);
       }
     }

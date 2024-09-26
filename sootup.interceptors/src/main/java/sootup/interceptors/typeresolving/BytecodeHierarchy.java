@@ -177,7 +177,7 @@ public class BytecodeHierarchy {
         ret.add(objectClassType);
       }
     } else {
-      ret.addAll(typeHierarchy.lowestCommonAncestor( (ClassType)a, (ClassType) b));
+      ret.addAll(typeHierarchy.lowestCommonAncestor((ClassType) a, (ClassType) b));
     }
     return ret;
   }
