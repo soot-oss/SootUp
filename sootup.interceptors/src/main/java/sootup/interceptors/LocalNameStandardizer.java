@@ -32,7 +32,6 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 
-// https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/scalar/LocalNameStandardizer.java
 
 /** @author Zun Wang */
 public class LocalNameStandardizer implements BodyInterceptor {
