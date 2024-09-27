@@ -256,6 +256,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
         lcas.add(ca.javaClassType);
       }
     }
+    if (lcas.isEmpty()) {
+      lcas.add(objectClassType);
+    }
     lcaCache.put(pair, lcas);
     pair = new ImmutablePair<>(b, a);
     lcaCache.put(pair, lcas);
