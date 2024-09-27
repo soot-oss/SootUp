@@ -37,7 +37,6 @@ import sootup.core.model.SootClass;
 import sootup.core.typehierarchy.ViewTypeHierarchy.ScanResult.Edge;
 import sootup.core.typehierarchy.ViewTypeHierarchy.ScanResult.EdgeType;
 import sootup.core.typehierarchy.ViewTypeHierarchy.ScanResult.Vertex;
-import sootup.core.typehierarchy.ViewTypeHierarchy.ScanResult.VertexType;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -68,7 +67,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (vertex == null) {
       throw new IllegalArgumentException("Could not find '" + interfaceType + "' in hierarchy.");
     }
-    if (vertex.type != VertexType.Interface) {
+    if (vertex instanceof Vertex.ClassVertex) {
       throw new IllegalArgumentException("'" + interfaceType + "' is not an interface.");
     }
     return subtypesOf(interfaceType);
@@ -81,7 +80,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (vertex == null) {
       throw new IllegalArgumentException("Could not find '" + classType + "' in hierarchy.");
     }
-    if (vertex.type != VertexType.Class) {
+    if (vertex instanceof Vertex.InterfaceVertex) {
       throw new IllegalArgumentException("'" + classType + "' is not a class.");
     }
     return subtypesOf(classType);
@@ -113,24 +112,20 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
     Graph<Vertex, Edge> graph = scanResult.graph;
 
-    switch (vertex.type) {
-      case Interface:
-        graph.incomingEdgesOf(vertex).stream()
+
+  if(vertex instanceof Vertex.InterfaceVertex) {
+    graph.incomingEdgesOf(vertex).stream()
             .filter(
-                edge ->
-                    edge.type == EdgeType.ClassDirectlyImplements
-                        || edge.type == EdgeType.InterfaceDirectlyExtends)
+                    edge ->
+                            edge.type == EdgeType.ClassDirectlyImplements
+                                    || edge.type == EdgeType.InterfaceDirectlyExtends)
             .map(graph::getEdgeSource)
             .forEach(directSubclass -> subclasses.add(directSubclass.javaClassType));
-        break;
-      case Class:
+  }else{
         graph.incomingEdgesOf(vertex).stream()
             .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
             .map(graph::getEdgeSource)
             .forEach(directSubclass -> subclasses.add(directSubclass.javaClassType));
-        break;
-      default:
-        throw new AssertionError("Unknown vertex type!");
     }
 
     return subclasses.stream();
@@ -176,7 +171,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (vertex == null) {
       throw new IllegalArgumentException("Could not find '" + classType + "' in hierarchy.");
     }
-    if (vertex.type != VertexType.Class) {
+    if (vertex instanceof Vertex.InterfaceVertex) {
       throw new IllegalArgumentException(classType + " is not a class.");
     }
     return directImplementedInterfacesOf(vertex).map(v -> v.javaClassType);
@@ -189,7 +184,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (vertex == null) {
       throw new IllegalArgumentException("Could not find " + interfaceType + " in hierarchy.");
     }
-    if (vertex.type != VertexType.Interface) {
+    if (vertex instanceof Vertex.ClassVertex) {
       throw new IllegalArgumentException(interfaceType + " is not an interface.");
     }
     return directExtendedInterfacesOf(vertex).map(v -> v.javaClassType);
@@ -257,10 +252,8 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       }
     }
     if (lcas.isEmpty()) {
-      lcas.add(objectClassType);
+        lcas = Collections.singleton(objectClassType);
     }
-    lcaCache.put(pair, lcas);
-    pair = new ImmutablePair<>(b, a);
     lcaCache.put(pair, lcas);
     return lcas;
   }
@@ -275,21 +268,18 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       throw new IllegalArgumentException("Could not find " + type + " in this hierarchy.");
     }
 
-    switch (vertex.type) {
-      case Class:
-        // We ascend from vertex through its superclasses to java.lang.Object.
-        // For each superclass, we take the interfaces it implements and merge
-        // them together in a Set.
-        return superClassesOf(vertex, false)
-            .flatMap(this::directImplementedInterfacesOf)
-            .flatMap(this::selfAndImplementedInterfaces)
-            .distinct();
-      case Interface:
+    if( vertex instanceof Vertex.ClassVertex ) {
+      // We ascend from vertex through its superclasses to java.lang.Object.
+      // For each superclass, we take the interfaces it implements and merge
+      // them together in a Set.
+      return superClassesOf(vertex, false)
+              .flatMap(this::directImplementedInterfacesOf)
+              .flatMap(this::selfAndImplementedInterfaces)
+              .distinct();
+    }else{
         return directExtendedInterfacesOf(vertex)
             .flatMap(this::selfAndImplementedInterfaces)
             .distinct();
-      default:
-        throw new AssertionError("Unexpected vertex type!");
     }
   }
 
@@ -329,7 +319,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (superclassOpt.isPresent()) {
       return superclassOpt;
     } else {
-      if (classVertex.type == VertexType.Interface) {
+      if (classVertex instanceof Vertex.InterfaceVertex) {
         return Optional.of(objectClassType);
       }
       return Optional.empty();
@@ -342,7 +332,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (vertex == null) {
       throw new IllegalArgumentException("Could not find '" + type + "' in hierarchy.");
     }
-    return vertex.type == VertexType.Interface;
+    return vertex instanceof Vertex.InterfaceVertex;
   }
 
   public boolean isClass(@Nonnull ClassType type) {
@@ -350,7 +340,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (vertex == null) {
       throw new IllegalArgumentException("Could not find '" + type + "' in hierarchy.");
     }
-    return vertex.type == VertexType.Class;
+    return vertex instanceof Vertex.ClassVertex;
   }
 
   /**
@@ -361,26 +351,23 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   private Stream<ClassType> visitSubgraph(
       Graph<Vertex, Edge> graph, Vertex vertex, boolean includeSelf) {
     Stream<ClassType> subgraph = includeSelf ? Stream.of(vertex.javaClassType) : Stream.empty();
-    switch (vertex.type) {
-      case Interface:
-        return Stream.concat(
-            subgraph,
-            graph.incomingEdgesOf(vertex).stream()
-                .filter(
-                    edge ->
-                        edge.type == EdgeType.ClassDirectlyImplements
-                            || edge.type == EdgeType.InterfaceDirectlyExtends)
-                .map(graph::getEdgeSource)
-                .flatMap(directSubtype -> visitSubgraph(graph, directSubtype, true)));
-      case Class:
+    if(vertex instanceof Vertex.InterfaceVertex) {
+      return Stream.concat(
+              subgraph,
+              graph.incomingEdgesOf(vertex).stream()
+                      .filter(
+                              edge ->
+                                      edge.type == EdgeType.ClassDirectlyImplements
+                                              || edge.type == EdgeType.InterfaceDirectlyExtends)
+                      .map(graph::getEdgeSource)
+                      .flatMap(directSubtype -> visitSubgraph(graph, directSubtype, true)));
+    }else{
         return Stream.concat(
             subgraph,
             graph.incomingEdgesOf(vertex).stream()
                 .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
                 .map(graph::getEdgeSource)
                 .flatMap(directSubclass -> visitSubgraph(graph, directSubclass, true)));
-      default:
-        throw new AssertionError("Unknown vertex type!");
     }
   }
 
@@ -440,14 +427,14 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Nonnull
   private static Vertex createAndAddClassVertex(Graph<Vertex, Edge> graph, ClassType type) {
-    Vertex classVertex = new Vertex(type, VertexType.Class);
+    Vertex classVertex = new Vertex.ClassVertex(type);
     graph.addVertex(classVertex);
     return classVertex;
   }
 
   @Nonnull
   private static Vertex createAndAddInterfaceVertex(Graph<Vertex, Edge> graph, ClassType type) {
-    Vertex interfaceVertex = new Vertex(type, VertexType.Interface);
+    Vertex interfaceVertex = new Vertex.InterfaceVertex(type);
     graph.addVertex(interfaceVertex);
     return interfaceVertex;
   }
@@ -461,23 +448,27 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   /** Holds a vertex for each {@link ClassType} encountered during the scan. */
   protected static class ScanResult {
 
-    enum VertexType {
-      Class,
-      Interface
-    }
-
     /**
      * @see #javaClassType
-     * @see #type
      */
-    protected static class Vertex {
+    protected static abstract class Vertex {
       @Nonnull final ClassType javaClassType;
-      @Nonnull final VertexType type;
-      int depth = -1;
 
-      Vertex(@Nonnull ClassType javaClassType, @Nonnull VertexType type) {
+      private Vertex(@Nonnull ClassType javaClassType) {
         this.javaClassType = javaClassType;
-        this.type = type;
+
+      }
+
+      private static class InterfaceVertex extends Vertex {
+        public InterfaceVertex(ClassType javaClassType) {
+          super(javaClassType);
+        }
+      }
+
+      private static class ClassVertex extends Vertex {
+        public ClassVertex(ClassType javaClassType) {
+          super(javaClassType);
+        }
       }
     }
 
@@ -512,11 +503,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   private class SuperClassVertexIterator implements Iterator<Vertex> {
-    @Nonnull private final Graph<Vertex, Edge> graph;
-    @Nonnull private Optional<Vertex> classVertexItBase;
+      @Nonnull private Optional<Vertex> classVertexItBase;
 
     public SuperClassVertexIterator(Vertex classVertex) {
-      graph = lazyScanResult.get().graph;
       classVertexItBase = Optional.of(classVertex);
     }
 
