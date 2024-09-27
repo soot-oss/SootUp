@@ -5,16 +5,18 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.nio.file.Paths;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import sootup.apk.frontend.main.AndroidVersionInfo;
 
-@RunWith(MockitoJUnitRunner.class)
+@Tag("Java8")
+@ExtendWith(MockitoExtension.class)
 public class AndroidVersionInfoTest {
 
   @Mock private File mockJarsFile;
@@ -25,7 +27,7 @@ public class AndroidVersionInfoTest {
 
   public AndroidVersionInfoTest() {}
 
-  @Before
+  @BeforeEach
   public void setUp() {
     // Setting up mocks
     mockJarsFile = mock(File.class);

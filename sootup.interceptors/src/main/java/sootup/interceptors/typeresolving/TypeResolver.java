@@ -81,7 +81,8 @@ public class TypeResolver {
         new TypePromotionVisitor(builder, evalFunction, hierarchy);
     typings = typings.stream().map(promotionVisitor::getPromotedTyping).collect(Collectors.toSet());
 
-    // Promote `null`/`BottomType` types to `Object`.
+    // Promote `null`/`BottomType`/'TopType' types to `Object`, and other types which have
+    // UnsupportedOperation in TypePromotionVisitor.
     for (Typing typing : typings) {
       for (Local local : locals) {
         typing.set(local, convertUnderspecifiedType(typing.getType(local)));
@@ -353,6 +354,12 @@ public class TypeResolver {
       // It is probably possible to use the debug information to choose a type here, but that
       // complexity is not worth it for such an edge case.
       return objectType;
+    } else if (type instanceof AugmentIntegerTypes.Integer1Type) {
+      return PrimitiveType.getBoolean();
+    } else if (type instanceof AugmentIntegerTypes.Integer127Type) {
+      return PrimitiveType.getByte();
+    } else if (type instanceof AugmentIntegerTypes.Integer32767Type) {
+      return PrimitiveType.getShort();
     } else {
       return type;
     }

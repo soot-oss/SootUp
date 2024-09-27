@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.List;
 import sootup.core.model.SourceType;
@@ -36,8 +37,6 @@ import sootup.java.bytecode.frontend.FileUtil;
 
 public class DownloadJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
 
-  private static final int BUFFER_SIZE = 1024;
-
   public DownloadJarAnalysisInputLocation(
       String downloadURL, List<BodyInterceptor> bodyInterceptors, Collection<Path> ignoredPaths) {
     super(
@@ -56,13 +55,9 @@ public class DownloadJarAnalysisInputLocation extends ArchiveBasedAnalysisInputL
       if (responseCode != HttpURLConnection.HTTP_OK) {
         throw new IOException("HTTP request failed with response code " + responseCode);
       }
-      try (InputStream inputStream = new BufferedInputStream(connection.getInputStream());
-          OutputStream outputStream = Files.newOutputStream(Paths.get(file.getAbsolutePath()))) {
-        byte[] buffer = new byte[BUFFER_SIZE];
-        int bytesRead;
-        while ((bytesRead = inputStream.read(buffer, 0, BUFFER_SIZE)) != -1) {
-          outputStream.write(buffer, 0, bytesRead);
-        }
+      try (InputStream inputStream = connection.getInputStream()) {
+        Path outputPath = Paths.get(file.getAbsolutePath());
+        Files.copy(inputStream, outputPath, StandardCopyOption.REPLACE_EXISTING);
       }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
