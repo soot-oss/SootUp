@@ -240,36 +240,6 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     return new CallGraphDifference(this, callGraph);
   }
 
-  @Override
-  @Nonnull
-  public Set<MethodSignature> getReachableMethods() {
-    Set<MethodSignature> reachableNodes = new HashSet<>();
-    List<MethodSignature> entryMethods = getEntryMethods();
-
-    for (MethodSignature startingNode : entryMethods) {
-      Deque<MethodSignature> stack = new ArrayDeque<>();
-      // add all entryMethods as reachableNodes
-      stack.push(startingNode);
-      // Traverse the call graph using DFS
-      while (!stack.isEmpty()) {
-        MethodSignature currentMethod = stack.pop();
-        if (!reachableNodes.add(currentMethod)) {
-          continue;
-        }
-        // Get the successors (i.e., called methods) of the current method
-        Set<CallGraph.Call> successors = callsFrom(currentMethod);
-
-        // Push the successors into the stack
-        for (CallGraph.Call successor : successors) {
-          if (!reachableNodes.contains(successor.getTargetMethodSignature())) {
-            stack.push(successor.getTargetMethodSignature());
-          }
-        }
-      }
-    }
-    return reachableNodes;
-  }
-
   /**
    * it returns the vertex of the graph that describes the given method signature in the call graph.
    * It will throw an exception if the vertex is not found

@@ -209,11 +209,4 @@ public interface CallGraph {
    */
   @Nonnull
   CallGraphDifference diff(@Nonnull CallGraph callGraph);
-
-  /**
-   * This method returns all reachable methods of the call graph
-   *
-   * @return a list of method signatures of reachable methods of the call graph
-   */
-  Set<MethodSignature> getReachableMethods();
 }

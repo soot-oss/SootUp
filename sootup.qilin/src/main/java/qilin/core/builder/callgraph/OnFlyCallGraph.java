@@ -469,11 +469,6 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   }
 
   @Override
-  public Set<MethodSignature> getReachableMethods() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public boolean containsMethod(@Nonnull MethodSignature method) {
     return this.methods.contains(method);
   }
