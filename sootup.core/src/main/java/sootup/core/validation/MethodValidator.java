@@ -32,8 +32,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
 public class MethodValidator implements BodyValidator {
-  public static final String staticInitializerName = "<clinit>";
-
   /**
    * Checks the following invariants on this Jimple body:
    *
@@ -58,11 +56,13 @@ public class MethodValidator implements BodyValidator {
       throw new IllegalStateException("An abstract Method does not have Body.");
     }
 
-    if (staticInitializerName.equals(method.getName()) && !method.isStatic()) {
+    if (view.getIdentifierFactory()
+            .isStaticInitializerSubSignature(methodSignature.getSubSignature())
+        && !method.isStatic()) {
       exceptions.add(
           new ValidationException(
               method,
-              staticInitializerName
+              methodSignature
                   + " should be static! Static initializer without 'static'('0x8') modifier"
                   + " will cause problem when running on android platform: "
                   + "\"<clinit> is not flagged correctly wrt/ static\"!"));

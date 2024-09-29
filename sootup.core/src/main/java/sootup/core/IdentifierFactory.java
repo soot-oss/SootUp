@@ -244,6 +244,14 @@ public interface IdentifierFactory {
    */
   ArrayType getArrayType(Type baseType, int dim);
 
+  /**
+   * Gets the static initializer method signature.
+   *
+   * @param declaringClassSignature the declaring class signature
+   * @return the static initializer method signature
+   */
+  MethodSignature getStaticInitializerSignature(ClassType declaringClassSignature);
+
   boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature);
 
   boolean isConstructorSignature(@Nonnull MethodSignature methodSignature);

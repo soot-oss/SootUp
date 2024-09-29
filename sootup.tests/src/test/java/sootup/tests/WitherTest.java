@@ -25,7 +25,7 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
-import sootup.java.sourcecode.frontend.WalaJavaClassProvider;
+import sootup.java.frontend.conversion.WalaJavaClassProvider;
 
 /** @author Kaustubh Kelkar updated on 09.07.2020 */
 @Tag("Java8")

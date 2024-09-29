@@ -50,4 +50,11 @@ public interface MutableCallGraph extends CallGraph {
       @Nonnull MethodSignature sourceMethod,
       @Nonnull MethodSignature targetMethod,
       @Nonnull InvokableStmt invokableStmt);
+
+  /**
+   * This method enables to add calls that are edges in the call graph.
+   *
+   * @param call this parameter defines the call that is transformed to the edge in the call graph.
+   */
+  void addCall(@Nonnull Call call);
 }

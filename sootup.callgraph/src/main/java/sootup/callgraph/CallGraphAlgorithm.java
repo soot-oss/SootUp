@@ -25,7 +25,7 @@ package sootup.callgraph;
 import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.core.types.JavaClassType;
+import sootup.core.types.ClassType;
 
 /** The interface of a implemented call graph algorithms */
 public interface CallGraphAlgorithm {
@@ -59,5 +59,5 @@ public interface CallGraphAlgorithm {
    * @return the modified call graph containing all methods of the given class
    */
   @Nonnull
-  CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType);
+  CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull ClassType classType);
 }

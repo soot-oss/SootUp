@@ -59,7 +59,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
@@ -70,10 +70,12 @@ public final class PTAUtils {
     return JavaIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
   }
 
+  // TODO: use isStaticInitializer from the IdentifierFactory
   public static boolean isStaticInitializer(SootMethod method) {
     return method.getName().equals("<clinit>");
   }
 
+  // TODO: use isConstructor from the IdentifierFactory
   public static boolean isConstructor(SootMethod method) {
     return method.getName().equals("<init>");
   }

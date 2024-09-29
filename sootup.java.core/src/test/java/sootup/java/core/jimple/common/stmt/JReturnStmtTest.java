@@ -32,7 +32,7 @@ import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
-/** @author Markus Schmidt & Linghui Luo */
+/** @author Markus Schmidt, Linghui Luo */
 @Tag("Java8")
 public class JReturnStmtTest {
 

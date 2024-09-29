@@ -43,7 +43,6 @@ import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
-import sootup.java.core.types.AnnotationType;
 import sootup.java.core.types.JavaClassType;
 
 /**
@@ -58,41 +57,17 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   public static final MethodSubSignature STATIC_INITIALIZER =
       new MethodSubSignature("<clinit>", Collections.emptyList(), VoidType.getInstance());
 
-  @Override
-  public boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
-    return methodSubSignature.equals(STATIC_INITIALIZER);
-  }
+  @Nonnull
+  private static final Pattern SOOT_FIELD_SUB_SIGNATURE_PATTERN =
+      Pattern.compile("^(?<type>[^\\s]+)\\s+(?<field>.+)$");
 
-  @Override
-  public boolean isConstructorSignature(@Nonnull MethodSignature methodSignature) {
-    return isConstructorSubSignature(methodSignature.getSubSignature());
-  }
-
-  @Override
-  public boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
-    return methodSubSignature.getName().equals("<init>")
-        && methodSubSignature.getType() == VoidType.getInstance();
-  }
-
-  @Override
-  public boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
-    if (methodSubSignature.getName().equals("main")) {
-      final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
-      if (parameterTypes.size() == 1) {
-        return parameterTypes.get(0).toString().equals("java.lang.String[]");
-      }
-    }
-    return false;
-  }
+  @Nonnull
+  private static final Pattern JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN =
+      Pattern.compile("^#(?<field>[^(]+):(?<type>.+)$");
 
   /** Caches the created PackageNames for packages. */
   @Nonnull
   protected final Cache<String, PackageName> packageCache =
-      CacheBuilder.newBuilder().weakValues().build();
-
-  /** Caches annotation types */
-  @Nonnull
-  protected final Cache<String, AnnotationType> annotationTypeCache =
       CacheBuilder.newBuilder().weakValues().build();
 
   /** Caches class types */
@@ -245,17 +220,6 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public ArrayType getArrayType(Type baseType, int dim) {
     return new ArrayType(baseType, dim);
-  }
-
-  public AnnotationType getAnnotationType(final String fullyQualifiedClassName) {
-    String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
-    String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
-
-    return annotationTypeCache
-        .asMap()
-        .computeIfAbsent(
-            className + packageName,
-            (k) -> new AnnotationType(className, getPackageName(packageName)));
   }
 
   /**
@@ -621,14 +585,6 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   @Nonnull
-  private static final Pattern SOOT_FIELD_SUB_SIGNATURE_PATTERN =
-      Pattern.compile("^(?<type>[^\\s]+)\\s+(?<field>.+)$");
-
-  @Nonnull
-  private static final Pattern JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN =
-      Pattern.compile("^#(?<field>[^(]+):(?<type>.+)$");
-
-  @Nonnull
   private static IllegalArgumentException createInvalidFieldSubSignatureException() {
     return new IllegalArgumentException(
         "Invalid field sub-signature.\n\n"
@@ -680,5 +636,37 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     }
 
     return getFieldSubSignature(fieldName, getType(typeName));
+  }
+
+  @Override
+  public MethodSignature getStaticInitializerSignature(ClassType declaringClassSignature) {
+    return getMethodSignature(declaringClassSignature, STATIC_INITIALIZER);
+  }
+
+  @Override
+  public boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.equals(STATIC_INITIALIZER);
+  }
+
+  @Override
+  public boolean isConstructorSignature(@Nonnull MethodSignature methodSignature) {
+    return isConstructorSubSignature(methodSignature.getSubSignature());
+  }
+
+  @Override
+  public boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.getName().equals("<init>")
+        && methodSubSignature.getType() == VoidType.getInstance();
+  }
+
+  @Override
+  public boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    if (methodSubSignature.getName().equals("main")) {
+      final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
+      if (parameterTypes.size() == 1) {
+        return parameterTypes.get(0).toString().equals("java.lang.String[]");
+      }
+    }
+    return false;
   }
 }

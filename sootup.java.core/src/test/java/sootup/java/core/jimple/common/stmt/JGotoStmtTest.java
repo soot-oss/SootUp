@@ -33,7 +33,7 @@ import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.java.core.JavaIdentifierFactory;
 
-/** @author Markus Schmidt & Linghui Luo */
+/** @author Markus Schmidt, Linghui Luo */
 @Tag("Java8")
 // TODO: [ms] incorporate Printer i.e. Body+Targets
 public class JGotoStmtTest {
