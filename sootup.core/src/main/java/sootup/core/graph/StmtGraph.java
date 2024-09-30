@@ -636,15 +636,16 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
         // FallsThroughStmts)
         final BasicBlock<?> successorBlock = successors.get(i);
 
-            enqueueWeighted(currentWeight+=getBlocks().size(), currentBlock, successorBlock);
+        enqueueWeighted(currentWeight += getBlocks().size(), currentBlock, successorBlock);
       }
 
       for (BasicBlock<?> trapHandlerBlock : currentBlock.getExceptionalSuccessors().values()) {
-          enqueueWeighted(currentWeight+=getBlocks().size(), currentBlock, trapHandlerBlock);
+        enqueueWeighted(currentWeight += getBlocks().size(), currentBlock, trapHandlerBlock);
       }
     }
 
-    private void enqueueWeighted(int currentWeight, BasicBlock<?> currentBlock, BasicBlock<?> successorBlock) {
+    private void enqueueWeighted(
+        int currentWeight, BasicBlock<?> currentBlock, BasicBlock<?> successorBlock) {
       if (seenTargets.contains(successorBlock)) {
         return;
       }
@@ -655,13 +656,12 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       boolean isSequenceTailExceptionFree =
           lastBlockOfSequence.getExceptionalSuccessors().isEmpty();
 
-
-      if(currentBlock.getTail() instanceof JIfStmt && currentBlock.getTail() instanceof JSwitchStmt){
-    //    currentWeight = minValue-getBlocks().size();
-      } else if(currentBlock.getTail() instanceof JGotoStmt){
+      if (currentBlock.getTail() instanceof JIfStmt
+          && currentBlock.getTail() instanceof JSwitchStmt) {
+        //    currentWeight = minValue-getBlocks().size();
+      } else if (currentBlock.getTail() instanceof JGotoStmt) {
         // currentWeight++;
       }
-
 
       int categoryWeight = 2;
       if (isSequenceTailExceptionFree) {
@@ -674,11 +674,23 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
         }
       }
 
-      IteratorFrame frame = new IteratorFrame(blockSequence, (currentWeight-iterations) - categoryWeight*getBlocks().size() );
+      IteratorFrame frame =
+          new IteratorFrame(
+              blockSequence, (currentWeight - iterations) - categoryWeight * getBlocks().size());
       worklist.add(frame);
       minValue = Math.min(frame.getWeight(), minValue);
       maxValue = Math.max(frame.getWeight(), maxValue);
-      System.out.println("weight: " +(currentWeight-iterations)+ " it:"+iterations +  " sum:" +frame.weightSum + " :: " +currentBlock +" => " + blockSequence);
+      System.out.println(
+          "weight: "
+              + (currentWeight - iterations)
+              + " it:"
+              + iterations
+              + " sum:"
+              + frame.weightSum
+              + " :: "
+              + currentBlock
+              + " => "
+              + blockSequence);
     }
 
     @Override
