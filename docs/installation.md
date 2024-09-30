@@ -26,17 +26,22 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.sourcecode</artifactId>
+            <artifactId>sootup.java.sourcecode.frontend</artifactId>
             <version>{{ git_latest_release }}</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.bytecode</artifactId>
+            <artifactId>sootup.java.bytecode.frontend</artifactId>
             <version>{{ git_latest_release }}</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.jimple.parser</artifactId>
+            <artifactId>sootup.jimple.frontend</artifactId>
+            <version>{{ git_latest_release }}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.apk.frontend</artifactId>
             <version>{{ git_latest_release }}</version>
         </dependency>
         <dependency>
@@ -46,7 +51,12 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.analysis</artifactId>
+            <artifactId>sootup.analysis.intraprocedural</artifactId>
+            <version>{{ git_latest_release }}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.analysis.interprocedural</artifactId>
             <version>{{ git_latest_release }}</version>
         </dependency>
         <dependency>
@@ -72,11 +82,13 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
     
     compile "org.soot-oss:sootup.core:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.java.core:{{ git_latest_release }}"
-    compile "org.soot-oss:sootup.java.sourcecode:{{ git_latest_release }}"
-    compile "org.soot-oss:sootup.java.bytecode:{{ git_latest_release }}"
-    compile "org.soot-oss:sootup.jimple.parser:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.java.sourcecode.frontend:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.java.bytecode.frontend:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.jimple.frontend:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.apk.frontend:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.callgraph:{{ git_latest_release }}"
-    compile "org.soot-oss:sootup.analysis:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.analysis.intraprocedural:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.analysis.interprocedural:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.qilin:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.codepropertygraph:{{ git_latest_release }}"
     ```

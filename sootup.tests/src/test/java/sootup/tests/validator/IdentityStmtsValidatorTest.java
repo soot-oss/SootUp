@@ -17,8 +17,8 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.validation.IdentityStmtsValidator;
 import sootup.core.validation.ValidationException;
-import sootup.jimple.parser.JimpleAnalysisInputLocation;
-import sootup.jimple.parser.JimpleView;
+import sootup.jimple.frontend.JimpleAnalysisInputLocation;
+import sootup.jimple.frontend.JimpleView;
 
 @Tag("Java8")
 public class IdentityStmtsValidatorTest {

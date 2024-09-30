@@ -38,7 +38,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.AbstractView;
 import sootup.java.core.*;
-import sootup.java.core.types.AnnotationType;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed. This view cannot
@@ -111,6 +110,11 @@ public class JavaView extends AbstractView {
     return abstractClass.flatMap(this::buildClassFrom);
   }
 
+  @Nonnull
+  public Optional<JavaAnnotationSootClass> getAnnotationClass(@Nonnull ClassType type) {
+    return getClass(type).filter(sc -> sc.isAnnotation()).map(sc -> (JavaAnnotationSootClass) sc);
+  }
+
   @Override
   @Nonnull
   public Optional<JavaSootMethod> getMethod(@Nonnull MethodSignature signature) {
@@ -163,12 +167,6 @@ public class JavaView extends AbstractView {
               classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
       cache.putClass(classType, theClass);
     }
-
-    if (theClass.getType() instanceof AnnotationType) {
-      JavaAnnotationSootClass jasc = (JavaAnnotationSootClass) theClass;
-      jasc.getAnnotations(Optional.of(this)).forEach(AnnotationUsage::getValuesWithDefaults);
-    }
-
     return Optional.of(theClass);
   }
 }
