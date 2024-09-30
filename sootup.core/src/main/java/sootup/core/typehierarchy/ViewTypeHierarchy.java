@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleDirectedGraph;
@@ -502,22 +503,25 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   private class SuperClassVertexIterator implements Iterator<Vertex> {
-    @Nonnull private Optional<Vertex> classVertexItBase;
+    @Nullable private Vertex classVertexItBase;
 
-    public SuperClassVertexIterator(Vertex classVertex) {
-      classVertexItBase = Optional.of(classVertex);
+    public SuperClassVertexIterator(@Nonnull Vertex classVertex) {
+      classVertexItBase = classVertex;
     }
 
     @Override
     public boolean hasNext() {
-      return classVertexItBase.isPresent();
+      return classVertexItBase != null;
     }
 
     @Override
     public Vertex next() {
-      Optional<Vertex> currentSuperClass = classVertexItBase;
-      classVertexItBase = directSuperClassOf(classVertexItBase.get()).findAny();
-      return currentSuperClass.get();
+      if (classVertexItBase == null) {
+        throw new NoSuchElementException("Iterator is already iterated.");
+      }
+      Vertex currentSuperClass = classVertexItBase;
+      classVertexItBase = directSuperClassOf(classVertexItBase).findAny().orElse(null);
+      return currentSuperClass;
     }
   }
 
