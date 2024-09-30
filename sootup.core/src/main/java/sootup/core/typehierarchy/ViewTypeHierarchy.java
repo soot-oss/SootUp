@@ -448,15 +448,14 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       }
 
       public Stream<ClassType> directSubTypesOf(Graph<Vertex, Edge> graph, Vertex vertex) {
-        Set<ClassType> subclasses = new HashSet<>();
-        graph.incomingEdgesOf(vertex).stream()
+        return graph.incomingEdgesOf(vertex).stream()
                 .filter(
                         edge ->
                                 edge.type == EdgeType.ClassDirectlyImplements
                                         || edge.type == EdgeType.InterfaceDirectlyExtends)
                 .map(graph::getEdgeSource)
-                .forEach(directSubclass -> subclasses.add(directSubclass.javaClassType));
-        return subclasses.stream();
+                .map(directSubclass -> directSubclass.javaClassType)
+                .distinct();
       }
 
     }
@@ -468,12 +467,10 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
       @Override
       public Stream<ClassType> directSubTypesOf(Graph<Vertex, Edge> graph, Vertex vertex) {
-        Set<ClassType> subclasses = new HashSet<>();
-        graph.incomingEdgesOf(vertex).stream()
+        return        graph.incomingEdgesOf(vertex).stream()
                 .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
-                .map(graph::getEdgeSource)
-                .forEach(directSubclass -> subclasses.add(directSubclass.javaClassType));
-        return subclasses.stream();
+                .map(graph::getEdgeSource).map(directSubclass -> directSubclass.javaClassType)
+                .distinct();
       }
     }
 
