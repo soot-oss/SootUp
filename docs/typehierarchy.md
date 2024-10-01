@@ -9,7 +9,7 @@ The TypeHierarchy models the relationship of Classes or Interfaces of a OOP prog
     String cpString = "src/test/resources/Callgraph/binary";
     List<AnalysisInputLocation> inputLocations = new ArrayList();
     inputLocations.add(new JavaClassPathAnalysisInputLocation(cpStr));
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
 
     JavaView view = new JavaView(inputLocations);
     TypeHierarchy typehierarchy = view.getTypeHierarchy();

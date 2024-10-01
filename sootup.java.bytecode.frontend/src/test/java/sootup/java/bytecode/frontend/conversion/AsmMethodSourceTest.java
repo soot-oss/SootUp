@@ -13,7 +13,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.bytecode.frontend.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootMethod;
@@ -31,7 +31,7 @@ public class AsmMethodSourceTest {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
     }
 
-    JavaView view = new JavaView(new DefaultRTJarAnalysisInputLocation());
+    JavaView view = new JavaView(new DefaultRuntimeAnalysisInputLocation());
 
     final JavaIdentifierFactory idf = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature =
