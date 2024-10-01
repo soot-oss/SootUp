@@ -42,7 +42,8 @@ class BackwardsInterproceduralCFGTest {
   @Test
   void methodStartAndEndPointTest() {
     JimpleBasedInterproceduralCFG forwardICFG =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
 
     BackwardsInterproceduralCFG backwardsInterproceduralCFG =
         new BackwardsInterproceduralCFG(forwardICFG);
@@ -58,7 +59,8 @@ class BackwardsInterproceduralCFGTest {
   @Test
   void methodToCallerStmtTest() {
     JimpleBasedInterproceduralCFG forwardICFG =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
 
     BackwardsInterproceduralCFG backwardsInterproceduralCFG =
         new BackwardsInterproceduralCFG(forwardICFG);

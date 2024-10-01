@@ -55,7 +55,6 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   protected static final Logger logger =
       LoggerFactory.getLogger(JimpleBasedInterproceduralCFG.class);
-  private List<MethodSignature> entryPoints;
 
   protected boolean includeReflectiveCalls;
 
@@ -123,14 +122,17 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
     super(enableExceptions);
     this.includeReflectiveCalls = includeReflectiveCalls;
     this.view = view;
-    this.entryPoints = cg.getEntryMethods();
     this.cg = cg;
     initializeStmtToOwner();
   }
 
+  public CallGraph getCg() {
+    return cg;
+  }
+
   public String buildICFGGraph(CallGraph callGraph) {
     Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph = new LinkedHashMap<>();
-    computeAllCalls(entryPoints, signatureToStmtGraph, callGraph);
+    computeAllCalls(callGraph.getEntryMethods(), signatureToStmtGraph, callGraph);
     return ICFGDotExporter.buildICFGGraph(signatureToStmtGraph, view, callGraph);
   }
 
