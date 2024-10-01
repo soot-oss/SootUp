@@ -13,7 +13,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.interceptors.typeresolving.Typing;
-import sootup.java.bytecode.frontend.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
@@ -31,7 +31,7 @@ public class TypeAssignerTestSuite {
         new JavaClassPathAnalysisInputLocation(
             baseDir, SourceType.Application, Collections.emptyList());
     AnalysisInputLocation rtJar =
-        new DefaultRTJarAnalysisInputLocation(SourceType.Application, Collections.emptyList());
+        new DefaultRuntimeAnalysisInputLocation(SourceType.Application, Collections.emptyList());
 
     view = new JavaView(Arrays.asList(analysisInputLocation, rtJar));
 

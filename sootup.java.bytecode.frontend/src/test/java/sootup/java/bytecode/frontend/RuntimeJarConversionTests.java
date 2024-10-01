@@ -24,7 +24,7 @@ import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.interceptors.CopyPropagator;
 import sootup.interceptors.DeadAssignmentEliminator;
 import sootup.interceptors.TypeAssigner;
-import sootup.java.bytecode.frontend.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
@@ -34,7 +34,8 @@ public class RuntimeJarConversionTests {
 
   @Test
   public void testJarWithDefaultInterceptors() {
-    AnalysisInputLocation inputLocation = new DefaultRTJarAnalysisInputLocation(SourceType.Library);
+    AnalysisInputLocation inputLocation =
+        new DefaultRuntimeAnalysisInputLocation(SourceType.Library);
     convertInputLocation(inputLocation);
   }
 
@@ -81,7 +82,7 @@ public class RuntimeJarConversionTests {
   // @Test
   public void testJar() {
     AnalysisInputLocation inputLocation =
-        new DefaultRTJarAnalysisInputLocation(SourceType.Library, Collections.emptyList());
+        new DefaultRuntimeAnalysisInputLocation(SourceType.Library, Collections.emptyList());
     convertInputLocation(inputLocation);
   }
 
@@ -108,7 +109,7 @@ public class RuntimeJarConversionTests {
 
   private static Body convertMethod(String methodSignature) {
     AnalysisInputLocation inputLocation =
-        new DefaultRTJarAnalysisInputLocation(SourceType.Library, bodyInterceptors);
+        new DefaultRuntimeAnalysisInputLocation(SourceType.Library, bodyInterceptors);
     return convertMethod(methodSignature, inputLocation);
   }
 
