@@ -14,7 +14,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.interceptors.typeresolving.BytecodeHierarchy;
 import sootup.interceptors.typeresolving.types.BottomType;
 import sootup.interceptors.typeresolving.types.TopType;
-import sootup.java.bytecode.frontend.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
@@ -57,7 +57,8 @@ public class BytecodeHierarchyTest {
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile);
     view =
-        new JavaView(Arrays.asList(new DefaultRTJarAnalysisInputLocation(), analysisInputLocation));
+        new JavaView(
+            Arrays.asList(new DefaultRuntimeAnalysisInputLocation(), analysisInputLocation));
 
     // create types
     IdentifierFactory factory = view.getIdentifierFactory();
@@ -134,55 +135,57 @@ public class BytecodeHierarchyTest {
     Collection<Type> actualSet;
     Collection<Type> expectedSet;
 
-    actualSet = hierarchy.getLeastCommonAncestor(double_class1, int_class);
+    actualSet = hierarchy.getLeastCommonAncestors(double_class1, int_class);
     expectedSet = ImmutableUtils.immutableSet(number, comparable);
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(rootInterface1, class1);
+    actualSet = hierarchy.getLeastCommonAncestors(rootInterface1, class1);
     expectedSet = Collections.singleton(rootInterface1);
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(PrimitiveType.getDouble(), PrimitiveType.getInt());
+    actualSet =
+        hierarchy.getLeastCommonAncestors(PrimitiveType.getDouble(), PrimitiveType.getInt());
     expectedSet = Collections.singleton(TopType.getInstance());
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(rootInterface1, rootInterface2);
+    actualSet = hierarchy.getLeastCommonAncestors(rootInterface1, rootInterface2);
     expectedSet = Collections.singleton(object);
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(intArr_prim, doubleArr_prim);
+    actualSet = hierarchy.getLeastCommonAncestors(intArr_prim, doubleArr_prim);
     expectedSet = ImmutableUtils.immutableSet(object, serializable, cloneable);
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(class1AArr, class3Arr);
+    actualSet = hierarchy.getLeastCommonAncestors(class1AArr, class3Arr);
     expectedSet = ImmutableUtils.immutableSet(objArr);
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(class1AArr, class2AArr);
+    actualSet = hierarchy.getLeastCommonAncestors(class1AArr, class2AArr);
     expectedSet = ImmutableUtils.immutableSet(class1AArr);
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(class3Arr, class4Arr);
+    actualSet = hierarchy.getLeastCommonAncestors(class3Arr, class4Arr);
     expectedSet = Collections.singleton(class2Arr);
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(class4, class4Arr);
+    actualSet = hierarchy.getLeastCommonAncestors(class4, class4Arr);
     expectedSet = ImmutableUtils.immutableSet(serializable, cloneable);
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(class2, class4Arr);
+    actualSet = hierarchy.getLeastCommonAncestors(class2, class4Arr);
     expectedSet = Collections.singleton(object);
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(class2, class4Arr);
+    actualSet = hierarchy.getLeastCommonAncestors(class2, class4Arr);
     expectedSet = Collections.singleton(object);
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(PrimitiveType.getShort(), PrimitiveType.getByte());
+    actualSet =
+        hierarchy.getLeastCommonAncestors(PrimitiveType.getShort(), PrimitiveType.getByte());
     expectedSet = Collections.singleton(PrimitiveType.getShort());
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(shortArr, byteArr);
+    actualSet = hierarchy.getLeastCommonAncestors(shortArr, byteArr);
     expectedSet = ImmutableUtils.immutableSet(object, serializable, cloneable);
     assertEquals(expectedSet, actualSet);
   }

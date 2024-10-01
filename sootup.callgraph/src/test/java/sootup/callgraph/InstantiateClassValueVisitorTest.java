@@ -63,7 +63,7 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.views.View;
-import sootup.java.bytecode.frontend.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.views.JavaView;
 
@@ -71,7 +71,7 @@ import sootup.java.core.views.JavaView;
 public class InstantiateClassValueVisitorTest {
   @Test
   public void testVisitor() {
-    View view = new JavaView(new DefaultRTJarAnalysisInputLocation());
+    View view = new JavaView(new DefaultRuntimeAnalysisInputLocation());
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
 
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();

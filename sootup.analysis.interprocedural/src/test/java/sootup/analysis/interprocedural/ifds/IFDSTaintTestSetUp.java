@@ -36,7 +36,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.bytecode.frontend.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
@@ -64,7 +64,8 @@ public class IFDSTaintTestSetUp {
   private void runAnalysis() {
 
     JimpleBasedInterproceduralCFG icfg =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
     IFDSTaintAnalysisProblem problem = new IFDSTaintAnalysisProblem(icfg, entryMethod);
     JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> solver =
         new JimpleIFDSSolver(problem);
@@ -78,7 +79,7 @@ public class IFDSTaintTestSetUp {
    */
   private void setupSoot(String targetTestClassName) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation(
             "src/test/resources/taint/binary", SourceType.Application, Collections.emptyList()));

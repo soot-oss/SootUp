@@ -244,7 +244,7 @@ public class TypeResolver {
           // when `local` has an array type, the type of `rhs` needs to be assignable as an element
           // of that array
           Collection<Type> leastCommonAncestorsElement =
-              hierarchy.getLeastCommonAncestor(elementType, rhsType);
+              hierarchy.getLeastCommonAncestors(elementType, rhsType);
           leastCommonAncestors =
               leastCommonAncestorsElement.stream()
                   .map(type -> Type.createArrayType(type, 1))
@@ -253,10 +253,10 @@ public class TypeResolver {
           // when `local` isn't an array type, but is used as an array, its type has to be
           // compatible with `[rhs][]`
           leastCommonAncestors =
-              hierarchy.getLeastCommonAncestor(oldType, Type.createArrayType(rhsType, 1));
+              hierarchy.getLeastCommonAncestors(oldType, Type.createArrayType(rhsType, 1));
         }
       } else {
-        leastCommonAncestors = hierarchy.getLeastCommonAncestor(oldType, rhsType);
+        leastCommonAncestors = hierarchy.getLeastCommonAncestors(oldType, rhsType);
       }
 
       assert !leastCommonAncestors.isEmpty();
