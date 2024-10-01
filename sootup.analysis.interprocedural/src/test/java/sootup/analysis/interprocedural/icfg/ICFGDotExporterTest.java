@@ -54,7 +54,8 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     entryMethodSignature = entryMethod.getSignature();
 
     JimpleBasedInterproceduralCFG icfg =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
@@ -89,7 +90,8 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     entryMethodSignature = entryMethod.getSignature();
 
     JimpleBasedInterproceduralCFG icfg =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
@@ -124,7 +126,8 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     entryMethodSignature = entryMethod.getSignature();
 
     JimpleBasedInterproceduralCFG icfg =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
@@ -151,7 +154,8 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     entryMethodSignature = entryMethod.getSignature();
 
     JimpleBasedInterproceduralCFG icfg =
-        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entryMethodSignature), false, false);
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
@@ -164,7 +168,8 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   public String edgesFromCallGraph(
       MethodSignature methodSignature, JimpleBasedInterproceduralCFG icfg, CallGraph callGraph) {
     Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph = new LinkedHashMap<>();
-    icfg.computeAllCalls(methodSignature, signatureToStmtGraph, callGraph);
+    icfg.computeAllCalls(
+        Collections.singletonList(methodSignature), signatureToStmtGraph, callGraph);
     Map<Integer, MethodSignature> calls;
     calls = ICFGDotExporter.computeCalls(signatureToStmtGraph, view, callGraph);
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
