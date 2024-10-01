@@ -76,7 +76,7 @@ public class TypePromotionVisitor extends TypeChecker {
         assert value instanceof Local;
         // The type of the local and the type that is required in the statement are incompatible,
         // so the type of the local needs to be upgraded to a common ancestor.
-        Collection<Type> lca = hierarchy.getLeastCommonAncestor(evaType, stdType);
+        Collection<Type> lca = hierarchy.getLeastCommonAncestors(evaType, stdType);
         assert !lca.isEmpty();
         // Only use the first of the common ancestors, because this is an edge case.
         // The proper way to do this would be to create a completely new visitor that can yield
