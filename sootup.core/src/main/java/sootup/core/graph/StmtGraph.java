@@ -160,7 +160,6 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    *
    * @param exceptionType The class type of the exceptional flow.
    * @param exceptionHandlerStmt The handler statement of the exceptional flow.
-   * @throws IllegalArgumentException if the trap is not found in the graph.
    */
   public abstract void removeExceptionalFlowFromAllBlocks(
       ClassType exceptionType, Stmt exceptionHandlerStmt);
