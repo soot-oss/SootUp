@@ -1301,6 +1301,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
     MutableBasicBlock blockOfTo = blockOfToPair.getRight();
 
+    // TODO: only works if "from" is the tail of a block
     // Unlink 2 blocks
     blockOfFrom.removeFromSuccessorBlocks(blockOfTo);
     blockOfTo.removePredecessorBlock(blockOfFrom);

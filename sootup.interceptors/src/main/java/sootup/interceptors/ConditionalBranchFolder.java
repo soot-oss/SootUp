@@ -110,9 +110,8 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       // replace ifStmt block by gotoStmt
       JGotoStmt gotoStmt = Jimple.newGotoStmt(ifStmt.getPositionInfo());
       stmtGraph.replaceStmt(ifStmt, gotoStmt);
-
-      // Call Unreachable Code Eliminator for pruning unreachable blocks
-      new UnreachableCodeEliminator().interceptBody(builder, view);
     }
+    // Call Unreachable Code Eliminator at the end for pruning unreachable blocks
+    new UnreachableCodeEliminator().interceptBody(builder, view);
   }
 }

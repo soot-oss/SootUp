@@ -126,7 +126,7 @@ public class ConditionalBranchFolderTest {
     assertEquals(
         Stream.of(
                 "ConditionalBranchFolderTest this",
-                "unknown $stack3, $stack4, l1",
+                "unknown $stack2, $stack3, $stack4, $stack5, l1",
                 "this := @this: ConditionalBranchFolderTest",
                 "l1 = 1",
                 "goto label1",
@@ -144,6 +144,31 @@ public class ConditionalBranchFolderTest {
                 "return")
             .collect(Collectors.toList()),
         Utils.filterJimple(body.toString()));
+
+    final MethodSignature methodSignature1 =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                "ConditionalBranchFolderTest", "tc1_1", "void", Collections.emptyList());
+    Body body1 = view.getMethod(methodSignature1).get().getBody();
+    assertFalse(body1.getStmts().isEmpty());
+
+    assertEquals(
+        Stream.of(
+                "ConditionalBranchFolderTest this",
+                "unknown $stack2, $stack3, $stack4, $stack5, l1",
+                "this := @this: ConditionalBranchFolderTest",
+                "l1 = 1",
+                "goto label1",
+                "label1:",
+                "goto label2",
+                "label2:",
+                "goto label3",
+                "label3:",
+                "$stack2 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $stack2.<java.io.PrintStream: void println(java.lang.String)>(\"False 2\")",
+                "return")
+            .collect(Collectors.toList()),
+        Utils.filterJimple(body1.toString()));
   }
 
   @Test
