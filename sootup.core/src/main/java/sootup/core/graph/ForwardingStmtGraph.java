@@ -1,4 +1,5 @@
 package sootup.core.graph;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -134,7 +135,8 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   }
 
   @Override
-  public void removeTrap(@Nonnull Trap trap) {
-    backingGraph.removeTrap(trap);
+  public void removeExceptionalFlowFromAllBlocks(
+      @Nonnull ClassType exceptionType, @Nonnull Stmt exceptionHandlerStmt) {
+    backingGraph.removeExceptionalFlowFromAllBlocks(exceptionType, exceptionHandlerStmt);
   }
 }

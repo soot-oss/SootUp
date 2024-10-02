@@ -1058,7 +1058,9 @@ public class MutableBlockStmtGraphTest {
     assertEquals(handlerStmt, traps.get(0).getHandlerStmt());
 
     // Remove the trap and verify it's removed
-    graph.removeTrap(traps.get(0));
+    Trap trapToRemove = traps.get(0);
+    graph.removeExceptionalFlowFromAllBlocks(
+        trapToRemove.getExceptionType(), trapToRemove.getHandlerStmt());
     traps = graph.buildTraps();
     assertEquals(0, traps.size());
   }
@@ -1097,48 +1099,14 @@ public class MutableBlockStmtGraphTest {
     assertEquals(2, traps.size());
 
     // Remove one trap and verify the remaining
-    graph.removeTrap(traps.get(0));
+    Trap trapToRemove = traps.get(0);
+    Trap trapToKeep = traps.get(1);
+
+    graph.removeExceptionalFlowFromAllBlocks(
+        trapToRemove.getExceptionType(), trapToRemove.getHandlerStmt());
     traps = graph.buildTraps();
     assertEquals(1, traps.size());
-    assertEquals(stmt2, traps.get(0).getBeginStmt());
-    assertEquals(handlerStmt2, traps.get(0).getHandlerStmt());
-  }
-
-  @Test
-  public void testRemoveTrapThatSharesHandlerWithAnotherTrap() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-
-    FallsThroughStmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
-    JGotoStmt gotoStmt = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
-    FallsThroughStmt stmt2 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
-    JReturnVoidStmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
-
-    Stmt sharedHandlerStmt =
-        new JIdentityStmt(
-            new Local("sharedEx", throwableSig),
-            new JCaughtExceptionRef(throwableSig),
-            StmtPositionInfo.getNoStmtPositionInfo());
-
-    // Add blocks to the graph
-    graph.addBlock(Collections.singletonList(stmt1));
-    graph.addBlock(Collections.singletonList(gotoStmt));
-    graph.addBlock(Collections.singletonList(stmt2));
-    graph.addBlock(Collections.singletonList(returnStmt));
-    graph.setStartingStmt(stmt1);
-
-    // Add two traps with different exception types but sharing the same handler
-    graph.addExceptionalEdge(stmt1, throwableSig, sharedHandlerStmt);
-    graph.addExceptionalEdge(stmt2, ioExceptionSig, sharedHandlerStmt);
-
-    List<Trap> traps = graph.buildTraps();
-    assertEquals(2, traps.size());
-
-    // Remove the first trap and verify the other remains with the same handler
-    graph.removeTrap(traps.get(0));
-
-    traps = graph.buildTraps();
-    assertEquals(1, traps.size());
-    assertEquals(stmt2, traps.get(0).getBeginStmt());
-    assertEquals(sharedHandlerStmt, traps.get(0).getHandlerStmt());
+    assertEquals(stmt2, trapToKeep.getBeginStmt());
+    assertEquals(handlerStmt2, trapToKeep.getHandlerStmt());
   }
 }

@@ -144,7 +144,7 @@ public class ImmutableBlockStmtGraph
   }
 
   @Override
-  public void removeTrap(@Nonnull Trap trap) {
+  public void removeExceptionalFlowFromAllBlocks(ClassType classType, Stmt exceptionHandlerStmt) {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
