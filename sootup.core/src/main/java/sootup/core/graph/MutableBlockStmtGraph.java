@@ -1604,7 +1604,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             .result();
   }
 
-  /** hint: little expensive getter - its more of a build/create */
+  /** hint: little expensive getter - its more of a build/create - currently no overlaps */
   @Override
   public List<Trap> buildTraps() {
     // [ms] try to incorporate it into the serialisation of jimple printing so the other half of
@@ -1627,104 +1627,18 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   @Override
-  public void removeTrap(@Nonnull Trap trap) {
-    List<Trap> traps = buildTraps();
-
-    if (!traps.contains(trap)) {
-      throw new IllegalArgumentException("The provided trap is not found in the graph.");
-    }
-
-    traps.remove(trap);
-
-    Map<Stmt, Integer> stmtToIdx = rebuildStmtToIdx();
-
-    // Rebuild trap-related structures to update control flow
-    PriorityQueue<Trap> trapStart =
-        new PriorityQueue<>(Comparator.comparingInt(t -> stmtToIdx.get(t.getBeginStmt())));
-    PriorityQueue<Trap> trapEnd =
-        new PriorityQueue<>(Comparator.comparingInt(t -> stmtToIdx.get(t.getEndStmt())));
-
-    traps.forEach(
-        t -> {
-          trapStart.add(t);
-          trapEnd.add(t);
-        });
-
-    manageTrapMappings(trapStart, trapEnd);
-    removeExceptionalEdgesFromGraph(trap.getExceptionType());
-  }
-
-  private Map<Stmt, Integer> rebuildStmtToIdx() {
-    Map<Stmt, Integer> stmtToIdx = new HashMap<>();
-
-    int index = 0;
+  public void removeExceptionalFlowFromAllBlocks(
+      @Nonnull ClassType exceptionType, @Nonnull Stmt exceptionHandlerStmt) {
     for (Iterator<BasicBlock<?>> it = getBlockIterator(); it.hasNext(); ) {
-      BasicBlock<?> block = it.next();
-      for (Stmt stmt : block.getStmts()) {
-        stmtToIdx.put(stmt, index++);
+      MutableBasicBlock block = (MutableBasicBlock) it.next();
+
+      Map<? extends ClassType, ?> exceptionalSuccessors = block.getExceptionalSuccessors();
+
+      MutableBasicBlock trapBlock = (MutableBasicBlock) exceptionalSuccessors.get(exceptionType);
+
+      if (trapBlock != null && trapBlock.getHead() == exceptionHandlerStmt) {
+        removeExceptionalEdge(block.getHead(), exceptionType);
       }
     }
-    return stmtToIdx;
-  }
-
-  private void manageTrapMappings(PriorityQueue<Trap> trapStart, PriorityQueue<Trap> trapEnd) {
-
-    Map<ClassType, Trap> activeTrapMap = new HashMap<>();
-
-    Trap nextStartingTrap = trapStart.poll();
-    Trap nextEndingTrap = trapEnd.poll();
-
-    while (nextStartingTrap != null || nextEndingTrap != null) {
-      if (nextEndingTrap != null) {
-        ClassType exceptionType = nextEndingTrap.getExceptionType();
-        activeTrapMap.remove(exceptionType);
-        nextEndingTrap = trapEnd.poll();
-      }
-
-      if (nextStartingTrap != null) {
-        Trap trap = nextStartingTrap;
-        ClassType exceptionType = trap.getExceptionType();
-        activeTrapMap.put(exceptionType, trap);
-        nextStartingTrap = trapStart.poll();
-      }
-    }
-
-    updateBlockWithTraps(activeTrapMap);
-  }
-
-  private void removeExceptionalEdgesFromGraph(ClassType exceptionType) {
-    for (Map.Entry<Stmt, Integer> entry : rebuildStmtToIdx().entrySet()) {
-      Stmt stmt = entry.getKey();
-      Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(stmt);
-
-      if (blockPair != null) {
-        MutableBasicBlock block = blockPair.getRight();
-
-        if (block.getExceptionalSuccessors().containsKey(exceptionType)) {
-          removeExceptionalEdge(stmt, exceptionType);
-          tryMergeIntoSurroundingBlocks(block);
-        }
-      }
-    }
-  }
-
-  private void updateBlockWithTraps(Map<ClassType, Trap> activeTrapMap) {
-    for (Map.Entry<ClassType, Trap> entry : activeTrapMap.entrySet()) {
-      ClassType exceptionType = entry.getKey();
-      Trap trap = entry.getValue();
-      applyTrapToBlock(trap.getBeginStmt(), exceptionType, trap.getHandlerStmt());
-    }
-  }
-
-  private void applyTrapToBlock(Stmt beginStmt, ClassType exceptionType, Stmt handlerStmt) {
-    Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(beginStmt);
-
-    if (blockPair == null) return;
-
-    MutableBasicBlock block = blockPair.getRight();
-
-    removeExceptionalEdge(beginStmt, exceptionType);
-    addExceptionalEdge(beginStmt, exceptionType, handlerStmt);
-    tryMergeIntoSurroundingBlocks(block);
   }
 }
