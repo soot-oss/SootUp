@@ -1,0 +1,2 @@
+jar_name,exception,failedMethodSignature,download_url
+sqlancer-2.0.0.jar,Failed to convert <sqlancer.Main$DBMSExecutor: void testConnection()>,"<sqlancer.Main$DBMSExecutor: void testConnection()>",https://repo1.maven.org/maven2/com/sqlancer/sqlancer/2.0.0/sqlancer-2.0.0.jar
