@@ -149,21 +149,23 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
             + classProvider.getHandledFileType().getExtensionWithDot();
 
     final Path archiveRoot = theFileSystem.getPath("modules", moduleSignature.getModuleName());
-    try {
-
-      return Files.walk(archiveRoot)
+    try (Stream<Path> paths = Files.walk(archiveRoot)) {
+    // collect into a list and then return a stream, so we do not leak the Stream returned by Files.walk
+    List<JavaSootClassSource> javaSootClassSources = paths
           .filter(
-              filePath ->
-                  !Files.isDirectory(filePath)
-                      && filePath
-                          .toString()
-                          .endsWith(classProvider.getHandledFileType().getExtensionWithDot())
-                      && !filePath.toString().endsWith(moduleInfoFilename))
+                  filePath ->
+                          !Files.isDirectory(filePath)
+                                  && filePath
+                                  .toString()
+                                  .endsWith(classProvider.getHandledFileType().getExtensionWithDot())
+                                  && !filePath.toString().endsWith(moduleInfoFilename))
           .flatMap(
-              p ->
-                  StreamUtils.optionalToStream(
-                      classProvider.createClassSource(this, p, fromPath(p, identifierFactory))))
-          .map(src -> (JavaSootClassSource) src);
+                  p ->
+                          StreamUtils.optionalToStream(
+                                  classProvider.createClassSource(this, p, fromPath(p, identifierFactory))))
+          .map(src -> (JavaSootClassSource) src)
+          .collect(Collectors.toList());
+    return javaSootClassSources.stream();
     } catch (IOException e) {
       throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
     }
