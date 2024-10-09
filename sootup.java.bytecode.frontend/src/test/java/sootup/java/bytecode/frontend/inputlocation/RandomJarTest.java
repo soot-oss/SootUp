@@ -1,6 +1,7 @@
 package sootup.java.bytecode.frontend.inputlocation;
 
 import categories.TestCategories;
+import com.google.gson.Gson;
 import java.io.*;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import sootup.java.core.views.JavaView;
 public class RandomJarTest extends BaseFixJarsTest {
 
   private final String jarDownloadPath = System.getProperty("jarPath", "");
-  private static final String FAILURE_METRICS_FILE = "jar_failure.csv";
+  private static final String FAILURE_METRICS_FILE = "jar_failure.json";
 
   @Test
   public void testJar() {
@@ -40,25 +41,23 @@ public class RandomJarTest extends BaseFixJarsTest {
     boolean fileExists = file.exists();
     System.out.println("Failure file path is" + file.getAbsolutePath());
 
-    try (FileWriter fw = new FileWriter(file, true);
-        PrintWriter writer = new PrintWriter(fw)) {
-      if (!fileExists) {
-        writer.println("jar_name,exception,failedMethodSignature,download_url");
-      }
+    Gson gson = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
-      // As the parameters in the method signature have delimiter (,), writer thinks that as a two
-      // different values, so wrapping in an escape sequence.
-      String failedMethodSignature = testMetrics.getFailedMethodSignature();
-      String escapedFailedMethodSignature = "\"" + failedMethodSignature + "\"";
-      writer.println(
-          testMetrics.getJar_name()
-              + ","
-              + testMetrics.getException()
-              + ","
-              + escapedFailedMethodSignature
-              + ","
-              + testMetrics.getDownload_url());
-    } catch (IOException e) {
+    try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+      if (!fileExists) {
+        raf.writeBytes("[\n");
+        raf.writeBytes(gson.toJson(testMetrics));
+        raf.writeBytes("\n]");
+      } else {
+        long length = file.length();
+        raf.seek(length - 2); // Position before the closing "]\n"
+
+        // Append the new JSON object
+        raf.writeBytes(",\n");
+        raf.writeBytes(gson.toJson(testMetrics));
+        raf.writeBytes("\n]");
+      }
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
