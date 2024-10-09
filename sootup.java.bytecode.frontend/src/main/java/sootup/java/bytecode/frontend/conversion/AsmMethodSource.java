@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
@@ -966,11 +965,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else if (val instanceof ConstantDynamic) {
       ConstantDynamic cd = (ConstantDynamic) val;
       if (MethodHandle.isMethodRef(cd.getBootstrapMethod().getTag())) {
-        v = JavaJimple.getInstance()
-                .newMethodHandle(toMethodSignature(cd.getBootstrapMethod()), cd.getBootstrapMethod().getTag());
+        v =
+            JavaJimple.getInstance()
+                .newMethodHandle(
+                    toMethodSignature(cd.getBootstrapMethod()), cd.getBootstrapMethod().getTag());
       } else {
-        v = JavaJimple.getInstance()
-                .newMethodHandle(toSootFieldSignature(cd.getBootstrapMethod()), cd.getBootstrapMethod().getTag());
+        v =
+            JavaJimple.getInstance()
+                .newMethodHandle(
+                    toSootFieldSignature(cd.getBootstrapMethod()),
+                    cd.getBootstrapMethod().getTag());
       }
     } else {
       throw new UnsupportedOperationException("Unknown constant type: " + val.getClass());
