@@ -45,7 +45,7 @@ public class ReversePostOrderBlockTraversal {
 
   @Nonnull
   public BlockIterator iterator() {
-    return new BlockIterator(startNode);
+    return new ReversePostOrderBlockIterator(startNode);
   }
 
   @Nonnull
@@ -55,34 +55,5 @@ public class ReversePostOrderBlockTraversal {
                 new ReversePostOrderBlockTraversal(cfg).iterator(), Spliterator.ORDERED),
             false)
         .collect(Collectors.toList());
-  }
-
-  public static class BlockIterator implements Iterator<BasicBlock<?>> {
-    private List<BasicBlock<?>> blocks;
-    private int i = 0;
-
-    public BlockIterator(@Nonnull BasicBlock<?> startNode) {
-      blocks =
-          StreamSupport.stream(
-                  Spliterators.spliteratorUnknownSize(
-                      new PostOrderBlockTraversal.BlockIterator(startNode), Spliterator.ORDERED),
-                  false)
-              .collect(Collectors.toList());
-      Collections.reverse(blocks);
-    }
-
-    @Override
-    public boolean hasNext() {
-      return i < blocks.size();
-    }
-
-    @Override
-    public BasicBlock<?> next() {
-      if (!hasNext()) {
-        throw new NoSuchElementException("There is no more block.");
-      }
-      i++;
-      return blocks.get(i - 1);
-    }
   }
 }
