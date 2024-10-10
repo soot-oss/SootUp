@@ -6,79 +6,52 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.expr.JAddExpr;
-import sootup.core.jimple.common.expr.JLeExpr;
 import sootup.core.jimple.common.stmt.*;
-import sootup.core.types.PrimitiveType;
 
 @Tag("Java8")
 public class DominanceFinderTest {
 
-  StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
+  TestGraphGenerator graphGenerator = new TestGraphGenerator();
 
   @Test
   public void testDominanceFinder() {
-    MutableBlockStmtGraph graph = createStmtGraph();
-    Map<BasicBlock<?>, Integer> blockToId = new HashMap<>();
-    // assign ids according to blocks sorted by BasicBlock::toString
-    List<? extends BasicBlock<?>> blocks =
-        graph.getBlocks().stream()
-            .sorted(Comparator.comparing(BasicBlock::toString))
+    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph();
+    DominanceFinder dominanceFinder = new DominanceFinder(graph);
+
+    int[] domsArr = dominanceFinder.getImmediateDominators();
+    List<Integer> doms = Arrays.stream(domsArr).boxed().collect(Collectors.toList());
+
+    List<Integer> expectedDoms = Arrays.asList(0, 0, 1, 2, 2, 2, 1);
+    assertEquals(expectedDoms, doms);
+  }
+
+  @Test
+  public void testDominanceFrontiers() {
+    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph();
+    DominanceFinder dominanceFinder = new DominanceFinder(graph);
+
+    List<BasicBlock<?>> blocks = dominanceFinder.getIdxToBlock();
+    List<Set<BasicBlock<?>>> dfList =
+        blocks.stream()
+            .map(block -> dominanceFinder.getDominanceFrontiers(block))
             .collect(Collectors.toList());
-    int i = 0;
-    for (BasicBlock<?> block : blocks) {
-      blockToId.put(block, i);
-      i++;
-    }
 
-    DominanceFinder dom = new DominanceFinder(graph);
+    // create expectedDFList
+    List<Set<BasicBlock<?>>> expectedDFList = new ArrayList<>();
+    expectedDFList.add(Collections.emptySet());
+    expectedDFList.add(Collections.singleton(blocks.get(1)));
+    expectedDFList.add(Collections.singleton(blocks.get(1)));
+    expectedDFList.add(Collections.singleton(blocks.get(5)));
+    expectedDFList.add(Collections.singleton(blocks.get(5)));
+    expectedDFList.add(Collections.singleton(blocks.get(1)));
+    expectedDFList.add(Collections.emptySet());
 
-    Map<Integer, Set<Integer>> expectedFrontiers = new HashMap<>();
-    expectedFrontiers.put(0, new HashSet<>(Collections.singletonList(2)));
-    expectedFrontiers.put(1, new HashSet<>(Collections.singletonList(2)));
-    expectedFrontiers.put(2, new HashSet<>(Collections.singletonList(2)));
-    expectedFrontiers.put(3, new HashSet<>());
-    expectedFrontiers.put(4, new HashSet<>(Collections.singletonList(0)));
-    expectedFrontiers.put(5, new HashSet<>(Collections.singletonList(0)));
-    expectedFrontiers.put(6, new HashSet<>());
-
-    Map<Integer, Integer> expectedDominators = new HashMap<>();
-    expectedDominators.put(0, 1);
-    expectedDominators.put(1, 2);
-    expectedDominators.put(2, 3);
-    expectedDominators.put(3, -1);
-    expectedDominators.put(4, 1);
-    expectedDominators.put(5, 1);
-    expectedDominators.put(6, 2);
-
-    // check dominators
-    for (BasicBlock<?> block : blocks) {
-      Integer dominatorId = -1;
-      BasicBlock<?> dominator = dom.getImmediateDominator(block);
-      if (dominator != null) {
-        dominatorId = blockToId.get(dominator);
-      }
-      Integer expectedId = expectedDominators.get(blockToId.get(block));
-
-      assertEquals(expectedId, dominatorId);
-    }
-
-    // check frontiers
-    for (BasicBlock<?> block : blocks) {
-      Set<BasicBlock<?>> frontier = dom.getDominanceFrontiers(block);
-      Set<Integer> frontierIds = frontier.stream().map(blockToId::get).collect(Collectors.toSet());
-      Set<Integer> expectedIds = expectedFrontiers.get(blockToId.get(block));
-
-      assertEquals(expectedIds, frontierIds);
-    }
+    assertEquals(expectedDFList, dfList);
   }
 
   @Test
   public void testBlockToIdxInverse() {
-    MutableBlockStmtGraph graph = createStmtGraph();
+    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph();
     DominanceFinder dom = new DominanceFinder(graph);
 
     // check that getBlockToIdx and getIdxToBlock are inverses
@@ -89,59 +62,39 @@ public class DominanceFinderTest {
     }
   }
 
-  private MutableBlockStmtGraph createStmtGraph() {
-    // reconstruct the example given in
-    // https://soot-oss.github.io/SootUp/v1.1.2/advanced-topics/#dominancefinder.
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+  @Test
+  public void testDominanceFinder2() {
+    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph2();
+    DominanceFinder dominanceFinder = new DominanceFinder(graph);
 
-    Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
-    Local l2 = new Local("l2", PrimitiveType.IntType.getInstance());
-    Local l3 = new Local("l3", PrimitiveType.IntType.getInstance());
+    int[] domsArr = dominanceFinder.getImmediateDominators();
+    List<Integer> doms = Arrays.stream(domsArr).boxed().collect(Collectors.toList());
 
-    JAssignStmt assign01 = new JAssignStmt(l1, IntConstant.getInstance(1), noPosInfo);
-    JAssignStmt assign02 = new JAssignStmt(l2, IntConstant.getInstance(2), noPosInfo);
-    JAssignStmt assign03 = new JAssignStmt(l2, IntConstant.getInstance(0), noPosInfo);
-    JAssignStmt assign41 = new JAssignStmt(l2, l3, noPosInfo);
-    JAssignStmt assign42 =
-        new JAssignStmt(l3, new JAddExpr(l3, IntConstant.getInstance(2)), noPosInfo);
-    JAssignStmt assign51 = new JAssignStmt(l2, l1, noPosInfo);
-    JAssignStmt assign52 =
-        new JAssignStmt(l3, new JAddExpr(l3, IntConstant.getInstance(1)), noPosInfo);
+    List<Integer> expectedDoms = Arrays.asList(0, 0, 0, 0, 0, 0);
 
-    BranchingStmt if1 = new JIfStmt(new JLeExpr(l3, IntConstant.getInstance(100)), noPosInfo);
-    BranchingStmt if3 = new JIfStmt(new JLeExpr(l2, IntConstant.getInstance(20)), noPosInfo);
+    assertEquals(expectedDoms, doms);
+  }
 
-    JReturnStmt return2 = new JReturnStmt(l2, noPosInfo);
-    JGotoStmt goto4 = new JGotoStmt(noPosInfo);
-    JGotoStmt goto5 = new JGotoStmt(noPosInfo);
-    JGotoStmt goto6 = new JGotoStmt(noPosInfo);
+  @Test
+  public void testDominanceFrontiers2() {
+    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph2();
+    DominanceFinder dominanceFinder = new DominanceFinder(graph);
 
-    // block 0
-    graph.setStartingStmt(assign01);
-    graph.putEdge(assign01, assign02);
-    graph.putEdge(assign02, assign03);
-    graph.putEdge(assign03, if1);
+    List<BasicBlock<?>> blocks = dominanceFinder.getIdxToBlock();
+    List<Set<BasicBlock<?>>> dfList =
+        blocks.stream()
+            .map(block -> dominanceFinder.getDominanceFrontiers(block))
+            .collect(Collectors.toList());
 
-    // block 1
-    graph.putEdge(if1, JIfStmt.FALSE_BRANCH_IDX, return2);
-    graph.putEdge(if1, JIfStmt.TRUE_BRANCH_IDX, if3);
+    // create expectedDFList
+    List<Set<BasicBlock<?>>> expectedDFList = new ArrayList<>();
+    expectedDFList.add(Collections.emptySet());
+    expectedDFList.add(Collections.singleton(blocks.get(5)));
+    expectedDFList.add(new HashSet<>(Arrays.asList(blocks.get(3), blocks.get(4))));
+    expectedDFList.add(Collections.singleton(blocks.get(4)));
+    expectedDFList.add(new HashSet<>(Arrays.asList(blocks.get(3), blocks.get(5))));
+    expectedDFList.add(Collections.singleton(blocks.get(4)));
 
-    // block 3
-    graph.putEdge(if3, JIfStmt.FALSE_BRANCH_IDX, assign41);
-    graph.putEdge(if3, JIfStmt.TRUE_BRANCH_IDX, assign51);
-
-    // block 4
-    graph.putEdge(assign41, assign42);
-    graph.putEdge(assign42, goto4);
-    graph.putEdge(goto4, JGotoStmt.BRANCH_IDX, goto6);
-
-    // block 5
-    graph.putEdge(assign51, assign52);
-    graph.putEdge(assign52, goto5);
-    graph.putEdge(goto5, JGotoStmt.BRANCH_IDX, goto6);
-
-    // block 6
-    graph.putEdge(goto6, JGotoStmt.BRANCH_IDX, if1);
-    return graph;
+    assertEquals(expectedDFList, dfList);
   }
 }
