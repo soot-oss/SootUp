@@ -36,11 +36,18 @@ public class DominanceFinder {
   private Map<BasicBlock<?>, Integer> blockToIdx = new HashMap<>();
   private int[] doms;
   private ArrayList<Integer>[] domFrontiers;
+  private BlockAnalysisDirection direction;
 
-  public DominanceFinder(@Nonnull StmtGraph<?> blockGraph) {
+  public DominanceFinder(StmtGraph<?> blockGraph) {
+    // normal DominanceFinder should be in reverse post order
+    this(blockGraph, BlockAnalysisDirection.REVERSEPOSTORDER);
+  }
 
-    // blocks should be in reverse post order
-    blocks = ReversePostOrderBlockTraversal.getBlocksSorted(blockGraph);
+  protected DominanceFinder(@Nonnull StmtGraph<?> blockGraph, BlockAnalysisDirection direction) {
+
+    // define the blocks' order
+    this.direction = direction;
+    blocks = direction.getSortedBlocks(blockGraph);
     for (int i = 0; i < blocks.size(); i++) {
       BasicBlock<?> block = blocks.get(i);
       blockToIdx.put(block, i);
@@ -63,7 +70,7 @@ public class DominanceFinder {
         }
         int blockIdx = blockToIdx.get(block);
         // ms: should not be necessary preds.addAll(block.getExceptionalPredecessors());
-        List<BasicBlock<?>> preds = new ArrayList<>(block.getPredecessors());
+        List<BasicBlock<?>> preds = new ArrayList<>(direction.getPredecessors(block));
         int newIdom = getFirstDefinedBlockPredIdx(preds);
         if (!preds.isEmpty() && newIdom != -1) {
           BasicBlock<?> processed = blocks.get(newIdom);
@@ -92,7 +99,7 @@ public class DominanceFinder {
 
     // calculate dominance frontiers for each block
     for (BasicBlock<?> block : blocks) {
-      List<BasicBlock<?>> preds = new ArrayList<>(block.getPredecessors());
+      List<BasicBlock<?>> preds = new ArrayList<>(direction.getPredecessors(block));
       // ms: should not be necessary  preds.addAll(block.getExceptionalPredecessors());
       if (preds.size() > 1) {
         int blockId = blockToIdx.get(block);
