@@ -32,8 +32,7 @@ public class ReversePostOrderTraversalTest {
     List<Integer> RPO =
         reversePostOrderBlocks.stream().map(b -> blockToId.get(b)).collect(Collectors.toList());
 
-    Integer[] arr = new Integer[] {3, 2, 1, 4, 5, 0, 6};
-    List<Integer> expectedRPO = Arrays.asList(arr);
+    List<Integer> expectedRPO = Arrays.asList(3, 2, 1, 4, 5, 0, 6);
     assertEquals(expectedRPO, RPO);
   }
 
@@ -58,8 +57,7 @@ public class ReversePostOrderTraversalTest {
     List<Integer> RPO =
         reversePostOrderBlocks.stream().map(b -> blocksToId.get(b)).collect(Collectors.toList());
 
-    Integer[] arr = new Integer[] {1, 4, 0, 3, 5, 2};
-    List<Integer> expectedRPO = Arrays.asList(arr);
+    List<Integer> expectedRPO = Arrays.asList(1, 4, 0, 3, 5, 2);
 
     assertEquals(expectedRPO, RPO);
   }

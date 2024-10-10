@@ -30,8 +30,7 @@ public class PostOrderTraversalTest {
     List<Integer> PO =
         postOrderBlocks.stream().map(b -> blockToId.get(b)).collect(Collectors.toList());
 
-    Integer[] arr = new Integer[] {6, 0, 5, 4, 1, 2, 3};
-    List<Integer> expectedPO = Arrays.asList(arr);
+    List<Integer> expectedPO = Arrays.asList(6, 0, 5, 4, 1, 2, 3);
     assertEquals(expectedPO, PO);
   }
 
@@ -55,8 +54,7 @@ public class PostOrderTraversalTest {
     List<Integer> PO =
         postOrderBlocks.stream().map(b -> blockToId.get(b)).collect(Collectors.toList());
 
-    Integer[] arr = new Integer[] {2, 5, 3, 0, 4, 1};
-    List<Integer> expectedPO = Arrays.asList(arr);
+    List<Integer> expectedPO = Arrays.asList(2, 5, 3, 0, 4, 1);
     assertEquals(expectedPO, PO);
   }
 }
