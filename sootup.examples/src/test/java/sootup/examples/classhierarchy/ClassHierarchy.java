@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -39,7 +39,7 @@ public class ClassHierarchy {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation("src/test/resources/ClassHierarchy/binary"));
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation()); // add rt.jar
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation()); // add rt.jar
 
     JavaView view = new JavaView(inputLocations);
 

@@ -22,7 +22,7 @@ import sootup.core.model.SourceType;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;

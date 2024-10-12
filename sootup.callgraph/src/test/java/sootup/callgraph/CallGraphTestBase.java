@@ -20,12 +20,12 @@ import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
-import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
+import sootup.java.frontend.inputlocation.JavaSourcePathAnalysisInputLocation;
 
 public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
@@ -45,7 +45,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   private JavaView createViewForClassPath(String classPath, boolean useSourceCodeFrontend) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
     if (useSourceCodeFrontend) {
       inputLocations.add(new JavaSourcePathAnalysisInputLocation(classPath));
     } else {
@@ -1053,7 +1053,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     String classPath = "src/test/resources/callgraph/Library/binary/";
 
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation(classPath + "application/", SourceType.Application));
     inputLocations.add(

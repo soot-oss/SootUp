@@ -13,9 +13,9 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.typehierarchy.HierarchyComparator;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
-import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
+import sootup.java.frontend.inputlocation.JavaSourcePathAnalysisInputLocation;
 
 @Tag("Java8")
 public class HierarchyComparatorTest {
@@ -28,7 +28,7 @@ public class HierarchyComparatorTest {
     inputLocations.add(
         new JavaSourcePathAnalysisInputLocation(
             Collections.singleton("src/test/resources/javatypehierarchy/Comparator")));
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
 
     view = new JavaView(inputLocations);
   }

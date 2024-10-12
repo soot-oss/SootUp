@@ -22,23 +22,18 @@ package sootup.java.core;
  * #L%
  */
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSubSignature;
-import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.java.core.types.JavaClassType;
-import sootup.java.core.views.JavaView;
 
 public class JavaSootClass extends SootClass {
 
@@ -53,51 +48,18 @@ public class JavaSootClass extends SootClass {
   }
 
   /**
-   * Get all annotations on this class. If provided with a View, will also resolve all inherited
-   * annotations from super classes.
+   * Get all annotations that are directly attached to this class.
    *
-   * @param view
+   * <p>This includes "visible" and "invisible" annotations. Note that inherited annotations are not
+   * part of this iterable.
+   *
    * @return
    */
   @Nonnull
-  public Iterable<AnnotationUsage> getAnnotations(@Nonnull Optional<JavaView> view) {
-    List<AnnotationUsage> annotationUsages = new ArrayList<>();
-
-    if (view.isPresent()) {
-      JavaView javaView = view.get();
-      if (this.getSuperclass().isPresent()) {
-
-        ClassType superClass = this.getSuperclass().get();
-
-        if (javaView.getClass(superClass).isPresent()) {
-          JavaSootClass superJavaSootClass = javaView.getClass(superClass).get();
-
-          Collection<AnnotationUsage> annos =
-              StreamSupport.stream(superJavaSootClass.getAnnotations(view).spliterator(), false)
-                  .filter(annotationUsage -> annotationUsage.getAnnotation().isInherited(view))
-                  .collect(Collectors.toList());
-
-          annotationUsages.addAll(annos);
-        }
-      }
-    }
-
-    ((JavaSootClassSource) classSource).resolveAnnotations().forEach(annotationUsages::add);
-
-    annotationUsages.forEach(e -> e.getAnnotation().getDefaultValues(view));
-
-    for (AnnotationUsage annotationUsage : annotationUsages) {
-      for (Object value : annotationUsage.getValuesWithDefaults().values()) {
-        if (value instanceof ArrayList
-            && !((ArrayList<?>) value).isEmpty()
-            && ((ArrayList<?>) value).get(0) instanceof AnnotationUsage) {
-          ((ArrayList<AnnotationUsage>) value)
-              .forEach(au -> au.getAnnotation().getDefaultValues(view));
-        }
-      }
-    }
-
-    return annotationUsages;
+  public Iterable<AnnotationUsage> getAnnotations() {
+    // we should cache it in the future: for now, we do not cache it
+    // because the underlying data structure might be mutable
+    return ((JavaSootClassSource) classSource).resolveAnnotations();
   }
 
   @Nonnull

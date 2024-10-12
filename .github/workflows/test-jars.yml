@@ -1,7 +1,9 @@
 name: Download Random JARs from Maven
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 1' # '0' : 0th minute, '9' : Hour (9 AM) '*' : Day of the month '*' : Month '1' : Day of the week (0 is sunday, 1 is monday)
+  workflow_dispatch: # Manual trigger of this action
 jobs:
   download-jars:
     runs-on: ubuntu-latest
@@ -19,18 +21,13 @@ jobs:
         run:
           pip install requests
 
-      - name: Download Metadata
-        id: download-metadata
-        uses: actions/download-artifact@v3
-        with:
-          name: metadata
-          path: metadata
-        continue-on-error: true # Allows workflow to continue even if the artifact metadata is not found (obviously it will not be found for the first run)
-
-      - name: Create empty metadata file
-        if: failure() # This runs if the previous step failed
-        run: |
-          echo '{"jars":[]}' > metadata/metadata.json
+#      - name: Download Metadata
+#        id: download-metadata
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: metadata
+#          path: metadata
+#        continue-on-error: true # Allows workflow to continue even if the artifact metadata is not found (obviously it will not be found for the first run)
 
       - name: Download random JARs
         id: download
@@ -38,12 +35,6 @@ jobs:
           python .github/download_jars.py
         env:
           METADATA_PATH: metadata/metadata.json
-
-      - name: Upload JARs
-        uses: actions/upload-artifact@v3
-        with:
-          name: jars
-          path: downloaded_jars/
 
       - name: Upload Metadata
         uses: actions/upload-artifact@v3
@@ -58,9 +49,6 @@ jobs:
           java-package: 'jdk'
           java-version: '8'
 
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - name: Install Maven
         run: |
           sudo apt-get update
@@ -70,21 +58,89 @@ jobs:
         run: |
           mvn clean install -DskipTests
 
-      - name: List directory contents
-        run: |
-            ls -l
-            ls -l ${{ github.workspace }}/downloaded_jars
-
       - name: Run tests on downloaded JARs
         run: |
-          for jar in $(ls ${{ github.workspace }}/downloaded_jars/*.jar); do
-            echo "Testing $jar"
-            mvn test -Dtest=sootup.java.bytecode.inputlocation.RandomJarTest -DjarPath="$jar" -pl sootup.java.bytecode
+          # Get the current date in YYYY-MM-DD format
+          current_date=$(date +"%Y-%m-%d")
+          echo "CURRENT_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+
+          # Loop through each artifact in metadata.json that matches the current date
+          for row in $(jq -c --arg date "$current_date" '.jars[] | select(.date == $date)' ${{ github.workspace }}/metadata/metadata.json); do
+            # Extract artifactId and download_url from each object
+            artifactId=$(echo "$row" | jq -r '.name')
+            downloadUrl=$(echo "$row" | jq -r '.download_url')
+
+            echo "Testing $artifactId from $downloadUrl"
+            mvn test -Dtest=sootup.java.bytecode.frontend.inputlocation.RandomJarTest#testJar -DjarPath="$downloadUrl" -pl sootup.java.bytecode.frontend
           done
 
-      - name: Upload the Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: jar_test_csv
-          path: sootup.java.bytecode/jar_test.csv
+      - name: Check for jar_failure.json
+        id: check_file
+        if: ${{ hashFiles('sootup.java.bytecode.frontend/jar_failure.json') != '' }}
+        run: |
+          echo "jar_failure.json exists"
+          # Read all jar_names from the CSV and store them in an environment variable
+          jar_names=$(awk -F, 'NR>1 {print $1}' sootup.java.bytecode.frontend/jar_failure.json | paste -sd "," -)
+          echo "JAR_NAMES=${jar_names}" >> $GITHUB_ENV
 
+      - name: Set branch name with timestamp
+        id: set_branch_name
+        if: env.JAR_NAMES != ''
+        run: |
+          # Get the current week number and timestamp
+          current_date=$(date +%Y%m%d)
+          branch_name="failed-jars-branch-${current_date}"
+          echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
+
+      - name: Create a Test File
+        if: env.JAR_NAMES != ''
+        run: |
+          mvn test -Dtest=sootup.java.bytecode.frontend.inputlocation.RandomJarTest#writeFile -pl sootup.java.bytecode.frontend
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Create new branch and prepare files
+        if: env.JAR_NAMES != ''
+        run: |
+          # Create a branch named `failed-jars-branch`
+          git checkout -b ${{ env.BRANCH_NAME }}
+          echo 'New Branch Checked Out'
+          # Add jar_failure.json to the new directory
+          git add sootup.java.bytecode.frontend/jar_failure.json
+          git add sootup.java.bytecode.frontend/src/test/java/sootup/java/bytecode/frontend/inputlocation/FixJars.java
+          echo 'CSV file Added to git'
+
+      - name: Create Issue
+        if: env.JAR_NAMES != ''
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Token: ${{ secrets.GITHUB_TOKEN }}"
+          FORMATTED_DATE=$(date -d "${{ env.CURRENT_DATE }}" +"%B %d")
+          ISSUE_TITLE="Issue when running jars on $FORMATTED_DATE"
+          ISSUE_BODY="Issue occurred during random testing of 100 jars."
+          echo "{\"title\":\"$ISSUE_TITLE\",\"body\":\"$ISSUE_BODY\"}"
+          ISSUE_RESPONSE=$(curl -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d "{\"title\":\"$ISSUE_TITLE\",\"body\":\"$ISSUE_BODY\"}" \
+          https://api.github.com/repos/${{ github.repository }}/issues)
+          ISSUE_NUMBER=$(echo "$ISSUE_RESPONSE" | jq '.number')
+          echo "ISSUE_NUMBER=$ISSUE_NUMBER" >> $GITHUB_ENV
+
+      - name: Move files and commit changes
+        if: env.JAR_NAMES != ''
+        run: |
+          echo " Token: ${{ secrets.GITHUB_TOKEN }}"
+          # Move jar files listed in jar_failure.json
+          git mv sootup.java.bytecode.frontend/jar_failure.json sootup.java.bytecode.frontend/src/test/resources/jar_failure.json
+          echo 'jar_failure.json moved to the branch'
+          COMMIT_MESSAGE="Linking issue #${{ env.ISSUE_NUMBER }} to the branch '${{ env.BRANCH_NAME }}' at https://github.com/${{ github.repository }}/tree/${{ env.BRANCH_NAME }}"
+          # Commit and push changes
+          git add .
+          git commit -m "$COMMIT_MESSAGE"
+          git push origin ${{ env.BRANCH_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -43,7 +43,6 @@ import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
-import sootup.java.core.types.AnnotationType;
 import sootup.java.core.types.JavaClassType;
 
 /**
@@ -69,11 +68,6 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   /** Caches the created PackageNames for packages. */
   @Nonnull
   protected final Cache<String, PackageName> packageCache =
-      CacheBuilder.newBuilder().weakValues().build();
-
-  /** Caches annotation types */
-  @Nonnull
-  protected final Cache<String, AnnotationType> annotationTypeCache =
       CacheBuilder.newBuilder().weakValues().build();
 
   /** Caches class types */
@@ -226,17 +220,6 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public ArrayType getArrayType(Type baseType, int dim) {
     return new ArrayType(baseType, dim);
-  }
-
-  public AnnotationType getAnnotationType(final String fullyQualifiedClassName) {
-    String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
-    String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
-
-    return annotationTypeCache
-        .asMap()
-        .computeIfAbsent(
-            className + packageName,
-            (k) -> new AnnotationType(className, getPackageName(packageName)));
   }
 
   /**

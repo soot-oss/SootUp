@@ -22,6 +22,7 @@ package sootup.core.typehierarchy;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -203,4 +204,6 @@ public interface TypeHierarchy {
   // checks if a Type is contained int the TypeHierarchy - should return the equivalent to
   // View.getClass(...).isPresent()
   boolean contains(ClassType type);
+
+  Collection<ClassType> getLowestCommonAncestors(ClassType a, ClassType b);
 }

@@ -10,10 +10,10 @@ import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
-import sootup.jimple.parser.JimpleAnalysisInputLocation;
-import sootup.jimple.parser.JimpleView;
+import sootup.jimple.frontend.JimpleAnalysisInputLocation;
+import sootup.jimple.frontend.JimpleView;
 
 public class BenchmarkTestSuiteBase {
   private final JavaView minimalTsView;
