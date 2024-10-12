@@ -1,4 +1,5 @@
 package sootup.core.graph;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -153,6 +154,15 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    * BasicBlock.getExceptionalSuccessor()
    */
   public abstract List<Trap> buildTraps();
+
+  /**
+   * Removes the specified exceptional flow from all blocks.
+   *
+   * @param exceptionType The class type of the exceptional flow.
+   * @param exceptionHandlerStmt The handler statement of the exceptional flow.
+   */
+  public abstract void removeExceptionalFlowFromAllBlocks(
+      ClassType exceptionType, Stmt exceptionHandlerStmt);
 
   /**
    * returns a Collection of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and
