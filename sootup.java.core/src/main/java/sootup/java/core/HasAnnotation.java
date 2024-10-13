@@ -28,5 +28,5 @@ package sootup.java.core;
  * @author liyiwei
  */
 public interface HasAnnotation {
-    Iterable<AnnotationUsage> getAnnotations();
+  Iterable<AnnotationUsage> getAnnotations();
 }
