@@ -29,6 +29,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.types.ClassType;
@@ -290,5 +292,69 @@ public class SootClass extends AbstractClass implements HasPosition {
   @Nonnull
   public SootClass withSourceType(@Nonnull SourceType sourceType) {
     return new SootClass(classSource, sourceType);
+  }
+
+  /**
+   * Creates a builder for {@link SootClass}.
+   * @return a {@link SootClassBuilder}
+   */
+  @Nonnull
+  public static ClassSourceStep builder() {
+    return new SootClassBuilder();
+  }
+
+  public interface ClassSourceStep {
+    @Nonnull
+    SourceTypeStep withClassSource(@Nonnull SootClassSource classSource);
+  }
+
+  public interface SourceTypeStep {
+    @Nonnull
+    Build withSourceType(@Nonnull SourceType sourceType);
+  }
+
+  public interface Build {
+    @Nonnull
+    SootClass build();
+  }
+
+  /**
+   * Defines a {@link SootClass} builder.
+   */
+  public static class SootClassBuilder implements ClassSourceStep, SourceTypeStep, Build {
+    @Nullable
+    private SootClassSource classSource;
+    @Nullable
+    private SourceType sourceType;
+
+    @Nullable
+    public SootClassSource getClassSource() {
+      return classSource;
+    }
+
+    @Nullable
+    public SourceType getSourceType() {
+      return sourceType;
+    }
+
+    @Override
+    @Nonnull
+    public SourceTypeStep withClassSource(@Nonnull SootClassSource classSource) {
+      this.classSource = classSource;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public Build withSourceType(@Nonnull SourceType sourceType) {
+      this.sourceType = sourceType;
+      return this;
+    }
+
+    @Override
+    @Nonnull
+    public SootClass build() {
+      return new SootClass(getClassSource(), getSourceType());
+    }
   }
 }
