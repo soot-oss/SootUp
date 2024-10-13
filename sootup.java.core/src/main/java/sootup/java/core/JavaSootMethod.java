@@ -34,7 +34,7 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 
-public class JavaSootMethod extends SootMethod {
+public class JavaSootMethod extends SootMethod implements HasAnnotation {
   @Nonnull private final Iterable<AnnotationUsage> annotations;
 
   public JavaSootMethod(
