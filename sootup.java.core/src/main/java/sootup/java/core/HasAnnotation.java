@@ -22,6 +22,11 @@ package sootup.java.core;
  * #L%
  */
 
+/**
+ * Interface to mark Soot code objects that may contain annotations.
+ *
+ * @author liyiwei
+ */
 public interface HasAnnotation {
     Iterable<AnnotationUsage> getAnnotations();
 }
