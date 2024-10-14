@@ -1,0 +1,504 @@
+{
+    "jars": [
+        {
+            "name": "mmm-ui-test-menu-0.9.10.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/github/m-m-m/mmm-ui-test-menu/0.9.10/mmm-ui-test-menu-0.9.10.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "simulator-core-1.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/tacitknowledge/simulator-core/1.1/simulator-core-1.1.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "hikaku-core-3.3.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/de/codecentric/hikaku/hikaku-core/3.3.0/hikaku-core-3.3.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "pureconfig-http4s022_2.12-0.17.7.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/pureconfig/pureconfig-http4s022_2.12/0.17.7/pureconfig-http4s022_2.12-0.17.7.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "geomesa-hbase-processors-3.5.2_2.11.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/geomesa/nifi/geomesa-hbase-processors/3.5.2_2.11/geomesa-hbase-processors-3.5.2_2.11.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "starter-redis-2023.12.05.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/github/leon406/starter-redis/2023.12.05/starter-redis-2023.12.05.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "openstack4j-resteasy-3.2.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/pacesys/openstack4j/connectors/openstack4j-resteasy/3.2.0/openstack4j-resteasy-3.2.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "macros_sjs0.6_2.11-2016.11.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/chandu0101/macros_sjs0.6_2.11/2016.11.0/macros_sjs0.6_2.11-2016.11.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "mtags-interfaces-1.3.5.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/scalameta/mtags-interfaces/1.3.5/mtags-interfaces-1.3.5.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "tapir-json-upickle_3-1.11.7.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/softwaremill/sttp/tapir/tapir-json-upickle_3/1.11.7/tapir-json-upickle_3-1.11.7.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "scalaz-scalatest_2.12-1.1.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/typelevel/scalaz-scalatest_2.12/1.1.2/scalaz-scalatest_2.12-1.1.2.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "common-zxing-1.0.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/cn/com/jeeweb/common-zxing/1.0.1/common-zxing-1.0.1.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "hawkular-apm-nodedetails-deriver-0.10.0.Final.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/hawkular/apm/hawkular-apm-nodedetails-deriver/0.10.0.Final/hawkular-apm-nodedetails-deriver-0.10.0.Final.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "cougar-core-api-3.2.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/betfair/cougar/cougar-core-api/3.2.1/cougar-core-api-3.2.1.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "qbicc-plugin-gc-semispace-0.77.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/qbicc/qbicc-plugin-gc-semispace/0.77.0/qbicc-plugin-gc-semispace-0.77.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "exam-core-2024.0.10.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/github/adven27/exam-core/2024.0.10/exam-core-2024.0.10.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "audiofile_3.0.0-RC2-2.3.3.jar",
+            "download_url": "https://repo1.maven.org/maven2/de/sciss/audiofile_3.0.0-RC2/2.3.3/audiofile_3.0.0-RC2-2.3.3.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "xian-mongodbdao-sync-0.3.3.3.jar",
+            "download_url": "https://repo1.maven.org/maven2/info/xiancloud/xian-mongodbdao-sync/0.3.3.3/xian-mongodbdao-sync-0.3.3.3.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "mica-core-0.0.1-RC1.jar",
+            "download_url": "https://repo1.maven.org/maven2/net/dreamlu/mica/mica-core/0.0.1-RC1/mica-core-0.0.1-RC1.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "org.tinygroup.search-2.2.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/tinygroup/org.tinygroup.search/2.2.0/org.tinygroup.search-2.2.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "sscontrol-httpd-thin-1.0-alpha-4.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/anrisoftware/sscontrol/sscontrol-httpd-thin/1.0-alpha-4/sscontrol-httpd-thin-1.0-alpha-4.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "binny-tika-detect_3-0.11.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/eikek/binny-tika-detect_3/0.11.0/binny-tika-detect_3-0.11.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "core_2.12-0.2.3.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/softwaremill/kmq/core_2.12/0.2.3/core_2.12-0.2.3.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "phaser_sjs0.6_2.12-2.6.2-5.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/scalajs/phaser_sjs0.6_2.12/2.6.2-5/phaser_sjs0.6_2.12-2.6.2-5.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "airstream_sjs1_2.13-17.1.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/raquo/airstream_sjs1_2.13/17.1.0/airstream_sjs1_2.13-17.1.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "kie-pmml-compiler-core-9.44.0.Final.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/kie/kie-pmml-compiler-core/9.44.0.Final/kie-pmml-compiler-core-9.44.0.Final.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "scala-io-performace_2.9.1-0.2.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/scala-incubator/io/scala-io-performace_2.9.1/0.2.0/scala-io-performace_2.9.1-0.2.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "korolev-cats_3-1.0.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/fomkin/korolev-cats_3/1.0.1/korolev-cats_3-1.0.1.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "merchant-identifier-2.0.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/mastercard/api/merchant-identifier/2.0.0/merchant-identifier-2.0.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "java-path-0.2.3.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/aegisql/java-path/0.2.3/java-path-0.2.3.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "process-usertasks-with-security-oidc-quarkus-with-console-1.7.0.Final.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/kie/kogito/process-usertasks-with-security-oidc-quarkus-with-console/1.7.0.Final/process-usertasks-with-security-oidc-quarkus-with-console-1.7.0.Final.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "utils-0.5.3.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/opendaylight/ttp/utils/0.5.3/utils-0.5.3.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "log4s_sjs1_2.13-1.10.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/log4s/log4s_sjs1_2.13/1.10.0/log4s_sjs1_2.13-1.10.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "parquet-types_2.11-0.3.4.jar",
+            "download_url": "https://repo1.maven.org/maven2/me/lyh/parquet-types_2.11/0.3.4/parquet-types_2.11-0.3.4.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "rabbitmq-1.8.3.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/basc/framework/rabbitmq/1.8.3/rabbitmq-1.8.3.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "flexy-tomee-2.2.3.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/vladmihalcea/flexy-pool/flexy-tomee/2.2.3/flexy-tomee-2.2.3.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "loading-attribute-polyfill-2.0.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/webjars/npm/loading-attribute-polyfill/2.0.2/loading-attribute-polyfill-2.0.2.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "component-api-notify-starter-1.0.75.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/lyloou/component-api-notify-starter/1.0.75/component-api-notify-starter-1.0.75.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "mime-db-1.53.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/mvnpm/mime-db/1.53.0/mime-db-1.53.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "appng-manager-1.20.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/appng/appng-manager/1.20.0/appng-manager-1.20.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "zio-elasticsearch-async-search_2.12-2.0.4.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/megl/zio-elasticsearch-async-search_2.12/2.0.4/zio-elasticsearch-async-search_2.12-2.0.4.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "servlet_2.12-0.8.4.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/acsgh/mad/scala/server/provider/servlet_2.12/0.8.4/servlet_2.12-0.8.4.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "qtjambi-xml-native-android-arm-6.7.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/qtjambi/qtjambi-xml-native-android-arm/6.7.0/qtjambi-xml-native-android-arm-6.7.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "openurp-edu-stat-webapp-0.0.4.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/openurp/edu/stat/openurp-edu-stat-webapp/0.0.4/openurp-edu-stat-webapp-0.0.4.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "github-com-luckylooke-dragular-4.2.3.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/webjars/bower/github-com-luckylooke-dragular/4.2.3/github-com-luckylooke-dragular-4.2.3.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "zio-stacktracer_3.0.0-M3-1.0.4-2.jar",
+            "download_url": "https://repo1.maven.org/maven2/dev/zio/zio-stacktracer_3.0.0-M3/1.0.4-2/zio-stacktracer_3.0.0-M3-1.0.4-2.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "jadex-applications-webservice-4.0.267.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/activecomponents/jadex/jadex-applications-webservice/4.0.267/jadex-applications-webservice-4.0.267.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "ironoxide-scala_2.12-0.15.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/ironcorelabs/ironoxide-scala_2.12/0.15.0/ironoxide-scala_2.12-0.15.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "nessie-quarkus-0.99.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/projectnessie/nessie/nessie-quarkus/0.99.0/nessie-quarkus-0.99.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "fuel-jackson-jvm-3.0.0-alpha03.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/kittinunf/fuel/fuel-jackson-jvm/3.0.0-alpha03/fuel-jackson-jvm-3.0.0-alpha03.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "data-distribution-api-vivo_1_09-1.1.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/edu/cornell/library/scholars/data-distribution-api-vivo_1_09/1.1.1/data-distribution-api-vivo_1_09-1.1.1.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "refcodes-properties-ext-application-3.3.8.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/refcodes/refcodes-properties-ext-application/3.3.8/refcodes-properties-ext-application-3.3.8.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "crosswords-api-client_2.10-0.5.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/gu/crosswords-api-client_2.10/0.5/crosswords-api-client_2.10-0.5.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "tripod-search-lucene-0.5.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/bbende/tripod/tripod-search-lucene/0.5.2/tripod-search-lucene-0.5.2.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "rusheye-api-1.0.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/arquillian/rusheye/rusheye-api/1.0.0/rusheye-api-1.0.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "myUtils-all-1.0.5-RELEASE.jar",
+            "download_url": "https://repo1.maven.org/maven2/top/xzxsrq/myUtils-all/1.0.5-RELEASE/myUtils-all-1.0.5-RELEASE.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "org.eclipse.scada.utils.propertyeditors-0.1.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/eclipse/neoscada/utils/org.eclipse.scada.utils.propertyeditors/0.1.0/org.eclipse.scada.utils.propertyeditors-0.1.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "aws-cdk-scala-servicediscovery_2.13-0.5.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/burkard/aws-cdk-scala-servicediscovery_2.13/0.5.0/aws-cdk-scala-servicediscovery_2.13-0.5.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "deploy-twitterharvester-0.0.11.jar",
+            "download_url": "https://repo1.maven.org/maven2/eu/dicode-project/deploy-twitterharvester/0.0.11/deploy-twitterharvester-0.0.11.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "consul-2.1.37.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/networknt/consul/2.1.37/consul-2.1.37.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "connector-browse-1.1.55.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/fabric8/funktion/connector/connector-browse/1.1.55/connector-browse-1.1.55.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "eureka-client-jersey3-2.0.3.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/netflix/eureka/eureka-client-jersey3/2.0.3/eureka-client-jersey3-2.0.3.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "trace-id-test2-0.0.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/houbb/trace-id-test2/0.0.2/trace-id-test2-0.0.2.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "org.eclipse.fx.code.editor-2.2.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/at/bestsolution/eclipse/org.eclipse.fx.code.editor/2.2.0/org.eclipse.fx.code.editor-2.2.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "scala-release-test_2.12-1.0.0-beta.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/dev/atedeg/scala-release-test_2.12/1.0.0-beta.2/scala-release-test_2.12-1.0.0-beta.2.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "azure-data-gremlin-spring-boot-starter-2.3.5.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/microsoft/azure/azure-data-gremlin-spring-boot-starter/2.3.5/azure-data-gremlin-spring-boot-starter-2.3.5.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "scalafix-testkit_2.12.13-0.9.28.jar",
+            "download_url": "https://repo1.maven.org/maven2/ch/epfl/scala/scalafix-testkit_2.12.13/0.9.28/scalafix-testkit_2.12.13-0.9.28.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "camel-connector-2.3.14.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/fabric8/django/camel-connector/2.3.14/camel-connector-2.3.14.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "org.eclipse.pde.unittest.junit-1.1.500.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/eclipse/pde/org.eclipse.pde.unittest.junit/1.1.500/org.eclipse.pde.unittest.junit-1.1.500.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "resolvers-okhttp-5.1.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/codehaus/httpcache4j/resolvers/resolvers-okhttp/5.1.1/resolvers-okhttp-5.1.1.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "lol-esports-api-wrapper-0.1.21.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/mckernant1/lol-esports-api-wrapper/0.1.21/lol-esports-api-wrapper-0.1.21.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "james-server-guice-smtp-3.8.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/apache/james/james-server-guice-smtp/3.8.1/james-server-guice-smtp-3.8.1.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "dynamicConfig-1.0.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/kl3answer/dynamicConfig/1.0.2/dynamicConfig-1.0.2.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "clustering_2.11-1.4.16.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/pshirshov/izumi/legacy/clustering_2.11/1.4.16/clustering_2.11-1.4.16.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "madura-vaadinsupport-2.6.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/nz/co/senanque/madura-vaadinsupport/2.6.0/madura-vaadinsupport-2.6.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "nirvana-storage-AN-0.0.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/tech/aegean/next/nirvana-storage/AN-0.0.1/nirvana-storage-AN-0.0.1.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "activiti-cloud-services-commons-io-7.1.0.M6.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/activiti/cloud/common/activiti-cloud-services-commons-io/7.1.0.M6/activiti-cloud-services-commons-io-7.1.0.M6.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "jimp__plugin-normalize-0.22.10.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/webjars/npm/jimp__plugin-normalize/0.22.10/jimp__plugin-normalize-0.22.10.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "com.liferay.app.builder.workflow.rest.impl-2.0.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/liferay/com.liferay.app.builder.workflow.rest.impl/2.0.2/com.liferay.app.builder.workflow.rest.impl-2.0.2.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "unfiltered-filter-async_2.12-0.12.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/ws/unfiltered/unfiltered-filter-async_2.12/0.12.0/unfiltered-filter-async_2.12-0.12.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "sling-configs-1.0.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/hu/blackbelt/karaf/features/sling-configs/1.0.2/sling-configs-1.0.2.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "rainier-base_2.12-0.3.5.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/stripe/rainier-base_2.12/0.3.5/rainier-base_2.12-0.3.5.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "jspdf-2.3.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/webjars/bower/jspdf/2.3.1/jspdf-2.3.1.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "dijon_2.12-0.6.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/me/vican/jorge/dijon_2.12/0.6.0/dijon_2.12-0.6.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "framework-boxing-1.0.0-SYLPHLIKE.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/sylphlike/framework-boxing/1.0.0-SYLPHLIKE/framework-boxing-1.0.0-SYLPHLIKE.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "luoshu-spring-0.32.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/luoshu-open/luoshu-spring/0.32/luoshu-spring-0.32.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "geronimo-servlet_2.5_spec-1.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/apache/geronimo/specs/geronimo-servlet_2.5_spec/1.2/geronimo-servlet_2.5_spec-1.2.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "zeebe-client-java-1.0.0-alpha7.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/zeebe/zeebe-client-java/1.0.0-alpha7/zeebe-client-java-1.0.0-alpha7.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "oxalis-persistence-6.7.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/network/oxalis/oxalis-persistence/6.7.0/oxalis-persistence-6.7.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "infinispan-server-testdriver-junit5-jakarta-14.0.32.Final.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/infinispan/infinispan-server-testdriver-junit5-jakarta/14.0.32.Final/infinispan-server-testdriver-junit5-jakarta-14.0.32.Final.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "framework-net-3.0.6.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/fartherp/framework-net/3.0.6/framework-net-3.0.6.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "avc-examples-users3-dao-inMemory-0.0.5.jar",
+            "download_url": "https://repo1.maven.org/maven2/net/avcompris/commons/avc-examples-users3-dao-inMemory/0.0.5/avc-examples-users3-dao-inMemory-0.0.5.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "web-kotlin-1.0.4.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/storm-bit/web-kotlin/1.0.4/web-kotlin-1.0.4.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "cdc-util-csv-0.9.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/gitlab/cdc-java/util/cdc-util-csv/0.9.0/cdc-util-csv-0.9.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "postscribe-1.4.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/webjars/bower/postscribe/1.4.0/postscribe-1.4.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "activation-1.1.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/javax/activation/activation/1.1.1/activation-1.1.1.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "activiti-cloud-services-subscriptions-7.1.0.M6.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/activiti/cloud/rb/activiti-cloud-services-subscriptions/7.1.0.M6/activiti-cloud-services-subscriptions-7.1.0.M6.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "gravitee-am-gateway-services-sync-4.5.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/gravitee/am/gateway/gravitee-am-gateway-services-sync/4.5.0/gravitee-am-gateway-services-sync-4.5.0.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "owlapi-gwt-4.3.2.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/net/sourceforge/owlapi/owlapi-gwt/4.3.2.1/owlapi-gwt-4.3.2.1.jar",
+            "date": "2024-10-14"
+        },
+        {
+            "name": "swak-core-2.3.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/gitee/mcolley/swak-core/2.3.1/swak-core-2.3.1.jar",
+            "date": "2024-10-14"
+        }
+    ]
+}

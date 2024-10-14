@@ -1,0 +1,14 @@
+[
+{
+  "jar_name": "exam-core-2024.0.10.jar",
+  "exception": "Failed to apply sootup.interceptors.NopEliminator@3b7645f1 to <io.github.adven27.concordion.extensions.exam.core.logger.LoggingFormatterExtension$LoggingFormatterListener: void afterExample(org.concordion.api.listener.ExampleEvent)>",
+  "download_url": "https://repo1.maven.org/maven2/io/github/adven27/exam-core/2024.0.10/exam-core-2024.0.10.jar",
+  "failedMethodSignature": "<io.github.adven27.concordion.extensions.exam.core.logger.LoggingFormatterExtension$LoggingFormatterListener: void afterExample(org.concordion.api.listener.ExampleEvent)>"
+},
+{
+  "jar_name": "audiofile_3.0.0-RC2-2.3.3.jar",
+  "exception": "Failed to convert <de.sciss.audiofile.AudioFile$AsyncBasic: scala.concurrent.Future close()>",
+  "download_url": "https://repo1.maven.org/maven2/de/sciss/audiofile_3.0.0-RC2/2.3.3/audiofile_3.0.0-RC2-2.3.3.jar",
+  "failedMethodSignature": "<de.sciss.audiofile.AudioFile$AsyncBasic: scala.concurrent.Future close()>"
+}
+]
