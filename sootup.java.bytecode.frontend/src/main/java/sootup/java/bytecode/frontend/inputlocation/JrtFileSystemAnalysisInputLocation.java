@@ -32,6 +32,7 @@ import org.apache.commons.io.FilenameUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.ResolveException;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
@@ -149,21 +150,25 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
             + classProvider.getHandledFileType().getExtensionWithDot();
 
     final Path archiveRoot = theFileSystem.getPath("modules", moduleSignature.getModuleName());
-    try {
-
-      return Files.walk(archiveRoot)
-          .filter(
-              filePath ->
-                  !Files.isDirectory(filePath)
-                      && filePath
-                          .toString()
-                          .endsWith(classProvider.getHandledFileType().getExtensionWithDot())
-                      && !filePath.toString().endsWith(moduleInfoFilename))
-          .flatMap(
-              p ->
-                  StreamUtils.optionalToStream(
-                      classProvider.createClassSource(this, p, fromPath(p, identifierFactory))))
-          .map(src -> (JavaSootClassSource) src);
+    try (Stream<Path> paths = Files.walk(archiveRoot)) {
+      // collect into a list and then return a stream, so we do not leak the Stream returned by
+      // Files.walk
+      List<JavaSootClassSource> javaSootClassSources =
+          paths
+              .filter(
+                  filePath ->
+                      !Files.isDirectory(filePath)
+                          && filePath
+                              .toString()
+                              .endsWith(classProvider.getHandledFileType().getExtensionWithDot())
+                          && !filePath.toString().endsWith(moduleInfoFilename))
+              .<SootClassSource>flatMap(
+                  p ->
+                      StreamUtils.optionalToStream(
+                          classProvider.createClassSource(this, p, fromPath(p, identifierFactory))))
+              .map(src -> (JavaSootClassSource) src)
+              .collect(Collectors.toList());
+      return javaSootClassSources.stream();
     } catch (IOException e) {
       throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
     }
