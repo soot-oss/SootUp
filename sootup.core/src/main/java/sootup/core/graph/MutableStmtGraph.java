@@ -45,6 +45,9 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
     addNode(stmt, Collections.emptyMap());
   }
 
+  /** replace a "oldStmt" with "newStmt" in the StmtGraph */
+  public abstract void replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt);
+
   /** inserts a "stmt" with exceptional flows "traps" into the StmtGraph */
   public abstract void addNode(@Nonnull Stmt stmt, @Nonnull Map<ClassType, Stmt> traps);
 
@@ -106,6 +109,8 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   public void setEdges(@Nonnull BranchingStmt from, @Nonnull Stmt... targets) {
     setEdges(from, Arrays.asList(targets));
   }
+
+  public abstract void unLinkNodes(@Nonnull Stmt from, @Nonnull Stmt to);
 
   /**
    * removes the current outgoing flows of "from" to "to"

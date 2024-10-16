@@ -577,8 +577,20 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     blockOf.clearPredecessorBlocks();
     blockOf.clearSuccessorBlocks();
     blockOf.clearExceptionalSuccessorBlocks();
-
     blocks.remove(blockOf);
+  }
+
+  @Override
+  public void replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(oldStmt);
+    if (blockPair == null) {
+      // Stmt does not exist in the graph
+      throw new IllegalArgumentException("splitStmt does not exist in this block!");
+    }
+    MutableBasicBlock block = blockPair.getRight();
+    block.replaceStmt(oldStmt, newStmt);
+    stmtToBlock.remove(oldStmt);
+    stmtToBlock.put(newStmt, blockPair);
   }
 
   @Override
@@ -1274,6 +1286,25 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         }
       }
     }
+  }
+
+  @Override
+  public void unLinkNodes(@Nonnull Stmt from, @Nonnull Stmt to) {
+    Pair<Integer, MutableBasicBlock> blockOfFromPair = stmtToBlock.get(from);
+    if (blockOfFromPair == null) {
+      throw new IllegalArgumentException("stmt '" + from + "' does not exist in this StmtGraph!");
+    }
+    MutableBasicBlock blockOfFrom = blockOfFromPair.getRight();
+    Pair<Integer, MutableBasicBlock> blockOfToPair = stmtToBlock.get(to);
+    if (blockOfToPair == null) {
+      throw new IllegalArgumentException("stmt '" + to + "' does not exist in this StmtGraph!");
+    }
+    MutableBasicBlock blockOfTo = blockOfToPair.getRight();
+
+    // TODO: only works if "from" is the tail of a block
+    // Unlink 2 blocks
+    blockOfFrom.removeFromSuccessorBlocks(blockOfTo);
+    blockOfTo.removePredecessorBlock(blockOfFrom);
   }
 
   @Override
