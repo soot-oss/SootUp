@@ -1,8 +1,10 @@
 package sootup.java.bytecode.frontend.inputlocation;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class TestWriter {
@@ -69,32 +71,20 @@ public class TestWriter {
     }
   }
 
-  String failedJarsInfo = "jar_failure.csv";
+  String failedJarsInfo = "jar_failure.json";
 
   public List<JarFailureRecord> getRecords() {
     List<JarFailureRecord> records = new ArrayList<>();
-    try (BufferedReader br = new BufferedReader(new FileReader(failedJarsInfo))) {
-      String line;
-      boolean isFirstLine = true;
-      while ((line = br.readLine()) != null) {
-        // Skip the header line
-        if (isFirstLine) {
-          isFirstLine = false;
-          continue;
-        }
+    Gson gson = new Gson();
+    try (FileReader reader = new FileReader(failedJarsInfo)) {
+      // Define the type for the Gson deserialization
+      Type recordListType = new TypeToken<List<JarFailureRecord>>() {}.getType();
 
-        // Split the line by commas, handling commas inside quotes
-        String[] values = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+      // Deserialize JSON into a List of JarFailureRecord
+      records = gson.fromJson(reader, recordListType);
 
-        // Remove leading and trailing quotes if necessary
-        for (int i = 0; i < values.length; i++) {
-          values[i] = values[i].replaceAll("^\"|\"$", "");
-        }
-        System.out.println("Values in the file: " + Arrays.toString(values) + "\n");
-        // Create a JarFailureRecord object from the line
-        JarFailureRecord record = new JarFailureRecord(values[2], values[3]);
-        records.add(record);
-      }
+      // Log the values read from the file (optional)
+      System.out.println("Values in the JSON file: " + records);
     } catch (IOException e) {
       e.printStackTrace();
     }
