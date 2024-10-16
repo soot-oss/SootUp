@@ -49,7 +49,6 @@ public enum BlockAnalysisDirection {
     @Nonnull
     @Override
     List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
-      // for MutableStmtGraph is in reversePostOrder, but for other stmtGraphs not.
       return Collections.unmodifiableList(blockGraph.getBlocksSorted());
     }
   },
