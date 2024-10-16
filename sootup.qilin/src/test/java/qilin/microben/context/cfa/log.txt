@@ -1,5 +1,0 @@
-insens-qilin.core: 1 passed, 6 failed.
-e-2o: 1 passed, 6 failed.
-2c: 7 passed
-j-ci: 1 passed, 6 failed.
-m-ci: 1 passed, 6 failed.
