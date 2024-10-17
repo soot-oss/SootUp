@@ -23,6 +23,7 @@ package sootup.core.graph;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -40,7 +41,7 @@ public class DominanceFinder {
 
   public DominanceFinder(StmtGraph<?> blockGraph) {
     // normal DominanceFinder should be in reverse post order
-    this(blockGraph, BlockAnalysisDirection.REVERSEPOSTORDER);
+    this(blockGraph, BlockAnalysisDirection.REVERSEPOSTORDERFORWARD);
   }
 
   protected DominanceFinder(@Nonnull StmtGraph<?> blockGraph, BlockAnalysisDirection direction) {
@@ -54,18 +55,32 @@ public class DominanceFinder {
     }
 
     // initialize doms
-    final BasicBlock<?> rootBlock = blockGraph.getStartingStmtBlock();
-    int rootBlockId = blockToIdx.get(rootBlock);
+    final BasicBlock<?> startBlock;
+    if (direction == BlockAnalysisDirection.REVERSEPOSTORDERFORWARD) {
+      startBlock = blockGraph.getStartingStmtBlock();
+    } else if (direction == BlockAnalysisDirection.POSTORDERBACKWARD) {
+      // todo: improve algorithm for graph with multiple tail-blocks
+      List<BasicBlock<?>> tails = blockGraph.getTailStmtBlocks();
+      if (tails.size() > 1) {
+        throw new RuntimeException(
+            "BlockAnalysisDirection 'BACKWARD' supports block-graphs containing only one tail-block!");
+      }
+      startBlock = tails.get(0);
+    } else {
+      throw new RuntimeException("Invalid BlockAnalysisDirection!");
+    }
+
+    int startBlockId = blockToIdx.get(startBlock);
     doms = new int[blocks.size()];
     Arrays.fill(doms, -1);
-    doms[rootBlockId] = rootBlockId;
+    doms[startBlockId] = startBlockId;
 
     // calculate immediate dominator for each block
     boolean isChanged = true;
     while (isChanged) {
       isChanged = false;
       for (BasicBlock<?> block : blocks) {
-        if (block.equals(rootBlock)) {
+        if (block.equals(startBlock)) {
           continue;
         }
         int blockIdx = blockToIdx.get(block);
@@ -97,18 +112,26 @@ public class DominanceFinder {
       domFrontiers[i] = new ArrayList<>();
     }
 
+    doms[startBlockId] = -1;
     // calculate dominance frontiers for each block
     for (BasicBlock<?> block : blocks) {
       List<BasicBlock<?>> preds = new ArrayList<>(direction.getPredecessors(block));
-      // ms: should not be necessary  preds.addAll(block.getExceptionalPredecessors());
       if (preds.size() > 1) {
         int blockId = blockToIdx.get(block);
         for (BasicBlock<?> pred : preds) {
           int predId = blockToIdx.get(pred);
-          while (predId != doms[blockId]) {
+          while (predId != -1 && predId != doms[blockId]) {
             domFrontiers[predId].add(blockId);
             predId = doms[predId];
           }
+        }
+      }
+    }
+
+    if (direction == BlockAnalysisDirection.POSTORDERBACKWARD) {
+      for (int i = 0; i < domFrontiers.length; i++) {
+        if (domFrontiers[i].contains(i)) {
+          domFrontiers[i].remove(new Integer(i));
         }
       }
     }
