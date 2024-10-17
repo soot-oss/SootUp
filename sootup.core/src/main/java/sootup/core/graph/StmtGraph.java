@@ -66,6 +66,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
   public abstract BasicBlock<?> getStartingStmtBlock();
 
+  public abstract List<BasicBlock<?>> getTailStmtBlocks();
+
   /**
    * returns the nodes in this graph in a non-deterministic order (-&gt;Set) to get the nodes in
    * linearized, ordered manner use iterator() or getStmts.

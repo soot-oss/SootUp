@@ -25,6 +25,7 @@ package sootup.core.graph;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -1379,6 +1380,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   @Nullable
   public BasicBlock<?> getStartingStmtBlock() {
     return getBlockOf(startingStmt);
+  }
+
+  @Override
+  public List<BasicBlock<?>> getTailStmtBlocks() {
+    return getTails().stream().map(stmt -> getBlockOf(stmt)).collect(Collectors.toList());
   }
 
   @Override
