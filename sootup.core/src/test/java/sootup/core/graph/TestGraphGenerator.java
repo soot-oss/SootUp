@@ -126,4 +126,33 @@ public class TestGraphGenerator {
 
     return graph;
   }
+
+  //a graph with two end blocks
+  public MutableBlockStmtGraph createStmtGraph3() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+
+    Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
+    Local l2 = new Local("l2", PrimitiveType.IntType.getInstance());
+    Local l3 = new Local("l3", PrimitiveType.IntType.getInstance());
+
+    JAssignStmt assignl1e1 = new JAssignStmt(l1, IntConstant.getInstance(1), noPosInfo);
+    JAssignStmt assignl2e1 = new JAssignStmt(l2, IntConstant.getInstance(2), noPosInfo);
+    JAssignStmt assignl3e0 = new JAssignStmt(l3, IntConstant.getInstance(0), noPosInfo);
+
+    JAssignStmt assignl3e1 = new JAssignStmt(l3, IntConstant.getInstance(1), noPosInfo);
+
+    BranchingStmt ifl2e100 = new JIfStmt(new JLtExpr(l3, IntConstant.getInstance(100)), noPosInfo);
+
+    JReturnStmt returnl1 = new JReturnStmt(l1, noPosInfo);
+    JReturnStmt returnl2 = new JReturnStmt(l2, noPosInfo);
+
+    graph.setStartingStmt(assignl1e1);
+    graph.putEdge(assignl1e1, assignl2e1);
+    graph.putEdge(assignl2e1, assignl3e0);
+    graph.putEdge(assignl3e0, ifl2e100);
+    graph.putEdge(ifl2e100, JIfStmt.TRUE_BRANCH_IDX, returnl1);
+    graph.putEdge(ifl2e100, JIfStmt.FALSE_BRANCH_IDX, returnl2);
+
+    return graph;
+  }
 }
