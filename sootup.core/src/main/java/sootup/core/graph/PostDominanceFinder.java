@@ -25,6 +25,6 @@ package sootup.core.graph;
 public class PostDominanceFinder extends DominanceFinder {
 
   public PostDominanceFinder(StmtGraph<?> blockGraph) {
-    super(blockGraph, BlockAnalysisDirection.BACKWARD);
+    super(blockGraph, BlockAnalysisDirection.POSTORDERBACKWARD);
   }
 }

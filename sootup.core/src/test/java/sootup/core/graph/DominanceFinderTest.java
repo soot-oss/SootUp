@@ -21,7 +21,7 @@ public class DominanceFinderTest {
     int[] domsArr = dominanceFinder.getImmediateDominators();
     List<Integer> doms = Arrays.stream(domsArr).boxed().collect(Collectors.toList());
 
-    List<Integer> expectedDoms = Arrays.asList(0, 0, 1, 2, 2, 2, 1);
+    List<Integer> expectedDoms = Arrays.asList(-1, 0, 1, 2, 2, 2, 1);
     assertEquals(expectedDoms, doms);
   }
 
@@ -70,7 +70,7 @@ public class DominanceFinderTest {
     int[] domsArr = dominanceFinder.getImmediateDominators();
     List<Integer> doms = Arrays.stream(domsArr).boxed().collect(Collectors.toList());
 
-    List<Integer> expectedDoms = Arrays.asList(0, 0, 0, 0, 0, 0);
+    List<Integer> expectedDoms = Arrays.asList(-1, 0, 0, 0, 0, 0);
 
     assertEquals(expectedDoms, doms);
   }

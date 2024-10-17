@@ -127,7 +127,7 @@ public class TestGraphGenerator {
     return graph;
   }
 
-  //a graph with two end blocks
+  // a graph with two end blocks
   public MutableBlockStmtGraph createStmtGraph3() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
