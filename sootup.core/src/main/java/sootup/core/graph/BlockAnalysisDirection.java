@@ -26,7 +26,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public enum BlockAnalysisDirection {
-  BACKWARD {
+  POSTORDERBACKWARD {
     @Override
     @Nonnull
     List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
@@ -36,36 +36,10 @@ public enum BlockAnalysisDirection {
     @Nonnull
     @Override
     List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
-      return Collections.unmodifiableList(new BackwardsStmtGraph(blockGraph).getBlocksSorted());
-    }
-  },
-  FORWARD {
-    @Override
-    @Nonnull
-    List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
-      return block.getPredecessors();
-    }
-
-    @Nonnull
-    @Override
-    List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
-      return Collections.unmodifiableList(blockGraph.getBlocksSorted());
-    }
-  },
-  POSTORDER {
-    @Override
-    @Nonnull
-    List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
-      return block.getPredecessors();
-    }
-
-    @Nonnull
-    @Override
-    List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
       return Collections.unmodifiableList(PostOrderBlockTraversal.getBlocksSorted(blockGraph));
     }
   },
-  REVERSEPOSTORDER {
+  REVERSEPOSTORDERFORWARD {
     @Override
     @Nonnull
     List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
