@@ -77,6 +77,71 @@ public class PostDominanceFinderTest {
   }
 
   @Test
+  public void testDominanceFinder2() {
+    MutableBlockStmtGraph graph = createStmtGraph2();
+    Map<BasicBlock<?>, Integer> blockToId = new HashMap<>();
+
+
+    // assign ids according to blocks sorted by BasicBlock::toString
+    /*List<? extends BasicBlock<?>> blocks =
+            graph.getBlocks().stream()
+                    .sorted(Comparator.comparing(BasicBlock::toString))
+                    .collect(Collectors.toList());*/
+    List<? extends BasicBlock<?>> blocks = PostOrderBlockTraversal.getBlocksSorted(graph);
+    int i = 0;
+    for (BasicBlock<?> block : blocks) {
+      blockToId.put(block, i);
+      i++;
+    }
+
+    PostDominanceFinder postDom = new PostDominanceFinder(graph);
+    for (BasicBlock<?> block : blocks) {
+      BasicBlock<?> dominator = postDom.getImmediateDominator(block);
+      System.out.println(block + " -- " + dominator);
+    }
+
+
+    /*Map<Integer, Set<Integer>> expectedFrontiers = new HashMap<>();
+    expectedFrontiers.put(0, new HashSet<>(Collections.singletonList(2)));
+    expectedFrontiers.put(1, new HashSet<>(Collections.singletonList(2)));
+    expectedFrontiers.put(2, new HashSet<>(Collections.singletonList(2)));
+    expectedFrontiers.put(3, new HashSet<>());
+    expectedFrontiers.put(4, new HashSet<>(Collections.singletonList(1)));
+    expectedFrontiers.put(5, new HashSet<>(Collections.singletonList(1)));
+    expectedFrontiers.put(6, new HashSet<>());
+
+    Map<Integer, Integer> expectedDominators = new HashMap<>();
+    expectedDominators.put(0, 2);
+    expectedDominators.put(1, 0);
+    expectedDominators.put(2, 6);
+    expectedDominators.put(3, 2);
+    expectedDominators.put(4, 0);
+    expectedDominators.put(5, 0);
+    expectedDominators.put(6, -1);
+
+    // check dominators
+    for (BasicBlock<?> block : blocks) {
+      BasicBlock<?> dominator = postDom.getImmediateDominator(block);
+      Integer dominatorId = -1;
+      if (dominator != null) {
+        dominatorId = blockToId.get(dominator);
+      }
+      Integer expectedId = expectedDominators.get(blockToId.get(block));
+
+      assertEquals(expectedId, dominatorId);
+    }
+
+    // check frontiers
+    for (BasicBlock<?> block : blocks) {
+      Set<BasicBlock<?>> frontier = postDom.getDominanceFrontiers(block);
+      Set<Integer> frontierIds = frontier.stream().map(blockToId::get).collect(Collectors.toSet());
+      Set<Integer> expectedIds = expectedFrontiers.get(blockToId.get(block));
+
+      assertEquals(expectedIds, frontierIds);
+    }*/
+  }
+
+  @Test
   public void testBlockToIdxInverse() {
     MutableBlockStmtGraph graph = createStmtGraph();
     DominanceFinder dom = new PostDominanceFinder(graph);
@@ -140,6 +205,35 @@ public class PostDominanceFinderTest {
 
     // block 6
     graph.putEdge(goto6, JGotoStmt.BRANCH_IDX, if1);
+    return graph;
+  }
+
+  private MutableBlockStmtGraph createStmtGraph2() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+
+    Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
+    Local l2 = new Local("l2", PrimitiveType.IntType.getInstance());
+    Local l3 = new Local("l3", PrimitiveType.IntType.getInstance());
+
+    JAssignStmt assign01 = new JAssignStmt(l1, IntConstant.getInstance(1), noPosInfo);
+    JAssignStmt assign02 = new JAssignStmt(l2, IntConstant.getInstance(2), noPosInfo);
+    JAssignStmt assign03 = new JAssignStmt(l3, IntConstant.getInstance(0), noPosInfo);
+
+    BranchingStmt if1 = new JIfStmt(new JLeExpr(l3, IntConstant.getInstance(100)), noPosInfo);
+
+    JReturnStmt return1 = new JReturnStmt(l1, noPosInfo);
+    JReturnStmt return2 = new JReturnStmt(l2, noPosInfo);
+
+    // block 0
+    graph.setStartingStmt(assign01);
+    graph.putEdge(assign01, assign02);
+    graph.putEdge(assign02, assign03);
+    graph.putEdge(assign03, if1);
+
+    // block 1 and 2
+    graph.putEdge(if1, JIfStmt.TRUE_BRANCH_IDX, return1);
+    graph.putEdge(if1, JIfStmt.FALSE_BRANCH_IDX, return2);
+
     return graph;
   }
 }
