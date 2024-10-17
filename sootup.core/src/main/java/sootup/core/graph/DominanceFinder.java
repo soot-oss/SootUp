@@ -23,7 +23,6 @@ package sootup.core.graph;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
