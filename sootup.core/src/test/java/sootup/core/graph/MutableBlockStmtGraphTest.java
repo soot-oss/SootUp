@@ -1114,7 +1114,7 @@ public class MutableBlockStmtGraphTest {
   public void testGetEntrypoints() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
-    FallsThroughStmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
     JReturnVoidStmt stmt2 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     JReturnVoidStmt stmt3 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -1130,7 +1130,7 @@ public class MutableBlockStmtGraphTest {
             new JCaughtExceptionRef(ioExceptionSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
-    FallsThroughStmt stmt4 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt stmt4 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
     // Add blocks and starting statement
     graph.addBlock(Collections.singletonList(stmt1));
@@ -1139,8 +1139,8 @@ public class MutableBlockStmtGraphTest {
     graph.addBlock(Collections.singletonList(stmt4));
     graph.setStartingStmt(stmt1);
 
-    graph.addExceptionalEdge(stmt1, throwableSig, handlerStmt1);
-    graph.addExceptionalEdge(stmt2, ioExceptionSig, handlerStmt2);
+    graph.addExceptionalEdge(stmt2, throwableSig, handlerStmt1);
+    graph.addExceptionalEdge(stmt3, ioExceptionSig, handlerStmt2);
 
     Collection<Stmt> entrypoints = graph.getEntrypoints();
     assertEquals(3, entrypoints.size());

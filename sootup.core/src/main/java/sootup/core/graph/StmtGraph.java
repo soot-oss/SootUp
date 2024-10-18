@@ -191,9 +191,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       JIdentityStmt jidStmt = (JIdentityStmt) stmt;
       IdentityRef rightOp = jidStmt.getRightOp();
       if (!(rightOp instanceof JCaughtExceptionRef)) continue;
-      // at this point we have a caught exception
-
-      if (predecessors(stmt).isEmpty()) continue;
+      // at this point we have an exception handler
 
       entrypoints.add(stmt);
     }
