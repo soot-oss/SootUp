@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
-import sootup.core.Language;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
@@ -45,8 +44,8 @@ import sootup.java.core.signatures.ModuleSignature;
 public class ModuleMultiReleaseJarAnalysisInputLocation extends MultiReleaseJarAnalysisInputLocation
     implements ModuleInfoAnalysisInputLocation {
   public ModuleMultiReleaseJarAnalysisInputLocation(
-      @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
-    super(path, srcType, language);
+      @Nonnull Path path, @Nonnull SourceType srcType, int version) {
+    super(path, srcType, version);
 
     /*
 
