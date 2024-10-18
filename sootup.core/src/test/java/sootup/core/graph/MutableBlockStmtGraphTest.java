@@ -1109,4 +1109,43 @@ public class MutableBlockStmtGraphTest {
     assertEquals(stmt2, trapToKeep.getBeginStmt());
     assertEquals(handlerStmt2, trapToKeep.getHandlerStmt());
   }
+
+  @Test
+  public void testGetEntrypoints() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+
+    JNopStmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JReturnVoidStmt stmt2 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JReturnVoidStmt stmt3 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+
+    Stmt handlerStmt1 =
+        new JIdentityStmt(
+            new Local("ex1", throwableSig),
+            new JCaughtExceptionRef(throwableSig),
+            StmtPositionInfo.getNoStmtPositionInfo());
+
+    Stmt handlerStmt2 =
+        new JIdentityStmt(
+            new Local("ex2", ioExceptionSig),
+            new JCaughtExceptionRef(ioExceptionSig),
+            StmtPositionInfo.getNoStmtPositionInfo());
+
+    JNopStmt stmt4 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+
+    // Add blocks and starting statement
+    graph.addBlock(Collections.singletonList(stmt1));
+    graph.addBlock(Collections.singletonList(stmt2));
+    graph.addBlock(Collections.singletonList(stmt3));
+    graph.addBlock(Collections.singletonList(stmt4));
+    graph.setStartingStmt(stmt1);
+
+    graph.addExceptionalEdge(stmt2, throwableSig, handlerStmt1);
+    graph.addExceptionalEdge(stmt3, ioExceptionSig, handlerStmt2);
+
+    Collection<Stmt> entrypoints = graph.getEntrypoints();
+    assertEquals(3, entrypoints.size());
+    assertTrue(entrypoints.contains(stmt1));
+    assertTrue(entrypoints.contains(handlerStmt1));
+    assertTrue(entrypoints.contains(handlerStmt2));
+  }
 }
