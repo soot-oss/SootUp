@@ -69,8 +69,7 @@ public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInpu
         getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
     ModuleInfoAnalysisInputLocation moduleMultiReleaseJarAnalysisInputLocation8 =
-        new ModuleMultiReleaseJarAnalysisInputLocation(
-            mmrj, SourceType.Application, 8);
+        new ModuleMultiReleaseJarAnalysisInputLocation(mmrj, SourceType.Application, 8);
 
     final JavaView view_8 =
         new JavaModuleView(
@@ -78,8 +77,7 @@ public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInpu
             Collections.singletonList(moduleMultiReleaseJarAnalysisInputLocation8));
 
     ModuleMultiReleaseJarAnalysisInputLocation moduleMultiReleaseJarAnalysisInputLocation9 =
-        new ModuleMultiReleaseJarAnalysisInputLocation(
-            mmrj, SourceType.Application, 9);
+        new ModuleMultiReleaseJarAnalysisInputLocation(mmrj, SourceType.Application, 9);
     final JavaModuleView view_9 =
         new JavaModuleView(
             Collections.emptyList(),

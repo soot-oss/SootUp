@@ -133,9 +133,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
           .forEach(
               ver -> {
                 final Path versionRoot =
-                    archiveRoot
-                        .getFileSystem()
-                        .getPath("/META-INF", "versions", ver.toString());
+                    archiveRoot.getFileSystem().getPath("/META-INF", "versions", ver.toString());
                 inputLocations.put(
                     ver,
                     create(versionRoot, sourceType, bodyInterceptors, Collections.emptyList()));

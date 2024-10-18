@@ -55,21 +55,11 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
   public void multiReleaseJar() {
 
     view_min =
-        new JavaView(
-            new MultiReleaseJarAnalysisInputLocation(
-                mrj, SourceType.Application, 1));
-    view_8 =
-        new JavaView(
-            new MultiReleaseJarAnalysisInputLocation(
-                mrj, SourceType.Application, 8));
-    view_9 =
-        new JavaView(
-            new MultiReleaseJarAnalysisInputLocation(
-                mrj, SourceType.Application, 9));
+        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, SourceType.Application, 1));
+    view_8 = new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, SourceType.Application, 8));
+    view_9 = new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, SourceType.Application, 9));
     view_10 =
-        new JavaView(
-            new MultiReleaseJarAnalysisInputLocation(
-                mrj, SourceType.Application, 10));
+        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, SourceType.Application, 10));
     view_max =
         new JavaView(
             new MultiReleaseJarAnalysisInputLocation(
