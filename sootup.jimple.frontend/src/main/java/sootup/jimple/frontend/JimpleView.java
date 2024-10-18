@@ -41,6 +41,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.views.AbstractView;
+import sootup.java.core.JavaIdentifierFactory;
 
 /**
  * The Class JimpleView manages the Sootclasses of the application being analyzed.
@@ -97,7 +98,7 @@ public class JimpleView extends AbstractView {
   @Nonnull
   @Override
   public IdentifierFactory getIdentifierFactory() {
-    return new JimpleLanguage().getIdentifierFactory();
+    return JavaIdentifierFactory.getInstance();
   }
 
   @Nonnull
