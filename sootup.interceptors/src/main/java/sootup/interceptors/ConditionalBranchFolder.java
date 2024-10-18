@@ -25,10 +25,9 @@ import com.google.common.collect.Lists;
 import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.constant.*;
-import sootup.core.jimple.common.stmt.BranchingStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -85,7 +84,11 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         continue;
       }
 
-      final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
+      List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
+      // The successors of IfStmt have true branch at index 0 & false branch at index 1.
+      // However, in other parts of code, TRUE_BRANCH_IDX is defined as 1 & FALSE_BRANCH_IDX as 0.
+      // To maintain consistency, we need to reverse the order of the successors.
+      ifSuccessors = Lists.reverse(ifSuccessors);
       final Stmt tautologicSuccessor;
       final Stmt neverReachedSucessor;
 
@@ -102,102 +105,13 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         neverReachedSucessor = ifSuccessors.get(JIfStmt.FALSE_BRANCH_IDX);
       }
 
-      // link previous stmt with always-reached successor of the if-Stmt
-      for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
-        List<Integer> successorIdxList = stmtGraph.removeEdge(predecessor, ifStmt);
-
-        if (predecessor instanceof FallsThroughStmt) {
-          FallsThroughStmt fallsThroughPred = (FallsThroughStmt) predecessor;
-          for (Integer successorIdx : successorIdxList) {
-            stmtGraph.putEdge(fallsThroughPred, tautologicSuccessor);
-          }
-        } else {
-          // should not be anything else than BranchingStmt.. just Stmt can have no successor
-          BranchingStmt branchingPred = (BranchingStmt) predecessor;
-          for (Integer successorIdx : successorIdxList) {
-            stmtGraph.putEdge(branchingPred, successorIdx, tautologicSuccessor);
-          }
-        }
-      }
-
-      stmtGraph.removeNode(ifStmt, false);
-
-      pruneExclusivelyReachableStmts(builder, neverReachedSucessor);
+      // remove edge from ifStmt to neverReachedSucessor
+      stmtGraph.unLinkNodes(ifStmt, neverReachedSucessor);
+      // replace ifStmt block by gotoStmt
+      JGotoStmt gotoStmt = Jimple.newGotoStmt(ifStmt.getPositionInfo());
+      stmtGraph.replaceStmt(ifStmt, gotoStmt);
     }
-  }
-
-  private void pruneExclusivelyReachableStmts(
-      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt fallsThroughStmt) {
-
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    Set<Stmt> reachedBranchingStmts = new HashSet<>();
-    Deque<Stmt> q = new ArrayDeque<>();
-
-    q.addFirst(fallsThroughStmt);
-    // stmts we want to remove
-    // remove all now unreachable stmts from "true"-block
-    while (!q.isEmpty()) {
-      Stmt itStmt = q.pollFirst();
-      if (itStmt.branches()) {
-        // reachable branching stmts that may or may not branch to another reachable stmt is all we
-        // are actually interested in
-        reachedBranchingStmts.add(itStmt);
-      }
-      if (stmtGraph.containsNode(itStmt)) {
-        final List<Stmt> predecessors = stmtGraph.predecessors(itStmt);
-        if (predecessors.size() <= 1) {
-          q.addAll(stmtGraph.successors(itStmt));
-        }
-      }
-    }
-    // now iterate again and remove if possible: ie predecessor.size() < 1
-    q.addFirst(fallsThroughStmt);
-    while (!q.isEmpty()) {
-      Stmt itStmt = q.pollFirst();
-      if (stmtGraph.containsNode(itStmt)) {
-        // hint: predecessor could also be already removed
-        if (isExclusivelyReachable(stmtGraph, itStmt, reachedBranchingStmts)) {
-          q.addAll(stmtGraph.successors(itStmt));
-          stmtGraph.removeNode(itStmt, false);
-          builder.removeDefLocalsOf(itStmt);
-        }
-      }
-    }
-  }
-
-  /** reachedStmts contains all reached Stmts from entrypoint which ALSO do branch! */
-  private boolean isExclusivelyReachable(
-      @Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull Set<Stmt> reachedStmts) {
-    final List<Stmt> predecessors = graph.predecessors(stmt);
-    final int predecessorSize = predecessors.size();
-    int amount = predecessorSize;
-    if (predecessorSize <= 1) {
-      // we already reached this stmt somehow via reachable stmts so at least one predecessor was
-      // reachable which makes it exclusively reachable if there are no other ingoing flows
-      // hint: <= because a predecessor could already be removed
-      return true;
-    }
-    for (Stmt predecessor : predecessors) {
-      if (predecessor.fallsThrough()) {
-        if (predecessor instanceof JIfStmt) {
-          final List<Stmt> predsSuccessors = graph.successors(predecessor);
-          if (predsSuccessors.size() > 0 && predsSuccessors.get(0) == stmt) {
-            // TODO: hint: possible problem occurs with partial removed targets as they change the
-            // idx positions..
-            amount--;
-            continue;
-          }
-        } else {
-          // "usual" fallsthrough
-          amount--;
-          continue;
-        }
-      }
-      // was a branching predecessor reachable?
-      if (reachedStmts.contains(predecessor)) {
-        amount--;
-      }
-    }
-    return amount == 0;
+    // Call Unreachable Code Eliminator at the end for pruning unreachable blocks
+    new UnreachableCodeEliminator().interceptBody(builder, view);
   }
 }
