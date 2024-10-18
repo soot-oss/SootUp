@@ -338,19 +338,23 @@
                 <configuration>
                     <failOnMissingHeader>${licence-check.failOnMissingHeader}</failOnMissingHeader>
                     <failOnNotUptodateHeader>${licence-check.failOnMissingHeader}</failOnNotUptodateHeader>
-                    <inceptionYear>1997</inceptionYear>
+                    <inceptionYear>2022</inceptionYear>
                     <addJavaLicenseAfterPackage>true</addJavaLicenseAfterPackage>
                     <licenseName>lgpl_v2_1</licenseName>
-                    <organizationName>Raja Vallée-Rai and others</organizationName>
+                    <organizationName>Kadiray Karakaya, Markus Schmidt, Jonas Klauke, Stefan Schott, Palaniappan Muthuraman, Marcus Hüwe and others</organizationName>
                     <roots>
-                        <root>sootup.java.analysis/src/main/java</root>
+                        <root>sootup.analysis.interprocedural/src/main/java</root>
+                        <root>sootup.analysis.intraprocedural/src/main/java</root>
+                        <root>sootup.apk.frontend/src/main/java</root>
                         <root>sootup.callgraph/src/main/java</root>
+                        <root>sootup.codepropertygraph/src/main/java</root>
                         <root>sootup.core/src/main/java</root>
-                        <root>sootup.java.examples/src/main/java</root>
-                        <root>sootup.java.bytecode/src/main/java</root>
+                        <root>sootup.examples/src/main/java</root>
+                        <root>sootup.interceptors/src/main/java</root>
+                        <root>sootup.java.bytecode.frontend/src/main/java</root>
                         <root>sootup.java.core/src/main/java</root>
-                        <root>sootup.java.sourcecode/src/main/java</root>
-                        <root>sootup.jimple.parser/src/main/java</root>
+                        <root>sootup.java.sourcecode.frontend/src/main/java</root>
+                        <root>sootup.jimple.frontend/src/main/java</root>
                         <root>sootup.tests/src/main/java</root>
                     </roots>
                 </configuration>
