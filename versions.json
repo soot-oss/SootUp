@@ -18,7 +18,10 @@
   {
     "version": "fix_addMissingRootsToHeaderCheck_preview",
     "title": "PR Preview fix_addMissingRootsToHeaderCheck",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "develop",
