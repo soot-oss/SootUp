@@ -185,16 +185,21 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   public Collection<Stmt> getEntrypoints() {
     final ArrayList<Stmt> entrypoints = new ArrayList<>();
     entrypoints.add(getStartingStmt());
-    for (Stmt stmt : getNodes()) {
-      if (!(stmt instanceof JIdentityStmt)) continue;
 
-      JIdentityStmt jidStmt = (JIdentityStmt) stmt;
-      IdentityRef rightOp = jidStmt.getRightOp();
-      if (!(rightOp instanceof JCaughtExceptionRef)) continue;
-      // at this point we have an exception handler
+    Collection<? extends BasicBlock<?>> blocks = getBlocks();
+    blocks.forEach(
+        block -> {
+          Stmt stmt = block.getHead();
+          if (!(stmt instanceof JIdentityStmt)) return;
 
-      entrypoints.add(stmt);
-    }
+          JIdentityStmt jidStmt = (JIdentityStmt) stmt;
+          IdentityRef rightOp = jidStmt.getRightOp();
+          if (!(rightOp instanceof JCaughtExceptionRef)) return;
+          // at this point we have an exception handler
+
+          entrypoints.add(stmt);
+        });
+
     return entrypoints;
   }
 
