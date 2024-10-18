@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.ref.IdentityRef;
+import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.types.ClassType;
@@ -176,17 +178,25 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   }
 
   /**
-   * returns a Collection of all stmts in the graph that don't have an unexceptional ingoing flow or
-   * are the starting Stmt.
+   * returns a Collection of all stmt in the graph that are either the starting stmt or only have an exceptional ingoing flow
    */
   @Nonnull
   public Collection<Stmt> getEntrypoints() {
-    final ArrayList<Stmt> stmts = new ArrayList<>();
-    stmts.add(getStartingStmt());
-    // TODO: [ms] memory/performance: instead of gettraps(): iterate through all stmts and add
-    // startingStmt+@caughtexception/predecessors().size() == 0?
-    buildTraps().stream().map(Trap::getHandlerStmt).forEach(stmts::add);
-    return stmts;
+    final ArrayList<Stmt> entrypoints = new ArrayList<>();
+    entrypoints.add(getStartingStmt());
+    for (Stmt stmt : getNodes()) {
+      if (!(stmt instanceof JIdentityStmt)) continue;
+
+      JIdentityStmt jidStmt = (JIdentityStmt) stmt;
+      IdentityRef rightOp = jidStmt.getRightOp();
+      if (!(rightOp instanceof JCaughtExceptionRef)) continue;
+      // at this point we have a caught exception
+
+      if (predecessors(stmt).isEmpty()) continue;
+
+      entrypoints.add(stmt);
+    }
+    return entrypoints;
   }
 
   /** validates whether the each Stmt has the correct amount of outgoing flows. */
