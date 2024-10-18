@@ -26,8 +26,9 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Local;
 import sootup.core.types.Type;
 import sootup.java.core.AnnotationUsage;
+import sootup.java.core.HasAnnotation;
 
-public class JavaLocal extends Local {
+public class JavaLocal extends Local implements HasAnnotation {
 
   // TODO: [ms] add to JavaJimple
   // TODO: [ms] make use of this class in both Java Frontends
