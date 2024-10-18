@@ -1119,16 +1119,16 @@ public class MutableBlockStmtGraphTest {
     JReturnVoidStmt stmt3 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
     Stmt handlerStmt1 =
-            new JIdentityStmt(
-                    new Local("ex1", throwableSig),
-                    new JCaughtExceptionRef(throwableSig),
-                    StmtPositionInfo.getNoStmtPositionInfo());
+        new JIdentityStmt(
+            new Local("ex1", throwableSig),
+            new JCaughtExceptionRef(throwableSig),
+            StmtPositionInfo.getNoStmtPositionInfo());
 
     Stmt handlerStmt2 =
-            new JIdentityStmt(
-                    new Local("ex2", ioExceptionSig),
-                    new JCaughtExceptionRef(ioExceptionSig),
-                    StmtPositionInfo.getNoStmtPositionInfo());
+        new JIdentityStmt(
+            new Local("ex2", ioExceptionSig),
+            new JCaughtExceptionRef(ioExceptionSig),
+            StmtPositionInfo.getNoStmtPositionInfo());
 
     FallsThroughStmt stmt4 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
 

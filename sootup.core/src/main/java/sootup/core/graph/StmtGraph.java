@@ -178,7 +178,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   }
 
   /**
-   * returns a Collection of all stmt in the graph that are either the starting stmt or only have an exceptional ingoing flow
+   * returns a Collection of all stmt in the graph that are either the starting stmt or only have an
+   * exceptional ingoing flow
    */
   @Nonnull
   public Collection<Stmt> getEntrypoints() {
