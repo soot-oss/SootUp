@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
@@ -56,25 +55,15 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
   public void multiReleaseJar() {
 
     view_min =
-        new JavaView(
-            new MultiReleaseJarAnalysisInputLocation(
-                mrj, SourceType.Application, new JavaLanguage(1)));
-    view_8 =
-        new JavaView(
-            new MultiReleaseJarAnalysisInputLocation(
-                mrj, SourceType.Application, new JavaLanguage(8)));
-    view_9 =
-        new JavaView(
-            new MultiReleaseJarAnalysisInputLocation(
-                mrj, SourceType.Application, new JavaLanguage(9)));
+        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, SourceType.Application, 1));
+    view_8 = new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, SourceType.Application, 8));
+    view_9 = new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, SourceType.Application, 9));
     view_10 =
-        new JavaView(
-            new MultiReleaseJarAnalysisInputLocation(
-                mrj, SourceType.Application, new JavaLanguage(10)));
+        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, SourceType.Application, 10));
     view_max =
         new JavaView(
             new MultiReleaseJarAnalysisInputLocation(
-                mrj, SourceType.Application, new JavaLanguage(Integer.MAX_VALUE)));
+                mrj, SourceType.Application, Integer.MAX_VALUE));
 
     classType = getIdentifierFactory().getClassType("de.upb.sse.multirelease.Utility");
     classType2 = getIdentifierFactory().getClassType("de.upb.sse.multirelease.Main");

@@ -36,7 +36,6 @@ import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import sootup.core.Language;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -59,52 +58,53 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   // "usual" Jar
   protected static final Integer DEFAULT_VERSION = 0;
 
-  @Nonnull protected final Language language;
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   @Nonnull
   protected final Map<Integer, AnalysisInputLocation> inputLocations = new LinkedHashMap<>();
 
+  private final int version;
+
   public static AnalysisInputLocation create(
       @Nonnull Path path,
       @Nonnull SourceType srcType,
-      @Nonnull Language language,
+      int version,
       List<BodyInterceptor> bodyInterceptors) {
 
     if (isMultiReleaseJar(path)) {
       return new MultiReleaseJarAnalysisInputLocation(
-          path, srcType, language, bodyInterceptors, true);
+          path, srcType, version, bodyInterceptors, true);
     }
 
     return create(
         path, srcType, bodyInterceptors, Collections.singletonList(Paths.get("/META-INF")));
   }
 
-  public MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, @Nonnull Language language) {
-    this(path, SourceType.Application, language);
+  public MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, int version) {
+    this(path, SourceType.Application, version);
   }
 
   public MultiReleaseJarAnalysisInputLocation(
-      @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
-    this(path, srcType, language, BytecodeBodyInterceptors.Default.getBodyInterceptors());
+      @Nonnull Path path, @Nonnull SourceType srcType, int version) {
+    this(path, srcType, version, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public MultiReleaseJarAnalysisInputLocation(
       @Nonnull Path path,
       @Nonnull SourceType srcType,
-      @Nonnull Language language,
+      int version,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
-    this(path, srcType, language, bodyInterceptors, isMultiReleaseJar(path));
+    this(path, srcType, version, bodyInterceptors, isMultiReleaseJar(path));
   }
 
   protected MultiReleaseJarAnalysisInputLocation(
       @Nonnull Path path,
       @Nonnull SourceType srcType,
-      @Nonnull Language language,
+      int version,
       @Nonnull List<BodyInterceptor> bodyInterceptors,
       boolean isMultiRelease) {
     super(path, srcType);
-    this.language = language;
+    this.version = version;
     this.bodyInterceptors = bodyInterceptors;
 
     if (!isMultiRelease) {
@@ -128,16 +128,14 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
                 return versionDirName.substring(0, versionDirName.length() - 1);
               })
           .map(Integer::new)
-          .filter(version -> version <= language.getVersion())
+          .filter(ver -> ver <= version)
           .sorted(Comparator.reverseOrder())
           .forEach(
-              version -> {
+              ver -> {
                 final Path versionRoot =
-                    archiveRoot
-                        .getFileSystem()
-                        .getPath("/META-INF", "versions", version.toString());
+                    archiveRoot.getFileSystem().getPath("/META-INF", "versions", ver.toString());
                 inputLocations.put(
-                    version,
+                    ver,
                     create(versionRoot, sourceType, bodyInterceptors, Collections.emptyList()));
               });
 
@@ -199,8 +197,8 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   }
 
   @Nonnull
-  public Language getLanguage() {
-    return language;
+  public int getVersion() {
+    return version;
   }
 
   public static boolean isMultiReleaseJar(Path path) {
