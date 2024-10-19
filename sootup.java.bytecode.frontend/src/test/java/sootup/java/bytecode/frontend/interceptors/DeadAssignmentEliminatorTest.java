@@ -189,7 +189,7 @@ public class DeadAssignmentEliminatorTest {
     assertEquals(
         Stream.of(
                 "DeadAssignmentEliminatorTest this",
-                "unknown $stack3, $stack4, $stack5",
+                "unknown $stack3, $stack4, $stack5, l1, l2",
                 "this := @this: DeadAssignmentEliminatorTest",
                 "l1 = 30",
                 "l2 = l1",
@@ -216,7 +216,7 @@ public class DeadAssignmentEliminatorTest {
     assertEquals(
         Stream.of(
                 "DeadAssignmentEliminatorTest this",
-                "unknown $stack2, $stack3",
+                "unknown $stack2, $stack3, l1",
                 "this := @this: DeadAssignmentEliminatorTest",
                 "l1 = \"cde\"",
                 "$stack2 = virtualinvoke l1.<java.lang.String: int length()>()",
