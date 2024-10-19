@@ -23,4 +23,14 @@ public class DeadAssignmentEliminatorTest {
         }
         System.out.println(x);
     }
+
+    void tc3(int x) {
+        boolean trackReusableBuffers = false;
+        try {
+            trackReusableBuffers = "true".equals(System.getProperty("com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers"));
+        } catch (SecurityException var2) {
+        }
+        boolean bufferRecyclerTracker = trackReusableBuffers ? true : null;
+    }
+
 }

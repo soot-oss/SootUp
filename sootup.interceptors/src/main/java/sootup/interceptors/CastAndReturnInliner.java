@@ -120,7 +120,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
         graph.removeNode(assign, false);
         if (graph.predecessors(retStmt).isEmpty()) {
           graph.removeNode(retStmt, false);
-          builder.removeDefLocalsOf(assign);
+          builder.removeDefLocalsOf(assign, builder);
         }
       }
     }
