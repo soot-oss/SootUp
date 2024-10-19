@@ -1,5 +1,7 @@
 package sootup.java.bytecode.frontend.interceptors;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -30,8 +32,6 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("Java8")
 public class DeadAssignmentEliminatorTest {
