@@ -62,6 +62,11 @@ public class ImmutableBlockStmtGraph
   }
 
   @Override
+  public List<BasicBlock<?>> getTailStmtBlocks() {
+    throw new UnsupportedOperationException("Not implemented yet!");
+  }
+
+  @Override
   public BasicBlock<ImmutableBasicBlock> getBlockOf(@Nonnull Stmt stmt) {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
