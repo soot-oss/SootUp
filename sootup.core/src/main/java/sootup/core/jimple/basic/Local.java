@@ -28,6 +28,7 @@ import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
+import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.ImmediateVisitor;
@@ -151,6 +152,36 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
       }
     }
     return defStmts;
+  }
+
+  public List<Stmt> getLocalOccurrences(Collection<Stmt> stmts) {
+    List<Stmt> localOccurrences = new ArrayList<>();
+    for (Stmt stmt : stmts) {
+      if (stmt instanceof AbstractDefinitionStmt) {
+        if (((AbstractDefinitionStmt) stmt).getLeftOp().equivTo(this)) {
+          localOccurrences.add(stmt);
+        }
+        ((AbstractDefinitionStmt) stmt)
+            .getUses()
+            .forEach(
+                use -> {
+                  if (use instanceof Local && ((Local) use).equivTo(this)) {
+                    localOccurrences.add(stmt);
+                  }
+                });
+      } else if (stmt instanceof JIfStmt) {
+        ((JIfStmt) stmt)
+            .getCondition()
+            .getUses()
+            .forEach(
+                value -> {
+                  if (value instanceof Local && value.equivTo(this)) {
+                    localOccurrences.add(stmt);
+                  }
+                });
+      }
+    }
+    return localOccurrences;
   }
 
   @Override

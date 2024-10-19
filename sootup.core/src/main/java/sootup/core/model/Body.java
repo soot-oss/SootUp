@@ -459,12 +459,18 @@ public class Body implements HasPosition {
       }
     }
 
-    public void removeDefLocalsOf(@Nonnull Stmt stmt) {
+    public void removeDefLocalsOf(@Nonnull Stmt stmt, BodyBuilder builder) {
       stmt.getDef()
           .ifPresent(
               def -> {
                 if (def instanceof Local) {
-                  locals.remove(def);
+                  List<Stmt> localOccurrences =
+                      ((Local) def).getLocalOccurrences(builder.getStmts());
+                  // after removing stmt, if the local variable doesn't occur anywhere else then
+                  // safely remove
+                  if (localOccurrences.isEmpty()) {
+                    locals.remove(def);
+                  }
                 }
               });
     }
