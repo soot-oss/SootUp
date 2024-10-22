@@ -2,98 +2,98 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/analysisinput/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/announcement/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/bodyinterceptors/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/builtin-analyses/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/callgraphs/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/codepropertygraphs/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/docguide/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/examples/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/faq/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/getting-started/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/installation/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/jimple-body/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/jimple-stmts/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/jimple-types/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/jimple-values/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/jimple/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/migrating/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/qilin/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/tool_setup/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/tools/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/typehierarchy/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/whatsnew/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/write_analyses/</loc>
-         <lastmod>2024-10-01</lastmod>
+         <lastmod>2024-10-22</lastmod>
     </url>
 </urlset>
