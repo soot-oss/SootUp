@@ -35,7 +35,7 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.Type;
 import sootup.java.core.types.JavaClassType;
 
-public class JavaSootClass extends SootClass {
+public class JavaSootClass extends SootClass implements HasAnnotation {
 
   public JavaSootClass(JavaSootClassSource classSource, SourceType sourceType) {
     super(classSource, sourceType);
