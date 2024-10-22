@@ -16,14 +16,6 @@
     }
   },
   {
-    "version": "fix_addMissingRootsToHeaderCheck_preview",
-    "title": "PR Preview fix_addMissingRootsToHeaderCheck",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "develop",
     "title": "develop",
     "aliases": []
