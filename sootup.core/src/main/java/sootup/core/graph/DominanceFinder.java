@@ -24,6 +24,8 @@ package sootup.core.graph;
 
 import java.util.*;
 import javax.annotation.Nonnull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @see <a
@@ -31,6 +33,8 @@ import javax.annotation.Nonnull;
  *     https://www.researchgate.net/publication/2569680_A_Simple_Fast_Dominance_Algorithm </a>
  */
 public class DominanceFinder {
+
+  private static Logger LOGGER = LoggerFactory.getLogger(DominanceFinder.class);
 
   private List<BasicBlock<?>> blocks;
   private Map<BasicBlock<?>, Integer> blockToIdx = new HashMap<>();
@@ -55,24 +59,23 @@ public class DominanceFinder {
 
     // initialize doms
     final BasicBlock<?> startBlock;
-    if (direction == BlockAnalysisDirection.REVERSEPOSTORDERFORWARD) {
-      startBlock = blockGraph.getStartingStmtBlock();
-    } else if (direction == BlockAnalysisDirection.POSTORDERBACKWARD) {
-      // todo: improve algorithm for graph with multiple tail-blocks
-      List<BasicBlock<?>> tails = blockGraph.getTailStmtBlocks();
-      if (tails.size() > 1) {
-        throw new RuntimeException(
-            "BlockAnalysisDirection 'BACKWARD' supports block-graphs containing only one tail-block!");
+    if (direction == BlockAnalysisDirection.REVERSEPOSTORDERFORWARD
+        || direction == BlockAnalysisDirection.POSTORDERBACKWARD) {
+      startBlock = blocks.get(0);
+      if (direction == BlockAnalysisDirection.POSTORDERBACKWARD) {
+        // todo: Postdominantor (POSTORDERBACKWARD) doesn't work for with multiple tail-blocks.
+        List<BasicBlock<?>> tails = blockGraph.getTailStmtBlocks();
+        if (tails.size() > 1) {
+          LOGGER.warn(
+              "BlockGraph has multiple tail-blocks, the Post-Dominators Computation could be incorrect!");
+        }
       }
-      startBlock = tails.get(0);
     } else {
       throw new RuntimeException("Invalid BlockAnalysisDirection!");
     }
-
-    int startBlockId = blockToIdx.get(startBlock);
     doms = new int[blocks.size()];
     Arrays.fill(doms, -1);
-    doms[startBlockId] = startBlockId;
+    doms[0] = 0;
 
     // calculate immediate dominator for each block
     boolean isChanged = true;
@@ -83,7 +86,6 @@ public class DominanceFinder {
           continue;
         }
         int blockIdx = blockToIdx.get(block);
-        // ms: should not be necessary preds.addAll(block.getExceptionalPredecessors());
         List<BasicBlock<?>> preds = new ArrayList<>(direction.getPredecessors(block));
         int newIdom = getFirstDefinedBlockPredIdx(preds);
         if (!preds.isEmpty() && newIdom != -1) {
@@ -111,7 +113,7 @@ public class DominanceFinder {
       domFrontiers[i] = new ArrayList<>();
     }
 
-    doms[startBlockId] = -1;
+    doms[0] = -1;
     // calculate dominance frontiers for each block
     for (BasicBlock<?> block : blocks) {
       List<BasicBlock<?>> preds = new ArrayList<>(direction.getPredecessors(block));
