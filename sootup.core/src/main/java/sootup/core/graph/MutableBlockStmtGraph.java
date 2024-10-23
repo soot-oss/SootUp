@@ -1604,7 +1604,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             .result();
   }
 
-  /** hint: little expensive getter - its more of a build/create */
+  /** hint: little expensive getter - its more of a build/create - currently no overlaps */
   @Override
   public List<Trap> buildTraps() {
     // [ms] try to incorporate it into the serialisation of jimple printing so the other half of
@@ -1624,5 +1624,21 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     final List<Trap> traps = it.getTraps();
     traps.sort(getTrapComparator(stmtsBlockIdx));
     return traps;
+  }
+
+  @Override
+  public void removeExceptionalFlowFromAllBlocks(
+      @Nonnull ClassType exceptionType, @Nonnull Stmt exceptionHandlerStmt) {
+    for (Iterator<BasicBlock<?>> it = getBlockIterator(); it.hasNext(); ) {
+      MutableBasicBlock block = (MutableBasicBlock) it.next();
+
+      Map<? extends ClassType, ?> exceptionalSuccessors = block.getExceptionalSuccessors();
+
+      MutableBasicBlock trapBlock = (MutableBasicBlock) exceptionalSuccessors.get(exceptionType);
+
+      if (trapBlock != null && trapBlock.getHead() == exceptionHandlerStmt) {
+        removeExceptionalEdge(block.getHead(), exceptionType);
+      }
+    }
   }
 }

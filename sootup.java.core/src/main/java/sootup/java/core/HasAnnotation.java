@@ -1,9 +1,10 @@
-package sootup.core;
+package sootup.java.core;
+
 /*-
  * #%L
- * Soot
+ * SootUp
  * %%
- * Copyright (C) 2019-2020 Linghui Luo, Markus Schmidt
+ * Copyright (C) 1997 - 2024 Raja Vallée-Rai and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,20 +23,10 @@ package sootup.core;
  */
 
 /**
- * This class is a container for language specific information
+ * Interface to mark Soot code objects that may contain annotations.
  *
- * @author Markus Schmidt
+ * @author liyiwei
  */
-public abstract class Language {
-
-  public abstract String getName();
-
-  public abstract int getVersion();
-
-  public abstract IdentifierFactory getIdentifierFactory();
-
-  @Override
-  public String toString() {
-    return getName() + " " + getVersion();
-  }
+public interface HasAnnotation {
+  Iterable<AnnotationUsage> getAnnotations();
 }
