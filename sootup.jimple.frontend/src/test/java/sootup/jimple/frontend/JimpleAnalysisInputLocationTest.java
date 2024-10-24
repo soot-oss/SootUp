@@ -4,12 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
+import sootup.interceptors.CopyPropagator;
 
 @Tag("Java8")
 public class JimpleAnalysisInputLocationTest {
@@ -96,5 +101,28 @@ public class JimpleAnalysisInputLocationTest {
 
     final Optional<SootClass> classSource4 = jv2.getClass(classType);
     assertTrue(classSource4.isPresent());
+  }
+
+  @Test
+  public void testIfBodyInterceptorsApplied() {
+    final String resourceDir = "src/test/java/resources/";
+    final JimpleAnalysisInputLocation inputLocation =
+        new JimpleAnalysisInputLocation(
+            Paths.get(resourceDir + "/jimple/testbodyinterceptorsinjimpleinputlocation"),
+            SourceType.Application,
+            Arrays.asList(new CopyPropagator()));
+    JimpleView jv1 = new JimpleView(inputLocation);
+    List<SootClass> applicationClasses = jv1.getClasses().collect(Collectors.toList());
+    applicationClasses.forEach(
+        cls -> {
+          cls.getMethods()
+              .forEach(
+                  m -> {
+                    if (m.getSignature().getName().contains("tc1")) {
+                      String s = m.getBody().toString();
+                      System.out.println(s);
+                    }
+                  });
+        });
   }
 }

@@ -1,0 +1,51 @@
+public class JB_CP extends java.lang.Object
+{
+    public void <init>()
+    {
+        JB_CP r0;
+
+
+        r0 := @this: JB_CP;
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    int tc1()
+    {
+        byte b0, b1;
+        java.io.PrintStream r0;
+        JB_CP r1;
+
+
+        r1 := @this: JB_CP;
+        b0 = 5;
+        b1 = b0;
+        r0 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke r0.<java.io.PrintStream: void println(int)>(b1);
+
+        return b1;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        int i0;
+        java.io.PrintStream r0;
+        java.lang.String r1;
+        java.lang.String[] r2;
+        JB_CP r3, r4;
+
+
+        r2 := @parameter0: java.lang.String[];
+        r3 = new JB_CP;
+        specialinvoke r3.<JB_CP: void <init>()>();
+        r4 = r3;
+        r0 = <java.lang.System: java.io.PrintStream out>;
+        i0 = virtualinvoke r4.<JB_CP: int tc1()>();
+        r1 = dynamicinvoke "makeConcatWithConstants" <java.lang.String (int)>(i0) <java.lang.invoke.StringConcatFactory: java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])>("tc1: \u0001");
+        virtualinvoke r0.<java.io.PrintStream: void println(java.lang.String)>(r1);
+
+        return;
+    }
+}
+
