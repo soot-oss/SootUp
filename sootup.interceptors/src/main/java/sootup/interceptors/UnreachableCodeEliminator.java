@@ -72,7 +72,7 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
 
     for (Stmt stmt : removeQ) {
       graph.removeNode(stmt, false);
-      builder.removeDefLocalsOf(stmt, builder);
+      builder.removeDefLocalsOf(stmt);
     }
   }
 }

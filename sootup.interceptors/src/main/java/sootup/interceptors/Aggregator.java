@@ -235,7 +235,7 @@ public class Aggregator implements BodyInterceptor {
             graph.setStartingStmt(newStartingStmt);
           }
           graph.removeNode(relevantDef);
-          builder.removeDefLocalsOf(relevantDef, builder);
+          builder.removeDefLocalsOf(relevantDef);
         }
       }
     }

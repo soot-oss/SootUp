@@ -202,7 +202,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       if (!essentialStmts.contains(stmt)) {
         if (stmtGraph.containsNode(stmt)) {
           stmtGraph.removeNode(stmt);
-          builder.removeDefLocalsOf(stmt, builder);
+          builder.removeDefLocalsOf(stmt);
         }
       }
     }
@@ -246,7 +246,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       Stmt newInvoke =
           Jimple.newInvokeStmt(assignStmt.getInvokeExpr().get(), assignStmt.getPositionInfo());
       stmtGraph.replaceNode(assignStmt, newInvoke);
-      builder.removeDefLocalsOf(assignStmt, builder);
+      builder.removeDefLocalsOf(assignStmt);
     }
   }
 }
