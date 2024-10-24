@@ -1,5 +1,10 @@
 # Incorporate Qilin Pointer Analysis
 
+!!! info "Experimental! - Qilin Pointer Analysis support in SootUp is currently experimental."
+
+    The Qilin pointer analysis in SootUp is currently experimental and still a work in progress. It is maintained under SootUp-Experimental repository. See [SootUp-Experimental](https://github.com/soot-oss/SootUp-Experimental)
+
+
 ### Dependencies
 
 === "Maven"
