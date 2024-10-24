@@ -61,6 +61,8 @@ abstract class ScopedAnalysisInputLocation implements AnalysisInputLocation {
   @Nonnull
   @Override
   public Collection<? extends SootClassSource> getClassSources(@Nonnull View view) {
+    // possibility to streamify this method to apply the filter at earlier stage i.e. before
+    // creating the ClassSources would be a faster approach..
     return inputLocation.getClassSources(view).stream()
         .filter(type -> filter(type.getClassType()))
         .collect(Collectors.toList());

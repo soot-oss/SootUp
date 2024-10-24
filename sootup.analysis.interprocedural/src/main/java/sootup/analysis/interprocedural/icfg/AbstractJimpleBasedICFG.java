@@ -138,15 +138,15 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @Override
   public boolean isExitStmt(Stmt stmt) {
     Body body = getBodyOf(stmt);
-    StmtGraph<?> cfg = getOrCreateStmtGraph(body);
-    return cfg.getTails().contains(stmt);
+    StmtGraph<?> stmtGraph = getOrCreateStmtGraph(body);
+    return stmtGraph.getTails().contains(stmt);
   }
 
   @Override
   public boolean isStartPoint(Stmt stmt) {
     Body body = getBodyOf(stmt);
-    StmtGraph<?> cfg = getOrCreateStmtGraph(body);
-    return cfg.getEntrypoints().contains(stmt);
+    StmtGraph<?> stmtGraph = getOrCreateStmtGraph(body);
+    return stmtGraph.getEntrypoints().contains(stmt);
   }
 
   @Override
@@ -176,8 +176,8 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       return Collections.emptySet();
     }
     Body body = m.getBody();
-    StmtGraph<?> cfg = getOrCreateStmtGraph(body);
-    return cfg.getEntrypoints();
+    StmtGraph<?> stmtGraph = getOrCreateStmtGraph(body);
+    return stmtGraph.getEntrypoints();
   }
 
   public boolean setOwnerStatement(Stmt u, Body b) {
@@ -228,8 +228,8 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (body == null) {
       return Collections.emptyList();
     }
-    StmtGraph<?> cfg = getOrCreateStmtGraph(body);
-    return cfg.predecessors(u);
+    StmtGraph<?> stmtGraph = getOrCreateStmtGraph(body);
+    return stmtGraph.predecessors(u);
   }
 
   @Override
@@ -238,8 +238,8 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       return Collections.emptySet();
     }
     Body body = m.getBody();
-    StmtGraph<?> cfg = getOrCreateStmtGraph(body);
-    return cfg.getTails();
+    StmtGraph<?> stmtGraph = getOrCreateStmtGraph(body);
+    return stmtGraph.getTails();
   }
 
   @Override
