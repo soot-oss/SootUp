@@ -32,6 +32,7 @@ import org.apache.commons.io.FilenameUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.ResolveException;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
@@ -41,7 +42,10 @@ import sootup.core.views.View;
 import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.java.bytecode.frontend.conversion.AsmJavaClassProvider;
 import sootup.java.bytecode.frontend.conversion.AsmModuleSource;
-import sootup.java.core.*;
+import sootup.java.core.JavaModuleIdentifierFactory;
+import sootup.java.core.JavaModuleInfo;
+import sootup.java.core.JavaSootClassSource;
+import sootup.java.core.ModuleInfoAnalysisInputLocation;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
@@ -132,15 +136,18 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   @Nonnull
   public Collection<JavaSootClassSource> getModulesClassSources(
       @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
-    return getClassSourcesInternal(moduleSignature, view.getIdentifierFactory(), view)
-        .collect(Collectors.toList());
+    final Path archiveRoot = theFileSystem.getPath("modules", moduleSignature.getModuleName());
+    try (Stream<Path> paths = Files.walk(archiveRoot)) {
+      return getClassSourcesInternal(paths, view.getIdentifierFactory(), view)
+          .collect(Collectors.toList());
+    } catch (IOException e) {
+      throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
+    }
   }
 
   @Nonnull
   protected Stream<JavaSootClassSource> getClassSourcesInternal(
-      @Nonnull ModuleSignature moduleSignature,
-      @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull View view) {
+      Stream<Path> paths, @Nonnull IdentifierFactory identifierFactory, @Nonnull View view) {
 
     ClassProvider classProvider = new AsmJavaClassProvider(view);
 
@@ -148,33 +155,38 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
         JavaModuleIdentifierFactory.MODULE_INFO_FILE
             + classProvider.getHandledFileType().getExtensionWithDot();
 
-    final Path archiveRoot = theFileSystem.getPath("modules", moduleSignature.getModuleName());
-    try {
-
-      return Files.walk(archiveRoot)
-          .filter(
-              filePath ->
-                  !Files.isDirectory(filePath)
-                      && filePath
-                          .toString()
-                          .endsWith(classProvider.getHandledFileType().getExtensionWithDot())
-                      && !filePath.toString().endsWith(moduleInfoFilename))
-          .flatMap(
-              p ->
-                  StreamUtils.optionalToStream(
-                      classProvider.createClassSource(this, p, fromPath(p, identifierFactory))))
-          .map(src -> (JavaSootClassSource) src);
-    } catch (IOException e) {
-      throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
-    }
+    // collect into a list and then return a stream, so we do not leak the Stream returned by
+    // Files.walk
+    return paths
+        .filter(
+            filePath ->
+                !Files.isDirectory(filePath)
+                    && filePath
+                        .toString()
+                        .endsWith(classProvider.getHandledFileType().getExtensionWithDot())
+                    && !filePath.toString().endsWith(moduleInfoFilename))
+        .<SootClassSource>flatMap(
+            p ->
+                StreamUtils.optionalToStream(
+                    classProvider.createClassSource(this, p, fromPath(p, identifierFactory))))
+        .map(src -> (JavaSootClassSource) src);
   }
 
   @Override
   public @Nonnull Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
-
     Collection<ModuleSignature> moduleSignatures = discoverModules();
     return moduleSignatures.stream()
-        .flatMap(sig -> getClassSourcesInternal(sig, view.getIdentifierFactory(), view))
+        .flatMap(
+            moduleSignature -> {
+              final Path archiveRoot =
+                  theFileSystem.getPath("modules", moduleSignature.getModuleName());
+              try (Stream<Path> paths = Files.walk(archiveRoot)) {
+                return getClassSourcesInternal(paths, view.getIdentifierFactory(), view);
+              } catch (IOException e) {
+                throw new ResolveException(
+                    "Error loading module " + moduleSignature, archiveRoot, e);
+              }
+            })
         .collect(Collectors.toList());
   }
 
