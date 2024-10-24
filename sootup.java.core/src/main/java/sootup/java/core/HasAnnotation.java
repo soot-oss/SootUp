@@ -1,10 +1,10 @@
-package sootup.analysis.intraprocedural;
+package sootup.java.core;
 
 /*-
  * #%L
  * SootUp
  * %%
- * Copyright (C) 2022 - 2024 Kadiray Karakaya, Markus Schmidt, Jonas Klauke, Stefan Schott, Palaniappan Muthuraman, Marcus Hüwe and others
+ * Copyright (C) 1997 - 2024 Raja Vallée-Rai and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,23 +22,11 @@ package sootup.analysis.intraprocedural;
  * #L%
  */
 
-import sootup.core.graph.BasicBlock;
-import sootup.core.graph.StmtGraph;
-
-public abstract class ForwardFlowAnalysis<A> extends FlowAnalysis<A> {
-
-  /** Construct the analysis from StmtGraph. */
-  public <B extends BasicBlock<B>> ForwardFlowAnalysis(StmtGraph<B> graph) {
-    super(graph);
-  }
-
-  @Override
-  protected boolean isForward() {
-    return true;
-  }
-
-  @Override
-  protected void execute() {
-    int i = execute(stmtToBeforeFlow, stmtToAfterFlow);
-  }
+/**
+ * Interface to mark Soot code objects that may contain annotations.
+ *
+ * @author liyiwei
+ */
+public interface HasAnnotation {
+  Iterable<AnnotationUsage> getAnnotations();
 }

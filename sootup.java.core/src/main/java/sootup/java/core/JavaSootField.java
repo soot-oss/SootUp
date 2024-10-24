@@ -29,7 +29,7 @@ import sootup.core.model.Position;
 import sootup.core.model.SootField;
 import sootup.core.signatures.FieldSignature;
 
-public class JavaSootField extends SootField {
+public class JavaSootField extends SootField implements HasAnnotation {
 
   @Nonnull private final Iterable<AnnotationUsage> annotations;
 
