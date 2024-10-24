@@ -92,6 +92,9 @@ public class LocalPacker implements BodyInterceptor {
         Value use = iterator.next();
         if (use instanceof Local) {
           Local newLocal = localToNewLocal.get(use);
+          if (newLocal == null) {
+            continue;
+          }
           // assign a reasonable name
           if (!newLocals.contains(newLocal)) {
             int starPos = newLocal.getName().indexOf('*');
@@ -110,18 +113,20 @@ public class LocalPacker implements BodyInterceptor {
       if (defOpt.isPresent() && defOpt.get() instanceof Local) {
         Local def = (Local) defOpt.get();
         Local newLocal = localToNewLocal.get(def);
-        // assign a reasonable name
-        if (!newLocals.contains(newLocal)) {
-          int starPos = newLocal.getName().indexOf('*');
-          String reasonableName = newLocal.getName().substring(0, starPos) + newLocals.size();
-          List<Local> oriLocals = newLocalToLocals.get(newLocal);
-          newLocal = newLocal.withName(reasonableName);
-          newLocals.add(newLocal);
-          for (Local ori : oriLocals) {
-            localToNewLocal.put(ori, newLocal);
+        if (newLocal != null) {
+          // assign a reasonable name
+          if (!newLocals.contains(newLocal)) {
+            int starPos = newLocal.getName().indexOf('*');
+            String reasonableName = newLocal.getName().substring(0, starPos) + newLocals.size();
+            List<Local> oriLocals = newLocalToLocals.get(newLocal);
+            newLocal = newLocal.withName(reasonableName);
+            newLocals.add(newLocal);
+            for (Local ori : oriLocals) {
+              localToNewLocal.put(ori, newLocal);
+            }
           }
+          newStmt = ((AbstractDefinitionStmt) newStmt).withNewDef(newLocal);
         }
-        newStmt = ((AbstractDefinitionStmt) newStmt).withNewDef(newLocal);
       }
       if (!stmt.equals(newStmt)) {
         stmtGraph.replaceNode(stmt, newStmt);

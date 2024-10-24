@@ -464,7 +464,13 @@ public class Body implements HasPosition {
           .ifPresent(
               def -> {
                 if (def instanceof Local) {
-                  locals.remove(def);
+                  List<Stmt> localOccurrences =
+                      ((Local) def).getStmtsUsingthisLocal(this.graph.getStmts(), stmt);
+                  // after removing stmt, if the local variable doesn't occur anywhere else then
+                  // safely remove
+                  if (localOccurrences.isEmpty()) {
+                    locals.remove(def);
+                  }
                 }
               });
     }
