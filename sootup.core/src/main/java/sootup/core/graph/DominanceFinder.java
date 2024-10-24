@@ -24,78 +24,55 @@ package sootup.core.graph;
 
 import java.util.*;
 import javax.annotation.Nonnull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * @author Zun Wang
  * @see <a
  *     href="https://www.researchgate.net/publication/2569680_A_Simple_Fast_Dominance_Algorithm">
  *     https://www.researchgate.net/publication/2569680_A_Simple_Fast_Dominance_Algorithm </a>
  */
 public class DominanceFinder {
 
+  private static Logger LOGGER = LoggerFactory.getLogger(DominanceFinder.class);
+
   private List<BasicBlock<?>> blocks;
   private Map<BasicBlock<?>, Integer> blockToIdx = new HashMap<>();
   private int[] doms;
   private ArrayList<Integer>[] domFrontiers;
+  private BlockAnalysisDirection direction;
 
-  protected AnalysisDirection direction;
-
-  public enum AnalysisDirection {
-    BACKWARD {
-      @Override
-      @Nonnull
-      List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
-        return block.getSuccessors();
-      }
-
-      @Nonnull
-      @Override
-      List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
-        return Collections.unmodifiableList(new BackwardsStmtGraph(blockGraph).getBlocksSorted());
-      }
-    },
-    FORWARD {
-      @Override
-      @Nonnull
-      List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
-        return block.getPredecessors();
-      }
-
-      @Nonnull
-      @Override
-      List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
-        return Collections.unmodifiableList(blockGraph.getBlocksSorted());
-      }
-    };
-
-    @Nonnull
-    abstract List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block);
-
-    @Nonnull
-    abstract List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph);
+  public DominanceFinder(StmtGraph<?> blockGraph) {
+    // normal DominanceFinder should be in reverse post order
+    this(blockGraph, BlockAnalysisDirection.REVERSEPOSTORDERFORWARD);
   }
 
-  public DominanceFinder(@Nonnull StmtGraph<?> blockGraph) {
-    this(blockGraph, AnalysisDirection.FORWARD);
-  }
+  protected DominanceFinder(@Nonnull StmtGraph<?> blockGraph, BlockAnalysisDirection direction) {
 
-  protected DominanceFinder(@Nonnull StmtGraph<?> blockGraph, AnalysisDirection direction) {
+    // define the blocks' order
     this.direction = direction;
-
-    // we're locked into providing a List<BasicBlock<?>>, not a List<? extends BasicBlock<?>>, so
-    // we'll use the block iterator directly (which provides this type) rather than
-    // #getBlocksSorted.
     blocks = direction.getSortedBlocks(blockGraph);
-
-    // assign each block a integer id. The starting block must have id 0; rely on
-    // getBlocksSorted to have put the starting block first.
     for (int i = 0; i < blocks.size(); i++) {
       BasicBlock<?> block = blocks.get(i);
       blockToIdx.put(block, i);
     }
-    final BasicBlock<?> startingStmtBlock = blocks.get(0);
 
     // initialize doms
+    final BasicBlock<?> startBlock;
+    if (direction == BlockAnalysisDirection.REVERSEPOSTORDERFORWARD
+        || direction == BlockAnalysisDirection.POSTORDERBACKWARD) {
+      startBlock = blocks.get(0);
+      if (direction == BlockAnalysisDirection.POSTORDERBACKWARD) {
+        // todo: Postdominantor (POSTORDERBACKWARD) doesn't work for with multiple tail-blocks.
+        List<BasicBlock<?>> tails = blockGraph.getTailStmtBlocks();
+        if (tails.size() > 1) {
+          LOGGER.warn(
+              "BlockGraph has multiple tail-blocks, the Post-Dominators Computation could be incorrect!");
+        }
+      }
+    } else {
+      throw new RuntimeException("Invalid BlockAnalysisDirection!");
+    }
     doms = new int[blocks.size()];
     Arrays.fill(doms, -1);
     doms[0] = 0;
@@ -105,12 +82,11 @@ public class DominanceFinder {
     while (isChanged) {
       isChanged = false;
       for (BasicBlock<?> block : blocks) {
-        if (block.equals(startingStmtBlock)) {
+        if (block.equals(startBlock)) {
           continue;
         }
         int blockIdx = blockToIdx.get(block);
         List<BasicBlock<?>> preds = new ArrayList<>(direction.getPredecessors(block));
-        // ms: should not be necessary preds.addAll(block.getExceptionalPredecessors());
         int newIdom = getFirstDefinedBlockPredIdx(preds);
         if (!preds.isEmpty() && newIdom != -1) {
           BasicBlock<?> processed = blocks.get(newIdom);
@@ -131,19 +107,16 @@ public class DominanceFinder {
       }
     }
 
-    // startBlockId should not have immediate dominator, actually.
-    doms[0] = -1;
-
     // initialize domFrontiers
-    domFrontiers = new ArrayList[blockGraph.getBlocks().size()];
+    domFrontiers = new ArrayList[blocks.size()];
     for (int i = 0; i < domFrontiers.length; i++) {
       domFrontiers[i] = new ArrayList<>();
     }
 
+    doms[0] = -1;
     // calculate dominance frontiers for each block
     for (BasicBlock<?> block : blocks) {
       List<BasicBlock<?>> preds = new ArrayList<>(direction.getPredecessors(block));
-      // ms: should not be necessary  preds.addAll(block.getExceptionalPredecessors());
       if (preds.size() > 1) {
         int blockId = blockToIdx.get(block);
         for (BasicBlock<?> pred : preds) {
@@ -152,6 +125,14 @@ public class DominanceFinder {
             domFrontiers[predId].add(blockId);
             predId = doms[predId];
           }
+        }
+      }
+    }
+
+    if (direction == BlockAnalysisDirection.POSTORDERBACKWARD) {
+      for (int i = 0; i < domFrontiers.length; i++) {
+        if (domFrontiers[i].contains(i)) {
+          domFrontiers[i].remove(new Integer(i));
         }
       }
     }

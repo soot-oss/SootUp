@@ -51,6 +51,11 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   }
 
   @Override
+  public List<BasicBlock<?>> getTailStmtBlocks() {
+    return backingGraph.getTailStmtBlocks();
+  }
+
+  @Override
   public BasicBlock<?> getBlockOf(@Nonnull Stmt stmt) {
     return backingGraph.getBlockOf(stmt);
   }

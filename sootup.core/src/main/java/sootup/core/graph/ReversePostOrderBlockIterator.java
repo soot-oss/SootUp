@@ -1,5 +1,4 @@
 package sootup.core.graph;
-
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -27,32 +26,31 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 
-public class PostOrderBlockTraversal implements BlockTraversal {
+public class ReversePostOrderBlockIterator implements BlockIterator {
+  private List<BasicBlock<?>> blocks;
+  private int i = 0;
 
-  private final BasicBlock<?> startNode;
-
-  public PostOrderBlockTraversal(StmtGraph<?> cfg) {
-    startNode = cfg.getStartingStmtBlock();
+  public ReversePostOrderBlockIterator(@Nonnull BasicBlock<?> startNode) {
+    blocks =
+        StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(
+                    new PostOrderBlockIterator(startNode), Spliterator.ORDERED),
+                false)
+            .collect(Collectors.toList());
+    Collections.reverse(blocks);
   }
 
-  public PostOrderBlockTraversal(BasicBlock<?> startNode) {
-    this.startNode = startNode;
+  @Override
+  public boolean hasNext() {
+    return i < blocks.size();
   }
 
-  public Iterable<BasicBlock<?>> getOrder() {
-    return this::iterator;
-  }
-
-  public BlockIterator iterator() {
-    return new PostOrderBlockIterator(startNode);
-  }
-
-  @Nonnull
-  public static List<BasicBlock<?>> getBlocksSorted(StmtGraph<?> cfg) {
-    return StreamSupport.stream(
-            Spliterators.spliteratorUnknownSize(
-                new PostOrderBlockTraversal(cfg).iterator(), Spliterator.ORDERED),
-            false)
-        .collect(Collectors.toList());
+  @Override
+  public BasicBlock<?> next() {
+    if (!hasNext()) {
+      throw new NoSuchElementException("There is no more block.");
+    }
+    i++;
+    return blocks.get(i - 1);
   }
 }

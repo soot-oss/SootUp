@@ -1,5 +1,4 @@
 package sootup.core.graph;
-
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,10 +20,4 @@ package sootup.core.graph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-
-public class PostDominanceFinder extends DominanceFinder {
-
-  public PostDominanceFinder(StmtGraph<?> blockGraph) {
-    super(blockGraph, BlockAnalysisDirection.POSTORDERBACKWARD);
-  }
-}
+public interface BlockTraversal {}
