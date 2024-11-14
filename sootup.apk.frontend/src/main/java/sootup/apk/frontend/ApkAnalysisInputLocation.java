@@ -58,7 +58,7 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
   public ApkAnalysisInputLocation(
       Path apkPath, String android_jar_path, List<BodyInterceptor> bodyInterceptors) {
     this.apk_path = apkPath;
-    androidSDKVersionInfo = new AndroidVersionInfo(apkPath, android_jar_path);
+    androidSDKVersionInfo = AndroidVersionInfo.getVersionInfo(apkPath, android_jar_path);
     this.android_jar_path = android_jar_path;
     this.bodyInterceptors = bodyInterceptors;
     this.classNamesList = extractDexFilesFromPath();

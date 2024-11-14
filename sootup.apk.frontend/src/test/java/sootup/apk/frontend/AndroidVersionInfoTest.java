@@ -35,7 +35,7 @@ public class AndroidVersionInfoTest {
 
     // Initialize the class with mock data
     androidVersionInfo =
-        new AndroidVersionInfo(Paths.get("resources/FlowSensitivity1.apk"), "mock/jar/path");
+        AndroidVersionInfo.getVersionInfo(Paths.get("resources/FlowSensitivity1.apk"), "mock/jar/path");
   }
 
   @Test

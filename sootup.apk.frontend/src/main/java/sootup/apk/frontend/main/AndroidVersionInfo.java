@@ -51,9 +51,18 @@ public class AndroidVersionInfo {
   private String jar_path_location = "";
   private Path apk_path = null;
 
-  public AndroidVersionInfo(Path apkPath, String android_jar_path) {
+  private static AndroidVersionInfo instance;
+
+  private AndroidVersionInfo(Path apkPath, String android_jar_path) {
     this.apk_path = apkPath;
     this.jar_path_location = android_jar_path;
+  }
+
+  public static synchronized AndroidVersionInfo getVersionInfo(Path apkPath, String android_jar_path) {
+    if(instance == null) {
+      return new AndroidVersionInfo(apkPath, android_jar_path);
+    }
+    return instance;
   }
 
   public int sdkTargetVersion = -1;

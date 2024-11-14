@@ -28,10 +28,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
-import org.jf.dexlib2.dexbacked.raw.EncodedValue;
+
 import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
+import org.jf.dexlib2.iface.value.EncodedValue;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
@@ -172,7 +173,7 @@ public class DexClassSource extends JavaSootClassSource {
     for (Annotation annotation : annotations) {
       for (AnnotationElement element : annotation.getElements()) {
         String name = element.getName();
-        paramMap.put(name, convertAnnotationValue(element.getValue().getValueType()));
+        paramMap.put(name, convertAnnotationValue(element.getValue()));
       }
       ClassType at =
           JavaIdentifierFactory.getInstance()

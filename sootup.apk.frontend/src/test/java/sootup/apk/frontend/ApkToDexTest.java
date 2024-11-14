@@ -57,7 +57,7 @@ public class ApkToDexTest {
 
   @Test
   public void loadAnApk() {
-    String apk_path = "resources/FlowSensitivity1.apk";
+    String apk_path = "/Users/palaniappanmuthuraman/WorkSpace/Evaluation/Evaluation_TaintBench/apks/taintbench_apks/backflash.apk";
     ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation(
             Paths.get(apk_path), "", DexBodyInterceptors.Default.bodyInterceptors());
@@ -67,6 +67,7 @@ public class ApkToDexTest {
     int methodsSize = 0;
     for (JavaSootClass javaSootClass : classes) {
       Set<JavaSootMethod> methods = javaSootClass.getMethods();
+      methods.stream().filter(SootMethod::hasBody).forEach(SootMethod::getBody);
       methodsSize += methods.size();
     }
     // There are a total of 740 classes and 10559 methods present in the given APK
