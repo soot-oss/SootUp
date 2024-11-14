@@ -15,10 +15,13 @@ import sootup.core.jimple.common.expr.JLeExpr;
 import sootup.core.jimple.common.expr.JNeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
+import sootup.core.model.Body;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.UnknownType;
+import sootup.core.util.ImmutableUtils;
 
 @Tag("Java8")
 public class MutableBlockStmtGraphTest {
@@ -1147,5 +1150,34 @@ public class MutableBlockStmtGraphTest {
     assertTrue(entrypoints.contains(stmt1));
     assertTrue(entrypoints.contains(handlerStmt1));
     assertTrue(entrypoints.contains(handlerStmt2));
+  }
+
+  @Test
+  public void testInsertBefore1(){
+
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+
+    Local l0 = new Local("l0", PrimitiveType.IntType.getInstance());
+    Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
+    Local l2 = new Local("l2", PrimitiveType.IntType.getInstance());
+    StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
+
+    JAssignStmt assignl0e1 = new JAssignStmt(l0, IntConstant.getInstance(1), noPosInfo);
+    JAssignStmt assignl1e1 = new JAssignStmt(l1, IntConstant.getInstance(2), noPosInfo);
+    JAssignStmt assignl2e0 = new JAssignStmt(l2, IntConstant.getInstance(0), noPosInfo);
+    JGotoStmt gotoStmt = new JGotoStmt(noPosInfo);
+
+    JReturnStmt returnl2 = new JReturnStmt(l2, noPosInfo);
+
+    graph.setStartingStmt(assignl0e1);
+    graph.putEdge(assignl0e1, assignl1e1);
+    graph.putEdge(assignl1e1, gotoStmt);
+    graph.putEdge(gotoStmt,JGotoStmt.BRANCH_IDX, assignl2e0);
+    graph.putEdge(assignl2e0, returnl2);
+
+    FallsThroughStmt nop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    FallsThroughStmt nop2 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    graph.insertBefore(assignl2e0, Arrays.asList(nop, nop2), Collections.emptyMap());
+    System.out.println(graph);
   }
 }
