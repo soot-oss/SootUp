@@ -1,0 +1,8 @@
+[
+{
+  "jar_name": "sdk-tools-jvm-0.20.6-alpha1.jar",
+  "exception": "Failed to apply sootup.interceptors.NopEliminator@7a51ba06 to <money.terra.sdk.tools.transaction.LocalSemaphoreProvider$acquire$1: java.lang.Object invokeSuspend(java.lang.Object)>",
+  "download_url": "https://repo1.maven.org/maven2/money/terra/sdk-tools-jvm/0.20.6-alpha1/sdk-tools-jvm-0.20.6-alpha1.jar",
+  "failedMethodSignature": "<money.terra.sdk.tools.transaction.LocalSemaphoreProvider$acquire$1: java.lang.Object invokeSuspend(java.lang.Object)>"
+}
+]

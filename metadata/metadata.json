@@ -1,0 +1,504 @@
+{
+    "jars": [
+        {
+            "name": "javamoney-calc-1.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/javamoney/lib/javamoney-calc/1.1/javamoney-calc-1.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "skinny-json_2.13.0-M4-3.0.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/skinny-framework/skinny-json_2.13.0-M4/3.0.1/skinny-json_2.13.0-M4-3.0.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "jboss-j2se-200504122039.jar",
+            "download_url": "https://repo1.maven.org/maven2/jboss/jboss-j2se/200504122039/jboss-j2se-200504122039.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "legendary-bprocess-1.0.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/gitee/coldmethod/legendary-bprocess/1.0.0/legendary-bprocess-1.0.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "notched-outline-14.0.0-canary.53b3cad2f.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/mvnpm/at/material/notched-outline/14.0.0-canary.53b3cad2f.0/notched-outline-14.0.0-canary.53b3cad2f.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "ksef-sample-2.0.24.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/alapierre/ksef/ksef-sample/2.0.24/ksef-sample-2.0.24.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "common-1.0.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/b0c0/common/1.0.2/common-1.0.2.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "agiso-core-logging-0.0.2.RELEASE.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/agiso/core/agiso-core-logging/0.0.2.RELEASE/agiso-core-logging-0.0.2.RELEASE.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "superquants_sjs0.6_2.12-0.9.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/rudogma/superquants_sjs0.6_2.12/0.9/superquants_sjs0.6_2.12-0.9.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "sms4j-aliyun-2.0.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/dromara/sms4j/sms4j-aliyun/2.0.1/sms4j-aliyun-2.0.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "fulcrum-yaafi-crypto-2.0.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/apache/fulcrum/fulcrum-yaafi-crypto/2.0.1/fulcrum-yaafi-crypto-2.0.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "mapbox.js-3.3.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/webjars/npm/mapbox.js/3.3.1/mapbox.js-3.3.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "scala3-tasty-inspector_3.0.0-M3-3.0.0-M3-bin-20201216-c8fb1fa-NIGHTLY.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/scala-lang/scala3-tasty-inspector_3.0.0-M3/3.0.0-M3-bin-20201216-c8fb1fa-NIGHTLY/scala3-tasty-inspector_3.0.0-M3-3.0.0-M3-bin-20201216-c8fb1fa-NIGHTLY.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "jamgo-test-8.3.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/jamgo/jamgo-test/8.3.0/jamgo-test-8.3.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "eve-transport-http-jetty-3.1.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/almende/eve/eve-transport-http-jetty/3.1.1/eve-transport-http-jetty-3.1.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "validator-livr-2.0.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/github/vlbaluk/validator-livr/2.0.0/validator-livr-2.0.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "wasabi-analytics-1.0.20190619090227.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/intuit/wasabi/wasabi-analytics/1.0.20190619090227/wasabi-analytics-1.0.20190619090227.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "log4s-testing_sjs0.6_2.13-1.8.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/log4s/log4s-testing_sjs0.6_2.13/1.8.2/log4s-testing_sjs0.6_2.13-1.8.2.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "daily-utils_2.10-0.1.5.jar",
+            "download_url": "https://repo1.maven.org/maven2/net/dericbourg/daily-utils/daily-utils_2.10/0.1.5/daily-utils_2.10-0.1.5.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "ammonite_2.10-0.1.4.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/lihaoyi/ammonite_2.10/0.1.4/ammonite_2.10-0.1.4.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "dquartz-1.2.9.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/haflife3/dquartz/1.2.9.2/dquartz-1.2.9.2.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "spark-selectdb-connector-3.1_2.12-1.0.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/selectdb/spark-selectdb-connector-3.1_2.12/1.0.1/spark-selectdb-connector-3.1_2.12-1.0.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "cs-iframe-core-module-application-2.14.jar",
+            "download_url": "https://repo1.maven.org/maven2/se/vgregion/cs-iframe/cs-iframe-core-module-application/2.14/cs-iframe-core-module-application-2.14.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "jridgewell__source-map-0.3.6.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/webjars/npm/jridgewell__source-map/0.3.6/jridgewell__source-map-0.3.6.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "elastic-job-test-1.0.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/dangdang/elastic-job-test/1.0.1/elastic-job-test-1.0.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "onos-incubator-rpc-1.15.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/onosproject/onos-incubator-rpc/1.15.0/onos-incubator-rpc-1.15.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "snoozy-test-suite-0.10.4.jar",
+            "download_url": "https://repo1.maven.org/maven2/fi/jubic/snoozy-test-suite/0.10.4/snoozy-test-suite-0.10.4.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "micro-snowflake-11.0.11-RELEASE.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/guoshiyao/rely/micro-snowflake/11.0.11-RELEASE/micro-snowflake-11.0.11-RELEASE.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "flexmark-ext-plantuml-code-macro-0.6.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/github/md2conf/flexmark-ext-plantuml-code-macro/0.6.0/flexmark-ext-plantuml-code-macro-0.6.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "camel-k-itests-knative-3.15.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/apache/camel/k/camel-k-itests-knative/3.15.0/camel-k-itests-knative-3.15.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "impe3-es-common-server-3.1.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/isotrol/impe3/impe3-es-common-server/3.1.1/impe3-es-common-server-3.1.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "hivemall-spark2.3-0.5.2-incubating.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/apache/hivemall/hivemall-spark2.3/0.5.2-incubating/hivemall-spark2.3-0.5.2-incubating.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "geronimo-farm-wadi-2.2.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/apache/geronimo/modules/geronimo-farm-wadi/2.2.1/geronimo-farm-wadi-2.2.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "darts-clone-java-0.6.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/net/arnx/darts-clone-java/0.6.0/darts-clone-java-0.6.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "invest-plugin-data-jpa-0.0.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/committed/invest/invest-plugin-data-jpa/0.0.1/invest-plugin-data-jpa-0.0.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "projection-domain-jvm-0.15.0-RC1.jar",
+            "download_url": "https://repo1.maven.org/maven2/city/smartb/cccev/projection-domain-jvm/0.15.0-RC1/projection-domain-jvm-0.15.0-RC1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "darklaf-macos-3.0.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/weisj/darklaf-macos/3.0.2/darklaf-macos-3.0.2.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "AMDJ-1.0.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/rwl/AMDJ/1.0.1/AMDJ-1.0.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "sugarcane-1.0.6.RELEASE.jar",
+            "download_url": "https://repo1.maven.org/maven2/cn/thearies/sugarcane/1.0.6.RELEASE/sugarcane-1.0.6.RELEASE.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "refined-cats_native0.4_2.13-0.11.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/eu/timepit/refined-cats_native0.4_2.13/0.11.1/refined-cats_native0.4_2.13-0.11.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "paoding-rose-portal-1.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/54chen/paoding-rose-portal/1.0/paoding-rose-portal-1.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "i2-client-f2-generate-secret-0.11.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/city/smartb/i2/i2-client-f2-generate-secret/0.11.0/i2-client-f2-generate-secret-0.11.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "metaconfig-typesafe-config_2.12-0.12.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/geirsson/metaconfig-typesafe-config_2.12/0.12.0/metaconfig-typesafe-config_2.12-0.12.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "vertx-service-discovery-bridge-consul-5.0.0.CR2.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/vertx/vertx-service-discovery-bridge-consul/5.0.0.CR2/vertx-service-discovery-bridge-consul-5.0.0.CR2.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "core_2.11-7.0.3.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/thoughtworks/binding/core_2.11/7.0.3/core_2.11-7.0.3.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "vega-format-1.1.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/webjars/npm/vega-format/1.1.2/vega-format-1.1.2.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "jbpm-console-ng-workbench-integration-client-7.0.0.Beta5.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/jbpm/jbpm-console-ng-workbench-integration-client/7.0.0.Beta5/jbpm-console-ng-workbench-integration-client-7.0.0.Beta5.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "quelle-1.0.4.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/webjars/npm/quelle/1.0.4/quelle-1.0.4.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "testit-adapter-cucumber7-2.3.8.jar",
+            "download_url": "https://repo1.maven.org/maven2/ru/testit/testit-adapter-cucumber7/2.3.8/testit-adapter-cucumber7-2.3.8.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "kogito-addons-quarkus-fabric8-kubernetes-service-catalog-test-utils-2.44.0.Alpha.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/kie/kogito/kogito-addons-quarkus-fabric8-kubernetes-service-catalog-test-utils/2.44.0.Alpha/kogito-addons-quarkus-fabric8-kubernetes-service-catalog-test-utils-2.44.0.Alpha.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "leopard-xparam-0.9.12.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/leopard/leopard-xparam/0.9.12/leopard-xparam-0.9.12.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "chopsticks-openapi_2.13-3.12.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/dev/chopsticks/chopsticks-openapi_2.13/3.12.0/chopsticks-openapi_2.13-3.12.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "gson-object-scala-syntax_2.12-0.4.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/sergeygrigorev/gson-object-scala-syntax_2.12/0.4.0/gson-object-scala-syntax_2.12-0.4.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "scurator_2.10-0.1.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/scurator/scurator_2.10/0.1.2/scurator_2.10-0.1.2.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "annotations-jvm-1.0.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/xebia/annotations-jvm/1.0.0/annotations-jvm-1.0.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "groovy-applib-0.2.0-incubating.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/apache/isis/progmodels/groovy-applib/0.2.0-incubating/groovy-applib-0.2.0-incubating.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "pre-registration-core-1.2.0.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/mosip/preregistration/pre-registration-core/1.2.0.1/pre-registration-core-1.2.0.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "randomjson-2.1.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/mangatmodi/randomjson/2.1.2/randomjson-2.1.2.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "antonio-compiler-0.0.8-alpha.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/github/naverz/antonio/antonio-compiler/0.0.8-alpha/antonio-compiler-0.0.8-alpha.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "yc.frame.webex-0.1.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/ycframe/yc.frame.webex/0.1.2/yc.frame.webex-0.1.2.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "nxparser-utilities-4.0.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/semanticweb/yars/nxparser-utilities/4.0.0/nxparser-utilities-4.0.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "kone.numberTheory-0.0.0-dev-1.jar",
+            "download_url": "https://repo1.maven.org/maven2/dev/lounres/kone.numberTheory/0.0.0-dev-1/kone.numberTheory-0.0.0-dev-1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "nussknacker-request-response-runtime_2.12-1.18.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/pl/touk/nussknacker/nussknacker-request-response-runtime_2.12/1.18.0/nussknacker-request-response-runtime_2.12-1.18.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "notification-banner-4.5.3.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/jasig/portlet/notification/notification-banner/4.5.3/notification-banner-4.5.3.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "encryption-ec-0.10.6.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/jpmorgan/quorum/encryption-ec/0.10.6/encryption-ec-0.10.6.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "weixin-mp-0.9.8.jar",
+            "download_url": "https://repo1.maven.org/maven2/cn/com/riversoft/weixin-mp/0.9.8/weixin-mp-0.9.8.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "jkube-maven-enricher-generic-0.1.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/eclipse/jkube/jkube-maven-enricher-generic/0.1.0/jkube-maven-enricher-generic-0.1.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "dropwizard-toolbox-test-logging-1.0.10-de7b64a.jar",
+            "download_url": "https://repo1.maven.org/maven2/zone/gryphon/dropwizard/dropwizard-toolbox-test-logging/1.0.10-de7b64a/dropwizard-toolbox-test-logging-1.0.10-de7b64a.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "dispatch-times_2.9.0.RC1-0.8.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/net/databinder/dispatch-times_2.9.0.RC1/0.8.0/dispatch-times_2.9.0.RC1-0.8.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "build-reporter-maven-extension-3.9.6.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/quarkus/bot/build-reporter-maven-extension/3.9.6/build-reporter-maven-extension-3.9.6.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "swave-scodec-compat_2.12-0.7.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/swave/swave-scodec-compat_2.12/0.7.1/swave-scodec-compat_2.12-0.7.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "da-metadata-schema_3-0.0.41.jar",
+            "download_url": "https://repo1.maven.org/maven2/uk/gov/nationalarchives/da-metadata-schema_3/0.0.41/da-metadata-schema_3-0.0.41.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "codestar-notifications-847.2.1365.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/cognitect/aws/codestar-notifications/847.2.1365.0/codestar-notifications-847.2.1365.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "lodash.assignin-4.2.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/webjars/npm/lodash.assignin/4.2.0/lodash.assignin-4.2.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "leshan-server-core-0.1.9.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/github/leshan/leshan-server-core/0.1.9/leshan-server-core-0.1.9.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "swagger-template-angular10-1.0.3.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/cloudflight/swagger-template/swagger-template-angular10/1.0.3/swagger-template-angular10-1.0.3.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "lwjgl-glfw-3.3.4.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/lwjgl/lwjgl-glfw/3.3.4/lwjgl-glfw-3.3.4.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "anran-java-energy-1.0.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/github/zhangchunsheng/anran-java-energy/1.0.1/anran-java-energy-1.0.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "fescar-common-0.4.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/alibaba/fescar/fescar-common/0.4.2/fescar-common-0.4.2.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "org-netbeans-modules-php-api-annotation-RELEASE230.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/netbeans/modules/org-netbeans-modules-php-api-annotation/RELEASE230/org-netbeans-modules-php-api-annotation-RELEASE230.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "slf4gwt-1.4.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/slf4gwt/slf4gwt/1.4/slf4gwt-1.4.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "cats-effect-testing-minitest_3.0.0-RC1-1.0.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/typelevel/cats-effect-testing-minitest_3.0.0-RC1/1.0.0/cats-effect-testing-minitest_3.0.0-RC1-1.0.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "activiti-5_21_0-0.7.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/toxos/process-assertions/activiti/activiti-5_21_0/0.7.1/activiti-5_21_0-0.7.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "joynr-websocket-client-1.25.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/joynr/android/messaging/websocket/joynr-websocket-client/1.25.0/joynr-websocket-client-1.25.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "tethys-jackson_2.13-0.26.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/tethys-json/tethys-jackson_2.13/0.26.0/tethys-jackson_2.13-0.26.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "pdok-util-1.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/nl/pdok/pdok-util/1.1/pdok-util-1.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "wod-iquod-qc-check-lfpr-group-1.0.10.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/github/ci-cmg/wod/wod-iquod-qc-check-lfpr-group/1.0.10/wod-iquod-qc-check-lfpr-group-1.0.10.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "github-com-supabase-supabase-js-1.0.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/webjars/npm/github-com-supabase-supabase-js/1.0.0/github-com-supabase-supabase-js-1.0.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "jetty-perf-helper-1.0.7.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/eclipse/jetty/toolchain/jetty-perf-helper/1.0.7/jetty-perf-helper-1.0.7.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "upickle_sjs0.5_2.10-0.2.5.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/lihaoyi/upickle_sjs0.5_2.10/0.2.5/upickle_sjs0.5_2.10-0.2.5.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "sdk-tools-jvm-0.20.6-alpha1.jar",
+            "download_url": "https://repo1.maven.org/maven2/money/terra/sdk-tools-jvm/0.20.6-alpha1/sdk-tools-jvm-0.20.6-alpha1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "sakurainterpreter-1.2.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/net/arkinsolomon/sakurainterpreter/1.2.0/sakurainterpreter-1.2.0.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "npm-registry-couchapp-2.6.13.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/webjars/npm/npm-registry-couchapp/2.6.13/npm-registry-couchapp-2.6.13.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "otel4s-core-common_native0.4_2.13-0.11.1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/typelevel/otel4s-core-common_native0.4_2.13/0.11.1/otel4s-core-common_native0.4_2.13-0.11.1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "process-0.3.2.jar",
+            "download_url": "https://repo1.maven.org/maven2/br/com/objectos/core/process/0.3.2/process-0.3.2.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "semantic_2.12-2.0.0-M1.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/scalameta/semantic_2.12/2.0.0-M1/semantic_2.12-2.0.0-M1.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "automorph-tapir_2.13-0.2.5.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/automorph/automorph-tapir_2.13/0.2.5/automorph-tapir_2.13-0.2.5.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "sip-servlets-as7-4.0.12.jar",
+            "download_url": "https://repo1.maven.org/maven2/org/mobicents/servlet/sip/containers/sip-servlets-as7/4.0.12/sip-servlets-as7-4.0.12.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "eureka-core-2.0.4.jar",
+            "download_url": "https://repo1.maven.org/maven2/com/netflix/eureka/eureka-core/2.0.4/eureka-core-2.0.4.jar",
+            "date": "2024-11-25"
+        },
+        {
+            "name": "aws-cdk-scala-efs_3-0.5.0.jar",
+            "download_url": "https://repo1.maven.org/maven2/io/burkard/aws-cdk-scala-efs_3/0.5.0/aws-cdk-scala-efs_3-0.5.0.jar",
+            "date": "2024-11-25"
+        }
+    ]
+}
