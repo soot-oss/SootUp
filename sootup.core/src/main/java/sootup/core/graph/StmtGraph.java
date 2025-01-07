@@ -22,6 +22,8 @@ package sootup.core.graph;
  * #L%
  */
 
+import static sootup.core.jimple.common.stmt.FallsThroughStmt.FALLTSTHROUH_IDX;
+
 import com.google.common.collect.Iterators;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -516,178 +518,234 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     }
   }
 
+  protected static class IteratorFrame
+      implements Comparable<IteratorFrame>, Iterable<BasicBlock<?>> {
+    private final int weightSum;
+    private final Deque<BasicBlock<?>> sequence;
+
+    protected IteratorFrame(Deque<BasicBlock<?>> sequence, int weightSum) {
+      this.weightSum = weightSum;
+      this.sequence = sequence;
+    }
+
+    @Override
+    public int compareTo(IteratorFrame o) {
+      return Integer.compare(weightSum, o.weightSum);
+    }
+
+    public int getWeight() {
+      return weightSum;
+    }
+
+    public int size() {
+      return sequence.size();
+    }
+
+    @Nonnull
+    @Override
+    public Iterator<BasicBlock<?>> iterator() {
+      return sequence.iterator();
+    }
+  }
+
   /** Iterates over the blocks */
   protected class BlockGraphIterator implements Iterator<BasicBlock<?>> {
 
-    @Nonnull private final ArrayDeque<BasicBlock<?>> trapHandlerBlocks = new ArrayDeque<>();
+    private final PriorityQueue<IteratorFrame> worklist = new PriorityQueue<>();
+    private IteratorFrame itFrame;
+    private Iterator<BasicBlock<?>> itBlock;
 
-    @Nonnull private final ArrayDeque<BasicBlock<?>> nestedBlocks = new ArrayDeque<>();
-    @Nonnull private final ArrayDeque<BasicBlock<?>> otherBlocks = new ArrayDeque<>();
-    @Nonnull private final Set<BasicBlock<?>> iteratedBlocks;
+    @Nonnull
+    private final Map<BasicBlock<?>, Deque<BasicBlock<?>>> fallsThroughSequenceMap =
+        new IdentityHashMap<>();
+
+    @Nonnull private final Set<BasicBlock<?>> seenTargets;
+    private int iterations = 0;
+    private int minValue = 0;
+    private int maxValue = 0;
 
     public BlockGraphIterator() {
+      System.out.println("==============0");
       final Collection<? extends BasicBlock<?>> blocks = getBlocks();
-      iteratedBlocks = new LinkedHashSet<>(blocks.size(), 1);
+      seenTargets = new LinkedHashSet<>(blocks.size(), 1);
       Stmt startingStmt = getStartingStmt();
       if (startingStmt != null) {
         final BasicBlock<?> startingBlock = getStartingStmtBlock();
-        updateFollowingBlocks(startingBlock);
-        nestedBlocks.addFirst(startingBlock);
+        itFrame = new IteratorFrame(calculateFallsThroughSequence(startingBlock), 0);
+        itBlock = itFrame.iterator();
+        updateFollowingBlocks(startingBlock, 0);
       }
     }
 
-    @Nullable
-    private BasicBlock<?> retrieveNextBlock() {
-      BasicBlock<?> nextBlock;
-      do {
-        if (!nestedBlocks.isEmpty()) {
-          nextBlock = nestedBlocks.pollFirst();
-        } else if (!trapHandlerBlocks.isEmpty()) {
-          nextBlock = trapHandlerBlocks.pollFirst();
-        } else if (!otherBlocks.isEmpty()) {
-          nextBlock = otherBlocks.pollFirst();
-        } else {
-          Collection<? extends BasicBlock<?>> blocks = getBlocks();
-          if (iteratedBlocks.size() < blocks.size()) {
-            // graph is not connected! iterate/append all not connected blocks at the end in no
-            // particular order.
-            for (BasicBlock<?> block : blocks) {
-              if (!iteratedBlocks.contains(block)) {
-                nestedBlocks.addLast(block);
-              }
-            }
-            if (!nestedBlocks.isEmpty()) {
-              return nestedBlocks.pollFirst();
-            }
-          }
+    protected Deque<BasicBlock<?>> calculateFallsThroughSequence(@Nonnull BasicBlock<?> param) {
+      Deque<BasicBlock<?>> basicBlockSequence = fallsThroughSequenceMap.get(param);
+      if (basicBlockSequence != null) {
+        return basicBlockSequence;
+      }
 
-          return null;
+      Deque<BasicBlock<?>> blockSequence = new ArrayDeque<>();
+
+      BasicBlock<?> continousBlockSequenceHeadCandidate = param;
+      // TODO: [ms] looks ugly.. simplify readability of the loop!
+      // find the leader of the Block Sequence (connected via FallsthroughStmts)
+      while (true) {
+        blockSequence.addFirst(continousBlockSequenceHeadCandidate);
+        final List<? extends BasicBlock<?>> itPreds =
+            continousBlockSequenceHeadCandidate.getPredecessors();
+        BasicBlock<?> continousBlockTailCandidate = continousBlockSequenceHeadCandidate;
+        final Optional<? extends BasicBlock<?>> fallsthroughPredOpt =
+            itPreds.stream()
+                .filter(
+                    b ->
+                        b.getTail().fallsThrough()
+                            && b.getSuccessors().get(FALLTSTHROUH_IDX)
+                                == continousBlockTailCandidate)
+                .findAny();
+        if (!fallsthroughPredOpt.isPresent()) {
+          break;
         }
+        BasicBlock<?> predecessorBlock = fallsthroughPredOpt.get();
+        if (predecessorBlock.getTail().fallsThrough()
+            && predecessorBlock.getSuccessors().get(FALLTSTHROUH_IDX)
+                == continousBlockSequenceHeadCandidate) {
+          // TODO: [ms] seems tautologic
+          continousBlockSequenceHeadCandidate = predecessorBlock;
+        } else {
+          break;
+        }
+      }
 
-        // skip retrieved nextBlock if its already returned
-      } while (iteratedBlocks.contains(nextBlock));
-      return nextBlock;
+      // iterate to the end of the sequence
+      BasicBlock<?> continousBlockSequenceTailCandidate = param;
+      while (continousBlockSequenceTailCandidate.getTail().fallsThrough()) {
+        continousBlockSequenceTailCandidate =
+            continousBlockSequenceTailCandidate.getSuccessors().get(0);
+        blockSequence.addLast(continousBlockSequenceTailCandidate);
+      }
+
+      // cache calculated sequence for every block in the sequence
+      for (BasicBlock<?> basicBlock : blockSequence) {
+        fallsThroughSequenceMap.put(basicBlock, blockSequence);
+        seenTargets.add(basicBlock);
+      }
+      return blockSequence;
     }
 
     @Override
     @Nonnull
     public BasicBlock<?> next() {
-      BasicBlock<?> currentBlock = retrieveNextBlock();
-      if (currentBlock == null) {
-        throw new NoSuchElementException("Iterator has no more Blocks.");
+      if (!itBlock.hasNext()) {
+        itFrame = worklist.poll();
+        if (itFrame == null) {
+          throw new NoSuchElementException("Iterator has no more Blocks.");
+        }
+        itBlock = itFrame.iterator();
       }
-      updateFollowingBlocks(currentBlock);
-      iteratedBlocks.add(currentBlock);
+
+      BasicBlock<?> currentBlock = itBlock.next();
+      System.out.println(++iterations + ": ");
+      updateFollowingBlocks(currentBlock, itFrame.getWeight());
       return currentBlock;
     }
 
-    private void updateFollowingBlocks(BasicBlock<?> currentBlock) {
-      // collect traps
+    private void updateFollowingBlocks(BasicBlock<?> currentBlock, int currentWeight) {
+
       final Stmt tailStmt = currentBlock.getTail();
-      for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> entry :
-          currentBlock.getExceptionalSuccessors().entrySet()) {
-        BasicBlock<?> trapHandlerBlock = entry.getValue();
-        trapHandlerBlocks.addLast(trapHandlerBlock);
-        nestedBlocks.addFirst(trapHandlerBlock);
+      final List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
+      final int startIdx = tailStmt.fallsThrough() ? 1 : 0;
+
+      // handle the branching successor(s)
+      for (int i = startIdx; i < successors.size(); i++) {
+        // find the leader/beginning block of a continuous sequence of Blocks (connected via
+        // FallsThroughStmts)
+        final BasicBlock<?> successorBlock = successors.get(i);
+
+        enqueueWeighted(currentWeight += getBlocks().size(), currentBlock, successorBlock);
       }
 
-      final List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
+      for (BasicBlock<?> trapHandlerBlock : currentBlock.getExceptionalSuccessors().values()) {
+        enqueueWeighted(currentWeight += getBlocks().size(), currentBlock, trapHandlerBlock);
+      }
+    }
 
-      for (int i = successors.size() - 1; i >= 0; i--) {
-        if (i == 0 && tailStmt.fallsThrough()) {
-          // non-branching successors i.e. not a BranchingStmt or is the first successor (i.e. its
-          // false successor) of
-          // JIfStmt
-          nestedBlocks.addFirst(successors.get(0));
+    private void enqueueWeighted(
+        int currentWeight, BasicBlock<?> currentBlock, BasicBlock<?> successorBlock) {
+      if (seenTargets.contains(successorBlock)) {
+        return;
+      }
+
+      iterations++;
+      Deque<BasicBlock<?>> blockSequence = calculateFallsThroughSequence(successorBlock);
+      BasicBlock<?> lastBlockOfSequence = blockSequence.getLast();
+      boolean isSequenceTailExceptionFree =
+          lastBlockOfSequence.getExceptionalSuccessors().isEmpty();
+
+      if (currentBlock.getTail() instanceof JIfStmt
+          && currentBlock.getTail() instanceof JSwitchStmt) {
+        //    currentWeight = minValue-getBlocks().size();
+      } else if (currentBlock.getTail() instanceof JGotoStmt) {
+        // currentWeight++;
+      }
+
+      int categoryWeight = 2;
+      if (isSequenceTailExceptionFree) {
+        if (lastBlockOfSequence.getTail() instanceof JReturnStmt
+            || lastBlockOfSequence.getTail() instanceof JReturnVoidStmt) {
+          // biggest number, yet - only bigger weight if there follows another JReturn(Void)Stmt
+          categoryWeight = 0;
         } else {
-
-          // create the longest FallsThroughStmt sequence possible
-          final BasicBlock<?> successorBlock = successors.get(i);
-          BasicBlock<?> leaderOfFallsthroughBlocks = successorBlock;
-          while (true) {
-            final List<? extends BasicBlock<?>> itPreds =
-                leaderOfFallsthroughBlocks.getPredecessors();
-
-            BasicBlock<?> finalLeaderOfFallsthroughBlocks = leaderOfFallsthroughBlocks;
-            final Optional<? extends BasicBlock<?>> fallsthroughPredOpt =
-                itPreds.stream()
-                    .filter(
-                        b ->
-                            b.getTail().fallsThrough()
-                                && b.getSuccessors().get(0) == finalLeaderOfFallsthroughBlocks)
-                    .findAny();
-            if (!fallsthroughPredOpt.isPresent()) {
-              break;
-            }
-            BasicBlock<?> predecessorBlock = fallsthroughPredOpt.get();
-            if (predecessorBlock.getTail().fallsThrough()
-                && predecessorBlock.getSuccessors().get(0) == leaderOfFallsthroughBlocks) {
-              leaderOfFallsthroughBlocks = predecessorBlock;
-            } else {
-              break;
-            }
-          }
-
-          // find a return Stmt inside the current Block
-          Stmt succTailStmt = successorBlock.getTail();
-          boolean hasNoSuccessorStmts = succTailStmt.getExpectedSuccessorCount() == 0;
-          boolean isExceptionFree = successorBlock.getExceptionalSuccessors().isEmpty();
-
-          boolean isLastStmtCandidate = hasNoSuccessorStmts && isExceptionFree;
-          // remember branching successors
-          if (tailStmt instanceof JGotoStmt) {
-            if (isLastStmtCandidate) {
-              nestedBlocks.removeFirstOccurrence(currentBlock);
-              otherBlocks.addLast(leaderOfFallsthroughBlocks);
-            } else {
-              otherBlocks.addFirst(leaderOfFallsthroughBlocks);
-            }
-          } else if (!nestedBlocks.contains(leaderOfFallsthroughBlocks)) {
-            // JSwitchStmt, JIfStmt
-            if (isLastStmtCandidate) {
-              nestedBlocks.addLast(leaderOfFallsthroughBlocks);
-            } else {
-              nestedBlocks.addFirst(leaderOfFallsthroughBlocks);
-            }
-          }
+          categoryWeight = 1;
         }
       }
+
+      IteratorFrame frame =
+          new IteratorFrame(
+              blockSequence, (currentWeight - iterations) - categoryWeight * getBlocks().size());
+      worklist.add(frame);
+      minValue = Math.min(frame.getWeight(), minValue);
+      maxValue = Math.max(frame.getWeight(), maxValue);
+      System.out.println(
+          "weight: "
+              + (currentWeight - iterations)
+              + " it:"
+              + iterations
+              + " sum:"
+              + frame.weightSum
+              + " :: "
+              + currentBlock
+              + " => "
+              + blockSequence);
     }
 
     @Override
     public boolean hasNext() {
-      final boolean hasIteratorMoreElements;
-      BasicBlock<?> b = retrieveNextBlock();
-      if (b != null) {
-        // reinsert at FIRST position -&gt; not great for performance - but easier handling in
-        // next()
-        nestedBlocks.addFirst(b);
-        hasIteratorMoreElements = true;
-      } else {
-        hasIteratorMoreElements = false;
+      // "assertion" that all elements are iterated
+      if (itBlock.hasNext()) {
+        return true;
       }
 
-      // "assertion" that all elements are iterated
-      if (!hasIteratorMoreElements) {
-        final int returnedSize = iteratedBlocks.size();
-        final Collection<? extends BasicBlock<?>> blocks = getBlocks();
-        final int actualSize = blocks.size();
-        if (returnedSize != actualSize) {
-          String info =
-              blocks.stream()
-                  .filter(n -> !iteratedBlocks.contains(n))
-                  .map(BasicBlock::getStmts)
-                  .collect(Collectors.toList())
-                  .toString();
-          throw new IllegalStateException(
-              "There are "
-                  + (actualSize - returnedSize)
-                  + " Blocks that are not iterated! i.e. the StmtGraph is not connected from its startingStmt!"
-                  + info
-                  + DotExporter.createUrlToWebeditor(StmtGraph.this));
-        }
+      if (!worklist.isEmpty()) {
+        return true;
       }
-      return hasIteratorMoreElements;
+
+      final Collection<? extends BasicBlock<?>> blocks = getBlocks();
+      final int actualSize = blocks.size();
+      if (seenTargets.size() != actualSize) {
+        String info =
+            blocks.stream()
+                .filter(n -> !seenTargets.contains(n))
+                .map(BasicBlock::getStmts)
+                .collect(Collectors.toList())
+                .toString();
+        throw new IllegalStateException(
+            "There are "
+                + (actualSize - seenTargets.size())
+                + " Blocks that are not iterated! i.e. the StmtGraph is not connected from its startingStmt!"
+                + info
+                + DotExporter.createUrlToWebeditor(StmtGraph.this));
+      }
+
+      return false;
     }
   }
 

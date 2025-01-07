@@ -139,23 +139,23 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
             "label1:",
             "l1 = \"try\"",
             "$stack4 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.String)>(l1)",
+            "virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.String)>(l1)", // <-- endrange:handler:label3,label5
             "label2:",
             "l1 = \"finally\"",
             "$stack5 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.String)>(l1)",
-            "goto label6",
+            "goto label6", // <-- label6
             "label3:",
             "$stack8 := @caughtexception",
             "l2 = $stack8",
             "l1 = \"catch\"",
             "$stack9 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $stack9.<java.io.PrintStream: void println(java.lang.String)>(l1)",
+            "virtualinvoke $stack9.<java.io.PrintStream: void println(java.lang.String)>(l1)", // <-- endrange:handler:label5
             "label4:",
             "l1 = \"finally\"",
             "$stack10 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack10.<java.io.PrintStream: void println(java.lang.String)>(l1)",
-            "goto label6",
+            "goto label6", // <-- label6
             "label5:",
             "$stack6 := @caughtexception",
             "l3 = $stack6",
