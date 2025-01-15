@@ -23,6 +23,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
+import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.interceptors.TrapTightener;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
@@ -33,6 +34,8 @@ import sootup.java.core.views.JavaView;
 @Tag(TestCategories.JAVA_8_CATEGORY)
 @Disabled("FIXME: needs .setTraps() adapted to MutableBlockStmtGraph")
 public class TrapTightenerTest {
+  public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();
+
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
@@ -131,7 +134,8 @@ public class TrapTightenerTest {
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap3);
-    List<Trap> actual = stmtGraph.buildTraps();
+    briefStmtPrinter.buildTraps(stmtGraph);
+    List<Trap> actual = briefStmtPrinter.getTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
   /**
@@ -172,7 +176,8 @@ public class TrapTightenerTest {
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap1);
-    List<Trap> actual = stmtGraph.buildTraps();
+    briefStmtPrinter.buildTraps(stmtGraph);
+    List<Trap> actual = briefStmtPrinter.getTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
 

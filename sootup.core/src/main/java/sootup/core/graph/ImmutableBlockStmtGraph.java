@@ -26,7 +26,6 @@ import com.google.common.collect.Lists;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
 
@@ -134,12 +133,6 @@ public class ImmutableBlockStmtGraph
 
   @Override
   public boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target) {
-    throw new UnsupportedOperationException("Not implemented yet!");
-  }
-
-  @Nonnull
-  @Override
-  public List<Trap> buildTraps() {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 

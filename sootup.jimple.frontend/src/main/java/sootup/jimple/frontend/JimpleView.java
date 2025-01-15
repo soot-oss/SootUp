@@ -129,11 +129,11 @@ public class JimpleView extends AbstractView {
                   .collect(Collectors.joining(",")),
           foundClassSources.get(0).getSourcePath());
     }
-    return buildClassFrom(foundClassSources.get(0));
+    return Optional.of(buildClassFrom(foundClassSources.get(0)));
   }
 
   @Nonnull
-  private synchronized Optional<SootClass> buildClassFrom(AbstractClassSource classSource) {
+  private synchronized SootClass buildClassFrom(AbstractClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
     SootClass theClass;
@@ -144,7 +144,7 @@ public class JimpleView extends AbstractView {
       theClass = cache.getClass(classType);
     }
 
-    return Optional.of(theClass);
+    return theClass;
   }
 
   private synchronized void resolveAll() {

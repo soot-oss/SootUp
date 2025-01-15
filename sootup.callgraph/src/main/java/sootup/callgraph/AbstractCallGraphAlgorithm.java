@@ -67,13 +67,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * This method starts the construction of the call graph algorithm. It initializes the needed
    * objects for the call graph generation and calls processWorkList method.
    *
-   * @param view the view contains all needed class files.
    * @param entryPoints a list of method signatures that will be added to the work list in the call
    *     graph generation.
    * @return the complete constructed call graph starting from the entry methods.
    */
   @Nonnull
-  final CallGraph constructCompleteCallGraph(View view, List<MethodSignature> entryPoints) {
+  final CallGraph constructCompleteCallGraph(List<MethodSignature> entryPoints) {
     Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
     Set<MethodSignature> processed = new HashSet<>();
 
@@ -83,7 +82,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     workList.addAll(clinits);
     MutableCallGraph cg = initializeCallGraph(entryPoints, clinits);
 
-    processWorkList(view, workList, processed, cg);
+    processWorkList(workList, processed, cg);
     return cg;
   }
 
@@ -124,21 +123,17 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /**
    * Processes all entries in the <code>workList</code>, skipping those present in <code>processed
-   *  </code>, adding call edges to the graph. Newly discovered methods are added to the <code>
-   *  workList</code> and processed as well. <code>cg</code> is updated accordingly. The method
+   * </code>, adding call edges to the graph. Newly discovered methods are added to the <code>
+   * workList</code> and processed as well. <code>cg</code> is updated accordingly. The method
    * postProcessingMethod is called after a method is processed in the <code>workList</code>.
    *
-   * @param view it contains the classes.
    * @param workList it contains all method that have to be processed in the call graph generation.
    *     This list is filled in the execution with found call targets in the call graph algorithm.
    * @param processed the list of processed method to only process the method once.
    * @param cg the call graph object that is filled with the found methods and call edges.
    */
   final void processWorkList(
-      View view,
-      Deque<MethodSignature> workList,
-      Set<MethodSignature> processed,
-      MutableCallGraph cg) {
+      Deque<MethodSignature> workList, Set<MethodSignature> processed, MutableCallGraph cg) {
     while (!workList.isEmpty()) {
       MethodSignature currentMethodSignature = workList.pop();
       // skip if already processed
@@ -154,7 +149,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       }
 
       // perform pre-processing if needed
-      preProcessingMethod(view, currentMethodSignature, workList, cg);
+      preProcessingMethod(currentMethodSignature, workList, cg);
 
       // process the method
       if (!cg.containsMethod(currentMethodSignature)) {
@@ -175,7 +170,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       processed.add(currentMethodSignature);
 
       // perform post-processing if needed
-      postProcessingMethod(view, currentMethodSignature, workList, cg);
+      postProcessingMethod(currentMethodSignature, workList, cg);
     }
   }
 
@@ -351,13 +346,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /**
    * This method enables optional pre-processing of a method in the call graph algorithm
    *
-   * @param view view
    * @param sourceMethod the processed method
    * @param workList the current work list that might be extended
    * @param cg the current cg that might be extended
    */
   protected abstract void preProcessingMethod(
-      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg);
@@ -365,13 +358,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /**
    * This method enables optional post-processing of a method in the call graph algorithm
    *
-   * @param view it contains classes and the type hierarchy.
    * @param sourceMethod the processed method
    * @param workList the current work list that might be extended
    * @param cg the current cg that might be extended
    */
   protected abstract void postProcessingMethod(
-      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg);
@@ -397,7 +388,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     // Step 1: Add edges from the new methods to other methods
     Deque<MethodSignature> workList = new ArrayDeque<>(newMethodSignatures);
     Set<MethodSignature> processed = new HashSet<>(oldCallGraph.getMethodSignatures());
-    processWorkList(view, workList, processed, updated);
+    processWorkList(workList, processed, updated);
 
     // Step 2: Add edges from old methods to methods overridden in the new class
     Stream<ClassType> superClasses = view.getTypeHierarchy().superClassesOf(classType);
@@ -445,10 +436,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * <p>The method throws an exception if there is no main method in any of the classes or if there
    * are more than one main method.
    *
-   * @param view to get the view specific main method.
    * @return - MethodSignature of main method.
    */
-  public MethodSignature findMainMethod(View view) {
+  public MethodSignature findMainMethod() {
     Collection<SootMethod> mainMethods =
         view.getClasses()
             .filter(aClass -> !aClass.isLibraryClass())

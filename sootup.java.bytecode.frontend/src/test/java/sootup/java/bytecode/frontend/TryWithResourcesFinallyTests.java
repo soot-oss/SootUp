@@ -4,13 +4,12 @@ import categories.TestCategories;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
@@ -29,6 +28,8 @@ public class TryWithResourcesFinallyTests {
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .parseMethodSignature("<TryWithResourcesFinally: void test0(java.lang.AutoCloseable)>");
-    List<Trap> traps = view.getMethod(methodSignature).get().getBody().getTraps();
+    BriefStmtPrinter stmtPrinter = new BriefStmtPrinter();
+    stmtPrinter.buildTraps(view.getMethod(methodSignature).get().getBody().getStmtGraph());
+    stmtPrinter.getTraps();
   }
 }
