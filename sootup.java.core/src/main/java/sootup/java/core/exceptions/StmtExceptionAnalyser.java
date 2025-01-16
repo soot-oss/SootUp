@@ -26,14 +26,13 @@ import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.JNewExpr;
+import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.typehierarchy.TypeHierarchy;
-import sootup.core.types.ClassType;
-import sootup.core.types.NullType;
-import sootup.core.types.Type;
-import sootup.core.types.UnknownType;
+import sootup.core.types.*;
 
 import javax.annotation.Nonnull;
 import java.util.Set;
@@ -51,7 +50,7 @@ public class StmtExceptionAnalyser {
         this.hierarchy = hierarchy;
     }
 
-    public ExceptionAnalyserResult mightThrow(@Nonnull Stmt stmt, @Nonnull MutableStmtGraph graph){
+    public ExceptionInferResult mightThrow(@Nonnull Stmt stmt, @Nonnull MutableStmtGraph graph){
         if(stmt instanceof JThrowStmt){
             return mightThrowExplicitly((JThrowStmt) stmt, graph);
         }else {
@@ -59,7 +58,7 @@ public class StmtExceptionAnalyser {
         }
     }
 
-    public ExceptionAnalyserResult mightThrowExplicitly(@Nonnull JThrowStmt throwStmt, @Nonnull MutableStmtGraph graph){
+    public ExceptionInferResult mightThrowExplicitly(@Nonnull JThrowStmt throwStmt, @Nonnull MutableStmtGraph graph){
         Immediate throwExpression = throwStmt.getOp();
         //todo: needs to check if all throwExpressions are locals
         if(!(throwExpression instanceof Local)){
@@ -68,10 +67,10 @@ public class StmtExceptionAnalyser {
         Local exceptionLocal = (Local) throwExpression;
         Type throwType = exceptionLocal.getType();
         if(throwType == null || throwType instanceof UnknownType){
-            return ExceptionAnalyserResult.createThrowableExceptions();
+            return ExceptionInferResult.createThrowableExceptions();
         }
         if(throwType instanceof NullType){
-            return ExceptionAnalyserResult.createNullPointerException();
+            return ExceptionInferResult.createNullPointerException();
         }
         if(!(throwType instanceof ClassType)){
             throw new IllegalStateException("The type of " + throwStmt +" is not a ClassType!");
@@ -83,21 +82,44 @@ public class StmtExceptionAnalyser {
         if(!(preciserType instanceof ClassType)){
             throw new IllegalStateException("The type of " + preciserType +" is not a ClassType!");
         }
-        return ExceptionAnalyserResult.createSingleException((ClassType) throwType, hierarchy);
+        return ExceptionInferResult.createSingleException((ClassType) throwType, hierarchy);
     }
 
     private Type findPreciserType(@Nonnull Local local, @Nonnull MutableStmtGraph graph){
         Type preciserType = null;
-        Set<Stmt> defStmts = graph.getStmts().stream().filter(stmt -> stmt instanceof AbstractDefinitionStmt).collect(Collectors.toSet());
-        Set<Value> aliasesOfGivenLocal = defStmts.stream().filter(stmt -> ((AbstractDefinitionStmt) stmt).getLeftOp()==local).map(stmt -> ((AbstractDefinitionStmt) stmt).getRightOp()).collect(Collectors.toSet());
-        Set<Type> allocationTypes = aliasesOfGivenLocal.stream().filter(value -> value instanceof JNewExpr).map(value -> value.getType()).collect(Collectors.toSet());
+        Set<Stmt> defStmtsOfLocal = graph.getStmts().stream().filter(stmt -> stmt instanceof AbstractDefinitionStmt).filter(stmt -> ((AbstractDefinitionStmt) stmt).getLeftOp()==local).collect(Collectors.toSet());
+        Set<Value> aliasesOfLocal = defStmtsOfLocal.stream().map(stmt -> ((AbstractDefinitionStmt) stmt).getRightOp()).collect(Collectors.toSet());
+        Set<Type> allocationTypes = aliasesOfLocal.stream().filter(value -> value instanceof JNewExpr).map(value -> value.getType()).collect(Collectors.toSet());
         if(allocationTypes.size() == 1){
             preciserType = allocationTypes.iterator().next();
         }
         return preciserType;
     }
 
-    private ExceptionAnalyserResult mightThrowImplicitly(Stmt stmt){
-        return null;
+    private ExceptionInferResult mightThrowImplicitly(Stmt stmt){
+        ExceptionInferResult result = ExceptionInferResult.createEmptyException();
+        if(stmt instanceof JAssignStmt){
+
+            Value leftOp = ((JAssignStmt) stmt).getLeftOp();
+            Value rightOp = ((JAssignStmt) stmt).getRightOp();
+
+            //write in an Array
+            if(leftOp instanceof JArrayRef){
+                result.addException(ExceptionInferResult.ExceptionType.INDEX_OUT_OF_BOUNDS_EXCEPTION, hierarchy);
+                result.addException(ExceptionInferResult.ExceptionType.NUll_POINTER_EXCEPTION, hierarchy);
+                if(rightOp instanceof ClassType){
+                    result.addException(ExceptionInferResult.ExceptionType.ARRAY_STORE_EXCEPTION, hierarchy);
+                }
+                return result;
+            }
+
+            //read from an Array
+            if(rightOp instanceof JArrayRef){
+                result.addException(ExceptionInferResult.ExceptionType.INDEX_OUT_OF_BOUNDS_EXCEPTION, hierarchy);
+                result.addException(ExceptionInferResult.ExceptionType.NUll_POINTER_EXCEPTION, hierarchy);
+                return result;
+            }
+        }
+        return result;
     }
 }
