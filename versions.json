@@ -1,13 +1,5 @@
 [
   {
-    "version": "ssa_correction_preview",
-    "title": "PR Preview ssa_correction",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "remove-experimental-modules_preview",
     "title": "PR Preview remove-experimental-modules",
     "aliases": [],
