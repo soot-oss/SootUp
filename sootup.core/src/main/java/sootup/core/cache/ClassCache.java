@@ -24,20 +24,37 @@ package sootup.core.cache;
 
 import java.util.Collection;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import sootup.core.frontend.SootClassSource;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
 /** Interface for different caching strategies of resolved classes. */
-public interface ClassCache {
+public interface ClassCache<C extends SootClass> {
 
-  SootClass getClass(ClassType classType);
+  /**
+   * return the SootClass identified by classType
+   * */
+  C getClass(@Nonnull ClassType classType);
 
+  /**
+   * return all SootClasses stored in this Cache
+   * */
   @Nonnull
-  Collection<SootClass> getClasses();
+  Collection<C> getClasses();
 
-  void putClass(ClassType classType, SootClass sootClass);
+  /**
+   * add the given SootClass into the Cache
+   * */
+  // TODO: simplify: classType can be retrieved from sootClass.getType()
+  @Nullable
+  C putClass(@Nonnull ClassType classType, @Nonnull C sootClass);
 
-  boolean hasClass(ClassType classType);
+  /**
+   * Check if the associated SootClass for ClassType exists in the Cache
+   * */
+  boolean hasClass(@Nonnull ClassType classType);
 
   int size();
 }

@@ -23,6 +23,8 @@ package sootup.core.cache;
  */
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
@@ -30,8 +32,20 @@ import sootup.core.types.ClassType;
  * Mutable version of the {@link FullCache} that additionally allows for a removal of cached
  * classes.
  */
-public class MutableFullCache extends FullCache implements MutableClassCache {
+public class MutableFullCache<C extends SootClass> extends FullCache<C> implements MutableClassCache<C> {
 
+  /**
+   * set SootClass into Cache, if element exists it will be replaced.
+   * */
+  @Override
+  @Nullable
+  public C putClass(@Nonnull ClassType classType, @Nonnull C sootClass) {
+    return cache.put(classType, sootClass);
+  }
+
+  /**
+   * removes the SootClass identified by classType from the Cache.
+   * */
   @Override
   public SootClass removeClass(@Nonnull ClassType classType) {
     if (this.hasClass(classType)) {
