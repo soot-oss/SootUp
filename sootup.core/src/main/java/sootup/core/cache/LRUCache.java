@@ -57,8 +57,8 @@ public class LRUCache<C extends SootClass> implements ClassCache<C> {
   }
 
   @Override
-  public C putClass(@Nonnull ClassType classType, @Nonnull C sootClass) {
-    return cache.putIfAbsent(classType, sootClass);
+  public C putClass(@Nonnull C sootClass) {
+    return cache.putIfAbsent(sootClass.getType(), sootClass);
   }
 
   @Override

@@ -24,12 +24,13 @@ package sootup.core.cache.provider;
 
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.MutableFullCache;
+import sootup.core.model.SootClass;
 
 /** Provides a new {@link MutableFullCache} object. */
-public class MutableFullCacheProvider implements ClassCacheProvider {
+public class MutableFullCacheProvider<C extends SootClass> implements ClassCacheProvider<C> {
 
   @Override
-  public ClassCache createCache() {
-    return new MutableFullCache();
+  public ClassCache<C> createCache() {
+    return new MutableFullCache<>();
   }
 }

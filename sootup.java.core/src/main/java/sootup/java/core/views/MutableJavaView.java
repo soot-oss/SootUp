@@ -63,7 +63,7 @@ public class MutableJavaView extends JavaView implements MutableView {
       logger.warn("Class " + classType + " already exists in view.");
       return;
     }
-    this.cache.putClass(classType, clazz);
+    this.cache.putClass(clazz);
     this.fireAddition(clazz);
   }
 

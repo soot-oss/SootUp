@@ -33,6 +33,7 @@ import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -50,7 +51,7 @@ public class JavaView extends AbstractView {
   @Nonnull protected final JavaIdentifierFactory identifierFactory;
 
   @Nonnull protected final List<AnalysisInputLocation> inputLocations;
-  @Nonnull protected final ClassCache cache;
+  @Nonnull protected final ClassCache<JavaSootClass> cache;
 
   protected volatile boolean isFullyResolved = false;
 
@@ -82,7 +83,7 @@ public class JavaView extends AbstractView {
   @Nonnull
   public synchronized Stream<JavaSootClass> getClasses() {
     if (isFullyResolved && cache instanceof FullCache) {
-      return cache.getClasses().stream().map(clazz -> (JavaSootClass) clazz);
+      return cache.getClasses().stream().map(clazz -> clazz);
     }
 
     Stream<JavaSootClass> resolvedClasses =
@@ -99,7 +100,7 @@ public class JavaView extends AbstractView {
   @Override
   @Nonnull
   public synchronized Optional<JavaSootClass> getClass(@Nonnull ClassType type) {
-    JavaSootClass cachedClass = (JavaSootClass) cache.getClass(type);
+    JavaSootClass cachedClass = cache.getClass(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
@@ -110,7 +111,7 @@ public class JavaView extends AbstractView {
 
   @Nonnull
   public Optional<JavaAnnotationSootClass> getAnnotationClass(@Nonnull ClassType type) {
-    return getClass(type).filter(sc -> sc.isAnnotation()).map(sc -> (JavaAnnotationSootClass) sc);
+    return getClass(type).filter(SootClass::isAnnotation).map(sc -> (JavaAnnotationSootClass) sc);
   }
 
   @Override
@@ -158,12 +159,12 @@ public class JavaView extends AbstractView {
     ClassType classType = classSource.getClassType();
     JavaSootClass theClass;
     if (cache.hasClass(classType)) {
-      theClass = (JavaSootClass) cache.getClass(classType);
+      theClass = cache.getClass(classType);
     } else {
       theClass =
           (JavaSootClass)
               classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
-      cache.putClass(classType, theClass);
+      cache.putClass(theClass);
     }
     return theClass;
   }

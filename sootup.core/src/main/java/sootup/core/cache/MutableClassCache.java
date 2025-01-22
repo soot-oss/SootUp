@@ -30,10 +30,7 @@ import sootup.core.types.ClassType;
 public interface MutableClassCache<C extends SootClass> extends ClassCache<C> {
   SootClass removeClass(ClassType classType);
 
-  default SootClass replaceClass(
-      @Nonnull ClassType oldType, @Nonnull ClassType newType, @Nonnull C newClass) {
-    SootClass oldClass = removeClass(oldType);
-    putClass(newType, newClass);
-    return oldClass;
+  default SootClass replaceClass(@Nonnull C newClass) {
+    return putClass(newClass);
   }
 }

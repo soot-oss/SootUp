@@ -55,7 +55,7 @@ import sootup.java.core.JavaIdentifierFactory;
 public class JimpleView extends AbstractView {
 
   @Nonnull protected final List<AnalysisInputLocation> inputLocations;
-  @Nonnull private final ClassCache cache;
+  @Nonnull private final ClassCache<SootClass> cache;
   @Nonnull protected final SourceType sourceType;
 
   private volatile boolean isFullyResolved = false;
@@ -65,13 +65,13 @@ public class JimpleView extends AbstractView {
   }
 
   public JimpleView(@Nonnull List<AnalysisInputLocation> inputLocations) {
-    this(inputLocations, new FullCacheProvider(), SourceType.Application);
+    this(inputLocations, new FullCacheProvider<>(), SourceType.Application);
   }
 
   public JimpleView(
       @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull ClassCacheProvider cacheProvider,
-      SourceType sourceType) {
+      @Nonnull ClassCacheProvider<SootClass> cacheProvider,
+      @Nonnull SourceType sourceType) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
     this.sourceType = sourceType;
@@ -139,7 +139,7 @@ public class JimpleView extends AbstractView {
     SootClass theClass;
     if (!cache.hasClass(classType)) {
       theClass = classSource.buildClass(sourceType);
-      cache.putClass(classType, theClass);
+      cache.putClass(theClass);
     } else {
       theClass = cache.getClass(classType);
     }

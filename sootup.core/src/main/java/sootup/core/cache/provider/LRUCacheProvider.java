@@ -24,9 +24,10 @@ package sootup.core.cache.provider;
 
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.LRUCache;
+import sootup.core.model.SootClass;
 
 /** Provides a new {@link LRUCache} object. */
-public class LRUCacheProvider implements ClassCacheProvider {
+public class LRUCacheProvider<C extends SootClass> implements ClassCacheProvider<C> {
   private final int cacheSize;
 
   /** Create a new LRUCacheProvider that returns a {@link LRUCache} with a default size of 100. */
@@ -43,7 +44,7 @@ public class LRUCacheProvider implements ClassCacheProvider {
   }
 
   @Override
-  public ClassCache createCache() {
-    return new LRUCache(cacheSize);
+  public ClassCache<C> createCache() {
+    return new LRUCache<>(cacheSize);
   }
 }
