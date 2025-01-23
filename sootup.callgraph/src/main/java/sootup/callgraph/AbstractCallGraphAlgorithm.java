@@ -162,14 +162,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       }
 
       // transform the method signature to the actual SootMethod
-      SootMethod currentMethod =
-          currentClass.getMethod(currentMethodSignature.getSubSignature()).orElse(null);
+      currentClass
+          .getMethod(currentMethodSignature.getSubSignature())
+          .ifPresent(
+              currentMethod -> {
+                // get all call targets of invocations in the method body
+                resolveAllCallsFromSourceMethod(currentMethod, cg, workList);
 
-      // get all call targets of invocations in the method body
-      resolveAllCallsFromSourceMethod(currentMethod, cg, workList);
-
-      // get all call targets of implicit edges in the method body
-      resolveAllImplicitCallsFromSourceMethod(currentMethod, cg, workList);
+                // get all call targets of implicit edges in the method body
+                resolveAllImplicitCallsFromSourceMethod(currentMethod, cg, workList);
+              });
 
       // set method as processed
       processed.add(currentMethodSignature);
@@ -222,7 +224,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected void resolveAllCallsFromSourceMethod(
       SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
-    if (sourceMethod == null || !sourceMethod.hasBody()) {
+    if (!sourceMethod.hasBody()) {
       return;
     }
 
@@ -247,10 +249,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected void resolveAllImplicitCallsFromSourceMethod(
       SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
-    if (sourceMethod == null || !sourceMethod.hasBody()) {
+    if (!sourceMethod.hasBody()) {
       return;
     }
-
     // collect all static initializer calls
     resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
   }
