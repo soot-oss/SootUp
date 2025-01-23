@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
@@ -294,8 +295,9 @@ public class JavaModuleView extends JavaView {
       stream =
           inputLocations.stream()
               .flatMap(
-                  input ->
-                      input.getClassSources(this).stream().map(src -> (JavaSootClassSource) src));
+                  input -> {
+                    return input.getClassSources(this).map(src -> (JavaSootClassSource) src);
+                  });
 
     } else {
       // named module
@@ -307,7 +309,8 @@ public class JavaModuleView extends JavaView {
                         .flatMap(
                             input -> {
                               // classpath
-                              return input.getClassSources(this).stream()
+                              return input
+                                  .getClassSources(this)
                                   .filter(
                                       cs ->
                                           moduleSignature.equals(
@@ -319,7 +322,9 @@ public class JavaModuleView extends JavaView {
                         .flatMap(
                             input -> {
                               // modulepath
-                              return input.getModulesClassSources(moduleSignature, this).stream();
+                              Stream<? extends SootClassSource> modulesClassSources =
+                                  input.getModulesClassSources(moduleSignature, this);
+                              return modulesClassSources;
                             }))
                 .map(src -> (JavaSootClassSource) src);
 
@@ -329,7 +334,8 @@ public class JavaModuleView extends JavaView {
             moduleInfoAnalysisInputLocations.stream()
                 .flatMap(
                     input ->
-                        input.getModulesClassSources(moduleSignature, this).stream()
+                        input
+                            .getModulesClassSources(moduleSignature, this)
                             .map(src -> (JavaSootClassSource) src));
       }
     }

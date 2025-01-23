@@ -23,7 +23,6 @@ package sootup.core.graph;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
 
@@ -48,6 +47,11 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   @Override
   public BasicBlock<?> getStartingStmtBlock() {
     return backingGraph.getStartingStmtBlock();
+  }
+
+  @Override
+  public List<BasicBlock<?>> getTailStmtBlocks() {
+    return backingGraph.getTailStmtBlocks();
   }
 
   @Override
@@ -126,12 +130,6 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   @Override
   public Iterator<Stmt> iterator() {
     return backingGraph.iterator();
-  }
-
-  @Nonnull
-  @Override
-  public List<Trap> buildTraps() {
-    return backingGraph.buildTraps();
   }
 
   @Override

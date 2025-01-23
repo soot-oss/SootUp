@@ -111,17 +111,6 @@ public class Body implements HasPosition {
     return locals;
   }
 
-  /**
-   * Returns an unmodifiable view of the traps found in this Body. @Deprecated the exceptional flow
-   * information is already integrated into the StmtGraphs BasicBlocks.getExceptionalFlows() -
-   * exists to make porting tools from Soot easier
-   */
-  @Nonnull
-  @Deprecated()
-  public List<Trap> getTraps() {
-    return graph.buildTraps();
-  }
-
   /** Return unit containing the \@this-assignment * */
   @Nullable
   public Stmt getThisStmt() {

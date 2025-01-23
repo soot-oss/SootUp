@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import sootup.core.IdentifierFactory;
@@ -62,8 +61,6 @@ public abstract class AnalysisInputLocationTest {
       assertTrue(clazzOpt.isPresent());
       assertEquals(classType, clazzOpt.get().getClassType());
     }
-    final Collection<? extends SootClassSource> classSources = ns.getClassSources(view);
-
-    assertEquals(classSources.size(), classesFound);
+    assertEquals(ns.getClassSources(view).count(), classesFound);
   }
 }

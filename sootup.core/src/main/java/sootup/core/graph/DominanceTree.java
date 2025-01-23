@@ -26,7 +26,12 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/*@author Zun Wang*/
+/**
+ * This class is used to build a dominance tree for a BlockStmtGraph, which helps identify the
+ * dominator-relationships among blocks
+ *
+ * @see <a>https://en.wikipedia.org/wiki/Dominator_(graph_theory)</a>
+ */
 public class DominanceTree {
 
   private List<BasicBlock<?>> blocks;
@@ -47,7 +52,7 @@ public class DominanceTree {
     }
 
     for (int i = 0; i < treeSize; i++) {
-      if (iDoms[i] != i) {
+      if (iDoms[i] != -1 && iDoms[i] != i) {
         parents[i] = iDoms[i];
         children[iDoms[i]].add(i);
       }

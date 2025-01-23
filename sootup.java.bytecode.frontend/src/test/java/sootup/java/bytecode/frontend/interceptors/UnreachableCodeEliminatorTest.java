@@ -13,16 +13,14 @@ import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
-import sootup.core.jimple.common.stmt.BranchingStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
-import sootup.core.jimple.common.stmt.JGotoStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
+import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.interceptors.UnreachableCodeEliminator;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
@@ -32,6 +30,8 @@ import sootup.java.core.views.JavaView;
 /** @author Zun Wang */
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class UnreachableCodeEliminatorTest {
+
+  public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   JavaJimple javaJimple = JavaJimple.getInstance();
@@ -139,7 +139,8 @@ public class UnreachableCodeEliminatorTest {
 
     new UnreachableCodeEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
-    assertEquals(0, builder.getStmtGraph().buildTraps().size());
+    briefStmtPrinter.buildTraps(builder.getStmtGraph());
+    assertEquals(0, briefStmtPrinter.getTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
@@ -175,7 +176,8 @@ public class UnreachableCodeEliminatorTest {
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
     eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
-    assertEquals(0, builder.getStmtGraph().buildTraps().size());
+    briefStmtPrinter.buildTraps(builder.getStmtGraph());
+    assertEquals(0, briefStmtPrinter.getTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     assertEquals(expectedStmtsSet, builder.getStmtGraph().getNodes());

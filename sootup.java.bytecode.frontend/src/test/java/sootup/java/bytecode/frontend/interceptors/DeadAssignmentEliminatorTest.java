@@ -27,7 +27,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.util.Utils;
 import sootup.interceptors.DeadAssignmentEliminator;
 import sootup.interceptors.LocalPacker;
-import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
@@ -173,7 +173,7 @@ public class DeadAssignmentEliminatorTest {
   @Test
   public void testDeadAssignmentEliminator() {
     AnalysisInputLocation inputLocation =
-        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+        new ClassFileBasedAnalysisInputLocation(
             classFilePath,
             "",
             SourceType.Application,
@@ -233,7 +233,7 @@ public class DeadAssignmentEliminatorTest {
   @Test
   public void testLocalCountAfterDAE() {
     AnalysisInputLocation inputLocation =
-        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+        new ClassFileBasedAnalysisInputLocation(
             classFilePath,
             "",
             SourceType.Application,

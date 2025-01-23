@@ -25,6 +25,7 @@ package sootup.java.core.views;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.cache.ClassCache;
@@ -33,6 +34,7 @@ import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -87,11 +89,14 @@ public class JavaView extends AbstractView {
 
     Stream<JavaSootClass> resolvedClasses =
         inputLocations.stream()
-            .flatMap(location -> location.getClassSources(this).stream())
+            .flatMap(
+                location -> {
+                  // TODO: [ms] find a way to not stream().collect().stream()
+                  return location.getClassSources(this).collect(Collectors.toList()).stream();
+                })
             .map(this::buildClassFrom);
 
     isFullyResolved = true;
-
     return resolvedClasses;
   }
 
@@ -110,7 +115,7 @@ public class JavaView extends AbstractView {
 
   @Nonnull
   public Optional<JavaAnnotationSootClass> getAnnotationClass(@Nonnull ClassType type) {
-    return getClass(type).filter(sc -> sc.isAnnotation()).map(sc -> (JavaAnnotationSootClass) sc);
+    return getClass(type).filter(SootClass::isAnnotation).map(sc -> (JavaAnnotationSootClass) sc);
   }
 
   @Override

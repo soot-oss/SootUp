@@ -22,6 +22,7 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
+import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
 
@@ -830,7 +831,10 @@ public class JimpleConverterTest {
             CharStreams.fromFileName("src/test/java/resources/jimple/RedundantTrapHandler.jimple"));
     Set<? extends SootMethod> methods = clazz.getMethods();
     SootMethod method = methods.iterator().next();
-    List<Trap> traps = method.getBody().getTraps();
+
+    BriefStmtPrinter stmtPrinter = new BriefStmtPrinter();
+    stmtPrinter.buildTraps(method.getBody().getStmtGraph());
+    List<Trap> traps = stmtPrinter.getTraps();
     assertEquals(0, traps.size());
   }
 }

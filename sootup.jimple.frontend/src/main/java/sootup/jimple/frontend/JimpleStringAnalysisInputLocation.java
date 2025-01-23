@@ -24,10 +24,9 @@ package sootup.jimple.frontend;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.CharStreams;
 import sootup.core.frontend.OverridingClassSource;
@@ -91,9 +90,8 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
 
   @Nonnull
   @Override
-  public Collection<? extends SootClassSource> getClassSources(@Nonnull View view) {
-    return Collections.singletonList(
-        getOverridingClassSource(jimpleFileContents, bodyInterceptors, view));
+  public Stream<? extends SootClassSource> getClassSources(@Nonnull View view) {
+    return Stream.of(getOverridingClassSource(jimpleFileContents, bodyInterceptors, view));
   }
 
   @Nonnull

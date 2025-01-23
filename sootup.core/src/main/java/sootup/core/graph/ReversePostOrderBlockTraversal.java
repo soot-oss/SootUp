@@ -27,15 +27,13 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 
-public class ReversePostOrderBlockTraversal {
-  private final BasicBlock<?> startNode;
+/** A strategy to traverse a StmtGraph in reverse post-order. */
+public class ReversePostOrderBlockTraversal implements BlockTraversalStrategy {
+
+  private final StmtGraph<?> cfg;
 
   public ReversePostOrderBlockTraversal(StmtGraph<?> cfg) {
-    startNode = cfg.getStartingStmtBlock();
-  }
-
-  public ReversePostOrderBlockTraversal(BasicBlock<?> startNode) {
-    this.startNode = startNode;
+    this.cfg = cfg;
   }
 
   @Nonnull
@@ -44,45 +42,18 @@ public class ReversePostOrderBlockTraversal {
   }
 
   @Nonnull
+  @Override
   public BlockIterator iterator() {
-    return new BlockIterator(startNode);
+    return new ReversePostOrderBlockIterator(this.cfg.getStartingStmtBlock());
   }
 
+  @Override
   @Nonnull
-  public static List<BasicBlock<?>> getBlocksSorted(StmtGraph<?> cfg) {
+  public List<BasicBlock<?>> getBlocksSorted() {
     return StreamSupport.stream(
             Spliterators.spliteratorUnknownSize(
-                new ReversePostOrderBlockTraversal(cfg).iterator(), Spliterator.ORDERED),
+                new ReversePostOrderBlockTraversal(this.cfg).iterator(), Spliterator.ORDERED),
             false)
         .collect(Collectors.toList());
-  }
-
-  public static class BlockIterator implements Iterator<BasicBlock<?>> {
-    private List<BasicBlock<?>> blocks;
-    private int i = 0;
-
-    public BlockIterator(@Nonnull BasicBlock<?> startNode) {
-      blocks =
-          StreamSupport.stream(
-                  Spliterators.spliteratorUnknownSize(
-                      new PostOrderBlockTraversal.BlockIterator(startNode), Spliterator.ORDERED),
-                  false)
-              .collect(Collectors.toList());
-      Collections.reverse(blocks);
-    }
-
-    @Override
-    public boolean hasNext() {
-      return i < blocks.size();
-    }
-
-    @Override
-    public BasicBlock<?> next() {
-      if (!hasNext()) {
-        throw new NoSuchElementException("There is no more block.");
-      }
-      i++;
-      return blocks.get(i - 1);
-    }
   }
 }

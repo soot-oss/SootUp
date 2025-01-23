@@ -168,20 +168,17 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param entry A class path entry
    * @return A stream of class path entries with wildcards exploded
    */
-  private static @Nonnull Stream<Path> handleWildCards(@Nonnull String entry) {
+  @Nonnull
+  private static Stream<Path> handleWildCards(@Nonnull String entry) {
     return handleWildCards(entry, FileSystems.getDefault());
   }
 
   @Override
   @Nonnull
-  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
-    // By using a set here, already added classes won't be overwritten and the class which is found
-    // first will be kept
-    Set<SootClassSource> found = new HashSet<>();
-    for (AnalysisInputLocation inputLocation : cpEntries) {
-      found.addAll(inputLocation.getClassSources(view));
-    }
-    return found.stream().map(src -> (JavaSootClassSource) src).collect(Collectors.toList());
+  public Stream<JavaSootClassSource> getClassSources(@Nonnull View view) {
+    return cpEntries.stream()
+        .flatMap(inputLocation -> inputLocation.getClassSources(view))
+        .map(src -> (JavaSootClassSource) src);
   }
 
   @Override

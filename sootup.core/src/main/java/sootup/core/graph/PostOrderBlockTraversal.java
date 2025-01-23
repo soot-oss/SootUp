@@ -27,82 +27,29 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 
-public class PostOrderBlockTraversal {
+/** A strategy to traverse a StmtGraph in post-order. */
+public class PostOrderBlockTraversal implements BlockTraversalStrategy {
 
-  private final BasicBlock<?> startNode;
+  private final StmtGraph<?> cfg;
 
   public PostOrderBlockTraversal(StmtGraph<?> cfg) {
-    startNode = cfg.getStartingStmtBlock();
-  }
-
-  public PostOrderBlockTraversal(BasicBlock<?> startNode) {
-    this.startNode = startNode;
+    this.cfg = cfg;
   }
 
   public Iterable<BasicBlock<?>> getOrder() {
     return this::iterator;
   }
 
+  @Override
   public BlockIterator iterator() {
-    return new BlockIterator(startNode);
+    return new PostOrderBlockIterator(this.cfg.getStartingStmtBlock());
   }
 
+  @Override
   @Nonnull
-  public static List<BasicBlock<?>> getBlocksSorted(StmtGraph<?> cfg) {
+  public List<BasicBlock<?>> getBlocksSorted() {
     return StreamSupport.stream(
-            Spliterators.spliteratorUnknownSize(
-                new PostOrderBlockTraversal(cfg).iterator(), Spliterator.ORDERED),
-            false)
+            Spliterators.spliteratorUnknownSize(this.iterator(), Spliterator.ORDERED), false)
         .collect(Collectors.toList());
-  }
-
-  public static class BlockIterator implements Iterator<BasicBlock<?>> {
-    private final Stack<Frame> stack = new Stack<>();
-    private final Set<BasicBlock<?>> visited = new HashSet<>();
-
-    public BlockIterator(@Nonnull BasicBlock<?> startNode) {
-      visitNode(startNode);
-      stack.push(
-          new Frame(startNode, ((List<BasicBlock<?>>) startNode.getSuccessors()).iterator()));
-    }
-
-    private boolean visitNode(@Nonnull BasicBlock<?> node) {
-      return visited.add(node);
-    }
-
-    @Override
-    public boolean hasNext() {
-      return !stack.isEmpty();
-    }
-
-    @Override
-    public BasicBlock<?> next() {
-      if (!hasNext()) {
-        throw new NoSuchElementException("There is no more block.");
-      }
-      while (!stack.isEmpty()) {
-        Frame frame = stack.peek();
-        if (frame.succIterator.hasNext()) {
-          BasicBlock<?> succ = frame.succIterator.next();
-          if (visitNode(succ)) {
-            stack.push(new Frame(succ, ((List<BasicBlock<?>>) succ.getSuccessors()).iterator()));
-          }
-        } else {
-          stack.pop();
-          return frame.node;
-        }
-      }
-      return null;
-    }
-
-    private static class Frame {
-      final BasicBlock<?> node;
-      final Iterator<BasicBlock<?>> succIterator;
-
-      Frame(BasicBlock<?> node, Iterator<BasicBlock<?>> childIterator) {
-        this.node = node;
-        this.succIterator = childIterator;
-      }
-    }
   }
 }

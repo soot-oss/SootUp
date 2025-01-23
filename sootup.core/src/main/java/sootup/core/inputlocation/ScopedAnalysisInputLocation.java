@@ -22,10 +22,9 @@ package sootup.core.inputlocation;
  * #L%
  */
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.model.SourceType;
@@ -60,12 +59,8 @@ abstract class ScopedAnalysisInputLocation implements AnalysisInputLocation {
 
   @Nonnull
   @Override
-  public Collection<? extends SootClassSource> getClassSources(@Nonnull View view) {
-    // possibility to streamify this method to apply the filter at earlier stage i.e. before
-    // creating the ClassSources would be a faster approach..
-    return inputLocation.getClassSources(view).stream()
-        .filter(type -> filter(type.getClassType()))
-        .collect(Collectors.toList());
+  public Stream<? extends SootClassSource> getClassSources(@Nonnull View view) {
+    return inputLocation.getClassSources(view).filter(type -> filter(type.getClassType()));
   }
 
   @Nonnull

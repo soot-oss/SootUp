@@ -33,6 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.tools.*;
 import sootup.core.frontend.SootClassSource;
@@ -95,7 +96,7 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
 
   @Nonnull
   @Override
-  public Collection<? extends SootClassSource> getClassSources(@Nonnull View view) {
+  public Stream<? extends SootClassSource> getClassSources(@Nonnull View view) {
     return inputLocation.getClassSources(view);
   }
 

@@ -31,6 +31,7 @@ import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.core.views.View;
 
 /**
@@ -53,7 +54,10 @@ public class JimpleTrapValidator implements BodyValidator {
     List<ValidationException> exceptions = new ArrayList<>();
 
     Set<Stmt> caughtStmts = new HashSet<Stmt>();
-    for (Trap trap : body.getTraps()) {
+    BriefStmtPrinter stmtPrinter = new BriefStmtPrinter();
+    stmtPrinter.buildTraps(body.getStmtGraph());
+    Iterable<Trap> traps = stmtPrinter.getTraps();
+    for (Trap trap : traps) {
       caughtStmts.add(trap.getHandlerStmt());
       if (!(trap.getHandlerStmt() instanceof JIdentityStmt)) {
         exceptions.add(

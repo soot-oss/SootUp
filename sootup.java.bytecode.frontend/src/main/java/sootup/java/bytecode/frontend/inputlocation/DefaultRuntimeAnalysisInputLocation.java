@@ -22,9 +22,9 @@ package sootup.java.bytecode.frontend.inputlocation;
  * #L%
  */
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -68,7 +68,7 @@ public class DefaultRuntimeAnalysisInputLocation implements AnalysisInputLocatio
 
   @Nonnull
   @Override
-  public Collection<? extends SootClassSource> getClassSources(@Nonnull View view) {
+  public Stream<? extends SootClassSource> getClassSources(@Nonnull View view) {
     return backingInputLocation.getClassSources(view);
   }
 

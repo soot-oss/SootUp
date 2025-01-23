@@ -63,7 +63,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Nonnull
   @Override
   public CallGraph initialize() {
-    List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod(view));
+    List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod());
     return initialize(entryPoints);
   }
 
@@ -74,7 +74,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     instantiatedClasses = new HashSet<>();
     ignoredCalls = new HashMap<>();
 
-    CallGraph cg = constructCompleteCallGraph(view, entryPoints);
+    CallGraph cg = constructCompleteCallGraph(entryPoints);
 
     // delete the data structures
     instantiatedClasses = Collections.emptySet();
@@ -214,14 +214,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * sourceMethod. If a new instantiated class has previously ignored calls to this class, they are
    * added to call graph
    *
-   * @param view view
    * @param sourceMethod the processed method
    * @param workList the current work list
    * @param cg the current cg
    */
   @Override
   protected void preProcessingMethod(
-      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
@@ -272,14 +270,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   /**
    * Postprocessing is not needed in RTA
    *
-   * @param view view
    * @param sourceMethod the processed method
    * @param workList the current worklist that is extended by methods that have to be analyzed.
    * @param cg the current cg is extended by new call targets and calls
    */
   @Override
   protected void postProcessingMethod(
-      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {

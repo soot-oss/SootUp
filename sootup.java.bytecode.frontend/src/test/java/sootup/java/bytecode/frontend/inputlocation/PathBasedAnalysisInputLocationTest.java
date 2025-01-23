@@ -58,8 +58,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testSingleClass() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
-            cls, "", SourceType.Application);
+        new ClassFileBasedAnalysisInputLocation(cls, "", SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();
     sigs.add(getIdentifierFactory().getClassType("Employee"));
     testClassReceival(pathBasedNamespace, sigs, 1);
@@ -77,7 +76,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testSingleClassWPackageName() {
     AnalysisInputLocation pathBasedNamespace =
-        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+        new ClassFileBasedAnalysisInputLocation(
             Paths.get("../shared-test-resources/ClassWithPackageName.class"),
             "ClassesPackageName",
             SourceType.Application);
