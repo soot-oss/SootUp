@@ -236,17 +236,15 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     if (newEdges != null) {
       newEdges.forEach(
           call -> {
-            MethodSignature concreteTarget =
-                resolveConcreteDispatch(view, call.getTargetMethodSignature()).orElse(null);
-            if (concreteTarget == null) {
-              return;
-            }
-            addCallToCG(
-                call.getSourceMethodSignature(),
-                concreteTarget,
-                call.getInvokableStmt(),
-                cg,
-                workList);
+            resolveConcreteDispatch(view, call.getTargetMethodSignature())
+                .ifPresent(
+                    concreteTarget ->
+                        addCallToCG(
+                            call.getSourceMethodSignature(),
+                            concreteTarget,
+                            call.getInvokableStmt(),
+                            cg,
+                            workList));
           });
       // can be removed because the instantiated class will be considered in future resolves
       ignoredCalls.remove(classType);
