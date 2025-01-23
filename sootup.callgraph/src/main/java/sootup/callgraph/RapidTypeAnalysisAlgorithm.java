@@ -36,6 +36,7 @@ import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
+import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 
 /**
@@ -88,11 +89,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    *
    * @param method this object contains the method body which is inspected.
    */
-  protected List<ClassType> collectInstantiatedClassesInMethod(SootMethod method) {
-    if (method == null || method.isAbstract() || method.isNative()) {
-      return Collections.emptyList();
-    }
-
+  protected Stream<ClassType> collectInstantiatedClassesInMethod(SootMethod method) {
     Set<ClassType> instantiated =
         method.getBody().getStmts().stream()
             .filter(stmt -> stmt instanceof JAssignStmt)
@@ -100,12 +97,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             .filter(value -> value instanceof JNewExpr)
             .map(value -> ((JNewExpr) value).getType())
             .collect(Collectors.toSet());
-    List<ClassType> newInstantiatedClassTypes =
-        instantiated.stream()
-            .filter(classType -> !instantiatedClasses.contains(classType))
-            .collect(Collectors.toList());
     instantiatedClasses.addAll(instantiated);
-    return newInstantiatedClassTypes;
+    return instantiated.stream().filter(classType -> !instantiatedClasses.contains(classType));
   }
 
   /**
@@ -223,17 +216,10 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
-    SootMethod method =
-        view.getClass(sourceMethod.getDeclClassType())
-            .flatMap(c -> c.getMethod(sourceMethod.getSubSignature()))
-            .orElse(null);
-    if (method == null) {
-      return;
-    }
-
-    List<ClassType> newInstantiatedClasses = collectInstantiatedClassesInMethod(method);
-    newInstantiatedClasses.forEach(
-        classType -> includeIgnoredCallsToClass(classType, cg, workList));
+    StreamUtils.optionalToStream(view.getMethod(sourceMethod))
+        .filter(SootMethod::isConcrete)
+        .flatMap(this::collectInstantiatedClassesInMethod)
+        .forEach(classType -> includeIgnoredCallsToClass(classType, cg, workList));
   }
 
   /**
