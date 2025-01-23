@@ -164,6 +164,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       // transform the method signature to the actual SootMethod
       currentClass
           .getMethod(currentMethodSignature.getSubSignature())
+          .filter(SootMethod::hasBody)
           .ifPresent(
               currentMethod -> {
                 // get all call targets of invocations in the method body
@@ -224,9 +225,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected void resolveAllCallsFromSourceMethod(
       SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
-    if (!sourceMethod.hasBody()) {
-      return;
-    }
 
     sourceMethod.getBody().getStmts().stream()
         .filter(Stmt::isInvokableStmt)
@@ -249,9 +247,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected void resolveAllImplicitCallsFromSourceMethod(
       SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
-    if (!sourceMethod.hasBody()) {
-      return;
-    }
     // collect all static initializer calls
     resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
   }
@@ -265,9 +260,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected void resolveAllStaticInitializerCalls(
       SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
-    if (sourceMethod == null || !sourceMethod.hasBody()) {
-      return;
-    }
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
     sourceMethod.getBody().getStmts().stream()
         .filter(Stmt::isInvokableStmt)
