@@ -325,19 +325,21 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   private static int getTrapApplicationComparator(
-          HashMap<Stmt, Integer> trapstmtToIdx, Trap trapA, Trap trapB) {
-    if (trapA.getEndStmt() == trapB.getEndStmt() && trapA.getBeginStmt() == trapB.getBeginStmt()) {
-      final Integer idxA = trapstmtToIdx.get(trapA.getHandlerStmt());
-      final Integer idxB = trapstmtToIdx.get(trapB.getHandlerStmt());
-      return idxA - idxB;
-    } else if (trapA.getEndStmt() == trapB.getEndStmt()) {
-      final Integer startIdxA = trapstmtToIdx.get(trapA.getBeginStmt());
-      final Integer startIdxB = trapstmtToIdx.get(trapB.getBeginStmt());
-      return startIdxB - startIdxA;
+      HashMap<Stmt, Integer> trapstmtToIdx, Trap trapA, Trap trapB) {
+    if (trapA.getEndStmt() == trapB.getEndStmt()) {
+      if (trapA.getBeginStmt() == trapB.getBeginStmt()) {
+        final Integer handlerIdxA = trapstmtToIdx.get(trapA.getHandlerStmt());
+        final Integer handlerIdxB = trapstmtToIdx.get(trapB.getHandlerStmt());
+        return handlerIdxA - handlerIdxB;
+      } else {
+        final Integer beginIdxA = trapstmtToIdx.get(trapA.getBeginStmt());
+        final Integer beginIdxB = trapstmtToIdx.get(trapB.getBeginStmt());
+        return beginIdxB - beginIdxA;
+      }
     } else {
-      final Integer idxA = trapstmtToIdx.get(trapA.getEndStmt());
-      final Integer idxB = trapstmtToIdx.get(trapB.getEndStmt());
-      return idxA - idxB;
+      final Integer endIdxA = trapstmtToIdx.get(trapA.getEndStmt());
+      final Integer endIdxB = trapstmtToIdx.get(trapB.getEndStmt());
+      return endIdxA - endIdxB;
     }
   }
 
