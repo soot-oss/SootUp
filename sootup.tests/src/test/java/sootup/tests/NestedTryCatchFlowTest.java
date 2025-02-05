@@ -1,6 +1,7 @@
 package sootup.tests;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableBlockStmtGraph;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@Tag("Java8")
 public class NestedTryCatchFlowTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
