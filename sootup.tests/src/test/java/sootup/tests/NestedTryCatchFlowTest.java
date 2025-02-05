@@ -1,5 +1,11 @@
 package sootup.tests;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -20,13 +26,6 @@ import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocatio
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 @Tag("Java8")
 public class NestedTryCatchFlowTest {
 
@@ -37,7 +36,8 @@ public class NestedTryCatchFlowTest {
           + File.separator
           + "shared-test-resources/bugfixes/";
   MethodSignature methodSignature =
-      factory.getMethodSignature(clazzType, "test_nested_try_catch_2", "int", Collections.singletonList("int"));
+      factory.getMethodSignature(
+          clazzType, "test_nested_try_catch_2", "int", Collections.singletonList("int"));
   final Path path = Paths.get(location + "NestedTryCatchFlow.class");
   PathBasedAnalysisInputLocation inputLocation =
       new ClassFileBasedAnalysisInputLocation(
@@ -49,7 +49,6 @@ public class NestedTryCatchFlowTest {
   public void testNestedTryCatchFlow1() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
     Map<Integer, BasicBlock<?>> returnValToBlockMap = new HashMap<>();
-
     for (BasicBlock<?> block : graph.getBlocks()) {
       for (Stmt stmt : block.getStmts()) {
         if (!(stmt instanceof JReturnStmt)) continue;
@@ -59,12 +58,18 @@ public class NestedTryCatchFlowTest {
       }
     }
 
-    boolean anyMatch0_1 = containsExceptionalBlock(returnValToBlockMap.get(0), returnValToBlockMap.get(1));
-    boolean anyMatch0_2 = containsExceptionalBlock(returnValToBlockMap.get(0), returnValToBlockMap.get(2));
-    boolean anyMatch0_3 = containsExceptionalBlock(returnValToBlockMap.get(0), returnValToBlockMap.get(3));
-    boolean anyMatch0_4 = containsExceptionalBlock(returnValToBlockMap.get(0), returnValToBlockMap.get(4));
-    boolean anyMatch0_5 = containsExceptionalBlock(returnValToBlockMap.get(0), returnValToBlockMap.get(5));
-    boolean anyMatch0_6 = containsExceptionalBlock(returnValToBlockMap.get(0), returnValToBlockMap.get(6));
+    boolean anyMatch0_1 =
+        containsExceptionalBlock(returnValToBlockMap.get(0), returnValToBlockMap.get(1));
+    boolean anyMatch0_2 =
+        containsExceptionalBlock(returnValToBlockMap.get(0), returnValToBlockMap.get(2));
+    boolean anyMatch0_3 =
+        containsExceptionalBlock(returnValToBlockMap.get(0), returnValToBlockMap.get(3));
+    boolean anyMatch0_4 =
+        containsExceptionalBlock(returnValToBlockMap.get(0), returnValToBlockMap.get(4));
+    boolean anyMatch0_5 =
+        containsExceptionalBlock(returnValToBlockMap.get(0), returnValToBlockMap.get(5));
+    boolean anyMatch0_6 =
+        containsExceptionalBlock(returnValToBlockMap.get(0), returnValToBlockMap.get(6));
     Assertions.assertFalse(anyMatch0_1);
     Assertions.assertTrue(anyMatch0_2);
     Assertions.assertTrue(anyMatch0_3);
@@ -72,12 +77,18 @@ public class NestedTryCatchFlowTest {
     Assertions.assertTrue(anyMatch0_5);
     Assertions.assertTrue(anyMatch0_6);
 
-    boolean anyMatch1_0 = containsExceptionalBlock(returnValToBlockMap.get(1), returnValToBlockMap.get(0));
-    boolean anyMatch1_2 = containsExceptionalBlock(returnValToBlockMap.get(1), returnValToBlockMap.get(2));
-    boolean anyMatch1_3 = containsExceptionalBlock(returnValToBlockMap.get(1), returnValToBlockMap.get(3));
-    boolean anyMatch1_4 = containsExceptionalBlock(returnValToBlockMap.get(1), returnValToBlockMap.get(4));
-    boolean anyMatch1_5 = containsExceptionalBlock(returnValToBlockMap.get(1), returnValToBlockMap.get(5));
-    boolean anyMatch1_6 = containsExceptionalBlock(returnValToBlockMap.get(1), returnValToBlockMap.get(6));
+    boolean anyMatch1_0 =
+        containsExceptionalBlock(returnValToBlockMap.get(1), returnValToBlockMap.get(0));
+    boolean anyMatch1_2 =
+        containsExceptionalBlock(returnValToBlockMap.get(1), returnValToBlockMap.get(2));
+    boolean anyMatch1_3 =
+        containsExceptionalBlock(returnValToBlockMap.get(1), returnValToBlockMap.get(3));
+    boolean anyMatch1_4 =
+        containsExceptionalBlock(returnValToBlockMap.get(1), returnValToBlockMap.get(4));
+    boolean anyMatch1_5 =
+        containsExceptionalBlock(returnValToBlockMap.get(1), returnValToBlockMap.get(5));
+    boolean anyMatch1_6 =
+        containsExceptionalBlock(returnValToBlockMap.get(1), returnValToBlockMap.get(6));
     Assertions.assertFalse(anyMatch1_0);
     Assertions.assertTrue(anyMatch1_2);
     Assertions.assertTrue(anyMatch1_3);
@@ -85,12 +96,18 @@ public class NestedTryCatchFlowTest {
     Assertions.assertTrue(anyMatch1_5);
     Assertions.assertTrue(anyMatch1_6);
 
-    boolean anyMatch2_0 = containsExceptionalBlock(returnValToBlockMap.get(2), returnValToBlockMap.get(0));
-    boolean anyMatch2_1 = containsExceptionalBlock(returnValToBlockMap.get(2), returnValToBlockMap.get(1));
-    boolean anyMatch2_3 = containsExceptionalBlock(returnValToBlockMap.get(2), returnValToBlockMap.get(3));
-    boolean anyMatch2_4 = containsExceptionalBlock(returnValToBlockMap.get(2), returnValToBlockMap.get(4));
-    boolean anyMatch2_5 = containsExceptionalBlock(returnValToBlockMap.get(2), returnValToBlockMap.get(5));
-    boolean anyMatch2_6 = containsExceptionalBlock(returnValToBlockMap.get(2), returnValToBlockMap.get(6));
+    boolean anyMatch2_0 =
+        containsExceptionalBlock(returnValToBlockMap.get(2), returnValToBlockMap.get(0));
+    boolean anyMatch2_1 =
+        containsExceptionalBlock(returnValToBlockMap.get(2), returnValToBlockMap.get(1));
+    boolean anyMatch2_3 =
+        containsExceptionalBlock(returnValToBlockMap.get(2), returnValToBlockMap.get(3));
+    boolean anyMatch2_4 =
+        containsExceptionalBlock(returnValToBlockMap.get(2), returnValToBlockMap.get(4));
+    boolean anyMatch2_5 =
+        containsExceptionalBlock(returnValToBlockMap.get(2), returnValToBlockMap.get(5));
+    boolean anyMatch2_6 =
+        containsExceptionalBlock(returnValToBlockMap.get(2), returnValToBlockMap.get(6));
     Assertions.assertFalse(anyMatch2_0);
     Assertions.assertFalse(anyMatch2_1);
     Assertions.assertFalse(anyMatch2_3);
@@ -98,12 +115,18 @@ public class NestedTryCatchFlowTest {
     Assertions.assertTrue(anyMatch2_5);
     Assertions.assertTrue(anyMatch2_6);
 
-    boolean anyMatch3_0 = containsExceptionalBlock(returnValToBlockMap.get(3), returnValToBlockMap.get(0));
-    boolean anyMatch3_1 = containsExceptionalBlock(returnValToBlockMap.get(3), returnValToBlockMap.get(1));
-    boolean anyMatch3_2 = containsExceptionalBlock(returnValToBlockMap.get(3), returnValToBlockMap.get(2));
-    boolean anyMatch3_4 = containsExceptionalBlock(returnValToBlockMap.get(3), returnValToBlockMap.get(4));
-    boolean anyMatch3_5 = containsExceptionalBlock(returnValToBlockMap.get(3), returnValToBlockMap.get(5));
-    boolean anyMatch3_6 = containsExceptionalBlock(returnValToBlockMap.get(3), returnValToBlockMap.get(6));
+    boolean anyMatch3_0 =
+        containsExceptionalBlock(returnValToBlockMap.get(3), returnValToBlockMap.get(0));
+    boolean anyMatch3_1 =
+        containsExceptionalBlock(returnValToBlockMap.get(3), returnValToBlockMap.get(1));
+    boolean anyMatch3_2 =
+        containsExceptionalBlock(returnValToBlockMap.get(3), returnValToBlockMap.get(2));
+    boolean anyMatch3_4 =
+        containsExceptionalBlock(returnValToBlockMap.get(3), returnValToBlockMap.get(4));
+    boolean anyMatch3_5 =
+        containsExceptionalBlock(returnValToBlockMap.get(3), returnValToBlockMap.get(5));
+    boolean anyMatch3_6 =
+        containsExceptionalBlock(returnValToBlockMap.get(3), returnValToBlockMap.get(6));
     Assertions.assertFalse(anyMatch3_0);
     Assertions.assertFalse(anyMatch3_1);
     Assertions.assertFalse(anyMatch3_2);
@@ -111,12 +134,18 @@ public class NestedTryCatchFlowTest {
     Assertions.assertTrue(anyMatch3_5);
     Assertions.assertTrue(anyMatch3_6);
 
-    boolean anyMatch4_0 = containsExceptionalBlock(returnValToBlockMap.get(4), returnValToBlockMap.get(0));
-    boolean anyMatch4_1 = containsExceptionalBlock(returnValToBlockMap.get(4), returnValToBlockMap.get(1));
-    boolean anyMatch4_2 = containsExceptionalBlock(returnValToBlockMap.get(4), returnValToBlockMap.get(2));
-    boolean anyMatch4_3 = containsExceptionalBlock(returnValToBlockMap.get(4), returnValToBlockMap.get(3));
-    boolean anyMatch4_5 = containsExceptionalBlock(returnValToBlockMap.get(4), returnValToBlockMap.get(5));
-    boolean anyMatch4_6 = containsExceptionalBlock(returnValToBlockMap.get(4), returnValToBlockMap.get(6));
+    boolean anyMatch4_0 =
+        containsExceptionalBlock(returnValToBlockMap.get(4), returnValToBlockMap.get(0));
+    boolean anyMatch4_1 =
+        containsExceptionalBlock(returnValToBlockMap.get(4), returnValToBlockMap.get(1));
+    boolean anyMatch4_2 =
+        containsExceptionalBlock(returnValToBlockMap.get(4), returnValToBlockMap.get(2));
+    boolean anyMatch4_3 =
+        containsExceptionalBlock(returnValToBlockMap.get(4), returnValToBlockMap.get(3));
+    boolean anyMatch4_5 =
+        containsExceptionalBlock(returnValToBlockMap.get(4), returnValToBlockMap.get(5));
+    boolean anyMatch4_6 =
+        containsExceptionalBlock(returnValToBlockMap.get(4), returnValToBlockMap.get(6));
     Assertions.assertFalse(anyMatch4_0);
     Assertions.assertFalse(anyMatch4_1);
     Assertions.assertFalse(anyMatch4_2);
@@ -124,12 +153,18 @@ public class NestedTryCatchFlowTest {
     Assertions.assertTrue(anyMatch4_5);
     Assertions.assertTrue(anyMatch4_6);
 
-    boolean anyMatch5_0 = containsExceptionalBlock(returnValToBlockMap.get(5), returnValToBlockMap.get(0));
-    boolean anyMatch5_1 = containsExceptionalBlock(returnValToBlockMap.get(5), returnValToBlockMap.get(1));
-    boolean anyMatch5_2 = containsExceptionalBlock(returnValToBlockMap.get(5), returnValToBlockMap.get(2));
-    boolean anyMatch5_3 = containsExceptionalBlock(returnValToBlockMap.get(5), returnValToBlockMap.get(3));
-    boolean anyMatch5_4 = containsExceptionalBlock(returnValToBlockMap.get(5), returnValToBlockMap.get(4));
-    boolean anyMatch5_6 = containsExceptionalBlock(returnValToBlockMap.get(5), returnValToBlockMap.get(6));
+    boolean anyMatch5_0 =
+        containsExceptionalBlock(returnValToBlockMap.get(5), returnValToBlockMap.get(0));
+    boolean anyMatch5_1 =
+        containsExceptionalBlock(returnValToBlockMap.get(5), returnValToBlockMap.get(1));
+    boolean anyMatch5_2 =
+        containsExceptionalBlock(returnValToBlockMap.get(5), returnValToBlockMap.get(2));
+    boolean anyMatch5_3 =
+        containsExceptionalBlock(returnValToBlockMap.get(5), returnValToBlockMap.get(3));
+    boolean anyMatch5_4 =
+        containsExceptionalBlock(returnValToBlockMap.get(5), returnValToBlockMap.get(4));
+    boolean anyMatch5_6 =
+        containsExceptionalBlock(returnValToBlockMap.get(5), returnValToBlockMap.get(6));
     Assertions.assertFalse(anyMatch5_0);
     Assertions.assertFalse(anyMatch5_1);
     Assertions.assertFalse(anyMatch5_2);
@@ -137,12 +172,18 @@ public class NestedTryCatchFlowTest {
     Assertions.assertFalse(anyMatch5_4);
     Assertions.assertFalse(anyMatch5_6);
 
-    boolean anyMatch6_0 = containsExceptionalBlock(returnValToBlockMap.get(6), returnValToBlockMap.get(0));
-    boolean anyMatch6_1 = containsExceptionalBlock(returnValToBlockMap.get(6), returnValToBlockMap.get(1));
-    boolean anyMatch6_2 = containsExceptionalBlock(returnValToBlockMap.get(6), returnValToBlockMap.get(2));
-    boolean anyMatch6_3 = containsExceptionalBlock(returnValToBlockMap.get(6), returnValToBlockMap.get(3));
-    boolean anyMatch6_4 = containsExceptionalBlock(returnValToBlockMap.get(6), returnValToBlockMap.get(4));
-    boolean anyMatch6_5 = containsExceptionalBlock(returnValToBlockMap.get(6), returnValToBlockMap.get(5));
+    boolean anyMatch6_0 =
+        containsExceptionalBlock(returnValToBlockMap.get(6), returnValToBlockMap.get(0));
+    boolean anyMatch6_1 =
+        containsExceptionalBlock(returnValToBlockMap.get(6), returnValToBlockMap.get(1));
+    boolean anyMatch6_2 =
+        containsExceptionalBlock(returnValToBlockMap.get(6), returnValToBlockMap.get(2));
+    boolean anyMatch6_3 =
+        containsExceptionalBlock(returnValToBlockMap.get(6), returnValToBlockMap.get(3));
+    boolean anyMatch6_4 =
+        containsExceptionalBlock(returnValToBlockMap.get(6), returnValToBlockMap.get(4));
+    boolean anyMatch6_5 =
+        containsExceptionalBlock(returnValToBlockMap.get(6), returnValToBlockMap.get(5));
     Assertions.assertFalse(anyMatch6_0);
     Assertions.assertFalse(anyMatch6_1);
     Assertions.assertFalse(anyMatch6_2);
