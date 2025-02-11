@@ -242,7 +242,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
                         addCallToCG(
                             call.getSourceMethodSignature(),
                             concreteTarget,
-                            call.getInvokableStmt(),
+                            call.getInvokableStmt().asInvokableStmt(),
                             cg,
                             workList));
           });
