@@ -121,14 +121,14 @@ jobs:
       - name: Test (JDK8)
         run: mvn -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: coverage-exec
+          name: coverage-exec-jdk8
           path: |
                   */target/coverage-reports/jacoco-ut-jdk8.exec
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: test-reports-jdk8
@@ -167,14 +167,14 @@ jobs:
       - name: Test (JDK9)
         run: mvn -B -am verify -Dfmt.skip -Dmaven.main.skip=true -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: coverage-exec
+          name: coverage-exec-jdk9
           path: |
             */target/coverage-reports/jacoco-ut-jdk9.exec
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: test-reports-jdk9
@@ -213,14 +213,14 @@ jobs:
       - name: Test (IntegrationTest)
         run: mvn -B -pl sootup.tests -am verify -Dfmt.skip -Dmaven.main.skip=true -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: coverage-exec
+          name: coverage-exec-integration
           path: |
             */target/coverage-reports/jacoco-ut-integrationtest.exec
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: test-reports-integrationtest
@@ -254,10 +254,20 @@ jobs:
             **/target/
           key: cache-compilation-${{ github.sha }}
 
-      - name: Download uploaded exec artifacts
-        uses: actions/download-artifact@v3
+      - name: Download uploaded exec artifacts for JDK8
+        uses: actions/download-artifact@v4
         with:
-          name: coverage-exec
+          name: coverage-exec-jdk8
+
+      - name: Download uploaded exec artifacts for JDK9
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-exec-jdk9
+
+      - name: Download uploaded exec artifacts for integration tests
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-exec-integration
 
       - name: merge coverage reports
         run:  mvn -ntp jacoco:merge@merge-results  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
@@ -266,7 +276,7 @@ jobs:
         run: mvn -ntp jacoco:report-aggregate@generate-coverage-report  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: upload aggregated coverage artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: aggregated-coverage-report
           path: sootup.report/target/jacoco-aggregate/

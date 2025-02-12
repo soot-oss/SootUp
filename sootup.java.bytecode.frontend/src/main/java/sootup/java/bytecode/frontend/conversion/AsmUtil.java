@@ -303,7 +303,7 @@ public final class AsmUtil {
   }
 
   public static Iterable<AnnotationUsage> createAnnotationUsage(
-      List<AnnotationNode> invisibleParameterAnnotation) {
+      List<? extends AnnotationNode> invisibleParameterAnnotation) {
     if (invisibleParameterAnnotation == null) {
       return Collections.emptyList();
     }

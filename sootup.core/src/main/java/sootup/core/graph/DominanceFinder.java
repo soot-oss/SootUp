@@ -66,7 +66,7 @@ public class DominanceFinder {
         // todo: Postdominantor (POSTORDERBACKWARD) doesn't work for with multiple tail-blocks.
         List<BasicBlock<?>> tails = blockGraph.getTailStmtBlocks();
         if (tails.size() > 1) {
-          LOGGER.warn(
+          LOGGER.debug(
               "BlockGraph has multiple tail-blocks, the Post-Dominators Computation could be incorrect!");
         }
       }

@@ -154,8 +154,9 @@ final class WarArchiveAnalysisInputLocation extends DirectoryBasedAnalysisInputL
         Path filepath = destDirectory.resolve(zipEntry.getName());
         final File file = filepath.toFile();
 
-        String canonicalPathStr = file.getCanonicalPath();
-        if (!canonicalPathStr.startsWith(destDirectory + File.separator)) {
+        String canonicalFilepathStr = file.getCanonicalPath();
+        String canonicalDestDirStr = dest.getCanonicalPath();
+        if (!canonicalFilepathStr.startsWith(canonicalDestDirStr + File.separator)) {
           throw new IllegalArgumentException(
               "ZipSlip Attack Mitigated: ZipEntry points outside of the target dir: "
                   + file.getName());
