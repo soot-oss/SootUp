@@ -37,6 +37,7 @@ import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
+import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 
 /**
