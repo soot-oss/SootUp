@@ -7,6 +7,7 @@ name: Documentation
 on:
   push:
     branches:
+      - master
       - develop
     paths:
       - 'mkdocs.yml'
@@ -14,10 +15,7 @@ on:
       - 'docs/**'
       - '.github/workflows/gh-pages.yml'
 
-  release:
-    types: [ created, published ]
-
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - reopened
@@ -67,18 +65,13 @@ jobs:
       # sanitize head_ref name
       - run: echo "DOC_VERSION_NAME=$(echo ${{ github.head_ref }} | sed "s/[^([[:alnum:]_.-]/_/g" )" >> $GITHUB_ENV
 
-      # on push to develop branch - keep a doc around for develop to show the current state
-      - name: deploy doc in subdirectory
-        if: github.event_name == 'push'
-        run: mike deploy develop --push
-
       # on PR events..
       - name: deploy doc in subdirectory
-        if: github.event_name == 'pull_request'
+        if: startsWith(github.event_name, 'pull_request')
         run: mike deploy ${{ env.DOC_VERSION_NAME }}_preview -t "PR Preview ${{ env.DOC_VERSION_NAME }}" --push && mike props ${{ env.DOC_VERSION_NAME }}_preview --set-string hidden=true --push
 
       - name: comment link to preview
-        if: github.event_name == 'pull_request' && github.event.action != 'closed'
+        if: startsWith(github.event_name, 'pull_request') && github.event.action != 'closed'
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           message: |
@@ -86,25 +79,15 @@ jobs:
 
       # on PR close - delete preview
       - name: delete the deployed preview
-        if: github.event_name == 'pull_request' && github.event.action == 'closed'
+        if: startsWith(github.event_name, 'pull_request') && github.event.action == 'closed'
         run: mike delete ${{ env.DOC_VERSION_NAME }}_preview --push
 
-
-      # on release events..
-      # sanitive head_ref name
-      - name: sanitize tag name
-        if: github.event_name == 'release'
-        run: echo "DOC_VERSION_NAME=$(echo ${{ github.ref_name }} | sed "s/[^[:alnum:]-]/_/g" )" >> $GITHUB_ENV
-
+      # on push - documenatation to show the latest develop state
       - name: deploy doc in subdirectory
-        if: github.event_name == 'release'
-        run: mike deploy ${{ env.DOC_VERSION_NAME }} --push
+        if: github.event_name == 'push '&& github.base_ref == 'develop'
+        run: mike deploy develop --push && mike deploy --push --update-aliases develop latest
 
-
-      - name: deploy doc in subdirectory
-        if: github.event_name == 'release'
-        run: mike deploy ${{ env.DOC_VERSION_NAME }} --push
-
-      - name: set the new release doc as default (release published)
-        if: github.event_name == 'release' && github.event.action == 'published'
-        run: mike deploy --push --update-aliases ${{ env.DOC_VERSION_NAME }} latest
+      - name: deploy doc version for the new release
+        if: github.event_name == 'push' && github.base_ref == 'master'
+        # grab version from pom file
+        run: mike deploy "$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed "s/[^([[:alnum:]_.-]/_/g" )" --push
