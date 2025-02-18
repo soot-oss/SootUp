@@ -85,7 +85,7 @@ jobs:
       # on push - documenatation to show the latest develop state
       - name: deploy doc in subdirectory
         if: github.event_name == 'push '&& github.base_ref == 'develop'
-        run: mike deploy develop --push && mike deploy --push --update-aliases develop latest
+        run: mike deploy develop --push --update-aliases develop latest
 
       - name: deploy doc version for the new release
         if: github.event_name == 'push' && github.base_ref == 'master'
