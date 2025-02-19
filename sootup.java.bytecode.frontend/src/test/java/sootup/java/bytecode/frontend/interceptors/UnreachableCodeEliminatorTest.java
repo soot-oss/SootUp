@@ -12,6 +12,7 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;
@@ -64,6 +65,12 @@ public class UnreachableCodeEliminatorTest {
       JavaJimple.newAssignStmt(l3, IntConstant.getInstance(3), noStmtPositionInfo);
 
   BranchingStmt jGotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
+
+  AbstractConditionExpr conditionExpr = JavaJimple.newEqExpr(l1, l2);
+  BranchingStmt jIfStmt = JavaJimple.newIfStmt(conditionExpr, noStmtPositionInfo);
+
+  FallsThroughStmt stmtinsideif =
+      JavaJimple.newAssignStmt(l3, IntConstant.getInstance(5), noStmtPositionInfo);
 
   Stmt ret1 = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
   Stmt ret2 = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
@@ -211,5 +218,72 @@ public class UnreachableCodeEliminatorTest {
     new UnreachableCodeEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
     assertEquals(inputGraph, builder.getStmtGraph());
+  }
+
+  @Test
+  public void testUCERemoveUnreachableBlock() {
+    // build an instance of BodyBuilder
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(methodSignature);
+
+    // add locals into builder
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(l0, l1, l2, l3));
+    builder.setLocals(locals);
+
+    // build stmtsGraph for the builder
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    stmtGraph.putEdge(startingStmt, stmt1);
+    stmtGraph.putEdge(stmt1, stmt2);
+    stmtGraph.putEdge(stmt2, jIfStmt);
+    // stmtGraph.putEdge(jIfStmt, 0, stmtinsideif);
+    stmtGraph.putEdge(jIfStmt, 1, stmt3);
+    stmtGraph.putEdge(stmtinsideif, stmt3);
+    stmtGraph.putEdge(stmt3, ret2);
+
+    // set startingStmt
+    stmtGraph.setStartingStmt(startingStmt);
+    // set Position
+    builder.setPosition(NoPositionInformation.getInstance());
+
+    UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
+    eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
+
+    // stmtinsideif got eliminated
+    Set<Stmt> expectedStmtsSet =
+        ImmutableUtils.immutableSet(startingStmt, stmt1, stmt2, jIfStmt, stmt3, ret1);
+    assertEquals(expectedStmtsSet.size(), builder.getStmtGraph().getNodes().size());
+  }
+
+  @Test
+  public void testUCERemoveUnreachableBlock1() {
+    // build an instance of BodyBuilder
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(methodSignature);
+
+    // add locals into builder
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(l0, l1, l2, l3));
+    builder.setLocals(locals);
+
+    // build stmtsGraph for the builder
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    stmtGraph.putEdge(startingStmt, stmt1);
+    stmtGraph.putEdge(stmt1, stmt2);
+    stmtGraph.putEdge(stmt2, jGotoStmt);
+    stmtGraph.putEdge(jGotoStmt, JGotoStmt.BRANCH_IDX, ret1);
+    stmtGraph.putEdge(stmtinsideif, stmt3);
+    stmtGraph.putEdge(stmt3, ret1);
+
+    // set startingStmt
+    stmtGraph.setStartingStmt(startingStmt);
+    // set Position
+    builder.setPosition(NoPositionInformation.getInstance());
+
+    UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
+    eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
+
+    // stmtinsideif, stmt3 got eliminated
+    Set<Stmt> expectedStmtsSet =
+        ImmutableUtils.immutableSet(startingStmt, stmt1, stmt2, jGotoStmt, ret1);
+    assertEquals(expectedStmtsSet.size(), builder.getStmtGraph().getNodes().size());
   }
 }
