@@ -2,7 +2,10 @@
   {
     "version": "version-2_preview",
     "title": "PR Preview version-2",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "issue-988-TypeAssigner_preview",
