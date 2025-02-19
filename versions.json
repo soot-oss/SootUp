@@ -1,5 +1,10 @@
 [
   {
+    "version": "version-2_preview",
+    "title": "PR Preview version-2",
+    "aliases": []
+  },
+  {
     "version": "issue-988-TypeAssigner_preview",
     "title": "PR Preview issue-988-TypeAssigner",
     "aliases": [],
