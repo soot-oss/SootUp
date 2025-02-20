@@ -25,9 +25,8 @@ package sootup.apk.frontend;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.jf.dexlib2.iface.DexFile;
 import sootup.apk.frontend.Util.*;
 import sootup.apk.frontend.dexpler.DexClassProvider;
@@ -104,17 +103,16 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
 
   @Nonnull
   @Override
-  public Collection<? extends SootClassSource> getClassSources(@Nonnull View view) {
+  public Stream<? extends SootClassSource> getClassSources(@Nonnull View view) {
     return classNamesList.entrySet().stream()
         .flatMap(
             className ->
                 StreamUtils.optionalToStream(
                     getClassSource(
-                        view.getIdentifierFactory().getClassType(className.getKey()), view)))
-        .collect(Collectors.toList());
+                        view.getIdentifierFactory().getClassType(className.getKey()), view)));
   }
 
-  @Nullable
+  @Nonnull
   @Override
   public SourceType getSourceType() {
     return SourceType.Application;

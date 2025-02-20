@@ -27,6 +27,7 @@ import java.util.List;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.core.views.View;
 
 public class TrapsValidator implements BodyValidator {
@@ -39,9 +40,12 @@ public class TrapsValidator implements BodyValidator {
   @Override
   public List<ValidationException> validate(Body body, View view) {
     List<ValidationException> exceptions = new ArrayList<>();
+    BriefStmtPrinter stmtPrinter = new BriefStmtPrinter();
+    stmtPrinter.buildTraps(body.getStmtGraph());
+    Iterable<Trap> traps = stmtPrinter.getTraps();
 
     List<Stmt> stmts = body.getStmts();
-    for (Trap t : body.getTraps()) {
+    for (Trap t : traps) {
       if (!stmts.contains(t.getBeginStmt()))
         exceptions.add(
             new ValidationException(

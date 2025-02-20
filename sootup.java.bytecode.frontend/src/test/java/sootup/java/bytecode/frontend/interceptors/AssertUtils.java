@@ -29,7 +29,7 @@ public class AssertUtils {
     }
   }
 
-  // assert whether two bodys have the same stmtGraphs
+  // assert whether two bodies have the same stmtGraphs
   public static void assertStmtGraphEquiv(Body expected, Body actual) {
     StmtGraph<?> expected_SG = expected.getStmtGraph();
     StmtGraph<?> actual_SG = actual.getStmtGraph();

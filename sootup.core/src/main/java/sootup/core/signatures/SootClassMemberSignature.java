@@ -23,6 +23,8 @@ package sootup.core.signatures;
  */
 
 import com.google.common.base.Objects;
+import com.google.common.base.Suppliers;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import sootup.core.model.SootClassMember;
 import sootup.core.types.ClassType;
@@ -90,10 +92,13 @@ public abstract class SootClassMemberSignature<V extends SootClassMemberSubSigna
     return hashCode;
   }
 
+  private final Supplier<String> _cachedToString =
+      Suppliers.memoize(() -> "<" + getDeclClassType() + ": " + getSubSignature() + '>');
+
   @Override
   @Nonnull
   public String toString() {
-    return "<" + declClassSignature + ": " + getSubSignature() + '>';
+    return _cachedToString.get();
   }
 
   @Override

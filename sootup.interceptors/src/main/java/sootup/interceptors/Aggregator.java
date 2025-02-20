@@ -69,7 +69,7 @@ public class Aggregator implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph graph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
-    Map<Value, Collection<Stmt>> usesMap = Body.collectUses(stmts);
+    Map<Value, List<Stmt>> usesMap = Body.collectUses(stmts);
 
     for (Stmt stmt : stmts) {
       if (!(stmt instanceof JAssignStmt)) {

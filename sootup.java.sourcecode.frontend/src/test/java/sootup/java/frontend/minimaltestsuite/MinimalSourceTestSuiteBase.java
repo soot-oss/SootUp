@@ -83,7 +83,7 @@ public abstract class MinimalSourceTestSuiteBase {
    *     respective name of the class
    */
   public String getClassName(String classPath) {
-    System.out.println(classPath);
+    // System.out.println(classPath);
     String[] classPathArray = classPath.split("\\.");
     String className =
         classPathArray[classPathArray.length - 1].substring(

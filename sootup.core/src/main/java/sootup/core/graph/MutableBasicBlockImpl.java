@@ -328,10 +328,9 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     successorBlocks = new MutableBasicBlockImpl[1];
 
     newBlock.addPredecessorBlock(this);
+    newBlock.copyExceptionalFlowFrom(this);
     setSuccessorBlock(
         0, newBlock); // 0 as this can only be a block if the Stmts before the last Stmt are
-    // FallsThroughStmt
-
     return newBlock;
   }
 

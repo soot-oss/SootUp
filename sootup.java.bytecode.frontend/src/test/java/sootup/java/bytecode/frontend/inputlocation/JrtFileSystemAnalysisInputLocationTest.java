@@ -7,6 +7,7 @@ import categories.TestCategories;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.SootClassSource;
@@ -46,12 +47,13 @@ public class JrtFileSystemAnalysisInputLocationTest {
     final ClassType sig2 =
         JavaModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
 
-    final Collection<? extends SootClassSource> classSources = inputLocation.getClassSources(view);
-    assertTrue(classSources.size() > 26000);
+    final Collection<? extends SootClassSource> classSources =
+        inputLocation.getClassSources(view).collect(Collectors.toList());
     inputLocation.getClassSources(view);
     assertTrue(
         classSources.size()
-            > 20000); // not precise as this amount can differ depending on the included runtime
+            > 20000); // "a lot" not precise as this amount can differ depending on the included
+    // runtime
     // library
     assertTrue(classSources.stream().anyMatch(cs -> cs.getClassType().equals(sig1)));
     assertTrue(view.getClass(sig1).isPresent());

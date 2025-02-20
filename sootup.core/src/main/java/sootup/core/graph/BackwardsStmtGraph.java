@@ -51,7 +51,8 @@ public class BackwardsStmtGraph extends ForwardingStmtGraph {
   @Nonnull
   @Override
   public List<? extends BasicBlock<?>> getBlocksSorted() {
-    return PostOrderBlockTraversal.getBlocksSorted(backingGraph);
+    PostOrderBlockTraversal traversal = new PostOrderBlockTraversal(backingGraph);
+    return traversal.getBlocksSorted();
   }
 
   @Nonnull

@@ -33,8 +33,8 @@ import sootup.core.util.ImmutableUtils;
 import sootup.core.util.Utils;
 import sootup.core.views.View;
 import sootup.interceptors.CopyPropagator;
+import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
@@ -405,7 +405,7 @@ public class CopyPropagatorTest {
   @Test
   void testBigInput() {
     AnalysisInputLocation inputLocation =
-        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+        new ClassFileBasedAnalysisInputLocation(
             Paths.get("../shared-test-resources/bugfixes/SlowCopyPropagator.class"),
             "",
             SourceType.Application,

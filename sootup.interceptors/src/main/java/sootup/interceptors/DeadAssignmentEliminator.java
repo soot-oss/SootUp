@@ -211,7 +211,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       return;
     }
 
-    Map<Value, Collection<Stmt>> essentialUses = Body.collectUses(essentialStmts);
+    Map<Value, List<Stmt>> essentialUses = Body.collectUses(essentialStmts);
     // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
     List<JAssignStmt> postProcess = new ArrayList<>();
     for (Stmt stmt : stmts) {

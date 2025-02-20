@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
@@ -163,7 +164,7 @@ public class JavaModuleView extends JavaView {
 
       if (!foundClassSources.isEmpty()) {
 
-        return buildClassFrom(foundClassSources.get(0));
+        return Optional.of(buildClassFrom(foundClassSources.get(0)));
       } else {
         PackageName packageName = type.getPackageName();
         if (packageName instanceof ModulePackageName
@@ -189,7 +190,7 @@ public class JavaModuleView extends JavaView {
                 .collect(Collectors.toList());
 
         if (!foundClassSources.isEmpty()) {
-          return buildClassFrom(foundClassSources.get(0));
+          return Optional.of(buildClassFrom(foundClassSources.get(0)));
         } else {
           // automatic module can access the unnamed module -> try to find in classpath (as if
           // modules do not exist)
@@ -231,7 +232,7 @@ public class JavaModuleView extends JavaView {
                     })
                 .findAny();
 
-        return foundClassSources.flatMap(this::buildClassFrom);
+        return foundClassSources.map(this::buildClassFrom);
       }
     }
 
@@ -294,8 +295,9 @@ public class JavaModuleView extends JavaView {
       stream =
           inputLocations.stream()
               .flatMap(
-                  input ->
-                      input.getClassSources(this).stream().map(src -> (JavaSootClassSource) src));
+                  input -> {
+                    return input.getClassSources(this).map(src -> (JavaSootClassSource) src);
+                  });
 
     } else {
       // named module
@@ -307,7 +309,8 @@ public class JavaModuleView extends JavaView {
                         .flatMap(
                             input -> {
                               // classpath
-                              return input.getClassSources(this).stream()
+                              return input
+                                  .getClassSources(this)
                                   .filter(
                                       cs ->
                                           moduleSignature.equals(
@@ -319,7 +322,9 @@ public class JavaModuleView extends JavaView {
                         .flatMap(
                             input -> {
                               // modulepath
-                              return input.getModulesClassSources(moduleSignature, this).stream();
+                              Stream<? extends SootClassSource> modulesClassSources =
+                                  input.getModulesClassSources(moduleSignature, this);
+                              return modulesClassSources;
                             }))
                 .map(src -> (JavaSootClassSource) src);
 
@@ -329,15 +334,12 @@ public class JavaModuleView extends JavaView {
             moduleInfoAnalysisInputLocations.stream()
                 .flatMap(
                     input ->
-                        input.getModulesClassSources(moduleSignature, this).stream()
+                        input
+                            .getModulesClassSources(moduleSignature, this)
                             .map(src -> (JavaSootClassSource) src));
       }
     }
-    return stream
-        .map(this::buildClassFrom)
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .collect(Collectors.toList());
+    return stream.map(this::buildClassFrom).collect(Collectors.toList());
   }
 
   /*

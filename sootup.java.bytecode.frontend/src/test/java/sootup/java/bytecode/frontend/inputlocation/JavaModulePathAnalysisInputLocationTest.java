@@ -125,8 +125,7 @@ public class JavaModulePathAnalysisInputLocationTest {
         Collections.singletonList(inputLocation);
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
-    final Collection<? extends SootClassSource> classSources = inputLocation.getClassSources(view);
-    assertEquals(3, classSources.size());
+    assertEquals(3, inputLocation.getClassSources(view).count());
   }
 
   @Test

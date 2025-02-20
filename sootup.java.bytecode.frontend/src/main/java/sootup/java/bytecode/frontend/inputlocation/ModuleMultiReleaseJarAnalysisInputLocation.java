@@ -23,11 +23,11 @@ package sootup.java.bytecode.frontend.inputlocation;
  */
 
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.model.SourceType;
@@ -109,7 +109,7 @@ public class ModuleMultiReleaseJarAnalysisInputLocation extends MultiReleaseJarA
   }
 
   @Override
-  public Collection<? extends SootClassSource> getModulesClassSources(
+  public Stream<? extends SootClassSource> getModulesClassSources(
       @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
     // TODO: check if we need to combine modules as well or if only versioned .class files are
     return ((JavaModulePathAnalysisInputLocation) inputLocations.get(DEFAULT_VERSION))

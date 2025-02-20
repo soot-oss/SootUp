@@ -25,7 +25,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
@@ -107,16 +106,14 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
 
   @Override
   @Nonnull
-  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
+  public Stream<JavaSootClassSource> getClassSources(@Nonnull View view) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     Preconditions.checkArgument(
         identifierFactory instanceof JavaModuleIdentifierFactory,
         "Factory must be a JavaModuleSignatureFactory");
 
     Collection<ModuleSignature> allModules = moduleFinder.getAllModules();
-    return allModules.stream()
-        .flatMap(sig -> getClassSourcesInternal(sig, view))
-        .collect(Collectors.toList());
+    return allModules.stream().flatMap(sig -> getClassSourcesInternal(sig, view));
   }
 
   @Nonnull
@@ -133,13 +130,13 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
 
   @Override
   @Nonnull
-  public Collection<JavaSootClassSource> getModulesClassSources(
+  public Stream<JavaSootClassSource> getModulesClassSources(
       @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     Preconditions.checkArgument(
         identifierFactory instanceof JavaModuleIdentifierFactory,
         "Factory must be a JavaModuleSignatureFactory");
-    return getClassSourcesInternal(moduleSignature, view).collect(Collectors.toList());
+    return getClassSourcesInternal(moduleSignature, view);
   }
 
   protected Stream<JavaSootClassSource> getClassSourcesInternal(
@@ -150,7 +147,7 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
       return Stream.empty();
     }
 
-    return inputLocation.getClassSources(view).stream().map(src -> (JavaSootClassSource) src);
+    return inputLocation.getClassSources(view).map(src -> (JavaSootClassSource) src);
   }
 
   @Override

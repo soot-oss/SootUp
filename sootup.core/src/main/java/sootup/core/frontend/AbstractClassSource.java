@@ -39,17 +39,17 @@ import sootup.core.views.View;
 public abstract class AbstractClassSource {
 
   // holds information about the class
-  protected final AnalysisInputLocation classSource;
+  protected final AnalysisInputLocation analysisInputLocation;
   // holds information about the specific data unit where the information about a class is stored
   protected final Path sourcePath;
   // the classType that identifies the containing class information
   protected ClassType classSignature;
 
   public AbstractClassSource(
-      @Nonnull AnalysisInputLocation classSource,
+      @Nonnull AnalysisInputLocation analysisInputLocation,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
-    this.classSource = classSource;
+    this.analysisInputLocation = analysisInputLocation;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;
   }
@@ -65,7 +65,7 @@ public abstract class AbstractClassSource {
   }
 
   public AnalysisInputLocation getAnalysisInputLocation() {
-    return classSource;
+    return analysisInputLocation;
   }
 
   public Path getSourcePath() {
@@ -88,12 +88,12 @@ public abstract class AbstractClassSource {
       return false;
     }
     AbstractClassSource that = (AbstractClassSource) o;
-    return Objects.equal(classSource, that.classSource)
+    return Objects.equal(analysisInputLocation, that.analysisInputLocation)
         && Objects.equal(sourcePath, that.sourcePath);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(classSource, sourcePath);
+    return Objects.hashCode(analysisInputLocation, sourcePath);
   }
 }

@@ -30,7 +30,7 @@ import sootup.java.core.views.JavaView;
  * This code example will show you how to build and examine a class hierarchy using sootup.
  */
 @Tag("Java8")
-public class ClassHierarchy {
+public class ClassHierarchyTest {
 
   @Test
   public void test() {

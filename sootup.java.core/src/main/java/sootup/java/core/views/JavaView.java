@@ -25,6 +25,7 @@ package sootup.java.core.views;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.cache.ClassCache;
@@ -33,6 +34,7 @@ import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -87,13 +89,14 @@ public class JavaView extends AbstractView {
 
     Stream<JavaSootClass> resolvedClasses =
         inputLocations.stream()
-            .flatMap(location -> location.getClassSources(this).stream())
-            .map(this::buildClassFrom)
-            .filter(Optional::isPresent)
-            .map(Optional::get);
+            .flatMap(
+                location -> {
+                  // TODO: [ms] find a way to not stream().collect().stream()
+                  return location.getClassSources(this).collect(Collectors.toList()).stream();
+                })
+            .map(this::buildClassFrom);
 
     isFullyResolved = true;
-
     return resolvedClasses;
   }
 
@@ -107,12 +110,12 @@ public class JavaView extends AbstractView {
     }
 
     Optional<JavaSootClassSource> abstractClass = getClassSource(type);
-    return abstractClass.flatMap(this::buildClassFrom);
+    return abstractClass.map(this::buildClassFrom);
   }
 
   @Nonnull
   public Optional<JavaAnnotationSootClass> getAnnotationClass(@Nonnull ClassType type) {
-    return getClass(type).filter(sc -> sc.isAnnotation()).map(sc -> (JavaAnnotationSootClass) sc);
+    return getClass(type).filter(SootClass::isAnnotation).map(sc -> (JavaAnnotationSootClass) sc);
   }
 
   @Override
@@ -155,7 +158,7 @@ public class JavaView extends AbstractView {
   }
 
   @Nonnull
-  protected synchronized Optional<JavaSootClass> buildClassFrom(AbstractClassSource classSource) {
+  protected synchronized JavaSootClass buildClassFrom(AbstractClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
     JavaSootClass theClass;
@@ -167,6 +170,6 @@ public class JavaView extends AbstractView {
               classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
       cache.putClass(classType, theClass);
     }
-    return Optional.of(theClass);
+    return theClass;
   }
 }

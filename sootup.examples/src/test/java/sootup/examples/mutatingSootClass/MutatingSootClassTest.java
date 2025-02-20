@@ -34,7 +34,7 @@ import sootup.java.core.views.JavaView;
  * @author Bastian Haverkamp
  */
 @Tag("Java8")
-public class MutatingSootClass {
+public class MutatingSootClassTest {
 
   @Disabled
   public void test() {

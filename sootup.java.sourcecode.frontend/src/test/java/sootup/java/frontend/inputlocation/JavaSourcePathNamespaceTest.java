@@ -3,16 +3,14 @@ package sootup.java.frontend.inputlocation;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
@@ -90,9 +88,8 @@ public class JavaSourcePathNamespaceTest {
         new JavaSourcePathAnalysisInputLocation(SourceType.Library, classPath);
     JavaView view = new JavaView(inputLocation);
 
-    Set<SootClass> classes = new HashSet<>(); // Set to track the classes to check
-    view.getClasses().filter(aClass -> !aClass.isLibraryClass()).forEach(classes::add);
-
-    assertEquals(0, classes.size(), "User Defined class found, expected none");
+    Stream<JavaSootClass> javaSootClassStream =
+        view.getClasses().filter(aClass -> !aClass.isLibraryClass());
+    assertEquals(0, javaSootClassStream.count(), "User Defined class found, expected none");
   }
 }

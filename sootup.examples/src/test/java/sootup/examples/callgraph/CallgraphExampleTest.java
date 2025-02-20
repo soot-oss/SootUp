@@ -3,6 +3,7 @@ package sootup.examples.callgraph;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.callgraph.CallGraph;
@@ -18,7 +19,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
 @Tag("Java8")
-public class CallgraphExample {
+public class CallgraphExampleTest {
 
   @Test
   public void test() {
@@ -46,12 +47,16 @@ public class CallgraphExample {
 
     // Create type hierarchy and CHA
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    System.out.println(typeHierarchy.subclassesOf(classTypeA));
+    System.out.println("Subclasses of A: ");
+    typeHierarchy.subclassesOf(classTypeA).forEach(System.out::println);
+
     CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view);
 
     // Create CG by initializing CHA with entry method(s)
     CallGraph cg = cha.initialize(Collections.singletonList(entryMethodSignature));
 
-    cg.callsFrom(entryMethodSignature).forEach(System.out::println);
+    System.out.println("Call Graph from B:");
+    final Set<CallGraph.Call> calls = cg.callsFrom(entryMethodSignature);
+    calls.forEach(System.out::println);
   }
 }

@@ -24,6 +24,7 @@ package sootup.java.frontend.inputlocation;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -131,15 +132,6 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
     this.exclusionFilePath = exclusionFilePath;
     this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
     this.bodyInterceptors = bodyInterceptors;
-    setSpecifiedAsBuiltInByUser(srcType);
-  }
-
-  /**
-   * The method sets the value of the variable srcType.
-   *
-   * @param srcType the source type for the path can be Library, Application, Phantom.
-   */
-  public void setSpecifiedAsBuiltInByUser(@Nullable SourceType srcType) {
     this.srcType = srcType;
   }
 
@@ -157,9 +149,8 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
 
   @Override
   @Nonnull
-  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
-
-    return classProvider.getClassSources(srcType);
+  public Stream<JavaSootClassSource> getClassSources(@Nonnull View view) {
+    return classProvider.getClassSources(srcType).stream();
   }
 
   @Override

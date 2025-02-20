@@ -24,8 +24,8 @@ import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.interceptors.Aggregator;
+import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
@@ -183,7 +183,7 @@ public class AggregatorTest {
   public void testIssue739() {
 
     AnalysisInputLocation inputLocation =
-        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+        new ClassFileBasedAnalysisInputLocation(
             Paths.get("../shared-test-resources/bugfixes/Issue739_Aggregator.class"),
             "",
             SourceType.Application,
@@ -203,7 +203,7 @@ public class AggregatorTest {
   public void testIssue911() {
 
     AnalysisInputLocation inputLocationB =
-        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+        new ClassFileBasedAnalysisInputLocation(
             Paths.get("../shared-test-resources/bugfixes/Issue911_Aggregator.class"),
             "",
             SourceType.Application,

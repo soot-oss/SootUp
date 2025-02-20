@@ -120,7 +120,6 @@ public class JimpleAnalysisInputLocationTest {
                   m -> {
                     if (m.getSignature().getName().contains("tc1")) {
                       String s = m.getBody().toString();
-                      System.out.println(s);
                     }
                   });
         });

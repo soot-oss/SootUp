@@ -173,11 +173,10 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
   @Override
   @Nonnull
-  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
-
+  public Stream<JavaSootClassSource> getClassSources(@Nonnull View view) {
     Collection<JavaSootClassSource> classSources = new ArrayList<>();
     inputLocations.values().stream()
-        .flatMap(location -> location.getClassSources(view).stream())
+        .flatMap(location -> location.getClassSources(view))
         .map(src -> (JavaSootClassSource) src)
         .forEach(
             cs -> {
@@ -193,7 +192,8 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
               }
             });
 
-    return classSources;
+    // TODO: return stream directly
+    return classSources.stream();
   }
 
   @Nonnull

@@ -32,6 +32,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
@@ -99,6 +100,7 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
     try {
       FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
+      // TODO: dont create a new AsmJavaClassProvider all the time!
       return getClassSourceInternal(
           (JavaClassType) type, archiveRoot, new AsmJavaClassProvider(view));
     } catch (ExecutionException e) {
@@ -106,12 +108,14 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
     }
   }
 
+  /** returns a Autocloseable resource that must be closed! */
   @Override
   @Nonnull
-  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
+  public Stream<JavaSootClassSource> getClassSources(@Nonnull View view) {
     try {
       FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
+      // TODO: dont create a new AsmJavaClassProvider all the time!
       return walkDirectory(
           archiveRoot, view.getIdentifierFactory(), new AsmJavaClassProvider(view));
     } catch (ExecutionException e) {

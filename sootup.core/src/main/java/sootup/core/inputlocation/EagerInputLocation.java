@@ -22,6 +22,7 @@ package sootup.core.inputlocation;
  */
 import com.google.common.collect.ImmutableMap;
 import java.util.*;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.frontend.SootClassSource;
@@ -69,9 +70,9 @@ public class EagerInputLocation implements AnalysisInputLocation {
 
   @Nonnull
   @Override
-  public Collection<SootClassSource> getClassSources(@Nullable View view) {
+  public Stream<SootClassSource> getClassSources(@Nullable View view) {
     // FIXME: add classloadingoptions
-    return map.values();
+    return map.values().stream();
   }
 
   @Nonnull

@@ -22,7 +22,7 @@ import sootup.java.core.views.JavaView;
 
 /** This example illustrates how to create and use a new Soot Project. */
 @Tag("Java8")
-public class BasicSetup {
+public class BasicSetupTest {
 
   @Test
   public void createByteCodeProject() {

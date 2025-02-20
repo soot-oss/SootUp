@@ -18,7 +18,7 @@ import sootup.java.core.views.JavaView;
 
 /** This example illustrates how to invoke body interceptors. */
 @Tag("Java8")
-public class BodyInterceptor {
+public class BodyInterceptorTest {
 
   @Test
   public void test() {

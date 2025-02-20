@@ -58,10 +58,6 @@ import sootup.core.util.printer.StmtPrinter;
 public class SootMethod extends SootClassMember<MethodSignature> implements Method {
 
   @Nonnull private final ImmutableSet<MethodModifier> modifiers;
-  /**
-   * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
-   */
-  @Nonnull protected final ImmutableList<Type> parameterTypes;
 
   /** Declared exceptions thrown by this method. Created upon demand. */
   @Nonnull protected final ImmutableList<ClassType> exceptions;
@@ -79,7 +75,6 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     super(methodSignature, position);
 
     this.bodySource = source;
-    this.parameterTypes = ImmutableUtils.immutableListOf(methodSignature.getParameterTypes());
     this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
     this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
   }
@@ -154,19 +149,32 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
   /** Returns the number of parameters taken by this method. */
   public int getParameterCount() {
-    return parameterTypes.size();
+    return getSignature().getParameterCount();
   }
 
-  /** Gets the type of the <i>n</i>th parameter of this method. */
   @Nonnull
   public Type getParameterType(int n) {
-    return parameterTypes.get(n);
+    return getSignature().getParameterType(n);
   }
 
-  /** Returns a read-only list of the parameter types of this method. */
+  @Nonnull
+  public MethodSubSignature getSubSignature() {
+    return getSignature().getSubSignature();
+  }
+
   @Nonnull
   public List<Type> getParameterTypes() {
-    return parameterTypes;
+    return getSignature().getParameterTypes();
+  }
+
+  @Nonnull
+  public ClassType getDeclClassType() {
+    return getSignature().getDeclClassType();
+  }
+
+  @Nonnull
+  public String getName() {
+    return getSignature().getName();
   }
 
   @Nonnull private final Supplier<Body> _lazyBody = Suppliers.memoize(this::lazyBodyInitializer);

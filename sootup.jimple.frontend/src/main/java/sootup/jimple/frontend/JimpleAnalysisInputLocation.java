@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -89,14 +88,16 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
     return bodyInterceptors;
   }
 
+  /** @return Autoclosable needs to be closed! */
   @Nonnull
-  List<SootClassSource> walkDirectory(
+  Stream<SootClassSource> walkDirectory(
       @Nonnull Path dirPath,
       @Nonnull IdentifierFactory factory,
       @Nonnull ClassProvider classProvider) {
 
-    try (final Stream<Path> walk = Files.walk(path)) {
-      return walk.filter(filePath -> PathUtils.hasExtension(filePath, FileType.JIMPLE))
+    try {
+      return Files.walk(path)
+          .filter(filePath -> PathUtils.hasExtension(filePath, FileType.JIMPLE))
           .flatMap(
               p -> {
                 String fullyQualifiedName =
@@ -108,9 +109,7 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
                 return StreamUtils.optionalToStream(
                     classProvider.createClassSource(
                         this, p, factory.getClassType(fullyQualifiedName)));
-              })
-          .collect(Collectors.toList());
-
+              });
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
@@ -118,7 +117,8 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
 
   @Override
   @Nonnull
-  public Collection<SootClassSource> getClassSources(@Nonnull View view) {
+  public Stream<SootClassSource> getClassSources(@Nonnull View view) {
+    // TODO: dont create a new CLassProvider every time
     return walkDirectory(
         path, view.getIdentifierFactory(), new JimpleClassProvider(bodyInterceptors, view));
   }

@@ -131,10 +131,9 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   /** Retreive CLassSources of a module specified by methodSignature */
   @Override
   @Nonnull
-  public Collection<JavaSootClassSource> getModulesClassSources(
+  public Stream<JavaSootClassSource> getModulesClassSources(
       @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
-    return getClassSourcesInternal(moduleSignature, view.getIdentifierFactory(), view)
-        .collect(Collectors.toList());
+    return getClassSourcesInternal(moduleSignature, view.getIdentifierFactory(), view);
   }
 
   @Nonnull
@@ -182,12 +181,11 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   }
 
   @Override
-  public @Nonnull Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
+  public @Nonnull Stream<JavaSootClassSource> getClassSources(@Nonnull View view) {
 
     Collection<ModuleSignature> moduleSignatures = discoverModules();
     return moduleSignatures.stream()
-        .flatMap(sig -> getClassSourcesInternal(sig, view.getIdentifierFactory(), view))
-        .collect(Collectors.toList());
+        .flatMap(sig -> getClassSourcesInternal(sig, view.getIdentifierFactory(), view));
   }
 
   /**
