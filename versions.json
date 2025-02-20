@@ -10,7 +10,10 @@
   {
     "version": "test-new-release_preview",
     "title": "PR Preview test-new-release",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "issue-988-TypeAssigner_preview",
