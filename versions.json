@@ -8,6 +8,11 @@
     }
   },
   {
+    "version": "test-new-release_preview",
+    "title": "PR Preview test-new-release",
+    "aliases": []
+  },
+  {
     "version": "issue-988-TypeAssigner_preview",
     "title": "PR Preview issue-988-TypeAssigner",
     "aliases": [],
