@@ -23,16 +23,14 @@ package sootup.core.model;
  */
 
 import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import com.google.common.collect.ImmutableSet;
 import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.types.ClassType;
@@ -59,7 +57,16 @@ public class SootClass extends AbstractClass implements HasPosition {
     this.classSignature = classSource.getClassType();
   }
 
-  private SootClass(SootClassSource classSource, SourceType sourceType, Set<? extends SootMethod> methods, Set<? extends SootField> fields, Set<ClassModifier> modifiers, Set<? extends ClassType> interfaces, Optional<? extends ClassType> superclass, Optional<? extends ClassType> outerClass, Position position) {
+  private SootClass(
+      SootClassSource classSource,
+      SourceType sourceType,
+      Set<? extends SootMethod> methods,
+      Set<? extends SootField> fields,
+      Set<ClassModifier> modifiers,
+      Set<? extends ClassType> interfaces,
+      Optional<? extends ClassType> superclass,
+      Optional<? extends ClassType> outerClass,
+      Position position) {
     super(classSource);
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
@@ -104,7 +111,7 @@ public class SootClass extends AbstractClass implements HasPosition {
 
   @Nonnull
   private Supplier<Set<? extends SootMethod>> _lazyMethods =
-          Suppliers.memoize(this::lazyMethodInitializer);
+      Suppliers.memoize(this::lazyMethodInitializer);
 
   /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */
   @Nonnull
@@ -114,7 +121,7 @@ public class SootClass extends AbstractClass implements HasPosition {
 
   @Nonnull
   private Supplier<Set<? extends SootField>> _lazyFields =
-          Suppliers.memoize(this::lazyFieldInitializer);
+      Suppliers.memoize(this::lazyFieldInitializer);
 
   /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
   @Override
@@ -124,7 +131,7 @@ public class SootClass extends AbstractClass implements HasPosition {
   }
 
   private Supplier<Set<ClassModifier>> lazyModifiers =
-          Suppliers.memoize(classSource::resolveModifiers);
+      Suppliers.memoize(classSource::resolveModifiers);
 
   /** Returns the modifiers of this class in an immutable set. */
   @Nonnull
@@ -133,7 +140,7 @@ public class SootClass extends AbstractClass implements HasPosition {
   }
 
   private Supplier<Set<? extends ClassType>> lazyInterfaces =
-          Suppliers.memoize(classSource::resolveInterfaces);
+      Suppliers.memoize(classSource::resolveInterfaces);
 
   /**
    * Returns a backed Chain of the interfaces that are directly implemented by this class. Note that
@@ -156,7 +163,7 @@ public class SootClass extends AbstractClass implements HasPosition {
   }
 
   private Supplier<Optional<? extends ClassType>> lazySuperclass =
-          Suppliers.memoize(classSource::resolveSuperclass);
+      Suppliers.memoize(classSource::resolveSuperclass);
 
   /**
    * WARNING: interfaces are subclasses of the java.lang.Object class! Does this class have a
@@ -176,7 +183,7 @@ public class SootClass extends AbstractClass implements HasPosition {
   }
 
   private Supplier<Optional<? extends ClassType>> lazyOuterClass =
-          Suppliers.memoize(classSource::resolveOuterClass);
+      Suppliers.memoize(classSource::resolveOuterClass);
 
   public boolean hasOuterClass() {
     return lazyOuterClass.get().isPresent();
@@ -309,74 +316,66 @@ public class SootClass extends AbstractClass implements HasPosition {
     return new SootClass(classSource, sourceType);
   }
 
-  /**
-   * Defines a {@link SootClass} builder.
-   */
+  /** Defines a {@link SootClass} builder. */
   public static class SootClassBuilder {
-    @Nullable
-    private SootClassSource classSource;
-    @Nullable
-    private SourceType sourceType;
-    @Nullable
-    private Set<? extends SootMethod> methods = ImmutableSet.of();
-    @Nullable
-    private Set<? extends SootField> fields = ImmutableSet.of();
-    @Nullable
-    private Set<ClassModifier> modifiers = ImmutableSet.of();
-    @Nullable
-    private Set<? extends ClassType> interfaces = ImmutableSet.of();
-    @Nullable
-    private Optional<? extends ClassType> superclass = Optional.empty();
-    @Nullable
-    private Optional<? extends ClassType> outerClass = Optional.empty();
-    @Nullable
-    private Position position;
+    @Nullable private SootClassSource classSource;
+    @Nullable private SourceType sourceType;
+    @Nullable private Set<? extends SootMethod> methods = ImmutableSet.of();
+    @Nullable private Set<? extends SootField> fields = ImmutableSet.of();
+    @Nullable private Set<ClassModifier> modifiers = ImmutableSet.of();
+    @Nullable private Set<? extends ClassType> interfaces = ImmutableSet.of();
+    @Nullable private Optional<? extends ClassType> superclass = Optional.empty();
+    @Nullable private Optional<? extends ClassType> outerClass = Optional.empty();
+    @Nullable private Position position;
 
-    private SootClassBuilder() {
-    }
+    private SootClassBuilder() {}
 
     public static ClassSourceStep builder() {
       return new Steps();
     }
 
-    /**
-     * Step interface for setting the class source.
-     */
+    /** Step interface for setting the class source. */
     public interface ClassSourceStep {
       SourceTypeStep withClassSource(@Nonnull SootClassSource classSource);
     }
 
-    /**
-     * Step interface for setting the source type.
-     */
+    /** Step interface for setting the source type. */
     public interface SourceTypeStep {
       CompleteStep withSourceType(@Nonnull SourceType sourceType);
     }
 
-    /**
-     * Interface that accumulates all possible methods.
-     */
-    public interface CompleteStep extends
-            InterfaceStep, MethodStep, FieldStep, ModifierStep, SuperclassStep, OuterClassStep, PositionStep, Build {
-    }
+    /** Interface that accumulates all possible methods. */
+    public interface CompleteStep
+        extends InterfaceStep,
+            MethodStep,
+            FieldStep,
+            ModifierStep,
+            SuperclassStep,
+            OuterClassStep,
+            PositionStep,
+            Build {}
 
     public interface MethodStep {
       CompleteStep withMethod(@Nonnull SootMethod method);
+
       CompleteStep withMethods(@Nonnull Set<? extends SootMethod> methods);
     }
 
     public interface FieldStep {
       CompleteStep withField(@Nonnull SootField field);
+
       CompleteStep withFields(@Nonnull Set<? extends SootField> fields);
     }
 
     public interface ModifierStep {
       CompleteStep withModifier(@Nonnull ClassModifier modifier);
+
       CompleteStep withModifiers(@Nonnull Set<ClassModifier> modifiers);
     }
 
     public interface InterfaceStep {
       CompleteStep withInterface(@Nonnull ClassType interfaceType);
+
       CompleteStep withInterfaces(@Nonnull Set<? extends ClassType> interfaceTypes);
     }
 
@@ -396,9 +395,7 @@ public class SootClass extends AbstractClass implements HasPosition {
       SootClass build();
     }
 
-    /**
-     * Concrete implementation of the step builder.
-     */
+    /** Concrete implementation of the step builder. */
     private static class Steps implements ClassSourceStep, SourceTypeStep, CompleteStep {
       private final SootClassBuilder instance = new SootClassBuilder();
 
@@ -416,65 +413,49 @@ public class SootClass extends AbstractClass implements HasPosition {
 
       @Override
       public CompleteStep withMethod(@Nonnull SootMethod method) {
-        instance.methods = ImmutableSet.<SootMethod>builder()
-                .add(method)
-                .build();
+        instance.methods = ImmutableSet.<SootMethod>builder().add(method).build();
         return this;
       }
 
       @Override
       public CompleteStep withMethods(@Nonnull Set<? extends SootMethod> methods) {
-        instance.methods = ImmutableSet.<SootMethod>builder()
-                .addAll(methods)
-                .build();
+        instance.methods = ImmutableSet.<SootMethod>builder().addAll(methods).build();
         return this;
       }
 
       @Override
       public CompleteStep withField(@Nonnull SootField field) {
-        instance.fields = ImmutableSet.<SootField>builder()
-                .add(field)
-                .build();
+        instance.fields = ImmutableSet.<SootField>builder().add(field).build();
         return this;
       }
 
       @Override
       public CompleteStep withFields(@Nonnull Set<? extends SootField> fields) {
-        instance.fields = ImmutableSet.<SootField>builder()
-                .addAll(fields)
-                .build();
+        instance.fields = ImmutableSet.<SootField>builder().addAll(fields).build();
         return this;
       }
 
       @Override
       public CompleteStep withModifier(@Nonnull ClassModifier modifier) {
-        instance.modifiers = ImmutableSet.<ClassModifier>builder()
-                .add(modifier)
-                .build();
+        instance.modifiers = ImmutableSet.<ClassModifier>builder().add(modifier).build();
         return this;
       }
 
       @Override
       public CompleteStep withModifiers(@Nonnull Set<ClassModifier> modifiers) {
-        instance.modifiers = ImmutableSet.<ClassModifier>builder()
-                .addAll(modifiers)
-                .build();
+        instance.modifiers = ImmutableSet.<ClassModifier>builder().addAll(modifiers).build();
         return this;
       }
 
       @Override
       public CompleteStep withInterface(@Nonnull ClassType interfaceType) {
-        instance.interfaces = ImmutableSet.<ClassType>builder()
-                .add(interfaceType)
-                .build();
+        instance.interfaces = ImmutableSet.<ClassType>builder().add(interfaceType).build();
         return this;
       }
 
       @Override
       public CompleteStep withInterfaces(@Nonnull Set<? extends ClassType> interfaceTypes) {
-        instance.interfaces = ImmutableSet.<ClassType>builder()
-                .addAll(interfaceTypes)
-                .build();
+        instance.interfaces = ImmutableSet.<ClassType>builder().addAll(interfaceTypes).build();
         return this;
       }
 
@@ -498,16 +479,16 @@ public class SootClass extends AbstractClass implements HasPosition {
 
       @Override
       public SootClass build() {
-        return new SootClass(instance.classSource,
-                instance.sourceType,
-                instance.methods,
-                instance.fields,
-                instance.modifiers,
-                instance.interfaces,
-                instance.superclass,
-                instance.outerClass,
-                instance.position
-        );
+        return new SootClass(
+            instance.classSource,
+            instance.sourceType,
+            instance.methods,
+            instance.fields,
+            instance.modifiers,
+            instance.interfaces,
+            instance.superclass,
+            instance.outerClass,
+            instance.position);
       }
     }
   }
