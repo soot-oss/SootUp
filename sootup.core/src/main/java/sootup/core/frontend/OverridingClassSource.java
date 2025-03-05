@@ -20,13 +20,10 @@ package sootup.core.frontend;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
+import com.google.common.collect.ImmutableSet;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -358,18 +355,26 @@ public class OverridingClassSource extends SootClassSource {
     }
 
     public interface MethodsStep {
+      CompleteStep withMethod(@Nonnull SootMethod method);
+
       CompleteStep withMethods(@Nonnull Collection<SootMethod> methods);
     }
 
     public interface FieldsStep {
+      CompleteStep withField(@Nonnull SootField field);
+
       CompleteStep withFields(@Nonnull Collection<SootField> fields);
     }
 
     public interface ModifiersStep {
+      CompleteStep withModifier(@Nonnull ClassModifier modifier);
+
       CompleteStep withModifiers(@Nonnull Set<ClassModifier> modifiers);
     }
 
     public interface InterfacesStep {
+      CompleteStep withInterface(@Nonnull ClassType interfaceType);
+
       CompleteStep withInterfaces(@Nonnull Set<ClassType> interfaces);
     }
 
@@ -411,8 +416,20 @@ public class OverridingClassSource extends SootClassSource {
       }
 
       @Override
+      public CompleteStep withMethod(@Nonnull SootMethod method) {
+        instance.overriddenSootMethods = ImmutableSet.<SootMethod>builder().add(method).build();
+        return this;
+      }
+
+      @Override
       public CompleteStep withMethods(@Nonnull Collection<SootMethod> methods) {
         instance.overriddenSootMethods.addAll(methods);
+        return this;
+      }
+
+      @Override
+      public CompleteStep withField(@Nonnull SootField field) {
+        instance.overriddenSootFields = ImmutableSet.<SootField>builder().add(field).build();
         return this;
       }
 
@@ -423,8 +440,21 @@ public class OverridingClassSource extends SootClassSource {
       }
 
       @Override
+      public CompleteStep withModifier(@Nonnull ClassModifier modifier) {
+        instance.overriddenModifiers = ImmutableSet.<ClassModifier>builder().add(modifier).build();
+        return this;
+      }
+
+      @Override
       public CompleteStep withModifiers(@Nonnull Set<ClassModifier> modifiers) {
         instance.overriddenModifiers.addAll(modifiers);
+        return this;
+      }
+
+      @Override
+      public CompleteStep withInterface(@Nonnull ClassType interfaceType) {
+        instance.overriddenInterfaces =
+            ImmutableSet.<ClassType>builder().add(interfaceType).build();
         return this;
       }
 

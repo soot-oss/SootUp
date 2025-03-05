@@ -316,33 +316,6 @@ public class SootClass extends AbstractClass implements HasPosition {
     return new SootClass(classSource, sourceType);
   }
 
-  @Nonnull
-  public SootClass withMethod(SootMethod sootMethod) {
-    return SootClassBuilder.builder()
-        .withClassSource(classSource)
-        .withSourceType(sourceType)
-        .withMethod(sootMethod)
-        .build();
-  }
-
-  @Nonnull
-  public SootClass withField(SootField sootField) {
-    return SootClassBuilder.builder()
-        .withClassSource(classSource)
-        .withSourceType(sourceType)
-        .withField(sootField)
-        .build();
-  }
-
-  @Nonnull
-  public SootClass withModifier(ClassModifier classModifier) {
-    return SootClassBuilder.builder()
-        .withClassSource(classSource)
-        .withSourceType(sourceType)
-        .withModifier(classModifier)
-        .build();
-  }
-
   /** Defines a {@link SootClass} builder. */
   public static class SootClassBuilder {
     @Nullable private SootClassSource classSource;
