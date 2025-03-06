@@ -61,9 +61,9 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   CallGraph loadCallGraph(String testDirectory, boolean useSourceCodeFrontend, String className) {
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
-//    if (version > 1.8) {
-//      fail("The rt.jar is not available after Java 8. You are using version " + version);
-//    }
+    //    if (version > 1.8) {
+    //      fail("The rt.jar is not available after Java 8. You are using version " + version);
+    //    }
 
     String classPath =
         "src/test/resources/callgraph/"
