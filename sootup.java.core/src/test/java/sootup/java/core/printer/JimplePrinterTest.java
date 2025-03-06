@@ -39,8 +39,7 @@ public class JimplePrinterTest {
     JimplePrinter p = new JimplePrinter(JimplePrinter.Option.UseImports);
     final StringWriter writer = new StringWriter();
     SootClass sootClass = buildClass(false);
-    SootClass sootClassUsingBuilder = buildClass(true);
-    p.printTo(sootClassUsingBuilder, new PrintWriter(writer));
+    p.printTo(sootClass, new PrintWriter(writer));
 
     assertEquals(
         Arrays.asList(
@@ -55,6 +54,19 @@ public class JimplePrinterTest {
             "nop",
             "return"),
         Utils.filterJimple(writer.toString()));
+  }
+
+  @Test
+  public void testSootClassBuilder() {
+    JimplePrinter p =
+        new JimplePrinter(JimplePrinter.Option.UseImports, JimplePrinter.Option.Deterministic);
+    final StringWriter writer = new StringWriter();
+    final StringWriter writer1 = new StringWriter();
+    SootClass sootClass = buildClass(false);
+    SootClass sootClassUsingBuilder = buildClass(true);
+    p.printTo(sootClass, new PrintWriter(writer));
+    p.printTo(sootClassUsingBuilder, new PrintWriter(writer1));
+    assertEquals(Utils.filterJimple(writer.toString()), Utils.filterJimple(writer1.toString()));
 
     // assert if sootClass and sootClassUsingBuilder are same
     assertEquals(
