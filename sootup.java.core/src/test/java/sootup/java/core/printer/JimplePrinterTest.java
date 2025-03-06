@@ -38,7 +38,9 @@ public class JimplePrinterTest {
 
     JimplePrinter p = new JimplePrinter(JimplePrinter.Option.UseImports);
     final StringWriter writer = new StringWriter();
-    p.printTo(buildClass(), new PrintWriter(writer));
+    SootClass sootClass = buildClass(false);
+    SootClass sootClassUsingBuilder = buildClass(true);
+    p.printTo(sootClassUsingBuilder, new PrintWriter(writer));
 
     assertEquals(
         Arrays.asList(
@@ -53,10 +55,21 @@ public class JimplePrinterTest {
             "nop",
             "return"),
         Utils.filterJimple(writer.toString()));
+
+    // assert if sootClass and sootClassUsingBuilder are same
+    assertEquals(
+        sootClass.getClassSource().getClassType().getClassName(),
+        sootClassUsingBuilder.getClassSource().getClassType().getClassName());
+    assertEquals(sootClass.getMethods().size(), sootClassUsingBuilder.getMethods().size());
+    assertEquals(sootClass.getFields().size(), sootClassUsingBuilder.getFields().size());
+    assertEquals(sootClass.getModifiers().size(), sootClassUsingBuilder.getModifiers().size());
+    assertEquals(sootClass.getInterfaces().size(), sootClassUsingBuilder.getInterfaces().size());
+    assertEquals(
+        sootClass.getSuperclass().get().getClassName(),
+        sootClassUsingBuilder.getSuperclass().get().getClassName());
   }
 
-  private SootClass buildClass() {
-
+  private SootClass buildClass(boolean buildUsingBuilder) {
     View view = new JavaView(new EagerInputLocation());
 
     String className = "some.package.SomeClass";
@@ -104,18 +117,64 @@ public class JimplePrinterTest {
                     .getClassType("files.stuff.FileNotFoundException")),
             NoPositionInformation.getInstance());
 
-    return new SootClass(
+    if (buildUsingBuilder) {
+      return getSootClassUsingBuilder(dummyMainMethod, anotherMethod, className, view);
+    }
+
+    return getSootClass(dummyMainMethod, anotherMethod, className, view);
+  }
+
+  private SootClass getSootClassUsingBuilder(
+      SootMethod dummyMainMethod, SootMethod anotherMethod, String className, View view) {
+    SootField sootField =
+        new SootField(
+            JavaIdentifierFactory.getInstance()
+                .getFieldSignature(
+                    "counter",
+                    JavaIdentifierFactory.getInstance().getClassType(className),
+                    PrimitiveType.getInt()),
+            EnumSet.of(FieldModifier.PRIVATE),
+            NoPositionInformation.getInstance());
+
+    OverridingClassSource overridingClassSource =
+        OverridingClassSource.OverridingClassSourceBuilder.builder()
+            .withMethods(new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)))
+            .withField(sootField)
+            .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+            .withInterfaces(
+                Collections.singleton(
+                    JavaIdentifierFactory.getInstance().getClassType("some.great.Interface")))
+            .withSuperclass(
+                Optional.of(
+                    JavaIdentifierFactory.getInstance().getClassType("some.great.Superclass")))
+            .withPosition(NoPositionInformation.getInstance())
+            .withClassType(view.getIdentifierFactory().getClassType(className))
+            .withAnalysisInputLocation(new EagerInputLocation())
+            .build();
+
+    SootClass sootClass =
+        SootClass.SootClassBuilder.builder()
+            .withClassSource(overridingClassSource)
+            .withSourceType(SourceType.Application)
+            .build();
+    return sootClass;
+  }
+
+  private SootClass getSootClass(
+      SootMethod dummyMainMethod, SootMethod anotherMethod, String className, View view) {
+    SootField sootField =
+        new SootField(
+            JavaIdentifierFactory.getInstance()
+                .getFieldSignature(
+                    "counter",
+                    JavaIdentifierFactory.getInstance().getClassType(className),
+                    PrimitiveType.getInt()),
+            EnumSet.of(FieldModifier.PRIVATE),
+            NoPositionInformation.getInstance());
+    OverridingClassSource overridingClassSource =
         new OverridingClassSource(
             new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
-            Collections.singleton(
-                new SootField(
-                    JavaIdentifierFactory.getInstance()
-                        .getFieldSignature(
-                            "counter",
-                            JavaIdentifierFactory.getInstance().getClassType(className),
-                            PrimitiveType.getInt()),
-                    EnumSet.of(FieldModifier.PRIVATE),
-                    NoPositionInformation.getInstance())),
+            Collections.singleton(sootField),
             EnumSet.of(ClassModifier.PUBLIC),
             Collections.singleton(
                 JavaIdentifierFactory.getInstance().getClassType("some.great.Interface")),
@@ -124,7 +183,7 @@ public class JimplePrinterTest {
             NoPositionInformation.getInstance(),
             null,
             view.getIdentifierFactory().getClassType(className),
-            new EagerInputLocation()),
-        SourceType.Application);
+            new EagerInputLocation());
+    return new SootClass(overridingClassSource, SourceType.Application);
   }
 }
