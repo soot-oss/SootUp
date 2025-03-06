@@ -31,7 +31,10 @@
   {
     "version": "add_StmtExceptionAnalyser_preview",
     "title": "PR Preview add_StmtExceptionAnalyser",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "1034-bug-fix-bodyinterceptor-dead-assignment-eliminator_preview",
