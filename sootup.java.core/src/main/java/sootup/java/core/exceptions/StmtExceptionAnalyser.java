@@ -24,14 +24,13 @@ package sootup.java.core.exceptions;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.BasicBlock;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.JNewExpr;
-import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
-import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.typehierarchy.TypeHierarchy;
@@ -46,7 +45,8 @@ public class StmtExceptionAnalyser {
     this.hierarchy = hierarchy;
   }
 
-  public ExceptionInferResult mightThrow(@Nonnull Stmt stmt, @Nonnull MutableStmtGraph graph) {
+  public ExceptionInferResult mightThrow(
+      @Nonnull Stmt stmt, @Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
     if (stmt instanceof JThrowStmt) {
       return mightThrowExplicitly((JThrowStmt) stmt, graph);
     } else {
@@ -55,7 +55,7 @@ public class StmtExceptionAnalyser {
   }
 
   public ExceptionInferResult mightThrowExplicitly(
-      @Nonnull JThrowStmt throwStmt, @Nonnull MutableStmtGraph graph) {
+      @Nonnull JThrowStmt throwStmt, @Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
     Immediate throwExpression = throwStmt.getOp();
     if (!(throwExpression instanceof Local)) {
       throw new IllegalStateException(
@@ -74,15 +74,16 @@ public class StmtExceptionAnalyser {
     }
     Type preciserType = findPreciserType(exceptionLocal, graph);
     if (preciserType != null) {
+      if (!(preciserType instanceof ClassType)) {
+        throw new IllegalStateException("The type of " + preciserType + " is not a ClassType!");
+      }
       throwType = preciserType;
-    }
-    if (!(preciserType instanceof ClassType)) {
-      throw new IllegalStateException("The type of " + preciserType + " is not a ClassType!");
     }
     return ExceptionInferResult.createSingleException((ClassType) throwType, hierarchy);
   }
 
-  private Type findPreciserType(@Nonnull Local local, @Nonnull MutableStmtGraph graph) {
+  private Type findPreciserType(
+      @Nonnull Local local, @Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
     Type preciserType = null;
     Set<Stmt> defStmtsOfLocal =
         graph.getStmts().stream()
