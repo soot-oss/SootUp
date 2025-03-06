@@ -23,6 +23,7 @@ import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.interceptors.*;
+import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
@@ -49,7 +50,7 @@ public class StmtExceptionAnalyserTest {
           new ConstantPropagatorAndFolder(),
           new TypeAssigner());
   PathBasedAnalysisInputLocation inputLocation =
-      new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+      new ClassFileBasedAnalysisInputLocation(
           path, "", SourceType.Application, interceptors);
   JavaClassPathAnalysisInputLocation javaInputLocation =
       new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar");
