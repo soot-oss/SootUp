@@ -23,6 +23,7 @@ package sootup.callgraph;
  */
 
 import java.util.*;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -106,7 +107,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param entryPoints the entry points of the call graph algorithm
    */
   protected List<MethodSignature> getClinitFromEntryPoints(List<MethodSignature> entryPoints) {
-    return entryPoints.stream()
+    return entryPoints.parallelStream()
         .map(
             methodSignature ->
                 getSignatureOfImplementedStaticInitializer(methodSignature.getDeclClassType()))
@@ -134,44 +135,49 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   final void processWorkList(
       Deque<MethodSignature> workList, Set<MethodSignature> processed, MutableCallGraph cg) {
+    ForkJoinPool pool = new ForkJoinPool(); // TODO: What level of parallelism?
     while (!workList.isEmpty()) {
-      MethodSignature currentMethodSignature = workList.pop();
-      // skip if already processed
-      if (processed.contains(currentMethodSignature)) {
-        continue;
+      List<MethodSignature> chunk = new ArrayList<>();
+      while (!workList.isEmpty() && chunk.size() < 4) {
+        chunk.add(workList.pop());
       }
+      pool.submit(() -> chunk.parallelStream().forEach(currentMethodSignature -> {
+        // skip if already processed
+        if (processed.contains(currentMethodSignature)) {
+          return;
+        }
+        // skip if library class
+        SootClass currentClass =
+                view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
+        if (currentClass == null || currentClass.isLibraryClass()) {
+          return;
+        }
+        // perform pre-processing if needed
+        preProcessingMethod(currentMethodSignature, workList, cg);
 
-      // skip if library class
-      SootClass currentClass =
-          view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
-      if (currentClass == null || currentClass.isLibraryClass()) {
-        continue;
-      }
+        // process the method
+        if (!cg.containsMethod(currentMethodSignature)) {
+          cg.addMethod(currentMethodSignature);
+        }
 
-      // perform pre-processing if needed
-      preProcessingMethod(currentMethodSignature, workList, cg);
+        // transform the method signature to the actual SootMethod
+        SootMethod currentMethod =
+                currentClass.getMethod(currentMethodSignature.getSubSignature()).orElse(null);
 
-      // process the method
-      if (!cg.containsMethod(currentMethodSignature)) {
-        cg.addMethod(currentMethodSignature);
-      }
+        // get all call targets of invocations in the method body
+        resolveAllCallsFromSourceMethod(currentMethod, cg, workList);
 
-      // transform the method signature to the actual SootMethod
-      SootMethod currentMethod =
-          currentClass.getMethod(currentMethodSignature.getSubSignature()).orElse(null);
+        // get all call targets of implicit edges in the method body
+        resolveAllImplicitCallsFromSourceMethod(currentMethod, cg, workList);
 
-      // get all call targets of invocations in the method body
-      resolveAllCallsFromSourceMethod(currentMethod, cg, workList);
+        // set method as processed
+        processed.add(currentMethodSignature);
 
-      // get all call targets of implicit edges in the method body
-      resolveAllImplicitCallsFromSourceMethod(currentMethod, cg, workList);
-
-      // set method as processed
-      processed.add(currentMethodSignature);
-
-      // perform post-processing if needed
-      postProcessingMethod(currentMethodSignature, workList, cg);
+        // perform post-processing if needed
+        postProcessingMethod(currentMethodSignature, workList, cg);
+      })).join(); // blocks current thread until task finished
     }
+    pool.shutdown(); // no new tasks accepted (https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ForkJoinPool.html)
   }
 
   /**
@@ -221,7 +227,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       return;
     }
 
-    sourceMethod.getBody().getStmts().stream()
+    sourceMethod.getBody().getStmts().parallelStream()
         .filter(Stmt::isInvokableStmt)
         .map(Stmt::asInvokableStmt)
         .forEach(
@@ -263,7 +269,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       return;
     }
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
-    sourceMethod.getBody().getStmts().stream()
+    sourceMethod.getBody().getStmts().parallelStream()
         .filter(Stmt::isInvokableStmt)
         .map(Stmt::asInvokableStmt)
         .forEach(
