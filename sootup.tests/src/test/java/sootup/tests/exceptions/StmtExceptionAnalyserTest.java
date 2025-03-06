@@ -50,8 +50,7 @@ public class StmtExceptionAnalyserTest {
           new ConstantPropagatorAndFolder(),
           new TypeAssigner());
   PathBasedAnalysisInputLocation inputLocation =
-      new ClassFileBasedAnalysisInputLocation(
-          path, "", SourceType.Application, interceptors);
+      new ClassFileBasedAnalysisInputLocation(path, "", SourceType.Application, interceptors);
   JavaClassPathAnalysisInputLocation javaInputLocation =
       new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar");
   JavaView view = new JavaView(Arrays.asList(inputLocation, javaInputLocation));
