@@ -11,7 +11,6 @@ import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.types.UnknownType;
-import sootup.core.util.ImmutableUtils;
 
 public class ExceptionInferStmtVisitor extends AbstractStmtVisitor {
 
@@ -21,10 +20,10 @@ public class ExceptionInferStmtVisitor extends AbstractStmtVisitor {
   private final ExceptionInferRefVisitor refVisitor;
 
   public ExceptionInferStmtVisitor(TypeHierarchy hierarchy) {
-      this.hierarchy = hierarchy;
-      this.refVisitor = new ExceptionInferRefVisitor();
-      this.exprVisitor = new ExceptionInferExprVisitor(hierarchy);
-      this.result = new ExceptionInferResult(ImmutableUtils.immutableSet(ExceptionInferResult.ErrorType.VM_ERROR, ExceptionInferResult.ErrorType.THREAD_DEATH));
+    this.hierarchy = hierarchy;
+    this.refVisitor = new ExceptionInferRefVisitor();
+    this.exprVisitor = new ExceptionInferExprVisitor(hierarchy);
+    this.result = ExceptionInferResult.createDefaultResult();
   }
 
   @Override
@@ -34,10 +33,10 @@ public class ExceptionInferStmtVisitor extends AbstractStmtVisitor {
 
   @Override
   public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
-    if(stmt.getInvokeExpr().isPresent()){
+    if (stmt.getInvokeExpr().isPresent()) {
       Expr expr = stmt.getInvokeExpr().get();
       expr.accept(exprVisitor);
-      result.addExceptions(exprVisitor.getResult(), hierarchy);
+      result = result.addExceptions(exprVisitor.getResult(), hierarchy);
     }
   }
 
@@ -46,19 +45,22 @@ public class ExceptionInferStmtVisitor extends AbstractStmtVisitor {
     Value leftOp = stmt.getLeftOp();
     Value rightOp = stmt.getRightOp();
     // store in array
-    if(leftOp instanceof Ref){
-      if (leftOp instanceof JArrayRef && (leftOp.getType() instanceof UnknownType || leftOp.getType() instanceof ClassType)) {
-        result.addException(ExceptionInferResult.ExceptionType.ARRAY_STORE_EXCEPTION, hierarchy);
+    if (leftOp instanceof Ref) {
+      if (leftOp instanceof JArrayRef
+          && (leftOp.getType() instanceof UnknownType || leftOp.getType() instanceof ClassType)) {
+        result =
+            result.addException(
+                ExceptionInferResult.ExceptionType.ARRAY_STORE_EXCEPTION, hierarchy);
       }
       ((Ref) leftOp).accept(refVisitor);
-      result.addExceptions(refVisitor.getResult(), hierarchy);
+      result = result.addExceptions(refVisitor.getResult(), hierarchy);
     }
-    if(rightOp instanceof Ref){
+    if (rightOp instanceof Ref) {
       ((Ref) rightOp).accept(refVisitor);
-      result.addExceptions(refVisitor.getResult(), hierarchy);
-    }else if(rightOp instanceof Expr){
+      result = result.addExceptions(refVisitor.getResult(), hierarchy);
+    } else if (rightOp instanceof Expr) {
       ((Expr) rightOp).accept(exprVisitor);
-      result.addExceptions(exprVisitor.getResult(), hierarchy);
+      result = result.addExceptions(exprVisitor.getResult(), hierarchy);
     }
   }
 
@@ -69,13 +71,17 @@ public class ExceptionInferStmtVisitor extends AbstractStmtVisitor {
 
   @Override
   public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
-    result.addException(ExceptionInferResult.ExceptionType.NUll_POINTER_EXCEPTION, hierarchy);
+    result =
+        result.addException(ExceptionInferResult.ExceptionType.NUll_POINTER_EXCEPTION, hierarchy);
   }
 
   @Override
   public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
-    result.addException(ExceptionInferResult.ExceptionType.NUll_POINTER_EXCEPTION, hierarchy);
-    result.addException(ExceptionInferResult.ExceptionType.ILLEGAL_MONITOR_STATE_EXCEPTION, hierarchy);
+    result =
+        result.addException(ExceptionInferResult.ExceptionType.NUll_POINTER_EXCEPTION, hierarchy);
+    result =
+        result.addException(
+            ExceptionInferResult.ExceptionType.ILLEGAL_MONITOR_STATE_EXCEPTION, hierarchy);
   }
 
   @Override
@@ -85,9 +91,11 @@ public class ExceptionInferStmtVisitor extends AbstractStmtVisitor {
 
   @Override
   public void caseIfStmt(@Nonnull JIfStmt stmt) {
-    Expr conditionExpr = stmt.getCondition();
+    defaultCaseStmt(stmt);
+    // ConditionExpr has no implicit exceptions
+    /*Expr conditionExpr = stmt.getCondition();
     conditionExpr.accept(exprVisitor);
-    result.addExceptions(exprVisitor.getResult(), hierarchy);
+    result = result.addExceptions(exprVisitor.getResult(), hierarchy);*/
   }
 
   @Override
@@ -121,11 +129,9 @@ public class ExceptionInferStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void defaultCaseStmt(@Nonnull Stmt stmt) {
+  public void defaultCaseStmt(@Nonnull Stmt stmt) {}
 
-  }
-
-  public ExceptionInferResult getResult(){
+  public ExceptionInferResult getResult() {
     return this.result;
   }
 }
