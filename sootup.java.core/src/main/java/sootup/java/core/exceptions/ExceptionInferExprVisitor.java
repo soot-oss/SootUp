@@ -11,7 +11,7 @@ import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
 
 public class ExceptionInferExprVisitor extends AbstractExprVisitor {
-
+  static Number a = 0;
   private ExceptionInferResult result;
   private final TypeHierarchy hierarchy;
 
@@ -188,7 +188,8 @@ public class ExceptionInferExprVisitor extends AbstractExprVisitor {
           || fromType instanceof UnknownType
           || ((!(fromType instanceof NullType))
               && (!((hierarchy.isSubtype(toType, fromType)) || toType.equals(fromType))))) {
-        result.addException(ExceptionInferResult.ExceptionType.CLASS_CAST_EXCEPTION, hierarchy);
+        result =
+            result.addException(ExceptionInferResult.ExceptionType.CLASS_CAST_EXCEPTION, hierarchy);
       }
     }
   }
@@ -207,13 +208,15 @@ public class ExceptionInferExprVisitor extends AbstractExprVisitor {
     }
     Value count = expr.getSize();
     if (count instanceof Local) {
-      result.addException(
-          ExceptionInferResult.ExceptionType.NEGATIVE_ARRAY_SIZE_EXCEPTION, hierarchy);
+      result =
+          result.addException(
+              ExceptionInferResult.ExceptionType.NEGATIVE_ARRAY_SIZE_EXCEPTION, hierarchy);
     } else if (count instanceof IntConstant) {
       BooleanConstant isLessThan = ((IntConstant) count).lessThan(IntConstant.getInstance(0));
       if (isLessThan.equals(BooleanConstant.getInstance(true))) {
-        result.addException(
-            ExceptionInferResult.ExceptionType.NEGATIVE_ARRAY_SIZE_EXCEPTION, hierarchy);
+        result =
+            result.addException(
+                ExceptionInferResult.ExceptionType.NEGATIVE_ARRAY_SIZE_EXCEPTION, hierarchy);
       }
     }
   }
@@ -224,16 +227,18 @@ public class ExceptionInferExprVisitor extends AbstractExprVisitor {
     for (int i = 0; i < expr.getSizeCount(); i++) {
       Value count = expr.getSize(i);
       if (count instanceof Local) {
-        result.addException(
-            ExceptionInferResult.ExceptionType.NEGATIVE_ARRAY_SIZE_EXCEPTION, hierarchy);
+        result =
+            result.addException(
+                ExceptionInferResult.ExceptionType.NEGATIVE_ARRAY_SIZE_EXCEPTION, hierarchy);
         break;
       } else if (count instanceof IntConstant) {
         BooleanConstant isLessThan = ((IntConstant) count).lessThan(IntConstant.getInstance(0));
         if (isLessThan.equals(BooleanConstant.getInstance(true))) {
-          result.addException(
-              ExceptionInferResult.ExceptionType.NEGATIVE_ARRAY_SIZE_EXCEPTION, hierarchy);
+          result =
+              result.addException(
+                  ExceptionInferResult.ExceptionType.NEGATIVE_ARRAY_SIZE_EXCEPTION, hierarchy);
+          break;
         }
-        break;
       }
     }
   }
@@ -263,8 +268,8 @@ public class ExceptionInferExprVisitor extends AbstractExprVisitor {
     result = ExceptionInferResult.createEmptyException();
   }
 
-  public ExceptionInferResult getResult(){
-      return this.result;
+  public ExceptionInferResult getResult() {
+    return this.result;
   }
 
   private boolean isZero(Constant constant) {

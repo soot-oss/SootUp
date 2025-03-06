@@ -88,34 +88,35 @@ public class ExceptionInferResult {
     Iterator<ClassType> oldExceptionsIterator = oldExceptions.iterator();
     while (oldExceptionsIterator.hasNext()) {
       ClassType oldException = oldExceptionsIterator.next();
-      boolean isOldExceptionContained =
-          newExceptions.stream()
-              .anyMatch(newException -> typeHierarchy.isSubtype(newException, oldException));
-      if (isOldExceptionContained) {
-        oldExceptionsIterator.remove();
-      }
+      newExceptions.stream()
+          .forEach(
+              newException -> {
+                if (typeHierarchy.isSubtype(newException, oldException)) {
+                  oldExceptionsIterator.remove();
+                }
+              });
     }
     newExceptions.addAll(oldExceptions);
     return new ExceptionInferResult(newExceptions);
   }
 
   public static class ExceptionType {
-    static final JavaIdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
-    static final ClassType THROWABLE = idFactory.getClassType("java.lang.Throwable");
-    static final ClassType NUll_POINTER_EXCEPTION =
+    public static final JavaIdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
+    public static final ClassType THROWABLE = idFactory.getClassType("java.lang.Throwable");
+    public static final ClassType NUll_POINTER_EXCEPTION =
         idFactory.getClassType("java.lang.NullPointerException");
-    static final ClassType ARRAY_STORE_EXCEPTION =
+    public static final ClassType ARRAY_STORE_EXCEPTION =
         idFactory.getClassType("java.lang.ArrayStoreException");
-    static final ClassType INDEX_OUT_OF_BOUNDS_EXCEPTION =
+    public static final ClassType INDEX_OUT_OF_BOUNDS_EXCEPTION =
         idFactory.getClassType("java.lang.IndexOutOfBoundsException");
-    static final ClassType ARITHMETIC_EXCEPTION =
+    public static final ClassType ARITHMETIC_EXCEPTION =
         idFactory.getClassType("java.lang.ArithmeticException");
-    static final ClassType NEGATIVE_ARRAY_SIZE_EXCEPTION =
+    public static final ClassType NEGATIVE_ARRAY_SIZE_EXCEPTION =
         idFactory.getClassType("java.lang.NegativeArraySizeException");
-    static final ClassType CLASS_CAST_EXCEPTION =
+    public static final ClassType CLASS_CAST_EXCEPTION =
         idFactory.getClassType("java.lang.ClassCastException");
-    static final ClassType ILLEGAL_MONITOR_STATE_EXCEPTION = idFactory.getClassType("java.lang.IllegalMonitorStateException");
-
+    public static final ClassType ILLEGAL_MONITOR_STATE_EXCEPTION =
+        idFactory.getClassType("java.lang.IllegalMonitorStateException");
   }
 
   public static class ErrorType {
