@@ -1,0 +1,66 @@
+Classfile /C:/Users/Klaukej/phd/Repos/SootUp/sootup.callgraph/src/test/resources/callgraph/Misc/binary/multi/FieldLeft.class
+  Last modified 07.03.2025; size 353 bytes
+  MD5 checksum 842860559eb2b583cdef18fc12c074bf
+  Compiled from "MultipleCallsToSameTarget.java"
+class multi.FieldLeft
+  minor version: 0
+  major version: 65
+  flags: ACC_SUPER
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // multi/FieldLeft.field:I
+   #8 = Class              #10            // multi/FieldLeft
+   #9 = NameAndType        #11:#12        // field:I
+  #10 = Utf8               multi/FieldLeft
+  #11 = Utf8               field
+  #12 = Utf8               I
+  #13 = Utf8               Code
+  #14 = Utf8               LineNumberTable
+  #15 = Utf8               method
+  #16 = Utf8               ()I
+  #17 = Utf8               <clinit>
+  #18 = Utf8               SourceFile
+  #19 = Utf8               MultipleCallsToSameTarget.java
+{
+  static int field;
+    descriptor: I
+    flags: ACC_STATIC
+
+  multi.FieldLeft();
+    descriptor: ()V
+    flags:
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 31: 0
+
+  static int method();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_2
+         1: ireturn
+      LineNumberTable:
+        line 33: 0
+
+  static {};
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_3
+         1: putstatic     #7                  // Field field:I
+         4: return
+      LineNumberTable:
+        line 32: 0
+}
+SourceFile: "MultipleCallsToSameTarget.java"

@@ -25,7 +25,6 @@ import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLoc
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
-import sootup.java.frontend.inputlocation.JavaSourcePathAnalysisInputLocation;
 
 public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
@@ -40,39 +39,23 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   // private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
   private JavaView createViewForClassPath(String classPath) {
-    return createViewForClassPath(classPath, true);
-  }
-
-  private JavaView createViewForClassPath(String classPath, boolean useSourceCodeFrontend) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
-    if (useSourceCodeFrontend) {
-      inputLocations.add(new JavaSourcePathAnalysisInputLocation(classPath));
-    } else {
-      inputLocations.add(new JavaClassPathAnalysisInputLocation(classPath));
-    }
+    inputLocations.add(new JavaClassPathAnalysisInputLocation(classPath));
 
     return new JavaView(inputLocations);
   }
 
   CallGraph loadCallGraph(String testDirectory, String className) {
-    return loadCallGraph(testDirectory, true, className);
-  }
-
-  CallGraph loadCallGraph(String testDirectory, boolean useSourceCodeFrontend, String className) {
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
     }
 
-    String classPath =
-        "src/test/resources/callgraph/"
-            + testDirectory
-            + "/"
-            + (useSourceCodeFrontend ? "source" : "binary");
+    String classPath = "src/test/resources/callgraph/" + testDirectory + "/binary";
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
-    view = createViewForClassPath(classPath, useSourceCodeFrontend);
+    view = createViewForClassPath(classPath);
 
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
@@ -237,7 +220,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testConcreteCall() {
-    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvc.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvc.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvc.Class"), "target", "void", Collections.emptyList());
@@ -250,7 +233,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testConcreteCallInSuperClass() {
-    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvcsc.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvcsc.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvcsc.SuperClass"),
@@ -272,7 +255,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testConcreteCallDifferentDefaultMethodInSubClass() {
-    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvcscddi.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvcscddi.Class");
     MethodSignature interfaceMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvcscddi.Interface"),
@@ -305,7 +288,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testConcreteCallInSuperClassWithDefaultInterface() {
-    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvcscwi.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvcscwi.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvcscwi.SuperClass"),
@@ -327,7 +310,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testConcreteCallInInterface() {
-    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvci.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvci.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvci.Interface"),
@@ -349,7 +332,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testConcreteCallInSubInterface() {
-    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvcsi.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvcsi.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvcsi.SubInterface"),
@@ -371,7 +354,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testConcreteCallInSuperClassSubInterface() {
-    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvcscsi.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvcscsi.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvcscsi.SubInterface"),
@@ -566,8 +549,15 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
+    MethodSignature invokedMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("nvc4.Superclass"),
+            "method",
+            "void",
+            Collections.emptyList());
+    System.out.println(cg.exportAsDot());
     assertTrue(
-        cg.containsCall(firstMethod, targetMethod, getInvokableStmt(firstMethod, targetMethod)));
+        cg.containsCall(firstMethod, targetMethod, getInvokableStmt(firstMethod, invokedMethod)));
   }
 
   @Test
@@ -698,7 +688,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testDynamicInterfaceMethod0() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim0.Class");
+    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim0.Class");
     MethodSignature interfaceMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("j8dim0.Interface"),
@@ -725,7 +715,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testDynamicInterfaceMethod1() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim1.Class");
+    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim1.Class");
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("j8dim1.Interface"),
@@ -739,7 +729,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testDynamicInterfaceMethod2() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim2.SuperClass");
+    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim2.SuperClass");
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
@@ -760,7 +750,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testDynamicInterfaceMethod3() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim3.SuperClass");
+    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim3.SuperClass");
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
@@ -772,7 +762,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testDynamicInterfaceMethod4() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim4.SuperClass");
+    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim4.SuperClass");
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
@@ -793,7 +783,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testDynamicInterfaceMethod5() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim5.SuperClass");
+    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim5.SuperClass");
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
@@ -827,7 +817,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testDynamicInterfaceMethod6() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim6.Demo");
+    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim6.Demo");
 
     MethodSignature combinedInterfaceMethod =
         identifierFactory.getMethodSignature(
@@ -872,7 +862,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testStaticInterfaceMethod() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8sim.Class");
+    CallGraph cg = loadCallGraph("InterfaceMethod", "j8sim.Class");
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
@@ -991,7 +981,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testWithoutEntryMethod() {
-    JavaView view = createViewForClassPath("src/test/resources/callgraph/DefaultEntryPoint");
+    JavaView view = createViewForClassPath("src/test/resources/callgraph/DefaultEntryPoint/binary");
 
     JavaClassType mainClassSignature = identifierFactory.getClassType("example2.Example");
     MethodSignature mainMethodSignature =
@@ -1012,13 +1002,14 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   @Test
   public void testMultipleMainMethod() {
 
-    JavaView view = createViewForClassPath("src/test/resources/callgraph/Misc");
+    JavaView view = createViewForClassPath("src/test/resources/callgraph/Misc/binary");
 
     CallGraphAlgorithm algorithm = createAlgorithm(view);
     try {
       algorithm.initialize();
       fail("Runtime Exception not thrown, when multiple main methods are defined.");
     } catch (RuntimeException e) {
+      System.out.println(e.getMessage());
       assertTrue(e.getMessage().startsWith("There are more than 1 main method present"));
     }
   }
@@ -1095,21 +1086,21 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("multi.Instantiated"),
             "method",
-            "void",
+            "int",
             Collections.emptyList());
 
     MethodSignature staticMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("multi.MultiCalls"),
             "method",
-            "void",
+            "int",
             Collections.emptyList());
 
     MethodSignature staticMethodField =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("multi.FieldLeft"),
             "method",
-            "void",
+            "int",
             Collections.emptyList());
 
     assertTrue(
@@ -1152,6 +1143,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             virtualMethod,
             getInvokableStmt(mainMethodSignature, virtualMethod, 1)));
 
+    System.out.println(cg.exportAsDot());
     checkClinit(cg, "multi.Instantiated", 0, false, null);
     checkClinit(cg, "multi.Instantiated", 1, false, null);
 
@@ -1197,7 +1189,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testIssue903() {
-    CallGraph cg = loadCallGraph("Bugfixes", false, "issue903.B");
+    CallGraph cg = loadCallGraph("Bugfixes", "issue903.B");
 
     MethodSignature closingCall =
         identifierFactory.getMethodSignature(

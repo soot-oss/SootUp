@@ -10,7 +10,8 @@ class Class {
     if( args.length == 42){
       Class.method();
     }else{
-      main("Recursive Call");
+      String[] array = {"Recursive Call"}; 
+      main(array);
     }
   }
 }

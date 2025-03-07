@@ -1,0 +1,101 @@
+Classfile /C:/Users/Klaukej/phd/Repos/SootUp/sootup.callgraph/src/test/resources/callgraph/Misc/binary/multi/MultipleCallsToSameTarget.class
+  Last modified 07.03.2025; size 551 bytes
+  MD5 checksum b49de17ebe07d9400604f69a78a86ad6
+  Compiled from "MultipleCallsToSameTarget.java"
+class multi.MultipleCallsToSameTarget
+  minor version: 0
+  major version: 65
+  flags: ACC_SUPER
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // multi/MultiCalls.method:()I
+   #8 = Class              #10            // multi/MultiCalls
+   #9 = NameAndType        #11:#12        // method:()I
+  #10 = Utf8               multi/MultiCalls
+  #11 = Utf8               method
+  #12 = Utf8               ()I
+  #13 = Fieldref           #14.#15        // multi/FieldLeft.field:I
+  #14 = Class              #16            // multi/FieldLeft
+  #15 = NameAndType        #17:#18        // field:I
+  #16 = Utf8               multi/FieldLeft
+  #17 = Utf8               field
+  #18 = Utf8               I
+  #19 = Methodref          #14.#9         // multi/FieldLeft.method:()I
+  #20 = Fieldref           #21.#15        // multi/FieldRight.field:I
+  #21 = Class              #22            // multi/FieldRight
+  #22 = Utf8               multi/FieldRight
+  #23 = Class              #24            // multi/Instantiated
+  #24 = Utf8               multi/Instantiated
+  #25 = Methodref          #23.#3         // multi/Instantiated."<init>":()V
+  #26 = Methodref          #23.#9         // multi/Instantiated.method:()I
+  #27 = Class              #28            // multi/MultipleCallsToSameTarget
+  #28 = Utf8               multi/MultipleCallsToSameTarget
+  #29 = Utf8               Code
+  #30 = Utf8               LineNumberTable
+  #31 = Utf8               main
+  #32 = Utf8               ([Ljava/lang/String;)V
+  #33 = Utf8               SourceFile
+  #34 = Utf8               MultipleCallsToSameTarget.java
+{
+  multi.MultipleCallsToSameTarget();
+    descriptor: ()V
+    flags:
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=1
+         0: invokestatic  #7                  // Method multi/MultiCalls.method:()I
+         3: pop
+         4: invokestatic  #7                  // Method multi/MultiCalls.method:()I
+         7: pop
+         8: iconst_5
+         9: putstatic     #13                 // Field multi/FieldLeft.field:I
+        12: invokestatic  #19                 // Method multi/FieldLeft.method:()I
+        15: putstatic     #13                 // Field multi/FieldLeft.field:I
+        18: getstatic     #20                 // Field multi/FieldRight.field:I
+        21: istore_1
+        22: getstatic     #20                 // Field multi/FieldRight.field:I
+        25: putstatic     #13                 // Field multi/FieldLeft.field:I
+        28: new           #23                 // class multi/Instantiated
+        31: dup
+        32: invokespecial #25                 // Method multi/Instantiated."<init>":()V
+        35: astore_2
+        36: new           #23                 // class multi/Instantiated
+        39: dup
+        40: invokespecial #25                 // Method multi/Instantiated."<init>":()V
+        43: astore_3
+        44: aload_2
+        45: invokevirtual #26                 // Method multi/Instantiated.method:()I
+        48: pop
+        49: aload_3
+        50: invokevirtual #26                 // Method multi/Instantiated.method:()I
+        53: pop
+        54: return
+      LineNumberTable:
+        line 6: 0
+        line 7: 4
+        line 9: 8
+        line 10: 12
+        line 12: 18
+        line 13: 22
+        line 15: 28
+        line 16: 36
+        line 18: 44
+        line 19: 49
+        line 20: 54
+}
+SourceFile: "MultipleCallsToSameTarget.java"
