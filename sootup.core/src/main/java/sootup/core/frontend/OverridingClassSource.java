@@ -20,13 +20,10 @@ package sootup.core.frontend;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
+import com.google.common.collect.ImmutableSet;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -333,5 +330,212 @@ public class OverridingClassSource extends SootClassSource {
         overriddenOuterClass,
         position,
         delegate);
+  }
+
+  /** Defines a {@link OverridingClassSourceBuilder} builder. */
+  public static class OverridingClassSourceBuilder {
+
+    @Nonnull private SootClassSource delegate;
+    @Nullable private Set<SootMethod> overriddenSootMethods = new HashSet<>();
+    @Nullable private Set<SootField> overriddenSootFields = new HashSet<>();
+
+    @Nullable
+    private EnumSet<ClassModifier> overriddenModifiers = EnumSet.noneOf(ClassModifier.class);
+
+    @Nullable private Set<ClassType> overriddenInterfaces = new HashSet<>();
+    @Nullable private Optional<ClassType> overriddenSuperclass = Optional.empty();
+    @Nullable private Optional<ClassType> overriddenOuterClass = Optional.empty();
+    @Nullable private Position position;
+    @Nullable Path sourcePath;
+    @Nullable ClassType classType;
+    @Nullable AnalysisInputLocation srcNamespace;
+
+    private OverridingClassSourceBuilder() {}
+
+    public static CompleteStep builder() {
+      return new Steps();
+    }
+
+    public interface SootClassSourceStep {
+      CompleteStep withSootClassSource(@Nonnull SootClassSource sootClassSource);
+    }
+
+    public interface MethodsStep {
+      CompleteStep withMethod(@Nonnull SootMethod method);
+
+      CompleteStep withMethods(@Nonnull Set<SootMethod> methods);
+    }
+
+    public interface FieldsStep {
+      CompleteStep withField(@Nonnull SootField field);
+
+      CompleteStep withFields(@Nonnull Set<SootField> fields);
+    }
+
+    public interface ModifiersStep {
+      CompleteStep withModifier(@Nonnull ClassModifier modifier);
+
+      CompleteStep withModifiers(@Nonnull EnumSet<ClassModifier> modifiers);
+    }
+
+    public interface InterfacesStep {
+      CompleteStep withInterface(@Nonnull ClassType interfaceType);
+
+      CompleteStep withInterfaces(@Nonnull Set<ClassType> interfaces);
+    }
+
+    public interface SuperclassStep {
+      CompleteStep withSuperclass(@Nonnull Optional<ClassType> superclass);
+    }
+
+    public interface OuterClassStep {
+      CompleteStep withOuterClass(@Nonnull Optional<ClassType> outerClass);
+    }
+
+    public interface PositionStep {
+      CompleteStep withPosition(@Nullable Position position);
+    }
+
+    public interface SourcePathStep {
+      CompleteStep withSourcePath(@Nullable Path sourcePath);
+    }
+
+    public interface ClassTypeStep {
+      CompleteStep withClassType(@Nullable ClassType classType);
+    }
+
+    public interface AnalysisInputLocationStep {
+      CompleteStep withAnalysisInputLocation(@Nullable AnalysisInputLocation analysisInputLocation);
+    }
+
+    public interface CompleteStep
+        extends SootClassSourceStep,
+            MethodsStep,
+            FieldsStep,
+            ModifiersStep,
+            InterfacesStep,
+            SuperclassStep,
+            OuterClassStep,
+            PositionStep,
+            SourcePathStep,
+            ClassTypeStep,
+            AnalysisInputLocationStep,
+            Build {}
+
+    public interface Build {
+      OverridingClassSource build();
+    }
+
+    /** Concrete implementation of the step builder. */
+    private static class Steps implements CompleteStep {
+      private final OverridingClassSourceBuilder instance = new OverridingClassSourceBuilder();
+
+      @Override
+      public CompleteStep withSootClassSource(@Nonnull SootClassSource sootClassSource) {
+        instance.delegate = sootClassSource;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withMethod(@Nonnull SootMethod method) {
+        instance.overriddenSootMethods = ImmutableSet.<SootMethod>builder().add(method).build();
+        return this;
+      }
+
+      @Override
+      public CompleteStep withMethods(@Nonnull Set<SootMethod> methods) {
+        instance.overriddenSootMethods.addAll(methods);
+        return this;
+      }
+
+      @Override
+      public CompleteStep withField(@Nonnull SootField field) {
+        instance.overriddenSootFields = ImmutableSet.<SootField>builder().add(field).build();
+        return this;
+      }
+
+      @Override
+      public CompleteStep withFields(@Nonnull Set<SootField> fields) {
+        instance.overriddenSootFields.addAll(fields);
+        return this;
+      }
+
+      @Override
+      public CompleteStep withModifier(@Nonnull ClassModifier modifier) {
+        instance.overriddenModifiers = EnumSet.of(modifier);
+        return this;
+      }
+
+      @Override
+      public CompleteStep withModifiers(@Nonnull EnumSet<ClassModifier> modifiers) {
+        instance.overriddenModifiers.addAll(modifiers);
+        return this;
+      }
+
+      @Override
+      public CompleteStep withInterface(@Nonnull ClassType interfaceType) {
+        instance.overriddenInterfaces =
+            ImmutableSet.<ClassType>builder().add(interfaceType).build();
+        return this;
+      }
+
+      @Override
+      public CompleteStep withInterfaces(@Nonnull Set<ClassType> interfaces) {
+        instance.overriddenInterfaces.addAll(interfaces);
+        return this;
+      }
+
+      @Override
+      public CompleteStep withSuperclass(@Nonnull Optional<ClassType> superclass) {
+        instance.overriddenSuperclass = superclass;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withOuterClass(@Nonnull Optional<ClassType> outerClass) {
+        instance.overriddenOuterClass = outerClass;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withPosition(@Nullable Position position) {
+        instance.position = position;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withSourcePath(@Nullable Path sourcePath) {
+        instance.sourcePath = sourcePath;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withClassType(@Nullable ClassType classType) {
+        instance.classType = classType;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withAnalysisInputLocation(
+          @Nullable AnalysisInputLocation analysisInputLocation) {
+        instance.srcNamespace = analysisInputLocation;
+        return this;
+      }
+
+      @Override
+      public OverridingClassSource build() {
+        return new OverridingClassSource(
+            instance.overriddenSootMethods,
+            instance.overriddenSootFields,
+            instance.overriddenModifiers,
+            instance.overriddenInterfaces,
+            instance.overriddenSuperclass.orElse(null),
+            instance.overriddenOuterClass.orElse(null),
+            instance.position,
+            instance.sourcePath,
+            instance.classType,
+            instance.srcNamespace);
+      }
+    }
   }
 }
