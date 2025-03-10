@@ -1,0 +1,8 @@
+[
+{
+  "jar_name": "gant_groovy2.1-1.9.11.jar",
+  "exception": "Failed to convert <gant.Gant: java.lang.Integer processArgs(java.lang.String[])>",
+  "download_url": "https://repo1.maven.org/maven2/org/codehaus/gant/gant_groovy2.1/1.9.11/gant_groovy2.1-1.9.11.jar",
+  "failedMethodSignature": "<gant.Gant: java.lang.Integer processArgs(java.lang.String[])>"
+}
+]
