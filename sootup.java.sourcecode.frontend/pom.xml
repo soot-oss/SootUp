@@ -299,7 +299,7 @@
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.expressions</artifactId>
-			<version>3.8.200</version>
+			<version>3.9.400</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.eclipse.platform</groupId>
