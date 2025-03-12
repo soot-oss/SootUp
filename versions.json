@@ -18,7 +18,10 @@
   {
     "version": "fix_setupforrelease_preview",
     "title": "PR Preview fix_setupforrelease",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "fix_changeLogLevel_preview",
