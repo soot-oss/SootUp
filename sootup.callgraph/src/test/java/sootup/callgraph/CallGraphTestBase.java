@@ -529,7 +529,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertFalse(cg.containsMethod(uncalledMethod));
   }
 
-  @Disabled //soundness feature currently not supported by SootUp will be addressed in Issue #1194
+  @Disabled // soundness feature currently not supported by SootUp will be addressed in Issue #1194
   @Test
   public void testNonVirtualCall4() {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc4.Class");
@@ -552,7 +552,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
-    System.out.println(cg.exportAsDot());
     assertTrue(
         cg.containsCall(firstMethod, targetMethod, getInvokableStmt(firstMethod, invokedMethod)));
   }
@@ -1140,7 +1139,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             virtualMethod,
             getInvokableStmt(mainMethodSignature, virtualMethod, 1)));
 
-    System.out.println(cg.exportAsDot());
     checkClinit(cg, "multi.Instantiated", 0, false, null);
     checkClinit(cg, "multi.Instantiated", 1, false, null);
 
