@@ -16,6 +16,11 @@
     }
   },
   {
+    "version": "fix_setupforrelease_preview",
+    "title": "PR Preview fix_setupforrelease",
+    "aliases": []
+  },
+  {
     "version": "fix_changeLogLevel_preview",
     "title": "PR Preview fix_changeLogLevel",
     "aliases": [],
