@@ -5,6 +5,7 @@
 !shared-test-resources/miniTestSuite/**/*.class
 !sootup.analysis/src/test/resources/taint/binary/*.class
 !sootup.callgraph/src/test/resources/callgraph/**/*.class
+!sootup.tests/src/test/resources/callgraph/**/*.class
 
 # Log file
 *.log
