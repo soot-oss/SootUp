@@ -66,13 +66,10 @@
         <module>sootup.interceptors</module>
         <module>sootup.java.bytecode.frontend</module>
         <module>sootup.java.sourcecode.frontend</module>
-        <module>sootup.tests</module>
         <module>sootup.callgraph</module>
         <module>sootup.qilin</module>
         <module>sootup.analysis.interprocedural</module>
         <module>sootup.analysis.intraprocedural</module>
-        <module>sootup.examples</module>
-        <module>sootup.report</module>
         <module>sootup.apk.frontend</module>
         <module>sootup.codepropertygraph</module>
     </modules>
@@ -86,7 +83,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
-        <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
+        <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
@@ -99,25 +96,25 @@
     <profiles>
         <profile>
             <id>Java8</id>
-            <properties>
-                <testcase.groups>Java8</testcase.groups>
-                <testCoverageType>jdk8</testCoverageType>
-            </properties>
             <!-- Activates if jdk is <1.9 which means it has a rt.jar -->
             <activation>
                 <jdk>(, 1.9)</jdk>
             </activation>
+            <properties>
+                <testcase.groups>Java8</testcase.groups>
+                <testCoverageType>jdk8</testCoverageType>
+            </properties>
         </profile>
         <profile>
             <id>Java9</id>
-            <properties>
-                <testcase.groups>Java9</testcase.groups>
-                <testCoverageType>jdk9</testCoverageType>
-            </properties>
             <!-- Activates if jdk is >=1.9 which means it has a jrt Provider -->
             <activation>
                 <jdk>[1.9, )</jdk>
             </activation>
+            <properties>
+                <testcase.groups>Java9</testcase.groups>
+                <testCoverageType>jdk9</testCoverageType>
+            </properties>
         </profile>
         <profile>
             <id>IntegrationTest</id>
@@ -136,7 +133,32 @@
             </activation>
         </profile>
         <profile>
+            <id>no-deployment</id>
+            <!--
+            According to https://github.com/sonatype/nexus-maven-plugins/tree/master/staging/maven-plugin
+            skipNexusStagingDeployMojo may not be set to true in the last reactor module. Because we don't
+            want to deploy our last module, nor a dummy module, we simply omit the relevant modules when
+            a deploy is in progress.
+            -->
+            <activation>
+                <property>
+                    <name>!release</name>
+                </property>
+            </activation>
+            <modules>
+                <module>sootup.examples</module>
+                <module>sootup.tests</module>
+                <module>sootup.report</module>
+            </modules>
+        </profile>
+        <profile>
             <id>deployment</id>
+            <activation>
+                <property>
+                    <!-- mvn clean deploy -Drelease to disable no-release profile -->
+                    <name>release</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
