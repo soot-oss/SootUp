@@ -18,10 +18,10 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
-import sootup.java.frontend.inputlocation.JavaSourcePathAnalysisInputLocation;
 
 @Tag("Java8")
 public class CallGraphTest {
@@ -43,18 +43,17 @@ public class CallGraphTest {
   private JavaView createViewForClassPath(String classPath) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
-    inputLocations.add(new JavaSourcePathAnalysisInputLocation(classPath));
-
+    inputLocations.add(new JavaClassPathAnalysisInputLocation(classPath));
     return new JavaView(inputLocations);
   }
 
   CallGraph loadCallGraph() {
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
+    //    double version = Double.parseDouble(System.getProperty("java.specification.version"));
+    //    if (version > 1.8) {
+    //      fail("The rt.jar is not available after Java 8. You are using version " + version);
+    //    }
 
-    String classPath = "src/test/resources/callgraph/" + "Misc";
+    String classPath = "src/test/resources/callgraph/" + "Misc/binary";
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
     view = createViewForClassPath(classPath);

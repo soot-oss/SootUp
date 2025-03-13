@@ -24,13 +24,15 @@ public class InheritDataWithProtectedMethodTest extends JavaTypeHierarchyTestBas
     ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) this.getView().getTypeHierarchy();
     ClassType sootClassType = getClassType(this.getClassName());
 
-    assertEquals(getClassType("SuperClass"), typeHierarchy.superClassOf(sootClassType).get());
+    assertEquals(
+        getClassType("SuperClass"), typeHierarchy.superClassOf(sootClassType).orElse(null));
     assertTrue(typeHierarchy.isSubtype(getClassType("SuperClass"), sootClassType));
 
     SootClass sootClass =
         this.getView()
             .getClass(this.getView().getIdentifierFactory().getClassType(this.getClassName()))
-            .get();
+            .orElse(null);
+    assertNotNull(sootClass);
     SootMethod sootMethod =
         sootClass
             .getMethod(
@@ -38,15 +40,16 @@ public class InheritDataWithProtectedMethodTest extends JavaTypeHierarchyTestBas
                     .getIdentifierFactory()
                     .getMethodSignature(sootClassType, "method", "void", Collections.emptyList())
                     .getSubSignature())
-            .get();
+            .orElse(null);
+    assertNotNull(sootMethod);
     Body body = sootMethod.getBody();
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: InheritDataWithProtectedMethod",
-                "i0 = specialinvoke r0.<SuperClass: int getnum()>()",
+                "this := @this: InheritDataWithProtectedMethod",
+                "l1 = specialinvoke this.<SuperClass: int getnum()>()",
                 "return")
             .collect(Collectors.toList());
 
