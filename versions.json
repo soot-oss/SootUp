@@ -10,7 +10,10 @@
   {
     "version": "refactor_moveSourceFrontendToExperimental_preview",
     "title": "PR Preview refactor_moveSourceFrontendToExperimental",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "issue-988-TypeAssigner_preview",
