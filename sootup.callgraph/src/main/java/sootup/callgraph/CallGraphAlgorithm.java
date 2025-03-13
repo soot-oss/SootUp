@@ -59,5 +59,6 @@ public interface CallGraphAlgorithm {
    * @return the modified call graph containing all methods of the given class
    */
   @Nonnull
-  CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull ClassType classType);
+  CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull ClassType classType)
+      throws InterruptedException;
 }

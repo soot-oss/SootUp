@@ -26,7 +26,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -83,11 +82,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     // find additional entry points
     List<MethodSignature> clinits = getClinitFromEntryPoints(entryPoints);
 
+    MutableCallGraph cg = initializeCallGraph(entryPoints, clinits);
     for (MethodSignature methodSignature : clinits) {
-      workList.synchronizedAdd(methodSignature, workList, processed, cg); // TODO: workList
+      synchronizedAdd(methodSignature, workList, processed);
     }
-    MutableCallGraph cg = initializeCallGraph(entryPoints, clinits); // TODO: Question: Ist die zurückgegebene Liste zwingend synchronzied?
-
     processWorkList(workList, processed, cg);
     return cg;
   }
@@ -140,39 +138,36 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param cg the call graph object that is filled with the found methods and call edges.
    */
   final void processWorkList(
-          ConcurrentLinkedDeque<MethodSignature> workList, Set<MethodSignature> processed, MutableCallGraph cg) {
-    try (ForkJoinPool forkJoinPool = new ForkJoinPool()) {
-      List<ForkJoinTask<MethodSignature>> forkJoinTasks = new ArrayList<>();
-      while (!workList.isEmpty()) {
-        MethodSignature methodSignature = workList.pop();
-        forkJoinTasks.add(forkJoinPool.submit(() -> processMethodSignature(methodSignature, workList, processed, cg)));
-      }
-      // wait for all tasks to complete
-      forkJoinTasks.forEach(ForkJoinTasks::join); // TODO!
-      // no new task accepted
-      forkJoinPool.shutdown();
-      boolean terminated = forkJoinPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-      if (!terminated) {
-        System.out.println("Pool did not terminate properly!");
-      }
-    } catch(Exception e) {
-      System.out.println(e.getMessage());
+      ConcurrentLinkedDeque<MethodSignature> workList,
+      Set<MethodSignature> processed,
+      MutableCallGraph cg) {
+    ForkJoinPool forkJoinPool = new ForkJoinPool();
+    List<ForkJoinTask<MethodSignature>> forkJoinTasks = new ArrayList<>();
+    while (!workList.isEmpty()) {
+      MethodSignature methodSignature = workList.pop();
+      ForkJoinTask<MethodSignature> task =
+          (ForkJoinTask<MethodSignature>)
+              forkJoinPool.submit(
+                  () -> processMethodSignature(methodSignature, workList, processed, cg));
+      forkJoinTasks.add(task);
     }
+    // wait for all tasks to complete
+    forkJoinTasks.forEach(ForkJoinTask::join);
+    // no new task accepted
+    forkJoinPool.shutdown();
+    /*
+    boolean terminated = forkJoinPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+    if (!terminated) {
+      System.out.println("Pool did not terminate properly!");
+    }
+    */
   }
 
-  private void synchronizedAdd(
-          MethodSignature currentMethodSignature, ConcurrentLinkedDeque<MethodSignature> workList, Set<MethodSignature> processed, MutableCallGraph cg) {
-    // skip if already processed
-    if (processed.contains(currentMethodSignature)) {
-      return;
-    }
-    // skip if library class
-    SootClass currentClass =
-            view.getClass(currentMethodSignature.getDeclClassType())
-                    .orElse(null);
-    if (currentClass == null || currentClass.isLibraryClass()) {
-      return;
-    }
+  final void processMethodSignature(
+      MethodSignature currentMethodSignature,
+      ConcurrentLinkedDeque<MethodSignature> workList,
+      Set<MethodSignature> processed,
+      MutableCallGraph cg) {
     // perform pre-processing if needed
     preProcessingMethod(currentMethodSignature, workList, cg);
 
@@ -182,10 +177,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
 
     // transform the method signature to the actual SootMethod
+    SootClass currentClass = view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
+    assert currentClass != null;
     SootMethod currentMethod =
-            currentClass
-                    .getMethod(currentMethodSignature.getSubSignature())
-                    .orElse(null);
+        currentClass.getMethod(currentMethodSignature.getSubSignature()).orElse(null);
 
     // get all call targets of invocations in the method body
     resolveAllCallsFromSourceMethod(currentMethod, cg, workList);
@@ -198,6 +193,31 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
     // perform post-processing if needed
     postProcessingMethod(currentMethodSignature, workList, cg);
+  }
+
+  /**
+   * The given methodSignature gets added to the <code>workList</code>, if it wasn't processed it
+   * already.
+   *
+   * @param currentMethodSignature the fully qualified signature of the method which gets checked.
+   * @param workList it contains all method that have to be processed in the call graph generation.
+   *     This list is filled in the execution with found call targets in the call graph algorithm.
+   * @param processed the list of processed method to only process the method once.
+   */
+  private void synchronizedAdd(
+      MethodSignature currentMethodSignature,
+      ConcurrentLinkedDeque<MethodSignature> workList,
+      Set<MethodSignature> processed) {
+    // skip if already processed
+    if (processed.contains(currentMethodSignature)) {
+      return;
+    }
+    // skip if library class
+    SootClass currentClass = view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
+    if (currentClass == null || currentClass.isLibraryClass()) {
+      return;
+    }
+    workList.add(currentMethodSignature);
   }
 
   /**
@@ -219,11 +239,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @Nonnull ConcurrentLinkedDeque<MethodSignature> workList) {
     if (!cg.containsMethod(source)) {
       cg.addMethod(source);
-      workList.push(source); // TODO: workList
+      workList.push(source);
     }
     if (!cg.containsMethod(target)) {
       cg.addMethod(target);
-      workList.push(target); // TODO: workList
+      workList.push(target);
     }
     if (!cg.containsCall(source, target, invokeStmt)) {
       cg.addCall(source, target, invokeStmt);
@@ -242,7 +262,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param workList the work list that will be updated of found target methods
    */
   protected void resolveAllCallsFromSourceMethod(
-      SootMethod sourceMethod, MutableCallGraph cg, ConcurrentLinkedDeque<MethodSignature> workList) {
+      SootMethod sourceMethod,
+      MutableCallGraph cg,
+      ConcurrentLinkedDeque<MethodSignature> workList) {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
@@ -270,7 +292,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param workList new target methods will be added to the work list
    */
   protected void resolveAllImplicitCallsFromSourceMethod(
-      SootMethod sourceMethod, MutableCallGraph cg, ConcurrentLinkedDeque<MethodSignature> workList) {
+      SootMethod sourceMethod,
+      MutableCallGraph cg,
+      ConcurrentLinkedDeque<MethodSignature> workList) {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
@@ -287,7 +311,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param workList found clinit methods will be added to the work list
    */
   protected void resolveAllStaticInitializerCalls(
-      SootMethod sourceMethod, MutableCallGraph cg, ConcurrentLinkedDeque<MethodSignature> workList) {
+      SootMethod sourceMethod,
+      MutableCallGraph cg,
+      ConcurrentLinkedDeque<MethodSignature> workList) {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
@@ -418,7 +444,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     MutableCallGraph updated = oldCallGraph.copy();
 
     // Step 1: Add edges from the new methods to other methods
-    ConcurrentLinkedDeque<MethodSignature> workList = new ConcurrentLinkedDeque<>(newMethodSignatures);
+    ConcurrentLinkedDeque<MethodSignature> workList =
+        new ConcurrentLinkedDeque<>(newMethodSignatures);
     Set<MethodSignature> processed = new HashSet<>(oldCallGraph.getMethodSignatures());
     processWorkList(workList, processed, updated);
 

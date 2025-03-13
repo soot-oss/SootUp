@@ -52,13 +52,13 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     }
   }
 
-  @Nonnull private final DirectedPseudograph<Vertex, Call> graph; // TODO: find thread-safe alternative
+  @Nonnull private final DirectedPseudograph<Vertex, Call> graph;
   @Nonnull private final ConcurrentMap<MethodSignature, Vertex> signatureToVertex;
-  @Nonnull private final List<MethodSignature> entryMethods; // TODO: either synchronizedList() or ConcurrentQueue/Map
+  @Nonnull private final List<MethodSignature> entryMethods;
 
   /** The constructor of the graph based call graph. it initializes the call graph object. */
   public GraphBasedCallGraph(List<MethodSignature> entryMethods) {
-    this(new DirectedPseudograph<>(null, null, false), new ConcurrentHashMap<>(), Collections.synchronizedList(entryMethods));
+    this(new DirectedPseudograph<>(null, null, false), new ConcurrentHashMap<>(), entryMethods);
   }
 
   protected GraphBasedCallGraph(
@@ -67,7 +67,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
       @Nonnull List<MethodSignature> entryMethods) {
     this.graph = graph;
     this.signatureToVertex = signatureToVertex;
-    this.entryMethods = Collections.synchronizedList(entryMethods);
+    this.entryMethods = entryMethods;
   }
 
   @Override
@@ -129,13 +129,13 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @Nonnull
   @Override
-  public Set<Call> callsFrom(@Nonnull MethodSignature sourceMethod) {
+  public synchronized Set<Call> callsFrom(@Nonnull MethodSignature sourceMethod) {
     return graph.outgoingEdgesOf(vertexOf(sourceMethod));
   }
 
   @Nonnull
   @Override
-  public Set<Call> callsTo(@Nonnull MethodSignature targetMethod) {
+  public synchronized Set<Call> callsTo(@Nonnull MethodSignature targetMethod) {
     return graph.incomingEdgesOf(vertexOf(targetMethod));
   }
 
@@ -156,17 +156,17 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   }
 
   @Override
-  public boolean containsCall(@Nonnull Call call) {
+  public synchronized boolean containsCall(@Nonnull Call call) {
     return graph.containsEdge(call);
   }
 
   @Override
-  public int callCount() {
+  public synchronized int callCount() {
     return graph.edgeSet().size();
   }
 
   @Override
-  public String exportAsDot() {
+  public synchronized String exportAsDot() {
     StringBuilder dotFormatBuilder = new StringBuilder();
     // The edgeSet is first sorted with the sourceMethod first and then targetMethod. It is sorted
     // by className, then the method name
@@ -214,7 +214,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
    * @param call the data of the call
    * @return an edge defining the call in the dot file
    */
-  protected String toDotEdge(CallGraph.Call call) {
+  protected synchronized String toDotEdge(CallGraph.Call call) {
     Vertex sourceVertex = graph.getEdgeSource(call);
     Vertex targetVertex = graph.getEdgeTarget(call);
     return "\"" + sourceVertex.methodSignature + "\" -> \"" + targetVertex.methodSignature + "\";";
@@ -223,7 +223,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @SuppressWarnings("unchecked") // (graph.clone() preserves generic properties)
   @Nonnull
   @Override
-  public MutableCallGraph copy() {
+  public synchronized MutableCallGraph copy() {
     return new GraphBasedCallGraph(
         (DirectedPseudograph<Vertex, Call>) graph.clone(),
         new ConcurrentHashMap<>(signatureToVertex),
@@ -264,7 +264,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
    * @return the found edge in an optional or otherwise an empty optional
    */
   @Nonnull
-  protected CallGraph.Call edgeOf(
+  protected synchronized CallGraph.Call edgeOf(
       @Nonnull MethodSignature source,
       @Nonnull MethodSignature target,
       @Nonnull InvokableStmt invokableStmt) {
