@@ -220,6 +220,16 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     return isPublic() && isStatic() && idf.isMainSubSignature(getSignature().getSubSignature());
   }
 
+  /** @return true if the method is a constructor */
+  public boolean isConstructor(@Nonnull IdentifierFactory idf) {
+    return idf.isConstructorSignature(getSignature());
+  }
+
+  /** @return true if the method is the default constructor */
+  public boolean isDefaultConstructor(@Nonnull IdentifierFactory idf) {
+    return isConstructor(idf) && getParameterCount() == 0;
+  }
+
   /**
    * Returns the declaration of this method, as used at the top of textual body representations
    * (before the {}'s containing the code for representation.)
