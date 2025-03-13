@@ -24,6 +24,7 @@ package sootup.callgraph;
 
 import com.google.common.collect.ArrayListMultimap;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -217,7 +218,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Override
   protected void preProcessingMethod(
       MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull ConcurrentLinkedDeque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
     SootMethod method =
         view.getClass(sourceMethod.getDeclClassType())
@@ -241,7 +242,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * @param workList the work list that will be extended by the new targets of ignored calls.
    */
   protected void includeIgnoredCallsToClass(
-      ClassType classType, MutableCallGraph cg, Deque<MethodSignature> workList) {
+      ClassType classType, MutableCallGraph cg, ConcurrentLinkedDeque<MethodSignature> workList) {
     List<Call> newEdges = ignoredCalls.get(classType);
     newEdges.forEach(
         call -> {
@@ -271,7 +272,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Override
   protected void postProcessingMethod(
       MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull ConcurrentLinkedDeque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
     //    not needed
   }

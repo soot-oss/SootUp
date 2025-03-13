@@ -23,6 +23,7 @@ package sootup.callgraph;
  */
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
@@ -163,7 +164,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   @Override
   protected void postProcessingMethod(
       MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull ConcurrentLinkedDeque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
     // do nothing
   }
@@ -171,7 +172,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   @Override
   protected void preProcessingMethod(
       MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull ConcurrentLinkedDeque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
     // do nothing
   }

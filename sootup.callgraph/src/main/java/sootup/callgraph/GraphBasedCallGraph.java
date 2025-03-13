@@ -23,12 +23,8 @@ package sootup.callgraph;
  */
 
 import java.util.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.jgrapht.graph.DirectedPseudograph;
@@ -56,31 +52,31 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     }
   }
 
-  @Nonnull private final DirectedPseudograph<Vertex, Call> graph;
-  @Nonnull private final Map<MethodSignature, Vertex> signatureToVertex;
-  @Nonnull private final List<MethodSignature> entryMethods;
+  @Nonnull private final DirectedPseudograph<Vertex, Call> graph; // TODO: find thread-safe alternative
+  @Nonnull private final ConcurrentMap<MethodSignature, Vertex> signatureToVertex;
+  @Nonnull private final List<MethodSignature> entryMethods; // TODO: either synchronizedList() or ConcurrentQueue/Map
 
   /** The constructor of the graph based call graph. it initializes the call graph object. */
   public GraphBasedCallGraph(List<MethodSignature> entryMethods) {
-    this(new DirectedPseudograph<>(null, null, false), new HashMap<>(), entryMethods);
+    this(new DirectedPseudograph<>(null, null, false), new ConcurrentHashMap<>(), Collections.synchronizedList(entryMethods));
   }
 
   protected GraphBasedCallGraph(
       @Nonnull DirectedPseudograph<Vertex, Call> graph,
-      @Nonnull Map<MethodSignature, Vertex> signatureToVertex,
+      @Nonnull ConcurrentMap<MethodSignature, Vertex> signatureToVertex,
       @Nonnull List<MethodSignature> entryMethods) {
     this.graph = graph;
     this.signatureToVertex = signatureToVertex;
-    this.entryMethods = entryMethods;
+    this.entryMethods = Collections.synchronizedList(entryMethods);
   }
 
   @Override
-  public void addMethod(@Nonnull MethodSignature calledMethod) {
+  public synchronized void addMethod(@Nonnull MethodSignature calledMethod) {
     Vertex v = new Vertex(calledMethod);
     addMethod(calledMethod, v);
   }
 
-  protected void addMethod(@Nonnull MethodSignature calledMethod, Vertex vertex) {
+  protected synchronized void addMethod(@Nonnull MethodSignature calledMethod, Vertex vertex) {
     if (containsMethod(calledMethod)) {
       return;
     }
@@ -89,7 +85,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   }
 
   @Override
-  public void addCall(
+  public synchronized void addCall(
       @Nonnull MethodSignature sourceMethod,
       @Nonnull MethodSignature targetMethod,
       @Nonnull InvokableStmt invokableStmt) {
@@ -97,7 +93,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   }
 
   @Override
-  public void addCall(@Nonnull Call call) {
+  public synchronized void addCall(@Nonnull Call call) {
     if (!containsMethod(call.getSourceMethodSignature())) {
       addMethod(call.getSourceMethodSignature());
     }
@@ -230,7 +226,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   public MutableCallGraph copy() {
     return new GraphBasedCallGraph(
         (DirectedPseudograph<Vertex, Call>) graph.clone(),
-        new HashMap<>(signatureToVertex),
+        new ConcurrentHashMap<>(signatureToVertex),
         new ArrayList<>(entryMethods));
   }
 
