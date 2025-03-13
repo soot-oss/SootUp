@@ -44,7 +44,7 @@ public class InheritPublicDataTest extends JavaTypeHierarchyTestBase {
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
     List<String> expectedStmts =
-        Stream.of("r0 := @this: InheritPublicData", "i0 = r0.<SuperClass: int num>", "return")
+        Stream.of("this := @this: InheritPublicData", "l1 = this.<SuperClass: int num>", "return")
             .collect(Collectors.toList());
 
     assertEquals(expectedStmts, actualStmts);

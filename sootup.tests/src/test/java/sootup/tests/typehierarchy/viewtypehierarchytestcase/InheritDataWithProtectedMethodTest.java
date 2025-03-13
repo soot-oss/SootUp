@@ -45,8 +45,8 @@ public class InheritDataWithProtectedMethodTest extends JavaTypeHierarchyTestBas
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: InheritDataWithProtectedMethod",
-                "i0 = specialinvoke r0.<SuperClass: int getnum()>()",
+                "this := @this: InheritDataWithProtectedMethod",
+                "l1 = specialinvoke this.<SuperClass: int getnum()>()",
                 "return")
             .collect(Collectors.toList());
 
