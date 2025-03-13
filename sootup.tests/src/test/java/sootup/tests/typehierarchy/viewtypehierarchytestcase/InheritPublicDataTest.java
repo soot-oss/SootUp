@@ -24,7 +24,8 @@ public class InheritPublicDataTest extends JavaTypeHierarchyTestBase {
     ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) this.getView().getTypeHierarchy();
     ClassType sootClassType = getClassType(this.getClassName());
 
-    assertEquals(getClassType("SuperClass"), typeHierarchy.superClassOf(sootClassType).orElse(null));
+    assertEquals(
+        getClassType("SuperClass"), typeHierarchy.superClassOf(sootClassType).orElse(null));
     assertTrue(typeHierarchy.isSubtype(getClassType("SuperClass"), sootClassType));
 
     SootClass sootClass =
@@ -38,7 +39,8 @@ public class InheritPublicDataTest extends JavaTypeHierarchyTestBase {
                 getView()
                     .getIdentifierFactory()
                     .getMethodSignature(sootClassType, "method", "void", Collections.emptyList())
-                    .getSubSignature()).orElse(null);
+                    .getSubSignature())
+            .orElse(null);
     assertNotNull(sootMethod);
     Body body = sootMethod.getBody();
     assertNotNull(body);
