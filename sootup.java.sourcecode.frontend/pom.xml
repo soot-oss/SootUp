@@ -218,7 +218,7 @@
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.contenttype</artifactId>
-			<version>3.7.1000</version>
+			<version>3.9.600</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.eclipse.platform</groupId>
