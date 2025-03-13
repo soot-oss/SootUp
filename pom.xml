@@ -65,7 +65,6 @@
         <module>sootup.java.core</module>
         <module>sootup.interceptors</module>
         <module>sootup.java.bytecode.frontend</module>
-        <module>sootup.java.sourcecode.frontend</module>
         <module>sootup.tests</module>
         <module>sootup.callgraph</module>
         <module>sootup.qilin</module>
@@ -362,7 +361,6 @@
                         <root>sootup.interceptors/src/main/java</root>
                         <root>sootup.java.bytecode.frontend/src/main/java</root>
                         <root>sootup.java.core/src/main/java</root>
-                        <root>sootup.java.sourcecode.frontend/src/main/java</root>
                         <root>sootup.jimple.frontend/src/main/java</root>
                         <root>sootup.tests/src/main/java</root>
                     </roots>
@@ -511,11 +509,6 @@
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.java.bytecode.frontend</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.sourcecode.frontend</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
