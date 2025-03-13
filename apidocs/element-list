@@ -90,8 +90,5 @@ sootup.java.core.language
 sootup.java.core.signatures
 sootup.java.core.types
 sootup.java.core.views
-sootup.java.frontend
-sootup.java.frontend.conversion
-sootup.java.frontend.inputlocation
 sootup.jimple
 sootup.jimple.frontend
