@@ -1,4 +1,4 @@
-package sootup.tests;
+package sootup.java.frontend;
 
 import static org.junit.jupiter.api.Assertions.*;
 
