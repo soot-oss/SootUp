@@ -22,7 +22,6 @@ import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.model.Body;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
@@ -59,7 +58,6 @@ public class WitherTest {
     assertNotNull(clazz);
     JavaSootClassSource classSource = clazz.getClassSource();
     JavaSootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
-    ClassType type = identifierFactory.getClassType("java.lang.String");
 
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
