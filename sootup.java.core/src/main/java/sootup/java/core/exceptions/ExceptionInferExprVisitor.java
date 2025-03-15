@@ -31,7 +31,7 @@ import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
 
 public class ExceptionInferExprVisitor extends AbstractExprVisitor {
-  static Number a = 0;
+
   private ExceptionInferResult result;
   private final TypeHierarchy hierarchy;
 
