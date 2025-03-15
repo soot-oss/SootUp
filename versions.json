@@ -8,6 +8,11 @@
     }
   },
   {
+    "version": "stmt_exception_analyser_preview",
+    "title": "PR Preview stmt_exception_analyser",
+    "aliases": []
+  },
+  {
     "version": "refactor_moveSourceFrontendToExperimental_preview",
     "title": "PR Preview refactor_moveSourceFrontendToExperimental",
     "aliases": [],
