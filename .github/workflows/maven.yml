@@ -49,7 +49,7 @@ jobs:
                 **/target/
           key: cache-compilation-${{ github.sha }}
 
-      - name: Build with JDK8
+      - name: Build with JDK17
         run: mvn -B compile -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
   Style:
@@ -254,12 +254,12 @@ jobs:
             **/target/
           key: cache-compilation-${{ github.sha }}
 
-      - name: Download uploaded exec artifacts for JDK8
+      - name: Download uploaded exec artifacts for JDK17
         uses: actions/download-artifact@v4
         with:
           name: coverage-exec-jdk17
 
-      - name: Download uploaded exec artifacts for JDK9
+      - name: Download uploaded exec artifacts for JDK21
         uses: actions/download-artifact@v4
         with:
           name: coverage-exec-jdk21
