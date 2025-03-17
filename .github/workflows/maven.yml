@@ -118,8 +118,8 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
 
-      - name: Test (JDK8)
-        run: mvn -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - name: Test (JDK17)
+        run: mvn -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava17 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
@@ -165,14 +165,14 @@ jobs:
           distribution: 'zulu'
 
       - name: Test (JDK21)
-        run: mvn -B -am verify -Dfmt.skip -Dmaven.main.skip=true -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -B -am verify -Dfmt.skip -Dmaven.main.skip=true -PJava21 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: coverage-exec-jdk21
           path: |
-            */target/coverage-reports/jacoco-ut-jdk9.exec
+            */target/coverage-reports/jacoco-ut-jdk21.exec
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
@@ -229,7 +229,7 @@ jobs:
 
   CoverageReport:
     runs-on: ubuntu-latest
-    needs: [ JDK9, JDK8, IntegrationTest]
+    needs: [ JDK17, JDK21, IntegrationTest]
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -257,12 +257,12 @@ jobs:
       - name: Download uploaded exec artifacts for JDK8
         uses: actions/download-artifact@v4
         with:
-          name: coverage-exec-jdk8
+          name: coverage-exec-jdk17
 
       - name: Download uploaded exec artifacts for JDK9
         uses: actions/download-artifact@v4
         with:
-          name: coverage-exec-jdk9
+          name: coverage-exec-jdk21
 
       - name: Download uploaded exec artifacts for integration tests
         uses: actions/download-artifact@v4
