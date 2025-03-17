@@ -26,11 +26,6 @@ public class AsmMethodSourceTest {
   @Test
   public void testFix_StackUnderrun_convertPutFieldInsn_init() {
 
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
-
     JavaView view = new JavaView(new DefaultRuntimeAnalysisInputLocation());
 
     final JavaIdentifierFactory idf = JavaIdentifierFactory.getInstance();
