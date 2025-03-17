@@ -50,7 +50,10 @@
   {
     "version": "feature_setJava17_preview",
     "title": "PR Preview feature_setJava17",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "develop",
