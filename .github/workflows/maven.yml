@@ -27,11 +27,11 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '8'
+          java-version: '17'
 
       - name: cache maven dependencies
         uses: actions/cache@v3
@@ -74,10 +74,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'zulu'
 
       - name: Check Format
@@ -112,10 +112,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'zulu'
 
       - name: Test (JDK8)
@@ -189,10 +189,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'zulu'
 
       - name: get cached compilation
@@ -232,10 +232,10 @@ jobs:
     needs: [ JDK9, JDK8, IntegrationTest]
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'zulu'
 
       - name: cache maven dependencies

@@ -17,7 +17,7 @@ jobs:
         with:
           distribution: 'adopt'
           java-package: 'jdk'
-          java-version: '8'
+          java-version: '17'
           server-id: 'ossrh' # must match the serverId configured for the nexus-staging-maven-plugin
           server-username: OSSRH_USERNAME # Env var that holds your OSSRH user name
           server-password: OSSRH_PASSWORD # Env var that holds your OSSRH user pw
