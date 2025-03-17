@@ -65,11 +65,7 @@ public class RuntimeJarConversionTests {
     convertInputLocation(inputLocation);
   }
 
-  /**
-   * helps debugging the conversion of a single method
-   *
-   * @return
-   */
+  /** helps debugging the conversion of a single method */
   static BiFunction<BodyInterceptor, Body.BodyBuilder, Boolean> step =
       (interceptor, builder) -> {
         if (interceptor.getClass() != CopyPropagator.class
