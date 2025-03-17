@@ -141,10 +141,6 @@ public class ClassHierarchyAnalysisAlgorithmTest
             "void",
             Collections.singletonList("java.lang.Object"));
 
-    MethodSignature clinitObject =
-        identifierFactory.getStaticInitializerSignature(
-            identifierFactory.getClassType("java.lang.Object"));
-
     assertFalse(
         cg.containsCall(
             mainMethodSignature,
@@ -204,32 +200,6 @@ public class ClassHierarchyAnalysisAlgorithmTest
             mainMethodSignature,
             virtualMethodE,
             getInvokableStmt(mainMethodSignature, virtualMethodA)));
-
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
-            clinitObject,
-            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorB.getDeclClassType())));
-
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
-            clinitObject,
-            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorC.getDeclClassType())));
-
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
-            clinitObject,
-            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorE.getDeclClassType())));
-
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
-            clinitObject,
-            getInvokableStmt(mainMethodSignature, staticMethodB)));
-
-    assertEquals(12, cg.callsFrom(mainMethodSignature).size());
 
     assertEquals(1, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());

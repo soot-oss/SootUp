@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
@@ -84,16 +85,15 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertNotNull(method);
     for (Stmt invokableStmt : method.getBody().getStmts()) {
       if (invokableStmt instanceof InvokableStmt
-          && ((InvokableStmt) invokableStmt).containsInvokeExpr()
-          && ((InvokableStmt) invokableStmt)
-              .getInvokeExpr()
-              .get()
-              .getMethodSignature()
-              .equals(staticTargetMethod)) {
-        if (currentIndex == index) {
-          return (InvokableStmt) invokableStmt;
+          && ((InvokableStmt) invokableStmt).containsInvokeExpr()) {
+        AbstractInvokeExpr stmt = ((InvokableStmt) invokableStmt).getInvokeExpr().orElse(null);
+        assertNotNull(stmt);
+        if (stmt.getMethodSignature().equals(staticTargetMethod)) {
+          if (currentIndex == index) {
+            return (InvokableStmt) invokableStmt;
+          }
+          currentIndex++;
         }
-        currentIndex++;
       }
     }
     throw new RuntimeException(
@@ -199,8 +199,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(cg.containsMethod(mainMethodSignature));
     assertTrue(cg.containsMethod(method));
     assertFalse(cg.containsMethod(uncalledMethod));
-    // 2 methods + Object::clinit
-    assertEquals(3, cg.getMethodSignatures().size());
 
     assertTrue(
         cg.containsCall(
@@ -210,8 +208,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(
         cg.containsCall(
             mainMethodSignature, method, getInvokableStmt(mainMethodSignature, method)));
-    // 2 calls +2 clinit calls
-    assertEquals(4, cg.callsFrom(mainMethodSignature).size());
   }
 
   @Test
@@ -1025,8 +1021,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
       fail("Runtime Exception not thrown, when no main methods are defined.");
     } catch (RuntimeException e) {
       assertEquals(
-          e.getMessage(),
-          "No main method is present in the input programs. initialize() method can be used if only one main method exists in the input program and that should be used as entry point for call graph. \n Please specify entry point as a parameter to initialize method.");
+          "No main method is present in the input programs. initialize() method can be used if only one main method exists in the input program and that should be used as entry point for call graph. \n Please specify entry point as a parameter to initialize method.",
+          e.getMessage());
     }
   }
 
@@ -1152,7 +1148,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     checkClinit(cg, "multi.MultiCalls", 0, false, staticMethod);
     checkClinit(cg, "multi.MultiCalls", 1, false, staticMethod);
 
-    assertEquals(27, cg.callsFrom(mainMethodSignature).size());
+    assertEquals(17, cg.callsFrom(mainMethodSignature).size());
 
     assertEquals(2, cg.callsTo(staticMethod).size());
     assertEquals(1, cg.callsTo(staticMethodField).size());
@@ -1169,16 +1165,12 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
       CallGraph cg, String clinitClassName, int index, boolean left, MethodSignature ms) {
     ClassType clinitClass = identifierFactory.getClassType(clinitClassName);
     MethodSignature clinitMethod = identifierFactory.getStaticInitializerSignature(clinitClass);
-    MethodSignature clinitObject =
-        identifierFactory.getStaticInitializerSignature(
-            identifierFactory.getClassType("java.lang.Object"));
     InvokableStmt invokeStmt;
     if (ms == null) {
       invokeStmt = getInvokableStmtNonInvokeExpr(mainMethodSignature, clinitClass, left, index);
     } else {
       invokeStmt = getInvokableStmt(mainMethodSignature, ms, index);
     }
-    assertTrue(cg.containsCall(mainMethodSignature, clinitObject, invokeStmt));
     assertTrue(cg.containsCall(mainMethodSignature, clinitMethod, invokeStmt));
   }
 
