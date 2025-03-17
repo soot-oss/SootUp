@@ -192,7 +192,6 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     return classSources.stream();
   }
 
-  @Nonnull
   public int getVersion() {
     return version;
   }
