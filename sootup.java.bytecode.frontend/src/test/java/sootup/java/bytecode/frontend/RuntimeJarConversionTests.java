@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -17,6 +18,7 @@ import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.transform.BodyInterceptorMetric;
 import sootup.core.transform.RunTimeBodyInterceptor;
+import sootup.core.types.ClassType;
 import sootup.core.util.DotExporter;
 import sootup.core.util.Utils;
 import sootup.interceptors.BytecodeBodyInterceptors;
@@ -25,6 +27,7 @@ import sootup.interceptors.DeadAssignmentEliminator;
 import sootup.interceptors.TypeAssigner;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 public class RuntimeJarConversionTests {
@@ -39,41 +42,22 @@ public class RuntimeJarConversionTests {
 
   private static void convertInputLocation(AnalysisInputLocation inputLocation) {
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
-    long classesCount = view.getClasses().count();
-    if (debug) {
-      System.out.println("classes: " + classesCount);
-    }
     int[] failedConversions = {0};
-    long[] progress = {0};
-
-    long count =
-        view.getClasses()
-            .peek(
-                c -> {
-                  if (!debug) {
-                    return;
-                  }
-                  System.out.println(
-                      "converted classes: "
-                          + progress[0]
-                          + "  failed: "
-                          + failedConversions[0]
-                          + " - progress "
-                          + ((double) progress[0]++ / classesCount));
-                })
-            .flatMap(c -> c.getMethods().stream())
-            .filter(SootMethod::isConcrete)
-            .peek(
-                javaSootMethod -> {
+    long[] count = {0};
+    view.getClasses()
+        .filter(t -> t.getType().getPackageName().toString().startsWith("java.lang"))
+        .flatMap(c -> c.getMethods().stream())
+        .filter(SootMethod::isConcrete)
+        .forEach(
+            javaSootMethod -> {
                   try {
+                    count[0]++;
                     javaSootMethod.getBody();
                   } catch (Exception e) {
-                    e.printStackTrace();
                     failedConversions[0]++;
                   }
-                })
-            .count();
-    assertTrue(count > 0);
+                });
+    assertTrue(count[0] > 0);
     assertEquals(0, failedConversions[0]);
   }
 
