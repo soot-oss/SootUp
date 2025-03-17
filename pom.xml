@@ -97,31 +97,20 @@
 
     <profiles>
         <profile>
-            <id>Java8</id>
+            <id>Java17</id>
             <properties>
-                <testcase.groups>Java8</testcase.groups>
-                <testCoverageType>jdk8</testCoverageType>
+                <testCoverageType>jdk17</testCoverageType>
             </properties>
-            <!-- Activates if jdk is <1.9 which means it has a rt.jar -->
-            <activation>
-                <jdk>(, 1.9)</jdk>
-            </activation>
         </profile>
         <profile>
-            <id>Java9</id>
+            <id>Java21</id>
             <properties>
-                <testcase.groups>Java9</testcase.groups>
-                <testCoverageType>jdk9</testCoverageType>
+                <testCoverageType>jdk21</testCoverageType>
             </properties>
-            <!-- Activates if jdk is >=1.9 which means it has a jrt Provider -->
-            <activation>
-                <jdk>[1.9, )</jdk>
-            </activation>
         </profile>
         <profile>
             <id>IntegrationTest</id>
             <properties>
-                <testcase.groups>Java8</testcase.groups>
                 <testCoverageType>integrationtest</testCoverageType>
             </properties>
         </profile>
@@ -315,7 +304,6 @@
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <argLine>-Xmx4096M ${surefireArgLine}</argLine>
-                    <groups>${testcase.groups}</groups>
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>
             </plugin>
