@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.cache.provider.LRUCacheProvider;
@@ -21,7 +20,6 @@ import sootup.java.core.views.JavaView;
  * Comprises tests that test the behavior of different types of caches. It uses the MiniApp.jar for
  * testing.
  */
-@Tag("Java8")
 public class CacheTest {
   static Path pathToJar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
   static List<AnalysisInputLocation> inputLocations;

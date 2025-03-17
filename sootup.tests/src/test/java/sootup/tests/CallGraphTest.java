@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
@@ -23,7 +22,6 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class CallGraphTest {
 
   protected JavaIdentifierFactory identifierFactory;

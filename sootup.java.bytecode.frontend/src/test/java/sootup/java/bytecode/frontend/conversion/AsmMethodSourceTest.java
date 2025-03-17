@@ -4,10 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -20,7 +18,6 @@ import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AsmMethodSourceTest {
 
   @Test

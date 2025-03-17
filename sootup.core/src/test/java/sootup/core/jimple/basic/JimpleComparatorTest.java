@@ -5,14 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.types.PrimitiveType;
 
-@Tag("Java8")
 public class JimpleComparatorTest {
 
   @Test

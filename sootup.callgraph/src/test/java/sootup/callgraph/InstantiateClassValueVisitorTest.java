@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Immediate;
@@ -67,7 +66,6 @@ import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLo
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class InstantiateClassValueVisitorTest {
   @Test
   public void testVisitor() {

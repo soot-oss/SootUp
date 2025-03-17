@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
@@ -29,7 +28,6 @@ import sootup.java.core.views.JavaView;
  *
  * This code example will show you how to build and examine a class hierarchy using sootup.
  */
-@Tag("Java8")
 public class ClassHierarchyTest {
 
   @Test

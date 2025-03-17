@@ -25,7 +25,6 @@ package sootup.java.core.jimple.common.stmt;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Comparator;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.IgnoreLocalNameComparator;
 import sootup.core.jimple.Jimple;
@@ -44,7 +43,6 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 /** @author Markus Schmidt, Linghui Luo */
-@Tag("Java8")
 public class JAssignStmtTest {
 
   Comparator<Stmt> c =

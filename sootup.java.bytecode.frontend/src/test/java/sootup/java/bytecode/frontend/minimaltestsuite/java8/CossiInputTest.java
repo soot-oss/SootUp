@@ -1,8 +1,6 @@
 package sootup.java.bytecode.frontend.minimaltestsuite.java8;
 
-import categories.TestCategories;
 import java.util.Collections;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -10,7 +8,6 @@ import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBa
 import sootup.java.core.JavaIdentifierFactory;
 
 /** @author Bastian Haverkamp */
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class CossiInputTest extends MinimalBytecodeTestSuiteBase {
 
   @Test

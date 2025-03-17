@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.analysis.interprocedural.ifds.IFDSTaintTestSetUp;
 import sootup.callgraph.CallGraph;
@@ -22,7 +21,6 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
   public CallGraph loadCallGraph(JavaView view) {

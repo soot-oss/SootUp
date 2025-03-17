@@ -4,10 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@Tag("Java8")
 public class ReversePostOrderTraversalTest {
 
   TestGraphGenerator graphGenerator = new TestGraphGenerator();

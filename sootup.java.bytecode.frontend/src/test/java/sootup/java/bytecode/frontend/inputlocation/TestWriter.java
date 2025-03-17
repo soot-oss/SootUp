@@ -17,7 +17,6 @@ public class TestWriter {
           + "import org.junit.jupiter.api.Test;\n"
           + "import sootup.java.core.views.JavaView;\n"
           + "\n"
-          + "@Tag(TestCategories.JAVA_8_CATEGORY)\n"
           + "public class FixJars extends BaseFixJarsTest {\n\n";
 
   String TEST_TAG = "@Test\n";
