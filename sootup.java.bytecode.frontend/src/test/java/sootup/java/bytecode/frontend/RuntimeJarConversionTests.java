@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -18,7 +17,6 @@ import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.transform.BodyInterceptorMetric;
 import sootup.core.transform.RunTimeBodyInterceptor;
-import sootup.core.types.ClassType;
 import sootup.core.util.DotExporter;
 import sootup.core.util.Utils;
 import sootup.interceptors.BytecodeBodyInterceptors;
@@ -27,7 +25,6 @@ import sootup.interceptors.DeadAssignmentEliminator;
 import sootup.interceptors.TypeAssigner;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 public class RuntimeJarConversionTests {
@@ -50,13 +47,13 @@ public class RuntimeJarConversionTests {
         .filter(SootMethod::isConcrete)
         .forEach(
             javaSootMethod -> {
-                  try {
-                    count[0]++;
-                    javaSootMethod.getBody();
-                  } catch (Exception e) {
-                    failedConversions[0]++;
-                  }
-                });
+              try {
+                count[0]++;
+                javaSootMethod.getBody();
+              } catch (Exception e) {
+                failedConversions[0]++;
+              }
+            });
     assertTrue(count[0] > 0);
     assertEquals(0, failedConversions[0]);
   }
