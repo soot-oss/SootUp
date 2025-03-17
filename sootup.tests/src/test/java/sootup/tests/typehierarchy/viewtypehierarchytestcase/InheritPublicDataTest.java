@@ -24,13 +24,15 @@ public class InheritPublicDataTest extends JavaTypeHierarchyTestBase {
     ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) this.getView().getTypeHierarchy();
     ClassType sootClassType = getClassType(this.getClassName());
 
-    assertEquals(getClassType("SuperClass"), typeHierarchy.superClassOf(sootClassType).get());
+    assertEquals(
+        getClassType("SuperClass"), typeHierarchy.superClassOf(sootClassType).orElse(null));
     assertTrue(typeHierarchy.isSubtype(getClassType("SuperClass"), sootClassType));
 
     SootClass sootClass =
         this.getView()
             .getClass(this.getView().getIdentifierFactory().getClassType(this.getClassName()))
-            .get();
+            .orElse(null);
+    assertNotNull(sootClass);
     SootMethod sootMethod =
         sootClass
             .getMethod(
@@ -38,13 +40,14 @@ public class InheritPublicDataTest extends JavaTypeHierarchyTestBase {
                     .getIdentifierFactory()
                     .getMethodSignature(sootClassType, "method", "void", Collections.emptyList())
                     .getSubSignature())
-            .get();
+            .orElse(null);
+    assertNotNull(sootMethod);
     Body body = sootMethod.getBody();
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
     List<String> expectedStmts =
-        Stream.of("r0 := @this: InheritPublicData", "i0 = r0.<SuperClass: int num>", "return")
+        Stream.of("this := @this: InheritPublicData", "l1 = this.<SuperClass: int num>", "return")
             .collect(Collectors.toList());
 
     assertEquals(expectedStmts, actualStmts);
