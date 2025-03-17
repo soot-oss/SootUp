@@ -2,12 +2,10 @@ package sootup.java.bytecode.frontend.interceptors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.TestCategories;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
@@ -21,7 +19,6 @@ import sootup.java.bytecode.frontend.inputlocation.JrtFileSystemAnalysisInputLoc
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class LocalSplitterTest {
   JavaView view;
   LocalSplitter localSplitter = new LocalSplitter();

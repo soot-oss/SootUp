@@ -26,14 +26,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSubSignature;
@@ -42,7 +40,6 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   final Path mrj = Paths.get("../shared-test-resources/multi-release-jar/mrjar.jar");

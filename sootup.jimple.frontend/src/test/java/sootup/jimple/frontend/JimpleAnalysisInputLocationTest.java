@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
@@ -16,7 +15,6 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.interceptors.CopyPropagator;
 
-@Tag("Java8")
 public class JimpleAnalysisInputLocationTest {
 
   @Test

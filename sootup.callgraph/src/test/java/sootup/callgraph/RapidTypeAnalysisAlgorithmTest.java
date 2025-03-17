@@ -3,13 +3,11 @@ package sootup.callgraph;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.views.JavaView;
 
 /** @author Kadiray Karakaya, Jonas Klauke */
-@Tag("Java8")
 public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm> {
 
   @Override

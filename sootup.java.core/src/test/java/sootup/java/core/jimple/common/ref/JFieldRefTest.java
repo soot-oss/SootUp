@@ -7,7 +7,6 @@ import java.util.EnumSet;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import sootup.core.IdentifierFactory;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
@@ -28,7 +27,6 @@ import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 /** @author Linghui Luo */
-@Tag("Java8")
 public class JFieldRefTest {
 
   JavaView view;

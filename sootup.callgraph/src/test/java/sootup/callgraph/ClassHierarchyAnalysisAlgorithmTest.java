@@ -3,7 +3,6 @@ package sootup.callgraph;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.views.JavaView;
@@ -13,7 +12,6 @@ import sootup.java.core.views.JavaView;
  *
  * @author Markus Schmidt
  */
-@Tag("Java8")
 public class ClassHierarchyAnalysisAlgorithmTest
     extends CallGraphTestBase<ClassHierarchyAnalysisAlgorithm> {
 

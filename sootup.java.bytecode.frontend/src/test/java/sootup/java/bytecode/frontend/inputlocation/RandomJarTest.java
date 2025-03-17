@@ -1,13 +1,10 @@
 package sootup.java.bytecode.frontend.inputlocation;
 
-import categories.TestCategories;
 import com.google.gson.Gson;
 import java.io.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.java.core.views.JavaView;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class RandomJarTest extends BaseFixJarsTest {
 
   private final String jarDownloadPath = System.getProperty("jarPath", "");

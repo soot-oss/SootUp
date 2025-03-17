@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Paths;
 import java.util.Collections;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
@@ -33,7 +32,6 @@ import sootup.java.core.views.JavaView;
  *
  * @author Bastian Haverkamp
  */
-@Tag("Java8")
 public class MutatingSootClassTest {
 
   @Disabled

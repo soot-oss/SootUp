@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.Body;
@@ -28,7 +27,6 @@ import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLo
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class RuntimeJarConversionTests {
   private static boolean debug = false;
 

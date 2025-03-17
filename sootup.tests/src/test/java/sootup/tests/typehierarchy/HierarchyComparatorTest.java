@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.typehierarchy.HierarchyComparator;
@@ -16,7 +15,6 @@ import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLo
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class HierarchyComparatorTest {
 
   private static View view;
