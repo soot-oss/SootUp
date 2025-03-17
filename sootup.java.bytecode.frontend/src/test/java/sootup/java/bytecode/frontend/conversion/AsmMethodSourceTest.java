@@ -1,8 +1,8 @@
 package sootup.java.bytecode.frontend.conversion;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import categories.TestCategories;
 import java.util.Arrays;
@@ -42,9 +42,11 @@ public class AsmMethodSourceTest {
     assertTrue(idf.isConstructorSignature(mainMethodSignature));
     assertTrue(idf.isConstructorSubSignature(mainMethodSignature.getSubSignature()));
 
-    final SootClass abstractClass = view.getClass(mainClassSignature).get();
+    final SootClass abstractClass = view.getClass(mainClassSignature).orElse(null);
+    assertNotNull(abstractClass);
 
-    final SootMethod method = abstractClass.getMethod(mainMethodSignature.getSubSignature()).get();
+    final SootMethod method = abstractClass.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
+    assertNotNull(method);
     method.getBody().getStmts();
   }
 
@@ -59,7 +61,8 @@ public class AsmMethodSourceTest {
         view.getMethod(
                 JavaIdentifierFactory.getInstance()
                     .parseMethodSignature("<NestedMethodCall: void nestedMethodCall()>"))
-            .get();
+            .orElse(null);
+    assertNotNull(method);
     assertEquals(
         "this := @this: NestedMethodCall;\n"
             + "i = 0;\n"
@@ -86,9 +89,10 @@ public class AsmMethodSourceTest {
         view.getMethod(
                 JavaIdentifierFactory.getInstance()
                     .parseMethodSignature("<ConditionalStringConcat: void method(boolean)>"))
-            .get();
+            .orElse(null);
+    assertNotNull(method);
 
-    assert !method.getBody().getStmts().stream()
-        .anyMatch(s -> s.toString().contains(" append(java.lang.String)>(\"ghi\")"));
+    assert method.getBody().getStmts().stream()
+        .noneMatch(s -> s.toString().contains(" append(java.lang.String)>(\"ghi\")"));
   }
 }
