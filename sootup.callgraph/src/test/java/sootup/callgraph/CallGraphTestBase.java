@@ -1001,7 +1001,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
       algorithm.initialize();
       fail("Runtime Exception not thrown, when multiple main methods are defined.");
     } catch (RuntimeException e) {
-      System.out.println(e.getMessage());
       assertTrue(e.getMessage().startsWith("There are more than 1 main method present"));
     }
   }

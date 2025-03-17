@@ -61,7 +61,6 @@ public class TestWriter {
     if (content.isEmpty()) {
       return;
     }
-    System.out.println(content);
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
       writer.write(content);
       System.out.println("Content successfully written to " + filePath);

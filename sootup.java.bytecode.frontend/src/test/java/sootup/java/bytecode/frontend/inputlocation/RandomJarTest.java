@@ -29,14 +29,12 @@ public class RandomJarTest extends BaseFixJarsTest {
 
   @Test
   public void writeFile() {
-    System.out.println("This Test is written");
     new TestWriter().writeTestFile();
   }
 
   public void writeMetrics(TestMetrics testMetrics) {
     File file = new File(FAILURE_METRICS_FILE);
     boolean fileExists = file.exists();
-    System.out.println("Failure file path is" + file.getAbsolutePath());
 
     Gson gson = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
@@ -71,22 +69,6 @@ public class RandomJarTest extends BaseFixJarsTest {
       this.download_url = download_url;
       this.exception = exception;
       this.failedMethodSignature = failedMethodSignature;
-    }
-
-    public String getDownload_url() {
-      return download_url;
-    }
-
-    String getJar_name() {
-      return jar_name;
-    }
-
-    String getException() {
-      return exception;
-    }
-
-    public String getFailedMethodSignature() {
-      return failedMethodSignature;
     }
   }
 }
