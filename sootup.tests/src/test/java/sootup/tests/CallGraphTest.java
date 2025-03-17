@@ -316,7 +316,7 @@ public class CallGraphTest {
   @Test
   public void dummyTest() {
     algorithmName = "CHA";
-    CallGraph cg = loadCallGraph();
+    loadCallGraph();
   }
 
   @Test
