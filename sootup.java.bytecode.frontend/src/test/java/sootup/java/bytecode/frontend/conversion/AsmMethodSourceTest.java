@@ -45,7 +45,8 @@ public class AsmMethodSourceTest {
     final SootClass abstractClass = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(abstractClass);
 
-    final SootMethod method = abstractClass.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
+    final SootMethod method =
+        abstractClass.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
     assertNotNull(method);
     method.getBody().getStmts();
   }
