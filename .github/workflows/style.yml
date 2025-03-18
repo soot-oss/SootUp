@@ -1,5 +1,5 @@
 name: Style & License Header Check
-description: Check the formatting. Use "mvn com.coveo:fmt-maven-plugin:format" to format the code.
+description: Check the formatting. Use "mvn com.spotify.fmt:fmt-maven-plugin:format" to format the code.
 
 on: [pull_request, merge_group]
 
@@ -19,7 +19,7 @@ jobs:
           java-version: 17
 
       - name: Check Format
-        run: mvn -B com.coveo:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -B com.spotify.fmt:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: License Headers
         run: mvn -B org.codehaus.mojo:license-maven-plugin:check-file-header -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
