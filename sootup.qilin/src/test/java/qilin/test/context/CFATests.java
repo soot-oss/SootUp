@@ -25,7 +25,6 @@ import qilin.test.util.JunitTests;
 @Disabled
 public class CFATests extends JunitTests {
 
-
   @Test
   public void testCFA1k0() {
     checkAssertions(run("qilin.microben.context.cfa.CFA1k0", "1c"));
