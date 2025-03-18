@@ -47,7 +47,10 @@
   {
     "version": "bumpVersionsUp_preview",
     "title": "PR Preview bumpVersionsUp",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "add_StmtExceptionAnalyser_preview",
