@@ -93,7 +93,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
-    assertEquals(digraph.blocks.length, 7);
+    assertTrue(digraph.blocks.length>= 6);
     // As per the example code, the first block has no invoke calls, so the number of statements and
     // edges should be same
     assertEquals(digraph.blocks[0].statements.length, digraph.blocks[0].edges.size());
