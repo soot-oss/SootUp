@@ -45,6 +45,11 @@
     "aliases": []
   },
   {
+    "version": "bumpVersionsUp_preview",
+    "title": "PR Preview bumpVersionsUp",
+    "aliases": []
+  },
+  {
     "version": "add_StmtExceptionAnalyser_preview",
     "title": "PR Preview add_StmtExceptionAnalyser",
     "aliases": [],
