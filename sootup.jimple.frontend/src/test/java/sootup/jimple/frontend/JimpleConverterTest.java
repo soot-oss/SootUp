@@ -10,7 +10,6 @@ import java.util.Set;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.ResolveException;
@@ -26,7 +25,6 @@ import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
 
-@Tag("Java8")
 public class JimpleConverterTest {
 
   private SootClass parseJimpleClass(CharStream cs) throws ResolveException {

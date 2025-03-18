@@ -132,7 +132,7 @@ public class DominanceFinder {
     if (direction == BlockAnalysisDirection.POSTORDERBACKWARD) {
       for (int i = 0; i < domFrontiers.length; i++) {
         if (domFrontiers[i].contains(i)) {
-          domFrontiers[i].remove(new Integer(i));
+          domFrontiers[i].remove(Integer.valueOf(i));
         }
       }
     }

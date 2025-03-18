@@ -2,10 +2,8 @@ package sootup.java.bytecode.frontend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.TestCategories;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.Body;
@@ -13,7 +11,6 @@ import sootup.core.util.Utils;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class FixMissingTraphandlerPredecessor {
   final String directory = "../shared-test-resources/bugfixes/";
 

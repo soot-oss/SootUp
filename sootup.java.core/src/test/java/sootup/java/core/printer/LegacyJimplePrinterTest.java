@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
@@ -26,7 +25,6 @@ import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class LegacyJimplePrinterTest {
 
   SootClass buildClass(Body.BodyBuilder builder) {

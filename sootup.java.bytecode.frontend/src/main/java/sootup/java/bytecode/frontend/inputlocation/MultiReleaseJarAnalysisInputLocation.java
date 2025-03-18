@@ -122,12 +122,8 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     Path versionedRoot = archiveRoot.getFileSystem().getPath("/META-INF/versions/");
 
     try (Stream<Path> list = Files.list(versionedRoot)) {
-      list.map(
-              dir -> {
-                String versionDirName = dir.getFileName().toString();
-                return versionDirName.substring(0, versionDirName.length() - 1);
-              })
-          .map(Integer::new)
+      list.map(dir -> dir.getFileName().toString())
+          .map(Integer::valueOf)
           .filter(ver -> ver <= version)
           .sorted(Comparator.reverseOrder())
           .forEach(
@@ -196,7 +192,6 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     return classSources.stream();
   }
 
-  @Nonnull
   public int getVersion() {
     return version;
   }
@@ -246,12 +241,8 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     Path versionedRoot = archiveRoot.getFileSystem().getPath("/META-INF/versions/");
 
     try (Stream<Path> list = Files.list(versionedRoot)) {
-      return list.map(
-              dir -> {
-                String versionDirName = dir.getFileName().toString();
-                return versionDirName.substring(0, versionDirName.length() - 1);
-              })
-          .map(Integer::new)
+      return list.map(dir -> dir.getFileName().toString())
+          .map(Integer::valueOf)
           .sorted()
           .collect(Collectors.toCollection(ArrayList::new));
     } catch (IOException e) {
