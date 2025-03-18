@@ -11,7 +11,9 @@ import sootup.core.types.ClassType;
 import sootup.java.core.JavaSootClass;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyTestBase {
 
   /**

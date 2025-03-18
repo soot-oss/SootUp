@@ -8,7 +8,9 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.JavaSootClass;
 
-/** @author Kaustubh Kelkar */
+/**
+ * @author Kaustubh Kelkar
+ */
 public class NoModifierClassTest extends MinimalBytecodeTestSuiteBase {
 
   @Test

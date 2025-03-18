@@ -22,7 +22,9 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.views.JavaView;
 
-/** @author Marcus Nachtigall */
+/**
+ * @author Marcus Nachtigall
+ */
 public class ConstantPropagatorAndFolderTest {
 
   /**

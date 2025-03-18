@@ -1,4 +1,5 @@
 package sootup.core.inputlocation;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework

@@ -22,7 +22,9 @@ import sootup.interceptors.typeresolving.Typing;
 import sootup.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.core.JavaIdentifierFactory;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
   AugEvalFunction evalFunction;

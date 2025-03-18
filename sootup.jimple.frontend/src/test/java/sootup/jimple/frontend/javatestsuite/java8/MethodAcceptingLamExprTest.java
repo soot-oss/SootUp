@@ -10,7 +10,9 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.jimple.frontend.javatestsuite.JimpleTestSuiteBase;
 
-/** @author Kaustubh Kelkar, Bastian Haverkamp */
+/**
+ * @author Kaustubh Kelkar, Bastian Haverkamp
+ */
 public class MethodAcceptingLamExprTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {

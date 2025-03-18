@@ -16,7 +16,9 @@ import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLo
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
-/** @author : Hasitha Rajapakse, Jonas Klauke * */
+/**
+ * @author : Hasitha Rajapakse, Jonas Klauke *
+ */
 public class ConcreteDispatchTest {
   public ClassType getClassType(String className) {
     return view.getIdentifierFactory().getClassType(className);

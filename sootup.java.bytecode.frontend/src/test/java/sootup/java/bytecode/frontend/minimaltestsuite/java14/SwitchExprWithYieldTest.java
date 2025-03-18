@@ -12,7 +12,9 @@ import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBa
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 
-/** @author Bastian Haverkamp */
+/**
+ * @author Bastian Haverkamp
+ */
 public class SwitchExprWithYieldTest extends MinimalBytecodeTestSuiteBase {
 
   @Override

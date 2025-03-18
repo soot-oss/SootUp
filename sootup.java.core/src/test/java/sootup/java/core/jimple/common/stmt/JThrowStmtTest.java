@@ -32,7 +32,9 @@ import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.java.core.JavaIdentifierFactory;
 
-/** @author Markus Schmidt, Linghui Luo */
+/**
+ * @author Markus Schmidt, Linghui Luo
+ */
 public class JThrowStmtTest {
 
   @Test

@@ -10,7 +10,9 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
-/** @author Kaustubh Kelkar, Markus Schmidt */
+/**
+ * @author Kaustubh Kelkar, Markus Schmidt
+ */
 public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
 
   @Test

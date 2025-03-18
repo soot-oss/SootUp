@@ -12,7 +12,9 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.signatures.ModuleSignature;
 
-/** @author Kaustubh Kelkar */
+/**
+ * @author Kaustubh Kelkar
+ */
 public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test

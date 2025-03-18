@@ -28,7 +28,9 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 @Disabled("FIXME: needs .setTraps() adapted to MutableBlockStmtGraph")
 public class TrapTightenerTest {
   public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();
@@ -135,6 +137,7 @@ public class TrapTightenerTest {
     List<Trap> actual = briefStmtPrinter.getTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
+
   /**
    *
    *

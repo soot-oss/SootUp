@@ -30,7 +30,9 @@ import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Kaustubh Kelkar updated on 09.07.2020 */
+/**
+ * @author Kaustubh Kelkar updated on 09.07.2020
+ */
 public class WitherTest {
 
   private JavaView loader;

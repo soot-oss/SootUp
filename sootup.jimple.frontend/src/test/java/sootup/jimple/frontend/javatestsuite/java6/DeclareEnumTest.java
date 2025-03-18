@@ -7,7 +7,9 @@ import sootup.core.model.SootClass;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.jimple.frontend.javatestsuite.JimpleTestSuiteBase;
 
-/** @author Kaustubh Kelkar */
+/**
+ * @author Kaustubh Kelkar
+ */
 public class DeclareEnumTest extends JimpleTestSuiteBase {
 
   @Test

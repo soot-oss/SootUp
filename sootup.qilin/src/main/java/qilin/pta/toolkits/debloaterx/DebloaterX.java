@@ -116,8 +116,7 @@ public class DebloaterX {
       }
       m2o.computeIfAbsent(method, k -> new HashSet<>()).add(heap);
     }
-    m2o.keySet()
-        .parallelStream()
+    m2o.keySet().parallelStream()
         .forEach(
             method -> {
               IntraFlowAnalysis ifa = new IntraFlowAnalysis(utility, method);

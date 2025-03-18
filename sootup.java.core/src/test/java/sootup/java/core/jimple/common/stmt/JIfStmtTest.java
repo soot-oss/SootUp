@@ -33,7 +33,9 @@ import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
-/** @author Markus Schmidt, Linghui Luo */
+/**
+ * @author Markus Schmidt, Linghui Luo
+ */
 public class JIfStmtTest {
   // TODO: [ms] incorporate Printer i.e. Body+Targets
   @Test

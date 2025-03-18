@@ -42,7 +42,9 @@ import sootup.core.types.PrimitiveType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
-/** @author Markus Schmidt, Linghui Luo */
+/**
+ * @author Markus Schmidt, Linghui Luo
+ */
 public class JAssignStmtTest {
 
   Comparator<Stmt> c =

@@ -13,7 +13,9 @@ import sootup.interceptors.typeresolving.PrimitiveHierarchy;
 import sootup.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.interceptors.typeresolving.types.BottomType;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public class PrimitiveHierarchyTest {
 
   private Type bt = BottomType.getInstance();

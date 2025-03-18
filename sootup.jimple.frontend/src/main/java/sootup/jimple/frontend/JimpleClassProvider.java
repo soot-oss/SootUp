@@ -39,7 +39,9 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ */
 public class JimpleClassProvider implements ClassProvider {
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;

@@ -1,4 +1,5 @@
 package sootup.core.graph;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -32,6 +33,7 @@ public interface BlockTraversalStrategy {
    * @return an iterator for traversing StmtGraph
    */
   public BlockIterator iterator();
+
   /**
    * This method returns a list of Blocks ordered by the traversal sequence.
    *

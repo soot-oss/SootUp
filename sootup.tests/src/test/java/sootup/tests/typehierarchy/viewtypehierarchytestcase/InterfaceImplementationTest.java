@@ -11,7 +11,9 @@ import sootup.core.types.ClassType;
 import sootup.java.core.types.JavaClassType;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
-/** @author: Hasitha Rajapakse * */
+/**
+ * @author: Hasitha Rajapakse *
+ */
 public class InterfaceImplementationTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {

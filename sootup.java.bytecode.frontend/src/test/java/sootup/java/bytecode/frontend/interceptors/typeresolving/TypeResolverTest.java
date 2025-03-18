@@ -34,7 +34,8 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   Type stringType = new JavaClassType("String", new JavaPackageName("java.lang"));
   Type charSequenceType = new JavaClassType("CharSequence", new JavaPackageName("java.lang"));
   Type numberType = new JavaClassType("Number", new JavaPackageName("java.lang"));
-  Type dateType = new JavaClassType("Date", new JavaPackageName("java.util"));;
+  Type dateType = new JavaClassType("Date", new JavaPackageName("java.util"));
+  ;
   Type miscType = new JavaClassType("Misc", new JavaPackageName(""));
   Type sysoutType = new JavaClassType("PrintStream", new JavaPackageName("java.io"));
   Type throwableType = new JavaClassType("Throwable", new JavaPackageName("java.lang"));

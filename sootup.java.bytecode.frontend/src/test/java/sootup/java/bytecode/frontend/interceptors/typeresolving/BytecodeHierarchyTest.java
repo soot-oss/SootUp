@@ -16,7 +16,9 @@ import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLo
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public class BytecodeHierarchyTest {
 
   private JavaView view;

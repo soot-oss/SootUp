@@ -26,7 +26,9 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public class ReplaceUseExprVisitorTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();

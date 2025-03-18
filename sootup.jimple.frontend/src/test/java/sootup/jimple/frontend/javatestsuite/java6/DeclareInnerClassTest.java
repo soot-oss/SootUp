@@ -11,7 +11,9 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.jimple.frontend.javatestsuite.JimpleTestSuiteBase;
 
-/** @author Kaustubh Kelkar */
+/**
+ * @author Kaustubh Kelkar
+ */
 public class DeclareInnerClassTest extends JimpleTestSuiteBase {
 
   final JavaClassType innerClassType =

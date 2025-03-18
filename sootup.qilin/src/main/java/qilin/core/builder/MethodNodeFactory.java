@@ -69,7 +69,9 @@ import sootup.core.types.Type;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
-/** @author Ondrej Lhotak */
+/**
+ * @author Ondrej Lhotak
+ */
 public class MethodNodeFactory {
   protected PAG pag;
   protected MethodPAG mpag;
