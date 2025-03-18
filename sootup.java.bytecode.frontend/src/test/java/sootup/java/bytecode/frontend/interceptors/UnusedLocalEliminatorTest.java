@@ -22,7 +22,9 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Marcus Nachtigall */
+/**
+ * @author Marcus Nachtigall
+ */
 public class UnusedLocalEliminatorTest {
 
   @Test

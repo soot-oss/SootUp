@@ -17,7 +17,9 @@ import sootup.java.core.types.JavaClassType;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
 import sootup.jimple.frontend.JimpleView;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ */
 public abstract class JimpleTestSuiteBase {
 
   static final String baseDir = "src/test/java/resources/jimple/";

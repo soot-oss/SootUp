@@ -25,7 +25,9 @@ package sootup.core.jimple.visitor;
 import javax.annotation.Nonnull;
 import sootup.core.types.*;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ */
 public abstract class AbstractTypeVisitor implements TypeVisitor, Visitor {
 
   @Override

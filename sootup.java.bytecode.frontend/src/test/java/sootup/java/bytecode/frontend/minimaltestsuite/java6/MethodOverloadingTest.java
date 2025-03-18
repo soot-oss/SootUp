@@ -15,13 +15,18 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
-/** @author Kaustubh Kelkar */
+/**
+ * @author Kaustubh Kelkar
+ */
 public class MethodOverloadingTest extends MinimalBytecodeTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         getDeclaredClassSignature(), "calculate", "int", Arrays.asList("int", "int"));
   }
-  /** @returns the method signature needed for second method in testCase */
+
+  /**
+   * @returns the method signature needed for second method in testCase
+   */
   public MethodSignature getMethodSignatureSingleParam() {
     return identifierFactory.getMethodSignature(
         getDeclaredClassSignature(), "calculate", "int", Collections.singletonList("int"));

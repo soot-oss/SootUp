@@ -3,7 +3,9 @@ package sootup.tests;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-/** @author Linghui Luo */
+/**
+ * @author Linghui Luo
+ */
 public class SimpleSootClientTest {
 
   @Test

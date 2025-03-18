@@ -15,7 +15,9 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 
-/** @author Kaustubh Kelkar */
+/**
+ * @author Kaustubh Kelkar
+ */
 public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getInitMethodSignature() {

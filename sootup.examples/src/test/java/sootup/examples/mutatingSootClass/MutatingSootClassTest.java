@@ -106,7 +106,10 @@ public class MutatingSootClassTest {
                         new ArrayType(
                             new JavaClassType("String", new PackageName("java.lang")), 1)),
                     VoidType.getInstance()))
-            .get().getBody().getLocals().stream()
+            .get()
+            .getBody()
+            .getLocals()
+            .stream()
             .findFirst()
             .get());
 
@@ -128,7 +131,10 @@ public class MutatingSootClassTest {
                         new ArrayType(
                             new JavaClassType("String", new PackageName("java.lang")), 1)),
                     VoidType.getInstance()))
-            .get().getBody().getLocals().stream()
+            .get()
+            .getBody()
+            .getLocals()
+            .stream()
             .noneMatch(local -> local.equals(newLocal)));
 
     // Please note that the jimple code of our newly modified method is not correct anymore, as we

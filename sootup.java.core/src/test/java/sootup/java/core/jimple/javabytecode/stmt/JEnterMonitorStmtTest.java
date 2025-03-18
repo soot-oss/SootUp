@@ -31,7 +31,9 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import sootup.core.types.PrimitiveType;
 
-/** @author Markus Schmidt, Linghui Luo */
+/**
+ * @author Markus Schmidt, Linghui Luo
+ */
 public class JEnterMonitorStmtTest {
 
   @Test

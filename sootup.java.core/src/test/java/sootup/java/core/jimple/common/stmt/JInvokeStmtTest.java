@@ -57,7 +57,9 @@ import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
-/** @author Markus Schmidt, Linghui Luo */
+/**
+ * @author Markus Schmidt, Linghui Luo
+ */
 public class JInvokeStmtTest {
 
   @Test

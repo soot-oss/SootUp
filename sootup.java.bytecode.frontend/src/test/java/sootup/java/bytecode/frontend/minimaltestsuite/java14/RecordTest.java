@@ -22,7 +22,9 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
-/** @author Jonas Klauke */
+/**
+ * @author Jonas Klauke
+ */
 public class RecordTest extends MinimalBytecodeTestSuiteBase {
 
   @Override

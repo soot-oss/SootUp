@@ -13,7 +13,9 @@ import sootup.core.jimple.common.expr.JLeExpr;
 import sootup.core.jimple.common.expr.JLtExpr;
 import sootup.core.types.PrimitiveType;
 
-/** @author Bastian Haverkamp */
+/**
+ * @author Bastian Haverkamp
+ */
 public class AbstractBinopExpr {
 
   final JimpleComparator comparator = JimpleComparator.getInstance();

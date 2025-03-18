@@ -14,7 +14,9 @@ import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.views.JavaModuleView;
 
-/** @author Andreas Dann, Markus Schmidt */
+/**
+ * @author Andreas Dann, Markus Schmidt
+ */
 public class JrtFileSystemAnalysisInputLocationTest {
 
   @Test

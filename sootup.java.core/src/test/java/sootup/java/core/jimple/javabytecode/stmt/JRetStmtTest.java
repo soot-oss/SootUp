@@ -30,7 +30,9 @@ import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JRetStmt;
 
-/** @author Markus Schmidt, Linghui Luo */
+/**
+ * @author Markus Schmidt, Linghui Luo
+ */
 public class JRetStmtTest {
 
   @Test

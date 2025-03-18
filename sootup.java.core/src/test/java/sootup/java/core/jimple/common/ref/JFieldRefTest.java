@@ -26,7 +26,9 @@ import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Linghui Luo */
+/**
+ * @author Linghui Luo
+ */
 public class JFieldRefTest {
 
   JavaView view;

@@ -9,7 +9,9 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ */
 public class InfiniteLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {

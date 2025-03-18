@@ -13,14 +13,18 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
-/** @author Kaustubh Kelkar */
+/**
+ * @author Kaustubh Kelkar
+ */
 public class SubClassTest extends MinimalBytecodeTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         getDeclaredClassSignature(), "subclassMethod", "void", Collections.emptyList());
   }
 
-  /** @returns the method signature needed for second method in testCase */
+  /**
+   * @returns the method signature needed for second method in testCase
+   */
   public MethodSignature getMethodSignature1() {
     return identifierFactory.getMethodSignature(
         getDeclaredClassSignature(), "superclassMethod", "void", Collections.emptyList());

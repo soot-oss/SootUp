@@ -43,9 +43,12 @@ import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ */
 public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   final Path path;
+
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
   private final SourceType srcType;
 
@@ -88,7 +91,9 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
     return bodyInterceptors;
   }
 
-  /** @return Autoclosable needs to be closed! */
+  /**
+   * @return Autoclosable needs to be closed!
+   */
   @Nonnull
   Stream<SootClassSource> walkDirectory(
       @Nonnull Path dirPath,

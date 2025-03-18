@@ -50,7 +50,9 @@ import sootup.interceptors.typeresolving.types.BottomType;
 import sootup.interceptors.typeresolving.types.TopType;
 import sootup.java.core.views.JavaView;
 
-/** @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08 */
+/**
+ * @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08
+ */
 public class TypeResolver {
   private final ArrayList<AbstractDefinitionStmt> assignments = new ArrayList<>();
   private final Map<Local, BitSet> depends = new HashMap<>();

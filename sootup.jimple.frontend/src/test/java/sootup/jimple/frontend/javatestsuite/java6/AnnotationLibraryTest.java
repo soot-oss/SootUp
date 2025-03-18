@@ -7,7 +7,9 @@ import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.jimple.frontend.javatestsuite.JimpleTestSuiteBase;
 
-/** @author Kaustubh Kelkar */
+/**
+ * @author Kaustubh Kelkar
+ */
 public class AnnotationLibraryTest extends JimpleTestSuiteBase {
 
   @Disabled

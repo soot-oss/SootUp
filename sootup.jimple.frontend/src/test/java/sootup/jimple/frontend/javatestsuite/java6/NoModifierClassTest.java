@@ -8,7 +8,9 @@ import sootup.core.model.SootClass;
 import sootup.core.signatures.MethodSignature;
 import sootup.jimple.frontend.javatestsuite.JimpleTestSuiteBase;
 
-/** @author Kaustubh Kelkar */
+/**
+ * @author Kaustubh Kelkar
+ */
 public class NoModifierClassTest extends JimpleTestSuiteBase {
 
   @Test

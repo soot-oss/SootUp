@@ -11,7 +11,9 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.JavaIdentifierFactory;
 
-/** @author Kaustubh Kelkar */
+/**
+ * @author Kaustubh Kelkar
+ */
 public class DeclareEnumTest extends MinimalBytecodeTestSuiteBase {
 
   @Test

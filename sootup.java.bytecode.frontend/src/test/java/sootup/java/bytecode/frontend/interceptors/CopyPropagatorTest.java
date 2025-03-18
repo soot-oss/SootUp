@@ -38,7 +38,9 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public class CopyPropagatorTest {
 
   // Preparation

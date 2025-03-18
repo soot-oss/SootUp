@@ -10,7 +10,9 @@ import sootup.core.model.SootClass;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
-/** @author Kaustubh Kelkar */
+/**
+ * @author Kaustubh Kelkar
+ */
 public class AnnotationLibraryTest extends MinimalBytecodeTestSuiteBase {
 
   // TODO: [bh] annotation methods lose default values

@@ -7,7 +7,9 @@ import sootup.core.model.SootMethod;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.JavaIdentifierFactory;
 
-/** @author Bastian Haverkamp */
+/**
+ * @author Bastian Haverkamp
+ */
 public class CossiInputTest extends MinimalBytecodeTestSuiteBase {
 
   @Test

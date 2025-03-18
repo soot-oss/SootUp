@@ -13,7 +13,9 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.util.DotExporter;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public class AssertUtils {
 
   // assert whether two bodies have the same locals

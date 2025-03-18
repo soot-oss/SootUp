@@ -10,7 +10,9 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
-/** @author Kaustubh Kelkar, Bastian Haverkamp */
+/**
+ * @author Kaustubh Kelkar, Bastian Haverkamp
+ */
 public class MethodAcceptingLamExprTest extends MinimalBytecodeTestSuiteBase {
 
   @Override

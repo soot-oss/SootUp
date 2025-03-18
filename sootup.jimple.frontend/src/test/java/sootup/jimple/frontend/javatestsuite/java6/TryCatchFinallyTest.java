@@ -8,7 +8,9 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.jimple.frontend.javatestsuite.JimpleTestSuiteBase;
 
-/** @author Kaustubh Kelkar, Markus Schmidt */
+/**
+ * @author Kaustubh Kelkar, Markus Schmidt
+ */
 public class TryCatchFinallyTest extends JimpleTestSuiteBase {
 
   @Test

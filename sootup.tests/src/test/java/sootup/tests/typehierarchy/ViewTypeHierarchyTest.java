@@ -27,7 +27,9 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 
-/** @author Kaustubh Kelkar update on 22.04.2020 */
+/**
+ * @author Kaustubh Kelkar update on 22.04.2020
+ */
 public class ViewTypeHierarchyTest {
 
   private JavaView view;

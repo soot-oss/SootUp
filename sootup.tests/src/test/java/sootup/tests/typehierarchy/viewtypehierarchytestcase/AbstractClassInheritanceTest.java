@@ -11,7 +11,9 @@ import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
-/** @author Hasitha Rajapakse * */
+/**
+ * @author Hasitha Rajapakse *
+ */
 public class AbstractClassInheritanceTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {

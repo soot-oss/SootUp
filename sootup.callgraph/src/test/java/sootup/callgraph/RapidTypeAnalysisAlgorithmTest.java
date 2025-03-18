@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.views.JavaView;
 
-/** @author Kadiray Karakaya, Jonas Klauke */
+/**
+ * @author Kadiray Karakaya, Jonas Klauke
+ */
 public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm> {
 
   @Override

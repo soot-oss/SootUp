@@ -12,7 +12,9 @@ import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
-/** @author Jonas Klauke * */
+/**
+ * @author Jonas Klauke *
+ */
 public class IncompleteSuperclassTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {

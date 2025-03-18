@@ -1,4 +1,5 @@
 package sootup.core.graph;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework

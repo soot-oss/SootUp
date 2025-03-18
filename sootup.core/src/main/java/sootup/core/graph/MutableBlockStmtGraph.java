@@ -735,7 +735,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     tryMergeWithSuccessorBlock(block);
   }
 
-  /** @return the successor block of block if the merge happended, if not merged: block */
+  /**
+   * @return the successor block of block if the merge happended, if not merged: block
+   */
   @Nonnull
   private MutableBasicBlock tryMergeWithSuccessorBlock(@Nonnull MutableBasicBlock block) {
     final List<MutableBasicBlock> successors = block.getSuccessors();
@@ -760,7 +762,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
-  /** @return the predecessor block of block if the merge happended, if not merged: block */
+  /**
+   * @return the predecessor block of block if the merge happended, if not merged: block
+   */
   @Nonnull
   private MutableBasicBlock tryMergeWithPredecessorBlock(@Nonnull MutableBasicBlock block) {
     final List<MutableBasicBlock> predecessors = block.getPredecessors();
