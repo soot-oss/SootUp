@@ -15,7 +15,7 @@ public class CallGraphDifferenceTest {
 
   @Test
   public void testCGDiff() {
-    String baseDir = "../shared-test-resources/CallGraphDifference/binary/";
+    String baseDir = "src/test/resources/callgraph/CallGraphDifference/binary/";
     AnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
             baseDir, SourceType.Application, Collections.emptyList());
