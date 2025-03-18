@@ -29,8 +29,7 @@ public class CallgraphExampleTest {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation("src/test/resources/Callgraph/binary"));
-    inputLocations.add(
-        new DefaultRuntimeAnalysisInputLocation()); // add rt.jar
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation()); // add rt.jar
 
     JavaView view = new JavaView(inputLocations);
 
