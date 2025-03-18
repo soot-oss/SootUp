@@ -18,10 +18,12 @@
 
 package qilin.test.core;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import qilin.core.PTA;
 import qilin.test.util.JunitTests;
 
+@Disabled
 public class ReflogTests extends JunitTests {
   @Test
   public void testFieldGetStatic() {

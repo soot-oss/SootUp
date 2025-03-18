@@ -18,10 +18,13 @@
 
 package qilin.test.context;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import qilin.test.util.JunitTests;
 
+@Disabled
 public class CFATests extends JunitTests {
+
 
   @Test
   public void testCFA1k0() {

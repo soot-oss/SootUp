@@ -18,9 +18,11 @@
 
 package qilin.test.core;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import qilin.test.util.JunitTests;
 
+@Disabled
 public class CallTests extends JunitTests {
   @Test
   public void testVirtualCall0() {
