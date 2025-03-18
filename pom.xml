@@ -75,8 +75,9 @@
 
     <!-- Shared Configuration -->
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -94,31 +95,20 @@
 
     <profiles>
         <profile>
-            <id>Java8</id>
-            <!-- Activates if jdk is <1.9 which means it has a rt.jar -->
-            <activation>
-                <jdk>(, 1.9)</jdk>
-            </activation>
+            <id>Java17</id>
             <properties>
-                <testcase.groups>Java8</testcase.groups>
-                <testCoverageType>jdk8</testCoverageType>
+                <testCoverageType>jdk17</testCoverageType>
             </properties>
         </profile>
         <profile>
-            <id>Java9</id>
-            <!-- Activates if jdk is >=1.9 which means it has a jrt Provider -->
-            <activation>
-                <jdk>[1.9, )</jdk>
-            </activation>
+            <id>Java21</id>
             <properties>
-                <testcase.groups>Java9</testcase.groups>
-                <testCoverageType>jdk9</testCoverageType>
+                <testCoverageType>jdk21</testCoverageType>
             </properties>
         </profile>
         <profile>
             <id>IntegrationTest</id>
             <properties>
-                <testcase.groups>Java8</testcase.groups>
                 <testCoverageType>integrationtest</testCoverageType>
             </properties>
         </profile>
@@ -262,8 +252,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.source}</target>
                     <compilerArgs>
                         <!-- Prevents recompilation due to missing package-info.class, see MCOMPILER-205 -->
                         <arg>-Xpkginfo:always</arg>
@@ -319,8 +309,8 @@
                                     <!-- path refers to artifact download folder structure in maven.yml -->
                                     <directory>${project.build.directory}/coverage-reports/</directory>
                                     <includes>
-                                        <include>jacoco-ut-jdk8.exec</include>
-                                        <include>jacoco-ut-jdk9.exec</include>
+                                        <include>jacoco-ut-jdk17.exec</include>
+                                        <include>jacoco-ut-jdk21.exec</include>
                                         <include>jacoco-ut-integrationtest.exec</include>
                                     </includes>
                                 </fileSet>
@@ -337,7 +327,6 @@
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <argLine>-Xmx4096M ${surefireArgLine}</argLine>
-                    <groups>${testcase.groups}</groups>
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>
             </plugin>
@@ -467,6 +456,11 @@
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
             <version>6.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.12.1</version>
         </dependency>
 
         <!-- testing -->

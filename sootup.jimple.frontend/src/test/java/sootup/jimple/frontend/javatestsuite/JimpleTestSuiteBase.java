@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -19,7 +18,6 @@ import sootup.jimple.frontend.JimpleAnalysisInputLocation;
 import sootup.jimple.frontend.JimpleView;
 
 /** @author Markus Schmidt */
-@Tag("Java8")
 public abstract class JimpleTestSuiteBase {
 
   static final String baseDir = "src/test/java/resources/jimple/";

@@ -2,14 +2,12 @@ package sootup.java.bytecode.frontend.interceptors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -41,7 +39,6 @@ import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class CopyPropagatorTest {
 
   // Preparation

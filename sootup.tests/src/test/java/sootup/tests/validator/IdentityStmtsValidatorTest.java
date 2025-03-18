@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
@@ -20,7 +19,6 @@ import sootup.core.validation.ValidationException;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
 import sootup.jimple.frontend.JimpleView;
 
-@Tag("Java8")
 public class IdentityStmtsValidatorTest {
 
   IdentityStmtsValidator identityStmtsValidator;

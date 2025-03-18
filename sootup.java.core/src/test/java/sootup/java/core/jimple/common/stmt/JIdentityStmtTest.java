@@ -24,7 +24,6 @@ package sootup.java.core.jimple.common.stmt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -37,7 +36,6 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 /** @author Markus Schmidt, Linghui Luo */
-@Tag("Java8")
 public class JIdentityStmtTest {
 
   @Test

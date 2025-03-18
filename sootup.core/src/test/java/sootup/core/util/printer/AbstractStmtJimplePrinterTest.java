@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.base.Objects;
 import java.util.Collections;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -13,7 +12,6 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 
-@Tag("Java8")
 public class AbstractStmtJimplePrinterTest {
 
   @Test

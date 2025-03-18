@@ -7,14 +7,12 @@ import static sootup.core.util.ImmutableUtils.immutableList;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
 /** @author Jonas Klauke * */
-@Tag("Java8")
 public class IncompleteSuperclassTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {

@@ -1,9 +1,7 @@
 package sootup.java.bytecode.frontend.inputlocation;
 
-import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.Collections;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.Body;
@@ -12,7 +10,6 @@ import sootup.interceptors.NopEliminator;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
 import sootup.jimple.frontend.JimpleView;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class FixJars extends BaseFixJarsTest {
 
   @Test

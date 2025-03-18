@@ -4,14 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.TestUtil;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 
-@Tag("Java8")
 public class JAssignStmtTest {
 
   @Test

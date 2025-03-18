@@ -26,12 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.EagerInputLocation;
@@ -52,7 +50,6 @@ import sootup.java.core.views.JavaView;
  * @author Manuel Benz created on 06.06.18
  * @author Kaustubh Kelkar updated on 16.04.2020
  */
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test

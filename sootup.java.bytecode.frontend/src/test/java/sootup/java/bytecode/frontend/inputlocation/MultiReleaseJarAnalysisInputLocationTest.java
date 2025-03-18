@@ -23,23 +23,23 @@ package sootup.java.bytecode.frontend.inputlocation;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   final Path mrj = Paths.get("../shared-test-resources/multi-release-jar/mrjar.jar");
@@ -71,69 +71,73 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
     assertTrue(MultiReleaseJarAnalysisInputLocation.isMultiReleaseJar(mrj));
 
     // for java 8
+    JavaSootClass jm8c1 = view_8.getClass(classType).orElse(null);
+    assertNotNull(jm8c1);
     assertEquals(
         "/de/upb/sse/multirelease/Utility.class",
-        view_8.getClass(classType).get().getClassSource().getSourcePath().toString());
+        jm8c1.getClassSource().getSourcePath().toString());
+    JavaSootClass jm8c2 = view_8.getClass(classType2).orElse(null);
+    assertNotNull(jm8c2);
     assertEquals(
-        "/de/upb/sse/multirelease/Main.class",
-        view_8.getClass(classType2).get().getClassSource().getSourcePath().toString());
+        "/de/upb/sse/multirelease/Main.class", jm8c2.getClassSource().getSourcePath().toString());
     // assert that method is correctly resolved to base
     MethodSubSignature printBodyMethodSubSig =
         getIdentifierFactory()
             .getMethodSubSignature(
                 "printVersion", getIdentifierFactory().getType("void"), Collections.emptyList());
-    assertTrue(
-        view_8
-            .getClass(classType)
-            .get()
-            .getMethod(printBodyMethodSubSig)
-            .get()
-            .getBody()
-            .toString()
-            .contains("java 8"));
+
+    JavaSootMethod jm8 = jm8c1.getMethod(printBodyMethodSubSig).orElse(null);
+    assertNotNull(jm8);
+    assertTrue(jm8.getBody().toString().contains("java 8"));
 
     // for java 9
+    JavaSootClass jm9c1 = view_9.getClass(classType).orElse(null);
+    assertNotNull(jm9c1);
     assertEquals(
         "/META-INF/versions/9/de/upb/sse/multirelease/Utility.class",
-        view_9.getClass(classType).get().getClassSource().getSourcePath().toString());
+        jm9c1.getClassSource().getSourcePath().toString());
+    JavaSootClass jm9c2 = view_9.getClass(classType2).orElse(null);
+    assertNotNull(jm9c2);
     assertEquals(
-        "/de/upb/sse/multirelease/Main.class",
-        view_9.getClass(classType2).get().getClassSource().getSourcePath().toString());
+        "/de/upb/sse/multirelease/Main.class", jm9c2.getClassSource().getSourcePath().toString());
 
     // for java10
+    JavaSootClass jm10c1 = view_10.getClass(classType).orElse(null);
+    assertNotNull(jm10c1);
     assertEquals(
         "/META-INF/versions/10/de/upb/sse/multirelease/Utility.class",
-        view_10.getClass(classType).get().getClassSource().getSourcePath().toString());
+        jm10c1.getClassSource().getSourcePath().toString());
+    JavaSootClass jm10c2 = view_10.getClass(classType2).orElse(null);
+    assertNotNull(jm10c2);
     assertEquals(
-        "/de/upb/sse/multirelease/Main.class",
-        view_10.getClass(classType2).get().getClassSource().getSourcePath().toString());
+        "/de/upb/sse/multirelease/Main.class", jm10c2.getClassSource().getSourcePath().toString());
 
     // assert that method is correctly resolved
-    assertTrue(
-        view_10
-            .getClass(classType)
-            .get()
-            .getMethod(printBodyMethodSubSig)
-            .get()
-            .getBody()
-            .toString()
-            .contains("java 10"));
+    JavaSootMethod jm10 = jm10c1.getMethod(printBodyMethodSubSig).orElse(null);
+    assertNotNull(jm10);
+    assertTrue(jm10.getBody().toString().contains("java 10"));
 
     // for min int
+    JavaSootClass jmMinC1 = view_min.getClass(classType).orElse(null);
+    assertNotNull(jmMinC1);
     assertEquals(
         "/de/upb/sse/multirelease/Utility.class",
-        view_min.getClass(classType).get().getClassSource().getSourcePath().toString());
+        jmMinC1.getClassSource().getSourcePath().toString());
+    JavaSootClass jmMinC2 = view_min.getClass(classType2).orElse(null);
+    assertNotNull(jmMinC2);
     assertEquals(
-        "/de/upb/sse/multirelease/Main.class",
-        view_min.getClass(classType2).get().getClassSource().getSourcePath().toString());
+        "/de/upb/sse/multirelease/Main.class", jmMinC2.getClassSource().getSourcePath().toString());
 
     // for max int
+    JavaSootClass jmMaxC1 = view_max.getClass(classType).orElse(null);
+    assertNotNull(jmMaxC1);
     assertEquals(
         "/META-INF/versions/10/de/upb/sse/multirelease/Utility.class",
-        view_max.getClass(classType).get().getClassSource().getSourcePath().toString());
+        jmMaxC1.getClassSource().getSourcePath().toString());
+    JavaSootClass jmMaxC2 = view_max.getClass(classType2).orElse(null);
+    assertNotNull(jmMaxC2);
     assertEquals(
-        "/de/upb/sse/multirelease/Main.class",
-        view_max.getClass(classType2).get().getClassSource().getSourcePath().toString());
+        "/de/upb/sse/multirelease/Main.class", jmMaxC2.getClassSource().getSourcePath().toString());
 
     // getClasses
     List<String> collectedClassesWPrintBody9 =

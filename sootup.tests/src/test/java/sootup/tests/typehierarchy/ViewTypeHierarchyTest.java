@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -29,7 +28,6 @@ import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 
 /** @author Kaustubh Kelkar update on 22.04.2020 */
-@Tag("Java8")
 public class ViewTypeHierarchyTest {
 
   private JavaView view;

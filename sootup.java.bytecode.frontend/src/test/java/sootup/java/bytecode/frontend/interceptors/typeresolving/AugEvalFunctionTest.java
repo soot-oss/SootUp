@@ -3,10 +3,8 @@ package sootup.java.bytecode.frontend.interceptors.typeresolving;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import categories.TestCategories;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Value;
@@ -25,7 +23,6 @@ import sootup.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.core.JavaIdentifierFactory;
 
 /** @author Zun Wang */
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
   AugEvalFunction evalFunction;
