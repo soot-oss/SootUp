@@ -48,7 +48,10 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
     entryMethod =
-        sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().orElse(null);
+        sc.getMethods().stream()
+            .filter(e -> e.getName().equals("entryPoint"))
+            .findFirst()
+            .orElse(null);
     assertNotNull(entryMethod);
 
     entryMethodSignature = entryMethod.getSignature();
@@ -86,7 +89,10 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
     entryMethod =
-        sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().orElse(null);
+        sc.getMethods().stream()
+            .filter(e -> e.getName().equals("entryPoint"))
+            .findFirst()
+            .orElse(null);
     assertNotNull(entryMethod);
 
     entryMethodSignature = entryMethod.getSignature();
@@ -97,7 +103,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
-    assertTrue(digraph.blocks.length>= 6);
+    assertTrue(digraph.blocks.length >= 6);
     // As per the example code, the first block has no invoke calls, so the number of statements and
     // edges should be same
     assertEquals(digraph.blocks[0].statements.length, digraph.blocks[0].edges.size());
