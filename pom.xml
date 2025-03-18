@@ -65,7 +65,6 @@
         <module>sootup.java.core</module>
         <module>sootup.interceptors</module>
         <module>sootup.java.bytecode.frontend</module>
-        <module>sootup.java.sourcecode.frontend</module>
         <module>sootup.callgraph</module>
         <module>sootup.qilin</module>
         <module>sootup.analysis.interprocedural</module>
