@@ -4,6 +4,7 @@
 name: Java CI with Maven
 
 on:
+  merge_group:
   push:
     branches: [ develop ]
 
@@ -26,15 +27,15 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
       - name: cache maven dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -43,145 +44,15 @@ jobs:
 
       - name: Cache compilation
         id: cache-compilation
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: | 
                 **/target/
           key: cache-compilation-${{ github.sha }}
 
-      - name: Build with JDK17
+      - name: Build
         run: mvn -B compile -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-  Style:
-    needs: Compilation
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: get cached compilation
-        id: cache-compilation
-        uses: actions/cache@v3
-        with:
-          path: |
-            **/target/
-          key: cache-compilation-${{ github.sha }}
-
-      - name: cache maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'zulu'
-
-      - name: Check Format
-        run: mvn -B com.spotify.fmt:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
-      - name: License Headers
-        run: mvn -B org.codehaus.mojo:license-maven-plugin:check-file-header -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
-      # create javadoc html to lint it
-      - name: Check Javadoc
-        run: mvn -B javadoc:aggregate -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
-  JDK17:
-    needs: Compilation
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: get cached compilation
-        id: cache-compilation
-        uses: actions/cache@v3
-        with:
-          path: | 
-                **/target/
-          key: cache-compilation-${{ github.sha }}
-
-      - name: cache maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'zulu'
-
-      - name: Test (JDK17)
-        run: mvn -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava17 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ always() }}
-        with:
-          name: coverage-exec-jdk17
-          path: |
-                  */target/coverage-reports/jacoco-ut-jdk17.exec
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ always() }}
-        with:
-          name: test-reports-jdk17
-          path: |
-                  */target/surefire-reports
-
-
-  JDK21:
-    needs: Compilation
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: get cached compilation
-        id: cache-compilation
-        uses: actions/cache@v3
-        with:
-          path: | 
-                **/target/
-          key: cache-compilation-${{ github.sha }}
-
-      - name: cache maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v3
-        with:
-          java-version: '21'
-          distribution: 'zulu'
-
-      - name: Test (JDK21)
-        run: mvn -B -am verify -Dfmt.skip -Dmaven.main.skip=true -PJava21 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ always() }}
-        with:
-          name: coverage-exec-jdk21
-          path: |
-            */target/coverage-reports/jacoco-ut-jdk21.exec
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ always() }}
-        with:
-          name: test-reports-jdk21
-          path: |
-            */target/surefire-reports
-
-    # takes a long time to run - so just run them when PR is not draft anymore
   IntegrationTest:
     if: ${{ !github.event.pull_request.draft }}
     needs: Compilation
@@ -227,16 +98,22 @@ jobs:
           path: |
             */target/surefire-reports
 
-  CoverageReport:
+  Tests:
+    needs: Compilation
     runs-on: ubuntu-latest
-    needs: [ JDK17, JDK21, IntegrationTest]
+    strategy:
+      matrix:
+        version: [17]
+
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      - name: get cached compilation
+        id: cache-compilation
+        uses: actions/cache@v3
         with:
-          java-version: '17'
-          distribution: 'zulu'
+          path: | 
+                **/target/
+          key: cache-compilation-${{ github.sha }}
 
       - name: cache maven dependencies
         uses: actions/cache@v3
@@ -246,9 +123,52 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Set up JDK ${{ matrix.version }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.version }}
+          distribution: 'zulu'
+
+      - name: Test (JDK${{ matrix.version }})
+        run: mvn -B -am verify -Dfmt.skip -Dmaven.main.skip=true -PJava${{ matrix.version }} -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: coverage-exec-jdk${{ matrix.version }}
+          path: |
+            */target/coverage-reports/jacoco-ut-jdk21.exec
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: test-reports-jdk${{ matrix.version }}
+          path: |
+            */target/surefire-reports
+
+    # takes a long time to run - so just run them when PR is not draft anymore
+  CoverageReport:
+    runs-on: ubuntu-latest
+    needs: [ MatrixRuns, IntegrationTest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+
+      - name: cache maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: get cached compilation
         id: cache-compilation
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             **/target/
@@ -256,18 +176,6 @@ jobs:
 
       - name: Download uploaded exec artifacts for JDK17
         uses: actions/download-artifact@v4
-        with:
-          name: coverage-exec-jdk17
-
-      - name: Download uploaded exec artifacts for JDK21
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-exec-jdk21
-
-      - name: Download uploaded exec artifacts for integration tests
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-exec-integration
 
       - name: merge coverage reports
         run:  mvn -ntp jacoco:merge@merge-results  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
@@ -288,7 +196,7 @@ jobs:
           jacoco-csv-file: sootup.report/target/jacoco-aggregate/jacoco.csv
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           files: sootup.report/target/jacoco-aggregate/jacoco.xml
 
@@ -296,7 +204,7 @@ jobs:
 
   publish-javadoc:
     needs: Compilation
-    if: github.ref == 'refs/heads/develop'
+    if: github.base_ref == 'develop'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy JavaDoc 🚀
@@ -305,4 +213,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           javadoc-branch: gh-pages
           java-version: 17
-          target-folder: apidocs 
+          target-folder: apidocs
