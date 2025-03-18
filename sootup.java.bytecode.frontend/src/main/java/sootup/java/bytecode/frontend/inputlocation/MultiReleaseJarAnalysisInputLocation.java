@@ -123,7 +123,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
     try (Stream<Path> list = Files.list(versionedRoot)) {
       list.map(dir -> dir.getFileName().toString())
-          .map(Integer::new)
+          .map(Integer::valueOf)
           .filter(ver -> ver <= version)
           .sorted(Comparator.reverseOrder())
           .forEach(
@@ -242,7 +242,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
     try (Stream<Path> list = Files.list(versionedRoot)) {
       return list.map(dir -> dir.getFileName().toString())
-          .map(Integer::new)
+          .map(Integer::valueOf)
           .sorted()
           .collect(Collectors.toCollection(ArrayList::new));
     } catch (IOException e) {
