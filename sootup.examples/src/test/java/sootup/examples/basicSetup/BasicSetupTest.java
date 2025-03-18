@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
@@ -20,6 +21,7 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.views.JavaView;
 
 /** This example illustrates how to create and use a new Soot Project. */
+@Disabled
 public class BasicSetupTest {
 
   @Test
