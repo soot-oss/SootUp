@@ -72,7 +72,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: | 
-                */target/
+                **/target/
           key: cache-compilation-${{ github.sha }}
 
       - name: cache maven dependencies
@@ -87,21 +87,21 @@ jobs:
         run: mvn -B -am verify -Dfmt.skip -Dmaven.main.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: rename unit test reports according to the current matrix version
-        run: mv */target/coverage-reports/jacoco-ut.exec  */target/coverage-reports/jacoco-ut-jdk${{ matrix.version }}.exec
+        run: mv **/target/coverage-reports/jacoco-ut.exec  **/target/coverage-reports/jacoco-ut-jdk${{ matrix.version }}.exec
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: coverage-exec-jdk${{ matrix.version }}
           path: |
-            */target/coverage-reports/jacoco-ut.exec
+            **/target/coverage-reports/jacoco-ut.exec
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: test-reports-jdk${{ matrix.version }}
           path: |
-            */target/surefire-reports
+            **/target/surefire-reports
 
     # takes a long time to run - so just run them when PR is not draft anymore
   CoverageReport:
@@ -128,7 +128,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            */target/
+            **/target/
           key: cache-compilation-${{ github.sha }}
 
       - name: Download uploaded exec artifacts for JDK17
