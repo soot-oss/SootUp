@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.8608ea7d.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.4af4bdda.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
@@ -915,15 +915,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#new-source-code-frontend" class="md-nav__link">
-    <span class="md-ellipsis">
-      New Source Code Frontend
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#immutable-by-design" class="md-nav__link">
     <span class="md-ellipsis">
       Immutable by Design
@@ -1092,15 +1083,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#new-source-code-frontend" class="md-nav__link">
-    <span class="md-ellipsis">
-      New Source Code Frontend
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#immutable-by-design" class="md-nav__link">
     <span class="md-ellipsis">
       Immutable by Design
@@ -1163,8 +1145,6 @@ It can be extended with a command-line interface, included in other software pro
 <li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.core">core module</a> contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module.</li>
 <li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.java.core">java.core module</a> contains parts that are essential for analyzing Java code.</li>
 <li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.java.bytecode">java.bytecode module</a> contains the functionality that is necessary for taking as input java bytecode.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.java.sourcecode">java.sourcecode module</a> contains the functionality that is necessary for taking as input java source code. 
-<strong>Beware: The sourcecodefrontend is currently unable to handle inputs with exceptions (try/catch/finally)!</strong> </li>
 <li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.callgraph">callgraph module</a> contains implementations of common call graph construction algorithms such as <strong>CHA</strong>, <strong>RTA</strong>. A reimplementation of <strong>Spark</strong> pointer analysis framework is in progress.</li>
 <li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.jimple.parser">jimple.parser module</a> contains the functionalty that is necessary for taking as input .jimple files.</li>
 <li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.analysis">analysis module</a> enables performing interprocedural dataflow analyses.</li>
@@ -1172,9 +1152,6 @@ It can be extended with a command-line interface, included in other software pro
 <h3 id="no-more-singletons">No More Singletons</h3>
 <p>Singletons offer a single view of a single program version, which makes it impossible to analyze multiple programs or multiple versions of the same program.
 SootUp does not make use of singletons such the <code>Scene</code> class in the old Soot any more. It enables analyzing multiple programs simultaneously.</p>
-<h3 id="new-source-code-frontend">New Source Code Frontend</h3>
-<p>Soot's JastAdd-based java frontend is not maintained anymore.
-In SootUp, we use WALA's well-maintained source code frontend, which will not only allow Soot to analyze Java source code, but also JavaScript and Python.</p>
 <h3 id="immutable-by-design">Immutable by Design</h3>
 <p>SootUp has been designed with the goal of immutability in mind.
 This makes sharing objects between several entities easier, because there is no need to worry about unintended changes to other entities.</p>
