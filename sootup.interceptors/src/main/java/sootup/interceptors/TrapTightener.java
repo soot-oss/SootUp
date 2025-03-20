@@ -24,7 +24,6 @@ package sootup.interceptors;
 
 import java.util.*;
 import javax.annotation.Nonnull;
-
 import sootup.core.graph.*;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -45,8 +44,9 @@ import sootup.java.core.exceptions.StmtExceptionAnalyser;
  *     caught by the Trap. In the case where none of the Units protected by a Trap can throw the
  *     exception it catches, the Trap's protected area is left completely empty, which will likely
  *     cause the UnreachableCodeEliminator to remove the Trap completely. The TrapTightener is used
- *     to reduce the risk of unverifiable code which can result from the use of ExceptionalUnitGraphs
- *     from which unrealizable exceptional control flow edges have been removed.
+ *     to reduce the risk of unverifiable code which can result from the use of
+ *     ExceptionalUnitGraphs from which unrealizable exceptional control flow edges have been
+ *     removed.
  */
 public class TrapTightener implements BodyInterceptor {
 
@@ -63,12 +63,12 @@ public class TrapTightener implements BodyInterceptor {
     Set<Stmt> monitoredStmts = monitoredStmts(graph);
 
     Map<Stmt, Collection<ClassType>> toRemove = new HashMap<>();
-    for(Stmt stmt : builder.getStmts()){
+    for (Stmt stmt : builder.getStmts()) {
       Map<ClassType, Stmt> exceptionalMap = graph.exceptionalSuccessors(stmt);
-      for(ClassType exceptionType : exceptionalMap.keySet()){
-        if(!isCatchAll(exceptionType) || !monitoredStmts.contains(stmt)){
-          if(!canThrowExceptionInGraph(graph, stmt, exceptionType)){
-            if(!toRemove.containsKey(stmt)){
+      for (ClassType exceptionType : exceptionalMap.keySet()) {
+        if (!isCatchAll(exceptionType) || !monitoredStmts.contains(stmt)) {
+          if (!canThrowExceptionInGraph(graph, stmt, exceptionType)) {
+            if (!toRemove.containsKey(stmt)) {
               toRemove.put(stmt, new HashSet<>());
             }
             toRemove.get(stmt).add(exceptionType);
@@ -84,7 +84,7 @@ public class TrapTightener implements BodyInterceptor {
       }
     }
 
-    //delete the unused traps
+    // delete the unused traps
     UnreachableCodeEliminator codeEliminator = new UnreachableCodeEliminator();
     codeEliminator.interceptBody(builder, view);
   }
@@ -141,18 +141,19 @@ public class TrapTightener implements BodyInterceptor {
    * @param stmt is a stmt in the given graph
    * @return true, if the given stmt can throw the exception stored in the given stmtGraph
    */
-  private boolean canThrowExceptionInGraph(@Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull ClassType exceptionType) {
+  private boolean canThrowExceptionInGraph(
+      @Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull ClassType exceptionType) {
     Set<ClassType> inferredExceptions = exceptionAnalyser.mightThrow(stmt, graph).getExceptions();
     boolean isThrowable =
-            inferredExceptions.stream()
-                    .anyMatch(
-                            inferredException ->
-                                    (inferredException.equals(exceptionType)
-                                            || hierarchy.isSubtype(inferredException, exceptionType)));
+        inferredExceptions.stream()
+            .anyMatch(
+                inferredException ->
+                    (inferredException.equals(exceptionType)
+                        || hierarchy.isSubtype(inferredException, exceptionType)));
     return isThrowable;
   }
 
-  private boolean isCatchAll(ClassType exceptionType){
+  private boolean isCatchAll(ClassType exceptionType) {
     return exceptionType.getFullyQualifiedName().contains("java.lang.Throwable");
   }
 }

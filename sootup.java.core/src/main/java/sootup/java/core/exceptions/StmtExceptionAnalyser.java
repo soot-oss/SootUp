@@ -1,4 +1,5 @@
 package sootup.java.core.exceptions;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
