@@ -4,10 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.util.Collections;
 import java.util.Set;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
@@ -24,8 +22,9 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Marcus Nachtigall */
-@Tag(TestCategories.JAVA_8_CATEGORY)
+/**
+ * @author Marcus Nachtigall
+ */
 public class UnusedLocalEliminatorTest {
 
   @Test

@@ -1,4 +1,5 @@
 package sootup.interceptors;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework

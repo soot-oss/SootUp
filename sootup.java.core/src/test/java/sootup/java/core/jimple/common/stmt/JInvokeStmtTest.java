@@ -33,7 +33,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.Immediate;
@@ -58,8 +57,9 @@ import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
-/** @author Markus Schmidt, Linghui Luo */
-@Tag("Java8")
+/**
+ * @author Markus Schmidt, Linghui Luo
+ */
 public class JInvokeStmtTest {
 
   @Test

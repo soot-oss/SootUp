@@ -3,7 +3,6 @@ package sootup.examples.bodyInterceptor;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -16,8 +15,6 @@ import sootup.interceptors.DeadAssignmentEliminator;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
-/** This example illustrates how to invoke body interceptors. */
-@Tag("Java8")
 public class BodyInterceptorTest {
 
   @Test

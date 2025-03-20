@@ -1,4 +1,5 @@
 package sootup.core.typehierarchy;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -429,7 +430,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   /** Holds a vertex for each {@link ClassType} encountered during the scan. */
   protected static class ScanResult {
 
-    /** @see #javaClassType */
+    /**
+     * @see #javaClassType
+     */
     protected abstract static class Vertex {
       @Nonnull final ClassType javaClassType;
 
@@ -481,7 +484,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       ClassDirectlyExtends
     }
 
-    /** @see #type */
+    /**
+     * @see #type
+     */
     protected static class Edge {
       @Nonnull final EdgeType type;
 

@@ -1,4 +1,5 @@
 package sootup.core.frontend;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -43,7 +44,9 @@ public interface BodySource {
   Body resolveBody(@Nonnull Iterable<MethodModifier> modifiers)
       throws ResolveException, IOException;
 
-  /** @return returns the default value of the Annotation for this method */
+  /**
+   * @return returns the default value of the Annotation for this method
+   */
   Object resolveAnnotationsDefaultValue();
 
   @Nonnull

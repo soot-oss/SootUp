@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.FieldSignature;
@@ -38,7 +37,6 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 
-@Tag("Java8")
 public class JavaIdentifierFactoryTest {
 
   @Test

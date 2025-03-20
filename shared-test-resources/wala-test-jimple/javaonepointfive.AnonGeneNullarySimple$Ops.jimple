@@ -1,5 +1,0 @@
-interface  javaonepointfive.AnonGeneNullarySimple$Ops extends java.lang.Object
-{
-
-    public abstract java.lang.Object nullary();
-}

@@ -40,7 +40,8 @@ public class LRUCache implements ClassCache {
           @Override
           protected boolean removeEldestEntry(Map.Entry<ClassType, SootClass> eldest) {
             return size() > cacheSize;
-          };
+          }
+          ;
         };
   }
 

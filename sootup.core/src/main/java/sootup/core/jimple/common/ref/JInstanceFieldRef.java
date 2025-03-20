@@ -1,4 +1,5 @@
 package sootup.core.jimple.common.ref;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework

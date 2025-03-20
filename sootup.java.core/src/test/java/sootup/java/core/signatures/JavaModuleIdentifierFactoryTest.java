@@ -2,7 +2,6 @@ package sootup.java.core.signatures;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
@@ -30,7 +29,6 @@ import sootup.java.core.JavaModuleIdentifierFactory;
  * #L%
  */
 
-@Tag("Java9")
 public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
 
   @Test

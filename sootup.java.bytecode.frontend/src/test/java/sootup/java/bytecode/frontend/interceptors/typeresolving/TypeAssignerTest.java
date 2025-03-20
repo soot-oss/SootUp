@@ -2,18 +2,15 @@ package sootup.java.bytecode.frontend.interceptors.typeresolving;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.TestCategories;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.util.Utils;
 import sootup.interceptors.TypeAssigner;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class TypeAssignerTest extends TypeAssignerTestSuite {
 
   @BeforeEach

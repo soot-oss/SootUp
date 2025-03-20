@@ -1,4 +1,5 @@
 package sootup.java.bytecode.frontend.conversion;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework

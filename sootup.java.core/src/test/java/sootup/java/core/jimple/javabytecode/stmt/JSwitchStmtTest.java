@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -16,7 +15,6 @@ import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 
-@Tag("Java8")
 public class JSwitchStmtTest {
 
   @Test

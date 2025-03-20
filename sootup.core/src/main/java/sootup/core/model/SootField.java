@@ -1,4 +1,5 @@
 package sootup.core.model;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -41,6 +42,7 @@ import sootup.core.util.ImmutableUtils;
 public class SootField extends SootClassMember<FieldSignature> implements Field {
 
   @Nonnull private final ImmutableSet<FieldModifier> modifiers;
+
   /** Constructs a Soot field with the given name, type and modifiers. */
   public SootField(
       @Nonnull FieldSignature signature,

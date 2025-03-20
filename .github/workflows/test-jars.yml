@@ -47,7 +47,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-package: 'jdk'
-          java-version: '8'
+          java-version: '17'
 
       - name: Install Maven
         run: |

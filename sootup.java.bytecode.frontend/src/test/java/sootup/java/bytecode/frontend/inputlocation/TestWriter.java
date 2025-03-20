@@ -17,7 +17,6 @@ public class TestWriter {
           + "import org.junit.jupiter.api.Test;\n"
           + "import sootup.java.core.views.JavaView;\n"
           + "\n"
-          + "@Tag(TestCategories.JAVA_8_CATEGORY)\n"
           + "public class FixJars extends BaseFixJarsTest {\n\n";
 
   String TEST_TAG = "@Test\n";
@@ -62,7 +61,6 @@ public class TestWriter {
     if (content.isEmpty()) {
       return;
     }
-    System.out.println(content);
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
       writer.write(content);
       System.out.println("Content successfully written to " + filePath);
