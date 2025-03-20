@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
@@ -33,7 +32,6 @@ import sootup.java.core.views.JavaView;
  * @author Linghui Luo
  * @author Kaustubh Kelkar updated on 02.07.2020
  */
-@Tag("Java8")
 public class SootMethodTest {
 
   @Test

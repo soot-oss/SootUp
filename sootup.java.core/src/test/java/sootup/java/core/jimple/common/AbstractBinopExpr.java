@@ -2,7 +2,6 @@ package sootup.java.core.jimple.common;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
@@ -14,8 +13,9 @@ import sootup.core.jimple.common.expr.JLeExpr;
 import sootup.core.jimple.common.expr.JLtExpr;
 import sootup.core.types.PrimitiveType;
 
-/** @author Bastian Haverkamp */
-@Tag("Java8")
+/**
+ * @author Bastian Haverkamp
+ */
 public class AbstractBinopExpr {
 
   final JimpleComparator comparator = JimpleComparator.getInstance();

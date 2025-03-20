@@ -2,9 +2,7 @@ package sootup.java.bytecode.frontend.interceptors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.TestCategories;
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.graph.MutableStmtGraph;
@@ -28,8 +26,9 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Zun Wang */
-@Tag(TestCategories.JAVA_8_CATEGORY)
+/**
+ * @author Zun Wang
+ */
 public class UnreachableCodeEliminatorTest {
 
   public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();

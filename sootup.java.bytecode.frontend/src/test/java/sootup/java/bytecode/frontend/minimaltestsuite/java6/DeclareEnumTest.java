@@ -2,10 +2,8 @@ package sootup.java.bytecode.frontend.minimaltestsuite.java6;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -13,8 +11,9 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.JavaIdentifierFactory;
 
-/** @author Kaustubh Kelkar */
-@Tag(TestCategories.JAVA_8_CATEGORY)
+/**
+ * @author Kaustubh Kelkar
+ */
 public class DeclareEnumTest extends MinimalBytecodeTestSuiteBase {
 
   @Test

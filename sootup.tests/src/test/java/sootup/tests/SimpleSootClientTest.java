@@ -1,11 +1,11 @@
 package sootup.tests;
 
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-/** @author Linghui Luo */
-@Tag("Java8")
+/**
+ * @author Linghui Luo
+ */
 public class SimpleSootClientTest {
 
   @Test

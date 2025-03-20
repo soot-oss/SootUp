@@ -42,7 +42,9 @@ public class JavaAnnotationSootMethod extends JavaSootMethod {
     super(source, methodSignature, modifiers, thrownExceptions, annotations, position);
   }
 
-  /** @return returns default value of annotation. May be null, if there is no default value */
+  /**
+   * @return returns default value of annotation. May be null, if there is no default value
+   */
   @Nullable
   public Object getDefaultValue() {
     return this.bodySource.resolveAnnotationsDefaultValue();
