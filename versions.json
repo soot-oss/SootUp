@@ -8,14 +8,6 @@
     }
   },
   {
-    "version": "stmt_exception_analyser_preview",
-    "title": "PR Preview stmt_exception_analyser",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "refactor_moveSourceFrontendToExperimental_preview",
     "title": "PR Preview refactor_moveSourceFrontendToExperimental",
     "aliases": [],
