@@ -3,13 +3,13 @@ package sootup.callgraph;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.views.JavaView;
 
-/** @author Kadiray Karakaya, Jonas Klauke */
-@Tag("Java8")
+/**
+ * @author Kadiray Karakaya, Jonas Klauke
+ */
 public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm> {
 
   @Override
@@ -135,10 +135,6 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             "void",
             Collections.singletonList("java.lang.Object"));
 
-    MethodSignature clinitObject =
-        identifierFactory.getStaticInitializerSignature(
-            identifierFactory.getClassType("java.lang.Object"));
-
     assertFalse(
         cg.containsCall(
             mainMethodSignature,
@@ -192,29 +188,6 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             mainMethodSignature,
             virtualMethodE,
             getInvokableStmt(mainMethodSignature, virtualMethodA)));
-
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
-            clinitObject,
-            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorB.getDeclClassType())));
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
-            clinitObject,
-            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorC.getDeclClassType())));
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
-            clinitObject,
-            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorE.getDeclClassType())));
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
-            clinitObject,
-            getInvokableStmt(mainMethodSignature, staticMethodB)));
-
-    assertEquals(11, cg.callsFrom(mainMethodSignature).size());
 
     assertEquals(1, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());

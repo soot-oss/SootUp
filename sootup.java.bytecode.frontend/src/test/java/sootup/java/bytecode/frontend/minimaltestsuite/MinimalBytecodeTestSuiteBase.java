@@ -2,7 +2,6 @@ package sootup.java.bytecode.frontend.minimaltestsuite;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import categories.TestCategories;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -30,7 +28,6 @@ import sootup.java.core.views.JavaView;
  * @author Hasitha Rajapakse
  * @author Kaustubh Kelkar
  */
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public abstract class MinimalBytecodeTestSuiteBase {
 
   static final String baseDir = "../shared-test-resources/miniTestSuite";

@@ -161,7 +161,9 @@ public enum ClassModifier {
     return m.stream().map((mod) -> mod.name().toLowerCase()).collect(Collectors.joining(" "));
   }
 
-  /** @return the bytecode of this Modifier. */
+  /**
+   * @return the bytecode of this Modifier.
+   */
   public int getBytecode() {
     return bytecode;
   }

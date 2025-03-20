@@ -1,4 +1,5 @@
 package sootup.java.bytecode.frontend.inputlocation;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework

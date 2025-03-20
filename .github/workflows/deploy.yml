@@ -17,7 +17,7 @@ jobs:
         with:
           distribution: 'adopt'
           java-package: 'jdk'
-          java-version: '8'
+          java-version: '17'
           server-id: 'ossrh' # must match the serverId configured for the nexus-staging-maven-plugin
           server-username: OSSRH_USERNAME # Env var that holds your OSSRH user name
           server-password: OSSRH_PASSWORD # Env var that holds your OSSRH user pw
@@ -27,8 +27,8 @@ jobs:
         run: |
           # -U force updates just to make sure we are using latest dependencies
           # -B Batch mode (do not ask for user input), just in case
-          # -P activate profile
-          mvn -B -U clean deploy -Pdeployment -DskipTests
+          # -D activate a profile via the release property (and disable defined submodules that should not be deployed)
+          mvn -U -B clean deploy -Drelease -DskipTests
         env:
           SIGN_KEY_PASS: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
           OSSRH_USERNAME: ${{ secrets.SONATYPE_USER }}

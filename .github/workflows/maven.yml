@@ -27,11 +27,11 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '8'
+          java-version: '17'
 
       - name: cache maven dependencies
         uses: actions/cache@v3
@@ -49,7 +49,7 @@ jobs:
                 **/target/
           key: cache-compilation-${{ github.sha }}
 
-      - name: Build with JDK8
+      - name: Build with JDK17
         run: mvn -B compile -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
   Style:
@@ -74,14 +74,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'zulu'
 
       - name: Check Format
-        run: mvn -B com.coveo:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -B com.spotify.fmt:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: License Headers
         run: mvn -B org.codehaus.mojo:license-maven-plugin:check-file-header -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
@@ -90,7 +90,7 @@ jobs:
       - name: Check Javadoc
         run: mvn -B javadoc:aggregate -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-  JDK8:
+  JDK17:
     needs: Compilation
     runs-on: ubuntu-latest
 
@@ -112,31 +112,31 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'zulu'
 
-      - name: Test (JDK8)
-        run: mvn -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - name: Test (JDK17)
+        run: mvn -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava17 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: coverage-exec-jdk8
+          name: coverage-exec-jdk17
           path: |
-                  */target/coverage-reports/jacoco-ut-jdk8.exec
+                  */target/coverage-reports/jacoco-ut-jdk17.exec
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: test-reports-jdk8
+          name: test-reports-jdk17
           path: |
                   */target/surefire-reports
 
 
-  JDK9:
+  JDK21:
     needs: Compilation
     runs-on: ubuntu-latest
 
@@ -158,26 +158,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set up JDK 9
+      - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          java-version: '9'
+          java-version: '21'
           distribution: 'zulu'
 
-      - name: Test (JDK9)
-        run: mvn -B -am verify -Dfmt.skip -Dmaven.main.skip=true -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - name: Test (JDK21)
+        run: mvn -B -am verify -Dfmt.skip -Dmaven.main.skip=true -PJava21 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: coverage-exec-jdk9
+          name: coverage-exec-jdk21
           path: |
-            */target/coverage-reports/jacoco-ut-jdk9.exec
+            */target/coverage-reports/jacoco-ut-jdk21.exec
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: test-reports-jdk9
+          name: test-reports-jdk21
           path: |
             */target/surefire-reports
 
@@ -189,10 +189,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'zulu'
 
       - name: get cached compilation
@@ -229,13 +229,13 @@ jobs:
 
   CoverageReport:
     runs-on: ubuntu-latest
-    needs: [ JDK9, JDK8, IntegrationTest]
+    needs: [ JDK17, JDK21, IntegrationTest]
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'zulu'
 
       - name: cache maven dependencies
@@ -254,15 +254,15 @@ jobs:
             **/target/
           key: cache-compilation-${{ github.sha }}
 
-      - name: Download uploaded exec artifacts for JDK8
+      - name: Download uploaded exec artifacts for JDK17
         uses: actions/download-artifact@v4
         with:
-          name: coverage-exec-jdk8
+          name: coverage-exec-jdk17
 
-      - name: Download uploaded exec artifacts for JDK9
+      - name: Download uploaded exec artifacts for JDK21
         uses: actions/download-artifact@v4
         with:
-          name: coverage-exec-jdk9
+          name: coverage-exec-jdk21
 
       - name: Download uploaded exec artifacts for integration tests
         uses: actions/download-artifact@v4

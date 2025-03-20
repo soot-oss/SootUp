@@ -29,7 +29,6 @@ import heros.InterproceduralCFG;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
@@ -37,7 +36,6 @@ import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
-@Tag("Java8")
 public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
 
   SootMethod getEntryPointMethod() {

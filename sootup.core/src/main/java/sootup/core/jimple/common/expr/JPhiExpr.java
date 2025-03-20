@@ -35,7 +35,9 @@ import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public final class JPhiExpr implements Expr {
 
   private final List<Local> args;

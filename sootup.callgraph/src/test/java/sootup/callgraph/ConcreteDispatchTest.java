@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -17,8 +16,9 @@ import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLo
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
-/** @author : Hasitha Rajapakse, Jonas Klauke * */
-@Tag("Java8")
+/**
+ * @author : Hasitha Rajapakse, Jonas Klauke *
+ */
 public class ConcreteDispatchTest {
   public ClassType getClassType(String className) {
     return view.getIdentifierFactory().getClassType(className);

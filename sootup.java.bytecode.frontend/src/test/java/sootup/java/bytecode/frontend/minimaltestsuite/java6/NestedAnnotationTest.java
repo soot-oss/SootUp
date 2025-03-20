@@ -3,7 +3,6 @@ package sootup.java.bytecode.frontend.minimaltestsuite.java6;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
@@ -12,7 +11,6 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 
-@Tag("Java8")
 public class NestedAnnotationTest extends MinimalBytecodeTestSuiteBase {
 
   /**

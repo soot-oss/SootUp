@@ -6,7 +6,9 @@ import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLoc
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author: Hasitha Rajapakse * */
+/**
+ * @author: Hasitha Rajapakse *
+ */
 public abstract class JavaTypeHierarchyTestBase {
   // Test Resource Folder Path
   static final String baseDir = "src/test/resources/javatypehierarchy/";
