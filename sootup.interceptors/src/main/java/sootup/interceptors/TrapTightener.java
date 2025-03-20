@@ -23,13 +23,9 @@ package sootup.interceptors;
  */
 
 import java.util.*;
-import java.util.concurrent.Callable;
 import javax.annotation.Nonnull;
 
-import org.checkerframework.checker.units.qual.C;
-import sootup.core.graph.BasicBlock;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.*;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
@@ -48,10 +44,9 @@ import sootup.java.core.exceptions.StmtExceptionAnalyser;
  *     exception caught by the Trap and ends just after the last Unit which might throw an exception
  *     caught by the Trap. In the case where none of the Units protected by a Trap can throw the
  *     exception it catches, the Trap's protected area is left completely empty, which will likely
- *     cause the UnreachableCodeEliminator to remove the Trap(handler?) completely (if the
- *     traphandler does not cover another range). The TrapTightener is used to reduce the risk of
- *     unverifiable code which can result from the use of ExceptionalUnitGraphs from which
- *     unrealizable exceptional control flow edges have been removed.
+ *     cause the UnreachableCodeEliminator to remove the Trap completely. The TrapTightener is used
+ *     to reduce the risk of unverifiable code which can result from the use of ExceptionalUnitGraphs
+ *     from which unrealizable exceptional control flow edges have been removed.
  */
 public class TrapTightener implements BodyInterceptor {
 
@@ -72,7 +67,7 @@ public class TrapTightener implements BodyInterceptor {
       Map<ClassType, Stmt> exceptionalMap = graph.exceptionalSuccessors(stmt);
       for(ClassType exceptionType : exceptionalMap.keySet()){
         if(!isCatchAll(exceptionType) || !monitoredStmts.contains(stmt)){
-          if(canThrowExceptionInGraph(graph, stmt, exceptionType)){
+          if(!canThrowExceptionInGraph(graph, stmt, exceptionType)){
             if(!toRemove.containsKey(stmt)){
               toRemove.put(stmt, new HashSet<>());
             }
@@ -89,6 +84,7 @@ public class TrapTightener implements BodyInterceptor {
       }
     }
 
+    //delete the unused traps
     UnreachableCodeEliminator codeEliminator = new UnreachableCodeEliminator();
     codeEliminator.interceptBody(builder, view);
   }
@@ -105,11 +101,10 @@ public class TrapTightener implements BodyInterceptor {
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
     Set<Stmt> visitedStmts = new HashSet<>();
-
-    boolean hasChanged = false;
     Value exitValue = null;
 
     while (!queue.isEmpty()) {
+      boolean hasChanged = false;
       Stmt currStmt = queue.removeFirst();
       if (currStmt instanceof JEnterMonitorStmt) {
         Value monitoredValue = ((JEnterMonitorStmt) currStmt).getOp();
@@ -158,6 +153,6 @@ public class TrapTightener implements BodyInterceptor {
   }
 
   private boolean isCatchAll(ClassType exceptionType){
-    return exceptionType.getFullyQualifiedName().equals("java.lang.Throwable");
+    return exceptionType.getFullyQualifiedName().contains("java.lang.Throwable");
   }
 }
