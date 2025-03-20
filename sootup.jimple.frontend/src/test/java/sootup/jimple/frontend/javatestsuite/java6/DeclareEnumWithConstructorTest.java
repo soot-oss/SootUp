@@ -6,7 +6,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.jimple.frontend.javatestsuite.JimpleTestSuiteBase;
 
 /**
@@ -18,8 +17,8 @@ public class DeclareEnumWithConstructorTest extends JimpleTestSuiteBase {
   public void test() {
     SootClass sc =
         loadClass(
-            JavaIdentifierFactory.getInstance()
-                .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Number"));
+            identifierFactory.getClassType(
+                getDeclaredClassSignature().getFullyQualifiedName() + "$Number"));
     assertTrue(sc.isEnum());
 
     final Set<SootMethod> methods = (Set<SootMethod>) sc.getMethods();

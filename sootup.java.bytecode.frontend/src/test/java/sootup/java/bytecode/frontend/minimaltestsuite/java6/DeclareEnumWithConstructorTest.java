@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 
@@ -71,8 +70,8 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
     assertJimpleStmts(sootMethod, expectedGetValueStmts());
     JavaSootClass sootClass =
         loadClass(
-            JavaIdentifierFactory.getInstance()
-                .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Number"));
+            identifierFactory.getClassType(
+                getDeclaredClassSignature().getFullyQualifiedName() + "$Number"));
     assertTrue(sootClass.isEnum());
 
     final Set<? extends JavaSootMethod> methods = sootClass.getMethods();

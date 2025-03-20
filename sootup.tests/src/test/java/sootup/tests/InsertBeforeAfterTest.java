@@ -26,19 +26,19 @@ import sootup.java.core.views.JavaView;
 
 public class InsertBeforeAfterTest {
 
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  ClassType clazzType = factory.getClassType("TrapBlockCheck");
   String location =
       Paths.get(System.getProperty("user.dir")).getParent()
           + File.separator
           + "shared-test-resources/bugfixes/";
-  MethodSignature methodSignature =
-      factory.getMethodSignature(clazzType, "test", "void", Collections.emptyList());
   final Path path = Paths.get(location + "TrapBlockCheck.class");
   PathBasedAnalysisInputLocation inputLocation =
       new ClassFileBasedAnalysisInputLocation(
           path, "", SourceType.Application, Collections.emptyList());
   JavaView view = new JavaView(inputLocation);
+  JavaIdentifierFactory factory = view.getIdentifierFactory();
+  ClassType clazzType = factory.getClassType("TrapBlockCheck");
+  MethodSignature methodSignature =
+      factory.getMethodSignature(clazzType, "test", "void", Collections.emptyList());
   Body body = view.getMethod(methodSignature).get().getBody();
   Set<Local> locals = body.getLocals();
 

@@ -46,7 +46,7 @@ public class WitherTest {
     inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation(classPath));
     loader = new JavaView(inputLocations);
-    identifierFactory = JavaIdentifierFactory.getInstance();
+    identifierFactory = loader.getIdentifierFactory();
     declareClassSig = identifierFactory.getClassType("BinaryOperations");
   }
 

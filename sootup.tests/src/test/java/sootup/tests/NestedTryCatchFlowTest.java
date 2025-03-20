@@ -27,20 +27,20 @@ import sootup.java.core.views.JavaView;
 
 public class NestedTryCatchFlowTest {
 
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  ClassType clazzType = factory.getClassType("NestedTryCatchFlow");
   String location =
       Paths.get(System.getProperty("user.dir")).getParent()
           + File.separator
           + "shared-test-resources/bugfixes/";
-  MethodSignature methodSignature =
-      factory.getMethodSignature(
-          clazzType, "test_nested_try_catch_2", "int", Collections.singletonList("int"));
   final Path path = Paths.get(location + "NestedTryCatchFlow.class");
   PathBasedAnalysisInputLocation inputLocation =
       new ClassFileBasedAnalysisInputLocation(
           path, "", SourceType.Application, Collections.emptyList());
   JavaView view = new JavaView(inputLocation);
+  JavaIdentifierFactory factory = view.getIdentifierFactory();
+  ClassType clazzType = factory.getClassType("NestedTryCatchFlow");
+  MethodSignature methodSignature =
+      factory.getMethodSignature(
+          clazzType, "test_nested_try_catch_2", "int", Collections.singletonList("int"));
   Body body = view.getMethod(methodSignature).get().getBody();
 
   @Test
