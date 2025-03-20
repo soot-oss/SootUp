@@ -1,7 +1,5 @@
 package sootup.java.bytecode.frontend.interceptors;
 
-import categories.TestCategories;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,6 +9,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.graph.MutableStmtGraph;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -34,6 +33,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.interceptors.*;
 import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
@@ -44,7 +44,6 @@ import sootup.java.core.views.JavaView;
 import static sootup.core.model.Body.builder;
 
 /** @author Zun Wang */
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class TrapTightenerTest {
 
   final JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
@@ -72,9 +71,8 @@ public class TrapTightenerTest {
                   "",
                   SourceType.Application,
                   interceptorsWithTT);
-  JavaClassPathAnalysisInputLocation javaInputLocation =
-          new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar");
-  JavaView view = new JavaView(Arrays.asList(inputLocation, javaInputLocation));
+  AnalysisInputLocation javaInputLocation = new DefaultRuntimeAnalysisInputLocation();
+  JavaView view = new JavaView(Arrays.asList(inputLocation, javaInputLocation ));
   JavaView viewTT = new JavaView(Arrays.asList(inputLocationWithTT, javaInputLocation));
   ClassType clazzType = factory.getClassType("TrapTightenerExamples");
 
