@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Value;
@@ -24,6 +25,7 @@ import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.interceptors.*;
 import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
@@ -51,9 +53,7 @@ public class StmtExceptionAnalyserTest {
           new TypeAssigner());
   PathBasedAnalysisInputLocation inputLocation =
       new ClassFileBasedAnalysisInputLocation(path, "", SourceType.Application, interceptors);
-  JavaClassPathAnalysisInputLocation javaInputLocation =
-      new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar");
-  JavaView view = new JavaView(Arrays.asList(inputLocation, javaInputLocation));
+  JavaView view = new JavaView(Arrays.asList(inputLocation, new DefaultRuntimeAnalysisInputLocation()));
   TypeHierarchy hierarchy = new ViewTypeHierarchy(view);
   StmtExceptionAnalyser exceptionAnalyser = new StmtExceptionAnalyser(hierarchy);
 
