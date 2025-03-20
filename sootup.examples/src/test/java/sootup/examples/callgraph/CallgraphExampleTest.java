@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphAlgorithm;
