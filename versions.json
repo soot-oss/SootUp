@@ -55,7 +55,10 @@
   {
     "version": "991-lets-remove-identifierfactorygetinstance-as-almost-nobody-uses-viewidentifierfactory-as-intended_preview",
     "title": "PR Preview 991-lets-remove-identifierfactorygetinstance-as-almost-nobody-uses-viewidentifierfactory-as-intended",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "v2_0_0",
