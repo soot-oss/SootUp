@@ -23,14 +23,14 @@ class MultipleCallsToSameTarget {
 class MultiCalls{
     static int field=3;
 
-    static void method(){
-
+    static int method(){
+        return 4;
     }
 }
 
 class FieldLeft{
     static int field=3;
-    static void method(){}
+    static int method(){return 2;}
 }
 
 class FieldRight{
@@ -40,5 +40,5 @@ class FieldRight{
 class Instantiated{
     static int field=3;
 
-    void method(){}
+    int method(){return 1;}
 }

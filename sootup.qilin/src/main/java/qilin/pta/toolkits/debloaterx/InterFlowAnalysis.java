@@ -36,8 +36,7 @@ public class InterFlowAnalysis {
    * */
   public void reachabilityAnalysis() {
     Set<SparkField> fields = utility.getFields();
-    fields
-        .parallelStream()
+    fields.parallelStream()
         .forEach(
             field -> {
               // compute the value of field could be loaded to which outmethods.

@@ -58,6 +58,11 @@ public class DexClassSource extends JavaSootClassSource {
 
   @Nonnull private final View view;
 
+  @Nonnull
+  public View getView() {
+    return view;
+  }
+
   public DexClassSource(
       @Nonnull View view,
       @Nonnull AnalysisInputLocation analysisInputLocation,
@@ -91,9 +96,7 @@ public class DexClassSource extends JavaSootClassSource {
   @Override
   public Collection<? extends SootField> resolveFields() throws ResolveException {
     return resolveFields(
-        classInformation.classDefinition.getFields(),
-        JavaIdentifierFactory.getInstance(),
-        classSignature);
+        classInformation.classDefinition.getFields(), view.getIdentifierFactory(), classSignature);
   }
 
   @Nonnull
@@ -158,7 +161,7 @@ public class DexClassSource extends JavaSootClassSource {
     return dexMethod.makeSootMethod(method, bodyInterceptors, view);
   }
 
-  protected static List<AnnotationUsage> convertAnnotation(Set<? extends Annotation> annotations) {
+  protected List<AnnotationUsage> convertAnnotation(Set<? extends Annotation> annotations) {
     if (annotations.isEmpty()) {
       return Collections.emptyList();
     }
@@ -175,7 +178,8 @@ public class DexClassSource extends JavaSootClassSource {
         paramMap.put(name, convertAnnotationValue(element.getValue().getValueType()));
       }
       ClassType at =
-          JavaIdentifierFactory.getInstance()
+          getView()
+              .getIdentifierFactory()
               .getClassType(DexUtil.toQualifiedName(annotation.getType()));
       annotationUsage.add(new AnnotationUsage(at, paramMap));
     }

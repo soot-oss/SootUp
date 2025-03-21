@@ -24,7 +24,6 @@ package sootup.java.core.jimple.common.stmt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -33,8 +32,9 @@ import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
-/** @author Markus Schmidt, Linghui Luo */
-@Tag("Java8")
+/**
+ * @author Markus Schmidt, Linghui Luo
+ */
 public class JReturnVoidStmtTest {
 
   @Test

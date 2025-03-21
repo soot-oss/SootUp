@@ -3,7 +3,6 @@ package sootup.tests;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -11,7 +10,6 @@ import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLoc
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class JimpleSerializationTest {
 
   @Test

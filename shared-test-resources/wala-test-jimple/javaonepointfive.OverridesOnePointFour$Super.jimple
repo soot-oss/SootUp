@@ -1,5 +1,0 @@
-interface  javaonepointfive.OverridesOnePointFour$Super extends java.lang.Object
-{
-
-    public abstract java.lang.Number get();
-}

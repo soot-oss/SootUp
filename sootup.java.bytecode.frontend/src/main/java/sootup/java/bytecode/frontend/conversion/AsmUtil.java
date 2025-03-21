@@ -1,9 +1,10 @@
 package sootup.java.bytecode.frontend.conversion;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2018-2023 Andreas Dann, Markus Schmidt, Jan Martin Persch and others
+ * Copyright (C) 2018-2023 Andreas Dann, Markus Schmidt, Jan Martin Persch, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -40,9 +41,14 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.util.Printer;
 import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.core.frontend.ResolveException;
+import sootup.core.frontend.SootClassSource;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.FieldModifier;
+import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
@@ -55,6 +61,8 @@ import sootup.java.core.types.JavaClassType;
 
 public final class AsmUtil {
 
+  private static final @Nonnull Logger logger = LoggerFactory.getLogger(AsmUtil.class);
+
   private AsmUtil() {}
 
   public static final int SUPPORTED_ASM_OPCODE = Opcodes.ASM9;
@@ -66,13 +74,29 @@ public final class AsmUtil {
    * @param classNode The node to initialize
    * @return the actual class signature found in the compilation unit
    */
-  protected static String initAsmClassSource(
-      @Nonnull Path classSource, @Nonnull ClassVisitor classNode) throws IOException {
+  protected static Optional<String> readClassName(
+      @Nonnull final Path classSource, @Nonnull final ClassVisitor classNode) {
     try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
-      ClassReader clsr = new ClassReader(sourceFileInputStream);
-      clsr.accept(classNode, ClassReader.SKIP_FRAMES);
-      return clsr.getClassName();
+      ClassReader classReader = new ClassReader(sourceFileInputStream);
+      classReader.accept(classNode, ClassReader.SKIP_FRAMES);
+      return Optional.of(classReader.getClassName().replace('/', '.'));
+    } catch (IOException exception) {
+      logger.warn("Cannot create class source for {}", classSource, exception);
+    } catch (IllegalArgumentException exception) {
+      logger.warn("Cannot create class source for {}", classSource, exception);
     }
+    return Optional.empty();
+  }
+
+  public static SootClassSource createClassSource(
+      @Nonnull final AnalysisInputLocation analysisInputLocation,
+      @Nonnull final Path sourcePath,
+      @Nonnull final ClassType classType,
+      @Nonnull final ClassNode classNode) {
+    if ((classNode.access & Opcodes.ACC_ANNOTATION) == Opcodes.ACC_ANNOTATION) {
+      return new AsmAnnotationClassSource(analysisInputLocation, sourcePath, classType, classNode);
+    }
+    return new AsmClassSource(analysisInputLocation, sourcePath, classType, classNode);
   }
 
   /**

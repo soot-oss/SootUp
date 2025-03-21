@@ -1,4 +1,5 @@
 package sootup.interceptors.typeresolving.types;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework

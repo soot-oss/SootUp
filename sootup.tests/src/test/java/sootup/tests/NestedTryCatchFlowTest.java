@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableBlockStmtGraph;
@@ -26,23 +25,22 @@ import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocatio
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class NestedTryCatchFlowTest {
 
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  ClassType clazzType = factory.getClassType("NestedTryCatchFlow");
   String location =
       Paths.get(System.getProperty("user.dir")).getParent()
           + File.separator
           + "shared-test-resources/bugfixes/";
-  MethodSignature methodSignature =
-      factory.getMethodSignature(
-          clazzType, "test_nested_try_catch_2", "int", Collections.singletonList("int"));
   final Path path = Paths.get(location + "NestedTryCatchFlow.class");
   PathBasedAnalysisInputLocation inputLocation =
       new ClassFileBasedAnalysisInputLocation(
           path, "", SourceType.Application, Collections.emptyList());
   JavaView view = new JavaView(inputLocation);
+  JavaIdentifierFactory factory = view.getIdentifierFactory();
+  ClassType clazzType = factory.getClassType("NestedTryCatchFlow");
+  MethodSignature methodSignature =
+      factory.getMethodSignature(
+          clazzType, "test_nested_try_catch_2", "int", Collections.singletonList("int"));
   Body body = view.getMethod(methodSignature).get().getBody();
 
   @Test

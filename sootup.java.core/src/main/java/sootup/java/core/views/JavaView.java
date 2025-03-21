@@ -145,8 +145,7 @@ public class JavaView extends AbstractView {
 
   @Nonnull
   protected Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type) {
-    return inputLocations
-        .parallelStream()
+    return inputLocations.parallelStream()
         .map(location -> location.getClassSource(type, this))
         .filter(Optional::isPresent)
         // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the

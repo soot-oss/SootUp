@@ -3,12 +3,10 @@ package sootup.java.bytecode.frontend.inputlocation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.types.ClassType;
@@ -16,8 +14,9 @@ import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.views.JavaModuleView;
 
-/** @author Andreas Dann, Markus Schmidt */
-@Tag(TestCategories.JAVA_9_CATEGORY)
+/**
+ * @author Andreas Dann, Markus Schmidt
+ */
 public class JrtFileSystemAnalysisInputLocationTest {
 
   @Test

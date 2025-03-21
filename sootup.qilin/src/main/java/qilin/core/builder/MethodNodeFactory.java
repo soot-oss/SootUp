@@ -66,10 +66,11 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
-/** @author Ondrej Lhotak */
+/**
+ * @author Ondrej Lhotak
+ */
 public class MethodNodeFactory {
   protected PAG pag;
   protected MethodPAG mpag;
@@ -430,7 +431,7 @@ public class MethodNodeFactory {
     }
     for (SootClass sc : visit) {
       MethodSubSignature subclinit =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <clinit>()");
+          scene.getView().getIdentifierFactory().parseMethodSubSignature("void <clinit>()");
       final Optional<? extends SootMethod> initStart = sc.getMethod(subclinit);
       initStart.ifPresent(ret::add);
     }

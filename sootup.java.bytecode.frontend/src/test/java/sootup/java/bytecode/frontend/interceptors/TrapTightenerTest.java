@@ -1,9 +1,7 @@
 package sootup.java.bytecode.frontend.interceptors;
 
-import categories.TestCategories;
 import java.util.*;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.graph.MutableStmtGraph;
@@ -30,8 +28,9 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Zun Wang */
-@Tag(TestCategories.JAVA_8_CATEGORY)
+/**
+ * @author Zun Wang
+ */
 @Disabled("FIXME: needs .setTraps() adapted to MutableBlockStmtGraph")
 public class TrapTightenerTest {
   public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();
@@ -138,6 +137,7 @@ public class TrapTightenerTest {
     List<Trap> actual = briefStmtPrinter.getTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
+
   /**
    *
    *

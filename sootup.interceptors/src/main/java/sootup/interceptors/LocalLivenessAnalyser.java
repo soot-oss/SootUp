@@ -30,7 +30,9 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public class LocalLivenessAnalyser {
 
   // Each stmt(node) has out-edges and in-edges
