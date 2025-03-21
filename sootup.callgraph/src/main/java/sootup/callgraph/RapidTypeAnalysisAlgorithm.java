@@ -90,7 +90,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    *
    * @param method this object contains the method body which is inspected.
    */
-  protected Stream<ClassType> collectInstantiatedClassesInMethod(SootMethod method) {
+  protected Stream<ClassType> collectInstantiatedClassesInMethod(@Nonnull SootMethod method) {
     Set<ClassType> instantiated =
         method.getBody().getStmts().stream()
             .filter(stmt -> stmt instanceof JAssignStmt)
