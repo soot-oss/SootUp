@@ -38,11 +38,11 @@ import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.*;
 
 /** An analyzer for a <code>Stmt</code> to determine the exceptions it might throw. */
-public class StmtExceptionAnalyser {
+public class StmtExceptionAnalyzer {
 
   private final TypeHierarchy hierarchy;
 
-  public StmtExceptionAnalyser(TypeHierarchy hierarchy) {
+  public StmtExceptionAnalyzer(TypeHierarchy hierarchy) {
     this.hierarchy = hierarchy;
   }
 
@@ -86,19 +86,20 @@ public class StmtExceptionAnalyser {
   private Type findPreciserType(
       @Nonnull Local local, @Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
     Type preciserType = null;
-    Set<Stmt> defStmtsOfLocal =
+    Set<AbstractDefinitionStmt> defStmtsOfLocal =
         graph.getStmts().stream()
-            .filter(stmt -> stmt instanceof AbstractDefinitionStmt)
-            .filter(stmt -> ((AbstractDefinitionStmt) stmt).getLeftOp() == local)
+            .filter(AbstractDefinitionStmt.class::isInstance)
+            .map(AbstractDefinitionStmt.class::cast)
+            .filter(def -> def.getLeftOp() == local)
             .collect(Collectors.toSet());
     Set<Value> aliasesOfLocal =
         defStmtsOfLocal.stream()
-            .map(stmt -> ((AbstractDefinitionStmt) stmt).getRightOp())
+            .map(AbstractDefinitionStmt::getRightOp)
             .collect(Collectors.toSet());
     Set<Type> allocationTypes =
         aliasesOfLocal.stream()
-            .filter(value -> value instanceof JNewExpr)
-            .map(value -> value.getType())
+            .filter(JNewExpr.class::isInstance)
+            .map(Value::getType)
             .collect(Collectors.toSet());
     if (allocationTypes.size() == 1) {
       preciserType = allocationTypes.iterator().next();

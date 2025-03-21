@@ -28,10 +28,10 @@ import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLo
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.exceptions.ExceptionInferResult;
-import sootup.java.core.exceptions.StmtExceptionAnalyser;
+import sootup.java.core.exceptions.StmtExceptionAnalyzer;
 import sootup.java.core.views.JavaView;
 
-public class StmtExceptionAnalyserTest {
+public class StmtExceptionAnalyzerTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   ClassType clazzType = factory.getClassType("StmtExceptions");
@@ -54,7 +54,7 @@ public class StmtExceptionAnalyserTest {
   JavaView view =
       new JavaView(Arrays.asList(inputLocation, new DefaultRuntimeAnalysisInputLocation()));
   TypeHierarchy hierarchy = new ViewTypeHierarchy(view);
-  StmtExceptionAnalyser exceptionAnalyser = new StmtExceptionAnalyser(hierarchy);
+  StmtExceptionAnalyzer exceptionAnalyser = new StmtExceptionAnalyzer(hierarchy);
 
   @Test
   public void testInvokeStmts() {
