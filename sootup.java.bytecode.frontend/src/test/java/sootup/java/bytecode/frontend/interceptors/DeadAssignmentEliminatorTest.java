@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
@@ -33,7 +32,6 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class DeadAssignmentEliminatorTest {
 
   Path classFilePath =

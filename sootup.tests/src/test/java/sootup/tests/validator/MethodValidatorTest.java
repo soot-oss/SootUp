@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
@@ -18,7 +17,6 @@ import sootup.core.validation.ValidationException;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
 import sootup.jimple.frontend.JimpleView;
 
-@Tag("Java8")
 public class MethodValidatorTest {
   MethodValidator methodValidator = new MethodValidator();
   static JimpleView jimpleView;

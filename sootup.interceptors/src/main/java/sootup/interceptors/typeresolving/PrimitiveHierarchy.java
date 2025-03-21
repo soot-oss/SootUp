@@ -1,4 +1,5 @@
 package sootup.interceptors.typeresolving;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -31,7 +32,9 @@ import sootup.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.interceptors.typeresolving.types.BottomType;
 import sootup.interceptors.typeresolving.types.TopType;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public class PrimitiveHierarchy {
 
   /**

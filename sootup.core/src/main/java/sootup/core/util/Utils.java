@@ -45,7 +45,9 @@ import sootup.core.model.SootMethod;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.printer.JimplePrinter;
 
-/** @author Linghui Luo */
+/**
+ * @author Linghui Luo
+ */
 public class Utils {
 
   /** e.g. to print b to understand / compare what every interceptor does. */

@@ -25,7 +25,9 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.common.stmt.Stmt;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public class BackwardsStmtGraph extends ForwardingStmtGraph {
 
   public BackwardsStmtGraph(@Nonnull StmtGraph<?> stmtGraph) {

@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -21,7 +20,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.UnknownType;
 import sootup.core.util.printer.BriefStmtPrinter;
 
-@Tag("Java8")
 public class MutableBlockStmtGraphTest {
 
   public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();

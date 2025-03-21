@@ -22,6 +22,7 @@ package sootup.callgraph;
  * #L%
  */
 
+import com.google.common.collect.ArrayListMultimap;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,7 +50,7 @@ import sootup.core.views.View;
 public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
   @Nonnull protected Set<ClassType> instantiatedClasses = Collections.emptySet();
-  @Nonnull protected Map<ClassType, List<Call>> ignoredCalls = Collections.emptyMap();
+  @Nonnull protected ArrayListMultimap<ClassType, Call> ignoredCalls = ArrayListMultimap.create();
 
   /**
    * The constructor of the RTA algorithm.
@@ -72,13 +73,13 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
     // init helper data structures
     instantiatedClasses = new HashSet<>();
-    ignoredCalls = new HashMap<>();
+    ignoredCalls = ArrayListMultimap.create();
 
     CallGraph cg = constructCompleteCallGraph(entryPoints);
 
     // delete the data structures
     instantiatedClasses = Collections.emptySet();
-    ignoredCalls = Collections.emptyMap();
+    ignoredCalls = ArrayListMultimap.create();
     return cg;
   }
 
@@ -198,13 +199,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   private void saveIgnoredCall(
       MethodSignature source, MethodSignature target, InvokableStmt invokableStmt) {
     ClassType notInstantiatedClass = target.getDeclClassType();
-    List<Call> calls = ignoredCalls.get(notInstantiatedClass);
     Call ignoredCall = new Call(source, target, invokableStmt);
-    if (calls == null) {
-      calls = new ArrayList<>();
-      ignoredCalls.put(notInstantiatedClass, calls);
-    }
-    calls.add(ignoredCall);
+    ignoredCalls.put(notInstantiatedClass, ignoredCall);
   }
 
   /**
@@ -247,24 +243,22 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   protected void includeIgnoredCallsToClass(
       ClassType classType, MutableCallGraph cg, Deque<MethodSignature> workList) {
     List<Call> newEdges = ignoredCalls.get(classType);
-    if (newEdges != null) {
-      newEdges.forEach(
-          call -> {
-            MethodSignature concreteTarget =
-                resolveConcreteDispatch(view, call.getTargetMethodSignature()).orElse(null);
-            if (concreteTarget == null) {
-              return;
-            }
-            addCallToCG(
-                call.getSourceMethodSignature(),
-                concreteTarget,
-                call.getInvokableStmt(),
-                cg,
-                workList);
-          });
-      // can be removed because the instantiated class will be considered in future resolves
-      ignoredCalls.remove(classType);
-    }
+    newEdges.forEach(
+        call -> {
+          MethodSignature concreteTarget =
+              resolveConcreteDispatch(view, call.getTargetMethodSignature()).orElse(null);
+          if (concreteTarget == null) {
+            return;
+          }
+          addCallToCG(
+              call.getSourceMethodSignature(),
+              concreteTarget,
+              call.getInvokableStmt(),
+              cg,
+              workList);
+        });
+    // can be removed because the instantiated class will be considered in future resolves
+    ignoredCalls.removeAll(classType);
   }
 
   /**

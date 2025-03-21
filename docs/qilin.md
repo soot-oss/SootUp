@@ -6,7 +6,7 @@
     ```maven
     <dependency>
         <groupId>org.soot-oss</groupId>
-        <artifactId>sootup.java.sourcecode</artifactId>
+        <artifactId>sootup.qilin</artifactId>
         <version>{{ git_latest_release }}</version>
     </dependency>
     ```

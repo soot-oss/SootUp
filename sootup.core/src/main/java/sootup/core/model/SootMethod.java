@@ -215,9 +215,25 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     return MethodModifier.isSynchronized(this.getModifiers());
   }
 
-  /** @return yes if this is the main method */
+  /**
+   * @return yes if this is the main method
+   */
   public boolean isMain(@Nonnull IdentifierFactory idf) {
     return isPublic() && isStatic() && idf.isMainSubSignature(getSignature().getSubSignature());
+  }
+
+  /**
+   * @return true if the method is a constructor
+   */
+  public boolean isConstructor(@Nonnull IdentifierFactory idf) {
+    return idf.isConstructorSignature(getSignature());
+  }
+
+  /**
+   * @return true if the method is the default constructor
+   */
+  public boolean isDefaultConstructor(@Nonnull IdentifierFactory idf) {
+    return isConstructor(idf) && getParameterCount() == 0;
   }
 
   /**

@@ -92,7 +92,9 @@ public class Zipper {
     System.out.println();
   }
 
-  /** @return set of precision-critical methods in the program */
+  /**
+   * @return set of precision-critical methods in the program
+   */
   public Set<SootMethod> analyze() {
     reset();
     System.out.println(

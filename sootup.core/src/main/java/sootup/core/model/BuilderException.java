@@ -1,4 +1,5 @@
 package sootup.core.model;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework

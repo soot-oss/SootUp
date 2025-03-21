@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import sootup.core.model.AbstractClass;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -20,7 +19,6 @@ import sootup.java.core.JavaSootClass;
  *
  * @author Jan Martin Persch
  */
-@Tag("Java8")
 public class JavaViewTest {
 
   private List<ClassType> signatures;
