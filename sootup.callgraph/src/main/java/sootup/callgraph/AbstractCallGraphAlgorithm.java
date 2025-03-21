@@ -260,7 +260,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param workList found clinit methods will be added to the work list
    */
   protected void resolveAllStaticInitializerCalls(
-      SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
+      @Nonnull SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
+    if (!sourceMethod.hasBody()) {
+      return;
+    }
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
     sourceMethod.getBody().getStmts().stream()
         .filter(Stmt::isInvokableStmt)
