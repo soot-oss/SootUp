@@ -10,7 +10,6 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
 public class Soot1580Test {
@@ -28,8 +27,7 @@ public class Soot1580Test {
 
     assertEquals(91, view.getClasses().count());
 
-    ClassType clazzType =
-        JavaIdentifierFactory.getInstance().getClassType("cn.jpush.android.data.f");
+    ClassType clazzType = view.getIdentifierFactory().getClassType("cn.jpush.android.data.f");
 
     assertTrue(view.getClass(clazzType).isPresent());
 

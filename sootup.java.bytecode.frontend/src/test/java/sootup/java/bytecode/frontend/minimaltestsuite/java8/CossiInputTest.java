@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
-import sootup.java.core.JavaIdentifierFactory;
 
 /**
  * @author Bastian Haverkamp
@@ -18,7 +17,7 @@ public class CossiInputTest extends MinimalBytecodeTestSuiteBase {
     clazz.getMethods().forEach(SootMethod::getBody);
 
     SootClass innerClazz =
-        loadClass(JavaIdentifierFactory.getInstance().getClassType("CossiInput$CossiInputBuilder"));
+        loadClass(identifierFactory.getClassType("CossiInput$CossiInputBuilder"));
 
     innerClazz.getMethod("build", Collections.emptyList()).get().getBody();
   }

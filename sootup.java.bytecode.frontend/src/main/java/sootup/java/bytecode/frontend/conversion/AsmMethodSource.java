@@ -1011,8 +1011,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     JavaClassType bsmCls = identifierFactory.getClassType(bsmClsName);
     List<Type> bsmSigTypes = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc());
     Type returnType = bsmSigTypes.remove(bsmSigTypes.size() - 1);
-    return JavaIdentifierFactory.getInstance()
-        .getMethodSignature(bsmCls, methodHandle.getName(), returnType, bsmSigTypes);
+    return identifierFactory.getMethodSignature(
+        bsmCls, methodHandle.getName(), returnType, bsmSigTypes);
   }
 
   private void convertLookupSwitchInsn(@Nonnull LookupSwitchInsnNode insn) {

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 
 /**
@@ -19,7 +18,7 @@ public class SwitchExprWithYieldTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
   public JavaClassType getDeclaredClassSignature() {
-    return JavaIdentifierFactory.getInstance().getClassType("SwitchExprWithYieldTest");
+    return identifierFactory.getClassType("SwitchExprWithYieldTest");
   }
 
   @Override

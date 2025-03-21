@@ -25,7 +25,7 @@ public class AsmMethodSourceTest {
 
     JavaView view = new JavaView(new DefaultRuntimeAnalysisInputLocation());
 
-    final JavaIdentifierFactory idf = JavaIdentifierFactory.getInstance();
+    final JavaIdentifierFactory idf = view.getIdentifierFactory();
     JavaClassType mainClassSignature =
         idf.getClassType("javax.management.NotificationBroadcasterSupport");
     MethodSignature mainMethodSignature =
@@ -57,7 +57,7 @@ public class AsmMethodSourceTest {
 
     JavaSootMethod method =
         view.getMethod(
-                JavaIdentifierFactory.getInstance()
+                view.getIdentifierFactory()
                     .parseMethodSignature("<NestedMethodCall: void nestedMethodCall()>"))
             .orElse(null);
     assertNotNull(method);
@@ -85,7 +85,7 @@ public class AsmMethodSourceTest {
 
     JavaSootMethod method =
         view.getMethod(
-                JavaIdentifierFactory.getInstance()
+                view.getIdentifierFactory()
                     .parseMethodSignature("<ConditionalStringConcat: void method(boolean)>"))
             .orElse(null);
     assertNotNull(method);

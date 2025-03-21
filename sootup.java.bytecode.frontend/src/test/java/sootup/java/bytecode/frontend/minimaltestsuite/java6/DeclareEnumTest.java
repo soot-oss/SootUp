@@ -9,7 +9,6 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
-import sootup.java.core.JavaIdentifierFactory;
 
 /**
  * @author Kaustubh Kelkar
@@ -20,8 +19,8 @@ public class DeclareEnumTest extends MinimalBytecodeTestSuiteBase {
   public void test() {
     SootClass sc =
         loadClass(
-            JavaIdentifierFactory.getInstance()
-                .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Type"));
+            identifierFactory.getClassType(
+                getDeclaredClassSignature().getFullyQualifiedName() + "$Type"));
     assertTrue(sc.isEnum());
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());

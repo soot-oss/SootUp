@@ -34,8 +34,9 @@ public class ClassHierarchyTest {
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
 
     // Specify class types we want to receive information about
-    JavaClassType clazzTypeA = JavaIdentifierFactory.getInstance().getClassType("A");
-    JavaClassType clazzTypeC = JavaIdentifierFactory.getInstance().getClassType("C");
+    JavaIdentifierFactory identifierFactory = view.getIdentifierFactory();
+    JavaClassType clazzTypeA = identifierFactory.getClassType("A");
+    JavaClassType clazzTypeC = identifierFactory.getClassType("C");
 
     // Check direct subtypes
     Set<ClassType> subtypes =
@@ -48,7 +49,6 @@ public class ClassHierarchyTest {
         typeHierarchy.superClassesOf(clazzTypeC).collect(Collectors.toList());
     assertEquals(
         superClasses,
-        Arrays.asList(
-            clazzTypeA, JavaIdentifierFactory.getInstance().getClassType("java.lang.Object")));
+        Arrays.asList(clazzTypeA, identifierFactory.getClassType("java.lang.Object")));
   }
 }
