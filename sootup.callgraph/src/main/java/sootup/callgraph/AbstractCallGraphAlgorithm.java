@@ -219,7 +219,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param workList the work list that will be updated of found target methods
    */
   protected void resolveAllCallsFromSourceMethod(
-      SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
+      @Nonnull SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
+    if (!sourceMethod.hasBody()) {
+      return;
+    }
 
     sourceMethod.getBody().getStmts().stream()
         .filter(Stmt::isInvokableStmt)
@@ -241,7 +244,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param workList new target methods will be added to the work list
    */
   protected void resolveAllImplicitCallsFromSourceMethod(
-      SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
+      @Nonnull SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
+    if (!sourceMethod.hasBody()) {
+      return;
+    }
     // collect all static initializer calls
     resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
   }
