@@ -85,6 +85,7 @@ sootup.interceptors.typeresolving.types
 sootup.java.bytecode.frontend.conversion
 sootup.java.bytecode.frontend.inputlocation
 sootup.java.core
+sootup.java.core.exceptions
 sootup.java.core.jimple.basic
 sootup.java.core.language
 sootup.java.core.signatures
