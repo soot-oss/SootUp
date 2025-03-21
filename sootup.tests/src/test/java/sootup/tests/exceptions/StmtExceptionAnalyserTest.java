@@ -4,7 +4,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Value;
@@ -52,7 +51,8 @@ public class StmtExceptionAnalyserTest {
           new TypeAssigner());
   PathBasedAnalysisInputLocation inputLocation =
       new ClassFileBasedAnalysisInputLocation(path, "", SourceType.Application, interceptors);
-  JavaView view = new JavaView(Arrays.asList(inputLocation, new DefaultRuntimeAnalysisInputLocation()));
+  JavaView view =
+      new JavaView(Arrays.asList(inputLocation, new DefaultRuntimeAnalysisInputLocation()));
   TypeHierarchy hierarchy = new ViewTypeHierarchy(view);
   StmtExceptionAnalyser exceptionAnalyser = new StmtExceptionAnalyser(hierarchy);
 
