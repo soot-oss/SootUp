@@ -4,7 +4,7 @@ package sootup.java.bytecode.frontend.conversion;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt and others
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,9 +22,11 @@ package sootup.java.bytecode.frontend.conversion;
  * #L%
  */
 
+import com.google.common.collect.Streams;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.tree.*;
@@ -47,10 +49,10 @@ class AsmClassSource extends JavaSootClassSource {
   @Nonnull private final ClassNode classNode;
 
   public AsmClassSource(
-      AnalysisInputLocation inputLocation,
-      Path sourcePath,
-      JavaClassType javaClassType,
-      @Nonnull ClassNode classNode) {
+      @Nonnull final AnalysisInputLocation inputLocation,
+      @Nonnull final Path sourcePath,
+      @Nonnull final ClassType javaClassType,
+      @Nonnull final ClassNode classNode) {
     super(inputLocation, javaClassType, sourcePath);
     this.classNode = classNode;
   }
@@ -70,42 +72,31 @@ class AsmClassSource extends JavaSootClassSource {
               return new JavaSootField(
                   fieldSignature,
                   modifiers,
-                  convertAnnotation(fieldNode.invisibleAnnotations),
+                  Streams.concat(
+                          convertAnnotation(fieldNode.visibleAnnotations),
+                          convertAnnotation(fieldNode.invisibleAnnotations))
+                      .collect(Collectors.toList()),
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());
   }
 
-  protected static List<AnnotationUsage> convertAnnotation(List<AnnotationNode> nodes) {
+  protected static Stream<AnnotationUsage> convertAnnotation(List<? extends AnnotationNode> nodes) {
     if (nodes == null) {
-      return Collections.emptyList();
+      return Stream.empty();
     }
-    return StreamSupport.stream(AsmUtil.createAnnotationUsage(nodes).spliterator(), false)
-        .collect(Collectors.toList());
+    return StreamSupport.stream(AsmUtil.createAnnotationUsage(nodes).spliterator(), false);
   }
 
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
-    List<AnnotationNode> annotationNodes = new ArrayList<>();
-
-    annotationNodes.addAll(
-        classNode.visibleAnnotations != null
-            ? classNode.visibleAnnotations
-            : Collections.emptyList());
-    annotationNodes.addAll(
-        classNode.visibleTypeAnnotations != null
-            ? classNode.visibleTypeAnnotations
-            : Collections.emptyList());
-    annotationNodes.addAll(
-        classNode.invisibleAnnotations != null
-            ? classNode.invisibleAnnotations
-            : Collections.emptyList());
-    annotationNodes.addAll(
-        classNode.invisibleTypeAnnotations != null
-            ? classNode.invisibleTypeAnnotations
-            : Collections.emptyList());
-
-    return convertAnnotation(annotationNodes);
+    Stream<AnnotationUsage> annotations =
+        Streams.concat(
+            convertAnnotation(classNode.visibleAnnotations),
+            convertAnnotation(classNode.invisibleAnnotations),
+            convertAnnotation(classNode.visibleTypeAnnotations),
+            convertAnnotation(classNode.invisibleTypeAnnotations));
+    return annotations.collect(Collectors.toList());
   }
 
   @Nonnull
@@ -129,21 +120,16 @@ class AsmClassSource extends JavaSootClassSource {
                   identifierFactory.getMethodSignature(
                       classSignature, methodName, retType, sigTypes);
 
-              List<AnnotationNode> annotations = new ArrayList<>();
-              if (methodSource.visibleAnnotations != null) {
-                annotations.addAll(methodSource.visibleAnnotations);
-              }
-              if (methodSource.invisibleAnnotations != null) {
-                annotations.addAll(methodSource.invisibleAnnotations);
-              }
-
               // TODO: position/line numbers if possible
               return new JavaSootMethod(
                   asmClassClassSourceContent,
                   methodSignature,
                   modifiers,
                   exceptions,
-                  convertAnnotation(annotations),
+                  Streams.concat(
+                          convertAnnotation(methodSource.visibleAnnotations),
+                          convertAnnotation(methodSource.invisibleAnnotations))
+                      .collect(Collectors.toList()),
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());

@@ -327,13 +327,19 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   private static int getTrapApplicationComparator(
       HashMap<Stmt, Integer> trapstmtToIdx, Trap trapA, Trap trapB) {
     if (trapA.getEndStmt() == trapB.getEndStmt()) {
-      final Integer startIdxA = trapstmtToIdx.get(trapA.getBeginStmt());
-      final Integer startIdxB = trapstmtToIdx.get(trapB.getBeginStmt());
-      return startIdxB - startIdxA;
+      if (trapA.getBeginStmt() == trapB.getBeginStmt()) {
+        final Integer handlerIdxA = trapstmtToIdx.get(trapA.getHandlerStmt());
+        final Integer handlerIdxB = trapstmtToIdx.get(trapB.getHandlerStmt());
+        return handlerIdxA - handlerIdxB;
+      } else {
+        final Integer beginIdxA = trapstmtToIdx.get(trapA.getBeginStmt());
+        final Integer beginIdxB = trapstmtToIdx.get(trapB.getBeginStmt());
+        return beginIdxB - beginIdxA;
+      }
     } else {
-      final Integer idxA = trapstmtToIdx.get(trapA.getEndStmt());
-      final Integer idxB = trapstmtToIdx.get(trapB.getEndStmt());
-      return idxA - idxB;
+      final Integer endIdxA = trapstmtToIdx.get(trapA.getEndStmt());
+      final Integer endIdxB = trapstmtToIdx.get(trapB.getEndStmt());
+      return endIdxA - endIdxB;
     }
   }
 
@@ -729,7 +735,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     tryMergeWithSuccessorBlock(block);
   }
 
-  /** @return the successor block of block if the merge happended, if not merged: block */
+  /**
+   * @return the successor block of block if the merge happended, if not merged: block
+   */
   @Nonnull
   private MutableBasicBlock tryMergeWithSuccessorBlock(@Nonnull MutableBasicBlock block) {
     final List<MutableBasicBlock> successors = block.getSuccessors();
@@ -754,7 +762,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
-  /** @return the predecessor block of block if the merge happended, if not merged: block */
+  /**
+   * @return the predecessor block of block if the merge happended, if not merged: block
+   */
   @Nonnull
   private MutableBasicBlock tryMergeWithPredecessorBlock(@Nonnull MutableBasicBlock block) {
     final List<MutableBasicBlock> predecessors = block.getPredecessors();

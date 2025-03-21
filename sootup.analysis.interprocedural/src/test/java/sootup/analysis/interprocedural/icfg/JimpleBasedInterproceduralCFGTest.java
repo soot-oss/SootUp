@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -12,12 +11,10 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 class JimpleBasedInterproceduralCFGTest {
 
   protected JavaView view;
@@ -31,9 +28,8 @@ class JimpleBasedInterproceduralCFGTest {
 
     view = new JavaView(inputLocations);
 
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature =
-        identifierFactory.getClassType("ICFGExampleForInvokableStmt");
+        view.getIdentifierFactory().getClassType("ICFGExampleForInvokableStmt");
 
     SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =
@@ -46,7 +42,7 @@ class JimpleBasedInterproceduralCFGTest {
             view, Collections.singletonList(entryMethodSignature), false, false);
 
     MethodSignature sig =
-        JavaIdentifierFactory.getInstance()
+        view.getIdentifierFactory()
             .getMethodSignature(
                 "ICFGExampleForInvokableStmt",
                 "foo",

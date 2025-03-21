@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.EagerInputLocation;
@@ -27,7 +26,6 @@ import sootup.core.validation.ValidationException;
 import sootup.java.core.*;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class MethodDeclarationValidatorTest {
   static JavaView view;
   static MethodDeclarationValidator methodDeclarationValidator;

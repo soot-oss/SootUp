@@ -69,8 +69,7 @@ public class ContainerFinder {
     s2.stop();
     System.out.println(s2);
     Stopwatch s3 = Stopwatch.newAndStart("remain-containerFinder");
-    remainObjs
-        .parallelStream()
+    remainObjs.parallelStream()
         .forEach(
             heap -> {
               Set<SparkField> fields = utility.getFields(heap);

@@ -27,7 +27,6 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 - Fully-Parallelizable Architecture
 - Enables lazy loading of classes (no interleaved loading of used/dependent classes anymore)
 - Fail early strategy - input validation while constructing/building objects
-- Up-to-Date (i.e. Java8!) Sourcecode Frontend (Beware: Cannot handle try-catch inputs, yet!)
 - Full Java 21 Support for Bytecode
 - Multiple Views (no single static Scene anymore)
 - Immutable Jimple IR Objects and Graphs
@@ -40,7 +39,7 @@ For questions and clarification, please use the [discussions](../../discussions)
 
 
 ## Publications
-[the SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) explains further details and the design decision behind SootUp.  
+[The SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) explains further details and the design decision behind SootUp.  
 [Preprint](/docs/assets/SootUp-paper.pdf) is also available.
 
 If you use SootUp in your research work, feel free to cite it as follows:

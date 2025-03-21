@@ -25,7 +25,6 @@ package sootup.jimple.frontend;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
@@ -33,7 +32,6 @@ import sootup.core.types.VoidType;
 import sootup.core.views.View;
 import sootup.interceptors.DeadAssignmentEliminator;
 
-@Tag("Java8")
 public class JimpleStringAnalysisInputLocationTest {
 
   @Test

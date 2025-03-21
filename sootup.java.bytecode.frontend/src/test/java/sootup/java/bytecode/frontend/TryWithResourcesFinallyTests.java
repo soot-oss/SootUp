@@ -1,10 +1,8 @@
 package sootup.java.bytecode.frontend;
 
-import categories.TestCategories;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -13,7 +11,6 @@ import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class TryWithResourcesFinallyTests {
 
   Path classFilePath = Paths.get("../shared-test-resources/bugfixes/TryWithResourcesFinally.class");

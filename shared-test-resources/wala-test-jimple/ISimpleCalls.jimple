@@ -1,5 +1,0 @@
-interface  ISimpleCalls extends java.lang.Object
-{
-
-    public abstract void helloWorld();
-}

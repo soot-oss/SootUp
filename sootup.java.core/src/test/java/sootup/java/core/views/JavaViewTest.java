@@ -8,11 +8,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import sootup.core.model.AbstractClass;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 
 /**
@@ -20,7 +18,6 @@ import sootup.java.core.JavaSootClass;
  *
  * @author Jan Martin Persch
  */
-@Tag("Java8")
 public class JavaViewTest {
 
   private List<ClassType> signatures;
@@ -49,8 +46,7 @@ public class JavaViewTest {
   }
 
   private void resolveUndefinedClass() {
-    ClassType signature =
-        JavaIdentifierFactory.getInstance().getClassType("com.example.NonExistingClass");
+    ClassType signature = view.getIdentifierFactory().getClassType("com.example.NonExistingClass");
 
     if (this.signatures.contains(signature)) {
       fail("FATAL ERROR: Non-existing class exists in signature list!");

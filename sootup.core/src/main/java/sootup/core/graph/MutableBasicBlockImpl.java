@@ -265,7 +265,9 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     return splitBlockUnlinked(newHeadsIdx);
   }
 
-  /** @param splitIdx should be in [1, stmts.size()-1] */
+  /**
+   * @param splitIdx should be in [1, stmts.size()-1]
+   */
   @Override
   public MutableBasicBlockImpl splitBlockUnlinked(int splitIdx) {
     if (splitIdx < 1 || splitIdx >= stmts.size()) {

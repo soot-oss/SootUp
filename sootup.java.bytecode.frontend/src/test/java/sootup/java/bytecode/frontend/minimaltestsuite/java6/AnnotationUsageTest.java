@@ -4,14 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.common.constant.BooleanConstant;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -21,14 +19,12 @@ import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaAnnotationSootClass;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.jimple.basic.JavaLocal;
 import sootup.java.core.language.JavaJimple;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
   // we can only read: RetentionPolicy.RUNTIME annotations
@@ -143,8 +139,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     JavaAnnotationSootClass annotationSootClass = classOptional.get();
     SootClass enumClass =
         loadClass(
-            JavaIdentifierFactory.getInstance()
-                .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Enums"));
+            identifierFactory.getClassType(
+                getDeclaredClassSignature().getFullyQualifiedName() + "$Enums"));
 
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put(
@@ -235,7 +231,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
       JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
       final Optional<JavaSootMethod> someMethod =
           sootClass.getMethod(
-              JavaIdentifierFactory.getInstance()
+              identifierFactory
                   .getMethodSignature(
                       sootClass.getType(),
                       "someMethod",
@@ -329,8 +325,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     assertTrue(method.isPresent());
     SootClass enumClass =
         loadClass(
-            JavaIdentifierFactory.getInstance()
-                .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Enums"));
+            identifierFactory.getClassType(
+                getDeclaredClassSignature().getFullyQualifiedName() + "$Enums"));
     assertTrue(enumClass.isEnum());
 
     ClassType enumAnnotationType = identifierFactory.getClassType("EnumAnnotation");
@@ -380,7 +376,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
       JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
       final Optional<JavaSootMethod> someMethod =
           sootClass.getMethod(
-              JavaIdentifierFactory.getInstance()
+              identifierFactory
                   .getMethodSignature(
                       sootClass.getType(),
                       "someMethod",

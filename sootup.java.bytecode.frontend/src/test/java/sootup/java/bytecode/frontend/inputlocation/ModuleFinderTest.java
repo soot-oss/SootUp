@@ -5,17 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.Collection;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.signatures.ModuleSignature;
 
-/** @author Kaustubh Kelkar */
-@Tag(TestCategories.JAVA_9_CATEGORY)
+/**
+ * @author Kaustubh Kelkar
+ */
 public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test

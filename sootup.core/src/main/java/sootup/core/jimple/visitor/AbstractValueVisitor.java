@@ -29,7 +29,9 @@ import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ */
 public abstract class AbstractValueVisitor implements ValueVisitor, Visitor {
 
   @Override

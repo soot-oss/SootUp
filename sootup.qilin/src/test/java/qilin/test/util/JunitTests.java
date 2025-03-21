@@ -18,12 +18,12 @@
 
 package qilin.test.util;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import qilin.core.PTA;
 import qilin.driver.PTAFactory;
 import qilin.driver.PTAOption;
@@ -36,7 +36,7 @@ public abstract class JunitTests {
   protected static String appPath, jrePath, refLogPath;
   protected static boolean isSetUp = false;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() throws IOException {
     if (isSetUp) {
       return;

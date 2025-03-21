@@ -1,4 +1,5 @@
 package sootup.core.frontend;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -27,7 +28,9 @@ import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
 
-/** @author Hasitha Rajapakse */
+/**
+ * @author Hasitha Rajapakse
+ */
 
 /**
  * Allows for replacing specific parts of a method or, resolve methods where all information is

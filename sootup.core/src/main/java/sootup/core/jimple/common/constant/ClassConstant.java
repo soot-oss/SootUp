@@ -114,6 +114,7 @@ public class ClassConstant implements Constant {
   public boolean isRefType() {
     return value.startsWith("L") && value.endsWith(";");
   }
+
   // TODO: [ms] code is quite like the one in  Asmutil.java ? so we can/shall refactor it?
   //  /** Returns numDimensions. */
   //  public Type toSootType() {

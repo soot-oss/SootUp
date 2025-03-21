@@ -26,12 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.EagerInputLocation;
@@ -52,7 +50,6 @@ import sootup.java.core.views.JavaView;
  * @author Manuel Benz created on 06.06.18
  * @author Kaustubh Kelkar updated on 16.04.2020
  */
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
@@ -116,14 +113,15 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     assertEquals(19, view.getClasses().count());
 
     // Create java class signature
-    ClassType utilsClassSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+    JavaIdentifierFactory identifierFactory = view.getIdentifierFactory();
+    ClassType utilsClassSignature = identifierFactory.getClassType("Employee", "ds");
 
     // Resolve signature to `SootClass`
     JavaSootClass utilsClass = view.getClass(utilsClassSignature).get();
 
     // Parse sub-signature for "setEmpSalary" method
     MethodSubSignature optionalToStreamMethodSubSignature =
-        JavaIdentifierFactory.getInstance().parseMethodSubSignature("void setEmpSalary(int)");
+        identifierFactory.parseMethodSubSignature("void setEmpSalary(int)");
 
     // Get method for sub-signature
     JavaSootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
@@ -138,15 +136,14 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     // Parse sub-signature for "empName" field
     FieldSubSignature nameFieldSubSignature =
-        JavaIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String empName");
+        identifierFactory.parseFieldSubSignature("java.lang.String empName");
 
     // Create the class signature
-    JavaClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+    JavaClassType classSignature = identifierFactory.getClassType("Employee", "ds");
 
     JavaSootField field =
         new JavaSootField(
-            JavaIdentifierFactory.getInstance()
-                .getFieldSignature(classSignature, nameFieldSubSignature),
+            identifierFactory.getFieldSignature(classSignature, nameFieldSubSignature),
             Collections.singleton(FieldModifier.PUBLIC),
             null,
             NoPositionInformation.getInstance());

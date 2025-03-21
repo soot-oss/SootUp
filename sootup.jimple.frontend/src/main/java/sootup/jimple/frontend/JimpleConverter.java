@@ -50,7 +50,6 @@ import sootup.core.signatures.SootClassMemberSubSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.jimple.JimpleBaseVisitor;
 import sootup.jimple.JimpleParser;
@@ -101,8 +100,7 @@ public class JimpleConverter {
 
   private static class ClassVisitor extends JimpleBaseVisitor<Boolean> {
 
-    @Nonnull
-    private final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+    @Nonnull private final IdentifierFactory identifierFactory;
 
     @Nonnull private final JimpleConverterUtil util;
     @Nonnull private final Path path;
@@ -115,6 +113,7 @@ public class JimpleConverter {
       util = new JimpleConverterUtil(path);
       this.bodyInterceptors = bodyInterceptors;
       this.view = view;
+      this.identifierFactory = view.getIdentifierFactory();
     }
 
     private ClassType clazz = null;

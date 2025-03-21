@@ -36,7 +36,6 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
 
 public class PTAScene {
   private final View view;
@@ -89,8 +88,7 @@ public class PTAScene {
   }
 
   public SootMethod getMethod(String methodSignature) {
-    MethodSignature mthdSig =
-        JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature);
+    MethodSignature mthdSig = view.getIdentifierFactory().parseMethodSignature(methodSignature);
     return view.getMethod(mthdSig).get();
   }
 
@@ -103,14 +101,12 @@ public class PTAScene {
   }
 
   public boolean containsMethod(String methodSignature) {
-    MethodSignature mthdSig =
-        JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature);
+    MethodSignature mthdSig = view.getIdentifierFactory().parseMethodSignature(methodSignature);
     return view.getMethod(mthdSig).isPresent();
   }
 
   public boolean containsField(String fieldSignature) {
-    FieldSignature fieldSig =
-        JavaIdentifierFactory.getInstance().parseFieldSignature(fieldSignature);
+    FieldSignature fieldSig = view.getIdentifierFactory().parseFieldSignature(fieldSignature);
     return view.getField(fieldSig).isPresent();
   }
 
@@ -134,8 +130,7 @@ public class PTAScene {
   }
 
   public SootField getField(String fieldSignature) {
-    FieldSignature fieldSig =
-        JavaIdentifierFactory.getInstance().parseFieldSignature(fieldSignature);
+    FieldSignature fieldSig = view.getIdentifierFactory().parseFieldSignature(fieldSignature);
     return view.getField(fieldSig).get();
   }
 

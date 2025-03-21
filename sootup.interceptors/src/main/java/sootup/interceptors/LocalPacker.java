@@ -1,4 +1,5 @@
 package sootup.interceptors;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -36,7 +37,9 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 
-/** @author Zun Wang * */
+/**
+ * @author Zun Wang *
+ */
 public class LocalPacker implements BodyInterceptor {
 
   @Override

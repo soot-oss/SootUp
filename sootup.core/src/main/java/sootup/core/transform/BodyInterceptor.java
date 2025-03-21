@@ -26,7 +26,9 @@ import javax.annotation.Nonnull;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
-/** @see #interceptBody(Body.BodyBuilder, View) */
+/**
+ * @see #interceptBody(Body.BodyBuilder, View)
+ */
 public interface BodyInterceptor {
 
   /**

@@ -21,7 +21,9 @@ package qilin.core.pag;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
-/** @author Ondrej Lhotak */
+/**
+ * @author Ondrej Lhotak
+ */
 public class LocalVarNode extends VarNode {
   protected SootMethod method;
 
