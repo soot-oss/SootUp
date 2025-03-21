@@ -4,7 +4,7 @@ package sootup.java.core;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2021 Bastian Haverkamp
+ * Copyright (C) 2021 Bastian Haverkamp, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,10 +31,10 @@ import sootup.core.types.ClassType;
 public abstract class JavaAnnotationSootClassSource extends JavaSootClassSource {
 
   public JavaAnnotationSootClassSource(
-      @Nonnull AnalysisInputLocation srcNamespace,
-      @Nonnull ClassType classSignature,
-      @Nonnull Path sourcePath) {
-    super(srcNamespace, classSignature, sourcePath);
+      @Nonnull final AnalysisInputLocation analysisInputLocation,
+      @Nonnull final ClassType classType,
+      @Nonnull final Path sourcePath) {
+    super(analysisInputLocation, classType, sourcePath);
   }
 
   @Override

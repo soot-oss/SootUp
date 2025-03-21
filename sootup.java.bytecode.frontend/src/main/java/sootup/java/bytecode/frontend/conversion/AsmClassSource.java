@@ -4,7 +4,7 @@ package sootup.java.bytecode.frontend.conversion;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt and others
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -49,10 +49,10 @@ class AsmClassSource extends JavaSootClassSource {
   @Nonnull private final ClassNode classNode;
 
   public AsmClassSource(
-      AnalysisInputLocation inputLocation,
-      Path sourcePath,
-      JavaClassType javaClassType,
-      @Nonnull ClassNode classNode) {
+      @Nonnull final AnalysisInputLocation inputLocation,
+      @Nonnull final Path sourcePath,
+      @Nonnull final ClassType javaClassType,
+      @Nonnull final ClassNode classNode) {
     super(inputLocation, javaClassType, sourcePath);
     this.classNode = classNode;
   }
