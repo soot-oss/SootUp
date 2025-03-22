@@ -15,7 +15,6 @@ import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
 public class CallgraphExampleTest {
@@ -35,10 +34,10 @@ public class CallgraphExampleTest {
     ClassType classTypeA = view.getIdentifierFactory().getClassType("A");
     ClassType classTypeB = view.getIdentifierFactory().getClassType("B");
     MethodSignature entryMethodSignature =
-        JavaIdentifierFactory.getInstance()
+        view.getIdentifierFactory()
             .getMethodSignature(
                 classTypeB,
-                JavaIdentifierFactory.getInstance()
+                view.getIdentifierFactory()
                     .getMethodSubSignature(
                         "calc", VoidType.getInstance(), Collections.singletonList(classTypeA)));
 

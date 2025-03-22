@@ -19,7 +19,6 @@ import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaAnnotationSootClass;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
@@ -140,8 +139,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     JavaAnnotationSootClass annotationSootClass = classOptional.get();
     SootClass enumClass =
         loadClass(
-            JavaIdentifierFactory.getInstance()
-                .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Enums"));
+            identifierFactory.getClassType(
+                getDeclaredClassSignature().getFullyQualifiedName() + "$Enums"));
 
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put(
@@ -232,7 +231,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
       JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
       final Optional<JavaSootMethod> someMethod =
           sootClass.getMethod(
-              JavaIdentifierFactory.getInstance()
+              identifierFactory
                   .getMethodSignature(
                       sootClass.getType(),
                       "someMethod",
@@ -326,8 +325,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     assertTrue(method.isPresent());
     SootClass enumClass =
         loadClass(
-            JavaIdentifierFactory.getInstance()
-                .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Enums"));
+            identifierFactory.getClassType(
+                getDeclaredClassSignature().getFullyQualifiedName() + "$Enums"));
     assertTrue(enumClass.isEnum());
 
     ClassType enumAnnotationType = identifierFactory.getClassType("EnumAnnotation");
@@ -377,7 +376,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
       JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
       final Optional<JavaSootMethod> someMethod =
           sootClass.getMethod(
-              JavaIdentifierFactory.getInstance()
+              identifierFactory
                   .getMethodSignature(
                       sootClass.getType(),
                       "someMethod",

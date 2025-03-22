@@ -19,7 +19,6 @@ import sootup.core.model.FieldModifier;
 import sootup.core.model.SootField;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.FieldSignature;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.OverridingJavaClassSource;
@@ -42,7 +41,7 @@ public class JFieldRefTest {
   public void testJStaticFieldRef() {
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
-        JavaIdentifierFactory.getInstance().getClassType("dummyMainClass");
+        view.getIdentifierFactory().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     JavaSootField field =
         new JavaSootField(
@@ -79,7 +78,7 @@ public class JFieldRefTest {
   public void testJInstanceFieldRef() {
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
-        JavaIdentifierFactory.getInstance().getClassType("dummyMainClass");
+        view.getIdentifierFactory().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     JavaSootField field =
         new JavaSootField(

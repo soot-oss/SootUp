@@ -37,7 +37,6 @@ import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -84,8 +83,8 @@ public class IFDSTaintTestSetUp {
 
     view = new JavaView(inputLocations);
 
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaClassType mainClassSignature = identifierFactory.getClassType(targetTestClassName);
+    JavaClassType mainClassSignature =
+        view.getIdentifierFactory().getClassType(targetTestClassName);
 
     SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =

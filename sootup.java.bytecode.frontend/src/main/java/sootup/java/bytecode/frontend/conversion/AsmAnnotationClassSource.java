@@ -4,7 +4,7 @@ package sootup.java.bytecode.frontend.conversion;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2021 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt, Bastian Haverkamp and others
+ * Copyright (C) 2021 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt, Bastian Haverkamp, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -54,7 +54,6 @@ import sootup.java.core.JavaAnnotationSootClassSource;
 import sootup.java.core.JavaAnnotationSootMethod;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootField;
-import sootup.java.core.types.JavaClassType;
 
 public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
 
@@ -63,9 +62,9 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
   public AsmAnnotationClassSource(
       AnalysisInputLocation inputLocation,
       Path sourcePath,
-      JavaClassType javaClassType,
+      ClassType classType,
       @Nonnull ClassNode classNode) {
-    super(inputLocation, javaClassType, sourcePath);
+    super(inputLocation, classType, sourcePath);
     this.classNode = classNode;
   }
 

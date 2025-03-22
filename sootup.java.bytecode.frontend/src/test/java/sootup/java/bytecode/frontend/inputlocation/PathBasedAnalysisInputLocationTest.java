@@ -113,14 +113,15 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     assertEquals(19, view.getClasses().count());
 
     // Create java class signature
-    ClassType utilsClassSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+    JavaIdentifierFactory identifierFactory = view.getIdentifierFactory();
+    ClassType utilsClassSignature = identifierFactory.getClassType("Employee", "ds");
 
     // Resolve signature to `SootClass`
     JavaSootClass utilsClass = view.getClass(utilsClassSignature).get();
 
     // Parse sub-signature for "setEmpSalary" method
     MethodSubSignature optionalToStreamMethodSubSignature =
-        JavaIdentifierFactory.getInstance().parseMethodSubSignature("void setEmpSalary(int)");
+        identifierFactory.parseMethodSubSignature("void setEmpSalary(int)");
 
     // Get method for sub-signature
     JavaSootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
@@ -135,15 +136,14 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     // Parse sub-signature for "empName" field
     FieldSubSignature nameFieldSubSignature =
-        JavaIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String empName");
+        identifierFactory.parseFieldSubSignature("java.lang.String empName");
 
     // Create the class signature
-    JavaClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+    JavaClassType classSignature = identifierFactory.getClassType("Employee", "ds");
 
     JavaSootField field =
         new JavaSootField(
-            JavaIdentifierFactory.getInstance()
-                .getFieldSignature(classSignature, nameFieldSubSignature),
+            identifierFactory.getFieldSignature(classSignature, nameFieldSubSignature),
             Collections.singleton(FieldModifier.PUBLIC),
             null,
             NoPositionInformation.getInstance());

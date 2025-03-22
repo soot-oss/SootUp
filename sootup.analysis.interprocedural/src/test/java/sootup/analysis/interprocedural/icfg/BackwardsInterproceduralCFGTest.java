@@ -13,7 +13,6 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -28,9 +27,8 @@ class BackwardsInterproceduralCFGTest {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
     view = new JavaView(inputLocations);
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature =
-        identifierFactory.getClassType("ICFGExampleForInvokableStmt");
+        view.getIdentifierFactory().getClassType("ICFGExampleForInvokableStmt");
     SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =
         sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().get();
@@ -64,7 +62,7 @@ class BackwardsInterproceduralCFGTest {
         new BackwardsInterproceduralCFG(forwardICFG);
 
     MethodSignature sig =
-        JavaIdentifierFactory.getInstance()
+        view.getIdentifierFactory()
             .getMethodSignature(
                 "ICFGExampleForInvokableStmt",
                 "foo",

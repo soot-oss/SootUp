@@ -17,7 +17,6 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -42,8 +41,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
     view = new JavaView(inputLocations);
 
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGExample");
+    JavaClassType mainClassSignature = view.getIdentifierFactory().getClassType("ICFGExample");
 
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
@@ -83,8 +81,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
     view = new JavaView(inputLocations);
 
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGExample2");
+    JavaClassType mainClassSignature = view.getIdentifierFactory().getClassType("ICFGExample2");
 
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
@@ -124,8 +121,8 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
     view = new JavaView(inputLocations);
 
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGArrayListExample");
+    JavaClassType mainClassSignature =
+        view.getIdentifierFactory().getClassType("ICFGArrayListExample");
 
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
@@ -154,8 +151,8 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
     view = new JavaView(inputLocations);
 
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGInterfaceExample");
+    JavaClassType mainClassSignature =
+        view.getIdentifierFactory().getClassType("ICFGInterfaceExample");
 
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);

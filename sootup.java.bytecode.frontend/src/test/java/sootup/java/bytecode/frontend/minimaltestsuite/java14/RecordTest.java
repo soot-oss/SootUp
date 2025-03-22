@@ -18,7 +18,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.PrimitiveType;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
@@ -29,7 +28,7 @@ public class RecordTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
   public JavaClassType getDeclaredClassSignature() {
-    return JavaIdentifierFactory.getInstance().getClassType("RecordTest");
+    return identifierFactory.getClassType("RecordTest");
   }
 
   @Override

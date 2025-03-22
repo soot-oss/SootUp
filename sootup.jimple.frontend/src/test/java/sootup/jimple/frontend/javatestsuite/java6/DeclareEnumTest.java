@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.jimple.frontend.javatestsuite.JimpleTestSuiteBase;
 
 /**
@@ -16,8 +15,8 @@ public class DeclareEnumTest extends JimpleTestSuiteBase {
   public void test() {
     SootClass sc =
         loadClass(
-            JavaIdentifierFactory.getInstance()
-                .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$Type"));
+            identifierFactory.getClassType(
+                getDeclaredClassSignature().getFullyQualifiedName() + "$Type"));
     assertTrue(sc.isEnum());
   }
 }
