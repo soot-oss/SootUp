@@ -56,7 +56,7 @@ jobs:
         run:  mvn -ntp jacoco:merge@merge-results  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: aggregate coverage reports across java versions
-        run: mvn -ntp jacoco:report-aggregate@generate-coverage-report  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -ntp jacoco:report-aggregate@generate-coverage-report -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: upload aggregated coverage artifact
         uses: actions/upload-artifact@v4
@@ -75,15 +75,3 @@ jobs:
         with:
           files: sootup.report/target/jacoco-aggregate/jacoco.xml
 
-
-  publish-javadoc:
-    if: github.base_ref == 'develop'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy JavaDoc 🚀
-        uses: MathieuSoysal/Javadoc-publisher.yml@v2.0.4
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          javadoc-branch: gh-pages
-          java-version: 17
-          target-folder: apidocs
