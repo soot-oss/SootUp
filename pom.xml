@@ -291,7 +291,7 @@
                                     <!-- path refers to artifact download folder structure in maven.yml -->
                                     <directory>${project.build.directory}/coverage-reports/</directory>
                                     <includes>
-                                        <include>jacoco-ut-*.exec</include>
+                                        <include>jacoco-ut*.exec</include>
                                     </includes>
                                 </fileSet>
                             </fileSets>
