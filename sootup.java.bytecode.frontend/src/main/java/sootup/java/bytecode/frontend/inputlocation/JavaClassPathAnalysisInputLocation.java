@@ -149,7 +149,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
       @NonNull String entry, FileSystem fileSystem) {
     if (entry.endsWith(WILDCARD_CHAR)) {
       Path baseDir = fileSystem.getPath(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
-      try (final DirectoryStream<Path> paths = Files.newDirectoryStream(baseDir, "*.{jar,JAR}"); ) {
+      try (final DirectoryStream<Path> paths = Files.newDirectoryStream(baseDir, "*.{jar,JAR}")) {
         return StreamUtils.iteratorToStream(paths.iterator());
       } catch (PatternSyntaxException | NotDirectoryException e) {
         throw new IllegalStateException("Malformed wildcard entry", e);

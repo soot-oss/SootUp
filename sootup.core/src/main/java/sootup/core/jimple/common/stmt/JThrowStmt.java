@@ -35,7 +35,7 @@ import sootup.core.util.printer.StmtPrinter;
 /** A statement that throws an Exception */
 public final class JThrowStmt extends AbstractStmt {
 
-  protected final Immediate op;
+  private final Immediate op;
 
   public JThrowStmt(@NonNull Immediate op, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);

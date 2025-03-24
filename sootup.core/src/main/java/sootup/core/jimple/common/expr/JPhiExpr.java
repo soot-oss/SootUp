@@ -89,7 +89,6 @@ public final class JPhiExpr implements Expr {
     return args.get(index);
   }
 
-  @NonNull
   public int getArgIndex(@NonNull BasicBlock<?> block) {
     if (!this.blockToArg.containsKey(block)) {
       throw new RuntimeException("The given block: " + block + " is not contained by PhiExpr!");

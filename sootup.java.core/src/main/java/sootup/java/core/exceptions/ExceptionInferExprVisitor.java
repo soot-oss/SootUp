@@ -294,13 +294,11 @@ public class ExceptionInferExprVisitor extends AbstractExprVisitor {
 
   private boolean isZero(Constant constant) {
     if (constant instanceof NumericConstant) {
-      if ((constant instanceof IntConstant && constant.equals(IntConstant.getInstance(0)))
+      return (constant instanceof IntConstant && constant.equals(IntConstant.getInstance(0)))
           || (constant instanceof LongConstant && constant.equals(LongConstant.getInstance(0)))
           || (constant instanceof FloatConstant && constant.equals(FloatConstant.getInstance(0.0f)))
           || (constant instanceof DoubleConstant
-              && constant.equals(DoubleConstant.getInstance(0.0)))) {
-        return true;
-      }
+              && constant.equals(DoubleConstant.getInstance(0.0)));
     }
     return false;
   }

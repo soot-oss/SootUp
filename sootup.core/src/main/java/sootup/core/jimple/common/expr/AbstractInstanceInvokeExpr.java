@@ -50,7 +50,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   public Stream<Value> getUses() {
     return Stream.concat(
         Stream.concat(
-            Stream.concat(getArgs().stream(), getArgs().stream().flatMap(arg -> arg.getUses())),
+            Stream.concat(getArgs().stream(), getArgs().stream().flatMap(Value::getUses)),
             base.getUses()),
         Stream.of(base));
   }

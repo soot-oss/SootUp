@@ -73,7 +73,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     builder
         .append(Jimple.INTERFACEINVOKE)
         .append(" ")
-        .append(getBase().toString())
+        .append(getBase())
         .append(".")
         .append(getMethodSignature())
         .append("(");

@@ -23,7 +23,6 @@ package sootup.core.util;
  */
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,17 +56,16 @@ public class Utils {
     List<BodyInterceptor> interceptors = new ArrayList<>(bodyInterceptors.size() * 2 + 1);
     bodyInterceptors.stream()
         .map(
-            b -> {
-              return (BodyInterceptor)
-                  (builder, view) -> {
-                    try {
-                      bi.apply(b, builder);
-                    } catch (Exception e) {
-                      throw new RuntimeException(e);
-                    }
-                    b.interceptBody(builder, view);
-                  };
-            })
+            b ->
+                (BodyInterceptor)
+                    (builder, view) -> {
+                      try {
+                        bi.apply(b, builder);
+                      } catch (Exception e) {
+                        throw new RuntimeException(e);
+                      }
+                      b.interceptBody(builder, view);
+                    })
         .forEach(interceptors::add);
     return interceptors;
   }
@@ -85,7 +83,7 @@ public class Utils {
       sourceFile.deleteOnExit();
 
       Path compileUnitPath = sourceFile.toPath();
-      Files.write(compileUnitPath, javaSourceContent.getBytes(StandardCharsets.UTF_8));
+      Files.writeString(compileUnitPath, javaSourceContent);
       return compileJavaOTF(compileUnitPath);
     } catch (IOException e) {
       e.printStackTrace();
@@ -239,7 +237,7 @@ public class Utils {
                 .append('"')
                 .append(',')
                 .append("\n"));
-    if (stmts.size() > 0) {
+    if (!stmts.isEmpty()) {
       sb.setCharAt(sb.length() - 2, '\n');
     }
 

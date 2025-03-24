@@ -32,11 +32,11 @@ public class FloatConstant implements RealConstant<FloatConstant> {
 
   private final float value;
 
-  private FloatConstant(@NonNull float value) {
+  private FloatConstant(float value) {
     this.value = value;
   }
 
-  public static FloatConstant getInstance(@NonNull float value) {
+  public static FloatConstant getInstance(float value) {
     return new FloatConstant(value);
   }
 

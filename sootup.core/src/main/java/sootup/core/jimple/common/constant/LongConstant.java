@@ -32,11 +32,11 @@ public class LongConstant implements ShiftableConstant<LongConstant> {
 
   private final long value;
 
-  private LongConstant(@NonNull long value) {
+  private LongConstant(long value) {
     this.value = value;
   }
 
-  public static LongConstant getInstance(@NonNull long value) {
+  public static LongConstant getInstance(long value) {
     return new LongConstant(value);
   }
 

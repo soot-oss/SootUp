@@ -37,7 +37,7 @@ import sootup.core.util.printer.StmtPrinter;
 /** A statement that enters a JVM monitor, thereby synchronizing its following statements. */
 public final class JEnterMonitorStmt extends AbstractStmt implements FallsThroughStmt {
 
-  protected final Immediate op;
+  private final Immediate op;
 
   public JEnterMonitorStmt(@NonNull Immediate op, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);

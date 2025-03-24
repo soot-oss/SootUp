@@ -203,7 +203,7 @@ final class WarArchiveAnalysisInputLocation extends DirectoryBasedAnalysisInputL
 
           } else {
             try (OutputStream fos = Files.newOutputStream(file.toPath());
-                BufferedOutputStream bos = new BufferedOutputStream(fos); ) {
+                BufferedOutputStream bos = new BufferedOutputStream(fos)) {
               while ((readBytesZip = zis.read(incomingValues)) != -1) {
                 if (extractedSize > maxAllowedBytesToExtract) {
                   throw new RuntimeException(

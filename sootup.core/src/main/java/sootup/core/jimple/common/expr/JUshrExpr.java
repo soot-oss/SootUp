@@ -38,7 +38,7 @@ public final class JUshrExpr extends AbstractIntLongBinopExpr {
 
   @NonNull
   @Override
-  public final String getSymbol() {
+  public String getSymbol() {
     return " >>> ";
   }
 

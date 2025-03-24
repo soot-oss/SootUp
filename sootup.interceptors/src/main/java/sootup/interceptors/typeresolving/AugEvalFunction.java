@@ -193,7 +193,7 @@ public class AugEvalFunction {
         ClassType type = null;
         for (ClassType exceptionType : exceptionTypes) {
           Optional<?> exceptionClassOpt = view.getClass(exceptionType);
-          if (!exceptionClassOpt.isPresent()) {
+          if (exceptionClassOpt.isEmpty()) {
             return throwableClassType;
           }
           if (type == null) {
@@ -254,7 +254,7 @@ public class AugEvalFunction {
     while (exceptionType != throwableClassType) {
       final Optional<? extends ClassType> superclassOpt =
           view.getClass(exceptionType).flatMap(SootClass::getSuperclass);
-      if (!superclassOpt.isPresent()) {
+      if (superclassOpt.isEmpty()) {
         // Note: We have progressed as far as the available information allows.
         logger.warn(
             "The path from '"

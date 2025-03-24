@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.*;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.io.FilenameUtils;
 import org.jspecify.annotations.NonNull;
@@ -170,7 +169,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
                       StreamUtils.optionalToStream(
                           classProvider.createClassSource(this, p, fromPath(p, identifierFactory))))
               .map(src -> (JavaSootClassSource) src)
-              .collect(Collectors.toList());
+              .toList();
       return javaSootClassSources.stream();
     } catch (IOException e) {
       throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);

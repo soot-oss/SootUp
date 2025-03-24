@@ -35,7 +35,7 @@ public final class JNeExpr extends AbstractConditionExpr {
 
   @NonNull
   @Override
-  public final String getSymbol() {
+  public String getSymbol() {
     return " != ";
   }
 

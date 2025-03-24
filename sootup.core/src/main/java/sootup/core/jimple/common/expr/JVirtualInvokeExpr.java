@@ -51,7 +51,7 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     StringBuilder builder = new StringBuilder();
     builder
         .append(Jimple.VIRTUALINVOKE + " ")
-        .append(getBase().toString())
+        .append(getBase())
         .append(".")
         .append(getMethodSignature())
         .append("(");

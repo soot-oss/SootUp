@@ -32,11 +32,11 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
 
   private final int value;
 
-  protected IntConstant(@NonNull int value) {
+  protected IntConstant(int value) {
     this.value = value;
   }
 
-  public static IntConstant getInstance(@NonNull int value) {
+  public static IntConstant getInstance(int value) {
     return new IntConstant(value);
   }
 

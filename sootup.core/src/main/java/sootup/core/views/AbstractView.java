@@ -63,7 +63,7 @@ public abstract class AbstractView implements View {
   @NonNull
   public Optional<? extends SootMethod> getMethod(@NonNull MethodSignature signature) {
     final Optional<? extends SootClass> aClass = getClass(signature.getDeclClassType());
-    if (!aClass.isPresent()) {
+    if (aClass.isEmpty()) {
       return Optional.empty();
     }
     return aClass.get().getMethod(signature.getSubSignature());
@@ -73,7 +73,7 @@ public abstract class AbstractView implements View {
   @NonNull
   public Optional<? extends SootField> getField(@NonNull FieldSignature signature) {
     final Optional<? extends SootClass> aClass = getClass(signature.getDeclClassType());
-    if (!aClass.isPresent()) {
+    if (aClass.isEmpty()) {
       return Optional.empty();
     }
     return aClass.get().getField(signature.getSubSignature());

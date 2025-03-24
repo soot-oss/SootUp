@@ -104,7 +104,7 @@ public final class JNewMultiArrayExpr implements Expr {
     return baseType;
   }
 
-  public Immediate getSize(@NonNull int index) {
+  public Immediate getSize(int index) {
     return sizes.get(index);
   }
 

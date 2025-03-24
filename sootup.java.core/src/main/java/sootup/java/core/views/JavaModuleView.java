@@ -94,7 +94,7 @@ public class JavaModuleView extends JavaView {
     }
 
     Optional<JavaModuleInfo> moduleInfoOpt = getModuleInfo(packageName.getModuleSignature());
-    if (!moduleInfoOpt.isPresent()) {
+    if (moduleInfoOpt.isEmpty()) {
       throw new IllegalStateException("ModuleDescriptor not available.");
     }
     JavaModuleInfo moduleInfo = moduleInfoOpt.get();
@@ -146,7 +146,7 @@ public class JavaModuleView extends JavaView {
       @NonNull ModulePackageName entryPackage, @NonNull JavaClassType type) {
 
     Optional<JavaModuleInfo> startOpt = getModuleInfo(entryPackage.getModuleSignature());
-    if (!startOpt.isPresent()) {
+    if (startOpt.isEmpty()) {
       return Optional.empty();
     }
 
@@ -252,7 +252,7 @@ public class JavaModuleView extends JavaView {
 
     while (!stack.isEmpty()) {
       Optional<JavaModuleInfo> moduleInfoOpt = getModuleInfo(stack.pop());
-      if (!moduleInfoOpt.isPresent()) {
+      if (moduleInfoOpt.isEmpty()) {
         continue;
       }
       JavaModuleInfo moduleInfo = moduleInfoOpt.get();
@@ -284,7 +284,7 @@ public class JavaModuleView extends JavaView {
       @NonNull ModuleSignature moduleSignature) {
 
     Optional<JavaModuleInfo> startOpt = getModuleInfo(moduleSignature);
-    if (!startOpt.isPresent()) {
+    if (startOpt.isEmpty()) {
       return Collections.emptyList();
     }
 

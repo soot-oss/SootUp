@@ -51,7 +51,7 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
     builder
         .append(Jimple.SPECIALINVOKE + " ")
-        .append(getBase().toString())
+        .append(getBase())
         .append(".")
         .append(getMethodSignature())
         .append("(");

@@ -69,7 +69,7 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
 
   private OverridingClassSource getOverridingClassSource(
       String jimpleFileContents, List<BodyInterceptor> bodyInterceptors, View view) {
-    final @NonNull OverridingClassSource classSource;
+    final OverridingClassSource classSource;
     try {
       JimpleConverter jimpleConverter = new JimpleConverter();
       classSource =

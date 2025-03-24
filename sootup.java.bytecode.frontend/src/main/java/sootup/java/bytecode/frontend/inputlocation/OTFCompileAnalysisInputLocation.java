@@ -32,7 +32,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.tools.*;
 import org.jspecify.annotations.NonNull;
@@ -185,7 +184,7 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
         fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singleton(binDir));
 
         File[] files = new File[srcFiles.size()];
-        srcFiles.stream().map(Path::toFile).collect(Collectors.toList()).toArray(files);
+        srcFiles.stream().map(Path::toFile).toList().toArray(files);
         Iterable<? extends JavaFileObject> javaFileObjects = fileManager.getJavaFileObjects(files);
 
         try (Writer writer = new StringWriter()) {

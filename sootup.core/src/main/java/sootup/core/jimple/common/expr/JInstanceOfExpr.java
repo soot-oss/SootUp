@@ -47,7 +47,7 @@ public final class JInstanceOfExpr implements Expr {
 
   @Override
   public String toString() {
-    return op.toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
+    return op + " " + Jimple.INSTANCEOF + " " + checkType;
   }
 
   @Override

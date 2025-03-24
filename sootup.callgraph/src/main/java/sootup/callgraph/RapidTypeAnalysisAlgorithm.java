@@ -125,7 +125,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   protected Stream<MethodSignature> resolveCall(
       SootMethod sourceMethod, InvokableStmt invokableStmt) {
     Optional<AbstractInvokeExpr> optInvokeExpr = invokableStmt.getInvokeExpr();
-    if (!optInvokeExpr.isPresent()) {
+    if (optInvokeExpr.isEmpty()) {
       return Stream.empty();
     }
     AbstractInvokeExpr invokeExpr = optInvokeExpr.get();

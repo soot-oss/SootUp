@@ -35,7 +35,7 @@ public final class JSubExpr extends AbstractFloatBinopExpr {
 
   @NonNull
   @Override
-  public final String getSymbol() {
+  public String getSymbol() {
     return " - ";
   }
 

@@ -46,7 +46,7 @@ public final class JParameterRef implements IdentityRef {
    * Constructs a ParameterRef object of the specified type, representing the specified parameter
    * number.
    */
-  public JParameterRef(@NonNull Type paramType, @NonNull int number) {
+  public JParameterRef(@NonNull Type paramType, int number) {
     this.index = number;
     this.paramType = paramType;
   }
@@ -103,7 +103,7 @@ public final class JParameterRef implements IdentityRef {
   }
 
   @NonNull
-  public JParameterRef withNumber(@NonNull int number) {
+  public JParameterRef withNumber(int number) {
     return new JParameterRef(paramType, number);
   }
 }

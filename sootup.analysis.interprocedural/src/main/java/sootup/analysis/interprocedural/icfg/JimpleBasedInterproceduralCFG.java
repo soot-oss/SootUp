@@ -35,6 +35,7 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph;
+import sootup.callgraph.CallGraph.Call;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -96,7 +97,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         public Collection<Stmt> load(SootMethod method) {
           Set<CallGraph.Call> calls = cg.callsTo(method.getSignature());
           Set<Stmt> callerStmts =
-              calls.stream().map(c -> c.getInvokableStmt()).collect(Collectors.toSet());
+              calls.stream().map(Call::getInvokableStmt).collect(Collectors.toSet());
           return callerStmts;
         }
       };

@@ -37,7 +37,7 @@ import sootup.core.util.printer.StmtPrinter;
 /** A statement that exits a JVM monitor, thereby ending synchronization. */
 public final class JExitMonitorStmt extends AbstractStmt implements FallsThroughStmt {
 
-  protected final Immediate op;
+  private final Immediate op;
 
   public JExitMonitorStmt(@NonNull Immediate op, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);

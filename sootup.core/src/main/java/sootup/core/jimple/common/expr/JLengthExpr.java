@@ -50,7 +50,7 @@ public final class JLengthExpr extends AbstractUnopExpr {
 
   @Override
   public String toString() {
-    return Jimple.LENGTHOF + " " + getOp().toString();
+    return Jimple.LENGTHOF + " " + getOp();
   }
 
   @Override

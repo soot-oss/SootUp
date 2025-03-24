@@ -38,11 +38,11 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
 
   private final double value;
 
-  private DoubleConstant(@NonNull double value) {
+  private DoubleConstant(double value) {
     this.value = value;
   }
 
-  public static DoubleConstant getInstance(@NonNull double value) {
+  public static DoubleConstant getInstance(double value) {
     return new DoubleConstant(value);
   }
 

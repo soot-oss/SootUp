@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
+import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 
 public class JavaAnnotationSootClass extends JavaSootClass {
@@ -44,6 +45,6 @@ public class JavaAnnotationSootClass extends JavaSootClass {
   @NonNull
   public Map<String, Object> getDefaultValues() {
     return getAnnotationMethods().stream()
-        .collect(Collectors.toMap(method -> method.getName(), method -> method.getDefaultValue()));
+        .collect(Collectors.toMap(SootMethod::getName, JavaAnnotationSootMethod::getDefaultValue));
   }
 }

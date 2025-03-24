@@ -53,7 +53,7 @@ public final class JNegExpr extends AbstractUnopExpr {
 
   @Override
   public String toString() {
-    return Jimple.NEG + " " + getOp().toString();
+    return Jimple.NEG + " " + getOp();
   }
 
   @Override

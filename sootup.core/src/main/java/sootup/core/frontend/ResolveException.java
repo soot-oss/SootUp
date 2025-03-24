@@ -43,7 +43,7 @@ public class ResolveException extends RuntimeException {
 
   public ResolveException(
       @NonNull String message, @NonNull Path sourcePath, @NonNull Position position) {
-    this(message, "file:/" + sourcePath.toAbsolutePath().toString(), position);
+    this(message, "file:/" + sourcePath.toAbsolutePath(), position);
   }
 
   private ResolveException(
@@ -62,7 +62,7 @@ public class ResolveException extends RuntimeException {
       @NonNull Path sourcePath,
       @NonNull Position position,
       @NonNull Exception e) {
-    this(message, "file:/" + sourcePath.toAbsolutePath().toString(), position, e);
+    this(message, "file:/" + sourcePath.toAbsolutePath(), position, e);
   }
 
   private ResolveException(

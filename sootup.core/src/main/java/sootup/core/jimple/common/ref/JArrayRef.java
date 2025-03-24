@@ -55,7 +55,7 @@ public final class JArrayRef implements ConcreteRef, LValue {
 
   @Override
   public String toString() {
-    return base.toString() + "[" + index.toString() + "]";
+    return base + "[" + index + "]";
   }
 
   @Override

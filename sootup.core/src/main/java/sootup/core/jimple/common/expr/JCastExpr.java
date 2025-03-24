@@ -55,7 +55,7 @@ public final class JCastExpr implements Expr {
 
   @Override
   public String toString() {
-    return "(" + type.toString() + ") " + op.toString();
+    return "(" + type + ") " + op;
   }
 
   @Override

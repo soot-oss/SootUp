@@ -280,7 +280,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               if (invokableStmt.containsInvokeExpr()) {
                 // static method call
                 Optional<AbstractInvokeExpr> exprOptional = invokableStmt.getInvokeExpr();
-                if (!exprOptional.isPresent()) return;
+                if (exprOptional.isEmpty()) return;
                 AbstractInvokeExpr expr = exprOptional.get();
                 if (expr instanceof JStaticInvokeExpr) {
                   ClassType newTargetClass = expr.getMethodSignature().getDeclClassType();

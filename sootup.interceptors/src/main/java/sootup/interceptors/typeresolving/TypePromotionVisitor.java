@@ -73,7 +73,6 @@ public class TypePromotionVisitor extends TypeChecker {
     }
     if (!hierarchy.isAncestor(stdType, evaType)) {
       if (!hierarchy.isAncestor(evaType, stdType)) {
-        assert value instanceof Local;
         // The type of the local and the type that is required in the statement are incompatible,
         // so the type of the local needs to be upgraded to a common ancestor.
         Collection<Type> lca = hierarchy.getLeastCommonAncestors(evaType, stdType);

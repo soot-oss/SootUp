@@ -48,7 +48,7 @@ public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
 
   @Override
   public String toString() {
-    return Jimple.RET + " " + stmtAddress.toString();
+    return Jimple.RET + " " + stmtAddress;
   }
 
   @Override

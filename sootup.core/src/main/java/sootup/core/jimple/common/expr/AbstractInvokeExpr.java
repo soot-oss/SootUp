@@ -81,10 +81,10 @@ public abstract class AbstractInvokeExpr implements Expr {
   protected void argsToString(@NonNull StringBuilder builder) {
     final int len = getArgCount();
     if (0 < len) {
-      builder.append(args[0].toString());
+      builder.append(args[0]);
       for (int i = 1; i < len; i++) {
         builder.append(", ");
-        builder.append(args[i].toString());
+        builder.append(args[i]);
       }
     }
   }

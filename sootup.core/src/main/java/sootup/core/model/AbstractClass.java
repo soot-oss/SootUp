@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
-import sootup.core.signatures.*;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.Signature;

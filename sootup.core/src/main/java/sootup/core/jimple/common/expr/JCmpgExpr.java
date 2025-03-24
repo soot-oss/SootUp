@@ -35,7 +35,7 @@ public final class JCmpgExpr extends AbstractIntBinopExpr {
 
   @NonNull
   @Override
-  public final String getSymbol() {
+  public String getSymbol() {
     return " " + Jimple.CMPG + " ";
   }
 

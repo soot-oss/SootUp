@@ -35,7 +35,7 @@ import sootup.core.util.printer.StmtPrinter;
 /** A statement that ends the method, returning a value. */
 public final class JReturnStmt extends AbstractStmt {
 
-  protected final Immediate op;
+  private final Immediate op;
 
   public JReturnStmt(@NonNull Immediate returnValue, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);

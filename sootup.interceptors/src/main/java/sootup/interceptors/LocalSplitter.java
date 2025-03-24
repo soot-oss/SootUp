@@ -24,7 +24,6 @@ package sootup.interceptors;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.LValue;
@@ -212,7 +211,7 @@ public class LocalSplitter implements BodyInterceptor {
       List<AbstractDefinitionStmt> assignments =
           assignmentsByLocal.getOrDefault(local, Collections.emptyList()).stream()
               .map(i -> (AbstractDefinitionStmt) stmts.get(i))
-              .collect(Collectors.toList());
+              .toList();
 
       if (assignments.size() <= 1) {
         // There is only a single assignment to the local, so no splitting is necessary
@@ -244,7 +243,7 @@ public class LocalSplitter implements BodyInterceptor {
           // a new assignment to the local -> end walk here
           // otherwise continue by adding all successors to the stack
           Optional<LValue> defOpt = stmt.getDef();
-          if (!defOpt.isPresent() || defOpt.get() != local) {
+          if (defOpt.isEmpty() || defOpt.get() != local) {
             stack.addAll(graph.getAllSuccessors(stmt));
           }
         }
@@ -314,11 +313,10 @@ public class LocalSplitter implements BodyInterceptor {
 
     for (int i = 0; i < statements.size(); i++) {
       Stmt stmt = statements.get(i);
-      if (!(stmt instanceof AbstractDefinitionStmt)) {
+      if (!(stmt instanceof AbstractDefinitionStmt defStmt)) {
         continue;
       }
 
-      AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
       LValue leftOp = defStmt.getLeftOp();
       if (!(leftOp instanceof Local)) {
         continue;
