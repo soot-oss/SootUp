@@ -75,15 +75,3 @@ jobs:
         with:
           files: sootup.report/target/jacoco-aggregate/jacoco.xml
 
-
-  publish-javadoc:
-    if: github.base_ref == 'develop'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy JavaDoc 🚀
-        uses: MathieuSoysal/Javadoc-publisher.yml@v3.0.2
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          javadoc-branch: gh-pages
-          java-version: 17
-          target-folder: apidocs
