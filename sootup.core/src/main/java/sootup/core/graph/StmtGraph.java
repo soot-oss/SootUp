@@ -27,8 +27,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
@@ -76,7 +76,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    * returns the nodes in this graph in a non-deterministic order (-&gt;Set) to get the nodes in
    * linearized, ordered manner use iterator() or getStmts.
    */
-  @Nonnull
+  @NonNull
   public abstract Collection<Stmt> getNodes();
 
   public List<Stmt> getStmts() {
@@ -85,37 +85,37 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     return res;
   }
 
-  @Nonnull
+  @NonNull
   public abstract Collection<? extends BasicBlock<?>> getBlocks();
 
-  @Nonnull
+  @NonNull
   public abstract List<? extends BasicBlock<?>> getBlocksSorted();
 
   public Iterator<BasicBlock<?>> getBlockIterator() {
     return new BlockGraphIterator(this);
   }
 
-  public abstract BasicBlock<?> getBlockOf(@Nonnull Stmt stmt);
+  public abstract BasicBlock<?> getBlockOf(@NonNull Stmt stmt);
 
-  public abstract boolean containsNode(@Nonnull Stmt node);
+  public abstract boolean containsNode(@NonNull Stmt node);
 
   /**
    * returns the ingoing flows to node as an List with no reliable/specific order and possibly
    * duplicate entries i.e. if a JSwitchStmt has multiple cases that brnach to `node`
    */
-  @Nonnull
-  public abstract List<Stmt> predecessors(@Nonnull Stmt node);
+  @NonNull
+  public abstract List<Stmt> predecessors(@NonNull Stmt node);
 
   /** it is possible to reach traphandlers through inline code i.e. without any exceptional flow */
-  @Nonnull
-  public abstract List<Stmt> exceptionalPredecessors(@Nonnull Stmt node);
+  @NonNull
+  public abstract List<Stmt> exceptionalPredecessors(@NonNull Stmt node);
 
   /** returns the outgoing flows of node as ordered List. The List can have duplicate entries! */
-  @Nonnull
-  public abstract List<Stmt> successors(@Nonnull Stmt node);
+  @NonNull
+  public abstract List<Stmt> successors(@NonNull Stmt node);
 
-  @Nonnull
-  public abstract Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node);
+  @NonNull
+  public abstract Map<ClassType, Stmt> exceptionalSuccessors(@NonNull Stmt node);
 
   /**
    * Collects all successors i.e. unexceptional and exceptional successors of a given stmt into a
@@ -124,8 +124,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    * @param stmt in the given graph
    * @return a list containing the unexceptional+exceptional successors of the given stmt
    */
-  @Nonnull
-  public List<Stmt> getAllSuccessors(@Nonnull Stmt stmt) {
+  @NonNull
+  public List<Stmt> getAllSuccessors(@NonNull Stmt stmt) {
     final List<Stmt> successors = successors(stmt);
     final Map<ClassType, Stmt> exSuccessors = exceptionalSuccessors(stmt);
     List<Stmt> allSuccessors = new ArrayList<>(successors.size() + exSuccessors.size());
@@ -135,13 +135,13 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   }
 
   /** returns the amount of ingoing flows into node */
-  public abstract int inDegree(@Nonnull Stmt node);
+  public abstract int inDegree(@NonNull Stmt node);
 
   /** returns the amount of flows that start from node */
-  public abstract int outDegree(@Nonnull Stmt node);
+  public abstract int outDegree(@NonNull Stmt node);
 
   /** returns the amount of flows with node as source or target. */
-  public int degree(@Nonnull Stmt node) {
+  public int degree(@NonNull Stmt node) {
     return inDegree(node) + outDegree(node);
   }
 
@@ -149,7 +149,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    * returns true if there is a flow between source and target throws an Exception if at least one
    * of the parameters is not contained in the graph.
    */
-  public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
+  public abstract boolean hasEdgeConnecting(@NonNull Stmt source, @NonNull Stmt target);
 
   /**
    * Removes the specified exceptional flow from all blocks.
@@ -164,7 +164,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    * returns a Collection of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and
    * JThrowStmt)
    */
-  @Nonnull
+  @NonNull
   public List<Stmt> getTails() {
     return getNodes().stream()
         .filter(stmt -> stmt.getExpectedSuccessorCount() == 0)
@@ -175,7 +175,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    * returns a Collection of all stmt in the graph that are either the starting stmt or only have an
    * exceptional ingoing flow
    */
-  @Nonnull
+  @NonNull
   public Collection<Stmt> getEntrypoints() {
     final ArrayList<Stmt> entrypoints = new ArrayList<>();
     entrypoints.add(getStartingStmt());
@@ -280,7 +280,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    * @return null if there is no such path.
    */
   @Nullable
-  public List<Stmt> getExtendedBasicBlockPathBetween(@Nonnull Stmt from, @Nonnull Stmt to) {
+  public List<Stmt> getExtendedBasicBlockPathBetween(@NonNull Stmt from, @NonNull Stmt to) {
 
     // if this holds, we're doomed to failure!!!
     if (inDegree(to) > 1) {
@@ -377,7 +377,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Iterator<Stmt> iterator() {
     return new BlockStmtGraphIterator();
   }
@@ -391,7 +391,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     return successors;
   }
 
-  public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
+  public boolean isStmtBranchTarget(@NonNull Stmt targetStmt) {
     final List<Stmt> predecessors = predecessors(targetStmt);
     if (predecessors.size() > 1) {
       // join node i.e. at least one is a branch
@@ -417,13 +417,13 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   private class BlockStmtGraphIterator implements Iterator<Stmt> {
 
     private final BlockGraphIterator blockIt;
-    @Nonnull private Iterator<Stmt> currentBlockIt = Collections.emptyIterator();
+    @NonNull private Iterator<Stmt> currentBlockIt = Collections.emptyIterator();
 
     public BlockStmtGraphIterator() {
       this(new BlockGraphIterator(StmtGraph.this));
     }
 
-    public BlockStmtGraphIterator(@Nonnull BlockGraphIterator blockIterator) {
+    public BlockStmtGraphIterator(@NonNull BlockGraphIterator blockIterator) {
       blockIt = blockIterator;
     }
 

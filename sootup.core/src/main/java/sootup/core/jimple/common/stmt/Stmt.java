@@ -23,7 +23,7 @@ package sootup.core.jimple.common.stmt;
  */
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.EquivTo;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -35,14 +35,11 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
-  @Nonnull
-  Stream<Value> getUses();
+  @NonNull Stream<Value> getUses();
 
-  @Nonnull
-  Optional<LValue> getDef();
+  @NonNull Optional<LValue> getDef();
 
-  @Nonnull
-  Stream<Value> getUsesAndDefs();
+  @NonNull Stream<Value> getUsesAndDefs();
 
   /**
    * Returns true if execution after this statement may continue at the following statement. (e.g.
@@ -58,7 +55,7 @@ public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
 
   int getExpectedSuccessorCount();
 
-  void toString(@Nonnull StmtPrinter up);
+  void toString(@NonNull StmtPrinter up);
 
   boolean containsArrayRef();
 
@@ -70,7 +67,7 @@ public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
 
   StmtPositionInfo getPositionInfo();
 
-  Stmt withNewUse(@Nonnull Value oldUse, @Nonnull Value newUse);
+  Stmt withNewUse(@NonNull Value oldUse, @NonNull Value newUse);
 
   boolean isInvokableStmt();
 

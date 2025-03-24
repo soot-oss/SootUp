@@ -23,7 +23,7 @@ package sootup.interceptors;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
@@ -42,7 +42,7 @@ public class LocalLivenessAnalyser {
   // e.g: a = b + c; live-in={b,c}  live-out={a,b,c}
   private final Map<Stmt, Set<Local>> liveOut = new HashMap<>();
 
-  public LocalLivenessAnalyser(@Nonnull StmtGraph<?> graph) {
+  public LocalLivenessAnalyser(@NonNull StmtGraph<?> graph) {
     // initial liveIn and liveOut
     List<Stmt> startingStmts = new ArrayList<>();
     for (Stmt stmt : graph.getNodes()) {
@@ -108,8 +108,8 @@ public class LocalLivenessAnalyser {
   }
 
   /** Get all live locals before the given stmt. */
-  @Nonnull
-  public Set<Local> getLiveLocalsBeforeStmt(@Nonnull Stmt stmt) {
+  @NonNull
+  public Set<Local> getLiveLocalsBeforeStmt(@NonNull Stmt stmt) {
     if (!liveIn.containsKey(stmt)) {
       throw new RuntimeException("Stmt: " + stmt + " is not in StmtGraph!");
     }
@@ -117,8 +117,8 @@ public class LocalLivenessAnalyser {
   }
 
   /** Get all live locals after the given stmt. */
-  @Nonnull
-  public Set<Local> getLiveLocalsAfterStmt(@Nonnull Stmt stmt) {
+  @NonNull
+  public Set<Local> getLiveLocalsAfterStmt(@NonNull Stmt stmt) {
     if (!liveOut.containsKey(stmt)) {
       throw new RuntimeException("Stmt: " + stmt + " is not in StmtGraph!");
     }
@@ -130,8 +130,8 @@ public class LocalLivenessAnalyser {
    *
    * @return a merged local set
    */
-  @Nonnull
-  private Set<Local> merge(@Nonnull Set<Local> set1, @Nonnull Set<Local> set2) {
+  @NonNull
+  private Set<Local> merge(@NonNull Set<Local> set1, @NonNull Set<Local> set2) {
     if (set1.isEmpty()) {
       return set2;
     } else {
@@ -145,7 +145,7 @@ public class LocalLivenessAnalyser {
    *
    * @return if same return true, else return false;
    */
-  private boolean isNotEqual(@Nonnull Set<Local> set1, @Nonnull Set<Local> set2) {
+  private boolean isNotEqual(@NonNull Set<Local> set1, @NonNull Set<Local> set2) {
     if (set1.size() != set2.size()) {
       return true;
     } else {

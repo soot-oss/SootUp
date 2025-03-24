@@ -27,8 +27,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -41,7 +41,7 @@ public class JavaSootClass extends SootClass implements HasAnnotation {
     super(classSource, sourceType);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public JavaClassType getType() {
     return (JavaClassType) super.getType();
@@ -55,14 +55,14 @@ public class JavaSootClass extends SootClass implements HasAnnotation {
    *
    * @return
    */
-  @Nonnull
+  @NonNull
   public Iterable<AnnotationUsage> getAnnotations() {
     // we should cache it in the future: for now, we do not cache it
     // because the underlying data structure might be mutable
     return ((JavaSootClassSource) classSource).resolveAnnotations();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Set<JavaSootMethod> getMethods() {
     return super.getMethods().stream()
@@ -70,7 +70,7 @@ public class JavaSootClass extends SootClass implements HasAnnotation {
         .collect(Collectors.toSet());
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Set<JavaSootField> getFields() {
     return super.getFields().stream()
@@ -78,52 +78,52 @@ public class JavaSootClass extends SootClass implements HasAnnotation {
         .collect(Collectors.toSet());
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Optional<JavaSootField> getField(@Nonnull String name) {
+  public Optional<JavaSootField> getField(@NonNull String name) {
     return super.getField(name).map(field -> (JavaSootField) field);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Optional<JavaSootField> getField(@Nonnull FieldSubSignature subSignature) {
+  public Optional<JavaSootField> getField(@NonNull FieldSubSignature subSignature) {
     return super.getField(subSignature).map(field -> (JavaSootField) field);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Optional<JavaSootMethod> getMethod(
-      @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes) {
+      @NonNull String name, @NonNull Iterable<? extends Type> parameterTypes) {
     return super.getMethod(name, parameterTypes).map(method -> (JavaSootMethod) method);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Set<JavaSootMethod> getMethodsByName(@Nonnull String name) {
+  public Set<JavaSootMethod> getMethodsByName(@NonNull String name) {
     return super.getMethodsByName(name).stream()
         .map(method -> (JavaSootMethod) method)
         .collect(Collectors.toSet());
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Optional<JavaSootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
+  public Optional<JavaSootMethod> getMethod(@NonNull MethodSubSignature subSignature) {
     return super.getMethod(subSignature).map(method -> (JavaSootMethod) method);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public JavaSootClassSource getClassSource() {
     return (JavaSootClassSource) super.getClassSource();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Optional<JavaClassType> getOuterClass() {
     return super.getOuterClass().map(ct -> (JavaClassType) ct);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Optional<JavaClassType> getSuperclass() {
     return super.getSuperclass().map(ct -> (JavaClassType) ct);
@@ -137,62 +137,62 @@ public class JavaSootClass extends SootClass implements HasAnnotation {
    * completely. {@link OverridingJavaClassSource} allows for replacing specific parts of a class,
    * such as fields and methods.
    */
-  @Nonnull
+  @NonNull
   public JavaSootClass withOverridingClassSource(
       Function<OverridingJavaClassSource, OverridingJavaClassSource> overrider) {
     return new JavaSootClass(
         overrider.apply(new OverridingJavaClassSource(getClassSource())), sourceType);
   }
 
-  @Nonnull
+  @NonNull
   public JavaSootClass withReplacedMethod(
-      @Nonnull JavaSootMethod toReplace, @Nonnull JavaSootMethod replacement) {
+      @NonNull JavaSootMethod toReplace, @NonNull JavaSootMethod replacement) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withReplacedMethod(toReplace, replacement),
         sourceType);
   }
 
-  @Nonnull
-  public JavaSootClass withMethods(@Nonnull Collection<JavaSootMethod> methods) {
+  @NonNull
+  public JavaSootClass withMethods(@NonNull Collection<JavaSootMethod> methods) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withMethods(methods), sourceType);
   }
 
-  @Nonnull
+  @NonNull
   public JavaSootClass withReplacedField(
-      @Nonnull JavaSootField toReplace, @Nonnull JavaSootField replacement) {
+      @NonNull JavaSootField toReplace, @NonNull JavaSootField replacement) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withReplacedField(toReplace, replacement),
         sourceType);
   }
 
-  @Nonnull
-  public JavaSootClass withFields(@Nonnull Collection<JavaSootField> fields) {
+  @NonNull
+  public JavaSootClass withFields(@NonNull Collection<JavaSootField> fields) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withFields(fields), sourceType);
   }
 
-  @Nonnull
-  public JavaSootClass withModifiers(@Nonnull Set<ClassModifier> modifiers) {
+  @NonNull
+  public JavaSootClass withModifiers(@NonNull Set<ClassModifier> modifiers) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withModifiers(modifiers), sourceType);
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-  @Nonnull
-  public JavaSootClass withSuperclass(@Nonnull Optional<JavaClassType> superclass) {
+  @NonNull
+  public JavaSootClass withSuperclass(@NonNull Optional<JavaClassType> superclass) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withSuperclass(superclass), sourceType);
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-  @Nonnull
-  public JavaSootClass withOuterClass(@Nonnull Optional<JavaClassType> outerClass) {
+  @NonNull
+  public JavaSootClass withOuterClass(@NonNull Optional<JavaClassType> outerClass) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withOuterClass(outerClass), sourceType);
   }
 
-  @Nonnull
+  @NonNull
   public JavaSootClass withPosition(@Nullable Position position) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withPosition(position), sourceType);

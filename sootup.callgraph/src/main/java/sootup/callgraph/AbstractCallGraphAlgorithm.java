@@ -25,7 +25,7 @@ package sootup.callgraph;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
@@ -57,9 +57,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractCallGraphAlgorithm.class);
 
-  @Nonnull protected final View view;
+  @NonNull protected final View view;
 
-  protected AbstractCallGraphAlgorithm(@Nonnull View view) {
+  protected AbstractCallGraphAlgorithm(@NonNull View view) {
     this.view = view;
   }
 
@@ -71,7 +71,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *     graph generation.
    * @return the complete constructed call graph starting from the entry methods.
    */
-  @Nonnull
+  @NonNull
   final CallGraph constructCompleteCallGraph(List<MethodSignature> entryPoints) {
     Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
     Set<MethodSignature> processed = new HashSet<>();
@@ -186,11 +186,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *     added
    */
   protected void addCallToCG(
-      @Nonnull MethodSignature source,
-      @Nonnull MethodSignature target,
-      @Nonnull InvokableStmt invokeStmt,
-      @Nonnull MutableCallGraph cg,
-      @Nonnull Deque<MethodSignature> workList) {
+      @NonNull MethodSignature source,
+      @NonNull MethodSignature target,
+      @NonNull InvokableStmt invokeStmt,
+      @NonNull MutableCallGraph cg,
+      @NonNull Deque<MethodSignature> workList) {
     if (!cg.containsMethod(source)) {
       cg.addMethod(source);
       workList.push(source);
@@ -280,7 +280,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               if (invokableStmt.containsInvokeExpr()) {
                 // static method call
                 Optional<AbstractInvokeExpr> exprOptional = invokableStmt.getInvokeExpr();
-                if (!exprOptional.isPresent()) return;
+                if (exprOptional.isEmpty()) return;
                 AbstractInvokeExpr expr = exprOptional.get();
                 if (expr instanceof JStaticInvokeExpr) {
                   ClassType newTargetClass = expr.getMethodSignature().getDeclClassType();
@@ -352,8 +352,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected abstract void preProcessingMethod(
       MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
-      @Nonnull MutableCallGraph cg);
+      @NonNull Deque<MethodSignature> workList,
+      @NonNull MutableCallGraph cg);
 
   /**
    * This method enables optional post-processing of a method in the call graph algorithm
@@ -364,12 +364,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected abstract void postProcessingMethod(
       MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
-      @Nonnull MutableCallGraph cg);
+      @NonNull Deque<MethodSignature> workList,
+      @NonNull MutableCallGraph cg);
 
-  @Nonnull
+  @NonNull
   @Override
-  public CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull ClassType classType) {
+  public CallGraph addClass(@NonNull CallGraph oldCallGraph, @NonNull ClassType classType) {
     SootClass clazz = view.getClassOrThrow(classType);
     Set<MethodSignature> newMethodSignatures =
         clazz.getMethods().stream()
@@ -468,7 +468,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return a stream of all reachable method signatures defined by the applied call graph
    *     algorithm.
    */
-  @Nonnull
+  @NonNull
   protected abstract Stream<MethodSignature> resolveCall(
       SootMethod method, InvokableStmt invokableStmt);
 
@@ -477,7 +477,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * This is done by checking each superclass and the class itself for whether it contains the
    * concrete implementation.
    */
-  @Nonnull
+  @NonNull
   public static Optional<MethodSignature> resolveConcreteDispatch(View view, MethodSignature m) {
     Optional<? extends SootMethod> methodOp = findConcreteMethod(view, m);
     if (methodOp.isPresent()) {
@@ -498,7 +498,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return the found method object, or null if the method was not found.
    */
   public static Optional<SootMethod> findConcreteMethod(
-      @Nonnull View view, @Nonnull MethodSignature sig) {
+      @NonNull View view, @NonNull MethodSignature sig) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     SootClass startclass = view.getClass(sig.getDeclClassType()).orElse(null);
     if (startclass == null) {

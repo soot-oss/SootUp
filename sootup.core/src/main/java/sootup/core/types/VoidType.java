@@ -22,15 +22,15 @@ package sootup.core.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 
 /** Represents Java's 'void' type as methods return's type. */
 public class VoidType extends Type {
 
-  @Nonnull private static final VoidType INSTANCE = new VoidType();
+  @NonNull private static final VoidType INSTANCE = new VoidType();
 
-  @Nonnull
+  @NonNull
   public static VoidType getInstance() {
     return INSTANCE;
   }
@@ -38,13 +38,13 @@ public class VoidType extends Type {
   private VoidType() {}
 
   @Override
-  @Nonnull
+  @NonNull
   public String toString() {
     return "void";
   }
 
   @Override
-  public <V extends TypeVisitor> V accept(@Nonnull V v) {
+  public <V extends TypeVisitor> V accept(@NonNull V v) {
     v.caseVoidType();
     return v;
   }

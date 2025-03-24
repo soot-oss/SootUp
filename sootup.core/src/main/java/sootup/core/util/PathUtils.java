@@ -26,7 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.inputlocation.FileType;
 
 /**
@@ -45,7 +45,7 @@ public class PathUtils {
    *     a dot followed by either of the extensions defined by the given {@link FileType}s
    *     otherwise.
    */
-  public static boolean hasExtension(@Nonnull Path path, @Nonnull FileType... extensions) {
+  public static boolean hasExtension(@NonNull Path path, @NonNull FileType... extensions) {
     return hasExtension(path, Arrays.asList(extensions));
   }
 
@@ -54,7 +54,7 @@ public class PathUtils {
    *
    * @see PathUtils#hasExtension(Path, FileType...)
    */
-  public static boolean hasExtension(@Nonnull Path path, @Nonnull Collection<FileType> extensions) {
+  public static boolean hasExtension(@NonNull Path path, @NonNull Collection<FileType> extensions) {
     if (Files.isDirectory(path)) {
       return false;
     }
@@ -72,7 +72,7 @@ public class PathUtils {
     return str.regionMatches(true, str.length() - suffixLength, suffix, 0, suffixLength);
   }
 
-  public static boolean isArchive(@Nonnull Path path) {
+  public static boolean isArchive(@NonNull Path path) {
     return hasExtension(path, FileType.ARCHIVE_TYPES);
   }
 }

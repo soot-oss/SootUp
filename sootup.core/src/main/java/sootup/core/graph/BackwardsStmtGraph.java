@@ -22,7 +22,7 @@ package sootup.core.graph;
  * #L%
  */
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.stmt.Stmt;
 
 /**
@@ -30,7 +30,7 @@ import sootup.core.jimple.common.stmt.Stmt;
  */
 public class BackwardsStmtGraph extends ForwardingStmtGraph {
 
-  public BackwardsStmtGraph(@Nonnull StmtGraph<?> stmtGraph) {
+  public BackwardsStmtGraph(@NonNull StmtGraph<?> stmtGraph) {
     super(stmtGraph);
   }
 
@@ -39,48 +39,48 @@ public class BackwardsStmtGraph extends ForwardingStmtGraph {
     throw new UnsupportedOperationException();
   }
 
-  @Nonnull
+  @NonNull
   public List<Stmt> getStartingStmts() {
     return backingGraph.getTails();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Collection<Stmt> getNodes() {
     return Collections.unmodifiableCollection(backingGraph.getNodes());
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<? extends BasicBlock<?>> getBlocksSorted() {
     PostOrderBlockTraversal traversal = new PostOrderBlockTraversal(backingGraph);
     return traversal.getBlocksSorted();
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public List<Stmt> predecessors(@Nonnull Stmt node) {
+  public List<Stmt> predecessors(@NonNull Stmt node) {
     return backingGraph.successors(node);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public List<Stmt> successors(@Nonnull Stmt node) {
+  public List<Stmt> successors(@NonNull Stmt node) {
     return backingGraph.predecessors(node);
   }
 
   @Override
-  public int inDegree(@Nonnull Stmt node) {
+  public int inDegree(@NonNull Stmt node) {
     return backingGraph.outDegree(node);
   }
 
   @Override
-  public int outDegree(@Nonnull Stmt node) {
+  public int outDegree(@NonNull Stmt node) {
     return backingGraph.inDegree(node);
   }
 
   @Override
-  public boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target) {
+  public boolean hasEdgeConnecting(@NonNull Stmt source, @NonNull Stmt target) {
     return backingGraph.hasEdgeConnecting(target, source);
   }
 }

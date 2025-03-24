@@ -24,8 +24,8 @@ package sootup.jimple.frontend;
 
 import java.nio.file.Path;
 import java.util.*;
-import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.*;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.Jimple;
@@ -50,9 +50,9 @@ public class JimpleConverterUtil {
 
   private final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private final Map<String, PackageName> imports = new HashMap<>();
-  @Nonnull private final Path fileUri;
+  @NonNull private final Path fileUri;
 
-  public JimpleConverterUtil(@Nonnull Path file) {
+  public JimpleConverterUtil(@NonNull Path file) {
     this.fileUri = file;
   }
 
@@ -76,8 +76,8 @@ public class JimpleConverterUtil {
         : this.identifierFactory.getClassType(typename, packageName.getName());
   }
 
-  @Nonnull
-  public static Position buildPositionFromCtx(@Nonnull ParserRuleContext ctx) {
+  @NonNull
+  public static Position buildPositionFromCtx(@NonNull ParserRuleContext ctx) {
 
     // calc end position (line number+char offset in line) as antlr is not capable to do it
     // intuitively
@@ -118,7 +118,7 @@ public class JimpleConverterUtil {
     }
   }
 
-  @Nonnull
+  @NonNull
   public MethodSignature getMethodSignature(
       JimpleParser.Method_signatureContext ctx, ParserRuleContext parentCtx) {
     if (ctx == null) {
@@ -138,7 +138,7 @@ public class JimpleConverterUtil {
     return identifierFactory.getMethodSignature(getClassType(classname), methodSubSignature);
   }
 
-  @Nonnull
+  @NonNull
   public MethodSubSignature getMethodSubSignature(
       JimpleParser.Method_subsignatureContext ctx, ParserRuleContext parentCtx) {
     if (ctx == null) {
@@ -212,7 +212,7 @@ public class JimpleConverterUtil {
     return set;
   }
 
-  @Nonnull
+  @NonNull
   public static JimpleParser createJimpleParser(CharStream charStream, Path path) {
     JimpleLexer lexer = new JimpleLexer(charStream);
 

@@ -22,7 +22,7 @@ package sootup.java.core.exceptions;
  * #L%
  */
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.util.ImmutableUtils;
@@ -50,7 +50,7 @@ public class ExceptionInferResult {
   }
 
   static ExceptionInferResult createSingleException(
-      @Nonnull ClassType exceptionType, @Nonnull TypeHierarchy typeHierarchy) {
+      @NonNull ClassType exceptionType, @NonNull TypeHierarchy typeHierarchy) {
     if (!typeHierarchy.contains(exceptionType)) {
       throw new IllegalArgumentException(
           "The given exceptionType \"" + exceptionType + "\" is not in type hierarchy!");

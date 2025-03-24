@@ -24,7 +24,7 @@ package sootup.core.graph;
 
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * This enum class is used to specify the direction of block analysis. Every enum direction name
@@ -35,12 +35,11 @@ import javax.annotation.Nonnull;
 public enum BlockAnalysisDirection {
   POSTORDERBACKWARD {
     @Override
-    @Nonnull
-    List<BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
+    @NonNull List<BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
       return (List<BasicBlock<?>>) block.getSuccessors();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
       PostOrderBlockTraversal traversal = new PostOrderBlockTraversal(blockGraph);
@@ -49,12 +48,11 @@ public enum BlockAnalysisDirection {
   },
   REVERSEPOSTORDERFORWARD {
     @Override
-    @Nonnull
-    List<BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
+    @NonNull List<BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
       return (List<BasicBlock<?>>) block.getPredecessors();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
       ReversePostOrderBlockTraversal traversal = new ReversePostOrderBlockTraversal(blockGraph);
@@ -62,9 +60,9 @@ public enum BlockAnalysisDirection {
     }
   };
 
-  @Nonnull
+  @NonNull
   abstract List<BasicBlock<?>> getPredecessors(BasicBlock<?> block);
 
-  @Nonnull
+  @NonNull
   abstract List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph);
 }

@@ -30,8 +30,8 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
@@ -61,7 +61,7 @@ import sootup.java.core.types.JavaClassType;
 
 public final class AsmUtil {
 
-  private static final @Nonnull Logger logger = LoggerFactory.getLogger(AsmUtil.class);
+  private static final @NonNull Logger logger = LoggerFactory.getLogger(AsmUtil.class);
 
   private AsmUtil() {}
 
@@ -75,7 +75,7 @@ public final class AsmUtil {
    * @return the actual class signature found in the compilation unit
    */
   protected static Optional<String> readClassName(
-      @Nonnull final Path classSource, @Nonnull final ClassVisitor classNode) {
+      @NonNull final Path classSource, @NonNull final ClassVisitor classNode) {
     try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
       ClassReader classReader = new ClassReader(sourceFileInputStream);
       classReader.accept(classNode, ClassReader.SKIP_FRAMES);
@@ -89,10 +89,10 @@ public final class AsmUtil {
   }
 
   public static SootClassSource createClassSource(
-      @Nonnull final AnalysisInputLocation analysisInputLocation,
-      @Nonnull final Path sourcePath,
-      @Nonnull final ClassType classType,
-      @Nonnull final ClassNode classNode) {
+      @NonNull final AnalysisInputLocation analysisInputLocation,
+      @NonNull final Path sourcePath,
+      @NonNull final ClassType classType,
+      @NonNull final ClassNode classNode) {
     if ((classNode.access & Opcodes.ACC_ANNOTATION) == Opcodes.ACC_ANNOTATION) {
       return new AsmAnnotationClassSource(analysisInputLocation, sourcePath, classType, classNode);
     }
@@ -105,7 +105,7 @@ public final class AsmUtil {
    * @param type the type to check.
    * @return {@code true} if its a dword type.
    */
-  public static boolean isDWord(@Nonnull Type type) {
+  public static boolean isDWord(@NonNull Type type) {
     return type == PrimitiveType.getLong() || type == PrimitiveType.getDouble();
   }
 
@@ -115,7 +115,7 @@ public final class AsmUtil {
    * @param str str name.
    * @return fully qualified name.
    */
-  public static String toQualifiedName(@Nonnull String str) {
+  public static String toQualifiedName(@NonNull String str) {
     final int endpos = str.length() - 1;
     if (endpos > 2 && str.charAt(endpos) == ';' && str.charAt(0) == 'L') {
       str = str.substring(1, endpos);
@@ -147,7 +147,7 @@ public final class AsmUtil {
     return modifierEnumSet;
   }
 
-  @Nonnull
+  @NonNull
   public static Collection<JavaClassType> asmIdToSignature(
       @Nullable Iterable<String> asmClassNames) {
     if (asmClassNames == null) {
@@ -159,13 +159,13 @@ public final class AsmUtil {
         .collect(Collectors.toList());
   }
 
-  @Nonnull
-  public static JavaClassType toJimpleClassType(@Nonnull String asmClassName) {
+  @NonNull
+  public static JavaClassType toJimpleClassType(@NonNull String asmClassName) {
     return JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
   }
 
-  @Nonnull
-  public static Type toJimpleType(@Nonnull String desc) {
+  @NonNull
+  public static Type toJimpleType(@NonNull String desc) {
     int nrDims = countArrayDim(desc);
     if (nrDims > 0) {
       desc = desc.substring(nrDims);
@@ -190,8 +190,8 @@ public final class AsmUtil {
         : baseType;
   }
 
-  @Nonnull
-  public static Type arrayTypetoJimpleType(@Nonnull String desc) {
+  @NonNull
+  public static Type arrayTypetoJimpleType(@NonNull String desc) {
     if (desc.charAt(0) == '[') {
       return toJimpleType(desc);
     }
@@ -199,7 +199,7 @@ public final class AsmUtil {
   }
 
   /** returns the amount of dimensions of a description. */
-  private static int countArrayDim(@Nonnull String desc) {
+  private static int countArrayDim(@NonNull String desc) {
     int nrDims = desc.lastIndexOf('[') + 1;
     for (int index = 0; index < nrDims; index++) {
       if (desc.charAt(index) != '[') {
@@ -213,7 +213,7 @@ public final class AsmUtil {
    * Converts a description to a primitive type or the void type. If the description does not match
    * it will return an empty Optional
    */
-  private static Optional<Type> toPrimitiveOrVoidType(@Nonnull String desc) {
+  private static Optional<Type> toPrimitiveOrVoidType(@NonNull String desc) {
     if (desc.length() > 1) {
       return Optional.empty();
     }
@@ -242,8 +242,8 @@ public final class AsmUtil {
   }
 
   /** Converts n types contained in desc to a list of Jimple Types */
-  @Nonnull
-  public static List<Type> toJimpleSignatureDesc(@Nonnull String desc) {
+  @NonNull
+  public static List<Type> toJimpleSignatureDesc(@NonNull String desc) {
     // [ms] more types are possibly needed for method type which is ( arg-type* ) ret-type
     List<Type> types = new ArrayList<>(1);
     int len = desc.length();
@@ -395,7 +395,7 @@ public final class AsmUtil {
     return ConstantUtil.fromObject(annotationValue);
   }
 
-  @Nonnull
+  @NonNull
   public static ClassNode getModuleDescriptor(Path moduleInfoFile) {
     ClassNode moduleDescriptor;
     try (InputStream sourceFileInputStream = Files.newInputStream(moduleInfoFile)) {

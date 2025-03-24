@@ -25,10 +25,10 @@ package sootup.apk.frontend.dexpler;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MultiDexContainer;
+import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.graph.MutableBlockStmtGraph;
@@ -50,7 +50,7 @@ public class DexMethod {
   }
 
   public JavaSootMethod makeSootMethod(
-      final Method method, List<BodyInterceptor> bodyInterceptors, @Nonnull View view) {
+      final Method method, List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
     int modifierFlags = method.getAccessFlags();
     if (Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)) {
       MethodSignature methodSignature =

@@ -22,7 +22,7 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 * #L%
 */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.*;
 import sootup.codepropertygraph.propertygraph.nodes.*;
@@ -47,141 +47,141 @@ class AstExprVisitor extends AbstractExprVisitor {
   }
 
   @Override
-  public void defaultCaseExpr(@Nonnull Expr expr) {
+  public void defaultCaseExpr(@NonNull Expr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
   }
 
   // Handle binary operations
   @Override
-  public void caseAddExpr(@Nonnull JAddExpr expr) {
+  public void caseAddExpr(@NonNull JAddExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseAndExpr(@Nonnull JAndExpr expr) {
+  public void caseAndExpr(@NonNull JAndExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseCmpExpr(@Nonnull JCmpExpr expr) {
+  public void caseCmpExpr(@NonNull JCmpExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseCmpgExpr(@Nonnull JCmpgExpr expr) {
+  public void caseCmpgExpr(@NonNull JCmpgExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseCmplExpr(@Nonnull JCmplExpr expr) {
+  public void caseCmplExpr(@NonNull JCmplExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseDivExpr(@Nonnull JDivExpr expr) {
+  public void caseDivExpr(@NonNull JDivExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseEqExpr(@Nonnull JEqExpr expr) {
+  public void caseEqExpr(@NonNull JEqExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseNeExpr(@Nonnull JNeExpr expr) {
+  public void caseNeExpr(@NonNull JNeExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseGeExpr(@Nonnull JGeExpr expr) {
+  public void caseGeExpr(@NonNull JGeExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseGtExpr(@Nonnull JGtExpr expr) {
+  public void caseGtExpr(@NonNull JGtExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseLeExpr(@Nonnull JLeExpr expr) {
+  public void caseLeExpr(@NonNull JLeExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseLtExpr(@Nonnull JLtExpr expr) {
+  public void caseLtExpr(@NonNull JLtExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseMulExpr(@Nonnull JMulExpr expr) {
+  public void caseMulExpr(@NonNull JMulExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseOrExpr(@Nonnull JOrExpr expr) {
+  public void caseOrExpr(@NonNull JOrExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseRemExpr(@Nonnull JRemExpr expr) {
+  public void caseRemExpr(@NonNull JRemExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseShlExpr(@Nonnull JShlExpr expr) {
+  public void caseShlExpr(@NonNull JShlExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseShrExpr(@Nonnull JShrExpr expr) {
+  public void caseShrExpr(@NonNull JShrExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseUshrExpr(@Nonnull JUshrExpr expr) {
+  public void caseUshrExpr(@NonNull JUshrExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseSubExpr(@Nonnull JSubExpr expr) {
+  public void caseSubExpr(@NonNull JSubExpr expr) {
     handleBinopExpr(expr);
   }
 
   @Override
-  public void caseXorExpr(@Nonnull JXorExpr expr) {
+  public void caseXorExpr(@NonNull JXorExpr expr) {
     handleBinopExpr(expr);
   }
 
   // Handle invocation expressions
   @Override
-  public void caseStaticInvokeExpr(@Nonnull JStaticInvokeExpr expr) {
+  public void caseStaticInvokeExpr(@NonNull JStaticInvokeExpr expr) {
     handleInvokeExpr(expr);
   }
 
   @Override
-  public void caseSpecialInvokeExpr(@Nonnull JSpecialInvokeExpr expr) {
+  public void caseSpecialInvokeExpr(@NonNull JSpecialInvokeExpr expr) {
     handleInvokeExpr(expr);
   }
 
   @Override
-  public void caseVirtualInvokeExpr(@Nonnull JVirtualInvokeExpr expr) {
+  public void caseVirtualInvokeExpr(@NonNull JVirtualInvokeExpr expr) {
     handleInvokeExpr(expr);
   }
 
   @Override
-  public void caseInterfaceInvokeExpr(@Nonnull JInterfaceInvokeExpr expr) {
+  public void caseInterfaceInvokeExpr(@NonNull JInterfaceInvokeExpr expr) {
     handleInvokeExpr(expr);
   }
 
   @Override
-  public void caseDynamicInvokeExpr(@Nonnull JDynamicInvokeExpr expr) {
+  public void caseDynamicInvokeExpr(@NonNull JDynamicInvokeExpr expr) {
     handleInvokeExpr(expr);
   }
 
   // Handle casting expressions
   @Override
-  public void caseCastExpr(@Nonnull JCastExpr expr) {
+  public void caseCastExpr(@NonNull JCastExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
 
@@ -191,7 +191,7 @@ class AstExprVisitor extends AbstractExprVisitor {
 
   // Handle instanceof expressions
   @Override
-  public void caseInstanceOfExpr(@Nonnull JInstanceOfExpr expr) {
+  public void caseInstanceOfExpr(@NonNull JInstanceOfExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
 
@@ -201,7 +201,7 @@ class AstExprVisitor extends AbstractExprVisitor {
 
   // Handle new array expressions
   @Override
-  public void caseNewArrayExpr(@Nonnull JNewArrayExpr expr) {
+  public void caseNewArrayExpr(@NonNull JNewArrayExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
 
@@ -210,7 +210,7 @@ class AstExprVisitor extends AbstractExprVisitor {
   }
 
   @Override
-  public void caseNewMultiArrayExpr(@Nonnull JNewMultiArrayExpr expr) {
+  public void caseNewMultiArrayExpr(@NonNull JNewMultiArrayExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
     for (Immediate size : expr.getSizes()) {
@@ -220,26 +220,26 @@ class AstExprVisitor extends AbstractExprVisitor {
   }
 
   @Override
-  public void caseNewExpr(@Nonnull JNewExpr expr) {
+  public void caseNewExpr(@NonNull JNewExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
   }
 
   // Handle length expressions
   @Override
-  public void caseLengthExpr(@Nonnull JLengthExpr expr) {
+  public void caseLengthExpr(@NonNull JLengthExpr expr) {
     handleUnopExpr(expr);
   }
 
   // Handle negation expressions
   @Override
-  public void caseNegExpr(@Nonnull JNegExpr expr) {
+  public void caseNegExpr(@NonNull JNegExpr expr) {
     handleUnopExpr(expr);
   }
 
   // Handle phi expressions
   @Override
-  public void casePhiExpr(@Nonnull JPhiExpr expr) {
+  public void casePhiExpr(@NonNull JPhiExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
     for (Immediate arg : expr.getArgs()) {

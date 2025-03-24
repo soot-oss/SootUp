@@ -25,46 +25,44 @@ package sootup.core.graph;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
 
 public interface MutableBasicBlock extends BasicBlock<MutableBasicBlock> {
 
-  void addStmt(@Nonnull Stmt newStmt);
+  void addStmt(@NonNull Stmt newStmt);
 
   void removeStmt(int idx);
 
-  void removeStmt(@Nonnull Stmt stmt);
+  void removeStmt(@NonNull Stmt stmt);
 
   void replaceStmt(Stmt oldStmt, Stmt newStmt);
 
-  void addPredecessorBlock(@Nonnull MutableBasicBlock block);
+  void addPredecessorBlock(@NonNull MutableBasicBlock block);
 
   void linkSuccessor(int successorIdx, MutableBasicBlock blockB);
 
-  boolean removePredecessorBlock(@Nonnull MutableBasicBlock b);
+  boolean removePredecessorBlock(@NonNull MutableBasicBlock b);
 
   void setSuccessorBlock(int successorIdx, @Nullable MutableBasicBlock block);
 
-  void removeFromSuccessorBlocks(@Nonnull MutableBasicBlock b);
+  void removeFromSuccessorBlocks(@NonNull MutableBasicBlock b);
 
-  void linkExceptionalSuccessorBlock(@Nonnull ClassType exception, MutableBasicBlock b);
+  void linkExceptionalSuccessorBlock(@NonNull ClassType exception, MutableBasicBlock b);
 
-  void removeExceptionalSuccessorBlock(@Nonnull ClassType exception);
+  void removeExceptionalSuccessorBlock(@NonNull ClassType exception);
 
-  @Nonnull
-  MutableBasicBlockImpl splitBlockLinked(int splitIdx);
+  @NonNull MutableBasicBlockImpl splitBlockLinked(int splitIdx);
 
   void copyExceptionalFlowFrom(MutableBasicBlock sourceBlock);
 
-  MutableBasicBlock splitBlockUnlinked(@Nonnull Stmt newTail, @Nonnull Stmt newHead);
+  MutableBasicBlock splitBlockUnlinked(@NonNull Stmt newTail, @NonNull Stmt newHead);
 
   MutableBasicBlockImpl splitBlockUnlinked(int splitIdx);
 
-  @Nonnull
-  MutableBasicBlock splitBlockLinked(@Nonnull Stmt splitStmt, boolean shouldBeNewHead);
+  @NonNull MutableBasicBlock splitBlockLinked(@NonNull Stmt splitStmt, boolean shouldBeNewHead);
 
   void clearSuccessorBlocks();
 
@@ -73,38 +71,38 @@ public interface MutableBasicBlock extends BasicBlock<MutableBasicBlock> {
   void clearPredecessorBlocks();
 
   List<Integer> replaceSuccessorBlock(
-      @Nonnull MutableBasicBlock oldBlock, @Nullable MutableBasicBlock newBlock);
+      @NonNull MutableBasicBlock oldBlock, @Nullable MutableBasicBlock newBlock);
 
   boolean replacePredecessorBlock(MutableBasicBlock oldBlock, MutableBasicBlock newBlock);
 
-  Collection<ClassType> collectExceptionalSuccessorBlocks(@Nonnull MutableBasicBlock block);
+  Collection<ClassType> collectExceptionalSuccessorBlocks(@NonNull MutableBasicBlock block);
 
-  @Nonnull
+  @NonNull
   @Override
   List<MutableBasicBlock> getPredecessors();
 
-  @Nonnull
+  @NonNull
   @Override
   List<MutableBasicBlock> getSuccessors();
 
   @Override
   Map<ClassType, MutableBasicBlock> getExceptionalPredecessors();
 
-  @Nonnull
+  @NonNull
   @Override
   Map<ClassType, MutableBasicBlock> getExceptionalSuccessors();
 
   int getStmtCount();
 
-  @Nonnull
+  @NonNull
   @Override
   List<Stmt> getStmts();
 
-  @Nonnull
+  @NonNull
   @Override
   Stmt getHead();
 
-  @Nonnull
+  @NonNull
   @Override
   Stmt getTail();
 

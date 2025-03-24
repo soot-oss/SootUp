@@ -23,8 +23,8 @@ package sootup.core.graph;
  */
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
@@ -40,22 +40,22 @@ import sootup.core.jimple.common.stmt.Stmt;
  */
 public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
-  @Nonnull private final StmtGraph<?> graph;
-  @Nonnull private final List<Trap> traps;
+  @NonNull private final StmtGraph<?> graph;
+  @NonNull private final List<Trap> traps;
   private int trapIdx = 0;
 
-  @Nonnull private final ArrayDeque<Stmt> currentUnbranchedBlock = new ArrayDeque<>();
-  @Nonnull private final ArrayDeque<Stmt> nestedBlocks = new ArrayDeque<>();
-  @Nonnull private final ArrayDeque<Stmt> otherBlocks = new ArrayDeque<>();
+  @NonNull private final ArrayDeque<Stmt> currentUnbranchedBlock = new ArrayDeque<>();
+  @NonNull private final ArrayDeque<Stmt> nestedBlocks = new ArrayDeque<>();
+  @NonNull private final ArrayDeque<Stmt> otherBlocks = new ArrayDeque<>();
 
   // caching the next Stmt to implement a simple hasNext() and skipping already returned Stmts
   @Nullable private Stmt cachedNextStmt;
 
   // TODO: [ms] improve memory consumption: only add Stmts with multiple predecessors; count
   // returnednodes with int;
-  @Nonnull private final Set<Stmt> returnedNodes;
+  @NonNull private final Set<Stmt> returnedNodes;
 
-  public StmtGraphBlockIterator(@Nonnull StmtGraph graph, @Nonnull List<Trap> traps) {
+  public StmtGraphBlockIterator(@NonNull StmtGraph graph, @NonNull List<Trap> traps) {
     this.graph = graph;
     returnedNodes = new HashSet<>(graph.getNodes().size(), 1);
     Stmt startingStmt = graph.getStartingStmt();
@@ -91,7 +91,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stmt next() {
 
     Stmt stmt = cachedNextStmt;

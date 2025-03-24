@@ -25,7 +25,7 @@ package sootup.core.cache;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
@@ -39,7 +39,7 @@ public class FullCache implements ClassCache {
     return cache.get(classType);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public synchronized Collection<SootClass> getClasses() {
     return cache.values();

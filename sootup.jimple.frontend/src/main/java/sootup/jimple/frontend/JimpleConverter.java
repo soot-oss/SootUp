@@ -25,9 +25,9 @@ package sootup.jimple.frontend;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
@@ -57,11 +57,11 @@ import sootup.jimple.JimpleParser;
 public class JimpleConverter {
 
   public OverridingClassSource run(
-      @Nonnull CharStream charStream,
-      @Nonnull AnalysisInputLocation inputlocation,
-      @Nonnull Path sourcePath,
-      @Nonnull List<BodyInterceptor> bodyInterceptors,
-      @Nonnull View view) {
+      @NonNull CharStream charStream,
+      @NonNull AnalysisInputLocation inputlocation,
+      @NonNull Path sourcePath,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull View view) {
 
     final JimpleParser jimpleParser =
         JimpleConverterUtil.createJimpleParser(charStream, sourcePath);
@@ -71,11 +71,11 @@ public class JimpleConverter {
   }
 
   public OverridingClassSource run(
-      @Nonnull JimpleParser parser,
-      @Nonnull AnalysisInputLocation inputlocation,
-      @Nonnull Path sourcePath,
-      @Nonnull List<BodyInterceptor> bodyInterceptors,
-      @Nonnull View view) {
+      @NonNull JimpleParser parser,
+      @NonNull AnalysisInputLocation inputlocation,
+      @NonNull Path sourcePath,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull View view) {
 
     ClassVisitor classVisitor;
     try {
@@ -100,15 +100,15 @@ public class JimpleConverter {
 
   private static class ClassVisitor extends JimpleBaseVisitor<Boolean> {
 
-    @Nonnull private final IdentifierFactory identifierFactory;
+    @NonNull private final IdentifierFactory identifierFactory;
 
-    @Nonnull private final JimpleConverterUtil util;
-    @Nonnull private final Path path;
-    @Nonnull private final List<BodyInterceptor> bodyInterceptors;
-    @Nonnull private final View view;
+    @NonNull private final JimpleConverterUtil util;
+    @NonNull private final Path path;
+    @NonNull private final List<BodyInterceptor> bodyInterceptors;
+    @NonNull private final View view;
 
     public ClassVisitor(
-        @Nonnull Path path, @Nonnull List<BodyInterceptor> bodyInterceptors, @Nonnull View view) {
+        @NonNull Path path, @NonNull List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
       this.path = path;
       util = new JimpleConverterUtil(path);
       this.bodyInterceptors = bodyInterceptors;
@@ -126,8 +126,8 @@ public class JimpleConverter {
     EnumSet<ClassModifier> modifiers = null;
 
     @Override
-    @Nonnull
-    public Boolean visitFile(@Nonnull JimpleParser.FileContext ctx) {
+    @NonNull
+    public Boolean visitFile(JimpleParser.@NonNull FileContext ctx) {
 
       position = JimpleConverterUtil.buildPositionFromCtx(ctx);
 
@@ -269,14 +269,14 @@ public class JimpleConverter {
       private final HashMap<String, Stmt> labeledStmts = new HashMap<>();
       private HashMap<String, Local> locals = new HashMap<>();
 
-      public Local getLocal(@Nonnull String name) {
+      public Local getLocal(@NonNull String name) {
         return locals.computeIfAbsent(
             name, (ignored) -> new Local(name, UnknownType.getInstance()));
       }
 
       @Override
-      @Nonnull
-      public SootMethod visitMethod(@Nonnull JimpleParser.MethodContext ctx) {
+      @NonNull
+      public SootMethod visitMethod(JimpleParser.@NonNull MethodContext ctx) {
 
         EnumSet<MethodModifier> modifier =
             ctx.method_modifier() == null
@@ -473,7 +473,7 @@ public class JimpleConverter {
         }
 
         @Override
-        @Nonnull
+        @NonNull
         public Stmt visitStmt(JimpleParser.StmtContext ctx) {
           StmtPositionInfo pos = new SimpleStmtPositionInfo(ctx.start.getLine());
 
@@ -864,7 +864,7 @@ public class JimpleConverter {
           }
         }
 
-        @Nonnull
+        @NonNull
         private List<Immediate> getArgList(JimpleParser.Arg_listContext ctx) {
           if (ctx == null || ctx.immediate() == null) {
             return Collections.emptyList();

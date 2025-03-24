@@ -25,7 +25,7 @@ package sootup.core.graph;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /** A strategy to traverse a StmtGraph in post-order. */
 public class PostOrderBlockTraversal implements BlockTraversalStrategy {
@@ -46,7 +46,7 @@ public class PostOrderBlockTraversal implements BlockTraversalStrategy {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public List<BasicBlock<?>> getBlocksSorted() {
     return StreamSupport.stream(
             Spliterators.spliteratorUnknownSize(this.iterator(), Spliterator.ORDERED), false)

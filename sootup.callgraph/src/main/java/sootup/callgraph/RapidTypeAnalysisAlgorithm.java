@@ -26,7 +26,7 @@ import com.google.common.collect.ArrayListMultimap;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph.Call;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -49,28 +49,28 @@ import sootup.core.views.View;
  */
 public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
-  @Nonnull protected Set<ClassType> instantiatedClasses = Collections.emptySet();
-  @Nonnull protected ArrayListMultimap<ClassType, Call> ignoredCalls = ArrayListMultimap.create();
+  @NonNull protected Set<ClassType> instantiatedClasses = Collections.emptySet();
+  @NonNull protected ArrayListMultimap<ClassType, Call> ignoredCalls = ArrayListMultimap.create();
 
   /**
    * The constructor of the RTA algorithm.
    *
    * @param view it contains the data of the classes and methods
    */
-  public RapidTypeAnalysisAlgorithm(@Nonnull View view) {
+  public RapidTypeAnalysisAlgorithm(@NonNull View view) {
     super(view);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public CallGraph initialize() {
     List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod());
     return initialize(entryPoints);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
+  public CallGraph initialize(@NonNull List<MethodSignature> entryPoints) {
     // init helper data structures
     instantiatedClasses = new HashSet<>();
     ignoredCalls = ArrayListMultimap.create();
@@ -121,11 +121,11 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    *     algorithm
    */
   @Override
-  @Nonnull
+  @NonNull
   protected Stream<MethodSignature> resolveCall(
       SootMethod sourceMethod, InvokableStmt invokableStmt) {
     Optional<AbstractInvokeExpr> optInvokeExpr = invokableStmt.getInvokeExpr();
-    if (!optInvokeExpr.isPresent()) {
+    if (optInvokeExpr.isEmpty()) {
       return Stream.empty();
     }
     AbstractInvokeExpr invokeExpr = optInvokeExpr.get();
@@ -217,8 +217,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Override
   protected void preProcessingMethod(
       MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
-      @Nonnull MutableCallGraph cg) {
+      @NonNull Deque<MethodSignature> workList,
+      @NonNull MutableCallGraph cg) {
     SootMethod method =
         view.getClass(sourceMethod.getDeclClassType())
             .flatMap(c -> c.getMethod(sourceMethod.getSubSignature()))
@@ -271,8 +271,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Override
   protected void postProcessingMethod(
       MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
-      @Nonnull MutableCallGraph cg) {
+      @NonNull Deque<MethodSignature> workList,
+      @NonNull MutableCallGraph cg) {
     //    not needed
   }
 }

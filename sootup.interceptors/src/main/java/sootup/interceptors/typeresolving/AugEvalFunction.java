@@ -23,8 +23,8 @@ package sootup.interceptors.typeresolving;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.IdentifierFactory;
@@ -81,10 +81,10 @@ public class AugEvalFunction {
    */
   @Nullable
   public Type evaluate(
-      @Nonnull Typing typing,
-      @Nonnull Value value,
-      @Nonnull Stmt stmt,
-      @Nonnull StmtGraph<?> graph) {
+      @NonNull Typing typing,
+      @NonNull Value value,
+      @NonNull Stmt stmt,
+      @NonNull StmtGraph<?> graph) {
 
     // TODO: [ms] make use of the ValueVisitor
 
@@ -193,7 +193,7 @@ public class AugEvalFunction {
         ClassType type = null;
         for (ClassType exceptionType : exceptionTypes) {
           Optional<?> exceptionClassOpt = view.getClass(exceptionType);
-          if (!exceptionClassOpt.isPresent()) {
+          if (exceptionClassOpt.isEmpty()) {
             return throwableClassType;
           }
           if (type == null) {
@@ -238,7 +238,7 @@ public class AugEvalFunction {
    * statement in body.
    */
   private Set<ClassType> getExceptionTypeCandidates(
-      @Nonnull Stmt handlerStmt, @Nonnull StmtGraph<?> graph) {
+      @NonNull Stmt handlerStmt, @NonNull StmtGraph<?> graph) {
     return graph.getBlockOf(handlerStmt).getExceptionalPredecessors().keySet();
   }
 
@@ -247,14 +247,14 @@ public class AugEvalFunction {
    * type
    */
   // TODO: ms: simplify - use the typehiararchy directly!
-  private Deque<ClassType> getExceptionPath(@Nonnull ClassType exceptionType) {
+  private Deque<ClassType> getExceptionPath(@NonNull ClassType exceptionType) {
     Deque<ClassType> path = new ArrayDeque<>();
     path.push(exceptionType);
 
     while (exceptionType != throwableClassType) {
       final Optional<? extends ClassType> superclassOpt =
           view.getClass(exceptionType).flatMap(SootClass::getSuperclass);
-      if (!superclassOpt.isPresent()) {
+      if (superclassOpt.isEmpty()) {
         // Note: We have progressed as far as the available information allows.
         logger.warn(
             "The path from '"
@@ -276,7 +276,7 @@ public class AugEvalFunction {
    * @param a an exception type
    * @param b an exception type
    */
-  private ClassType getLeastCommonExceptionType(@Nonnull ClassType a, @Nonnull ClassType b) {
+  private ClassType getLeastCommonExceptionType(@NonNull ClassType a, @NonNull ClassType b) {
     if (a == b) {
       return a;
     }

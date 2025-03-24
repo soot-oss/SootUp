@@ -23,7 +23,7 @@ package sootup.core.jimple.common.stmt;
  */
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
@@ -35,10 +35,10 @@ import sootup.core.util.printer.StmtPrinter;
 /** A method call */
 public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt, InvokableStmt {
 
-  @Nonnull private final AbstractInvokeExpr invokeExpr;
+  @NonNull private final AbstractInvokeExpr invokeExpr;
 
   public JInvokeStmt(
-      @Nonnull AbstractInvokeExpr invokeExpr, @Nonnull StmtPositionInfo positionInfo) {
+      @NonNull AbstractInvokeExpr invokeExpr, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.invokeExpr = invokeExpr;
   }
@@ -59,24 +59,24 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     invokeExpr.toString(up);
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Optional<AbstractInvokeExpr> getInvokeExpr() {
     return Optional.of(invokeExpr);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Stream<Value> getUses() {
     return Stream.concat(invokeExpr.getUses(), Stream.of(invokeExpr));
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseInvokeStmt(this);
     return v;
   }
@@ -92,7 +92,7 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseInvokeStmt(this, o);
   }
 
@@ -101,13 +101,13 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
     return invokeExpr.equivHashCode();
   }
 
-  @Nonnull
+  @NonNull
   public JInvokeStmt withInvokeExpr(AbstractInvokeExpr invokeExpr) {
     return new JInvokeStmt(invokeExpr, getPositionInfo());
   }
 
-  @Nonnull
-  public JInvokeStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JInvokeStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JInvokeStmt(getInvokeExpr().get(), positionInfo);
   }
 }

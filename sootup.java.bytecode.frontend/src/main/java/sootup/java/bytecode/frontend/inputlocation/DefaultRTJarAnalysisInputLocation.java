@@ -24,7 +24,7 @@ package sootup.java.bytecode.frontend.inputlocation;
 
 import java.nio.file.Paths;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 
@@ -42,12 +42,12 @@ class DefaultRTJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocatio
     this(SourceType.Library);
   }
 
-  public DefaultRTJarAnalysisInputLocation(@Nonnull SourceType srcType) {
+  public DefaultRTJarAnalysisInputLocation(@NonNull SourceType srcType) {
     super(Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), srcType);
   }
 
   public DefaultRTJarAnalysisInputLocation(
-      @Nonnull SourceType srcType, @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull SourceType srcType, @NonNull List<BodyInterceptor> bodyInterceptors) {
     super(Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), srcType, bodyInterceptors);
   }
 }

@@ -28,9 +28,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
@@ -52,20 +52,20 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
   private final SourceType srcType;
 
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+  @NonNull private final List<BodyInterceptor> bodyInterceptors;
 
-  public JimpleAnalysisInputLocation(@Nonnull Path path) {
+  public JimpleAnalysisInputLocation(@NonNull Path path) {
     this(path, SourceType.Application, Collections.emptyList());
   }
 
-  public JimpleAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+  public JimpleAnalysisInputLocation(@NonNull Path path, @Nullable SourceType srcType) {
     this(path, srcType, Collections.emptyList());
   }
 
   public JimpleAnalysisInputLocation(
-      @Nonnull Path path,
+      @NonNull Path path,
       @Nullable SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     if (!Files.exists(path)) {
       throw new IllegalArgumentException(
           "The configured path '"
@@ -79,13 +79,13 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
     this.srcType = srcType;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public SourceType getSourceType() {
     return srcType;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;
@@ -94,11 +94,10 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   /**
    * @return Autoclosable needs to be closed!
    */
-  @Nonnull
-  Stream<SootClassSource> walkDirectory(
-      @Nonnull Path dirPath,
-      @Nonnull IdentifierFactory factory,
-      @Nonnull ClassProvider classProvider) {
+  @NonNull Stream<SootClassSource> walkDirectory(
+      @NonNull Path dirPath,
+      @NonNull IdentifierFactory factory,
+      @NonNull ClassProvider classProvider) {
 
     try {
       return Files.walk(path)
@@ -121,16 +120,16 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   }
 
   @Override
-  @Nonnull
-  public Stream<SootClassSource> getClassSources(@Nonnull View view) {
+  @NonNull
+  public Stream<SootClassSource> getClassSources(@NonNull View view) {
     // TODO: dont create a new CLassProvider every time
     return walkDirectory(
         path, view.getIdentifierFactory(), new JimpleClassProvider(bodyInterceptors, view));
   }
 
   @Override
-  @Nonnull
-  public Optional<SootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
+  @NonNull
+  public Optional<SootClassSource> getClassSource(@NonNull ClassType type, @NonNull View view) {
     final JimpleClassProvider classProvider = new JimpleClassProvider(bodyInterceptors, view);
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();

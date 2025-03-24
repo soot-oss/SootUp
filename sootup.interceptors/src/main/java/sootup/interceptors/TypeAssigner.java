@@ -22,7 +22,7 @@ package sootup.interceptors;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
@@ -39,7 +39,7 @@ public class TypeAssigner implements BodyInterceptor {
   public TypeAssigner() {}
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     new TypeResolver((JavaView) view).resolve(builder);
   }
 }

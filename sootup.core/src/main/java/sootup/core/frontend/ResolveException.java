@@ -1,7 +1,7 @@
 package sootup.core.frontend;
 
 import java.nio.file.Path;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.Position;
 
@@ -28,59 +28,59 @@ import sootup.core.model.Position;
  */
 public class ResolveException extends RuntimeException {
 
-  @Nonnull private final String inputUri;
-  @Nonnull private final Position range;
+  @NonNull private final String inputUri;
+  @NonNull private final Position range;
 
   // FIXME: [ms] fix usages to give a file uri
   @Deprecated
-  public ResolveException(@Nonnull String message) {
+  public ResolveException(@NonNull String message) {
     this(message, "./file-does-not-exist", NoPositionInformation.getInstance());
   }
 
-  public ResolveException(@Nonnull String message, @Nonnull Path sourcePath) {
+  public ResolveException(@NonNull String message, @NonNull Path sourcePath) {
     this(message, sourcePath, NoPositionInformation.getInstance());
   }
 
   public ResolveException(
-      @Nonnull String message, @Nonnull Path sourcePath, @Nonnull Position position) {
-    this(message, "file:/" + sourcePath.toAbsolutePath().toString(), position);
+      @NonNull String message, @NonNull Path sourcePath, @NonNull Position position) {
+    this(message, "file:/" + sourcePath.toAbsolutePath(), position);
   }
 
   private ResolveException(
-      @Nonnull String message, @Nonnull String inputUri, @Nonnull Position range) {
+      @NonNull String message, @NonNull String inputUri, @NonNull Position range) {
     super(message + " " + inputUri + " " + range);
     this.range = range;
     this.inputUri = inputUri;
   }
 
-  public ResolveException(@Nonnull String message, @Nonnull Path sourcePath, @Nonnull Exception e) {
+  public ResolveException(@NonNull String message, @NonNull Path sourcePath, @NonNull Exception e) {
     this(message, sourcePath, NoPositionInformation.getInstance(), e);
   }
 
   public ResolveException(
-      @Nonnull String message,
-      @Nonnull Path sourcePath,
-      @Nonnull Position position,
-      @Nonnull Exception e) {
-    this(message, "file:/" + sourcePath.toAbsolutePath().toString(), position, e);
+      @NonNull String message,
+      @NonNull Path sourcePath,
+      @NonNull Position position,
+      @NonNull Exception e) {
+    this(message, "file:/" + sourcePath.toAbsolutePath(), position, e);
   }
 
   private ResolveException(
-      @Nonnull String message,
-      @Nonnull String inputUri,
-      @Nonnull Position range,
-      @Nonnull Exception e) {
+      @NonNull String message,
+      @NonNull String inputUri,
+      @NonNull Position range,
+      @NonNull Exception e) {
     super(message + " " + inputUri + " " + range, e);
     this.range = range;
     this.inputUri = inputUri;
   }
 
-  @Nonnull
+  @NonNull
   public String getInputUri() {
     return inputUri;
   }
 
-  @Nonnull
+  @NonNull
   public Position getRange() {
     return range;
   }
