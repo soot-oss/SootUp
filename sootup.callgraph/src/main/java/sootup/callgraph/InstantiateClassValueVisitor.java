@@ -22,7 +22,7 @@ package sootup.callgraph;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
@@ -48,17 +48,17 @@ public class InstantiateClassValueVisitor extends AbstractValueVisitor {
   }
 
   @Override
-  public void caseNewExpr(@Nonnull JNewExpr expr) {
+  public void caseNewExpr(@NonNull JNewExpr expr) {
     setResult(expr.getType());
   }
 
   @Override
-  public void caseNewArrayExpr(@Nonnull JNewArrayExpr expr) {
+  public void caseNewArrayExpr(@NonNull JNewArrayExpr expr) {
     setResult(findClassTypeInType(expr.getBaseType()));
   }
 
   @Override
-  public void caseNewMultiArrayExpr(@Nonnull JNewMultiArrayExpr expr) {
+  public void caseNewMultiArrayExpr(@NonNull JNewMultiArrayExpr expr) {
     setResult(findClassTypeInType(expr.getBaseType()));
   }
 

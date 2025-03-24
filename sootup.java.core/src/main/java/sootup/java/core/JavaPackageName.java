@@ -22,7 +22,7 @@ package sootup.java.core;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.PackageName;
 
@@ -38,7 +38,7 @@ public class JavaPackageName extends PackageName {
    *
    * @param packageName the package's name
    */
-  public JavaPackageName(@Nonnull String packageName) {
+  public JavaPackageName(@NonNull String packageName) {
     super(packageName);
   }
 }

@@ -31,7 +31,7 @@ import heros.ThreadSafe;
 import heros.solver.IDESolver;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph;
@@ -63,7 +63,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   protected CacheLoader<Stmt, Collection<SootMethod>> loaderUnitToCallees =
       new CacheLoader<Stmt, Collection<SootMethod>>() {
-        @Nonnull
+        @NonNull
         @Override
         public Collection<SootMethod> load(Stmt stmt) {
           ArrayList<SootMethod> res = new ArrayList<>();
@@ -91,7 +91,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   protected CacheLoader<SootMethod, Collection<Stmt>> loaderMethodToCallers =
       new CacheLoader<SootMethod, Collection<Stmt>>() {
-        @Nonnull
+        @NonNull
         @Override
         public Collection<Stmt> load(SootMethod method) {
           Set<CallGraph.Call> calls = cg.callsTo(method.getSignature());
@@ -183,12 +183,12 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   }
 
   @Override
-  public Collection<SootMethod> getCalleesOfCallAt(@Nonnull Stmt u) {
+  public Collection<SootMethod> getCalleesOfCallAt(@NonNull Stmt u) {
     return stmtToCallees.getUnchecked(u);
   }
 
   @Override
-  public Collection<Stmt> getCallersOf(@Nonnull SootMethod m) {
+  public Collection<Stmt> getCallersOf(@NonNull SootMethod m) {
     return methodToCallers.getUnchecked(m);
   }
 }

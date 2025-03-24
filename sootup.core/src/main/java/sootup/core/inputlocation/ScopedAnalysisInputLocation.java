@@ -25,7 +25,7 @@ package sootup.core.inputlocation;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
@@ -38,38 +38,38 @@ import sootup.core.views.View;
  */
 abstract class ScopedAnalysisInputLocation implements AnalysisInputLocation {
 
-  @Nonnull private final AnalysisInputLocation inputLocation;
+  @NonNull private final AnalysisInputLocation inputLocation;
 
-  public ScopedAnalysisInputLocation(@Nonnull AnalysisInputLocation inputLocation) {
+  public ScopedAnalysisInputLocation(@NonNull AnalysisInputLocation inputLocation) {
     this.inputLocation = inputLocation;
   }
 
   /** Override this method. */
-  protected abstract boolean filter(@Nonnull ClassType type);
+  protected abstract boolean filter(@NonNull ClassType type);
 
-  @Nonnull
+  @NonNull
   @Override
   public Optional<? extends SootClassSource> getClassSource(
-      @Nonnull ClassType type, @Nonnull View view) {
+      @NonNull ClassType type, @NonNull View view) {
     if (!filter(type)) {
       return Optional.empty();
     }
     return inputLocation.getClassSource(type, view);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Stream<? extends SootClassSource> getClassSources(@Nonnull View view) {
+  public Stream<? extends SootClassSource> getClassSources(@NonNull View view) {
     return inputLocation.getClassSources(view).filter(type -> filter(type.getClassType()));
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public SourceType getSourceType() {
     return inputLocation.getSourceType();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<BodyInterceptor> getBodyInterceptors() {
     return inputLocation.getBodyInterceptors();

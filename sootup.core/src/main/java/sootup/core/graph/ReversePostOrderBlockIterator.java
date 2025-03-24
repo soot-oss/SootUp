@@ -25,15 +25,15 @@ package sootup.core.graph;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /** A block iterator that iterates through the blocks of a StmtGraph in reverse post-order. */
 public class ReversePostOrderBlockIterator implements BlockIterator {
   private List<BasicBlock<?>> blocks;
   private int i = 0;
 
-  public ReversePostOrderBlockIterator(@Nonnull BasicBlock<?> startNode) {
+  public ReversePostOrderBlockIterator(@NonNull BasicBlock<?> startNode) {
     blocks =
         StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(

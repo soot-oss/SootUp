@@ -22,7 +22,7 @@ package sootup.core.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 
 /** Represents Java's primitive types. */
@@ -34,64 +34,64 @@ public abstract class PrimitiveType extends Type {
    *
    * @param name the primitive's name
    */
-  private PrimitiveType(@Nonnull String name) {
+  private PrimitiveType(@NonNull String name) {
     this.name = name;
   }
 
-  @Nonnull private final String name;
+  @NonNull private final String name;
 
   /**
    * Gets the primitive type's name.
    *
    * @return The value to get.
    */
-  @Nonnull
+  @NonNull
   public String getName() {
     return name;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public String toString() {
     return name;
   }
 
-  @Nonnull
+  @NonNull
   public static ByteType getByte() {
     return ByteType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static ShortType getShort() {
     return ShortType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static IntType getInt() {
     return IntType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static LongType getLong() {
     return LongType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static FloatType getFloat() {
     return FloatType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static DoubleType getDouble() {
     return DoubleType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static CharType getChar() {
     return CharType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static BooleanType getBoolean() {
     return BooleanType.getInstance();
   }
@@ -108,7 +108,7 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseByteType();
       return v;
     }
@@ -126,7 +126,7 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseShortType();
       return v;
     }
@@ -139,7 +139,7 @@ public abstract class PrimitiveType extends Type {
       super("int");
     }
 
-    protected IntType(@Nonnull String name) {
+    protected IntType(@NonNull String name) {
       super(name);
     }
 
@@ -148,7 +148,7 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseIntType();
       return v;
     }
@@ -166,7 +166,7 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseDoubleType();
       return v;
     }
@@ -184,7 +184,7 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseLongType();
       return v;
     }
@@ -202,7 +202,7 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseFloatType();
       return v;
     }
@@ -220,7 +220,7 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseCharType();
       return v;
     }
@@ -233,7 +233,7 @@ public abstract class PrimitiveType extends Type {
       super("boolean");
     }
 
-    protected BooleanType(@Nonnull String name) {
+    protected BooleanType(@NonNull String name) {
       super(name);
     }
 
@@ -242,7 +242,7 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseBooleanType();
       return v;
     }

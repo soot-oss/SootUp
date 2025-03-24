@@ -22,39 +22,29 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public interface NumericConstant<N extends NumericConstant<N>>
     extends Constant, ComparableConstant<N> {
 
   // PTC 1999/06/28
-  @Nonnull
-  N add(@Nonnull N c);
+  @NonNull N add(@NonNull N c);
 
-  @Nonnull
-  N subtract(@Nonnull N c);
+  @NonNull N subtract(@NonNull N c);
 
-  @Nonnull
-  N multiply(@Nonnull N c);
+  @NonNull N multiply(@NonNull N c);
 
-  @Nonnull
-  N divide(@Nonnull N c);
+  @NonNull N divide(@NonNull N c);
 
-  @Nonnull
-  N remainder(@Nonnull N c);
+  @NonNull N remainder(@NonNull N c);
 
-  @Nonnull
-  BooleanConstant lessThan(@Nonnull N c);
+  @NonNull BooleanConstant lessThan(@NonNull N c);
 
-  @Nonnull
-  BooleanConstant lessThanOrEqual(@Nonnull N c);
+  @NonNull BooleanConstant lessThanOrEqual(@NonNull N c);
 
-  @Nonnull
-  BooleanConstant greaterThan(@Nonnull N c);
+  @NonNull BooleanConstant greaterThan(@NonNull N c);
 
-  @Nonnull
-  BooleanConstant greaterThanOrEqual(@Nonnull N c);
+  @NonNull BooleanConstant greaterThanOrEqual(@NonNull N c);
 
-  @Nonnull
-  N negate();
+  @NonNull N negate();
 }

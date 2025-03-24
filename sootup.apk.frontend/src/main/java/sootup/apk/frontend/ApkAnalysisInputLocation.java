@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
 import org.jf.dexlib2.iface.DexFile;
+import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.Util.*;
 import sootup.apk.frontend.dexpler.DexClassProvider;
 import sootup.apk.frontend.dexpler.DexFileProvider;
@@ -88,10 +88,10 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
     return classList;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Optional<? extends SootClassSource> getClassSource(
-      @Nonnull ClassType type, @Nonnull View view) {
+      @NonNull ClassType type, @NonNull View view) {
     return Objects.requireNonNull(getClassSourceInternal(type, new DexClassProvider(view)));
   }
 
@@ -101,9 +101,9 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
     return dexClassProvider.createClassSource(this, apk_path, type);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Stream<? extends SootClassSource> getClassSources(@Nonnull View view) {
+  public Stream<? extends SootClassSource> getClassSources(@NonNull View view) {
     return classNamesList.entrySet().stream()
         .flatMap(
             className ->
@@ -112,13 +112,13 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
                         view.getIdentifierFactory().getClassType(className.getKey()), view)));
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public SourceType getSourceType() {
     return SourceType.Application;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;

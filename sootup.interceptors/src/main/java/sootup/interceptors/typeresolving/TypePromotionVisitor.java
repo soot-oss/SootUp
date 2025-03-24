@@ -23,7 +23,7 @@ package sootup.interceptors.typeresolving;
  */
 
 import java.util.Collection;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -35,9 +35,9 @@ import sootup.interceptors.typeresolving.types.TopType;
 
 public class TypePromotionVisitor extends TypeChecker {
   public TypePromotionVisitor(
-      @Nonnull Body.BodyBuilder builder,
-      @Nonnull AugEvalFunction evalFunction,
-      @Nonnull BytecodeHierarchy hierarchy) {
+      Body.@NonNull BodyBuilder builder,
+      @NonNull AugEvalFunction evalFunction,
+      @NonNull BytecodeHierarchy hierarchy) {
     super(builder, evalFunction, hierarchy);
   }
 
@@ -55,7 +55,7 @@ public class TypePromotionVisitor extends TypeChecker {
         || type.equals(AugmentIntegerTypes.getInteger32767());
   }
 
-  public void visit(@Nonnull Value value, @Nonnull Type stdType, @Nonnull Stmt stmt) {
+  public void visit(@NonNull Value value, @NonNull Type stdType, @NonNull Stmt stmt) {
 
     /* Note: When visiting function parameters, we may encounter constant values such as strings ("abc") or integers (2).
       These constants are not instances of the Local class and should be handled accordingly.

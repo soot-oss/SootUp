@@ -23,7 +23,7 @@ package sootup.core.jimple.basic;
  */
 
 import java.util.Objects;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
@@ -36,23 +36,23 @@ import sootup.core.types.ClassType;
 public final class Trap {
 
   /** The exception being caught. */
-  @Nonnull private final ClassType exception;
+  @NonNull private final ClassType exception;
 
   /** The first stmt being trapped. */
-  @Nonnull private final Stmt beginStmt;
+  @NonNull private final Stmt beginStmt;
 
   /** The stmt just before the last stmt being trapped. */
-  @Nonnull private final Stmt endStmt;
+  @NonNull private final Stmt endStmt;
 
   /** The stmt to which execution flows after the caught exception is triggered. */
-  @Nonnull private final Stmt handlerStmt;
+  @NonNull private final Stmt handlerStmt;
 
   /** Creates a Trap with the given exception, handler, begin and end stmts. */
   public Trap(
-      @Nonnull ClassType exception,
-      @Nonnull Stmt beginStmt, // inclusive
-      @Nonnull Stmt endStmt, // exclusive!
-      @Nonnull Stmt handlerStmt) {
+      @NonNull ClassType exception,
+      @NonNull Stmt beginStmt, // inclusive
+      @NonNull Stmt endStmt, // exclusive!
+      @NonNull Stmt handlerStmt) {
 
     if (beginStmt == endStmt) {
       throw new IllegalArgumentException("The covered Trap range is empty. Trap is of no use.");
@@ -74,42 +74,42 @@ public final class Trap {
     return new String(sb);
   }
 
-  @Nonnull
-  public Trap withException(@Nonnull ClassType exception) {
+  @NonNull
+  public Trap withException(@NonNull ClassType exception) {
     return new Trap(exception, getBeginStmt(), getEndStmt(), getHandlerStmt());
   }
 
-  @Nonnull
-  public Trap withBeginStmt(@Nonnull Stmt beginStmt) {
+  @NonNull
+  public Trap withBeginStmt(@NonNull Stmt beginStmt) {
     return new Trap(getExceptionType(), beginStmt, getEndStmt(), getHandlerStmt());
   }
 
-  @Nonnull
-  public Trap withHandlerStmt(@Nonnull Stmt handlerStmt) {
+  @NonNull
+  public Trap withHandlerStmt(@NonNull Stmt handlerStmt) {
     return new Trap(getExceptionType(), getBeginStmt(), getEndStmt(), handlerStmt);
   }
 
-  @Nonnull
-  public Trap withEndStmt(@Nonnull Stmt endStmt) {
+  @NonNull
+  public Trap withEndStmt(@NonNull Stmt endStmt) {
     return new Trap(getExceptionType(), getBeginStmt(), endStmt, getHandlerStmt());
   }
 
-  @Nonnull
+  @NonNull
   public Stmt getBeginStmt() {
     return beginStmt;
   }
 
-  @Nonnull
+  @NonNull
   public Stmt getEndStmt() {
     return endStmt;
   }
 
-  @Nonnull
+  @NonNull
   public Stmt getHandlerStmt() {
     return handlerStmt;
   }
 
-  @Nonnull
+  @NonNull
   public ClassType getExceptionType() {
     return exception;
   }

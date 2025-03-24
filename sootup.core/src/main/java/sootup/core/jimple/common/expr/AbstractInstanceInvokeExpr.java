@@ -24,7 +24,7 @@ package sootup.core.jimple.common.expr;
 
 import java.util.List;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -32,21 +32,21 @@ import sootup.core.signatures.MethodSignature;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
-  @Nonnull private final Local base;
+  @NonNull private final Local base;
 
   AbstractInstanceInvokeExpr(
-      @Nonnull Local base, @Nonnull MethodSignature methodSig, @Nonnull Immediate[] args) {
+      @NonNull Local base, @NonNull MethodSignature methodSig, @NonNull Immediate[] args) {
     super(methodSig, args);
     this.base = base;
   }
 
-  @Nonnull
+  @NonNull
   public Local getBase() {
     return base;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(
         Stream.concat(
@@ -61,12 +61,12 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
     return base.equivHashCode() * 101 + getMethodSignature().hashCode() * 17;
   }
 
-  @Nonnull
-  public abstract AbstractInvokeExpr withBase(@Nonnull Local base);
+  @NonNull
+  public abstract AbstractInvokeExpr withBase(@NonNull Local base);
 
-  @Nonnull
-  public abstract AbstractInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature);
+  @NonNull
+  public abstract AbstractInvokeExpr withMethodSignature(@NonNull MethodSignature methodSignature);
 
-  @Nonnull
-  public abstract AbstractInvokeExpr withArgs(@Nonnull List<Immediate> args);
+  @NonNull
+  public abstract AbstractInvokeExpr withArgs(@NonNull List<Immediate> args);
 }

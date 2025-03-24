@@ -24,7 +24,7 @@ package sootup.apk.frontend.interceptors;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -59,13 +59,13 @@ public class DexNullTransformer extends AbstractNullTransformer {
   private Local l = null;
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
 
     AbstractStmtVisitor checkDef =
         new AbstractStmtVisitor() {
           @Override
-          public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+          public void caseAssignStmt(@NonNull JAssignStmt stmt) {
             Value r = stmt.getRightOp();
             if (r instanceof JFieldRef) {
               usedAsObject = isObject(r.getType());
@@ -97,7 +97,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
           }
 
           @Override
-          public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
+          public void caseIdentityStmt(@NonNull JIdentityStmt stmt) {
             if (stmt.getLeftOp() == l) {
               usedAsObject = isObject(stmt.getRightOp().getType());
               doBreak = true;
@@ -128,14 +128,14 @@ public class DexNullTransformer extends AbstractNullTransformer {
           }
 
           @Override
-          public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
+          public void caseInvokeStmt(@NonNull JInvokeStmt stmt) {
             AbstractInvokeExpr e = stmt.getInvokeExpr().get();
             usedAsObject = examineInvokeExpr(e);
             doBreak = true;
           }
 
           @Override
-          public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+          public void caseAssignStmt(@NonNull JAssignStmt stmt) {
             Value left = stmt.getLeftOp();
             Value r = stmt.getRightOp();
 
@@ -213,26 +213,26 @@ public class DexNullTransformer extends AbstractNullTransformer {
           }
 
           @Override
-          public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
+          public void caseIdentityStmt(@NonNull JIdentityStmt stmt) {
             if (stmt.getLeftOp() == l) {
               throw new RuntimeException("IMPOSSIBLE 0");
             }
           }
 
           @Override
-          public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
+          public void caseEnterMonitorStmt(@NonNull JEnterMonitorStmt stmt) {
             usedAsObject = stmt.getOp() == l;
             doBreak = true;
           }
 
           @Override
-          public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
+          public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
             usedAsObject = stmt.getOp() == l;
             doBreak = true;
           }
 
           @Override
-          public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
+          public void caseReturnStmt(@NonNull JReturnStmt stmt) {
             usedAsObject =
                 stmt.getOp() == l
                     && isObject(Objects.requireNonNull(builder.getMethodSignature()).getType());
@@ -240,7 +240,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
           }
 
           @Override
-          public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
+          public void caseThrowStmt(@NonNull JThrowStmt stmt) {
             usedAsObject = stmt.getOp() == l;
             doBreak = true;
           }
@@ -309,7 +309,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
           Set<Value> objects = null;
 
           @Override
-          public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+          public void caseAssignStmt(@NonNull JAssignStmt stmt) {
             if (isObject(stmt.getLeftOp().getType()) && isConstZero(stmt.getRightOp())) {
               stmt.withRValue(nullConstant);
               return;
@@ -341,7 +341,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
           }
 
           @Override
-          public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
+          public void caseEnterMonitorStmt(@NonNull JEnterMonitorStmt stmt) {
             if (stmt.getOp() instanceof IntConstant
                 && ((IntConstant) stmt.getOp()).getValue() == 0) {
               stmt.withOp(nullConstant);
@@ -349,7 +349,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
           }
 
           @Override
-          public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
+          public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
             if (stmt.getOp() instanceof IntConstant
                 && ((IntConstant) stmt.getOp()).getValue() == 0) {
               stmt.withOp(nullConstant);
@@ -357,7 +357,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
           }
 
           @Override
-          public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
+          public void caseReturnStmt(@NonNull JReturnStmt stmt) {
             if (stmt.getOp() instanceof IntConstant) {
               assert builder.getMethodSignature() != null;
               if (isObject(builder.getMethodSignature().getType())) {

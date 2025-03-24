@@ -22,36 +22,36 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that checks whether two value are equal. */
 public final class JEqExpr extends AbstractConditionExpr {
 
-  public JEqExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JEqExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public final String getSymbol() {
     return " == ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseEqExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JEqExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JEqExpr withOp1(@NonNull Immediate op1) {
     return new JEqExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JEqExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JEqExpr withOp2(@NonNull Immediate op2) {
     return new JEqExpr(getOp1(), op2);
   }
 }

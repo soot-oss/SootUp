@@ -22,36 +22,36 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that multiplies two numbers. */
 public final class JMulExpr extends AbstractFloatBinopExpr {
 
-  public JMulExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JMulExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public final String getSymbol() {
     return " * ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseMulExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JMulExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JMulExpr withOp1(@NonNull Immediate op1) {
     return new JMulExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JMulExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JMulExpr withOp2(@NonNull Immediate op2) {
     return new JMulExpr(getOp1(), op2);
   }
 }

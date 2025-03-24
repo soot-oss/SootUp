@@ -27,8 +27,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.CharStreams;
+import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -46,12 +46,12 @@ import sootup.interceptors.BytecodeBodyInterceptors;
  */
 public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation {
 
-  @Nonnull final Path path = Paths.get("only-in-memory.jimple");
-  @Nonnull final List<BodyInterceptor> bodyInterceptors;
-  @Nonnull final SourceType sourceType;
+  @NonNull final Path path = Paths.get("only-in-memory.jimple");
+  @NonNull final List<BodyInterceptor> bodyInterceptors;
+  @NonNull final SourceType sourceType;
   private String jimpleFileContents;
 
-  public JimpleStringAnalysisInputLocation(@Nonnull String jimpleFileContents) {
+  public JimpleStringAnalysisInputLocation(@NonNull String jimpleFileContents) {
     this(
         jimpleFileContents,
         SourceType.Application,
@@ -59,9 +59,9 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
   }
 
   public JimpleStringAnalysisInputLocation(
-      @Nonnull String jimpleFileContents,
-      @Nonnull SourceType sourceType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull String jimpleFileContents,
+      @NonNull SourceType sourceType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     this.jimpleFileContents = jimpleFileContents;
     this.bodyInterceptors = bodyInterceptors;
     this.sourceType = sourceType;
@@ -69,7 +69,7 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
 
   private OverridingClassSource getOverridingClassSource(
       String jimpleFileContents, List<BodyInterceptor> bodyInterceptors, View view) {
-    final @Nonnull OverridingClassSource classSource;
+    final @NonNull OverridingClassSource classSource;
     try {
       JimpleConverter jimpleConverter = new JimpleConverter();
       classSource =
@@ -81,26 +81,26 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
     return classSource;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Optional<? extends SootClassSource> getClassSource(
-      @Nonnull ClassType type, @Nonnull View view) {
+      @NonNull ClassType type, @NonNull View view) {
     return Optional.of(getOverridingClassSource(jimpleFileContents, bodyInterceptors, view));
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Stream<? extends SootClassSource> getClassSources(@Nonnull View view) {
+  public Stream<? extends SootClassSource> getClassSources(@NonNull View view) {
     return Stream.of(getOverridingClassSource(jimpleFileContents, bodyInterceptors, view));
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public SourceType getSourceType() {
     return sourceType;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;

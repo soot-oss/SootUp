@@ -28,7 +28,7 @@ package sootup.core.jimple.common.ref;
  */
 
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -46,7 +46,7 @@ public final class JInstanceFieldRef extends JFieldRef {
    * @param base the base value of the field
    * @param fieldSig the field sig
    */
-  public JInstanceFieldRef(@Nonnull Local base, @Nonnull FieldSignature fieldSig) {
+  public JInstanceFieldRef(@NonNull Local base, @NonNull FieldSignature fieldSig) {
     super(fieldSig);
     this.base = base;
   }
@@ -57,7 +57,7 @@ public final class JInstanceFieldRef extends JFieldRef {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     base.toString(up);
     up.literal(".");
     up.fieldSignature(getFieldSignature());
@@ -68,20 +68,20 @@ public final class JInstanceFieldRef extends JFieldRef {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(base.getUses(), Stream.of(base));
   }
 
   @Override
-  public <V extends RefVisitor> V accept(@Nonnull V v) {
+  public <V extends RefVisitor> V accept(@NonNull V v) {
 
     v.caseInstanceFieldRef(this);
     return v;
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseInstanceFieldRef(this, o);
   }
 
@@ -91,13 +91,13 @@ public final class JInstanceFieldRef extends JFieldRef {
     return getFieldSignature().hashCode() * 101 + base.hashCode() + 17;
   }
 
-  @Nonnull
-  public JInstanceFieldRef withBase(@Nonnull Local base) {
+  @NonNull
+  public JInstanceFieldRef withBase(@NonNull Local base) {
     return new JInstanceFieldRef(base, getFieldSignature());
   }
 
-  @Nonnull
-  public JInstanceFieldRef withFieldSignature(@Nonnull FieldSignature fieldSignature) {
+  @NonNull
+  public JInstanceFieldRef withFieldSignature(@NonNull FieldSignature fieldSignature) {
     return new JInstanceFieldRef(getBase(), fieldSignature);
   }
 }

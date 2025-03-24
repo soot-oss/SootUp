@@ -22,7 +22,7 @@ package sootup.interceptors;
  * #L%
  */
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
@@ -39,7 +39,7 @@ import sootup.core.views.View;
 public class LocalNameStandardizer implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     MutableStmtGraph graph = builder.getStmtGraph();
     // Get the order of all Locals' occurrences and store them into a map

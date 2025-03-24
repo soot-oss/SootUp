@@ -23,7 +23,7 @@ package sootup.core.jimple.common.ref;
  */
 
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.RefVisitor;
@@ -34,12 +34,12 @@ public final class JCaughtExceptionRef implements IdentityRef {
 
   private final Type type;
 
-  public JCaughtExceptionRef(@Nonnull Type type) {
+  public JCaughtExceptionRef(@NonNull Type type) {
     this.type = type;
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseCaughtException(this, o);
   }
 
@@ -55,24 +55,24 @@ public final class JCaughtExceptionRef implements IdentityRef {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.identityRef(this);
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.empty();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return type;
   }
 
   @Override
-  public <V extends RefVisitor> V accept(@Nonnull V v) {
+  public <V extends RefVisitor> V accept(@NonNull V v) {
 
     v.caseCaughtExceptionRef(this);
     return v;

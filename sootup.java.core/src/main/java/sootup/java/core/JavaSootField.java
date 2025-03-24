@@ -23,7 +23,7 @@ package sootup.java.core;
  */
 
 import java.util.Collections;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.FieldModifier;
 import sootup.core.model.Position;
 import sootup.core.model.SootField;
@@ -31,7 +31,7 @@ import sootup.core.signatures.FieldSignature;
 
 public class JavaSootField extends SootField implements HasAnnotation {
 
-  @Nonnull private final Iterable<AnnotationUsage> annotations;
+  @NonNull private final Iterable<AnnotationUsage> annotations;
 
   /**
    * Constructs a Soot field with the given name, type and modifiers.
@@ -42,25 +42,25 @@ public class JavaSootField extends SootField implements HasAnnotation {
    * @param position position of the field
    */
   public JavaSootField(
-      @Nonnull FieldSignature signature,
-      @Nonnull Iterable<FieldModifier> modifiers,
-      @Nonnull Iterable<AnnotationUsage> annotations,
+      @NonNull FieldSignature signature,
+      @NonNull Iterable<FieldModifier> modifiers,
+      @NonNull Iterable<AnnotationUsage> annotations,
       Position position) {
     super(signature, modifiers, position);
     this.annotations = annotations;
   }
 
-  @Nonnull
+  @NonNull
   public Iterable<AnnotationUsage> getAnnotations() {
     return annotations;
   }
 
-  @Nonnull
-  public JavaSootField withAnnotations(@Nonnull Iterable<AnnotationUsage> annotations) {
+  @NonNull
+  public JavaSootField withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
     return new JavaSootField(getSignature(), getModifiers(), annotations, getPosition());
   }
 
-  @Nonnull
+  @NonNull
   public static AnnotationOrSignatureStep builder() {
     return new JavaSootFieldBuilder();
   }
@@ -79,20 +79,20 @@ public class JavaSootField extends SootField implements HasAnnotation {
 
     private Iterable<AnnotationUsage> annotations = null;
 
-    @Nonnull
+    @NonNull
     public Iterable<AnnotationUsage> getAnnotations() {
       return annotations != null ? annotations : Collections.emptyList();
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public BuildStep withAnnotation(Iterable<AnnotationUsage> annotations) {
       this.annotations = annotations;
       return this;
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public JavaSootField build() {
       return new JavaSootField(getSignature(), getModifiers(), getAnnotations(), getPosition());
     }

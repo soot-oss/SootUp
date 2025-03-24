@@ -22,7 +22,7 @@ package sootup.java.core.exceptions;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.ref.JArrayRef;
@@ -49,12 +49,12 @@ public class ExceptionInferStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseBreakpointStmt(@Nonnull JBreakpointStmt stmt) {
+  public void caseBreakpointStmt(@NonNull JBreakpointStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
+  public void caseInvokeStmt(@NonNull JInvokeStmt stmt) {
     if (stmt.getInvokeExpr().isPresent()) {
       Expr expr = stmt.getInvokeExpr().get();
       expr.accept(exprVisitor);
@@ -63,7 +63,7 @@ public class ExceptionInferStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+  public void caseAssignStmt(@NonNull JAssignStmt stmt) {
     Value leftOp = stmt.getLeftOp();
     Value rightOp = stmt.getRightOp();
     // store in array
@@ -87,18 +87,18 @@ public class ExceptionInferStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
+  public void caseIdentityStmt(@NonNull JIdentityStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
+  public void caseEnterMonitorStmt(@NonNull JEnterMonitorStmt stmt) {
     result =
         result.addException(ExceptionInferResult.ExceptionType.NUll_POINTER_EXCEPTION, hierarchy);
   }
 
   @Override
-  public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
+  public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
     result =
         result.addException(ExceptionInferResult.ExceptionType.NUll_POINTER_EXCEPTION, hierarchy);
     result =
@@ -107,12 +107,12 @@ public class ExceptionInferStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseGotoStmt(@Nonnull JGotoStmt stmt) {
+  public void caseGotoStmt(@NonNull JGotoStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseIfStmt(@Nonnull JIfStmt stmt) {
+  public void caseIfStmt(@NonNull JIfStmt stmt) {
     defaultCaseStmt(stmt);
     // ConditionExpr has no implicit exceptions
     /*Expr conditionExpr = stmt.getCondition();
@@ -121,37 +121,37 @@ public class ExceptionInferStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseNopStmt(@Nonnull JNopStmt stmt) {
+  public void caseNopStmt(@NonNull JNopStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseRetStmt(@Nonnull JRetStmt stmt) {
+  public void caseRetStmt(@NonNull JRetStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
+  public void caseReturnStmt(@NonNull JReturnStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseReturnVoidStmt(@Nonnull JReturnVoidStmt stmt) {
+  public void caseReturnVoidStmt(@NonNull JReturnVoidStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseSwitchStmt(@Nonnull JSwitchStmt stmt) {
+  public void caseSwitchStmt(@NonNull JSwitchStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
+  public void caseThrowStmt(@NonNull JThrowStmt stmt) {
     defaultCaseStmt(stmt);
   }
 
   @Override
-  public void defaultCaseStmt(@Nonnull Stmt stmt) {}
+  public void defaultCaseStmt(@NonNull Stmt stmt) {}
 
   public ExceptionInferResult getResult() {
     return this.result;

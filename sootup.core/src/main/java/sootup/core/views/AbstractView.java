@@ -23,8 +23,8 @@ package sootup.core.views;
  */
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -44,7 +44,7 @@ public abstract class AbstractView implements View {
   public AbstractView() {}
 
   @Override
-  @Nonnull
+  @NonNull
   public TypeHierarchy getTypeHierarchy() {
     if (this.typeHierarchy == null) {
       typeHierarchy = new ViewTypeHierarchy(this);
@@ -54,14 +54,14 @@ public abstract class AbstractView implements View {
 
   /**
    * resolve and check for accessibility of the class from a given package * TODO: incorporate
-   * AccessUtil @Nonnull public synchronized Optional&lt;T&gt; getClass( @Nonnull PackageName
-   * entryPackage, @Nonnull ClassType type) { Optional&lt;T&gt; aClass = getClass(type); if
+   * AccessUtil @NonNull public synchronized Optional&lt;T&gt; getClass( @NonNull PackageName
+   * entryPackage, @NonNull ClassType type) { Optional&lt;T&gt; aClass = getClass(type); if
    * (aClass.isPresent() &amp;&amp; AccessUtil.isAccessible(entryPackage, aClass.get()) ) { return
    * Optional.empty(); } return aClass; }
    */
   @Override
-  @Nonnull
-  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
+  @NonNull
+  public Optional<? extends SootMethod> getMethod(@NonNull MethodSignature signature) {
     final Optional<? extends SootClass> aClass = getClass(signature.getDeclClassType());
     if (!aClass.isPresent()) {
       return Optional.empty();
@@ -70,8 +70,8 @@ public abstract class AbstractView implements View {
   }
 
   @Override
-  @Nonnull
-  public Optional<? extends SootField> getField(@Nonnull FieldSignature signature) {
+  @NonNull
+  public Optional<? extends SootField> getField(@NonNull FieldSignature signature) {
     final Optional<? extends SootClass> aClass = getClass(signature.getDeclClassType());
     if (!aClass.isPresent()) {
       return Optional.empty();

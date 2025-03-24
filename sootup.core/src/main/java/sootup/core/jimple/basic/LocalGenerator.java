@@ -25,8 +25,8 @@ package sootup.core.jimple.basic;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.visitor.AbstractTypeVisitor;
 import sootup.core.types.ClassType;
@@ -48,12 +48,12 @@ public class LocalGenerator {
    * Creates Locals {@link Local} with a standard naming scheme. If a Set of Locals is provided, the
    * LocalGenerator checks whether the name is already taken.
    */
-  public LocalGenerator(@Nonnull Set<Local> existingLocals) {
+  public LocalGenerator(@NonNull Set<Local> existingLocals) {
     locals = existingLocals;
   }
 
   /** generate this local with given type */
-  public Local generateThisLocal(@Nonnull Type type) {
+  public Local generateThisLocal(@NonNull Type type) {
     if (this.thisLocal == null) {
       this.thisLocal = generateLocal(type);
     }
@@ -61,7 +61,7 @@ public class LocalGenerator {
   }
 
   /** generates a new {@link Local} given the type for local. */
-  public Local generateLocal(@Nonnull Type type) {
+  public Local generateLocal(@NonNull Type type) {
     Local localCandidate;
     // is there a name collision? retry!
     do {
@@ -75,7 +75,7 @@ public class LocalGenerator {
     return localCandidate;
   }
 
-  public Local generateParameterLocal(@Nonnull Type type, int index) {
+  public Local generateParameterLocal(@NonNull Type type, int index) {
     if (!this.parameterLocals.containsKey(index)) {
       Local paraLocal = generateLocal(type);
       this.parameterLocals.put(index, paraLocal);
@@ -146,7 +146,7 @@ public class LocalGenerator {
     }
 
     @Override
-    public void caseClassType(@Nonnull ClassType classType) {
+    public void caseClassType(@NonNull ClassType classType) {
       result.append("r").append(tempRefLikeType++);
     }
 

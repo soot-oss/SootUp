@@ -22,8 +22,8 @@ package sootup.java.core;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.frontend.BodySource;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.Position;
@@ -33,12 +33,12 @@ import sootup.core.types.ClassType;
 public class JavaAnnotationSootMethod extends JavaSootMethod {
 
   public JavaAnnotationSootMethod(
-      @Nonnull BodySource source,
-      @Nonnull MethodSignature methodSignature,
-      @Nonnull Iterable<MethodModifier> modifiers,
-      @Nonnull Iterable<ClassType> thrownExceptions,
-      @Nonnull Iterable<AnnotationUsage> annotations,
-      @Nonnull Position position) {
+      @NonNull BodySource source,
+      @NonNull MethodSignature methodSignature,
+      @NonNull Iterable<MethodModifier> modifiers,
+      @NonNull Iterable<ClassType> thrownExceptions,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Position position) {
     super(source, methodSignature, modifiers, thrownExceptions, annotations, position);
   }
 

@@ -25,7 +25,7 @@ package sootup.core.graph;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /** A strategy to traverse a StmtGraph in reverse post-order. */
 public class ReversePostOrderBlockTraversal implements BlockTraversalStrategy {
@@ -36,19 +36,19 @@ public class ReversePostOrderBlockTraversal implements BlockTraversalStrategy {
     this.cfg = cfg;
   }
 
-  @Nonnull
+  @NonNull
   public Iterable<BasicBlock<?>> getOrder() {
     return this::iterator;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public BlockIterator iterator() {
     return new ReversePostOrderBlockIterator(this.cfg.getStartingStmtBlock());
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public List<BasicBlock<?>> getBlocksSorted() {
     return StreamSupport.stream(
             Spliterators.spliteratorUnknownSize(

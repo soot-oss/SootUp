@@ -22,7 +22,7 @@ package sootup.core.graph;
  * #L%
  */
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
 
@@ -33,9 +33,9 @@ import sootup.core.types.ClassType;
  */
 public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
 
-  @Nonnull protected final StmtGraph<V> backingGraph;
+  @NonNull protected final StmtGraph<V> backingGraph;
 
-  public ForwardingStmtGraph(@Nonnull StmtGraph<V> backingGraph) {
+  public ForwardingStmtGraph(@NonNull StmtGraph<V> backingGraph) {
     this.backingGraph = backingGraph;
   }
 
@@ -55,78 +55,78 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   }
 
   @Override
-  public BasicBlock<?> getBlockOf(@Nonnull Stmt stmt) {
+  public BasicBlock<?> getBlockOf(@NonNull Stmt stmt) {
     return backingGraph.getBlockOf(stmt);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Collection<Stmt> getNodes() {
     return backingGraph.getNodes();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Collection<? extends BasicBlock<?>> getBlocks() {
     return backingGraph.getBlocks();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<? extends BasicBlock<?>> getBlocksSorted() {
     return backingGraph.getBlocksSorted();
   }
 
   @Override
-  public boolean containsNode(@Nonnull Stmt node) {
+  public boolean containsNode(@NonNull Stmt node) {
     return backingGraph.containsNode(node);
   }
 
   @Override
-  @Nonnull
-  public List<Stmt> predecessors(@Nonnull Stmt stmt) {
+  @NonNull
+  public List<Stmt> predecessors(@NonNull Stmt stmt) {
     return backingGraph.predecessors(stmt);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+  public List<Stmt> exceptionalPredecessors(@NonNull Stmt node) {
     return backingGraph.exceptionalPredecessors(node);
   }
 
   @Override
-  @Nonnull
-  public List<Stmt> successors(@Nonnull Stmt stmt) {
+  @NonNull
+  public List<Stmt> successors(@NonNull Stmt stmt) {
     return backingGraph.successors(stmt);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+  public Map<ClassType, Stmt> exceptionalSuccessors(@NonNull Stmt node) {
     return backingGraph.exceptionalSuccessors(node);
   }
 
   @Override
-  public int degree(@Nonnull Stmt stmt) {
+  public int degree(@NonNull Stmt stmt) {
     return backingGraph.degree(stmt);
   }
 
   @Override
-  public int inDegree(@Nonnull Stmt stmt) {
+  public int inDegree(@NonNull Stmt stmt) {
     return backingGraph.inDegree(stmt);
   }
 
   @Override
-  public int outDegree(@Nonnull Stmt stmt) {
+  public int outDegree(@NonNull Stmt stmt) {
     return backingGraph.outDegree(stmt);
   }
 
   @Override
-  public boolean hasEdgeConnecting(@Nonnull Stmt from, @Nonnull Stmt to) {
+  public boolean hasEdgeConnecting(@NonNull Stmt from, @NonNull Stmt to) {
     return backingGraph.hasEdgeConnecting(from, to);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Iterator<Stmt> iterator() {
     return backingGraph.iterator();
@@ -134,7 +134,7 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
 
   @Override
   public void removeExceptionalFlowFromAllBlocks(
-      @Nonnull ClassType exceptionType, @Nonnull Stmt exceptionHandlerStmt) {
+      @NonNull ClassType exceptionType, @NonNull Stmt exceptionHandlerStmt) {
     backingGraph.removeExceptionalFlowFromAllBlocks(exceptionType, exceptionHandlerStmt);
   }
 }

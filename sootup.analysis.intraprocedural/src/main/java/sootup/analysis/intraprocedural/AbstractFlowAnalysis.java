@@ -24,7 +24,7 @@ package sootup.analysis.intraprocedural;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -51,7 +51,7 @@ public abstract class AbstractFlowAnalysis<F> {
   }
 
   /** Returns the flow object corresponding to the initial values for each graph node. */
-  @Nonnull
+  @NonNull
   protected abstract F newInitialFlow();
 
   /** Returns the initial flow value for entry/ exit graph nodes. */
@@ -74,18 +74,18 @@ public abstract class AbstractFlowAnalysis<F> {
    * necessary to check whether <code>in1</code> and <code>in2</code> are equal or aliased ). Used
    * by the doAnalysis method.
    */
-  protected abstract void merge(@Nonnull F in1, @Nonnull F in2, @Nonnull F out);
+  protected abstract void merge(@NonNull F in1, @NonNull F in2, @NonNull F out);
 
   /**
    * Merges in1 and in2 into out, just before node succNode. By default, this method just calls
    * merge(A,A,A), ignoring the node.
    */
-  protected void merge(@Nonnull Stmt succNode, @Nonnull F in1, @Nonnull F in2, @Nonnull F out) {
+  protected void merge(@NonNull Stmt succNode, @NonNull F in1, @NonNull F in2, @NonNull F out) {
     merge(in1, in2, out);
   }
 
   /** Creates a copy of the <code>source</code> flow object in <code>dest</code>. */
-  protected abstract void copy(@Nonnull F source, @Nonnull F dest);
+  protected abstract void copy(@NonNull F source, @NonNull F dest);
 
   /**
    * Carries out the actual flow analysis. Typically called from a concrete FlowAnalysis's
@@ -94,13 +94,13 @@ public abstract class AbstractFlowAnalysis<F> {
   protected abstract void execute();
 
   /** Accessor function returning value of IN set for s. */
-  @Nonnull
-  public F getFlowBefore(@Nonnull Stmt s) {
+  @NonNull
+  public F getFlowBefore(@NonNull Stmt s) {
     return stmtToBeforeFlow.get(s);
   }
 
   /** Merges in into inout, just before node succNode. */
-  protected void mergeInto(@Nonnull Stmt succNode, @Nonnull F inout, @Nonnull F in) {
+  protected void mergeInto(@NonNull Stmt succNode, @NonNull F inout, @NonNull F in) {
     F tmp = newInitialFlow();
     merge(succNode, inout, in, tmp);
     copy(tmp, inout);

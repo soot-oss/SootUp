@@ -23,7 +23,7 @@ package sootup.core.signatures;
  */
 
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -32,10 +32,10 @@ import sootup.core.types.Type;
 public class MethodSignature extends SootClassMemberSignature<MethodSubSignature> {
 
   public MethodSignature(
-      @Nonnull ClassType declaringClassSignature,
-      @Nonnull String methodName,
-      @Nonnull Iterable<Type> parameters,
-      @Nonnull Type fqReturnType) {
+      @NonNull ClassType declaringClassSignature,
+      @NonNull String methodName,
+      @NonNull Iterable<Type> parameters,
+      @NonNull Type fqReturnType) {
     this(declaringClassSignature, new MethodSubSignature(methodName, parameters, fqReturnType));
   }
 
@@ -47,12 +47,12 @@ public class MethodSignature extends SootClassMemberSignature<MethodSubSignature
    * @param subSignature the sub-signature
    */
   public MethodSignature(
-      @Nonnull ClassType declaringClass, @Nonnull MethodSubSignature subSignature) {
+      @NonNull ClassType declaringClass, @NonNull MethodSubSignature subSignature) {
     super(declaringClass, subSignature);
   }
 
   /** The method's parameters' signatures. */
-  @Nonnull
+  @NonNull
   public List<Type> getParameterTypes() {
     return this.getSubSignature().getParameterTypes();
   }
@@ -62,7 +62,7 @@ public class MethodSignature extends SootClassMemberSignature<MethodSubSignature
     return this.getSubSignature().getParameterTypes().size();
   }
 
-  @Nonnull
+  @NonNull
   public Type getParameterType(int n) {
     return getParameterTypes().get(n);
   }

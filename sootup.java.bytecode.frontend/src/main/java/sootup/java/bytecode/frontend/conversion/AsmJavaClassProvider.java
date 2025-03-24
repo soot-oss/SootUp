@@ -23,7 +23,7 @@ package sootup.java.bytecode.frontend.conversion;
  */
 import java.nio.file.Path;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
@@ -40,18 +40,18 @@ import sootup.java.core.types.ModuleJavaClassType;
 /** A {@link ClassProvider} capable of handling Java bytecode */
 public class AsmJavaClassProvider implements ClassProvider {
 
-  @Nonnull private final View view;
-  private static final @Nonnull Logger logger = LoggerFactory.getLogger(AsmJavaClassProvider.class);
+  @NonNull private final View view;
+  private static final @NonNull Logger logger = LoggerFactory.getLogger(AsmJavaClassProvider.class);
 
-  public AsmJavaClassProvider(@Nonnull View view) {
+  public AsmJavaClassProvider(@NonNull View view) {
     this.view = view;
   }
 
   @Override
   public Optional<SootClassSource> createClassSource(
-      @Nonnull final AnalysisInputLocation analysisInputLocation,
-      @Nonnull final Path sourcePath,
-      @Nonnull final ClassType classType) {
+      @NonNull final AnalysisInputLocation analysisInputLocation,
+      @NonNull final Path sourcePath,
+      @NonNull final ClassType classType) {
 
     if (classType instanceof ModuleJavaClassType
         && classType.getClassName().equals(JavaModuleIdentifierFactory.MODULE_INFO_FILE)) {
@@ -79,7 +79,7 @@ public class AsmJavaClassProvider implements ClassProvider {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public FileType getHandledFileType() {
     return FileType.CLASS;
   }
@@ -94,13 +94,13 @@ public class AsmJavaClassProvider implements ClassProvider {
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public MethodVisitor visitMethod(
         int access,
-        @Nonnull String name,
-        @Nonnull String desc,
-        @Nonnull String signature,
-        @Nonnull String[] exceptions) {
+        @NonNull String name,
+        @NonNull String desc,
+        @NonNull String signature,
+        @NonNull String[] exceptions) {
 
       AsmMethodSource mn =
           new AsmMethodSource(

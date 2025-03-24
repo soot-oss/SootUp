@@ -23,7 +23,7 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -39,7 +39,7 @@ public final class JInstanceOfExpr implements Expr {
   private final Immediate op;
   private final Type checkType;
 
-  public JInstanceOfExpr(@Nonnull Immediate op, @Nonnull Type checkType) {
+  public JInstanceOfExpr(@NonNull Immediate op, @NonNull Type checkType) {
 
     this.op = op;
     this.checkType = checkType;
@@ -51,7 +51,7 @@ public final class JInstanceOfExpr implements Expr {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     op.toString(up);
     up.literal(" ");
     up.literal(Jimple.INSTANCEOF);
@@ -60,7 +60,7 @@ public final class JInstanceOfExpr implements Expr {
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseInstanceOfExpr(this, o);
   }
 
@@ -75,12 +75,12 @@ public final class JInstanceOfExpr implements Expr {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(op.getUses(), Stream.of(op));
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return PrimitiveType.getBoolean();
@@ -91,18 +91,18 @@ public final class JInstanceOfExpr implements Expr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseInstanceOfExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JInstanceOfExpr withOp(@Nonnull Immediate op) {
+  @NonNull
+  public JInstanceOfExpr withOp(@NonNull Immediate op) {
     return new JInstanceOfExpr(op, getCheckType());
   }
 
-  @Nonnull
-  public JInstanceOfExpr withCheckType(@Nonnull Type checkType) {
+  @NonNull
+  public JInstanceOfExpr withCheckType(@NonNull Type checkType) {
     return new JInstanceOfExpr(getOp(), checkType);
   }
 }

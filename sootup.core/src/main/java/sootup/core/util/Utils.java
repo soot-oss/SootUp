@@ -35,9 +35,9 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
 import javax.tools.*;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.EquivTo;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
@@ -52,8 +52,8 @@ public class Utils {
 
   /** e.g. to print b to understand / compare what every interceptor does. */
   public static List<BodyInterceptor> wrapEachBodyInterceptorWith(
-      @Nonnull List<BodyInterceptor> bodyInterceptors,
-      @Nonnull BiFunction<BodyInterceptor, Body.BodyBuilder, Boolean> bi) {
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull BiFunction<BodyInterceptor, Body.BodyBuilder, Boolean> bi) {
     List<BodyInterceptor> interceptors = new ArrayList<>(bodyInterceptors.size() * 2 + 1);
     bodyInterceptors.stream()
         .map(
@@ -193,8 +193,8 @@ public class Utils {
     }
   }
 
-  @Nonnull
-  public static ArrayList<String> bodyStmtsAsStrings(@Nonnull Body body) {
+  @NonNull
+  public static ArrayList<String> bodyStmtsAsStrings(@NonNull Body body) {
     StringWriter writer = new StringWriter();
     try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
       JimplePrinter printer = new JimplePrinter();
@@ -205,7 +205,7 @@ public class Utils {
     return filterJimple(writer.toString());
   }
 
-  @Nonnull
+  @NonNull
   public static ArrayList<String> filterJimple(String str) {
     return filterJimple(
         Arrays.stream(str.split("\n")).skip(1) // Remove method declaration
@@ -221,12 +221,12 @@ public class Utils {
   }
 
   /** Helper for writing tests . */
-  public static String generateJimpleForTest(@Nonnull Body b) {
+  public static String generateJimpleForTest(@NonNull Body b) {
     ArrayList<String> arr = filterJimple(Utils.bodyStmtsAsStrings(b).stream());
     return generateJimpleTest(arr);
   }
 
-  public static String generateJimpleTest(@Nonnull List<String> stmts) {
+  public static String generateJimpleTest(@NonNull List<String> stmts) {
     StringBuilder sb = new StringBuilder();
 
     sb.append(

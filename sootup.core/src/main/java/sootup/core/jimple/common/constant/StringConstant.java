@@ -22,7 +22,7 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.Type;
@@ -32,7 +32,7 @@ public class StringConstant implements Constant {
   private final String value;
   private final Type type;
 
-  public StringConstant(@Nonnull String str, @Nonnull Type type) {
+  public StringConstant(@NonNull String str, @NonNull Type type) {
     this.type = type;
     this.value = str;
   }
@@ -49,14 +49,14 @@ public class StringConstant implements Constant {
     return value.hashCode();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return type;
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull V v) {
     v.caseStringConstant(this);
     return v;
   }

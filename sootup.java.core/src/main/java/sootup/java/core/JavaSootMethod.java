@@ -24,7 +24,7 @@ package sootup.java.core;
 
 import java.util.Collections;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.model.Body;
@@ -35,28 +35,28 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 
 public class JavaSootMethod extends SootMethod implements HasAnnotation {
-  @Nonnull private final Iterable<AnnotationUsage> annotations;
+  @NonNull private final Iterable<AnnotationUsage> annotations;
 
   public JavaSootMethod(
-      @Nonnull BodySource source,
-      @Nonnull MethodSignature methodSignature,
-      @Nonnull Iterable<MethodModifier> modifiers,
-      @Nonnull Iterable<ClassType> thrownExceptions,
-      @Nonnull Iterable<AnnotationUsage> annotations,
-      @Nonnull Position position) {
+      @NonNull BodySource source,
+      @NonNull MethodSignature methodSignature,
+      @NonNull Iterable<MethodModifier> modifiers,
+      @NonNull Iterable<ClassType> thrownExceptions,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Position position) {
     super(source, methodSignature, modifiers, thrownExceptions, position);
     this.annotations = annotations;
   }
 
-  @Nonnull
+  @NonNull
   public Iterable<AnnotationUsage> getAnnotations() {
     return annotations;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public JavaSootMethod withOverridingMethodSource(
-      @Nonnull Function<OverridingBodySource, OverridingBodySource> overrider) {
+      @NonNull Function<OverridingBodySource, OverridingBodySource> overrider) {
     return new JavaSootMethod(
         overrider.apply(new OverridingBodySource(bodySource)),
         getSignature(),
@@ -66,16 +66,16 @@ public class JavaSootMethod extends SootMethod implements HasAnnotation {
         getPosition());
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public JavaSootMethod withSource(@Nonnull BodySource source) {
+  public JavaSootMethod withSource(@NonNull BodySource source) {
     return new JavaSootMethod(
         source, getSignature(), getModifiers(), exceptions, getAnnotations(), getPosition());
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public JavaSootMethod withModifiers(@Nonnull Iterable<MethodModifier> modifiers) {
+  public JavaSootMethod withModifiers(@NonNull Iterable<MethodModifier> modifiers) {
     return new JavaSootMethod(
         bodySource,
         getSignature(),
@@ -85,9 +85,9 @@ public class JavaSootMethod extends SootMethod implements HasAnnotation {
         getPosition());
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public JavaSootMethod withThrownExceptions(@Nonnull Iterable<ClassType> thrownExceptions) {
+  public JavaSootMethod withThrownExceptions(@NonNull Iterable<ClassType> thrownExceptions) {
     return new JavaSootMethod(
         bodySource,
         getSignature(),
@@ -97,8 +97,8 @@ public class JavaSootMethod extends SootMethod implements HasAnnotation {
         getPosition());
   }
 
-  @Nonnull
-  public JavaSootMethod withAnnotations(@Nonnull Iterable<AnnotationUsage> annotations) {
+  @NonNull
+  public JavaSootMethod withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
     return new JavaSootMethod(
         bodySource,
         getSignature(),
@@ -108,9 +108,9 @@ public class JavaSootMethod extends SootMethod implements HasAnnotation {
         getPosition());
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public JavaSootMethod withBody(@Nonnull Body body) {
+  public JavaSootMethod withBody(@NonNull Body body) {
     return new JavaSootMethod(
         new OverridingBodySource(bodySource).withBody(body),
         getSignature(),
@@ -120,13 +120,13 @@ public class JavaSootMethod extends SootMethod implements HasAnnotation {
         getPosition());
   }
 
-  @Nonnull
+  @NonNull
   public static AnnotationOrSignatureStep builder() {
     return new JavaSootMethodBuilder();
   }
 
   public interface AnnotationOrSignatureStep extends MethodSourceStep {
-    BuildStep withAnnotation(@Nonnull Iterable<AnnotationUsage> annotations);
+    BuildStep withAnnotation(@NonNull Iterable<AnnotationUsage> annotations);
   }
 
   /**
@@ -139,20 +139,20 @@ public class JavaSootMethod extends SootMethod implements HasAnnotation {
 
     private Iterable<AnnotationUsage> annotations = null;
 
-    @Nonnull
+    @NonNull
     public Iterable<AnnotationUsage> getAnnotations() {
       return annotations != null ? annotations : Collections.emptyList();
     }
 
     @Override
-    @Nonnull
-    public BuildStep withAnnotation(@Nonnull Iterable<AnnotationUsage> annotations) {
+    @NonNull
+    public BuildStep withAnnotation(@NonNull Iterable<AnnotationUsage> annotations) {
       this.annotations = annotations;
       return this;
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public JavaSootMethod build() {
       return new JavaSootMethod(
           getSource(),

@@ -23,10 +23,10 @@ package sootup.apk.frontend.Util;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
 import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.value.EncodedValue;
+import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
@@ -87,7 +87,7 @@ public class DexUtil {
     return type;
   }
 
-  public static String toQualifiedName(@Nonnull String str) {
+  public static String toQualifiedName(@NonNull String str) {
     final int endpos = str.length() - 1;
     if (endpos > 2 && str.charAt(endpos) == ';' && str.charAt(0) == 'L') {
       str = str.substring(1, endpos);

@@ -22,7 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -36,12 +36,12 @@ import sootup.core.util.printer.StmtPrinter;
 /** An expression that negates its operand (-). */
 public final class JNegExpr extends AbstractUnopExpr {
 
-  public JNegExpr(@Nonnull Immediate op) {
+  public JNegExpr(@NonNull Immediate op) {
     super(op);
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseNegExpr(this, o);
   }
 
@@ -57,13 +57,13 @@ public final class JNegExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.NEG);
     up.literal(" ");
     getOp().toString(up);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     Value op = getOp();
@@ -87,13 +87,13 @@ public final class JNegExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseNegExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JNegExpr withOp(@Nonnull Immediate op) {
+  @NonNull
+  public JNegExpr withOp(@NonNull Immediate op) {
     return new JNegExpr(op);
   }
 }

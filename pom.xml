@@ -478,12 +478,11 @@
             <version>5.16.1</version>
             <scope>test</scope>
         </dependency>
-        <!-- adds `@Nullable` and `@Nonnull` annotations -->
+        <!-- adds `@Nullable` and `@NonNull ` annotations -->
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.2</version>
-            <scope>provided</scope>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>

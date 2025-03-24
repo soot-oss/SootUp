@@ -33,7 +33,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
@@ -75,14 +75,14 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
                     }
                   }));
 
-  public ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
+  public ArchiveBasedAnalysisInputLocation(@NonNull Path path, @NonNull SourceType srcType) {
     this(path, srcType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public ArchiveBasedAnalysisInputLocation(
-      @Nonnull Path path,
-      @Nonnull SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull Path path,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     this(path, srcType, bodyInterceptors, Collections.emptyList());
   }
 
@@ -95,8 +95,8 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
   }
 
   @Override
-  @Nonnull
-  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
+  @NonNull
+  public Optional<JavaSootClassSource> getClassSource(@NonNull ClassType type, @NonNull View view) {
     try {
       FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
@@ -110,8 +110,8 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
 
   /** returns a Autocloseable resource that must be closed! */
   @Override
-  @Nonnull
-  public Stream<JavaSootClassSource> getClassSources(@Nonnull View view) {
+  @NonNull
+  public Stream<JavaSootClassSource> getClassSources(@NonNull View view) {
     try {
       FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");

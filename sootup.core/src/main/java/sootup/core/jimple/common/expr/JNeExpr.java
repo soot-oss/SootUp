@@ -22,36 +22,36 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** The opposite of {@link JEqExpr} */
 public final class JNeExpr extends AbstractConditionExpr {
 
-  public JNeExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JNeExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public final String getSymbol() {
     return " != ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseNeExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JNeExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JNeExpr withOp1(@NonNull Immediate op1) {
     return new JNeExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JNeExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JNeExpr withOp2(@NonNull Immediate op2) {
     return new JNeExpr(getOp1(), op2);
   }
 }

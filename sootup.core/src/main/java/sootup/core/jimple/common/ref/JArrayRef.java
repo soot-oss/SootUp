@@ -23,7 +23,7 @@ package sootup.core.jimple.common.ref;
  */
 
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.visitor.RefVisitor;
 import sootup.core.types.ArrayType;
@@ -37,13 +37,13 @@ public final class JArrayRef implements ConcreteRef, LValue {
   private final Local base;
   private final Immediate index;
 
-  public JArrayRef(@Nonnull Local base, @Nonnull Immediate index) {
+  public JArrayRef(@NonNull Local base, @NonNull Immediate index) {
     this.base = base;
     this.index = index;
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseArrayRef(this, o);
   }
 
@@ -59,25 +59,25 @@ public final class JArrayRef implements ConcreteRef, LValue {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     base.toString(up);
     up.literal("[");
     index.toString(up);
     up.literal("]");
   }
 
-  @Nonnull
+  @NonNull
   public Local getBase() {
     return base;
   }
 
-  @Nonnull
+  @NonNull
   public Immediate getIndex() {
     return index;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(
         Stream.concat(base.getUses(), Stream.of(base)),
@@ -85,7 +85,7 @@ public final class JArrayRef implements ConcreteRef, LValue {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Type getType() {
     Type baseType = base.getType();
     if (baseType instanceof ArrayType) {
@@ -98,19 +98,19 @@ public final class JArrayRef implements ConcreteRef, LValue {
   }
 
   @Override
-  public <V extends RefVisitor> V accept(@Nonnull V v) {
+  public <V extends RefVisitor> V accept(@NonNull V v) {
 
     v.caseArrayRef(this);
     return v;
   }
 
-  @Nonnull
-  public JArrayRef withBase(@Nonnull Local base) {
+  @NonNull
+  public JArrayRef withBase(@NonNull Local base) {
     return new JArrayRef(base, getIndex());
   }
 
-  @Nonnull
-  public JArrayRef withIndex(@Nonnull Immediate index) {
+  @NonNull
+  public JArrayRef withIndex(@NonNull Immediate index) {
     return new JArrayRef(getBase(), index);
   }
 }

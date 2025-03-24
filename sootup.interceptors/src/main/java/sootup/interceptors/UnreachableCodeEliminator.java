@@ -22,7 +22,7 @@ package sootup.interceptors;
  * #L%
  */
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableBasicBlock;
 import sootup.core.graph.MutableStmtGraph;
@@ -38,7 +38,7 @@ import sootup.core.views.View;
 public class UnreachableCodeEliminator implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     MutableStmtGraph graph = builder.getStmtGraph();
 

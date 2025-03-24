@@ -22,7 +22,7 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -43,13 +43,13 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
 
   public ReplaceUseRefVisitor() {}
 
-  public void init(@Nonnull Value oldUse, @Nonnull Value newUse) {
+  public void init(@NonNull Value oldUse, @NonNull Value newUse) {
     this.oldUse = oldUse;
     this.newUse = newUse;
   }
 
   @Override
-  public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef ref) {
+  public void caseInstanceFieldRef(@NonNull JInstanceFieldRef ref) {
     if (ref.getBase() == oldUse) {
       setResult(ref.withBase((Local) newUse));
     } else {
@@ -58,7 +58,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
   }
 
   @Override
-  public void caseArrayRef(@Nonnull JArrayRef ref) {
+  public void caseArrayRef(@NonNull JArrayRef ref) {
     if (ref.getBase() == oldUse) {
       setResult(ref.withBase((Local) newUse));
     } else if (ref.getIndex() == oldUse) {
@@ -69,7 +69,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor {
   }
 
   @Override
-  public void defaultCaseRef(@Nonnull Ref ref) {
+  public void defaultCaseRef(@NonNull Ref ref) {
     setResult(ref);
   }
 

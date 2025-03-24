@@ -22,32 +22,32 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.constant.*;
 
 public interface ConstantVisitor extends Visitor {
 
-  void caseBooleanConstant(@Nonnull BooleanConstant constant);
+  void caseBooleanConstant(@NonNull BooleanConstant constant);
 
-  void caseDoubleConstant(@Nonnull DoubleConstant constant);
+  void caseDoubleConstant(@NonNull DoubleConstant constant);
 
-  void caseFloatConstant(@Nonnull FloatConstant constant);
+  void caseFloatConstant(@NonNull FloatConstant constant);
 
-  void caseIntConstant(@Nonnull IntConstant constant);
+  void caseIntConstant(@NonNull IntConstant constant);
 
-  void caseLongConstant(@Nonnull LongConstant constant);
+  void caseLongConstant(@NonNull LongConstant constant);
 
-  void caseNullConstant(@Nonnull NullConstant constant);
+  void caseNullConstant(@NonNull NullConstant constant);
 
-  void caseStringConstant(@Nonnull StringConstant constant);
+  void caseStringConstant(@NonNull StringConstant constant);
 
-  void caseEnumConstant(@Nonnull EnumConstant constant);
+  void caseEnumConstant(@NonNull EnumConstant constant);
 
-  void caseClassConstant(@Nonnull ClassConstant constant);
+  void caseClassConstant(@NonNull ClassConstant constant);
 
-  void caseMethodHandle(@Nonnull MethodHandle handle);
+  void caseMethodHandle(@NonNull MethodHandle handle);
 
-  void caseMethodType(@Nonnull MethodType methodType);
+  void caseMethodType(@NonNull MethodType methodType);
 
-  void defaultCaseConstant(@Nonnull Constant constant);
+  void defaultCaseConstant(@NonNull Constant constant);
 }

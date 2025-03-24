@@ -22,36 +22,36 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 public final class JCmplExpr extends AbstractIntBinopExpr {
 
-  public JCmplExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JCmplExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public final String getSymbol() {
     return " " + Jimple.CMPL + " ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseCmplExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JCmplExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JCmplExpr withOp1(@NonNull Immediate op1) {
     return new JCmplExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JCmplExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JCmplExpr withOp2(@NonNull Immediate op2) {
     return new JCmplExpr(getOp1(), op2);
   }
 }

@@ -28,7 +28,7 @@ package sootup.core.jimple.common.constant;
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -38,11 +38,11 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
 
   private final double value;
 
-  private DoubleConstant(@Nonnull double value) {
+  private DoubleConstant(@NonNull double value) {
     this.value = value;
   }
 
-  public static DoubleConstant getInstance(@Nonnull double value) {
+  public static DoubleConstant getInstance(@NonNull double value) {
     return new DoubleConstant(value);
   }
 
@@ -59,75 +59,75 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
   }
 
   // PTC 1999/06/28
-  @Nonnull
+  @NonNull
   @Override
-  public DoubleConstant add(@Nonnull DoubleConstant c) {
+  public DoubleConstant add(@NonNull DoubleConstant c) {
     return DoubleConstant.getInstance(value + c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public DoubleConstant subtract(@Nonnull DoubleConstant c) {
+  public DoubleConstant subtract(@NonNull DoubleConstant c) {
     return DoubleConstant.getInstance(value - c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public DoubleConstant multiply(@Nonnull DoubleConstant c) {
+  public DoubleConstant multiply(@NonNull DoubleConstant c) {
     return DoubleConstant.getInstance(value * c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public DoubleConstant divide(@Nonnull DoubleConstant c) {
+  public DoubleConstant divide(@NonNull DoubleConstant c) {
     return DoubleConstant.getInstance(value / c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public DoubleConstant remainder(@Nonnull DoubleConstant c) {
+  public DoubleConstant remainder(@NonNull DoubleConstant c) {
     return DoubleConstant.getInstance(value % c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant equalEqual(@Nonnull DoubleConstant c) {
+  public BooleanConstant equalEqual(@NonNull DoubleConstant c) {
     return BooleanConstant.getInstance(Double.compare(value, c.value) == 0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant notEqual(@Nonnull DoubleConstant c) {
+  public BooleanConstant notEqual(@NonNull DoubleConstant c) {
     return BooleanConstant.getInstance(Double.compare(value, c.value) != 0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant lessThan(@Nonnull DoubleConstant c) {
+  public BooleanConstant lessThan(@NonNull DoubleConstant c) {
     return BooleanConstant.getInstance(Double.compare(value, c.value) < 0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant lessThanOrEqual(@Nonnull DoubleConstant c) {
+  public BooleanConstant lessThanOrEqual(@NonNull DoubleConstant c) {
     return BooleanConstant.getInstance(Double.compare(value, c.value) <= 0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant greaterThan(@Nonnull DoubleConstant c) {
+  public BooleanConstant greaterThan(@NonNull DoubleConstant c) {
     return BooleanConstant.getInstance(Double.compare(value, c.value) > 0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant greaterThanOrEqual(@Nonnull DoubleConstant c) {
+  public BooleanConstant greaterThanOrEqual(@NonNull DoubleConstant c) {
     return BooleanConstant.getInstance(Double.compare(value, c.value) >= 0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant cmpg(@Nonnull DoubleConstant constant) {
+  public IntConstant cmpg(@NonNull DoubleConstant constant) {
     final double cValue = constant.value;
     if (value < cValue) {
       return IntConstant.getInstance(-1);
@@ -138,9 +138,9 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
     }
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant cmpl(@Nonnull DoubleConstant constant) {
+  public IntConstant cmpl(@NonNull DoubleConstant constant) {
     final double cValue = constant.value;
     if (value > cValue) {
       return IntConstant.getInstance(1);
@@ -151,7 +151,7 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
     }
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public DoubleConstant negate() {
     return DoubleConstant.getInstance(-(value));
@@ -170,14 +170,14 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
     }
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return PrimitiveType.getDouble();
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull V v) {
     v.caseDoubleConstant(this);
     return v;
   }

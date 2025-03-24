@@ -22,36 +22,36 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that checks whether operand 1 &gt; operand 2. */
 public final class JGtExpr extends AbstractConditionExpr {
 
-  public JGtExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JGtExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public final String getSymbol() {
     return " > ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseGtExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JGtExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JGtExpr withOp1(@NonNull Immediate op1) {
     return new JGtExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JGtExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JGtExpr withOp2(@NonNull Immediate op2) {
     return new JGtExpr(getOp1(), op2);
   }
 }

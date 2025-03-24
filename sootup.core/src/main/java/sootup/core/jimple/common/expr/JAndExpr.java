@@ -22,36 +22,36 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that computes a binary AND of two operands. */
 public final class JAndExpr extends AbstractIntLongBinopExpr {
 
-  public JAndExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JAndExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public final String getSymbol() {
     return " & ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseAndExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JAndExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JAndExpr withOp1(@NonNull Immediate op1) {
     return new JAndExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JAndExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JAndExpr withOp2(@NonNull Immediate op2) {
     return new JAndExpr(getOp1(), op2);
   }
 }

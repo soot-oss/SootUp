@@ -2,8 +2,8 @@ package sootup.core.graph;
 
 import java.util.*;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
@@ -31,13 +31,13 @@ import sootup.core.types.ClassType;
  */
 
 public class MutableBasicBlockImpl implements MutableBasicBlock {
-  @Nonnull private final ArrayList<MutableBasicBlock> predecessorBlocks = new ArrayList<>();
+  @NonNull private final ArrayList<MutableBasicBlock> predecessorBlocks = new ArrayList<>();
   private MutableBasicBlock[] successorBlocks =
       new MutableBasicBlock[1]; // 1 := most probable amount of successors/elements
 
-  @Nonnull private final Map<ClassType, MutableBasicBlock> exceptionalSuccessorBlocks;
+  @NonNull private final Map<ClassType, MutableBasicBlock> exceptionalSuccessorBlocks;
 
-  @Nonnull private final List<Stmt> stmts;
+  @NonNull private final List<Stmt> stmts;
 
   public MutableBasicBlockImpl() {
     exceptionalSuccessorBlocks = new HashMap<>();
@@ -58,7 +58,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   }
 
   @Override
-  public void addStmt(@Nonnull Stmt newStmt) {
+  public void addStmt(@NonNull Stmt newStmt) {
     if (getStmtCount() > 0 && getTail() instanceof BranchingStmt) {
       throw new IllegalArgumentException(
           "Can't add another Stmt to a Block after a BranchingStmt.");
@@ -72,7 +72,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   }
 
   @Override
-  public void removeStmt(@Nonnull Stmt stmt) {
+  public void removeStmt(@NonNull Stmt stmt) {
     final int idx = stmts.indexOf(stmt);
     removeStmt(idx);
   }
@@ -91,7 +91,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     stmts.set(idx, newStmt);
   }
 
-  protected void updateSuccessorContainer(@Nonnull Stmt newStmt) {
+  protected void updateSuccessorContainer(@NonNull Stmt newStmt) {
     // we are not keeping/copying the currently stored flows as they are associated with a specific
     // stmt
     final int expectedSuccessorCount = newStmt.getExpectedSuccessorCount();
@@ -103,7 +103,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   }
 
   @Override
-  public void addPredecessorBlock(@Nonnull MutableBasicBlock block) {
+  public void addPredecessorBlock(@NonNull MutableBasicBlock block) {
     predecessorBlocks.add(block);
   }
 
@@ -133,12 +133,12 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   }
 
   @Override
-  public boolean removePredecessorBlock(@Nonnull MutableBasicBlock b) {
+  public boolean removePredecessorBlock(@NonNull MutableBasicBlock b) {
     return predecessorBlocks.remove(b);
   }
 
   @Override
-  public void removeFromSuccessorBlocks(@Nonnull MutableBasicBlock b) {
+  public void removeFromSuccessorBlocks(@NonNull MutableBasicBlock b) {
     for (int i = 0; i < successorBlocks.length; i++) {
       if (successorBlocks[i] == b) {
         successorBlocks[i] = null;
@@ -147,13 +147,13 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   }
 
   @Override
-  public void linkExceptionalSuccessorBlock(@Nonnull ClassType exception, MutableBasicBlock b) {
+  public void linkExceptionalSuccessorBlock(@NonNull ClassType exception, MutableBasicBlock b) {
     exceptionalSuccessorBlocks.put(exception, b);
     b.addPredecessorBlock(this);
   }
 
   @Override
-  public void removeExceptionalSuccessorBlock(@Nonnull ClassType exception) {
+  public void removeExceptionalSuccessorBlock(@NonNull ClassType exception) {
     final MutableBasicBlock removedHandlerBlock = exceptionalSuccessorBlocks.remove(exception);
     if (removedHandlerBlock == null) {
       throw new IllegalArgumentException(
@@ -163,7 +163,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   }
 
   @Override
-  public Collection<ClassType> collectExceptionalSuccessorBlocks(@Nonnull MutableBasicBlock block) {
+  public Collection<ClassType> collectExceptionalSuccessorBlocks(@NonNull MutableBasicBlock block) {
     // hint: there can be multiple Exceptions pointing to a handler
     Collection<ClassType> q = new ArrayDeque<>();
     for (Map.Entry<ClassType, MutableBasicBlock> entry : exceptionalSuccessorBlocks.entrySet()) {
@@ -174,13 +174,13 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     return q;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<MutableBasicBlock> getPredecessors() {
     return Collections.unmodifiableList(predecessorBlocks);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<MutableBasicBlock> getSuccessors() {
     if (stmts.isEmpty()) {
@@ -210,13 +210,13 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     return excPreds;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Map<ClassType, MutableBasicBlock> getExceptionalSuccessors() {
     return Collections.unmodifiableMap(exceptionalSuccessorBlocks);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<Stmt> getStmts() {
     return Collections.unmodifiableList(stmts);
@@ -227,7 +227,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     return stmts.size();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Stmt getHead() {
     if (stmts.isEmpty()) {
@@ -236,7 +236,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     return stmts.get(0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Stmt getTail() {
     int size = stmts.size();
@@ -252,7 +252,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
    * blocks.
    */
   @Override
-  public MutableBasicBlockImpl splitBlockUnlinked(@Nonnull Stmt newTail, @Nonnull Stmt newHead) {
+  public MutableBasicBlockImpl splitBlockUnlinked(@NonNull Stmt newTail, @NonNull Stmt newHead) {
     int splitIdx = stmts.indexOf(newTail); // possibly expensive!
     if (splitIdx < 0) {
       throw new IllegalArgumentException(
@@ -298,8 +298,8 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
    * @return BasicBlock with the second part of Stmts
    */
   @Override
-  @Nonnull
-  public MutableBasicBlockImpl splitBlockLinked(@Nonnull Stmt splitStmt, boolean shouldBeNewHead) {
+  @NonNull
+  public MutableBasicBlockImpl splitBlockLinked(@NonNull Stmt splitStmt, boolean shouldBeNewHead) {
     int splitIdx = stmts.indexOf(splitStmt);
     if (splitIdx < 0) {
       throw new IllegalArgumentException("splitting Stmt is not contained in this Block.");
@@ -312,7 +312,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public MutableBasicBlockImpl splitBlockLinked(int splitIdx) {
 
     MutableBasicBlockImpl newBlock = splitBlockUnlinked(splitIdx);
@@ -384,7 +384,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   /** set newBlock to null to unset.. */
   @Override
   public List<Integer> replaceSuccessorBlock(
-      @Nonnull MutableBasicBlock oldBlock, @Nullable MutableBasicBlock newBlock) {
+      @NonNull MutableBasicBlock oldBlock, @Nullable MutableBasicBlock newBlock) {
     List<Integer> found =
         new ArrayList<>(successorBlocks.length); // max.. almost definitely smaller
     for (int i = 0; i < successorBlocks.length; i++) {

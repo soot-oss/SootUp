@@ -24,7 +24,7 @@ package sootup.core.jimple.common.constant;
 
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
@@ -36,12 +36,12 @@ public class MethodType implements Constant {
   private final Type type;
   private final MethodSubSignature methodSig;
 
-  public MethodType(@Nonnull MethodSubSignature methodSubSignature, @Nonnull ClassType type) {
+  public MethodType(@NonNull MethodSubSignature methodSubSignature, @NonNull ClassType type) {
     this.methodSig = methodSubSignature;
     this.type = type;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return type;
@@ -81,7 +81,7 @@ public class MethodType implements Constant {
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull V v) {
     v.caseMethodType(this);
     return v;
   }

@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Value;
 import sootup.core.signatures.MethodSignature;
@@ -35,10 +35,10 @@ import sootup.core.util.printer.StmtPrinter;
 
 public abstract class AbstractInvokeExpr implements Expr {
 
-  @Nonnull private final MethodSignature methodSignature;
-  @Nonnull private final Immediate[] args;
+  @NonNull private final MethodSignature methodSignature;
+  @NonNull private final Immediate[] args;
 
-  protected AbstractInvokeExpr(@Nonnull MethodSignature method, @Nonnull Immediate[] args) {
+  protected AbstractInvokeExpr(@NonNull MethodSignature method, @NonNull Immediate[] args) {
     this.methodSignature = method;
     for (Immediate arg : args) {
       if (arg == null) {
@@ -48,7 +48,7 @@ public abstract class AbstractInvokeExpr implements Expr {
     this.args = args;
   }
 
-  @Nonnull
+  @NonNull
   public MethodSignature getMethodSignature() {
     return this.methodSignature;
   }
@@ -66,19 +66,19 @@ public abstract class AbstractInvokeExpr implements Expr {
     return args.length;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return methodSignature.getType();
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(Stream.of(args), Stream.of(args).flatMap(Value::getUses));
   }
 
-  protected void argsToString(@Nonnull StringBuilder builder) {
+  protected void argsToString(@NonNull StringBuilder builder) {
     final int len = getArgCount();
     if (0 < len) {
       builder.append(args[0].toString());
@@ -89,7 +89,7 @@ public abstract class AbstractInvokeExpr implements Expr {
     }
   }
 
-  protected void argsToPrinter(@Nonnull StmtPrinter up) {
+  protected void argsToPrinter(@NonNull StmtPrinter up) {
     final int len = getArgCount();
     if (0 < len) {
       args[0].toString(up);

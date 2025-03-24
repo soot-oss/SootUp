@@ -23,7 +23,7 @@ package sootup.core.jimple.common.stmt;
  */
 
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -37,7 +37,7 @@ public final class JThrowStmt extends AbstractStmt {
 
   protected final Immediate op;
 
-  public JThrowStmt(@Nonnull Immediate op, @Nonnull StmtPositionInfo positionInfo) {
+  public JThrowStmt(@NonNull Immediate op, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.op = op;
   }
@@ -48,14 +48,14 @@ public final class JThrowStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.THROW);
     up.literal(" ");
     op.toString(up);
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseThrowStmt(this);
     return v;
   }
@@ -80,23 +80,23 @@ public final class JThrowStmt extends AbstractStmt {
     return comparator.caseThrowStmt(this, o);
   }
 
-  @Nonnull
-  public JThrowStmt withOp(@Nonnull Immediate op) {
+  @NonNull
+  public JThrowStmt withOp(@NonNull Immediate op) {
     return new JThrowStmt(op, getPositionInfo());
   }
 
-  @Nonnull
-  public JThrowStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JThrowStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JThrowStmt(getOp(), positionInfo);
   }
 
-  @Nonnull
+  @NonNull
   public Immediate getOp() {
     return op;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(op.getUses(), Stream.of(op));
   }

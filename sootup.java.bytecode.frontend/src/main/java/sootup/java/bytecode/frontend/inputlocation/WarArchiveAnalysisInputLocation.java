@@ -29,10 +29,10 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import javax.annotation.Nonnull;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.jspecify.annotations.NonNull;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -54,7 +54,7 @@ final class WarArchiveAnalysisInputLocation extends DirectoryBasedAnalysisInputL
   public static int maxAllowedBytesToExtract =
       1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
-  private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nonnull SourceType srcType)
+  private WarArchiveAnalysisInputLocation(@NonNull Path warPath, @NonNull SourceType srcType)
       throws IOException {
     this(
         warPath,
@@ -64,10 +64,10 @@ final class WarArchiveAnalysisInputLocation extends DirectoryBasedAnalysisInputL
   }
 
   WarArchiveAnalysisInputLocation(
-      @Nonnull Path warPath,
-      @Nonnull SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors,
-      @Nonnull Collection<Path> ignoredPaths)
+      @NonNull Path warPath,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull Collection<Path> ignoredPaths)
       throws IOException {
     super(
         Files.createTempDirectory("sootUp-war-" + warPath.hashCode()).toAbsolutePath(),
@@ -107,16 +107,16 @@ final class WarArchiveAnalysisInputLocation extends DirectoryBasedAnalysisInputL
   }
 
   @Override
-  @Nonnull
-  public Stream<JavaSootClassSource> getClassSources(@Nonnull View view) {
+  @NonNull
+  public Stream<JavaSootClassSource> getClassSources(@NonNull View view) {
     return containedInputLocations.stream()
         .flatMap(location -> location.getClassSources(view))
         .map(src -> (JavaSootClassSource) src);
   }
 
   @Override
-  @Nonnull
-  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
+  @NonNull
+  public Optional<JavaSootClassSource> getClassSource(@NonNull ClassType type, @NonNull View view) {
 
     for (AnalysisInputLocation inputLocation : containedInputLocations) {
       final Optional<? extends SootClassSource> classSource =
@@ -234,7 +234,7 @@ final class WarArchiveAnalysisInputLocation extends DirectoryBasedAnalysisInputL
    * @param extractedWARPath The path where the war file is extracted Adds the classes associated to
    *     servlet-class in a {@link ArrayList} of {@link String}
    */
-  @Nonnull
+  @NonNull
   public List<String> retrieveServletClasses(String extractedWARPath) {
     List<String> classesInXML = new ArrayList<>();
     try {
