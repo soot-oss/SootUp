@@ -56,7 +56,7 @@ jobs:
         run:  mvn -ntp jacoco:merge@merge-results  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: aggregate coverage reports across java versions
-        run: mvn -ntp jacoco:report-aggregate@generate-coverage-report  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -ntp jacoco:report-aggregate@generate-coverage-report -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: upload aggregated coverage artifact
         uses: actions/upload-artifact@v4
