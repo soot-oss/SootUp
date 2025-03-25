@@ -22,7 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -30,11 +30,11 @@ import sootup.core.types.UnknownType;
 
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
 
-  protected AbstractFloatBinopExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  protected AbstractFloatBinopExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     Immediate op1 = getOp1();

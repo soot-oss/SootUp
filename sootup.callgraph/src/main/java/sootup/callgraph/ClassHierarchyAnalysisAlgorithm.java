@@ -24,7 +24,7 @@ package sootup.callgraph;
 
 import java.util.*;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
@@ -50,19 +50,19 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
    *
    * @param view it contains the data of the classes and methods
    */
-  public ClassHierarchyAnalysisAlgorithm(@Nonnull View view) {
+  public ClassHierarchyAnalysisAlgorithm(@NonNull View view) {
     super(view);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public CallGraph initialize() {
     return constructCompleteCallGraph(Collections.singletonList(findMainMethod()));
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
+  public CallGraph initialize(@NonNull List<MethodSignature> entryPoints) {
     return constructCompleteCallGraph(entryPoints);
   }
 
@@ -77,7 +77,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
    *     algorithm
    */
   @Override
-  @Nonnull
+  @NonNull
   protected Stream<MethodSignature> resolveCall(SootMethod method, InvokableStmt invokableStmt) {
     Optional<AbstractInvokeExpr> optInvokeExpr = invokableStmt.getInvokeExpr();
     if (!optInvokeExpr.isPresent()) {
@@ -163,16 +163,16 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   @Override
   protected void postProcessingMethod(
       MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
-      @Nonnull MutableCallGraph cg) {
+      @NonNull Deque<MethodSignature> workList,
+      @NonNull MutableCallGraph cg) {
     // do nothing
   }
 
   @Override
   protected void preProcessingMethod(
       MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
-      @Nonnull MutableCallGraph cg) {
+      @NonNull Deque<MethodSignature> workList,
+      @NonNull MutableCallGraph cg) {
     // do nothing
   }
 }

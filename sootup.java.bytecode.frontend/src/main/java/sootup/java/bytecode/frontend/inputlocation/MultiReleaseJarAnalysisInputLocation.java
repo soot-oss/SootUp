@@ -35,7 +35,7 @@ import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -58,16 +58,16 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   // "usual" Jar
   protected static final Integer DEFAULT_VERSION = 0;
 
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+  @NonNull private final List<BodyInterceptor> bodyInterceptors;
 
-  @Nonnull
+  @NonNull
   protected final Map<Integer, AnalysisInputLocation> inputLocations = new LinkedHashMap<>();
 
   private final int version;
 
   public static AnalysisInputLocation create(
-      @Nonnull Path path,
-      @Nonnull SourceType srcType,
+      @NonNull Path path,
+      @NonNull SourceType srcType,
       int version,
       List<BodyInterceptor> bodyInterceptors) {
 
@@ -80,28 +80,28 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
         path, srcType, bodyInterceptors, Collections.singletonList(Paths.get("/META-INF")));
   }
 
-  public MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, int version) {
+  public MultiReleaseJarAnalysisInputLocation(@NonNull Path path, int version) {
     this(path, SourceType.Application, version);
   }
 
   public MultiReleaseJarAnalysisInputLocation(
-      @Nonnull Path path, @Nonnull SourceType srcType, int version) {
+      @NonNull Path path, @NonNull SourceType srcType, int version) {
     this(path, srcType, version, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public MultiReleaseJarAnalysisInputLocation(
-      @Nonnull Path path,
-      @Nonnull SourceType srcType,
+      @NonNull Path path,
+      @NonNull SourceType srcType,
       int version,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     this(path, srcType, version, bodyInterceptors, isMultiReleaseJar(path));
   }
 
   protected MultiReleaseJarAnalysisInputLocation(
-      @Nonnull Path path,
-      @Nonnull SourceType srcType,
+      @NonNull Path path,
+      @NonNull SourceType srcType,
       int version,
-      @Nonnull List<BodyInterceptor> bodyInterceptors,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
       boolean isMultiRelease) {
     super(path, srcType);
     this.version = version;
@@ -153,8 +153,8 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   }
 
   @Override
-  @Nonnull
-  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
+  @NonNull
+  public Optional<JavaSootClassSource> getClassSource(@NonNull ClassType type, @NonNull View view) {
     for (AnalysisInputLocation analysisInputLocation : inputLocations.values()) {
       Optional<? extends SootClassSource> classSource =
           analysisInputLocation.getClassSource(type, view);
@@ -168,8 +168,8 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   }
 
   @Override
-  @Nonnull
-  public Stream<JavaSootClassSource> getClassSources(@Nonnull View view) {
+  @NonNull
+  public Stream<JavaSootClassSource> getClassSources(@NonNull View view) {
     Collection<JavaSootClassSource> classSources = new ArrayList<>();
     inputLocations.values().stream()
         .flatMap(location -> location.getClassSources(view))
@@ -220,7 +220,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;
   }
@@ -229,7 +229,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
    * lists all versions from the version directories inside the META-INF/ directory - excluding the
    * default implemention version
    */
-  protected static List<Integer> getLanguageVersions(@Nonnull Path path) {
+  protected static List<Integer> getLanguageVersions(@NonNull Path path) {
     FileSystem fs;
     try {
       fs = fileSystemCache.get(path);

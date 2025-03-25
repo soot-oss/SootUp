@@ -23,7 +23,7 @@ package sootup.core.jimple.common.ref;
  */
 
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.RefVisitor;
@@ -46,13 +46,13 @@ public final class JParameterRef implements IdentityRef {
    * Constructs a ParameterRef object of the specified type, representing the specified parameter
    * number.
    */
-  public JParameterRef(@Nonnull Type paramType, @Nonnull int number) {
+  public JParameterRef(@NonNull Type paramType, int number) {
     this.index = number;
     this.paramType = paramType;
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseParameterRef(this, o);
   }
 
@@ -68,7 +68,7 @@ public final class JParameterRef implements IdentityRef {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.identityRef(this);
   }
 
@@ -78,32 +78,32 @@ public final class JParameterRef implements IdentityRef {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.empty();
   }
 
   /** Returns the type of this ParameterRef. */
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return paramType;
   }
 
   @Override
-  public <V extends RefVisitor> V accept(@Nonnull V v) {
+  public <V extends RefVisitor> V accept(@NonNull V v) {
 
     v.caseParameterRef(this);
     return v;
   }
 
-  @Nonnull
-  public JParameterRef withParamType(@Nonnull Type paramType) {
+  @NonNull
+  public JParameterRef withParamType(@NonNull Type paramType) {
     return new JParameterRef(paramType, index);
   }
 
-  @Nonnull
-  public JParameterRef withNumber(@Nonnull int number) {
+  @NonNull
+  public JParameterRef withNumber(int number) {
     return new JParameterRef(paramType, number);
   }
 }

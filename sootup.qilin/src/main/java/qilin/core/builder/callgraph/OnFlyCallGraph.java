@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import qilin.core.pag.ContextMethod;
 import qilin.util.DataFactory;
 import qilin.util.queue.ChunkedQueue;
@@ -429,15 +429,15 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
   /* implements APIs from MutableCallGraph*/
   @Override
-  public void addMethod(@Nonnull MethodSignature calledMethod) {
+  public void addMethod(@NonNull MethodSignature calledMethod) {
     this.methods.add(calledMethod);
   }
 
   @Override
   public void addCall(
-      @Nonnull MethodSignature sourceMethod,
-      @Nonnull MethodSignature targetMethod,
-      @Nonnull InvokableStmt stmt) {
+      @NonNull MethodSignature sourceMethod,
+      @NonNull MethodSignature targetMethod,
+      @NonNull InvokableStmt stmt) {
     Set<Call> targets = this.calls.computeIfAbsent(sourceMethod, k -> DataFactory.createSet());
     if (targets.add(new Call(sourceMethod, targetMethod, stmt))) {
       ++callCnt;
@@ -445,48 +445,46 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   }
 
   @Override
-  public void addCall(@Nonnull Call call) {
+  public void addCall(@NonNull Call call) {
     addCall(
         call.getSourceMethodSignature(), call.getTargetMethodSignature(), call.getInvokableStmt());
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Set<MethodSignature> getMethodSignatures() {
     return new HashSet<>(this.methods);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public MutableCallGraph copy() {
     throw new UnsupportedOperationException();
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public CallGraphDifference diff(@Nonnull CallGraph callGraph) {
+  public CallGraphDifference diff(@NonNull CallGraph callGraph) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public boolean containsMethod(@Nonnull MethodSignature method) {
+  public boolean containsMethod(@NonNull MethodSignature method) {
     return this.methods.contains(method);
   }
 
   @Override
   public boolean containsCall(
-      @Nonnull MethodSignature sourceMethod,
-      @Nonnull MethodSignature targetMethod,
+      @NonNull MethodSignature sourceMethod,
+      @NonNull MethodSignature targetMethod,
       InvokableStmt stmt) {
     return containsCall(new Call(sourceMethod, targetMethod, stmt));
   }
 
   @Override
-  public boolean containsCall(@Nonnull Call call) {
+  public boolean containsCall(@NonNull Call call) {
     if (this.calls.containsKey(call.getSourceMethodSignature())) {
-      if (this.calls.get(call.getSourceMethodSignature()).contains(call)) {
-        return true;
-      }
+      return this.calls.get(call.getSourceMethodSignature()).contains(call);
     }
     return false;
   }
@@ -501,31 +499,31 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
     throw new UnsupportedOperationException();
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Set<Call> callsFrom(@Nonnull MethodSignature sourceMethod) {
+  public Set<Call> callsFrom(@NonNull MethodSignature sourceMethod) {
     return this.calls.getOrDefault(sourceMethod, Collections.emptySet());
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Set<Call> callsTo(@Nonnull MethodSignature targetMethod) {
+  public Set<Call> callsTo(@NonNull MethodSignature targetMethod) {
     throw new UnsupportedOperationException();
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Set<MethodSignature> callTargetsFrom(@Nonnull MethodSignature sourceMethod) {
+  public Set<MethodSignature> callTargetsFrom(@NonNull MethodSignature sourceMethod) {
     return callsFrom(sourceMethod).stream()
-        .map(call -> call.getTargetMethodSignature())
+        .map(Call::getTargetMethodSignature)
         .collect(Collectors.toSet());
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Set<MethodSignature> callSourcesTo(@Nonnull MethodSignature targetMethod) {
+  public Set<MethodSignature> callSourcesTo(@NonNull MethodSignature targetMethod) {
     return callsTo(targetMethod).stream()
-        .map(call -> call.getSourceMethodSignature())
+        .map(Call::getSourceMethodSignature)
         .collect(Collectors.toSet());
   }
 

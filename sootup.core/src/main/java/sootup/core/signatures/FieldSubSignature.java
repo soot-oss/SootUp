@@ -24,7 +24,7 @@ package sootup.core.signatures;
 
 import com.google.common.base.Suppliers;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
@@ -43,12 +43,12 @@ public class FieldSubSignature extends SootClassMemberSubSignature
    * @param name The method name.
    * @param type The type signature.
    */
-  public FieldSubSignature(@Nonnull String name, @Nonnull Type type) {
+  public FieldSubSignature(@NonNull String name, @NonNull Type type) {
     super(name, type);
   }
 
   @Override
-  public int compareTo(@Nonnull FieldSubSignature o) {
+  public int compareTo(@NonNull FieldSubSignature o) {
     return super.compareTo(o);
   }
 
@@ -56,7 +56,7 @@ public class FieldSubSignature extends SootClassMemberSubSignature
       Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));
 
   @Override
-  @Nonnull
+  @NonNull
   public String toString() {
     return _cachedToString.get();
   }

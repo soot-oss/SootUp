@@ -23,7 +23,7 @@ package sootup.core.signatures;
  */
 
 import com.google.common.base.Objects;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 
 /**
@@ -50,7 +50,7 @@ public class PackageName {
     this.packageName = packageName;
   }
 
-  @Nonnull
+  @NonNull
   public String getName() {
     return packageName;
   }

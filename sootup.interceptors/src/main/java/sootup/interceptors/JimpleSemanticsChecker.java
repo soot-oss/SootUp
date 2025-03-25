@@ -22,7 +22,7 @@ package sootup.interceptors;
  * #L%
  */
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.model.Body;
@@ -40,18 +40,18 @@ public abstract class JimpleSemanticsChecker implements BodyInterceptor {
   private static final Logger logger = LoggerFactory.getLogger(JimpleSemanticsChecker.class);
 
   protected List<ValidationException> validate(
-      @Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+      Body.@NonNull BodyBuilder builder, @NonNull View view) {
     // FIXME: implement
     throw new UnsupportedOperationException("List of Validators is not incorporated yet.");
   }
 
   @Override
-  public abstract void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view);
+  public abstract void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view);
 
   public static class LoggingJimpleChecker extends JimpleSemanticsChecker {
 
     @Override
-    public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+    public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
       final List<ValidationException> exceptions = validate(builder, view);
       for (ValidationException validationException : exceptions) {
         logger.warn(validationException.getMessage());
@@ -62,7 +62,7 @@ public abstract class JimpleSemanticsChecker implements BodyInterceptor {
   public static class ThrowingJimpleChecker extends LoggingJimpleChecker {
 
     @Override
-    public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+    public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
       super.interceptBody(builder, view);
       throw new IllegalStateException("There are semantic errors in the Jimple - see warn log.");
     }

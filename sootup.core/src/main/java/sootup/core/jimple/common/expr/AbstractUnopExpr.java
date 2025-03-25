@@ -23,25 +23,25 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Value;
 
 public abstract class AbstractUnopExpr implements Expr {
 
-  @Nonnull private final Immediate op;
+  @NonNull private final Immediate op;
 
-  AbstractUnopExpr(@Nonnull Immediate op) {
+  AbstractUnopExpr(@NonNull Immediate op) {
     this.op = op;
   }
 
-  @Nonnull
+  @NonNull
   public Immediate getOp() {
     return op;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public final Stream<Value> getUses() {
     return Stream.concat(op.getUses(), Stream.of(op));
   }

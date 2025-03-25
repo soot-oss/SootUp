@@ -2,8 +2,8 @@ package sootup.core.graph;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
@@ -35,11 +35,11 @@ import sootup.core.util.DotExporter;
 public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
 
   private final StmtGraph stmtGraph;
-  @Nonnull private final ArrayDeque<BasicBlock<?>> trapHandlerBlocks = new ArrayDeque<>();
+  @NonNull private final ArrayDeque<BasicBlock<?>> trapHandlerBlocks = new ArrayDeque<>();
 
-  @Nonnull private final ArrayDeque<BasicBlock<?>> nestedBlocks = new ArrayDeque<>();
-  @Nonnull private final ArrayDeque<BasicBlock<?>> otherBlocks = new ArrayDeque<>();
-  @Nonnull private final Set<BasicBlock<?>> iteratedBlocks;
+  @NonNull private final ArrayDeque<BasicBlock<?>> nestedBlocks = new ArrayDeque<>();
+  @NonNull private final ArrayDeque<BasicBlock<?>> otherBlocks = new ArrayDeque<>();
+  @NonNull private final Set<BasicBlock<?>> iteratedBlocks;
 
   public BlockGraphIterator(StmtGraph stmtGraph) {
     this.stmtGraph = stmtGraph;
@@ -87,7 +87,7 @@ public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public BasicBlock<?> next() {
     BasicBlock<?> currentBlock = retrieveNextBlock();
     if (currentBlock == null) {

@@ -21,7 +21,7 @@ package sootup.java.core.exceptions;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.visitor.AbstractRefVisitor;
 import sootup.core.util.ImmutableUtils;
@@ -33,12 +33,12 @@ public class ExceptionInferRefVisitor extends AbstractRefVisitor {
   public ExceptionInferRefVisitor() {}
 
   @Override
-  public void caseStaticFieldRef(@Nonnull JStaticFieldRef ref) {
+  public void caseStaticFieldRef(@NonNull JStaticFieldRef ref) {
     result = new ExceptionInferResult(ExceptionInferResult.ErrorType.INITIALIZATION_ERROR);
   }
 
   @Override
-  public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef ref) {
+  public void caseInstanceFieldRef(@NonNull JInstanceFieldRef ref) {
     result =
         new ExceptionInferResult(
             ImmutableUtils.immutableSet(
@@ -47,7 +47,7 @@ public class ExceptionInferRefVisitor extends AbstractRefVisitor {
   }
 
   @Override
-  public void caseArrayRef(@Nonnull JArrayRef ref) {
+  public void caseArrayRef(@NonNull JArrayRef ref) {
     result =
         new ExceptionInferResult(
             ImmutableUtils.immutableSet(
@@ -56,22 +56,22 @@ public class ExceptionInferRefVisitor extends AbstractRefVisitor {
   }
 
   @Override
-  public void caseParameterRef(@Nonnull JParameterRef ref) {
+  public void caseParameterRef(@NonNull JParameterRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void caseCaughtExceptionRef(@Nonnull JCaughtExceptionRef ref) {
+  public void caseCaughtExceptionRef(@NonNull JCaughtExceptionRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void caseThisRef(@Nonnull JThisRef ref) {
+  public void caseThisRef(@NonNull JThisRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void defaultCaseRef(@Nonnull Ref ref) {
+  public void defaultCaseRef(@NonNull Ref ref) {
     result = ExceptionInferResult.createEmptyException();
   }
 

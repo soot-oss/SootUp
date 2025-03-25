@@ -28,38 +28,38 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class StreamUtils {
   /** Converts an {@link Optional} to a {@link Stream}. */
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-  @Nonnull
-  public static <T> Stream<T> optionalToStream(@Nonnull Optional<T> o) {
+  @NonNull
+  public static <T> Stream<T> optionalToStream(@NonNull Optional<T> o) {
     return o.map(Stream::of).orElseGet(Stream::empty);
   }
 
   /** Converts an {@link Iterable} to a {@link Stream}. */
-  @Nonnull
-  public static <T> Stream<T> iterableToStream(@Nonnull Iterable<T> it) {
+  @NonNull
+  public static <T> Stream<T> iterableToStream(@NonNull Iterable<T> it) {
     return iterableToStream(it, false);
   }
 
   /** Converts an {@link Iterable} to a {@link Stream}. */
-  @Nonnull
-  public static <T> Stream<T> iterableToStream(@Nonnull Iterable<T> it, boolean parallel) {
+  @NonNull
+  public static <T> Stream<T> iterableToStream(@NonNull Iterable<T> it, boolean parallel) {
     return StreamSupport.stream(it.spliterator(), parallel);
   }
 
   /** Converts an {@link Iterator} to a {@link Stream}. */
-  @Nonnull
-  public static <T> Stream<T> iteratorToStream(@Nonnull Iterator<T> it) {
+  @NonNull
+  public static <T> Stream<T> iteratorToStream(@NonNull Iterator<T> it) {
     return iteratorToStream(it, false);
   }
 
   /** Converts an {@link Iterator} to a {@link Stream}. */
-  @Nonnull
-  public static <T> Stream<T> iteratorToStream(@Nonnull Iterator<T> it, boolean parallel) {
+  @NonNull
+  public static <T> Stream<T> iteratorToStream(@NonNull Iterator<T> it, boolean parallel) {
     return StreamSupport.stream(
         Spliterators.spliteratorUnknownSize(it, Spliterator.ORDERED), parallel);
   }
@@ -80,8 +80,8 @@ public class StreamUtils {
    * @param <C> The type of the casted object.
    * @return The specified <i>stream</i>.
    */
-  @Nonnull
-  public static <C> Stream<C> filterAllCasted(@Nonnull Stream<?> stream, @Nonnull Class<C> clazz) {
+  @NonNull
+  public static <C> Stream<C> filterAllCasted(@NonNull Stream<?> stream, @NonNull Class<C> clazz) {
     return stream.filter(clazz::isInstance).map(clazz::cast);
   }
 
@@ -94,8 +94,8 @@ public class StreamUtils {
    * @return <i>value</i>, if it is not {@code null}; otherwise, <i>other</i>.
    * @see Optional#orElse(Object)
    */
-  @Nonnull
-  public static <T> T valueOrElse(@Nullable T value, @Nonnull T other) {
+  @NonNull
+  public static <T> T valueOrElse(@Nullable T value, @NonNull T other) {
     return value != null ? value : other;
   }
 }

@@ -25,7 +25,7 @@ package sootup.core.validation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.views.View;
@@ -38,7 +38,7 @@ public class LocalsValidator implements BodyValidator {
    * @return
    */
   @Override
-  public List<ValidationException> validate(@Nonnull Body body, @Nonnull View view) {
+  public List<ValidationException> validate(@NonNull Body body, @NonNull View view) {
     List<ValidationException> exception = new ArrayList<>();
 
     final Set<Local> locals = body.getLocals();

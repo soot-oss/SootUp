@@ -24,7 +24,7 @@ package sootup.interceptors;
 
 import com.google.common.collect.Lists;
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.constant.*;
@@ -47,7 +47,7 @@ import sootup.core.views.View;
 public class ConditionalBranchFolder implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
 
@@ -128,7 +128,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
   }
 
   private void pruneExclusivelyReachableStmts(
-      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt fallsThroughStmt) {
+      Body.@NonNull BodyBuilder builder, @NonNull Stmt fallsThroughStmt) {
 
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
     Set<Stmt> reachedBranchingStmts = new HashSet<>();
@@ -168,7 +168,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
 
   /** reachedStmts contains all reached Stmts from entrypoint which ALSO do branch! */
   private boolean isExclusivelyReachable(
-      @Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull Set<Stmt> reachedStmts) {
+      @NonNull StmtGraph<?> graph, @NonNull Stmt stmt, @NonNull Set<Stmt> reachedStmts) {
     final List<Stmt> predecessors = graph.predecessors(stmt);
     final int predecessorSize = predecessors.size();
     int amount = predecessorSize;

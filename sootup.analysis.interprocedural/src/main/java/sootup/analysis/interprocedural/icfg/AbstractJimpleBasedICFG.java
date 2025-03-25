@@ -29,7 +29,7 @@ import heros.SynchronizedBy;
 import heros.solver.IDESolver;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -50,9 +50,9 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   protected LoadingCache<Body, StmtGraph<?>> bodyToStmtGraph =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
           new CacheLoader<Body, StmtGraph<?>>() {
-            @Nonnull
+            @NonNull
             @Override
-            public StmtGraph<?> load(@Nonnull Body body) {
+            public StmtGraph<?> load(@NonNull Body body) {
               return makeGraph(body);
             }
           });
@@ -61,9 +61,9 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   protected LoadingCache<SootMethod, List<Value>> methodToParameterRefs =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
           new CacheLoader<SootMethod, List<Value>>() {
-            @Nonnull
+            @NonNull
             @Override
-            public List<Value> load(@Nonnull SootMethod m) {
+            public List<Value> load(@NonNull SootMethod m) {
               return new ArrayList<>(m.getBody().getParameterLocals());
             }
           });
@@ -72,9 +72,9 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   protected LoadingCache<SootMethod, Set<Stmt>> methodToCallsFromWithin =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
           new CacheLoader<SootMethod, Set<Stmt>>() {
-            @Nonnull
+            @NonNull
             @Override
-            public Set<Stmt> load(@Nonnull SootMethod m) {
+            public Set<Stmt> load(@NonNull SootMethod m) {
               return getCallsFromWithinMethod(m);
             }
           });

@@ -23,7 +23,7 @@ package sootup.interceptors;
  */
 import com.google.common.collect.Lists;
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.LValue;
@@ -43,7 +43,7 @@ import sootup.core.views.View;
 public class LocalPacker implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);

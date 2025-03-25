@@ -24,7 +24,7 @@ package sootup.java.core.exceptions;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Immediate;
@@ -47,7 +47,7 @@ public class StmtExceptionAnalyzer {
   }
 
   public ExceptionInferResult mightThrow(
-      @Nonnull Stmt stmt, @Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
+      @NonNull Stmt stmt, @NonNull StmtGraph<? extends BasicBlock<?>> graph) {
     if (stmt instanceof JThrowStmt) {
       return mightThrowExplicitly((JThrowStmt) stmt, graph);
     } else {
@@ -56,7 +56,7 @@ public class StmtExceptionAnalyzer {
   }
 
   public ExceptionInferResult mightThrowExplicitly(
-      @Nonnull JThrowStmt throwStmt, @Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
+      @NonNull JThrowStmt throwStmt, @NonNull StmtGraph<? extends BasicBlock<?>> graph) {
     Immediate throwExpression = throwStmt.getOp();
     if (!(throwExpression instanceof Local)) {
       throw new IllegalStateException(
@@ -84,7 +84,7 @@ public class StmtExceptionAnalyzer {
   }
 
   private Type findPreciserType(
-      @Nonnull Local local, @Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
+      @NonNull Local local, @NonNull StmtGraph<? extends BasicBlock<?>> graph) {
     Type preciserType = null;
     Set<AbstractDefinitionStmt> defStmtsOfLocal =
         graph.getStmts().stream()

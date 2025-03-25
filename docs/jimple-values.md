@@ -203,7 +203,7 @@ Just subclass the methods to the respective `Value`s you need to handle. This is
         AbstractValueVisitor visitor = new AbstractValueVisitor<Integer>() {
             private int intConstantCounter = 0;
             @Override
-            public void caseConstant(@Nonnull Constant c) {
+            public void caseConstant(@NonNull  Constant c) {
                 intConstantCounter++;
                 setResult(intConstantCounter);
             }

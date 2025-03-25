@@ -24,7 +24,7 @@ package sootup.core.jimple.common.stmt;
 
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -33,29 +33,29 @@ import sootup.core.types.Type;
 
 public abstract class AbstractDefinitionStmt extends AbstractStmt {
 
-  AbstractDefinitionStmt(@Nonnull StmtPositionInfo positionInfo) {
+  AbstractDefinitionStmt(@NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
   }
 
-  @Nonnull
+  @NonNull
   public abstract LValue getLeftOp();
 
-  @Nonnull
+  @NonNull
   public abstract Value getRightOp();
 
-  @Nonnull
+  @NonNull
   public Type getType() {
     return getLeftOp().getType();
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Optional<LValue> getDef() {
     return Optional.of(getLeftOp());
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public final Stream<Value> getUses() {
     Value rightOp = getRightOp();
     return Stream.concat(
@@ -72,6 +72,6 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
     return false;
   }
 
-  @Nonnull
-  public abstract FallsThroughStmt withNewDef(@Nonnull Local newLocal);
+  @NonNull
+  public abstract FallsThroughStmt withNewDef(@NonNull Local newLocal);
 }

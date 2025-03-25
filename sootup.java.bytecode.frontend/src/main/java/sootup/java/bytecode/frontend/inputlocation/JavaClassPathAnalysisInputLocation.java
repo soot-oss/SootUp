@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.frontend.SootClassSource;
@@ -52,11 +52,11 @@ import sootup.java.core.JavaSootClassSource;
  * @author Kaustubh Kelkar updated on 20.07.2020
  */
 public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation {
-  private static final @Nonnull Logger logger =
+  private static final @NonNull Logger logger =
       LoggerFactory.getLogger(JavaClassPathAnalysisInputLocation.class);
-  private static final @Nonnull String WILDCARD_CHAR = "*";
+  private static final @NonNull String WILDCARD_CHAR = "*";
 
-  @Nonnull private final Collection<AnalysisInputLocation> cpEntries;
+  @NonNull private final Collection<AnalysisInputLocation> cpEntries;
 
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
   private final SourceType srcType;
@@ -69,12 +69,12 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    *
    * @param classPath The class path to search in
    */
-  public JavaClassPathAnalysisInputLocation(@Nonnull String classPath) {
+  public JavaClassPathAnalysisInputLocation(@NonNull String classPath) {
     this(classPath, SourceType.Application);
   }
 
   public JavaClassPathAnalysisInputLocation(
-      @Nonnull String classPath, @Nonnull SourceType srcType) {
+      @NonNull String classPath, @NonNull SourceType srcType) {
     this(classPath, srcType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
@@ -86,9 +86,9 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param srcType the source type for the path can be Library, Application, Phantom.
    */
   public JavaClassPathAnalysisInputLocation(
-      @Nonnull String classPath,
-      @Nonnull SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull String classPath,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     this.srcType = srcType;
     this.bodyInterceptors = bodyInterceptors;
 
@@ -100,13 +100,13 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public SourceType getSourceType() {
     return srcType;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;
   }
@@ -118,7 +118,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param fileSystem filesystem in which the paths are resolved
    * @return path entries
    */
-  static @Nonnull Stream<Path> explode(@Nonnull String paths, FileSystem fileSystem) {
+  static @NonNull Stream<Path> explode(@NonNull String paths, FileSystem fileSystem) {
     // the classpath is split at every path separator which is not escaped
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
     final Stream<Path> exploded =
@@ -133,7 +133,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param paths entries as one string
    * @return path entries
    */
-  static @Nonnull Stream<Path> explode(@Nonnull String paths) {
+  static @NonNull Stream<Path> explode(@NonNull String paths) {
     return explode(paths, FileSystems.getDefault());
   }
 
@@ -145,11 +145,11 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param fileSystem The filesystem the paths should be resolved for
    * @return A stream of class path entries with wildcards exploded
    */
-  private static @Nonnull Stream<Path> handleWildCards(
-      @Nonnull String entry, FileSystem fileSystem) {
+  private static @NonNull Stream<Path> handleWildCards(
+      @NonNull String entry, FileSystem fileSystem) {
     if (entry.endsWith(WILDCARD_CHAR)) {
       Path baseDir = fileSystem.getPath(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
-      try (final DirectoryStream<Path> paths = Files.newDirectoryStream(baseDir, "*.{jar,JAR}"); ) {
+      try (final DirectoryStream<Path> paths = Files.newDirectoryStream(baseDir, "*.{jar,JAR}")) {
         return StreamUtils.iteratorToStream(paths.iterator());
       } catch (PatternSyntaxException | NotDirectoryException e) {
         throw new IllegalStateException("Malformed wildcard entry", e);
@@ -168,22 +168,22 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param entry A class path entry
    * @return A stream of class path entries with wildcards exploded
    */
-  @Nonnull
-  private static Stream<Path> handleWildCards(@Nonnull String entry) {
+  @NonNull
+  private static Stream<Path> handleWildCards(@NonNull String entry) {
     return handleWildCards(entry, FileSystems.getDefault());
   }
 
   @Override
-  @Nonnull
-  public Stream<JavaSootClassSource> getClassSources(@Nonnull View view) {
+  @NonNull
+  public Stream<JavaSootClassSource> getClassSources(@NonNull View view) {
     return cpEntries.stream()
         .flatMap(inputLocation -> inputLocation.getClassSources(view))
         .map(src -> (JavaSootClassSource) src);
   }
 
   @Override
-  @Nonnull
-  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
+  @NonNull
+  public Optional<JavaSootClassSource> getClassSource(@NonNull ClassType type, @NonNull View view) {
     for (AnalysisInputLocation inputLocation : cpEntries) {
       final Optional<? extends SootClassSource> classSource =
           inputLocation.getClassSource(type, view);
@@ -194,8 +194,8 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
     return Optional.empty();
   }
 
-  @Nonnull
-  private Optional<AnalysisInputLocation> inputLocationForPath(@Nonnull Path path) {
+  @NonNull
+  private Optional<AnalysisInputLocation> inputLocationForPath(@NonNull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
       return Optional.of(PathBasedAnalysisInputLocation.create(path, srcType, bodyInterceptors));
     } else {
@@ -210,7 +210,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param jarPath The jar path for which the classes need to be listed
    * @return list of classpath entries
    */
-  private List<AnalysisInputLocation> explodeClassPath(@Nonnull String jarPath) {
+  private List<AnalysisInputLocation> explodeClassPath(@NonNull String jarPath) {
     return explodeClassPath(jarPath, FileSystems.getDefault());
   }
 
@@ -222,7 +222,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @return list of classpath entries
    */
   private List<AnalysisInputLocation> explodeClassPath(
-      @Nonnull String jarPath, @Nonnull FileSystem fileSystem) {
+      @NonNull String jarPath, @NonNull FileSystem fileSystem) {
     return explode(jarPath, fileSystem)
         .flatMap(cp -> StreamUtils.optionalToStream(inputLocationForPath(cp)))
         .collect(Collectors.toList());

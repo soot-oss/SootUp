@@ -23,7 +23,7 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Value;
@@ -37,13 +37,13 @@ public final class JCastExpr implements Expr {
   private final Immediate op;
   private final Type type;
 
-  public JCastExpr(@Nonnull Immediate op, @Nonnull Type type) {
+  public JCastExpr(@NonNull Immediate op, @NonNull Type type) {
     this.op = op;
     this.type = type;
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseCastExpr(this, o);
   }
 
@@ -55,11 +55,11 @@ public final class JCastExpr implements Expr {
 
   @Override
   public String toString() {
-    return "(" + type.toString() + ") " + op.toString();
+    return "(" + type + ") " + op;
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal("(");
     up.typeSignature(type);
     up.literal(") ");
@@ -71,30 +71,30 @@ public final class JCastExpr implements Expr {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(op.getUses(), Stream.of(op));
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return type;
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseCastExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JCastExpr withOp(@Nonnull Immediate op) {
+  @NonNull
+  public JCastExpr withOp(@NonNull Immediate op) {
     return new JCastExpr(op, type);
   }
 
-  @Nonnull
-  public JCastExpr withType(@Nonnull Type type) {
+  @NonNull
+  public JCastExpr withType(@NonNull Type type) {
     return new JCastExpr(getOp(), type);
   }
 }

@@ -23,7 +23,7 @@ package sootup.core.typehierarchy;
  */
 
 import java.util.Comparator;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.types.ClassType;
 
 /**
@@ -34,7 +34,7 @@ public class HierarchyComparator implements Comparator<ClassType> {
 
   TypeHierarchy typeHierarchy;
 
-  public HierarchyComparator(@Nonnull TypeHierarchy hierarchy) {
+  public HierarchyComparator(@NonNull TypeHierarchy hierarchy) {
     this.typeHierarchy = hierarchy;
   }
 

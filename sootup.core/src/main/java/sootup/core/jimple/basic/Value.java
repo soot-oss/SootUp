@@ -23,7 +23,7 @@ package sootup.core.jimple.basic;
  */
 
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.ref.Ref;
@@ -45,16 +45,14 @@ public interface Value extends EquivTo {
    *
    * @return
    */
-  @Nonnull
-  Stream<Value> getUses();
+  @NonNull Stream<Value> getUses();
 
   /** Returns the Soot type of this Value. */
-  @Nonnull
-  Type getType();
+  @NonNull Type getType();
 
-  void toString(@Nonnull StmtPrinter up);
+  void toString(@NonNull StmtPrinter up);
 
-  default void accept(@Nonnull ValueVisitor v) {
+  default void accept(@NonNull ValueVisitor v) {
     // [ms] find a way without casting and instanceof..
     if (this instanceof Local) {
       ((Local) this).accept((ImmediateVisitor) v);

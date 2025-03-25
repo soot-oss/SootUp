@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.core.PointsToAnalysis;
@@ -193,7 +193,7 @@ public class MethodNodeFactory {
           }
 
           @Override
-          public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+          public void caseAssignStmt(@NonNull JAssignStmt stmt) {
             Value l = stmt.getLeftOp();
             Value r = stmt.getRightOp();
             if (l instanceof JStaticFieldRef) {
@@ -217,7 +217,7 @@ public class MethodNodeFactory {
           }
 
           @Override
-          public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
+          public void caseIdentityStmt(@NonNull JIdentityStmt stmt) {
             if (!(stmt.getLeftOp().getType() instanceof ReferenceType)) {
               return;
             }
@@ -227,19 +227,19 @@ public class MethodNodeFactory {
           }
 
           @Override
-          public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
+          public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
             defaultCaseStmt(stmt);
           }
 
           @Override
-          public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
+          public void caseReturnStmt(@NonNull JReturnStmt stmt) {
             if (!(stmt.getOp().getType() instanceof ReferenceType)) return;
             Node retNode = getNode(stmt.getOp());
             mpag.addInternalEdge(retNode, caseRet());
           }
 
           @Override
-          public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
+          public void caseThrowStmt(@NonNull JThrowStmt stmt) {
             if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
               mpag.addInternalEdge(getNode(stmt.getOp()), getNode(scene.getFieldGlobalThrow()));
             }

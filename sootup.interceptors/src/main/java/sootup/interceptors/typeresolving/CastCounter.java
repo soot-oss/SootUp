@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -60,10 +60,10 @@ public class CastCounter extends TypeChecker {
   private int newLocalsCount = 0;
 
   public CastCounter(
-      @Nonnull Body.BodyBuilder builder,
-      @Nonnull AugEvalFunction evalFunction,
-      @Nonnull BytecodeHierarchy hierarchy,
-      @Nonnull Typing typing) {
+      Body.@NonNull BodyBuilder builder,
+      @NonNull AugEvalFunction evalFunction,
+      @NonNull BytecodeHierarchy hierarchy,
+      @NonNull Typing typing) {
     super(builder, evalFunction, hierarchy);
     setTyping(typing);
 
@@ -95,7 +95,7 @@ public class CastCounter extends TypeChecker {
   }
 
   /** This method is used to check whether a value in a stmt needs a cast. */
-  public void visit(@Nonnull Value value, @Nonnull Type stdType, @Nonnull Stmt stmt) {
+  public void visit(@NonNull Value value, @NonNull Type stdType, @NonNull Stmt stmt) {
     if (!(value instanceof Immediate)) {
       return;
     }
@@ -136,7 +136,7 @@ public class CastCounter extends TypeChecker {
     stmt2NewStmt.put(stmt, newStmt);
   }
 
-  private Local generateTempLocal(@Nonnull Type type) {
+  private Local generateTempLocal(@NonNull Type type) {
     String name = "#l" + newLocalsCount++;
     return Jimple.newLocal(name, type);
   }

@@ -22,7 +22,7 @@ package sootup.interceptors;
  * #L%
  */
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;

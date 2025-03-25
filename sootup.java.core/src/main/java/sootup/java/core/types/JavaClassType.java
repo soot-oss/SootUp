@@ -24,7 +24,7 @@ package sootup.java.core.types;
 
 import com.google.common.base.Objects;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
@@ -40,8 +40,8 @@ public class JavaClassType extends ClassType {
       Pattern.compile(
           "^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom|jdk|com\\.oracle\\.|org\\.ietf\\.|org\\.jcp\\.)");
 
-  @Nonnull private final String className;
-  @Nonnull private final PackageName packageName;
+  @NonNull private final String className;
+  @NonNull private final PackageName packageName;
   private final int hashCode;
 
   /**
@@ -51,7 +51,7 @@ public class JavaClassType extends ClassType {
    * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
    * @param packageName the corresponding package
    */
-  public JavaClassType(@Nonnull final String className, @Nonnull final PackageName packageName) {
+  public JavaClassType(@NonNull final String className, @NonNull final PackageName packageName) {
     String realClassName = className;
     // TODO: [ms] we shouldnt do that inner class conversion here? -> IdentifierFactory
     if (realClassName.contains(".")) {
@@ -110,13 +110,13 @@ public class JavaClassType extends ClassType {
   }
 
   /** The simple class name. */
-  @Nonnull
+  @NonNull
   public String getClassName() {
     return className;
   }
 
   /** The package in which the class resides. */
-  @Nonnull
+  @NonNull
   public PackageName getPackageName() {
     return packageName;
   }
