@@ -10,7 +10,10 @@
   {
     "version": "TrapTightener_preview",
     "title": "PR Preview TrapTightener",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "refactor_moveSourceFrontendToExperimental_preview",
