@@ -23,7 +23,7 @@ package sootup.java.core;
  */
 
 import java.nio.file.Path;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
@@ -31,15 +31,15 @@ import sootup.core.types.ClassType;
 public abstract class JavaAnnotationSootClassSource extends JavaSootClassSource {
 
   public JavaAnnotationSootClassSource(
-      @Nonnull final AnalysisInputLocation analysisInputLocation,
-      @Nonnull final ClassType classType,
-      @Nonnull final Path sourcePath) {
+      @NonNull final AnalysisInputLocation analysisInputLocation,
+      @NonNull final ClassType classType,
+      @NonNull final Path sourcePath) {
     super(analysisInputLocation, classType, sourcePath);
   }
 
   @Override
-  @Nonnull
-  public JavaAnnotationSootClass buildClass(@Nonnull SourceType sourceType) {
+  @NonNull
+  public JavaAnnotationSootClass buildClass(@NonNull SourceType sourceType) {
     return new JavaAnnotationSootClass(this, sourceType);
   }
 }

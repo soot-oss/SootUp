@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.ClassCacheProvider;
@@ -49,31 +49,31 @@ import sootup.java.core.*;
  * @author Jan Martin Persch
  */
 public class JavaView extends AbstractView {
-  @Nonnull protected final JavaIdentifierFactory identifierFactory;
+  @NonNull protected final JavaIdentifierFactory identifierFactory;
 
-  @Nonnull protected final List<AnalysisInputLocation> inputLocations;
-  @Nonnull protected final ClassCache cache;
+  @NonNull protected final List<AnalysisInputLocation> inputLocations;
+  @NonNull protected final ClassCache cache;
 
   protected volatile boolean isFullyResolved = false;
 
-  public JavaView(@Nonnull AnalysisInputLocation inputLocation) {
+  public JavaView(@NonNull AnalysisInputLocation inputLocation) {
     this(Collections.singletonList(inputLocation));
   }
 
-  public JavaView(@Nonnull List<AnalysisInputLocation> inputLocations) {
+  public JavaView(@NonNull List<AnalysisInputLocation> inputLocations) {
     this(inputLocations, new FullCacheProvider());
   }
 
   public JavaView(
-      @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull ClassCacheProvider cacheProvider) {
+      @NonNull List<AnalysisInputLocation> inputLocations,
+      @NonNull ClassCacheProvider cacheProvider) {
     this(inputLocations, cacheProvider, JavaIdentifierFactory.getInstance());
   }
 
   protected JavaView(
-      @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull ClassCacheProvider cacheProvider,
-      @Nonnull JavaIdentifierFactory idf) {
+      @NonNull List<AnalysisInputLocation> inputLocations,
+      @NonNull ClassCacheProvider cacheProvider,
+      @NonNull JavaIdentifierFactory idf) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
     this.identifierFactory = idf;
@@ -81,7 +81,7 @@ public class JavaView extends AbstractView {
 
   /** Resolves all classes that are part of the view and stores them in the cache. */
   @Override
-  @Nonnull
+  @NonNull
   public synchronized Stream<JavaSootClass> getClasses() {
     if (isFullyResolved && cache instanceof FullCache) {
       return cache.getClasses().stream().map(clazz -> (JavaSootClass) clazz);
@@ -102,8 +102,8 @@ public class JavaView extends AbstractView {
 
   /** Resolves the class matching the provided {@link ClassType ClassType}. */
   @Override
-  @Nonnull
-  public synchronized Optional<JavaSootClass> getClass(@Nonnull ClassType type) {
+  @NonNull
+  public synchronized Optional<JavaSootClass> getClass(@NonNull ClassType type) {
     JavaSootClass cachedClass = (JavaSootClass) cache.getClass(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
@@ -113,26 +113,26 @@ public class JavaView extends AbstractView {
     return abstractClass.map(this::buildClassFrom);
   }
 
-  @Nonnull
-  public Optional<JavaAnnotationSootClass> getAnnotationClass(@Nonnull ClassType type) {
+  @NonNull
+  public Optional<JavaAnnotationSootClass> getAnnotationClass(@NonNull ClassType type) {
     return getClass(type).filter(SootClass::isAnnotation).map(sc -> (JavaAnnotationSootClass) sc);
   }
 
   @Override
-  @Nonnull
-  public Optional<JavaSootMethod> getMethod(@Nonnull MethodSignature signature) {
+  @NonNull
+  public Optional<JavaSootMethod> getMethod(@NonNull MethodSignature signature) {
     return getClass(signature.getDeclClassType())
         .flatMap(c -> c.getMethod(signature.getSubSignature()));
   }
 
   @Override
-  @Nonnull
-  public Optional<JavaSootField> getField(@Nonnull FieldSignature signature) {
+  @NonNull
+  public Optional<JavaSootField> getField(@NonNull FieldSignature signature) {
     return getClass(signature.getDeclClassType())
         .flatMap(c -> c.getField(signature.getSubSignature()));
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public JavaIdentifierFactory getIdentifierFactory() {
     return identifierFactory;
@@ -143,8 +143,8 @@ public class JavaView extends AbstractView {
     return cache.size();
   }
 
-  @Nonnull
-  protected Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type) {
+  @NonNull
+  protected Optional<JavaSootClassSource> getClassSource(@NonNull ClassType type) {
     return inputLocations.parallelStream()
         .map(location -> location.getClassSource(type, this))
         .filter(Optional::isPresent)
@@ -156,7 +156,7 @@ public class JavaView extends AbstractView {
         .findAny();
   }
 
-  @Nonnull
+  @NonNull
   protected synchronized JavaSootClass buildClassFrom(AbstractClassSource classSource) {
 
     ClassType classType = classSource.getClassType();

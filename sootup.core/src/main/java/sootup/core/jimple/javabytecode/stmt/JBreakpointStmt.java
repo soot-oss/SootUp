@@ -22,7 +22,7 @@ package sootup.core.jimple.javabytecode.stmt;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -33,7 +33,7 @@ import sootup.core.util.printer.StmtPrinter;
 
 public final class JBreakpointStmt extends AbstractStmt implements FallsThroughStmt {
 
-  public JBreakpointStmt(@Nonnull StmtPositionInfo positionInfo) {
+  public JBreakpointStmt(@NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
   }
 
@@ -43,12 +43,12 @@ public final class JBreakpointStmt extends AbstractStmt implements FallsThroughS
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.BREAKPOINT);
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseBreakpointStmt(this);
     return v;
   }
@@ -64,7 +64,7 @@ public final class JBreakpointStmt extends AbstractStmt implements FallsThroughS
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseBreakpointStmt(this, o);
   }
 
@@ -73,8 +73,8 @@ public final class JBreakpointStmt extends AbstractStmt implements FallsThroughS
     return 42 + 1;
   }
 
-  @Nonnull
-  public JBreakpointStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JBreakpointStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JBreakpointStmt(positionInfo);
   }
 }

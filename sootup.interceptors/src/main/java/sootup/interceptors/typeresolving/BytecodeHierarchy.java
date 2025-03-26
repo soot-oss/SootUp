@@ -23,7 +23,7 @@ package sootup.interceptors.typeresolving;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.*;
@@ -55,7 +55,7 @@ public class BytecodeHierarchy {
     return typeHierarchy.contains(type);
   }
 
-  public boolean isAncestor(@Nonnull Type ancestor, @Nonnull Type child) {
+  public boolean isAncestor(@NonNull Type ancestor, @NonNull Type child) {
     if (PrimitiveHierarchy.isAncestor(ancestor, child)) {
       return true;
     }

@@ -25,7 +25,7 @@ package sootup.interceptors;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.transform.BodyInterceptor;
 
 /** Built-in sets of {@link BodyInterceptor}s for the bytecode frontend */
@@ -44,13 +44,13 @@ public enum BytecodeBodyInterceptors {
       // RuntimeJarConversionTests
       new TypeAssigner());
 
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+  @NonNull private final List<BodyInterceptor> bodyInterceptors;
 
   BytecodeBodyInterceptors(BodyInterceptor... bodyInterceptors) {
     this.bodyInterceptors = Collections.unmodifiableList(Arrays.asList(bodyInterceptors));
   }
 
-  @Nonnull
+  @NonNull
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;
   }

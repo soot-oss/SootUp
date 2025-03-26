@@ -23,8 +23,8 @@ package sootup.core.frontend;
  */
 import com.google.common.base.Objects;
 import java.nio.file.Path;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
@@ -47,9 +47,9 @@ public abstract class AbstractClassSource {
   protected ClassType classSignature;
 
   public AbstractClassSource(
-      @Nonnull AnalysisInputLocation analysisInputLocation,
-      @Nonnull ClassType classSignature,
-      @Nonnull Path sourcePath) {
+      @NonNull AnalysisInputLocation analysisInputLocation,
+      @NonNull ClassType classSignature,
+      @NonNull Path sourcePath) {
     this.analysisInputLocation = analysisInputLocation;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;
@@ -59,7 +59,7 @@ public abstract class AbstractClassSource {
    * @param sourceType instantiates the Subclass of AbstractClassSource to create a *SootClass
    * @return a *SootClass
    */
-  public abstract SootClass buildClass(@Nonnull SourceType sourceType);
+  public abstract SootClass buildClass(@NonNull SourceType sourceType);
 
   public ClassType getClassType() {
     return classSignature;

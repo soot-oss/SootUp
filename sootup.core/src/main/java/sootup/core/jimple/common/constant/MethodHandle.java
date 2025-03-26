@@ -22,7 +22,7 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
@@ -32,7 +32,7 @@ import sootup.core.types.Type;
 
 public class MethodHandle implements Constant {
 
-  @Nonnull private final Type type;
+  @NonNull private final Type type;
 
   public enum Kind {
     REF_GET_FIELD(1, "REF_GET_FIELD"),
@@ -85,22 +85,22 @@ public class MethodHandle implements Constant {
     }
   }
 
-  @Nonnull
+  @NonNull
   private final SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature;
 
-  @Nonnull private final Kind kind;
+  @NonNull private final Kind kind;
 
   public MethodHandle(
-      @Nonnull SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature,
+      @NonNull SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature,
       int tag,
-      @Nonnull Type type) {
+      @NonNull Type type) {
     this(referenceSignature, Kind.getKind(tag), type);
   }
 
   public MethodHandle(
-      @Nonnull SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature,
-      @Nonnull MethodHandle.Kind kind,
-      @Nonnull Type type) {
+      @NonNull SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature,
+      MethodHandle.@NonNull Kind kind,
+      @NonNull Type type) {
     this.kind = kind;
     this.type = type;
     this.referenceSignature = referenceSignature;
@@ -142,7 +142,7 @@ public class MethodHandle implements Constant {
     return "methodhandle: \"" + kind.valStr + "\" " + referenceSignature;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return type;
@@ -157,7 +157,7 @@ public class MethodHandle implements Constant {
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull V v) {
     v.caseMethodHandle(this);
     return v;
   }

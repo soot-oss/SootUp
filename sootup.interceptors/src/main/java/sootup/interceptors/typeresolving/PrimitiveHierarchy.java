@@ -24,7 +24,7 @@ package sootup.interceptors.typeresolving;
 
 import java.util.Collection;
 import java.util.Collections;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -43,8 +43,8 @@ public class PrimitiveHierarchy {
    * ancestor of a and b; If there are c = a and c = b, but there's no b = a or a = b then c is the
    * least common ancestor of a and b;
    */
-  @Nonnull
-  public static Collection<Type> getLeastCommonAncestor(@Nonnull Type a, @Nonnull Type b) {
+  @NonNull
+  public static Collection<Type> getLeastCommonAncestor(@NonNull Type a, @NonNull Type b) {
     if (a == b) {
       return Collections.singleton(a);
     }
@@ -90,7 +90,7 @@ public class PrimitiveHierarchy {
    * child</code>, namely, whether child can be assigned to ancestor directly to obtain: ancestor =
    * child.
    */
-  public static boolean isAncestor(@Nonnull Type ancestor, @Nonnull Type child) {
+  public static boolean isAncestor(@NonNull Type ancestor, @NonNull Type child) {
 
     if (ancestor == child) {
       return true;
@@ -171,7 +171,7 @@ public class PrimitiveHierarchy {
   }
 
   /** Check whether the two given types are primitives or BottomType */
-  public static boolean arePrimitives(@Nonnull Type a, @Nonnull Type b) {
+  public static boolean arePrimitives(@NonNull Type a, @NonNull Type b) {
     return (a instanceof PrimitiveType || a.getClass() == BottomType.class)
         && (b instanceof PrimitiveType || b.getClass() == BottomType.class);
   }

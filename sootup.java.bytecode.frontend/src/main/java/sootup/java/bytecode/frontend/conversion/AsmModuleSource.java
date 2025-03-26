@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.*;
 import sootup.core.frontend.ResolveException;
@@ -43,10 +43,10 @@ import sootup.java.core.types.JavaClassType;
 
 public class AsmModuleSource extends JavaModuleInfo {
 
-  @Nonnull private final Path sourcePath;
-  @Nonnull private final Supplier<ModuleNode> _lazyModule = Suppliers.memoize(this::_lazyModule);
+  @NonNull private final Path sourcePath;
+  @NonNull private final Supplier<ModuleNode> _lazyModule = Suppliers.memoize(this::_lazyModule);
 
-  public AsmModuleSource(@Nonnull Path sourcePath) {
+  public AsmModuleSource(@NonNull Path sourcePath) {
 
     // if it would be an automatic module there would be no module-info.class
     super();

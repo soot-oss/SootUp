@@ -22,17 +22,17 @@ package sootup.java.core.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.java.core.signatures.ModulePackageName;
 
 public class ModuleJavaClassType extends JavaClassType {
 
   public ModuleJavaClassType(
-      @Nonnull final String className, @Nonnull final ModulePackageName packageName) {
+      @NonNull final String className, @NonNull final ModulePackageName packageName) {
     super(className, packageName);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public ModulePackageName getPackageName() {
     return (ModulePackageName) super.getPackageName();

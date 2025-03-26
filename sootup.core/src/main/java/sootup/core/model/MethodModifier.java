@@ -27,7 +27,7 @@ package sootup.core.model;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * An Enum that provides static methods and constants to represent and work with with Java modifiers
@@ -62,63 +62,63 @@ public enum MethodModifier {
     bytecode = i;
   }
 
-  public static boolean isAbstract(@Nonnull Set<MethodModifier> m) {
+  public static boolean isAbstract(@NonNull Set<MethodModifier> m) {
     return m.contains(ABSTRACT);
   }
 
-  public static boolean isFinal(@Nonnull Set<MethodModifier> m) {
+  public static boolean isFinal(@NonNull Set<MethodModifier> m) {
     return m.contains(FINAL);
   }
 
-  public static boolean isNative(@Nonnull Set<MethodModifier> m) {
+  public static boolean isNative(@NonNull Set<MethodModifier> m) {
     return m.contains(NATIVE);
   }
 
-  public static boolean isPrivate(@Nonnull Set<MethodModifier> m) {
+  public static boolean isPrivate(@NonNull Set<MethodModifier> m) {
     return m.contains(PRIVATE);
   }
 
-  public static boolean isProtected(@Nonnull Set<MethodModifier> m) {
+  public static boolean isProtected(@NonNull Set<MethodModifier> m) {
     return m.contains(PROTECTED);
   }
 
-  public static boolean isPublic(@Nonnull Set<MethodModifier> m) {
+  public static boolean isPublic(@NonNull Set<MethodModifier> m) {
     return m.contains(PUBLIC);
   }
 
-  public static boolean isStatic(@Nonnull Set<MethodModifier> m) {
+  public static boolean isStatic(@NonNull Set<MethodModifier> m) {
     return m.contains(STATIC);
   }
 
-  public static boolean isSynchronized(@Nonnull Set<MethodModifier> m) {
+  public static boolean isSynchronized(@NonNull Set<MethodModifier> m) {
     return m.contains(SYNCHRONIZED);
   }
 
-  public static boolean isVarargs(@Nonnull Set<MethodModifier> m) {
+  public static boolean isVarargs(@NonNull Set<MethodModifier> m) {
     return m.contains(VARARGS);
   }
 
-  public static boolean isBridge(@Nonnull Set<MethodModifier> m) {
+  public static boolean isBridge(@NonNull Set<MethodModifier> m) {
     return m.contains(BRIDGE);
   }
 
-  public static boolean isStrictFP(@Nonnull Set<MethodModifier> m) {
+  public static boolean isStrictFP(@NonNull Set<MethodModifier> m) {
     return m.contains(STRICTFP);
   }
 
-  public static boolean isEnum(@Nonnull Set<MethodModifier> m) {
+  public static boolean isEnum(@NonNull Set<MethodModifier> m) {
     return m.contains(ENUM);
   }
 
-  public static boolean isSynthetic(@Nonnull Set<MethodModifier> m) {
+  public static boolean isSynthetic(@NonNull Set<MethodModifier> m) {
     return m.contains(SYNTHETIC);
   }
 
-  public static boolean isConstructor(@Nonnull Set<MethodModifier> m) {
+  public static boolean isConstructor(@NonNull Set<MethodModifier> m) {
     return m.contains(CONSTRUCTOR);
   }
 
-  public static boolean isDeclaredSynchronized(@Nonnull Set<MethodModifier> m) {
+  public static boolean isDeclaredSynchronized(@NonNull Set<MethodModifier> m) {
     return m.contains(DECLARED_SYNCHRONIZED);
   }
 
@@ -128,8 +128,8 @@ public enum MethodModifier {
    * @param m a modifier set
    * @return a textual representation of the modifiers.
    */
-  @Nonnull
-  public static String toString(@Nonnull Set<MethodModifier> m) {
+  @NonNull
+  public static String toString(@NonNull Set<MethodModifier> m) {
     StringBuilder builder = new StringBuilder();
 
     if (isPublic(m)) {
@@ -184,9 +184,9 @@ public enum MethodModifier {
     return builder.toString();
   }
 
-  @Nonnull
+  @NonNull
   // depends on the natural order of the Enums!
-  public static String toString(@Nonnull EnumSet<MethodModifier> m) {
+  public static String toString(@NonNull EnumSet<MethodModifier> m) {
     return m.stream().map((mod) -> mod.name().toLowerCase()).collect(Collectors.joining(" "));
   }
 

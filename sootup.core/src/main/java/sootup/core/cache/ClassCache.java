@@ -23,7 +23,7 @@ package sootup.core.cache;
  */
 
 import java.util.Collection;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
@@ -32,8 +32,7 @@ public interface ClassCache {
 
   SootClass getClass(ClassType classType);
 
-  @Nonnull
-  Collection<SootClass> getClasses();
+  @NonNull Collection<SootClass> getClasses();
 
   void putClass(ClassType classType, SootClass sootClass);
 

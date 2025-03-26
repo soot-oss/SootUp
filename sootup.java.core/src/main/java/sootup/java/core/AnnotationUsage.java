@@ -25,7 +25,7 @@ package sootup.java.core;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.types.ClassType;
 
 /**
@@ -35,10 +35,10 @@ import sootup.core.types.ClassType;
  */
 public class AnnotationUsage {
 
-  @Nonnull private final ClassType annotation;
-  @Nonnull private final Map<String, Object> values;
+  @NonNull private final ClassType annotation;
+  @NonNull private final Map<String, Object> values;
 
-  public AnnotationUsage(@Nonnull ClassType annotation, @Nonnull Map<String, Object> values) {
+  public AnnotationUsage(@NonNull ClassType annotation, @NonNull Map<String, Object> values) {
     this.annotation = annotation;
     this.values = values;
   }
@@ -46,12 +46,12 @@ public class AnnotationUsage {
   /*
    * Rename to getType?
    */
-  @Nonnull
+  @NonNull
   public ClassType getAnnotation() {
     return annotation;
   }
 
-  @Nonnull
+  @NonNull
   public Map<String, Object> getValues() {
     return Collections.unmodifiableMap(values);
   }

@@ -24,8 +24,8 @@ package sootup.core.graph;
 
 import com.google.common.collect.Lists;
 import java.util.*;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
 
@@ -36,7 +36,7 @@ public class ImmutableBlockStmtGraph
   private final List<ImmutableBasicBlock> blocks;
   private final Map<Stmt, ImmutableBasicBlock> stmtToBlock = new HashMap<>();
 
-  public ImmutableBlockStmtGraph(@Nonnull MutableStmtGraph graph) {
+  public ImmutableBlockStmtGraph(@NonNull MutableStmtGraph graph) {
 
     final List<? extends BasicBlock<?>> mblocks = graph.getBlocksSorted();
     blocks = Lists.newArrayListWithExpectedSize(mblocks.size());
@@ -66,11 +66,11 @@ public class ImmutableBlockStmtGraph
   }
 
   @Override
-  public BasicBlock<ImmutableBasicBlock> getBlockOf(@Nonnull Stmt stmt) {
+  public BasicBlock<ImmutableBasicBlock> getBlockOf(@NonNull Stmt stmt) {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<Stmt> getNodes() {
     int size = 0;
@@ -84,60 +84,60 @@ public class ImmutableBlockStmtGraph
     return stmts;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Collection<ImmutableBasicBlock> getBlocks() {
     return blocks;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<? extends BasicBlock<?>> getBlocksSorted() {
     return blocks;
   }
 
   @Override
-  public boolean containsNode(@Nonnull Stmt node) {
+  public boolean containsNode(@NonNull Stmt node) {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public List<Stmt> predecessors(@Nonnull Stmt node) {
+  public List<Stmt> predecessors(@NonNull Stmt node) {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+  public List<Stmt> exceptionalPredecessors(@NonNull Stmt node) {
     throw new UnsupportedOperationException("not implemented");
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public List<Stmt> successors(@Nonnull Stmt node) {
+  public List<Stmt> successors(@NonNull Stmt node) {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+  public Map<ClassType, Stmt> exceptionalSuccessors(@NonNull Stmt node) {
     // FIXME! implement
     throw new RuntimeException("not implemented");
   }
 
   @Override
-  public int inDegree(@Nonnull Stmt node) {
+  public int inDegree(@NonNull Stmt node) {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
   @Override
-  public int outDegree(@Nonnull Stmt node) {
+  public int outDegree(@NonNull Stmt node) {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
   @Override
-  public boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target) {
+  public boolean hasEdgeConnecting(@NonNull Stmt source, @NonNull Stmt target) {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
@@ -146,7 +146,7 @@ public class ImmutableBlockStmtGraph
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Iterator<Stmt> iterator() {
     return new Iterator<Stmt>() {
@@ -190,31 +190,31 @@ public class ImmutableBlockStmtGraph
       this.predecessors = predecessors;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<ImmutableBasicBlock> getPredecessors() {
       return predecessors;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<ImmutableBasicBlock> getSuccessors() {
       return successors;
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public Map<ClassType, ImmutableBasicBlock> getExceptionalPredecessors() {
       throw new UnsupportedOperationException("not implemented yet");
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Map<? extends ClassType, ImmutableBasicBlock> getExceptionalSuccessors() {
       throw new UnsupportedOperationException("not implemented yet");
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Stmt> getStmts() {
       throw new UnsupportedOperationException();
@@ -225,13 +225,13 @@ public class ImmutableBlockStmtGraph
       return endIdx - startIdx + 1;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Stmt getHead() {
       throw new UnsupportedOperationException();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Stmt getTail() {
       throw new UnsupportedOperationException();

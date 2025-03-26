@@ -23,8 +23,8 @@ package sootup.interceptors.typeresolving;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.graph.MutableStmtGraph;
@@ -62,24 +62,24 @@ public abstract class TypeChecker extends AbstractStmtVisitor {
   private static final Logger logger = LoggerFactory.getLogger(TypeChecker.class);
 
   public TypeChecker(
-      @Nonnull Body.BodyBuilder builder,
-      @Nonnull AugEvalFunction evalFunction,
-      @Nonnull BytecodeHierarchy hierarchy) {
+      Body.@NonNull BodyBuilder builder,
+      @NonNull AugEvalFunction evalFunction,
+      @NonNull BytecodeHierarchy hierarchy) {
     this.builder = builder;
     this.graph = builder.getStmtGraph();
     this.evalFunction = evalFunction;
     this.hierarchy = hierarchy;
   }
 
-  public abstract void visit(@Nonnull Value value, @Nonnull Type stdType, @Nonnull Stmt stmt);
+  public abstract void visit(@NonNull Value value, @NonNull Type stdType, @NonNull Stmt stmt);
 
   @Override
-  public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
+  public void caseInvokeStmt(@NonNull JInvokeStmt stmt) {
     handleInvokeExpr(stmt.getInvokeExpr().get(), stmt);
   }
 
   @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+  public void caseAssignStmt(@NonNull JAssignStmt stmt) {
     LValue lhs = stmt.getLeftOp();
     Value rhs = stmt.getRightOp();
     Type type_lhs = null;
@@ -247,32 +247,32 @@ public abstract class TypeChecker extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
+  public void caseEnterMonitorStmt(@NonNull JEnterMonitorStmt stmt) {
     visit(stmt.getOp(), hierarchy.objectClassType, stmt);
   }
 
   @Override
-  public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
+  public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
     visit(stmt.getOp(), hierarchy.objectClassType, stmt);
   }
 
   @Override
-  public void caseIfStmt(@Nonnull JIfStmt stmt) {
+  public void caseIfStmt(@NonNull JIfStmt stmt) {
     handleBinopExpr(stmt.getCondition(), PrimitiveType.getBoolean(), stmt);
   }
 
   @Override
-  public void caseSwitchStmt(@Nonnull JSwitchStmt stmt) {
+  public void caseSwitchStmt(@NonNull JSwitchStmt stmt) {
     visit(stmt.getKey(), PrimitiveType.getInt(), stmt);
   }
 
   @Override
-  public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
+  public void caseReturnStmt(@NonNull JReturnStmt stmt) {
     visit(stmt.getOp(), builder.getMethodSignature().getType(), stmt);
   }
 
   @Override
-  public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
+  public void caseThrowStmt(@NonNull JThrowStmt stmt) {
     visit(stmt.getOp(), hierarchy.throwableClassType, stmt);
   }
 
@@ -331,7 +331,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor {
   }
 
   // select the type with bigger bit size
-  public Type selectArrayType(@Nullable Type preType, @Nonnull Type newType, @Nonnull Stmt stmt) {
+  public Type selectArrayType(@Nullable Type preType, @NonNull Type newType, @NonNull Stmt stmt) {
     if (preType == null || preType.equals(newType)) {
       return newType;
     }

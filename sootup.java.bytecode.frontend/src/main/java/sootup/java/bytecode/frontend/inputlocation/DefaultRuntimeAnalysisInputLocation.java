@@ -25,7 +25,7 @@ package sootup.java.bytecode.frontend.inputlocation;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -37,18 +37,18 @@ import sootup.interceptors.BytecodeBodyInterceptors;
 /** AnalysisInputLocation that points to the shipped Java Runtime of the current JVM execution */
 public class DefaultRuntimeAnalysisInputLocation implements AnalysisInputLocation {
 
-  @Nonnull private final AnalysisInputLocation backingInputLocation;
+  @NonNull private final AnalysisInputLocation backingInputLocation;
 
   public DefaultRuntimeAnalysisInputLocation() {
     this(SourceType.Library);
   }
 
-  public DefaultRuntimeAnalysisInputLocation(@Nonnull SourceType srcType) {
+  public DefaultRuntimeAnalysisInputLocation(@NonNull SourceType srcType) {
     this(srcType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public DefaultRuntimeAnalysisInputLocation(
-      @Nonnull SourceType srcType, @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull SourceType srcType, @NonNull List<BodyInterceptor> bodyInterceptors) {
 
     String version = System.getProperty("java.version");
     // are we using Java 8 or lower in the current JVM execution?
@@ -59,26 +59,26 @@ public class DefaultRuntimeAnalysisInputLocation implements AnalysisInputLocatio
     }
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Optional<? extends SootClassSource> getClassSource(
-      @Nonnull ClassType type, @Nonnull View view) {
+      @NonNull ClassType type, @NonNull View view) {
     return backingInputLocation.getClassSource(type, view);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Stream<? extends SootClassSource> getClassSources(@Nonnull View view) {
+  public Stream<? extends SootClassSource> getClassSources(@NonNull View view) {
     return backingInputLocation.getClassSources(view);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public SourceType getSourceType() {
     return backingInputLocation.getSourceType();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<BodyInterceptor> getBodyInterceptors() {
     return backingInputLocation.getBodyInterceptors();

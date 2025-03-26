@@ -22,7 +22,7 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.NullType;
 import sootup.core.types.Type;
@@ -48,14 +48,14 @@ public class NullConstant implements Constant {
     return 982;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return NullType.getInstance();
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull V v) {
     v.caseNullConstant(this);
     return v;
   }

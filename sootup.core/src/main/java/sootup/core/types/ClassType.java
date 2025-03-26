@@ -22,7 +22,7 @@ package sootup.core.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 import sootup.core.signatures.PackageName;
 import sootup.core.signatures.Signature;
@@ -41,7 +41,7 @@ public abstract class ClassType extends ReferenceType implements Signature {
   public abstract PackageName getPackageName();
 
   @Override
-  public <V extends TypeVisitor> V accept(@Nonnull V v) {
+  public <V extends TypeVisitor> V accept(@NonNull V v) {
     v.caseClassType(this);
     return v;
   }

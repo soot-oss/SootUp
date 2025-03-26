@@ -22,7 +22,7 @@ package sootup.core.transform;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
@@ -45,7 +45,7 @@ public class RunTimeBodyInterceptor implements BodyInterceptor {
   }
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     long startTime = System.currentTimeMillis(); // Start time
     final int MB = 1024 * 1024;
     Runtime runtime = Runtime.getRuntime();

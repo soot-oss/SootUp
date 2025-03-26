@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.provider.ClassCacheProvider;
@@ -54,23 +54,23 @@ import sootup.java.core.JavaIdentifierFactory;
 // for View if we really need different views in the future?
 public class JimpleView extends AbstractView {
 
-  @Nonnull protected final List<AnalysisInputLocation> inputLocations;
-  @Nonnull private final ClassCache cache;
-  @Nonnull protected final SourceType sourceType;
+  @NonNull protected final List<AnalysisInputLocation> inputLocations;
+  @NonNull private final ClassCache cache;
+  @NonNull protected final SourceType sourceType;
 
   private volatile boolean isFullyResolved = false;
 
-  public JimpleView(@Nonnull AnalysisInputLocation inputLocation) {
+  public JimpleView(@NonNull AnalysisInputLocation inputLocation) {
     this(Collections.singletonList(inputLocation));
   }
 
-  public JimpleView(@Nonnull List<AnalysisInputLocation> inputLocations) {
+  public JimpleView(@NonNull List<AnalysisInputLocation> inputLocations) {
     this(inputLocations, new FullCacheProvider(), SourceType.Application);
   }
 
   public JimpleView(
-      @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull ClassCacheProvider cacheProvider,
+      @NonNull List<AnalysisInputLocation> inputLocations,
+      @NonNull ClassCacheProvider cacheProvider,
       SourceType sourceType) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
@@ -78,31 +78,30 @@ public class JimpleView extends AbstractView {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public synchronized Stream<SootClass> getClasses() {
     return getAbstractClassSources().stream();
   }
 
-  @Nonnull
+  @NonNull
   synchronized Collection<SootClass> getAbstractClassSources() {
     resolveAll();
     return cache.getClasses();
   }
 
   @Override
-  @Nonnull
-  public synchronized Optional<SootClass> getClass(@Nonnull ClassType type) {
+  @NonNull
+  public synchronized Optional<SootClass> getClass(@NonNull ClassType type) {
     return getAbstractClass(type);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public IdentifierFactory getIdentifierFactory() {
     return JavaIdentifierFactory.getInstance();
   }
 
-  @Nonnull
-  Optional<SootClass> getAbstractClass(@Nonnull ClassType type) {
+  @NonNull Optional<SootClass> getAbstractClass(@NonNull ClassType type) {
     SootClass cachedClass = cache.getClass(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
@@ -132,7 +131,7 @@ public class JimpleView extends AbstractView {
     return Optional.of(buildClassFrom(foundClassSources.get(0)));
   }
 
-  @Nonnull
+  @NonNull
   private synchronized SootClass buildClassFrom(AbstractClassSource classSource) {
 
     ClassType classType = classSource.getClassType();

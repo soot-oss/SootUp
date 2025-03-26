@@ -54,7 +54,7 @@ public class TrapTightener implements BodyInterceptor {
   StmtExceptionAnalyzer exceptionAnalyzer;
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     this.hierarchy = view.getTypeHierarchy();
     this.exceptionAnalyzer = new StmtExceptionAnalyzer(hierarchy);
@@ -103,9 +103,10 @@ public class TrapTightener implements BodyInterceptor {
    * @param graph a given StmtGraph
    * @return a set of monitored stmts
    */
+
   public Set<Stmt> monitoredStmts(@Nonnull StmtGraph<?> graph) {
     Map<Stmt, Set<Value>> monitored = new HashMap<>();
-
+    
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
     Set<Stmt> visitedStmts = new HashSet<>();

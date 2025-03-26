@@ -25,7 +25,7 @@ package sootup.core.jimple.basic;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
@@ -46,11 +46,11 @@ import sootup.core.util.printer.StmtPrinter;
  */
 public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
 
-  @Nonnull private final String name;
-  @Nonnull private final Type type;
+  @NonNull private final String name;
+  @NonNull private final Type type;
 
   /** Constructs a JimpleLocal of the given name and type. */
-  public Local(@Nonnull String name, @Nonnull Type type) {
+  public Local(@NonNull String name, @NonNull Type type) {
     this.name = name;
     if (type instanceof VoidType) {
       throw new RuntimeException("Type should not be VoidType");
@@ -73,7 +73,7 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseLocal(this, o);
   }
 
@@ -83,13 +83,13 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
   }
 
   /** Returns the name of this object. */
-  @Nonnull
+  @NonNull
   public String getName() {
     return name;
   }
 
   /** Returns the type of this local. */
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return type;
@@ -101,12 +101,12 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.local(this);
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.empty();
   }
@@ -169,18 +169,18 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
   }
 
   @Override
-  public <V extends ImmediateVisitor> V accept(@Nonnull V v) {
+  public <V extends ImmediateVisitor> V accept(@NonNull V v) {
     v.caseLocal(this);
     return v;
   }
 
-  @Nonnull
-  public Local withName(@Nonnull String name) {
+  @NonNull
+  public Local withName(@NonNull String name) {
     return new Local(name, type);
   }
 
-  @Nonnull
-  public Local withType(@Nonnull Type type) {
+  @NonNull
+  public Local withType(@NonNull Type type) {
     return new Local(name, type);
   }
 }

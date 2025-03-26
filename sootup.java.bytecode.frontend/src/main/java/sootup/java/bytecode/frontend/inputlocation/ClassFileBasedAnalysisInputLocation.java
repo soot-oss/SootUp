@@ -27,8 +27,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
@@ -41,12 +41,12 @@ import sootup.java.core.types.JavaClassType;
 
 public class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
-  @Nonnull private final String omittedPackageName;
+  @NonNull private final String omittedPackageName;
 
   public ClassFileBasedAnalysisInputLocation(
-      @Nonnull Path classFilePath,
-      @Nonnull String omittedPackageName,
-      @Nonnull SourceType srcType) {
+      @NonNull Path classFilePath,
+      @NonNull String omittedPackageName,
+      @NonNull SourceType srcType) {
     this(
         classFilePath,
         omittedPackageName,
@@ -55,10 +55,10 @@ public class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputL
   }
 
   public ClassFileBasedAnalysisInputLocation(
-      @Nonnull Path classFilePath,
-      @Nonnull String omittedPackageName,
-      @Nonnull SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull Path classFilePath,
+      @NonNull String omittedPackageName,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     super(classFilePath, srcType, bodyInterceptors);
     this.omittedPackageName = omittedPackageName;
 
@@ -72,8 +72,8 @@ public class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputL
   }
 
   @Override
-  @Nonnull
-  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
+  @NonNull
+  public Optional<JavaSootClassSource> getClassSource(@NonNull ClassType type, @NonNull View view) {
 
     if (!type.getPackageName().getName().startsWith(omittedPackageName)) {
       return Optional.empty();
@@ -82,9 +82,9 @@ public class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputL
     return getSingleClass((JavaClassType) type, path, new AsmJavaClassProvider(view));
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Stream<JavaSootClassSource> getClassSources(@Nonnull View view) {
+  public Stream<JavaSootClassSource> getClassSources(@NonNull View view) {
     AsmJavaClassProvider classProvider = new AsmJavaClassProvider(view);
     IdentifierFactory factory = view.getIdentifierFactory();
     Path dirPath = this.path.getParent();
@@ -99,8 +99,8 @@ public class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputL
     return Stream.of(javaSootClassSource.get());
   }
 
-  @Nonnull
-  protected String fromPath(@Nonnull Path baseDirPath, Path packageNamePathAndClass) {
+  @NonNull
+  protected String fromPath(@NonNull Path baseDirPath, Path packageNamePathAndClass) {
     String str =
         FilenameUtils.removeExtension(
             packageNamePathAndClass

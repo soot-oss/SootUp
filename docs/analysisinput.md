@@ -132,7 +132,7 @@ JavaView view = new JavaView(inputLocation);
 ```java
 public class Dex2JarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
 
-    public Dex2JarAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    public Dex2JarAnalysisInputLocation(@NonNull  Path path, @Nullable SourceType srcType) {
         super(path, srcType);
         String jarPath = dex2jar(path);
         this.path = Paths.get(jarPath);
