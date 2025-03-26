@@ -16,7 +16,6 @@
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-core</artifactId>
-			<version>1.3.1</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -33,8 +32,8 @@
 
 		<!-- JSR-305 for annotations -->
 		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>jsr305</artifactId>
+			<groupId>org.jspecify</groupId>
+			<artifactId>jspecify</artifactId>
 		</dependency>
 
 		<dependency>

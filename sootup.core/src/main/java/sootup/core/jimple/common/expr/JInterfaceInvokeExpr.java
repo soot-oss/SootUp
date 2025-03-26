@@ -29,7 +29,7 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -43,7 +43,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
   /** methodArgs to an array args. */
   public JInterfaceInvokeExpr(
-      @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
+      @NonNull Local base, @NonNull MethodSignature method, @NonNull List<Immediate> args) {
     super(base, method, args.toArray(new Immediate[0]));
 
     // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are
@@ -63,7 +63,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseInterfaceInvokeExpr(this, o);
   }
 
@@ -73,7 +73,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     builder
         .append(Jimple.INTERFACEINVOKE)
         .append(" ")
-        .append(getBase().toString())
+        .append(getBase())
         .append(".")
         .append(getMethodSignature())
         .append("(");
@@ -84,7 +84,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.INTERFACEINVOKE);
     up.literal(" ");
     getBase().toString(up);
@@ -96,26 +96,26 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseInterfaceInvokeExpr(this);
     return v;
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public JInterfaceInvokeExpr withBase(@Nonnull Local base) {
+  public JInterfaceInvokeExpr withBase(@NonNull Local base) {
     return new JInterfaceInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public JInterfaceInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
+  public JInterfaceInvokeExpr withMethodSignature(@NonNull MethodSignature methodSignature) {
     return new JInterfaceInvokeExpr(getBase(), methodSignature, getArgs());
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public JInterfaceInvokeExpr withArgs(@Nonnull List<Immediate> args) {
+  public JInterfaceInvokeExpr withArgs(@NonNull List<Immediate> args) {
     return new JInterfaceInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }

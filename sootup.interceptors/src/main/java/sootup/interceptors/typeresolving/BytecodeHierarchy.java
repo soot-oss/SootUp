@@ -1,4 +1,5 @@
 package sootup.interceptors.typeresolving;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -22,7 +23,7 @@ package sootup.interceptors.typeresolving;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.*;
@@ -30,7 +31,9 @@ import sootup.core.views.View;
 import sootup.interceptors.typeresolving.types.BottomType;
 import sootup.interceptors.typeresolving.types.TopType;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public class BytecodeHierarchy {
 
   private final TypeHierarchy typeHierarchy;
@@ -52,7 +55,7 @@ public class BytecodeHierarchy {
     return typeHierarchy.contains(type);
   }
 
-  public boolean isAncestor(@Nonnull Type ancestor, @Nonnull Type child) {
+  public boolean isAncestor(@NonNull Type ancestor, @NonNull Type child) {
     if (PrimitiveHierarchy.isAncestor(ancestor, child)) {
       return true;
     }

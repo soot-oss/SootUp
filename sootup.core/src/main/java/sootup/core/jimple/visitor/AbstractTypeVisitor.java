@@ -22,10 +22,12 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.types.*;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ */
 public abstract class AbstractTypeVisitor implements TypeVisitor, Visitor {
 
   @Override
@@ -74,7 +76,7 @@ public abstract class AbstractTypeVisitor implements TypeVisitor, Visitor {
   }
 
   @Override
-  public void caseClassType(@Nonnull ClassType classType) {
+  public void caseClassType(@NonNull ClassType classType) {
     defaultCaseType();
   }
 

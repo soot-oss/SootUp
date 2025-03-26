@@ -22,7 +22,7 @@ package sootup.core.model;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.signatures.SootClassMemberSignature;
 import sootup.core.types.ClassType;
 
@@ -34,17 +34,17 @@ import sootup.core.types.ClassType;
  */
 public abstract class SootClassMember<S extends SootClassMemberSignature> implements HasPosition {
 
-  @Nonnull private final S signature;
+  @NonNull private final S signature;
 
-  @Nonnull private final Position position;
+  @NonNull private final Position position;
 
-  SootClassMember(@Nonnull S signature, @Nonnull Position position) {
+  SootClassMember(@NonNull S signature, @NonNull Position position) {
     this.signature = signature;
     this.position = position;
   }
 
   /** Returns the SootClass declaring this one. */
-  @Nonnull
+  @NonNull
   public ClassType getDeclaringClassType() {
     return this.signature.getDeclClassType();
   }
@@ -69,24 +69,24 @@ public abstract class SootClassMember<S extends SootClassMemberSignature> implem
 
   /** Returns the signature of this method. */
   @Override
-  @Nonnull
+  @NonNull
   public String toString() {
     return signature.toString();
   }
 
   /** Returns the Soot signature of this method. Used to refer to methods unambiguously. */
-  @Nonnull
+  @NonNull
   public S getSignature() {
     return signature;
   }
 
-  @Nonnull
+  @NonNull
   public String getName() {
 
     return signature.getName();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Position getPosition() {
     return position;

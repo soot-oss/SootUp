@@ -24,7 +24,7 @@ package sootup.core.util.printer;
 
 import com.google.common.collect.ComparisonChain;
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.*;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Trap;
@@ -109,7 +109,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
    *
    * @return the linearized StmtGraph
    */
-  public Iterable<Stmt> initializeSootMethod(@Nonnull StmtGraph<?> stmtGraph) {
+  public Iterable<Stmt> initializeSootMethod(@NonNull StmtGraph<?> stmtGraph) {
     this.graph = stmtGraph;
     JNopStmt needsNopAtEnd = buildTraps(stmtGraph);
     final Collection<Stmt> labeledStmts = getLabeledStmts(stmtGraph, this.traps);
@@ -233,7 +233,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   }
 
   /** Comparator which sorts the trap output in getTraps() */
-  public Comparator<Trap> getTrapComparator(@Nonnull Map<Stmt, Integer> stmtsBlockIdx) {
+  public Comparator<Trap> getTrapComparator(@NonNull Map<Stmt, Integer> stmtsBlockIdx) {
     return (a, b) ->
         ComparisonChain.start()
             .compare(stmtsBlockIdx.get(a.getBeginStmt()), stmtsBlockIdx.get(b.getBeginStmt()))
@@ -253,7 +253,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
    *
    * @return A collection of all the Stmts that are targets of a BranchingStmt
    */
-  @Nonnull
+  @NonNull
   public Collection<Stmt> getLabeledStmts(StmtGraph stmtGraph, List<Trap> traps) {
     Set<Stmt> stmtList = new HashSet<>();
     Collection<Stmt> stmtGraphNodes = stmtGraph.getNodes();

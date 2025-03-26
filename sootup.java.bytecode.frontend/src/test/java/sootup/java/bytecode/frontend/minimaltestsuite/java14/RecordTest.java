@@ -3,13 +3,11 @@ package sootup.java.bytecode.frontend.minimaltestsuite.java14;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
@@ -20,17 +18,17 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.PrimitiveType;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
-/** @author Jonas Klauke */
-@Tag(TestCategories.JAVA_8_CATEGORY)
+/**
+ * @author Jonas Klauke
+ */
 public class RecordTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
   public JavaClassType getDeclaredClassSignature() {
-    return JavaIdentifierFactory.getInstance().getClassType("RecordTest");
+    return identifierFactory.getClassType("RecordTest");
   }
 
   @Override

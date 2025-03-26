@@ -3,7 +3,7 @@ package nvc5;
 
 // import lib.annotations.callgraph.DirectCall;
 
-public class Demo {
+class Demo {
 
   public static void main(String[] args){
     new Sub().method();

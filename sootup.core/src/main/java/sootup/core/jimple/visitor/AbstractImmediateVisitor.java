@@ -22,7 +22,7 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.constant.Constant;
@@ -30,14 +30,14 @@ import sootup.core.jimple.common.constant.Constant;
 public class AbstractImmediateVisitor extends AbstractConstantVisitor implements ImmediateVisitor {
 
   @Override
-  public void caseLocal(@Nonnull Local local) {
+  public void caseLocal(@NonNull Local local) {
     defaultCaseImmediate(local);
   }
 
   @Override
-  public void defaultCaseConstant(@Nonnull Constant constant) {
+  public void defaultCaseConstant(@NonNull Constant constant) {
     defaultCaseImmediate(constant);
   }
 
-  private void defaultCaseImmediate(@Nonnull Immediate immediate) {}
+  private void defaultCaseImmediate(@NonNull Immediate immediate) {}
 }

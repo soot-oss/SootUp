@@ -1,12 +1,13 @@
 package sootup.java.core.model;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
@@ -16,12 +17,12 @@ import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
-import sootup.core.model.Body;
-import sootup.core.model.ClassModifier;
-import sootup.core.model.MethodModifier;
-import sootup.core.model.SourceType;
+import sootup.core.model.*;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
+import sootup.core.types.VoidType;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
@@ -31,7 +32,6 @@ import sootup.java.core.views.JavaView;
  * @author Linghui Luo
  * @author Kaustubh Kelkar updated on 02.07.2020
  */
-@Tag("Java8")
 public class SootMethodTest {
 
   @Test
@@ -95,5 +95,31 @@ public class SootMethodTest {
             .getMethod(methodSignature.getSubSignature())
             .orElseThrow(() -> new RuntimeException("Failed getting method " + methodSignature))
             .hasBody());
+  }
+
+  @Test
+  public void constructorTest() {
+    IdentifierFactory idf = JavaIdentifierFactory.getInstance();
+
+    SootMethod mockedConstructor = spy(new SootMethod.SootMethodBuilder().build());
+    MethodSignature mockedSignature = mock(MethodSignature.class);
+    MethodSubSignature mockedSubSignature = mock(MethodSubSignature.class);
+
+    when(mockedSubSignature.getName()).thenReturn("<init>");
+    when(mockedSubSignature.getType()).thenReturn(VoidType.getInstance());
+    when(mockedSignature.getSubSignature()).thenReturn(mockedSubSignature);
+    when(mockedConstructor.getSignature()).thenReturn(mockedSignature);
+    when(mockedConstructor.getParameterCount()).thenReturn(0);
+
+    assertTrue(idf.isConstructorSubSignature(mockedSubSignature));
+    assertTrue(idf.isConstructorSignature(mockedSignature));
+
+    assertTrue(mockedConstructor.isConstructor(idf));
+    assertTrue(mockedConstructor.isDefaultConstructor(idf));
+
+    when(mockedConstructor.getParameterCount()).thenReturn(1);
+    assertFalse(mockedConstructor.isDefaultConstructor(idf));
+
+    when(mockedSubSignature.getName()).thenReturn("method");
   }
 }

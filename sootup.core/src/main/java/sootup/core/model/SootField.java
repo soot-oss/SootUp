@@ -1,4 +1,5 @@
 package sootup.core.model;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -25,7 +26,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.Type;
@@ -40,12 +41,13 @@ import sootup.core.util.ImmutableUtils;
  */
 public class SootField extends SootClassMember<FieldSignature> implements Field {
 
-  @Nonnull private final ImmutableSet<FieldModifier> modifiers;
+  @NonNull private final ImmutableSet<FieldModifier> modifiers;
+
   /** Constructs a Soot field with the given name, type and modifiers. */
   public SootField(
-      @Nonnull FieldSignature signature,
-      @Nonnull Iterable<FieldModifier> modifiers,
-      @Nonnull Position position) {
+      @NonNull FieldSignature signature,
+      @NonNull Iterable<FieldModifier> modifiers,
+      @NonNull Position position) {
     super(signature, position);
     this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
   }
@@ -80,7 +82,7 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
    *
    * @see FieldModifier
    */
-  @Nonnull
+  @NonNull
   public Set<FieldModifier> getModifiers() {
     return modifiers;
   }
@@ -90,18 +92,18 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
     return Objects.hash(modifiers, getSignature());
   }
 
-  @Nonnull
+  @NonNull
   public Type getType() {
     return this.getSignature().getType();
   }
 
-  @Nonnull
-  public SootField withSignature(@Nonnull FieldSignature signature) {
+  @NonNull
+  public SootField withSignature(@NonNull FieldSignature signature) {
     return new SootField(signature, getModifiers(), getPosition());
   }
 
-  @Nonnull
-  public SootField withModifiers(@Nonnull Iterable<FieldModifier> modifiers) {
+  @NonNull
+  public SootField withModifiers(@NonNull Iterable<FieldModifier> modifiers) {
     return new SootField(getSignature(), modifiers, getPosition());
   }
 
@@ -110,31 +112,28 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
    *
    * @return A {@link SootField}
    */
-  @Nonnull
+  @NonNull
   public static SignatureStep builder() {
     return new SootFieldBuilder();
   }
 
   public interface SignatureStep {
-    @Nonnull
-    ModifierStep withSignature(@Nonnull FieldSignature value);
+    @NonNull ModifierStep withSignature(@NonNull FieldSignature value);
   }
 
   public interface ModifierStep {
-    @Nonnull
-    BuildStep withModifier(@Nonnull Iterable<FieldModifier> modifier);
+    @NonNull BuildStep withModifier(@NonNull Iterable<FieldModifier> modifier);
 
-    @Nonnull
-    default BuildStep withModifiers(@Nonnull FieldModifier first, @Nonnull FieldModifier... rest) {
+    @NonNull
+    default BuildStep withModifiers(@NonNull FieldModifier first, @NonNull FieldModifier... rest) {
       return withModifier(EnumSet.of(first, rest));
     }
   }
 
   public interface BuildStep {
-    BuildStep withPosition(@Nonnull Position pos);
+    BuildStep withPosition(@NonNull Position pos);
 
-    @Nonnull
-    SootField build();
+    @NonNull SootField build();
   }
 
   /**
@@ -149,45 +148,45 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
     private Iterable<FieldModifier> modifiers;
     private Position position = NoPositionInformation.getInstance();
 
-    @Nonnull
+    @NonNull
     protected FieldSignature getSignature() {
       return signature;
     }
 
-    @Nonnull
+    @NonNull
     protected Iterable<FieldModifier> getModifiers() {
       return modifiers;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Position getPosition() {
       return position;
     }
 
     @Override
-    @Nonnull
-    public ModifierStep withSignature(@Nonnull FieldSignature signature) {
+    @NonNull
+    public ModifierStep withSignature(@NonNull FieldSignature signature) {
       this.signature = signature;
       return this;
     }
 
     @Override
-    @Nonnull
-    public BuildStep withModifier(@Nonnull Iterable<FieldModifier> modifiers) {
+    @NonNull
+    public BuildStep withModifier(@NonNull Iterable<FieldModifier> modifiers) {
       this.modifiers = modifiers;
       return this;
     }
 
     @Override
-    @Nonnull
-    public BuildStep withPosition(@Nonnull Position position) {
+    @NonNull
+    public BuildStep withPosition(@NonNull Position position) {
       this.position = position;
       return this;
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public SootField build() {
       return new SootField(getSignature(), getModifiers(), getPosition());
     }

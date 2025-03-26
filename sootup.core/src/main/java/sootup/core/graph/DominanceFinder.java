@@ -23,7 +23,7 @@ package sootup.core.graph;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class DominanceFinder {
     this(blockGraph, BlockAnalysisDirection.REVERSEPOSTORDERFORWARD);
   }
 
-  protected DominanceFinder(@Nonnull StmtGraph<?> blockGraph, BlockAnalysisDirection direction) {
+  protected DominanceFinder(@NonNull StmtGraph<?> blockGraph, BlockAnalysisDirection direction) {
 
     // define the blocks' order
     this.direction = direction;
@@ -132,13 +132,13 @@ public class DominanceFinder {
     if (direction == BlockAnalysisDirection.POSTORDERBACKWARD) {
       for (int i = 0; i < domFrontiers.length; i++) {
         if (domFrontiers[i].contains(i)) {
-          domFrontiers[i].remove(new Integer(i));
+          domFrontiers[i].remove(Integer.valueOf(i));
         }
       }
     }
   }
 
-  public void replaceBlock(@Nonnull BasicBlock<?> newBlock, BasicBlock<?> oldBlock) {
+  public void replaceBlock(@NonNull BasicBlock<?> newBlock, BasicBlock<?> oldBlock) {
     if (!blockToIdx.containsKey(oldBlock)) {
       throw new RuntimeException("The given block: " + oldBlock + " is not in BlockGraph!");
     }
@@ -148,7 +148,7 @@ public class DominanceFinder {
     blocks.set(idx, newBlock);
   }
 
-  public BasicBlock<?> getImmediateDominator(@Nonnull BasicBlock<?> block) {
+  public BasicBlock<?> getImmediateDominator(@NonNull BasicBlock<?> block) {
     if (!blockToIdx.containsKey(block)) {
       throw new RuntimeException("The given block: " + block + " is not in BlockGraph!");
     }
@@ -161,8 +161,8 @@ public class DominanceFinder {
     return blocks.get(idomIdx);
   }
 
-  @Nonnull
-  public Set<BasicBlock<?>> getDominanceFrontiers(@Nonnull BasicBlock<?> block) {
+  @NonNull
+  public Set<BasicBlock<?>> getDominanceFrontiers(@NonNull BasicBlock<?> block) {
     if (!blockToIdx.containsKey(block)) {
       throw new RuntimeException("The given block: " + block + " is not in BlockGraph!");
     }
@@ -175,17 +175,17 @@ public class DominanceFinder {
     return dFs;
   }
 
-  @Nonnull
+  @NonNull
   public List<BasicBlock<?>> getIdxToBlock() {
     return blocks;
   }
 
-  @Nonnull
+  @NonNull
   public Map<BasicBlock<?>, Integer> getBlockToIdx() {
     return blockToIdx;
   }
 
-  @Nonnull
+  @NonNull
   public int[] getImmediateDominators() {
     return this.doms;
   }

@@ -1,4 +1,5 @@
 package sootup.java.bytecode.frontend.inputlocation;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -33,8 +34,8 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -58,16 +59,16 @@ import sootup.java.core.signatures.ModuleSignature;
 public class ModuleFinder {
 
   // associate a module name with the input location, that represents the module
-  @Nonnull
+  @NonNull
   private final Map<ModuleSignature, AnalysisInputLocation> moduleInputLocation = new HashMap<>();
 
-  @Nonnull private final Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
+  @NonNull private final Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
 
   private int next = 0;
 
-  @Nonnull private final List<Path> modulePathEntries;
-  @Nonnull private final SourceType sourceType;
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+  @NonNull private final List<Path> modulePathEntries;
+  @NonNull private final SourceType sourceType;
+  @NonNull private final List<BodyInterceptor> bodyInterceptors;
 
   public boolean hasMoreToResolve() {
     return next < modulePathEntries.size();
@@ -80,10 +81,10 @@ public class ModuleFinder {
    * @param sourceType
    */
   public ModuleFinder(
-      @Nonnull Path modulePath,
-      @Nonnull FileSystem fileSystem,
-      @Nonnull SourceType sourceType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull Path modulePath,
+      @NonNull FileSystem fileSystem,
+      @NonNull SourceType sourceType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     this.sourceType = sourceType;
     this.bodyInterceptors = bodyInterceptors;
     this.modulePathEntries =
@@ -102,13 +103,13 @@ public class ModuleFinder {
   }
 
   public ModuleFinder(
-      @Nonnull Path modulePath,
-      @Nonnull SourceType sourceType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull Path modulePath,
+      @NonNull SourceType sourceType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     this(modulePath, FileSystems.getDefault(), sourceType, bodyInterceptors);
   }
 
-  public ModuleFinder(@Nonnull Path modulePath) {
+  public ModuleFinder(@NonNull Path modulePath) {
     this(
         modulePath,
         FileSystems.getDefault(),
@@ -116,7 +117,7 @@ public class ModuleFinder {
         BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
-  @Nonnull
+  @NonNull
   public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
     if (hasMoreToResolve()) {
       getAllModules();
@@ -124,7 +125,7 @@ public class ModuleFinder {
     return Optional.ofNullable(moduleInfoMap.get(sig));
   }
 
-  @Nonnull
+  @NonNull
   public Set<ModuleSignature> getModules() {
     if (hasMoreToResolve()) {
       getAllModules();
@@ -139,7 +140,7 @@ public class ModuleFinder {
    * @return the input location that resolves classes contained in the module
    */
   @Nullable
-  public AnalysisInputLocation getModule(@Nonnull ModuleSignature moduleName) {
+  public AnalysisInputLocation getModule(@NonNull ModuleSignature moduleName) {
 
     // check if module is cached
     AnalysisInputLocation inputLocationForModule = moduleInputLocation.get(moduleName);
@@ -163,7 +164,7 @@ public class ModuleFinder {
    *
    * @return the names of all modules found
    */
-  @Nonnull
+  @NonNull
   public Collection<ModuleSignature> getAllModules() {
 
     while (hasMoreToResolve()) {
@@ -181,7 +182,7 @@ public class ModuleFinder {
    *
    * @param path the directory
    */
-  private void discoverModulesIn(@Nonnull Path path) {
+  private void discoverModulesIn(@NonNull Path path) {
     BasicFileAttributes attrs;
     try {
       attrs = Files.readAttributes(path, BasicFileAttributes.class);
@@ -220,7 +221,7 @@ public class ModuleFinder {
     }
   }
 
-  private void buildModuleForExplodedModule(@Nonnull Path dir) throws ResolveException {
+  private void buildModuleForExplodedModule(@NonNull Path dir) throws ResolveException {
     // create the input location for this module dir
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(dir, sourceType, bodyInterceptors);
@@ -244,7 +245,7 @@ public class ModuleFinder {
    *
    * @param jar the jar file
    */
-  private void buildModuleForJar(@Nonnull Path jar) {
+  private void buildModuleForJar(@NonNull Path jar) {
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(jar, sourceType, bodyInterceptors);
     Path mi;
@@ -277,8 +278,8 @@ public class ModuleFinder {
    * @param path to the jar file
    * @return the name of the automatic module
    */
-  @Nonnull
-  public static String createModuleNameForAutomaticModule(@Nonnull Path path) {
+  @NonNull
+  public static String createModuleNameForAutomaticModule(@NonNull Path path) {
     // check if Automatic-Module-Name header exists in manifest file and use it if exists
     try (JarFile jar = new JarFile(path.toFile())) {
       final String file = "META-INF/MANIFEST.MF";

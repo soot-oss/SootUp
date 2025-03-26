@@ -22,7 +22,7 @@ package sootup.interceptors;
  * #L%
  */
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -45,7 +45,7 @@ public class NopEliminator implements BodyInterceptor {
    * @param builder The current body before interception.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     MutableStmtGraph graph = builder.getStmtGraph();
 
     Queue<Stmt> q = new ArrayDeque<>();

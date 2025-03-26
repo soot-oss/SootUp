@@ -25,8 +25,8 @@ package sootup.java.core;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.apache.commons.lang3.ClassUtils;
+import org.jspecify.annotations.NonNull;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.Type;
@@ -47,14 +47,14 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
     return INSTANCE;
   }
 
-  public static JavaModuleIdentifierFactory getInstance(@Nonnull String module) {
+  public static JavaModuleIdentifierFactory getInstance(@NonNull String module) {
     return getInstance(getModuleSignature(module));
   }
 
   private static final Cache<ModuleSignature, JavaModuleIdentifierFactory>
       moduleIdentifierFactoryWrapper = CacheBuilder.newBuilder().weakValues().build();
 
-  public static JavaModuleIdentifierFactory getInstance(@Nonnull ModuleSignature moduleSignature) {
+  public static JavaModuleIdentifierFactory getInstance(@NonNull ModuleSignature moduleSignature) {
     return moduleIdentifierFactoryWrapper
         .asMap()
         .computeIfAbsent(moduleSignature, JavaModuleIdentifierFactoryWrapper::new);
@@ -72,7 +72,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   }
 
   @Override
-  public boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+  public boolean isMainSubSignature(@NonNull MethodSubSignature methodSubSignature) {
     if (methodSubSignature.getName().equals("main")) {
       final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
       if (parameterTypes.size() == 1) {
@@ -125,17 +125,17 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
    *     string to denote the unnamed module or the default package.
    */
   public ModuleJavaClassType getClassType(
-      final @Nonnull String className,
-      final @Nonnull String packageName,
-      final @Nonnull String moduleName) {
+      final @NonNull String className,
+      final @NonNull String packageName,
+      final @NonNull String moduleName) {
     ModulePackageName packageIdentifier = getPackageName(packageName, moduleName);
     return new ModuleJavaClassType(className, packageIdentifier);
   }
 
   public ModuleJavaClassType getClassType(
-      final @Nonnull String className,
-      final @Nonnull String packageName,
-      final @Nonnull ModuleSignature moduleSignature) {
+      final @NonNull String className,
+      final @NonNull String packageName,
+      final @NonNull ModuleSignature moduleSignature) {
     ModulePackageName packageIdentifier = getPackageName(packageName, moduleSignature);
     return new ModuleJavaClassType(className, packageIdentifier);
   }
@@ -152,12 +152,12 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
    * @throws NullPointerException if the given module name is null. Use the empty string to denote
    *     the unnamed module.
    */
-  public static ModuleSignature getModuleSignature(@Nonnull final String moduleName) {
+  public static ModuleSignature getModuleSignature(@NonNull final String moduleName) {
     return modules.asMap().computeIfAbsent(moduleName, ModuleSignature::new);
   }
 
   @Override
-  public ModulePackageName getPackageName(@Nonnull final String packageName) {
+  public ModulePackageName getPackageName(@NonNull final String packageName) {
     return getPackageName(packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
   }
 
@@ -173,7 +173,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
    *     string to denote the unnamed module or the default package.
    */
   public ModulePackageName getPackageName(
-      @Nonnull final String packageName, @Nonnull final String moduleName) {
+      @NonNull final String packageName, @NonNull final String moduleName) {
     String fqId = moduleName + "." + packageName;
     return (ModulePackageName)
         packageCache
@@ -183,7 +183,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   }
 
   public ModulePackageName getPackageName(
-      @Nonnull final String packageName, @Nonnull final ModuleSignature moduleSignature) {
+      @NonNull final String packageName, @NonNull final ModuleSignature moduleSignature) {
     String fqId = moduleSignature.getModuleName() + "." + packageName;
     return (ModulePackageName)
         packageCache
@@ -194,9 +194,9 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   /** Wrapper which refers to a given ModuleSignature when building stuff */
   private static class JavaModuleIdentifierFactoryWrapper extends JavaModuleIdentifierFactory {
 
-    @Nonnull private final ModuleSignature moduleSignature;
+    @NonNull private final ModuleSignature moduleSignature;
 
-    private JavaModuleIdentifierFactoryWrapper(@Nonnull ModuleSignature moduleSignature) {
+    private JavaModuleIdentifierFactoryWrapper(@NonNull ModuleSignature moduleSignature) {
       this.moduleSignature = moduleSignature;
     }
 

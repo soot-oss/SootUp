@@ -1,4 +1,5 @@
 package sootup.interceptors;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -23,7 +24,7 @@ package sootup.interceptors;
  */
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -48,7 +49,7 @@ public class UnusedLocalEliminator implements BodyInterceptor {
    * @param builder the BodyBuilder.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     // recreate Set of Locals from Stmts
     Set<Local> locals = new LinkedHashSet<>();

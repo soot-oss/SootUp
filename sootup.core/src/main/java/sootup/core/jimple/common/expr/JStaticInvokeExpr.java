@@ -23,7 +23,7 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -35,12 +35,12 @@ import sootup.core.util.printer.StmtPrinter;
 public final class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   /** Stores the values to the args array. */
-  public JStaticInvokeExpr(@Nonnull MethodSignature method, @Nonnull List<Immediate> args) {
+  public JStaticInvokeExpr(@NonNull MethodSignature method, @NonNull List<Immediate> args) {
     super(method, args.toArray(new Immediate[0]));
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseStaticInvokeExpr(this, o);
   }
 
@@ -61,7 +61,7 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.STATICINVOKE);
     up.literal(" ");
     up.methodSignature(getMethodSignature());
@@ -71,18 +71,18 @@ public final class JStaticInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseStaticInvokeExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JStaticInvokeExpr withMethodSignature(@Nonnull MethodSignature methodSignature) {
+  @NonNull
+  public JStaticInvokeExpr withMethodSignature(@NonNull MethodSignature methodSignature) {
     return new JStaticInvokeExpr(methodSignature, getArgs());
   }
 
-  @Nonnull
-  public JStaticInvokeExpr withArgs(@Nonnull List<Immediate> args) {
+  @NonNull
+  public JStaticInvokeExpr withArgs(@NonNull List<Immediate> args) {
     return new JStaticInvokeExpr(getMethodSignature(), args);
   }
 }

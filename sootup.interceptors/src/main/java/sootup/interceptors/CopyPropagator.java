@@ -1,4 +1,5 @@
 package sootup.interceptors;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -26,7 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -59,7 +60,7 @@ public class CopyPropagator implements BodyInterceptor {
   static final LongConstant zeroLongConstInstance = LongConstant.getInstance(0);
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
     for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       Stmt newStmt = stmt;
@@ -140,7 +141,7 @@ public class CopyPropagator implements BodyInterceptor {
   }
 
   private Stmt replaceUse(
-      @Nonnull MutableStmtGraph graph, @Nonnull Stmt stmt, @Nonnull Value use, @Nonnull Value rhs) {
+      @NonNull MutableStmtGraph graph, @NonNull Stmt stmt, @NonNull Value use, @NonNull Value rhs) {
     if (rhs != use) {
       Stmt newStmt = stmt.withNewUse(use, rhs);
       if (newStmt != stmt) {
@@ -151,7 +152,7 @@ public class CopyPropagator implements BodyInterceptor {
     return stmt;
   }
 
-  private boolean isPropatabable(@Nonnull List<Stmt> defsOfUse) {
+  private boolean isPropatabable(@NonNull List<Stmt> defsOfUse) {
     // If local is defined just one time, then the propagation of this local available.
     boolean isPropagateable = false;
     if (defsOfUse.size() == 1) {

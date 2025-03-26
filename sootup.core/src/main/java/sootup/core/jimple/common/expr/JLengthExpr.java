@@ -22,7 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -33,12 +33,12 @@ import sootup.core.util.printer.StmtPrinter;
 /** An expression that returns the length of an array. */
 public final class JLengthExpr extends AbstractUnopExpr {
 
-  public JLengthExpr(@Nonnull Immediate op) {
+  public JLengthExpr(@NonNull Immediate op) {
     super(op);
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseLengthExpr(this, o);
   }
 
@@ -50,30 +50,30 @@ public final class JLengthExpr extends AbstractUnopExpr {
 
   @Override
   public String toString() {
-    return Jimple.LENGTHOF + " " + getOp().toString();
+    return Jimple.LENGTHOF + " " + getOp();
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.LENGTHOF);
     up.literal(" ");
     getOp().toString(up);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public PrimitiveType getType() {
     return PrimitiveType.getInt();
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseLengthExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JLengthExpr withOp(@Nonnull Immediate op) {
+  @NonNull
+  public JLengthExpr withOp(@NonNull Immediate op) {
     return new JLengthExpr(op);
   }
 }

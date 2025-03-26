@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
 import sootup.core.graph.MutableStmtGraph;
@@ -21,14 +21,12 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
 /**
  * @author Markus Schmidt
  * @author Kaustubh Kelkar updated on 02.07.2020
  */
-@Tag("Java8")
 public class JimplePrinterTest {
   // import collisions are already tested in AbstractStmtPrinterTest covered in
   // AbstractStmtPrinterTest
@@ -38,7 +36,8 @@ public class JimplePrinterTest {
 
     JimplePrinter p = new JimplePrinter(JimplePrinter.Option.UseImports);
     final StringWriter writer = new StringWriter();
-    p.printTo(buildClass(), new PrintWriter(writer));
+    SootClass sootClass = buildClass(false);
+    p.printTo(sootClass, new PrintWriter(writer));
 
     assertEquals(
         Arrays.asList(
@@ -55,14 +54,38 @@ public class JimplePrinterTest {
         Utils.filterJimple(writer.toString()));
   }
 
-  private SootClass buildClass() {
+  @Test
+  public void testSootClassBuilder() {
+    JimplePrinter p =
+        new JimplePrinter(JimplePrinter.Option.UseImports, JimplePrinter.Option.Deterministic);
+    final StringWriter writer = new StringWriter();
+    final StringWriter writer1 = new StringWriter();
+    SootClass sootClass = buildClass(false);
+    SootClass sootClassUsingBuilder = buildClass(true);
+    p.printTo(sootClass, new PrintWriter(writer));
+    p.printTo(sootClassUsingBuilder, new PrintWriter(writer1));
+    assertEquals(Utils.filterJimple(writer.toString()), Utils.filterJimple(writer1.toString()));
 
+    // assert if sootClass and sootClassUsingBuilder are same
+    assertEquals(
+        sootClass.getClassSource().getClassType().getClassName(),
+        sootClassUsingBuilder.getClassSource().getClassType().getClassName());
+    assertEquals(sootClass.getMethods().size(), sootClassUsingBuilder.getMethods().size());
+    assertEquals(sootClass.getFields().size(), sootClassUsingBuilder.getFields().size());
+    assertEquals(sootClass.getModifiers().size(), sootClassUsingBuilder.getModifiers().size());
+    assertEquals(sootClass.getInterfaces().size(), sootClassUsingBuilder.getInterfaces().size());
+    assertEquals(
+        sootClass.getSuperclass().get().getClassName(),
+        sootClassUsingBuilder.getSuperclass().get().getClassName());
+  }
+
+  private SootClass buildClass(boolean buildUsingBuilder) {
     View view = new JavaView(new EagerInputLocation());
 
     String className = "some.package.SomeClass";
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
     MethodSignature methodSignatureOne =
-        view.getIdentifierFactory()
-            .getMethodSignature(className, "main", "void", Collections.emptyList());
+        identifierFactory.getMethodSignature(className, "main", "void", Collections.emptyList());
 
     StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
     final JReturnVoidStmt returnVoidStmt = new JReturnVoidStmt(noPosInfo);
@@ -87,8 +110,8 @@ public class JimplePrinterTest {
             NoPositionInformation.getInstance());
 
     MethodSignature methodSignatureTwo =
-        view.getIdentifierFactory()
-            .getMethodSignature(className, "otherMethod", "int", Collections.emptyList());
+        identifierFactory.getMethodSignature(
+            className, "otherMethod", "int", Collections.emptyList());
     bodyBuilder
         .setMethodSignature(methodSignatureTwo)
         .setPosition(NoPositionInformation.getInstance());
@@ -100,31 +123,68 @@ public class JimplePrinterTest {
             methodSignatureTwo,
             EnumSet.of(MethodModifier.PRIVATE),
             Collections.singletonList(
-                JavaIdentifierFactory.getInstance()
-                    .getClassType("files.stuff.FileNotFoundException")),
+                identifierFactory.getClassType("files.stuff.FileNotFoundException")),
             NoPositionInformation.getInstance());
 
-    return new SootClass(
+    if (buildUsingBuilder) {
+      return getSootClassUsingBuilder(dummyMainMethod, anotherMethod, className, view);
+    }
+
+    return getSootClass(dummyMainMethod, anotherMethod, className, view);
+  }
+
+  private SootClass getSootClassUsingBuilder(
+      SootMethod dummyMainMethod, SootMethod anotherMethod, String className, View view) {
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+    SootField sootField =
+        new SootField(
+            identifierFactory.getFieldSignature(
+                "counter", identifierFactory.getClassType(className), PrimitiveType.getInt()),
+            EnumSet.of(FieldModifier.PRIVATE),
+            NoPositionInformation.getInstance());
+
+    OverridingClassSource overridingClassSource =
+        OverridingClassSource.OverridingClassSourceBuilder.builder()
+            .withMethods(new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)))
+            .withField(sootField)
+            .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+            .withInterfaces(
+                Collections.singleton(identifierFactory.getClassType("some.great.Interface")))
+            .withSuperclass(Optional.of(identifierFactory.getClassType("some.great.Superclass")))
+            .withPosition(NoPositionInformation.getInstance())
+            .withClassType(identifierFactory.getClassType(className))
+            .withAnalysisInputLocation(new EagerInputLocation())
+            .build();
+
+    SootClass sootClass =
+        SootClass.SootClassBuilder.builder()
+            .withClassSource(overridingClassSource)
+            .withSourceType(SourceType.Application)
+            .build();
+    return sootClass;
+  }
+
+  private SootClass getSootClass(
+      SootMethod dummyMainMethod, SootMethod anotherMethod, String className, View view) {
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+    SootField sootField =
+        new SootField(
+            identifierFactory.getFieldSignature(
+                "counter", identifierFactory.getClassType(className), PrimitiveType.getInt()),
+            EnumSet.of(FieldModifier.PRIVATE),
+            NoPositionInformation.getInstance());
+    OverridingClassSource overridingClassSource =
         new OverridingClassSource(
             new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
-            Collections.singleton(
-                new SootField(
-                    JavaIdentifierFactory.getInstance()
-                        .getFieldSignature(
-                            "counter",
-                            JavaIdentifierFactory.getInstance().getClassType(className),
-                            PrimitiveType.getInt()),
-                    EnumSet.of(FieldModifier.PRIVATE),
-                    NoPositionInformation.getInstance())),
+            Collections.singleton(sootField),
             EnumSet.of(ClassModifier.PUBLIC),
-            Collections.singleton(
-                JavaIdentifierFactory.getInstance().getClassType("some.great.Interface")),
-            JavaIdentifierFactory.getInstance().getClassType("some.great.Superclass"),
+            Collections.singleton(identifierFactory.getClassType("some.great.Interface")),
+            identifierFactory.getClassType("some.great.Superclass"),
             null,
             NoPositionInformation.getInstance(),
             null,
-            view.getIdentifierFactory().getClassType(className),
-            new EagerInputLocation()),
-        SourceType.Application);
+            identifierFactory.getClassType(className),
+            new EagerInputLocation());
+    return new SootClass(overridingClassSource, SourceType.Application);
   }
 }

@@ -22,7 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
@@ -33,23 +33,23 @@ import sootup.core.types.UnknownType;
 /** An expression that shifts its operand to the left (&gt;&gt;). */
 public final class JShrExpr extends AbstractIntLongBinopExpr {
 
-  public JShrExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JShrExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public String getSymbol() {
     return " >> ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseShrExpr(this);
     return v;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     Value op1 = getOp1();
@@ -69,13 +69,13 @@ public final class JShrExpr extends AbstractIntLongBinopExpr {
     return UnknownType.getInstance();
   }
 
-  @Nonnull
-  public JShrExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JShrExpr withOp1(@NonNull Immediate op1) {
     return new JShrExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JShrExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JShrExpr withOp2(@NonNull Immediate op2) {
     return new JShrExpr(getOp1(), op2);
   }
 }

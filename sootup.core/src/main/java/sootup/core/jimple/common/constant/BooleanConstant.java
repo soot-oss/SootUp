@@ -22,7 +22,7 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -67,44 +67,44 @@ public class BooleanConstant
     return FALSE;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return PrimitiveType.getBoolean();
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull V v) {
     v.caseBooleanConstant(this);
     return v;
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant equalEqual(@Nonnull BooleanConstant c) {
+  public BooleanConstant equalEqual(@NonNull BooleanConstant c) {
     return BooleanConstant.getInstance(value == c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant notEqual(@Nonnull BooleanConstant c) {
+  public BooleanConstant notEqual(@NonNull BooleanConstant c) {
     return BooleanConstant.getInstance(value != c.value);
   }
 
-  @Nonnull
-  public BooleanConstant and(@Nonnull BooleanConstant c) {
+  @NonNull
+  public BooleanConstant and(@NonNull BooleanConstant c) {
     return BooleanConstant.getInstance(value & c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant or(@Nonnull BooleanConstant c) {
+  public BooleanConstant or(@NonNull BooleanConstant c) {
     return BooleanConstant.getInstance(value | c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant xor(@Nonnull BooleanConstant c) {
+  public BooleanConstant xor(@NonNull BooleanConstant c) {
     return BooleanConstant.getInstance(value ^ c.value);
   }
 

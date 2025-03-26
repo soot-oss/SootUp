@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.core.PointsToAnalysis;
@@ -66,10 +66,11 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
-/** @author Ondrej Lhotak */
+/**
+ * @author Ondrej Lhotak
+ */
 public class MethodNodeFactory {
   protected PAG pag;
   protected MethodPAG mpag;
@@ -192,7 +193,7 @@ public class MethodNodeFactory {
           }
 
           @Override
-          public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+          public void caseAssignStmt(@NonNull JAssignStmt stmt) {
             Value l = stmt.getLeftOp();
             Value r = stmt.getRightOp();
             if (l instanceof JStaticFieldRef) {
@@ -216,7 +217,7 @@ public class MethodNodeFactory {
           }
 
           @Override
-          public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
+          public void caseIdentityStmt(@NonNull JIdentityStmt stmt) {
             if (!(stmt.getLeftOp().getType() instanceof ReferenceType)) {
               return;
             }
@@ -226,19 +227,19 @@ public class MethodNodeFactory {
           }
 
           @Override
-          public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
+          public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
             defaultCaseStmt(stmt);
           }
 
           @Override
-          public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
+          public void caseReturnStmt(@NonNull JReturnStmt stmt) {
             if (!(stmt.getOp().getType() instanceof ReferenceType)) return;
             Node retNode = getNode(stmt.getOp());
             mpag.addInternalEdge(retNode, caseRet());
           }
 
           @Override
-          public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
+          public void caseThrowStmt(@NonNull JThrowStmt stmt) {
             if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
               mpag.addInternalEdge(getNode(stmt.getOp()), getNode(scene.getFieldGlobalThrow()));
             }
@@ -430,7 +431,7 @@ public class MethodNodeFactory {
     }
     for (SootClass sc : visit) {
       MethodSubSignature subclinit =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <clinit>()");
+          scene.getView().getIdentifierFactory().parseMethodSubSignature("void <clinit>()");
       final Optional<? extends SootMethod> initStart = sc.getMethod(subclinit);
       initStart.ifPresent(ret::add);
     }

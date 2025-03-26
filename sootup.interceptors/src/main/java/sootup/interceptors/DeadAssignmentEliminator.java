@@ -1,4 +1,5 @@
 package sootup.interceptors;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -23,7 +24,7 @@ package sootup.interceptors;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.analysis.intraprocedural.reachingdefs.ReachingDefs;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
@@ -63,7 +64,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
   }
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
     Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(stmtGraph)).getReachingDefs();
     // refactor.. why already here - getNodes as well

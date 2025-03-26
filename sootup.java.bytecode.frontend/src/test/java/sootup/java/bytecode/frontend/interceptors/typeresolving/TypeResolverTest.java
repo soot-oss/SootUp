@@ -2,12 +2,10 @@ package sootup.java.bytecode.frontend.interceptors.typeresolving;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import categories.TestCategories;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
@@ -29,7 +27,6 @@ import sootup.java.core.JavaPackageName;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class TypeResolverTest extends TypeAssignerTestSuite {
 
   String baseDir = "../shared-test-resources/TypeResolverTestSuite/";
@@ -37,7 +34,8 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   Type stringType = new JavaClassType("String", new JavaPackageName("java.lang"));
   Type charSequenceType = new JavaClassType("CharSequence", new JavaPackageName("java.lang"));
   Type numberType = new JavaClassType("Number", new JavaPackageName("java.lang"));
-  Type dateType = new JavaClassType("Date", new JavaPackageName("java.util"));;
+  Type dateType = new JavaClassType("Date", new JavaPackageName("java.util"));
+  ;
   Type miscType = new JavaClassType("Misc", new JavaPackageName(""));
   Type sysoutType = new JavaClassType("PrintStream", new JavaPackageName("java.io"));
   Type throwableType = new JavaClassType("Throwable", new JavaPackageName("java.lang"));

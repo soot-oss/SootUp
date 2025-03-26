@@ -65,67 +65,33 @@
         <module>sootup.java.core</module>
         <module>sootup.interceptors</module>
         <module>sootup.java.bytecode.frontend</module>
-        <module>sootup.java.sourcecode.frontend</module>
-        <module>sootup.tests</module>
         <module>sootup.callgraph</module>
         <module>sootup.qilin</module>
         <module>sootup.analysis.interprocedural</module>
         <module>sootup.analysis.intraprocedural</module>
-        <module>sootup.examples</module>
-        <module>sootup.report</module>
         <module>sootup.apk.frontend</module>
         <module>sootup.codepropertygraph</module>
     </modules>
 
     <!-- Shared Configuration -->
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
-        <jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
-        <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
-        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-        <maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
+        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+        <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
+        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-        <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
-        <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
+        <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
         <reactorRootsTarget>${basedir}/target</reactorRootsTarget>
     </properties>
 
     <profiles>
-        <profile>
-            <id>Java8</id>
-            <properties>
-                <testcase.groups>Java8</testcase.groups>
-                <testCoverageType>jdk8</testCoverageType>
-            </properties>
-            <!-- Activates if jdk is <1.9 which means it has a rt.jar -->
-            <activation>
-                <jdk>(, 1.9)</jdk>
-            </activation>
-        </profile>
-        <profile>
-            <id>Java9</id>
-            <properties>
-                <testcase.groups>Java9</testcase.groups>
-                <testCoverageType>jdk9</testCoverageType>
-            </properties>
-            <!-- Activates if jdk is >=1.9 which means it has a jrt Provider -->
-            <activation>
-                <jdk>[1.9, )</jdk>
-            </activation>
-        </profile>
-        <profile>
-            <id>IntegrationTest</id>
-            <properties>
-                <testcase.groups>Java8</testcase.groups>
-                <testCoverageType>integrationtest</testCoverageType>
-            </properties>
-        </profile>
         <profile>
             <id>skipTestProfile</id>
             <activation>
@@ -136,9 +102,39 @@
             </activation>
         </profile>
         <profile>
-            <id>release</id>
+            <id>no-deployment</id>
+            <!--
+            According to https://github.com/sonatype/nexus-maven-plugins/tree/master/staging/maven-plugin
+            skipNexusStagingDeployMojo may not be set to true in the last reactor module. Because we don't
+            want to deploy our last module, nor a dummy module, we simply omit the relevant modules when
+            a deploy is in progress.
+            -->
+            <activation>
+                <property>
+                    <name>!release</name>
+                </property>
+            </activation>
+            <modules>
+                <module>sootup.examples</module>
+                <module>sootup.tests</module>
+                <module>sootup.report</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>deployment</id>
+            <activation>
+                <property>
+                    <!-- mvn clean deploy -Drelease to disable no-release profile -->
+                    <name>release</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>versions-maven-plugin</artifactId>
+                        <version>2.18.0</version>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -168,7 +164,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>${maven-source-plugin.version}</version>
+                        <version>3.3.1</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -205,7 +201,7 @@
 		    <plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-release-plugin</artifactId>
-			<version>${maven-release-plugin.version}</version>
+			<version>3.1.1</version>
 			<configuration>
 				<tagNameFormat>@{project.version}</tagNameFormat>
 			</configuration>
@@ -218,9 +214,9 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.coveo</groupId>
+                <groupId>com.spotify.fmt</groupId>
                 <artifactId>fmt-maven-plugin</artifactId>
-                <version>2.8</version>
+                <version>2.25</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -234,10 +230,10 @@
                 <!-- just define the Java version to be used for compiling and plugins -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.14.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.source}</target>
                     <compilerArgs>
                         <!-- Prevents recompilation due to missing package-info.class, see MCOMPILER-205 -->
                         <arg>-Xpkginfo:always</arg>
@@ -258,7 +254,7 @@
                         </goals>
                         <configuration>
                             <!-- Sets the path to the file which contains the execution data. -->
-                            <destFile>${project.build.directory}/coverage-reports/jacoco-ut-${testCoverageType}.exec
+                            <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec
                             </destFile>
                             <!-- Sets the name of the property containing the settings for JaCoCo
                                 runtime agent. -->
@@ -293,9 +289,7 @@
                                     <!-- path refers to artifact download folder structure in maven.yml -->
                                     <directory>${project.build.directory}/coverage-reports/</directory>
                                     <includes>
-                                        <include>jacoco-ut-jdk8.exec</include>
-                                        <include>jacoco-ut-jdk9.exec</include>
-                                        <include>jacoco-ut-integrationtest.exec</include>
+                                        <include>jacoco-ut*.exec</include>
                                     </includes>
                                 </fileSet>
                             </fileSets>
@@ -311,14 +305,13 @@
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <argLine>-Xmx4096M ${surefireArgLine}</argLine>
-                    <groups>${testcase.groups}</groups>
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>3.0.0-M6</version>
+                <version>3.5.2</version>
                 <configuration>
                     <showSuccess>false</showSuccess>
                 </configuration>
@@ -338,7 +331,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>1.16</version>
+                <version>2.5.0</version>
                 <configuration>
                     <failOnMissingHeader>${licence-check.failOnMissingHeader}</failOnMissingHeader>
                     <failOnNotUptodateHeader>${licence-check.failOnMissingHeader}</failOnNotUptodateHeader>
@@ -357,7 +350,6 @@
                         <root>sootup.interceptors/src/main/java</root>
                         <root>sootup.java.bytecode.frontend/src/main/java</root>
                         <root>sootup.java.core/src/main/java</root>
-                        <root>sootup.java.sourcecode.frontend/src/main/java</root>
                         <root>sootup.jimple.frontend/src/main/java</root>
                         <root>sootup.tests/src/main/java</root>
                     </roots>
@@ -379,27 +371,27 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.13</version>
+            <version>2.0.17</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.14.0</version>
+            <version>3.17.0</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.16.1</version>
+            <version>2.18.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>33.3.0-jre</version>
+            <version>33.4.5-jre</version>
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-core</artifactId>
-            <version>1.3.1</version>
+            <version>1.5.2</version>
         </dependency>
         <dependency>
             <groupId>de.upb.cs.swt</groupId>
@@ -429,63 +421,68 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
-            <version>4.9.3</version>
+            <version>4.13.2</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
         <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
-            <version>1.5.0</version>
+            <version>1.9.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.oshi/oshi-core -->
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>6.4.0</version>
+            <version>6.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.12.1</version>
         </dependency>
 
         <!-- testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.10.3</version>
+            <version>5.12.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.10.3</version>
+            <version>5.12.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.10.3</version>
+            <version>5.12.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>2.0.13</version>
+            <version>2.0.17</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>4.0.0</version>
+            <version>5.16.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.12.0</version>
+            <version>5.16.1</version>
             <scope>test</scope>
         </dependency>
-        <!-- adds `@Nullable` and `@Nonnull` annotations -->
+        <!-- adds `@Nullable` and `@NonNull ` annotations -->
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.2</version>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
@@ -505,11 +502,6 @@
         <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.java.bytecode.frontend</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.sourcecode.frontend</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

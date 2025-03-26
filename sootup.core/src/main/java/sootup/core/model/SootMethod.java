@@ -33,8 +33,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
@@ -57,21 +57,21 @@ import sootup.core.util.printer.StmtPrinter;
  */
 public class SootMethod extends SootClassMember<MethodSignature> implements Method {
 
-  @Nonnull private final ImmutableSet<MethodModifier> modifiers;
+  @NonNull private final ImmutableSet<MethodModifier> modifiers;
 
   /** Declared exceptions thrown by this method. Created upon demand. */
-  @Nonnull protected final ImmutableList<ClassType> exceptions;
+  @NonNull protected final ImmutableList<ClassType> exceptions;
 
   /** Tells this method how to find out where its body lives. */
-  @Nonnull protected final BodySource bodySource;
+  @NonNull protected final BodySource bodySource;
 
   /** Constructs a SootMethod object with the given attributes. */
   public SootMethod(
-      @Nonnull BodySource source,
-      @Nonnull MethodSignature methodSignature,
-      @Nonnull Iterable<MethodModifier> modifiers,
-      @Nonnull Iterable<ClassType> thrownExceptions,
-      @Nonnull Position position) {
+      @NonNull BodySource source,
+      @NonNull MethodSignature methodSignature,
+      @NonNull Iterable<MethodModifier> modifiers,
+      @NonNull Iterable<ClassType> thrownExceptions,
+      @NonNull Position position) {
     super(methodSignature, position);
 
     this.bodySource = source;
@@ -79,7 +79,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
   }
 
-  @Nonnull
+  @NonNull
   private Body lazyBodyInitializer() {
     if (!isConcrete()) {
       throw new ResolveException(
@@ -127,7 +127,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    *
    * @see MethodModifier
    */
-  @Nonnull
+  @NonNull
   public Set<MethodModifier> getModifiers() {
     return modifiers;
   }
@@ -142,7 +142,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     return !isAbstract() && !isNative();
   }
 
-  @Nonnull
+  @NonNull
   public Type getReturnType() {
     return getSignature().getType();
   }
@@ -152,35 +152,35 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     return getSignature().getParameterCount();
   }
 
-  @Nonnull
+  @NonNull
   public Type getParameterType(int n) {
     return getSignature().getParameterType(n);
   }
 
-  @Nonnull
+  @NonNull
   public MethodSubSignature getSubSignature() {
     return getSignature().getSubSignature();
   }
 
-  @Nonnull
+  @NonNull
   public List<Type> getParameterTypes() {
     return getSignature().getParameterTypes();
   }
 
-  @Nonnull
+  @NonNull
   public ClassType getDeclClassType() {
     return getSignature().getDeclClassType();
   }
 
-  @Nonnull
+  @NonNull
   public String getName() {
     return getSignature().getName();
   }
 
-  @Nonnull private final Supplier<Body> _lazyBody = Suppliers.memoize(this::lazyBodyInitializer);
+  @NonNull private final Supplier<Body> _lazyBody = Suppliers.memoize(this::lazyBodyInitializer);
 
   /** Retrieves the active body for this method. */
-  @Nonnull
+  @NonNull
   public Body getBody() {
     return this._lazyBody.get();
   }
@@ -190,12 +190,12 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     return isConcrete();
   }
 
-  @Nonnull
+  @NonNull
   public BodySource getBodySource() {
     return bodySource;
   }
 
-  @Nonnull
+  @NonNull
   public List<ClassType> getExceptionSignatures() {
     return exceptions;
   }
@@ -215,16 +215,32 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     return MethodModifier.isSynchronized(this.getModifiers());
   }
 
-  /** @return yes if this is the main method */
-  public boolean isMain(@Nonnull IdentifierFactory idf) {
+  /**
+   * @return yes if this is the main method
+   */
+  public boolean isMain(@NonNull IdentifierFactory idf) {
     return isPublic() && isStatic() && idf.isMainSubSignature(getSignature().getSubSignature());
+  }
+
+  /**
+   * @return true if the method is a constructor
+   */
+  public boolean isConstructor(@NonNull IdentifierFactory idf) {
+    return idf.isConstructorSignature(getSignature());
+  }
+
+  /**
+   * @return true if the method is the default constructor
+   */
+  public boolean isDefaultConstructor(@NonNull IdentifierFactory idf) {
+    return isConstructor(idf) && getParameterCount() == 0;
   }
 
   /**
    * Returns the declaration of this method, as used at the top of textual body representations
    * (before the {}'s containing the code for representation.)
    */
-  public void toString(@Nonnull StmtPrinter printer) {
+  public void toString(@NonNull StmtPrinter printer) {
 
     // print modifiers
     final Set<MethodModifier> modifiers = getModifiers();
@@ -255,7 +271,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    * selected parts of a {@link SootMethod} without recreating a {@link BodySource} completely.
    * {@link OverridingBodySource} allows for replacing the body of a method.
    */
-  @Nonnull
+  @NonNull
   public SootMethod withOverridingMethodSource(
       Function<OverridingBodySource, OverridingBodySource> overrider) {
     return new SootMethod(
@@ -266,25 +282,25 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
         getPosition());
   }
 
-  @Nonnull
+  @NonNull
   public SootMethod withSource(BodySource source) {
     return new SootMethod(source, getSignature(), getModifiers(), exceptions, getPosition());
   }
 
-  @Nonnull
+  @NonNull
   public SootMethod withModifiers(Iterable<MethodModifier> modifiers) {
     return new SootMethod(
         bodySource, getSignature(), modifiers, getExceptionSignatures(), getPosition());
   }
 
-  @Nonnull
+  @NonNull
   public SootMethod withThrownExceptions(Iterable<ClassType> thrownExceptions) {
     return new SootMethod(
         bodySource, getSignature(), getModifiers(), thrownExceptions, getPosition());
   }
 
-  @Nonnull
-  public SootMethod withBody(@Nonnull Body body) {
+  @NonNull
+  public SootMethod withBody(@NonNull Body body) {
     return new SootMethod(
         new OverridingBodySource(bodySource).withBody(body),
         getSignature(),
@@ -298,46 +314,39 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    *
    * @return A {@link SootMethodBuilder}.
    */
-  @Nonnull
+  @NonNull
   public static MethodSourceStep builder() {
     return new SootMethodBuilder();
   }
 
   public interface MethodSourceStep {
-    @Nonnull
-    SignatureStep withSource(@Nonnull BodySource value);
+    @NonNull SignatureStep withSource(@NonNull BodySource value);
   }
 
   public interface SignatureStep {
-    @Nonnull
-    ModifierStep withSignature(@Nonnull MethodSignature value);
+    @NonNull ModifierStep withSignature(@NonNull MethodSignature value);
   }
 
   public interface ModifierStep {
-    @Nonnull
-    ThrownExceptionsStep withModifier(@Nonnull Iterable<MethodModifier> modifier);
+    @NonNull ThrownExceptionsStep withModifier(@NonNull Iterable<MethodModifier> modifier);
 
-    @Nonnull
+    @NonNull
     default ThrownExceptionsStep withModifiers(
-        @Nonnull MethodModifier first, @Nonnull MethodModifier... rest) {
+        @NonNull MethodModifier first, @NonNull MethodModifier... rest) {
       return withModifier(EnumSet.of(first, rest));
     }
   }
 
   public interface ThrownExceptionsStep {
-    @Nonnull
-    BuildStep withThrownExceptions(@Nonnull Iterable<ClassType> value);
+    @NonNull BuildStep withThrownExceptions(@NonNull Iterable<ClassType> value);
 
-    @Nonnull
-    SootMethod build();
+    @NonNull SootMethod build();
   }
 
   public interface BuildStep {
-    @Nonnull
-    SootMethod build();
+    @NonNull SootMethod build();
 
-    @Nonnull
-    BuildStep withPosition(Position position);
+    @NonNull BuildStep withPosition(Position position);
   }
 
   /**
@@ -354,12 +363,12 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
           HasPosition {
 
     @Nullable private BodySource source;
-    @Nonnull private Iterable<MethodModifier> modifiers = Collections.emptyList();
+    @NonNull private Iterable<MethodModifier> modifiers = Collections.emptyList();
     @Nullable private MethodSignature methodSignature;
-    @Nonnull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
-    @Nonnull private Position position = NoPositionInformation.getInstance();
+    @NonNull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
+    @NonNull private Position position = NoPositionInformation.getInstance();
 
-    @Nonnull
+    @NonNull
     public Iterable<MethodModifier> getModifiers() {
       return modifiers;
     }
@@ -374,53 +383,53 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
       return methodSignature;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Position getPosition() {
       return position;
     }
 
-    @Nonnull
+    @NonNull
     public Iterable<ClassType> getThrownExceptions() {
       return thrownExceptions;
     }
 
     @Override
-    @Nonnull
-    public SignatureStep withSource(@Nonnull BodySource source) {
+    @NonNull
+    public SignatureStep withSource(@NonNull BodySource source) {
       this.source = source;
       return this;
     }
 
     @Override
-    @Nonnull
-    public ModifierStep withSignature(@Nonnull MethodSignature methodSignature) {
+    @NonNull
+    public ModifierStep withSignature(@NonNull MethodSignature methodSignature) {
       this.methodSignature = methodSignature;
       return this;
     }
 
     @Override
-    @Nonnull
-    public ThrownExceptionsStep withModifier(@Nonnull Iterable<MethodModifier> modifiers) {
+    @NonNull
+    public ThrownExceptionsStep withModifier(@NonNull Iterable<MethodModifier> modifiers) {
       this.modifiers = modifiers;
       return this;
     }
 
     @Override
-    @Nonnull
-    public BuildStep withThrownExceptions(@Nonnull Iterable<ClassType> thrownExceptions) {
+    @NonNull
+    public BuildStep withThrownExceptions(@NonNull Iterable<ClassType> thrownExceptions) {
       this.thrownExceptions = thrownExceptions;
       return this;
     }
 
-    @Nonnull
-    public BuildStep withPosition(@Nonnull Position position) {
+    @NonNull
+    public BuildStep withPosition(@NonNull Position position) {
       this.position = position;
       return this;
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public SootMethod build() {
       // nonnull is enforced by stepwise builder pattern - at least if s.o. doesn't force a null
       // value as parameter

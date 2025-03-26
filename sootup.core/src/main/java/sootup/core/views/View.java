@@ -24,7 +24,7 @@ package sootup.core.views;
 
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
@@ -43,30 +43,26 @@ import sootup.core.types.ClassType;
 public interface View {
 
   /** Return all classes in the view. */
-  @Nonnull
-  Stream<? extends SootClass> getClasses();
+  @NonNull Stream<? extends SootClass> getClasses();
 
   /**
    * Return a class with given signature.
    *
    * @return A class with given signature.
    */
-  @Nonnull
-  Optional<? extends SootClass> getClass(@Nonnull ClassType signature);
+  @NonNull Optional<? extends SootClass> getClass(@NonNull ClassType signature);
 
-  Optional<? extends SootField> getField(@Nonnull FieldSignature signature);
+  Optional<? extends SootField> getField(@NonNull FieldSignature signature);
 
-  Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature);
+  Optional<? extends SootMethod> getMethod(@NonNull MethodSignature signature);
 
-  @Nonnull
-  TypeHierarchy getTypeHierarchy();
+  @NonNull TypeHierarchy getTypeHierarchy();
 
   /** Returns the {@link IdentifierFactory} for this view. */
-  @Nonnull
-  IdentifierFactory getIdentifierFactory();
+  @NonNull IdentifierFactory getIdentifierFactory();
 
-  @Nonnull
-  default SootClass getClassOrThrow(@Nonnull ClassType classType) {
+  @NonNull
+  default SootClass getClassOrThrow(@NonNull ClassType classType) {
     return getClass(classType)
         .orElseThrow(
             () -> new IllegalArgumentException("Could not find " + classType + " in View."));

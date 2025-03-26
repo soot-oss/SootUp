@@ -23,7 +23,7 @@ package sootup.analysis.intraprocedural;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +97,7 @@ public abstract class UniverseSortedPriorityQueue<E> extends AbstractQueue<E> {
     }
   }
 
-  int getOrdinal(@Nonnull Object o) {
+  int getOrdinal(@NonNull Object o) {
     Integer i = ordinalMap.get(o);
     if (i == null) {
       throw new NoSuchElementException();
@@ -298,7 +298,7 @@ public abstract class UniverseSortedPriorityQueue<E> extends AbstractQueue<E> {
       return queue.get(ordinal);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Iterator<E> iterator() {
       return new Itr() {

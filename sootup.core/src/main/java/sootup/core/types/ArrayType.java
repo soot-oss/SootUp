@@ -23,7 +23,7 @@ package sootup.core.types;
  */
 
 import com.google.common.base.Objects;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -96,7 +96,7 @@ public class ArrayType extends ReferenceType {
   }
 
   @Override
-  public <V extends TypeVisitor> V accept(@Nonnull V v) {
+  public <V extends TypeVisitor> V accept(@NonNull V v) {
     v.caseArrayType();
     return v;
   }

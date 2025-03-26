@@ -1,9 +1,10 @@
 package sootup.java.bytecode.frontend.conversion;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallée-Rai, Linghui Luo, Markus Schmidt and others
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Linghui Luo, Markus Schmidt, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,12 +21,10 @@ package sootup.java.bytecode.frontend.conversion;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,67 +35,51 @@ import sootup.core.inputlocation.FileType;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.core.types.ModuleJavaClassType;
 
 /** A {@link ClassProvider} capable of handling Java bytecode */
 public class AsmJavaClassProvider implements ClassProvider {
 
-  @Nonnull private final View view;
-  private static final @Nonnull Logger logger = LoggerFactory.getLogger(AsmJavaClassProvider.class);
+  @NonNull private final View view;
+  private static final @NonNull Logger logger = LoggerFactory.getLogger(AsmJavaClassProvider.class);
 
-  public AsmJavaClassProvider(@Nonnull View view) {
+  public AsmJavaClassProvider(@NonNull View view) {
     this.view = view;
   }
 
   @Override
   public Optional<SootClassSource> createClassSource(
-      @Nonnull AnalysisInputLocation analysisInputLocation,
-      @Nonnull Path sourcePath,
-      @Nonnull ClassType classType) {
+      @NonNull final AnalysisInputLocation analysisInputLocation,
+      @NonNull final Path sourcePath,
+      @NonNull final ClassType classType) {
 
-    SootClassNode classNode;
-    final String actualClassSignature;
-    try {
-      classNode = new SootClassNode(analysisInputLocation);
-      actualClassSignature = AsmUtil.initAsmClassSource(sourcePath, classNode);
-    } catch (IOException exception) {
-      logger.warn("ioe: " + sourcePath, exception);
-      return Optional.empty();
-    } catch (IllegalArgumentException exception) {
-      logger.warn("iae: " + sourcePath, exception);
-      return Optional.empty();
-    }
-
-    String requestedName = classType.getPackageName().getName();
-    String requestedFQClassName =
-        classType.getPackageName().getName()
-            + (requestedName.isEmpty() ? "" : ".")
-            + classType.getClassName();
-    String actualFQClassName = actualClassSignature.replace('/', '.');
-    if (!actualFQClassName.equals(requestedFQClassName)) {
-      return Optional.empty();
-    }
-
-    JavaClassType klassType = (JavaClassType) classType;
-
-    if (klassType instanceof ModuleJavaClassType
-        && klassType.getClassName().equals(JavaModuleIdentifierFactory.MODULE_INFO_FILE)) {
+    if (classType instanceof ModuleJavaClassType
+        && classType.getClassName().equals(JavaModuleIdentifierFactory.MODULE_INFO_FILE)) {
       logger.warn("Can not create ClassSource from a module info descriptor! path:" + sourcePath);
       return Optional.empty();
-    } else {
-      if ((classNode.access & Opcodes.ACC_ANNOTATION) == Opcodes.ACC_ANNOTATION) {
-        return Optional.of(
-            new AsmAnnotationClassSource(analysisInputLocation, sourcePath, klassType, classNode));
-      }
-
-      return Optional.of(
-          new AsmClassSource(analysisInputLocation, sourcePath, klassType, classNode));
     }
+    final var classNode = new SootClassNode(analysisInputLocation);
+    final var actualClassFQNOpt = AsmUtil.readClassName(sourcePath, classNode);
+    final var requestedClassFQN = classType.getFullyQualifiedName();
+
+    if (actualClassFQNOpt.isEmpty()) {
+      return Optional.empty();
+    }
+
+    if (actualClassFQNOpt.isPresent() && !actualClassFQNOpt.get().equals(requestedClassFQN)) {
+      logger.warn(
+          "Class names do not match. Actual:{}, Requested:{}",
+          actualClassFQNOpt.get(),
+          requestedClassFQN);
+      return Optional.empty();
+    }
+
+    return Optional.of(
+        AsmUtil.createClassSource(analysisInputLocation, sourcePath, classType, classNode));
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public FileType getHandledFileType() {
     return FileType.CLASS;
   }
@@ -111,13 +94,13 @@ public class AsmJavaClassProvider implements ClassProvider {
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public MethodVisitor visitMethod(
         int access,
-        @Nonnull String name,
-        @Nonnull String desc,
-        @Nonnull String signature,
-        @Nonnull String[] exceptions) {
+        @NonNull String name,
+        @NonNull String desc,
+        @NonNull String signature,
+        @NonNull String[] exceptions) {
 
       AsmMethodSource mn =
           new AsmMethodSource(

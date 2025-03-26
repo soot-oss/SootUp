@@ -7,11 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -22,7 +20,6 @@ import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.types.ModuleJavaClassType;
 import sootup.java.core.views.JavaModuleView;
 
-@Tag(TestCategories.JAVA_9_CATEGORY)
 public class JavaModuleViewTest {
 
   private final String testPath = "../shared-test-resources/jigsaw-examples/";

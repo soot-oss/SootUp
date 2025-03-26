@@ -4,7 +4,7 @@ package sootup.java.bytecode.frontend.conversion;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2021 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt, Bastian Haverkamp and others
+ * Copyright (C) 2021 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt, Bastian Haverkamp, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -54,18 +54,17 @@ import sootup.java.core.JavaAnnotationSootClassSource;
 import sootup.java.core.JavaAnnotationSootMethod;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootField;
-import sootup.java.core.types.JavaClassType;
 
 public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
 
-  @Nonnull protected final ClassNode classNode;
+  @NonNull protected final ClassNode classNode;
 
   public AsmAnnotationClassSource(
       AnalysisInputLocation inputLocation,
       Path sourcePath,
-      JavaClassType javaClassType,
-      @Nonnull ClassNode classNode) {
-    super(inputLocation, javaClassType, sourcePath);
+      ClassType classType,
+      @NonNull ClassNode classNode) {
+    super(inputLocation, classType, sourcePath);
     this.classNode = classNode;
   }
 
@@ -90,7 +89,7 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
         .collect(Collectors.toSet());
   }
 
-  @Nonnull
+  @NonNull
   public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveMethods(classNode.methods, identifierFactory, classSignature)
@@ -169,23 +168,23 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Collection<? extends SootField> resolveFields() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveFields(classNode.fields, identifierFactory, classSignature);
   }
 
-  @Nonnull
+  @NonNull
   public EnumSet<ClassModifier> resolveModifiers() {
     return Modifiers.getClassModifiers(classNode.access);
   }
 
-  @Nonnull
+  @NonNull
   public Set<? extends ClassType> resolveInterfaces() {
     return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
   }
 
-  @Nonnull
+  @NonNull
   public Optional<? extends ClassType> resolveSuperclass() {
     if (classNode.superName == null) {
       return Optional.empty();
@@ -193,7 +192,7 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
     return Optional.ofNullable(AsmUtil.toJimpleClassType(classNode.superName));
   }
 
-  @Nonnull
+  @NonNull
   public Optional<? extends ClassType> resolveOuterClass() {
     if (classNode.outerClass == null) {
       return Optional.empty();
@@ -201,7 +200,7 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
     return Optional.of(AsmUtil.toJimpleClassType(classNode.outerClass));
   }
 
-  @Nonnull
+  @NonNull
   public Position resolvePosition() {
     // TODO [ms]: implement line numbers for bytecode
     return NoPositionInformation.getInstance();

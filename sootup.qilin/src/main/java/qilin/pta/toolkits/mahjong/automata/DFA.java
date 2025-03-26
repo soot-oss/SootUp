@@ -22,7 +22,9 @@ public class DFA {
     this.q0 = q0;
   }
 
-  /** @return Set of states. Does not contains dead state. */
+  /**
+   * @return Set of states. Does not contains dead state.
+   */
   public Set<DFAState> getStates() {
     if (states == null) {
       computeStates();
@@ -30,7 +32,9 @@ public class DFA {
     return states;
   }
 
-  /** @return Set of all states including dead state. */
+  /**
+   * @return Set of all states including dead state.
+   */
   public Set<DFAState> getAllStates() {
     if (allStates == null) {
       computeStates();

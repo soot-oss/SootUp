@@ -24,7 +24,7 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 
 import java.util.*;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.analysis.intraprocedural.ForwardFlowAnalysis;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
@@ -73,7 +73,7 @@ public class ReachingDefs {
       execute();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     protected Set<VariableDefinition> newInitialFlow() {
       Set<VariableDefinition> initialValues = new HashSet<>();
@@ -87,9 +87,9 @@ public class ReachingDefs {
 
     @Override
     protected void merge(
-        @Nonnull Set<VariableDefinition> in1,
-        @Nonnull Set<VariableDefinition> in2,
-        @Nonnull Set<VariableDefinition> out) {
+        @NonNull Set<VariableDefinition> in1,
+        @NonNull Set<VariableDefinition> in2,
+        @NonNull Set<VariableDefinition> out) {
       out.clear();
       out.addAll(in1);
       out.addAll(in2);
@@ -97,14 +97,14 @@ public class ReachingDefs {
 
     @Override
     protected void copy(
-        @Nonnull Set<VariableDefinition> source, @Nonnull Set<VariableDefinition> dest) {
+        @NonNull Set<VariableDefinition> source, @NonNull Set<VariableDefinition> dest) {
       dest.clear();
       dest.addAll(source);
     }
 
     @Override
     protected void flowThrough(
-        @Nonnull Set<VariableDefinition> in, Stmt d, @Nonnull Set<VariableDefinition> out) {
+        @NonNull Set<VariableDefinition> in, Stmt d, @NonNull Set<VariableDefinition> out) {
       out.clear();
       out.addAll(in);
       kill(d).forEach(out::remove);

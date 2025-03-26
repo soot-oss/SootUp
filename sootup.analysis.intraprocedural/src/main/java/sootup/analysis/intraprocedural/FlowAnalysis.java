@@ -23,7 +23,7 @@ package sootup.analysis.intraprocedural;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.JGotoStmt;
@@ -91,9 +91,9 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
      * @return
      */
     static <F> List<Entry<F>> newUniverse(
-        @Nonnull StmtGraph<? extends BasicBlock<?>> g,
-        @Nonnull AnalysisDirection direction,
-        @Nonnull F entryFlow) {
+        @NonNull StmtGraph<? extends BasicBlock<?>> g,
+        @NonNull AnalysisDirection direction,
+        @NonNull F entryFlow) {
       final int size = g.getNodes().size();
       final int n = size;
 
@@ -207,7 +207,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
       }
     }
 
-    @Nonnull
+    @NonNull
     private static <D, F> Entry<F>[] visitEntry(
         Map<Stmt, Entry<F>> visited, Entry<F> v, List<Stmt> out) {
       final int n = out.size();
@@ -223,9 +223,9 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
       return v.out = a;
     }
 
-    @Nonnull
+    @NonNull
     private static <F> Entry<F> getEntryOf(
-        @Nonnull Map<Stmt, Entry<F>> visited, @Nonnull Stmt stmt, @Nonnull Entry<F> v) {
+        @NonNull Map<Stmt, Entry<F>> visited, @NonNull Stmt stmt, @NonNull Entry<F> v) {
       // either we reach a new node or a merge node, the latter one is rare
       // so put and restore should be better that a lookup
 
@@ -250,7 +250,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
       return oldEntry;
     }
 
-    private static <D, F> void sccPop(@Nonnull Deque<Entry<F>> s, @Nonnull Entry<F> v) {
+    private static <D, F> void sccPop(@NonNull Deque<Entry<F>> s, @NonNull Entry<F> v) {
       int min = v.number;
       for (Entry<F> e : v.out) {
         assert e.number > Integer.MIN_VALUE;
@@ -287,46 +287,42 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
   enum AnalysisDirection {
     BACKWARD {
       @Override
-      @Nonnull
-      List<Stmt> getEntries(StmtGraph<? extends BasicBlock<?>> g) {
+      @NonNull List<Stmt> getEntries(StmtGraph<? extends BasicBlock<?>> g) {
         return g.getTails();
       }
 
       @Override
-      @Nonnull
-      List<Stmt> getOut(StmtGraph<? extends BasicBlock<?>> g, Stmt s) {
+      @NonNull List<Stmt> getOut(StmtGraph<? extends BasicBlock<?>> g, Stmt s) {
         return g.predecessors(s);
       }
     },
     FORWARD {
       @Override
-      @Nonnull
-      List<Stmt> getEntries(StmtGraph<? extends BasicBlock<?>> g) {
+      @NonNull List<Stmt> getEntries(StmtGraph<? extends BasicBlock<?>> g) {
         return (List<Stmt>) g.getEntrypoints();
       }
 
       @Override
-      @Nonnull
-      List<Stmt> getOut(StmtGraph<? extends BasicBlock<?>> g, Stmt s) {
+      @NonNull List<Stmt> getOut(StmtGraph<? extends BasicBlock<?>> g, Stmt s) {
         return g.successors(s);
       }
     };
 
-    @Nonnull
+    @NonNull
     abstract List<Stmt> getEntries(StmtGraph<? extends BasicBlock<?>> g);
 
-    @Nonnull
+    @NonNull
     abstract List<Stmt> getOut(StmtGraph<? extends BasicBlock<?>> g, Stmt s);
   }
 
   /** Maps graph nodes to OUT sets. */
-  @Nonnull protected final Map<Stmt, A> stmtToAfterFlow;
+  @NonNull protected final Map<Stmt, A> stmtToAfterFlow;
 
   /** Filtered: Maps graph nodes to OUT sets. */
-  @Nonnull protected Map<Stmt, A> filterStmtToAfterFlow;
+  @NonNull protected Map<Stmt, A> filterStmtToAfterFlow;
 
   /** Constructs a flow analysis on the given <code>DirectedGraph</code>. */
-  public FlowAnalysis(@Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
+  public FlowAnalysis(@NonNull StmtGraph<? extends BasicBlock<?>> graph) {
     super(graph);
     this.stmtToAfterFlow = new IdentityHashMap<>(graph.getNodes().size() * 2 + 1);
     this.filterStmtToAfterFlow = Collections.emptyMap();
@@ -346,23 +342,23 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
    * @param d the current node
    * @param out the returned flow
    */
-  protected abstract void flowThrough(@Nonnull A in, Stmt d, @Nonnull A out);
+  protected abstract void flowThrough(@NonNull A in, Stmt d, @NonNull A out);
 
   /** Accessor function returning value of OUT set for s. */
-  public A getFlowAfter(@Nonnull Stmt s) {
+  public A getFlowAfter(@NonNull Stmt s) {
     A a = stmtToAfterFlow.get(s);
     return a == null ? newInitialFlow() : a;
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public A getFlowBefore(@Nonnull Stmt s) {
+  public A getFlowBefore(@NonNull Stmt s) {
     A a = stmtToBeforeFlow.get(s);
     return a == null ? newInitialFlow() : a;
   }
 
   private void initFlow(
-      @Nonnull Iterable<Entry<A>> universe, @Nonnull Map<Stmt, A> in, @Nonnull Map<Stmt, A> out) {
+      @NonNull Iterable<Entry<A>> universe, @NonNull Map<Stmt, A> in, @NonNull Map<Stmt, A> out) {
 
     // If a node has only a single in-flow, the in-flow is always equal
     // to the out-flow if its predecessor, so we use the same object.
@@ -410,7 +406,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
    * @param stmt the node to check
    * @return <code>false</code>
    */
-  protected boolean omissible(@Nonnull Stmt stmt) {
+  protected boolean omissible(@NonNull Stmt stmt) {
     return false;
   }
 
@@ -421,15 +417,15 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
    * @param mergeNode
    * @return Flow.OUT
    */
-  protected Flow getFlow(@Nonnull Stmt from, @Nonnull Stmt mergeNode) {
+  protected Flow getFlow(@NonNull Stmt from, @NonNull Stmt mergeNode) {
     return Flow.OUT;
   }
 
-  private A getFlow(@Nonnull Entry<A> o, @Nonnull Entry<A> e) {
+  private A getFlow(@NonNull Entry<A> o, @NonNull Entry<A> e) {
     return (o.inFlow == o.outFlow) ? o.outFlow : getFlow(o.data, e.data).getFlow(o);
   }
 
-  private void meetFlows(@Nonnull Entry<A> entry) {
+  private void meetFlows(@NonNull Entry<A> entry) {
     assert entry.in.length >= 1;
 
     if (entry.in.length > 1) {
@@ -446,7 +442,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
     }
   }
 
-  final int execute(@Nonnull Map<Stmt, A> inFlow, @Nonnull Map<Stmt, A> outFlow) {
+  final int execute(@NonNull Map<Stmt, A> inFlow, @NonNull Map<Stmt, A> outFlow) {
 
     final boolean isForward = isForward();
     final List<Entry<A>> universe =

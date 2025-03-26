@@ -22,16 +22,13 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public interface ShiftableConstant<A extends ShiftableConstant<A>>
     extends NumericConstant<A>, LogicalConstant<A> {
-  @Nonnull
-  A shiftLeft(@Nonnull IntConstant c);
+  @NonNull A shiftLeft(@NonNull IntConstant c);
 
-  @Nonnull
-  A shiftRight(@Nonnull IntConstant c);
+  @NonNull A shiftRight(@NonNull IntConstant c);
 
-  @Nonnull
-  A unsignedShiftRight(@Nonnull IntConstant c);
+  @NonNull A unsignedShiftRight(@NonNull IntConstant c);
 }

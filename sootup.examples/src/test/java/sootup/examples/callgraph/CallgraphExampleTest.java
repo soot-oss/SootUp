@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphAlgorithm;
@@ -14,11 +13,10 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class CallgraphExampleTest {
 
   @Test
@@ -28,9 +26,7 @@ public class CallgraphExampleTest {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation("src/test/resources/Callgraph/binary"));
-    inputLocations.add(
-        new JavaClassPathAnalysisInputLocation(
-            System.getProperty("java.home") + "/lib/rt.jar")); // add rt.jar
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation()); // add rt.jar
 
     JavaView view = new JavaView(inputLocations);
 
@@ -38,10 +34,10 @@ public class CallgraphExampleTest {
     ClassType classTypeA = view.getIdentifierFactory().getClassType("A");
     ClassType classTypeB = view.getIdentifierFactory().getClassType("B");
     MethodSignature entryMethodSignature =
-        JavaIdentifierFactory.getInstance()
+        view.getIdentifierFactory()
             .getMethodSignature(
                 classTypeB,
-                JavaIdentifierFactory.getInstance()
+                view.getIdentifierFactory()
                     .getMethodSubSignature(
                         "calc", VoidType.getInstance(), Collections.singletonList(classTypeA)));
 

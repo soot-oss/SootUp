@@ -1,4 +1,5 @@
 package sootup.core.frontend;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -26,7 +27,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.Position;
@@ -57,9 +58,9 @@ public abstract class SootClassSource extends AbstractClassSource {
    * @param classSignature the signature that has been used to resolve this class
    */
   public SootClassSource(
-      @Nonnull AnalysisInputLocation srcNamespace,
-      @Nonnull ClassType classSignature,
-      @Nonnull Path sourcePath) {
+      @NonNull AnalysisInputLocation srcNamespace,
+      @NonNull ClassType classSignature,
+      @NonNull Path sourcePath) {
     super(srcNamespace, classSignature, sourcePath);
   }
 
@@ -68,29 +69,29 @@ public abstract class SootClassSource extends AbstractClassSource {
   }
 
   /** Reads from the source to retrieve its methods. This may be an expensive operation. */
-  @Nonnull
+  @NonNull
   public abstract Collection<? extends SootMethod> resolveMethods() throws ResolveException;
 
   /** Reads from the source to retrieve its fields. This may be an expensive operation. */
-  @Nonnull
+  @NonNull
   public abstract Collection<? extends SootField> resolveFields() throws ResolveException;
 
   /** Reads from the source to retrieve its modifiers. This may be an expensive operation. */
-  @Nonnull
+  @NonNull
   public abstract Set<ClassModifier> resolveModifiers();
 
   /**
    * Reads from the source to retrieve its directly implemented interfaces. This may be an expensive
    * operation.
    */
-  @Nonnull
+  @NonNull
   public abstract Set<? extends ClassType> resolveInterfaces();
 
   /**
    * Reads from the source to retrieve its superclass, if present. This may be an expensive
    * operation.
    */
-  @Nonnull
+  @NonNull
   public abstract Optional<? extends ClassType> resolveSuperclass();
 
   /**
@@ -99,13 +100,13 @@ public abstract class SootClassSource extends AbstractClassSource {
    *
    * @return
    */
-  @Nonnull
+  @NonNull
   public abstract Optional<? extends ClassType> resolveOuterClass();
 
   /**
    * Reads from the source to retrieve its position in the source code. This may be an expensive
    * operation.
    */
-  @Nonnull
+  @NonNull
   public abstract Position resolvePosition();
 }

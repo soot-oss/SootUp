@@ -22,36 +22,36 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that computes a % b. */
 public final class JRemExpr extends AbstractFloatBinopExpr {
 
-  public JRemExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JRemExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public String getSymbol() {
     return " % ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseRemExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JRemExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JRemExpr withOp1(@NonNull Immediate op1) {
     return new JRemExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JRemExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JRemExpr withOp2(@NonNull Immediate op2) {
     return new JRemExpr(getOp1(), op2);
   }
 }

@@ -24,7 +24,7 @@ package sootup.core.util.printer;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.constant.Constant;
@@ -119,7 +119,7 @@ public abstract class AbstractStmtPrinter extends StmtPrinter {
   }
 
   @Override
-  public void typeSignature(@Nonnull Type type) {
+  public void typeSignature(@NonNull Type type) {
     handleIndent();
     if (useImports) {
       if (type instanceof ClassType) {

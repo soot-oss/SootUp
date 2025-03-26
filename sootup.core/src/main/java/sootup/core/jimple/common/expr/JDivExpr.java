@@ -22,36 +22,36 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that divides a number by another. */
 public final class JDivExpr extends AbstractFloatBinopExpr {
 
-  public JDivExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JDivExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public final String getSymbol() {
+  public String getSymbol() {
     return " / ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseDivExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JDivExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JDivExpr withOp1(@NonNull Immediate op1) {
     return new JDivExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JDivExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JDivExpr withOp2(@NonNull Immediate op2) {
     return new JDivExpr(getOp1(), op2);
   }
 }

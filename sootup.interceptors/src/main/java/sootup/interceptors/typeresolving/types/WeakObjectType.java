@@ -1,4 +1,5 @@
 package sootup.interceptors.typeresolving.types;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -20,7 +21,7 @@ package sootup.interceptors.typeresolving.types;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 import sootup.core.signatures.PackageName;
 import sootup.java.core.types.JavaClassType;
@@ -48,7 +49,7 @@ public class WeakObjectType extends JavaClassType {
   }
 
   @Override
-  public <V extends TypeVisitor> V accept(@Nonnull V v) {
+  public <V extends TypeVisitor> V accept(@NonNull V v) {
     throw new UnsupportedOperationException();
   }
 }

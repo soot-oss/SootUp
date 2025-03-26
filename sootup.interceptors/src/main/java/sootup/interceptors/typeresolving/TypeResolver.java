@@ -25,7 +25,7 @@ package sootup.interceptors.typeresolving;
 import com.google.common.collect.Lists;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.IdentifierFactory;
@@ -50,7 +50,9 @@ import sootup.interceptors.typeresolving.types.BottomType;
 import sootup.interceptors.typeresolving.types.TopType;
 import sootup.java.core.views.JavaView;
 
-/** @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08 */
+/**
+ * @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08
+ */
 public class TypeResolver {
   private final ArrayList<AbstractDefinitionStmt> assignments = new ArrayList<>();
   private final Map<Local, BitSet> depends = new HashMap<>();
@@ -60,12 +62,12 @@ public class TypeResolver {
 
   private static final Logger logger = LoggerFactory.getLogger(TypeResolver.class);
 
-  public TypeResolver(@Nonnull JavaView view) {
+  public TypeResolver(@NonNull JavaView view) {
     this.view = view;
     objectType = view.getIdentifierFactory().getClassType("java.lang.Object");
   }
 
-  public boolean resolve(@Nonnull Body.BodyBuilder builder) {
+  public boolean resolve(Body.@NonNull BodyBuilder builder) {
     init(builder);
     BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
     AugEvalFunction evalFunction = new AugEvalFunction(view);
@@ -161,16 +163,16 @@ public class TypeResolver {
     }
   }
 
-  private void addDependency(@Nonnull Local local, int id) {
+  private void addDependency(@NonNull Local local, int id) {
     BitSet bitSet = depends.computeIfAbsent(local, k -> new BitSet());
     bitSet.set(id);
   }
 
   private Collection<Typing> applyAssignmentConstraint(
-      @Nonnull StmtGraph<?> graph,
-      @Nonnull Typing typing,
-      @Nonnull AugEvalFunction evalFunction,
-      @Nonnull BytecodeHierarchy hierarchy) {
+      @NonNull StmtGraph<?> graph,
+      @NonNull Typing typing,
+      @NonNull AugEvalFunction evalFunction,
+      @NonNull BytecodeHierarchy hierarchy) {
 
     final int numOfAssignments = assignments.size();
     if (numOfAssignments == 0) {
@@ -289,7 +291,7 @@ public class TypeResolver {
   }
 
   /** This method is used to remove the more general typings. */
-  private void minimize(@Nonnull List<Typing> typings, @Nonnull BytecodeHierarchy hierarchy) {
+  private void minimize(@NonNull List<Typing> typings, @NonNull BytecodeHierarchy hierarchy) {
     Set<Type> objectLikeTypes = new HashSet<>();
     // FIXME: [ms] handle java modules as well!
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
@@ -317,7 +319,7 @@ public class TypeResolver {
     }
   }
 
-  private Map<Local, Set<Type>> getLocal2Types(@Nonnull List<Typing> typings) {
+  private Map<Local, Set<Type>> getLocal2Types(@NonNull List<Typing> typings) {
     Map<Local, Set<Type>> map = new HashMap<>();
     for (Typing typing : typings) {
       for (Local local : typing.getLocals()) {
@@ -329,17 +331,17 @@ public class TypeResolver {
   }
 
   private CastCounter getMinCastsCounter(
-      @Nonnull Body.BodyBuilder builder,
-      @Nonnull Collection<Typing> typings,
-      @Nonnull AugEvalFunction evalFunction,
-      @Nonnull BytecodeHierarchy hierarchy) {
+      Body.@NonNull BodyBuilder builder,
+      @NonNull Collection<Typing> typings,
+      @NonNull AugEvalFunction evalFunction,
+      @NonNull BytecodeHierarchy hierarchy) {
     return typings.stream()
         .map(typing -> new CastCounter(builder, evalFunction, hierarchy, typing))
         .min(Comparator.comparingInt(CastCounter::getCastCount))
         .get();
   }
 
-  private Type convertUnderspecifiedType(@Nonnull Type type) {
+  private Type convertUnderspecifiedType(@NonNull Type type) {
     if (type instanceof ArrayType) {
       Type elementType = convertUnderspecifiedType(((ArrayType) type).getElementType());
       return Type.createArrayType(elementType, 1);
@@ -365,7 +367,7 @@ public class TypeResolver {
     }
   }
 
-  private Type convertType(@Nonnull Type type) {
+  private Type convertType(@NonNull Type type) {
     if (type instanceof AugmentIntegerTypes.Integer1Type) {
       return PrimitiveType.getBoolean();
     } else if (type instanceof AugmentIntegerTypes.Integer127Type) {
