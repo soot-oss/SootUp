@@ -1,0 +1,25 @@
+name: PR Documentation Preview
+
+permissions:
+  pages: write
+  deployments: write
+  contents: write
+  pull-requests: write
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  paths:
+    - 'mkdocs.yml'
+    - 'sootup.examples/**'
+    - 'docs/**'
+    - '.github/workflows/deploy-pr-preview.yml'
+
+concurrency: pages
+
+jobs:
+  deploy-preview:
+    uses: secure-software-engineering/actions/documentation-workflows/pages-pr-preview.yml@roshansamantaray-patch-1
+    with:
+      enable_comment: true
+      title_prefix: "SootUp PR Preview: "
