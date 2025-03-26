@@ -474,7 +474,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   public void removeExceptionalEdgeWithoutSurrounding(
-      @Nonnull Stmt node, @Nonnull ClassType exceptionType) {
+      @NonNull Stmt node, @NonNull ClassType exceptionType) {
     Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(node);
     if (blockPair == null) {
       throw new IllegalArgumentException(
@@ -650,9 +650,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
    *
    * @return the splitted block with the splitStmt as head
    */
-  @Nonnull
+  @NonNull
   public MutableBasicBlock splitAndExcludeStmtFromBlock(
-      @Nonnull Stmt splitStmt, MutableBasicBlock block) {
+      @NonNull Stmt splitStmt, MutableBasicBlock block) {
 
     if (block.getStmtCount() <= 1) {
       // just a single stmt in the block -> e.g. it is already the block we want
@@ -746,7 +746,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   /** Merges block into Predecessor/Successor if possible. */
-  public void tryMergeIntoSurroundingBlocks(@Nonnull MutableBasicBlock block) {
+  public void tryMergeIntoSurroundingBlocks(@NonNull MutableBasicBlock block) {
     // merge with predecessor if possible
     block = tryMergeWithPredecessorBlock(block);
     // and/or merge with successorBlock
