@@ -103,10 +103,9 @@ public class TrapTightener implements BodyInterceptor {
    * @param graph a given StmtGraph
    * @return a set of monitored stmts
    */
-
   public Set<Stmt> monitoredStmts(@NonNull StmtGraph<?> graph) {
     Map<Stmt, Set<Value>> monitored = new HashMap<>();
-    
+
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
     Set<Stmt> visitedStmts = new HashSet<>();
