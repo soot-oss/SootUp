@@ -23,7 +23,7 @@ package sootup.interceptors;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.*;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -104,7 +104,7 @@ public class TrapTightener implements BodyInterceptor {
    * @return a set of monitored stmts
    */
 
-  public Set<Stmt> monitoredStmts(@Nonnull StmtGraph<?> graph) {
+  public Set<Stmt> monitoredStmts(@NonNull StmtGraph<?> graph) {
     Map<Stmt, Set<Value>> monitored = new HashMap<>();
     
     Deque<Stmt> queue = new ArrayDeque<>();
@@ -151,7 +151,7 @@ public class TrapTightener implements BodyInterceptor {
    * @return true, if the given stmt can throw the exception stored in the given stmtGraph
    */
   private boolean canThrowExceptionInGraph(
-      @Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull ClassType exceptionType) {
+      @NonNull StmtGraph<?> graph, @NonNull Stmt stmt, @NonNull ClassType exceptionType) {
     Set<ClassType> inferredExceptions = exceptionAnalyzer.mightThrow(stmt, graph).getExceptions();
     boolean isThrowable =
         inferredExceptions.stream()
