@@ -4,7 +4,7 @@ package sootup.interceptors;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 John Jorgensen, Zun Wang
+ * Copyright (C) 1997-2025 John Jorgensen, Zun Wang
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -24,17 +24,17 @@ package sootup.interceptors;
 
 import java.util.*;
 import javax.annotation.Nonnull;
-import sootup.core.graph.BasicBlock;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.graph.*;
+import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.java.core.exceptions.StmtExceptionAnalyzer;
 
 /**
  * @author Zun Wang
@@ -43,128 +43,126 @@ import sootup.core.views.View;
  *     exception caught by the Trap and ends just after the last Unit which might throw an exception
  *     caught by the Trap. In the case where none of the Units protected by a Trap can throw the
  *     exception it catches, the Trap's protected area is left completely empty, which will likely
- *     cause the UnreachableCodeEliminator to remove the Trap(handler?) completely (if the
- *     traphandler does not cover another range). The TrapTightener is used to reduce the risk of
- *     unverifiable code which can result from the use of ExceptionalUnitGraphs from which
- *     unrealizable exceptional control flow edges have been removed.
+ *     cause the UnreachableCodeEliminator to remove the Trap completely. The TrapTightener is used
+ *     to reduce the risk of unverifiable code which can result from the use of
+ *     ExceptionalUnitGraphs from which unrealizable exceptional control flow edges have been
+ *     removed.
  */
 public class TrapTightener implements BodyInterceptor {
+
+  TypeHierarchy hierarchy;
+  StmtExceptionAnalyzer exceptionAnalyzer;
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
-    // FIXME: [ms] ThrowAnalysis is missing and in result mightThrow (...) makes no sense. Issue
-    // #486
-    if (true) {
-      throw new UnsupportedOperationException("TrapTightener is not yet implemented.");
-    }
+    this.hierarchy = view.getTypeHierarchy();
+    this.exceptionAnalyzer = new StmtExceptionAnalyzer(hierarchy);
+    MutableBlockStmtGraph blockGraph = (MutableBlockStmtGraph) builder.getStmtGraph();
 
-    MutableStmtGraph graph = builder.getStmtGraph();
-    List<Stmt> stmtsInPrintOrder = builder.getStmts();
+    Set<Stmt> monitoredStmts = monitoredStmts(blockGraph);
 
-    // collect stmts
-    Set<Stmt> monitoredStmts = monitoredStmts(graph);
     Map<Stmt, Collection<ClassType>> toRemove = new HashMap<>();
-    for (BasicBlock<?> block : graph.getBlocks()) {
-      for (Stmt stmt : block.getStmts()) {
-
-        Collection<ClassType> removeForStmt = new ArrayList<>();
-        for (Map.Entry<? extends ClassType, ?> exception :
-            block.getExceptionalSuccessors().entrySet()) {
-
-          // FIXME: check for java9 modules signature, too!
-          boolean isCatchAll =
-              exception.getKey().getFullyQualifiedName().equals("java.lang.Throwable");
-
-          if (
-          /* mightThrow(graph, stmt, trap) || */ (isCatchAll && monitoredStmts.contains(stmt))) {
-            // if it might throw or if trap is a catch-all block and the current stmt has an active
-            // monitor, we need to keep the block
-            removeForStmt.add(exception.getKey());
-            break;
+    for (Stmt stmt : builder.getStmts()) {
+      Map<ClassType, Stmt> exceptionalMap = blockGraph.exceptionalSuccessors(stmt);
+      for (ClassType exceptionType : exceptionalMap.keySet()) {
+        if (!isCatchAll(exceptionType) || !monitoredStmts.contains(stmt)) {
+          if (!canThrowExceptionInGraph(blockGraph, stmt, exceptionType)) {
+            if (!toRemove.containsKey(stmt)) {
+              toRemove.put(stmt, new HashSet<>());
+            }
+            toRemove.get(stmt).add(exceptionType);
           }
-        }
-        if (!removeForStmt.isEmpty()) {
-          toRemove.put(stmt, removeForStmt);
         }
       }
     }
 
     // remove exceptions for stmts
+    Set<MutableBasicBlock> mutatedBlocks = new HashSet<>();
     for (Map.Entry<Stmt, Collection<ClassType>> entry : toRemove.entrySet()) {
+      Stmt stmt = entry.getKey();
+      MutableBasicBlock block = (MutableBasicBlock) blockGraph.getBlockOf(stmt);
+      blockGraph.splitAndExcludeStmtFromBlock(stmt, block);
       for (ClassType classType : entry.getValue()) {
-        graph.removeExceptionalEdge(entry.getKey(), classType);
+        MutableBasicBlock blockWithUnthrowableException =
+            (MutableBasicBlock) blockGraph.getBlockOf(entry.getKey());
+        blockWithUnthrowableException.removeExceptionalSuccessorBlock(classType);
+        mutatedBlocks.add(blockWithUnthrowableException);
       }
     }
+    mutatedBlocks.stream().forEach(block -> blockGraph.tryMergeIntoSurroundingBlocks(block));
 
-    // FIXME: check if there are traphandlers that have no predecessor
-
+    // delete the unused traps
+    UnreachableCodeEliminator codeEliminator = new UnreachableCodeEliminator();
+    codeEliminator.interceptBody(builder, view);
   }
 
   /**
-   * Find out all monitored stmts from a given exceptional graph, collect them into a list
+   * Find out all monitored stmts from a given StmtGraph, collect them into a list
    *
-   * @param graph a given exceptionalStmtGraph
-   * @return a list of monitored stmts
+   * @param graph a given StmtGraph
+   * @return a set of monitored stmts
    */
-  private Set<Stmt> monitoredStmts(@Nonnull StmtGraph<?> graph) {
-    Set<Stmt> monitoredStmts = new HashSet<>();
+  public Set<Stmt> monitoredStmts(@Nonnull StmtGraph<?> graph) {
+    Map<Stmt, Set<Value>> monitored = new HashMap<>();
+
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
     Set<Stmt> visitedStmts = new HashSet<>();
+    Value exitValue = null;
 
     while (!queue.isEmpty()) {
-      Stmt stmt = queue.removeFirst();
-      visitedStmts.add(stmt);
-      // enter a monitored block
-      if (stmt instanceof JEnterMonitorStmt) {
-        Deque<Stmt> monitoredQueue = new ArrayDeque<>();
-        monitoredQueue.add(stmt);
-        while (!monitoredQueue.isEmpty()) {
-          Stmt monitoredStmt = monitoredQueue.removeFirst();
-          monitoredStmts.add(monitoredStmt);
-          visitedStmts.add(monitoredStmt);
-          if (monitoredStmt instanceof JExitMonitorStmt) {
-            queue.addAll(graph.getAllSuccessors(monitoredStmt));
-          } else {
-            for (Stmt succ : graph.getAllSuccessors(monitoredStmt)) {
-              if (!visitedStmts.contains(succ)) {
-                monitoredQueue.add(succ);
+      boolean hasChanged = false;
+      Stmt currStmt = queue.removeFirst();
+      if (currStmt instanceof JEnterMonitorStmt) {
+        Value monitoredValue = ((JEnterMonitorStmt) currStmt).getOp();
+        if (!monitored.containsKey(currStmt)) {
+          monitored.put(currStmt, new HashSet<>());
+        }
+        hasChanged = monitored.get(currStmt).add(monitoredValue);
+      } else if (currStmt instanceof JExitMonitorStmt) {
+        exitValue = ((JExitMonitorStmt) currStmt).getOp();
+      }
+      for (Stmt pred : graph.predecessors(currStmt)) {
+        if (monitored.containsKey(pred)) {
+          for (Value value : monitored.get(pred)) {
+            if (value != exitValue) {
+              if (!monitored.containsKey(currStmt)) {
+                monitored.put(currStmt, new HashSet<>());
               }
+              hasChanged = monitored.get(currStmt).add(value);
             }
           }
         }
-      } else {
-        queue.addAll(graph.getAllSuccessors(stmt));
+      }
+      if (visitedStmts.add(currStmt) || hasChanged) {
+        queue.addAll(graph.getAllSuccessors(currStmt));
       }
     }
-    return monitoredStmts;
+    return monitored.keySet();
   }
 
   /**
-   * Check whether trap-destinations of the given stmt contain the given trap.
+   * Check whether the given stmt could throw the exception interpreted by a given stmtGraph
    *
-   * @param graph is a exceptional StmtGraph
+   * @param graph is a StmtGraph
    * @param stmt is a stmt in the given graph
-   * @param trap is a given trap
-   * @return If trap-destinations of the given stmt contain the given trap, return true, otherwise
-   *     return false
+   * @return true, if the given stmt can throw the exception stored in the given stmtGraph
    */
+  private boolean canThrowExceptionInGraph(
+      @Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull ClassType exceptionType) {
+    Set<ClassType> inferredExceptions = exceptionAnalyzer.mightThrow(stmt, graph).getExceptions();
+    boolean isThrowable =
+        inferredExceptions.stream()
+            .anyMatch(
+                inferredException ->
+                    (inferredException.equals(exceptionType)
+                        || hierarchy.isSubtype(inferredException, exceptionType)));
+    return isThrowable;
+  }
 
-  // FIXME: [ms] makes no sense in that Implementation! StmtGraph is not the legacy
-  // ExceptionalUnitGraph
-  private boolean mightThrow(@Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull Trap trap) {
-    final BasicBlock<?> block = graph.getBlockOf(stmt);
-
-    for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> dest :
-        block.getExceptionalSuccessors().entrySet()) {
-      final ClassType exceptionType = dest.getKey();
-      final BasicBlock<?> traphandlerBlock = dest.getValue();
-      if (exceptionType.equals(trap.getExceptionType())
-          && traphandlerBlock.getHead().equals(trap.getHandlerStmt())) {
-        return true;
-      }
-    }
-    return false;
+  private boolean isCatchAll(ClassType exceptionType) {
+    return exceptionType.getFullyQualifiedName().equals("java.lang.Throwable")
+        || exceptionType.getFullyQualifiedName().equals("java.base/java.lang.Throwable");
   }
 }
