@@ -30,10 +30,10 @@ public class TrapTightenerTest {
           + File.separator
           + "shared-test-resources/interceptors/";
   final Path path = Paths.get(location + "TrapTightenerExamples.class");
-  List<BodyInterceptor> interceptors = Arrays.asList();
   List<BodyInterceptor> interceptorsWithTT = Arrays.asList(new TrapTightener());
   PathBasedAnalysisInputLocation inputLocation =
-      new ClassFileBasedAnalysisInputLocation(path, "", SourceType.Application, interceptors);
+      new ClassFileBasedAnalysisInputLocation(
+          path, "", SourceType.Application, Collections.emptyList());
   PathBasedAnalysisInputLocation inputLocationWithTT =
       new ClassFileBasedAnalysisInputLocation(path, "", SourceType.Application, interceptorsWithTT);
   AnalysisInputLocation javaInputLocation = new DefaultRuntimeAnalysisInputLocation();
@@ -82,6 +82,7 @@ public class TrapTightenerTest {
   public void testExample2() {
     MethodSignature methodSignature =
         factory.getMethodSignature(clazzType, "example2", "void", Collections.emptyList());
+    System.out.println(view.getMethod(methodSignature).get().getBody());
     Body bodyAfterTT = viewTT.getMethod(methodSignature).get().getBody();
     String exceptedBody =
         "{\n"
@@ -233,5 +234,17 @@ public class TrapTightenerTest {
             + " catch java.lang.NullPointerException from label2 to label3 with label4;\n"
             + "}\n";
     assertEquals(exceptedBody, bodyAfterTT.toString());
+  }
+
+  @Test
+  public void test() {
+    MethodSignature methodSignature1 =
+        factory.getMethodSignature(clazzType, "example6", "void", Collections.emptyList());
+    MethodSignature methodSignature2 =
+        factory.getMethodSignature(clazzType, "example7", "void", Collections.emptyList());
+    Body body1 = view.getMethod(methodSignature1).get().getBody();
+    System.out.println(body1);
+    Body body2 = view.getMethod(methodSignature2).get().getBody();
+    System.out.println(body2);
   }
 }
