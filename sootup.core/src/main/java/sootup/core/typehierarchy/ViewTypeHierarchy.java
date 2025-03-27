@@ -536,6 +536,21 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     }
 
     @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof Map.Entry)) {
+        return false;
+      }
+      Map.Entry<?, ?> other = (Map.Entry) obj;
+      return (Objects.equals(this.getKey(), other.getKey())
+              && Objects.equals(this.getValue(), other.getValue()))
+          || (Objects.equals(this.getKey(), other.getValue())
+              && Objects.equals(this.getValue(), other.getKey()));
+    }
+
+    @Override
     public int hashCode() {
       return Objects.hash(getKey()) + Objects.hash(getValue());
     }
