@@ -235,16 +235,4 @@ public class TrapTightenerTest {
             + "}\n";
     assertEquals(exceptedBody, bodyAfterTT.toString());
   }
-
-  @Test
-  public void test() {
-    MethodSignature methodSignature1 =
-        factory.getMethodSignature(clazzType, "example6", "void", Collections.emptyList());
-    MethodSignature methodSignature2 =
-        factory.getMethodSignature(clazzType, "example7", "void", Collections.emptyList());
-    Body body1 = view.getMethod(methodSignature1).get().getBody();
-    System.out.println(body1);
-    Body body2 = view.getMethod(methodSignature2).get().getBody();
-    System.out.println(body2);
-  }
 }
