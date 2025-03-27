@@ -124,8 +124,8 @@ Like the classes, methods also have an identifier which we call `MethodSignature
             view
                 .getIdentifierFactory()
                 .getMethodSignature(
-                    "main", // method name
                     classType,
+                    "main", // method name
                     "void", // return type
                     Collections.singletonList("java.lang.String[]")); // args
         ```
