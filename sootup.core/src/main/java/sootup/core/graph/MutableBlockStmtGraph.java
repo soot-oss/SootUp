@@ -473,17 +473,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     tryMergeIntoSurroundingBlocks(block);
   }
 
-  public void removeExceptionalEdgeWithoutSurrounding(
-      @NonNull Stmt node, @NonNull ClassType exceptionType) {
-    Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(node);
-    if (blockPair == null) {
-      throw new IllegalArgumentException(
-          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
-    }
-    MutableBasicBlock block = blockPair.getRight();
-    block.removeExceptionalSuccessorBlock(exceptionType);
-  }
-
   @Override
   public void clearExceptionalEdges(@NonNull Stmt node) {
     Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(node);
