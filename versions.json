@@ -32,14 +32,6 @@
     }
   },
   {
-    "version": "fix_docs_preview",
-    "title": "PR Preview fix_docs",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "fix_changeLogLevel_preview",
     "title": "PR Preview fix_changeLogLevel",
     "aliases": [],
