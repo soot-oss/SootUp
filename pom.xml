@@ -406,7 +406,7 @@
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
-            <version>9.7.1</version>
+            <version>9.8</version>
         </dependency>
         <dependency>
             <groupId>org.smali</groupId>
