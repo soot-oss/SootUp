@@ -33,7 +33,6 @@ jobs:
       if: github.actor == 'dependabot[bot]'
       steps:
         - name: Auto-approve Dependabot PRs
-          run: gh pr review --approve "$PR_URL"
-          env:
-            PR_URL: ${{github.event.pull_request.html_url}}
-            GH_TOKEN: ${{secrets.SSE_BOT_PAT}}
+          uses: sse/actions/auto-approve-dependabot@main
+          with:
+            token: ${{ secrets.SSE_BOT_PAT }}
