@@ -28,11 +28,11 @@ jobs:
           PR_URL: ${{github.event.pull_request.html_url}}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-    auto-approve:
-      runs-on: ubuntu-latest
-      if: github.actor == 'dependabot[bot]'
-      steps:
-        - name: Auto-approve Dependabot PRs
-          uses: sse/actions/auto-approve-dependabot@main
-          with:
-            token: ${{ secrets.SSE_BOT_PAT }}
+  auto-approve:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]' && secrets.SSE_BOT_PAT != ''
+    steps:
+      - name: Auto-approve Dependabot PRs
+        uses: sse/actions/auto-approve-dependabot@develop
+        with:
+          token: ${{ secrets.SSE_BOT_PAT }}
