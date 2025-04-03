@@ -9,11 +9,11 @@ permissions:
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
-  paths:
-    - 'mkdocs.yml'
-    - 'sootup.examples/**'
-    - 'docs/**'
-    - '.github/workflows/deploy-pr-preview.yml'
+    paths:
+      - 'mkdocs.yml'
+      - 'sootup.examples/**'
+      - 'docs/**'
+      - '.github/workflows/deploy-pr-preview.yml'
 
 concurrency: pages
 
