@@ -30,6 +30,7 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
+import sootup.core.jimple.javabytecode.stmt.*;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
@@ -72,4 +73,88 @@ public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
   boolean isInvokableStmt();
 
   InvokableStmt asInvokableStmt();
+
+  boolean isJAssignStmt();
+
+  boolean isJBreakpointStmt();
+
+  boolean isJEnterMonitorStmt();
+
+  boolean isJExitMonitorStmt();
+
+  boolean isJGotoStmt();
+
+  boolean isJIdentityStmt();
+
+  boolean isJIfStmt();
+
+  boolean isJInvokeStmt();
+
+  boolean isJNopStmt();
+
+  boolean isJRetStmt();
+
+  boolean isJReturnStmt();
+
+  boolean isJReturnVoidStmt();
+
+  boolean isJSwitchStmt();
+
+  boolean isJThrowStmt();
+
+  JAssignStmt asJAssignStmt();
+
+  JBreakpointStmt asJBreakpointStmt();
+
+  JEnterMonitorStmt asJEnterMonitorStmt();
+
+  JExitMonitorStmt asJExitMonitorStmt();
+
+  JGotoStmt asJGotoStmt();
+
+  JIdentityStmt asJIdentityStmt();
+
+  JIfStmt asJIfStmt();
+
+  JInvokeStmt asJInvokeStmt();
+
+  JNopStmt asJNopStmt();
+
+  JRetStmt asJRetStmt();
+
+  JReturnStmt asJReturnStmt();
+
+  JReturnVoidStmt asJReturnVoidStmt();
+
+  JSwitchStmt asJSwitchStmt();
+
+  JThrowStmt asJThrowStmt();
+
+  Optional<JAssignStmt> toJAssignStmt();
+
+  Optional<JBreakpointStmt> toJBreakpointStmt();
+
+  Optional<JEnterMonitorStmt> toJEnterMonitorStmt();
+
+  Optional<JExitMonitorStmt> toJExitMonitorStmt();
+
+  Optional<JGotoStmt> toJGotoStmt();
+
+  Optional<JIdentityStmt> toJIdentityStmt();
+
+  Optional<JIfStmt> toJIfStmt();
+
+  Optional<JInvokeStmt> toJInvokeStmt();
+
+  Optional<JNopStmt> toJNopStmt();
+
+  Optional<JRetStmt> toJRetStmt();
+
+  Optional<JReturnStmt> toJReturnStmt();
+
+  Optional<JReturnVoidStmt> toJReturnVoidStmt();
+
+  Optional<JSwitchStmt> toJSwitchStmt();
+
+  Optional<JThrowStmt> toJThrowStmt();
 }
