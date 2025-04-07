@@ -31,8 +31,6 @@ jobs:
   auto-approve:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]' && secrets.SSE_BOT_PAT != ''
-    steps:
-      - name: Auto-approve Dependabot PRs
-        uses: secure-software-engineering/actions/.github/workflows/auto-approve-dependabot.yml@roshansamantaray-patch-1
-        with:
-          token: ${{ secrets.SSE_BOT_PAT }}
+    uses: secure-software-engineering/actions/.github/workflows/auto-approve-dependabot.yml@roshansamantaray-patch-1
+    with:
+      token: ${{ secrets.SSE_BOT_PAT }}
