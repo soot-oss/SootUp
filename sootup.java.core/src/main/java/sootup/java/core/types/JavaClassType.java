@@ -23,11 +23,12 @@ package sootup.java.core.types;
  */
 
 import com.google.common.base.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
+import sootup.core.types.*;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
 public class JavaClassType extends ClassType {
@@ -119,5 +120,185 @@ public class JavaClassType extends ClassType {
   @NonNull
   public PackageName getPackageName() {
     return packageName;
+  }
+
+  @Override
+  protected boolean isClassType() {
+    return true;
+  }
+
+  @Override
+  protected boolean isArrayType() {
+    return false;
+  }
+
+  @Override
+  protected boolean isNullType() {
+    return false;
+  }
+
+  @Override
+  protected boolean isJavaClassType() {
+    return true;
+  }
+
+  @Override
+  protected boolean isModuleJavaClassType() {
+    return false;
+  }
+
+  @Override
+  protected boolean isWeakObjectType() {
+    return false;
+  }
+
+  @Override
+  protected ClassType asClassType() {
+    return this;
+  }
+
+  @Override
+  protected ArrayType asArrayType() {
+    return null;
+  }
+
+  @Override
+  protected NullType asNullType() {
+    return null;
+  }
+
+  @Override
+  protected Type asJavaClassType() {
+    return this;
+  }
+
+  @Override
+  protected Type asModuleJavaClassType() {
+    return null;
+  }
+
+  @Override
+  protected Type asWeakObjectType() {
+    return null;
+  }
+
+  @Override
+  protected Optional<ClassType> toClassType() {
+    return Optional.of(this);
+  }
+
+  @Override
+  protected Optional<ArrayType> toArrayType() {
+    return Optional.empty();
+  }
+
+  @Override
+  protected Optional<NullType> toNullType() {
+    return Optional.empty();
+  }
+
+  @Override
+  protected Optional<Type> toJavaClassType() {
+    return Optional.of(this);
+  }
+
+  @Override
+  protected Optional<Type> toModuleJavaClassType() {
+    return Optional.empty();
+  }
+
+  @Override
+  protected Optional<Type> toWeakObjectType() {
+    return Optional.empty();
+  }
+
+  @Override
+  protected boolean isPrimitiveType() {
+    return false;
+  }
+
+  @Override
+  protected boolean isReferenceType() {
+    return true;
+  }
+
+  @Override
+  protected boolean isBottomType() {
+    return false;
+  }
+
+  @Override
+  protected boolean isTopType() {
+    return false;
+  }
+
+  @Override
+  protected boolean isUnknownType() {
+    return false;
+  }
+
+  @Override
+  protected boolean isVoidType() {
+    return false;
+  }
+
+  @Override
+  protected PrimitiveType asPrimitiveType() {
+    return null;
+  }
+
+  @Override
+  protected ReferenceType asReferenceType() {
+    return this;
+  }
+
+  @Override
+  protected Type asBottomType() {
+    return null;
+  }
+
+  @Override
+  protected Type asTopType() {
+    return null;
+  }
+
+  @Override
+  protected UnknownType asUnknownType() {
+    return null;
+  }
+
+  @Override
+  protected VoidType asVoidType() {
+    return null;
+  }
+
+  @Override
+  protected Optional<PrimitiveType> toPrimitiveType() {
+    return Optional.empty();
+  }
+
+  @Override
+  protected Optional<ReferenceType> toReferenceType() {
+    return Optional.of(this);
+  }
+
+  @Override
+  protected Optional<Type> toBottomType() {
+    return Optional.empty();
+  }
+
+  @Override
+  protected Optional<Type> toTopType() {
+    return Optional.empty();
+  }
+
+  @Override
+  protected Optional<UnknownType> toUnknownType() {
+    return Optional.empty();
+  }
+
+  @Override
+  protected Optional<VoidType> toVoidType() {
+    return Optional.empty();
   }
 }

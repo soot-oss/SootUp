@@ -22,9 +22,10 @@ package sootup.interceptors.typeresolving.types;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
-import sootup.core.types.Type;
+import sootup.core.types.*;
 
 /**
  * This type is an imaginary/intermediate type which is used to calculate Type Inference
@@ -50,5 +51,95 @@ public class BottomType extends Type {
   @Override
   public String toString() {
     return "BottomType";
+  }
+
+  @Override
+  protected boolean isPrimitiveType() {
+    return false;
+  }
+
+  @Override
+  protected boolean isReferenceType() {
+    return false;
+  }
+
+  @Override
+  protected boolean isBottomType() {
+    return true;
+  }
+
+  @Override
+  protected boolean isTopType() {
+    return false;
+  }
+
+  @Override
+  protected boolean isUnknownType() {
+    return false;
+  }
+
+  @Override
+  protected boolean isVoidType() {
+    return false;
+  }
+
+  @Override
+  protected PrimitiveType asPrimitiveType() {
+    return null;
+  }
+
+  @Override
+  protected ReferenceType asReferenceType() {
+    return null;
+  }
+
+  @Override
+  protected Type asBottomType() {
+    return this;
+  }
+
+  @Override
+  protected Type asTopType() {
+    return null;
+  }
+
+  @Override
+  protected UnknownType asUnknownType() {
+    return null;
+  }
+
+  @Override
+  protected VoidType asVoidType() {
+    return null;
+  }
+
+  @Override
+  protected Optional<PrimitiveType> toPrimitiveType() {
+    return Optional.empty();
+  }
+
+  @Override
+  protected Optional<ReferenceType> toReferenceType() {
+    return Optional.empty();
+  }
+
+  @Override
+  protected Optional<Type> toBottomType() {
+    return Optional.of(this);
+  }
+
+  @Override
+  protected Optional<Type> toTopType() {
+    return Optional.empty();
+  }
+
+  @Override
+  protected Optional<UnknownType> toUnknownType() {
+    return Optional.empty();
+  }
+
+  @Override
+  protected Optional<VoidType> toVoidType() {
+    return Optional.empty();
   }
 }

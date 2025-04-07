@@ -22,5 +22,25 @@ package sootup.core.types;
  * #L%
  */
 
+import java.util.Optional;
+
 /** Represents the signature of a Java type, e.g., a class, an array type, or null. */
-public abstract class ReferenceType extends Type {}
+public abstract class ReferenceType extends Type {
+  protected abstract boolean isClassType();
+
+  protected abstract boolean isArrayType();
+
+  protected abstract boolean isNullType();
+
+  protected abstract ClassType asClassType();
+
+  protected abstract ArrayType asArrayType();
+
+  protected abstract NullType asNullType();
+
+  protected abstract Optional<ClassType> toClassType();
+
+  protected abstract Optional<ArrayType> toArrayType();
+
+  protected abstract Optional<NullType> toNullType();
+}
