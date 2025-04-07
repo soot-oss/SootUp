@@ -33,6 +33,6 @@ jobs:
     if: github.actor == 'dependabot[bot]' && secrets.SSE_BOT_PAT != ''
     steps:
       - name: Auto-approve Dependabot PRs
-        uses: secure-software-engineering/actions/auto-approve-dependabot@develop
+        uses: secure-software-engineering/actions/.github/workflows/auto-approve-dependabot/auto-approve-dependabot.yml@develop
         with:
           token: ${{ secrets.SSE_BOT_PAT }}
