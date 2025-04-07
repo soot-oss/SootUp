@@ -29,7 +29,6 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
-import sootup.core.jimple.javabytecode.stmt.*;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -65,108 +64,8 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
   }
 
   @Override
-  public boolean isJAssignStmt() {
-    return false;
-  }
-
-  @Override
-  public boolean isJBreakpointStmt() {
-    return false;
-  }
-
-  @Override
-  public boolean isJEnterMonitorStmt() {
-    return false;
-  }
-
-  @Override
-  public boolean isJExitMonitorStmt() {
-    return false;
-  }
-
-  @Override
-  public boolean isJGotoStmt() {
-    return false;
-  }
-
-  @Override
-  public boolean isJIdentityStmt() {
-    return false;
-  }
-
-  @Override
-  public boolean isJIfStmt() {
-    return false;
-  }
-
-  @Override
   public boolean isJInvokeStmt() {
     return true;
-  }
-
-  @Override
-  public boolean isJNopStmt() {
-    return false;
-  }
-
-  @Override
-  public boolean isJRetStmt() {
-    return false;
-  }
-
-  @Override
-  public boolean isJReturnStmt() {
-    return false;
-  }
-
-  @Override
-  public boolean isJReturnVoidStmt() {
-    return false;
-  }
-
-  @Override
-  public boolean isJSwitchStmt() {
-    return false;
-  }
-
-  @Override
-  public boolean isJThrowStmt() {
-    return false;
-  }
-
-  @Override
-  public JAssignStmt asJAssignStmt() {
-    return null;
-  }
-
-  @Override
-  public JBreakpointStmt asJBreakpointStmt() {
-    return null;
-  }
-
-  @Override
-  public JEnterMonitorStmt asJEnterMonitorStmt() {
-    return null;
-  }
-
-  @Override
-  public JExitMonitorStmt asJExitMonitorStmt() {
-    return null;
-  }
-
-  @Override
-  public JGotoStmt asJGotoStmt() {
-    return null;
-  }
-
-  @Override
-  public JIdentityStmt asJIdentityStmt() {
-    return null;
-  }
-
-  @Override
-  public JIfStmt asJIfStmt() {
-    return null;
   }
 
   @Override
@@ -175,103 +74,8 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
   }
 
   @Override
-  public JNopStmt asJNopStmt() {
-    return null;
-  }
-
-  @Override
-  public JRetStmt asJRetStmt() {
-    return null;
-  }
-
-  @Override
-  public JReturnStmt asJReturnStmt() {
-    return null;
-  }
-
-  @Override
-  public JReturnVoidStmt asJReturnVoidStmt() {
-    return null;
-  }
-
-  @Override
-  public JSwitchStmt asJSwitchStmt() {
-    return null;
-  }
-
-  @Override
-  public JThrowStmt asJThrowStmt() {
-    return null;
-  }
-
-  @Override
-  public Optional<JAssignStmt> toJAssignStmt() {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<JBreakpointStmt> toJBreakpointStmt() {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<JEnterMonitorStmt> toJEnterMonitorStmt() {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<JExitMonitorStmt> toJExitMonitorStmt() {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<JGotoStmt> toJGotoStmt() {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<JIdentityStmt> toJIdentityStmt() {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<JIfStmt> toJIfStmt() {
-    return Optional.empty();
-  }
-
-  @Override
   public Optional<JInvokeStmt> toJInvokeStmt() {
     return Optional.of(this);
-  }
-
-  @Override
-  public Optional<JNopStmt> toJNopStmt() {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<JRetStmt> toJRetStmt() {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<JReturnStmt> toJReturnStmt() {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<JReturnVoidStmt> toJReturnVoidStmt() {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<JSwitchStmt> toJSwitchStmt() {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<JThrowStmt> toJThrowStmt() {
-    return Optional.empty();
   }
 
   @Override

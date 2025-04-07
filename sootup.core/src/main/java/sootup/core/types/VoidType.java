@@ -51,88 +51,13 @@ public class VoidType extends Type {
   }
 
   @Override
-  protected boolean isPrimitiveType() {
-    return false;
-  }
-
-  @Override
-  protected boolean isReferenceType() {
-    return false;
-  }
-
-  @Override
-  protected boolean isBottomType() {
-    return false;
-  }
-
-  @Override
-  protected boolean isTopType() {
-    return false;
-  }
-
-  @Override
-  protected boolean isUnknownType() {
-    return false;
-  }
-
-  @Override
   protected boolean isVoidType() {
     return true;
   }
 
   @Override
-  protected PrimitiveType asPrimitiveType() {
-    return null;
-  }
-
-  @Override
-  protected ReferenceType asReferenceType() {
-    return null;
-  }
-
-  @Override
-  protected Type asBottomType() {
-    return null;
-  }
-
-  @Override
-  protected Type asTopType() {
-    return null;
-  }
-
-  @Override
-  protected UnknownType asUnknownType() {
-    return null;
-  }
-
-  @Override
   protected VoidType asVoidType() {
     return this;
-  }
-
-  @Override
-  protected Optional<PrimitiveType> toPrimitiveType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected Optional<ReferenceType> toReferenceType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected Optional<Type> toBottomType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected Optional<Type> toTopType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected Optional<UnknownType> toUnknownType() {
-    return Optional.empty();
   }
 
   @Override

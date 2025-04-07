@@ -26,21 +26,39 @@ import java.util.Optional;
 
 /** Represents the signature of a Java type, e.g., a class, an array type, or null. */
 public abstract class ReferenceType extends Type {
-  protected abstract boolean isClassType();
+  protected boolean isClassType() {
+    return false;
+  }
 
-  protected abstract boolean isArrayType();
+  protected boolean isArrayType() {
+    return false;
+  }
 
-  protected abstract boolean isNullType();
+  protected boolean isNullType() {
+    return false;
+  }
 
-  protected abstract ClassType asClassType();
+  protected ClassType asClassType() {
+    return null;
+  }
 
-  protected abstract ArrayType asArrayType();
+  protected ArrayType asArrayType() {
+    return null;
+  }
 
-  protected abstract NullType asNullType();
+  protected NullType asNullType() {
+    return null;
+  }
 
-  protected abstract Optional<ClassType> toClassType();
+  protected Optional<ClassType> toClassType() {
+    return Optional.empty();
+  }
 
-  protected abstract Optional<ArrayType> toArrayType();
+  protected Optional<ArrayType> toArrayType() {
+    return Optional.empty();
+  }
 
-  protected abstract Optional<NullType> toNullType();
+  protected Optional<NullType> toNullType() {
+    return Optional.empty();
+  }
 }

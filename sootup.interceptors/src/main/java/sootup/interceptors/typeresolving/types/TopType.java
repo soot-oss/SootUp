@@ -63,48 +63,8 @@ public class TopType extends Type {
   }
 
   @Override
-  protected boolean isPrimitiveType() {
-    return false;
-  }
-
-  @Override
-  protected boolean isReferenceType() {
-    return false;
-  }
-
-  @Override
-  protected boolean isBottomType() {
-    return false;
-  }
-
-  @Override
   protected boolean isTopType() {
     return true;
-  }
-
-  @Override
-  protected boolean isUnknownType() {
-    return false;
-  }
-
-  @Override
-  protected boolean isVoidType() {
-    return false;
-  }
-
-  @Override
-  protected PrimitiveType asPrimitiveType() {
-    return null;
-  }
-
-  @Override
-  protected ReferenceType asReferenceType() {
-    return null;
-  }
-
-  @Override
-  protected Type asBottomType() {
-    return null;
   }
 
   @Override
@@ -113,42 +73,7 @@ public class TopType extends Type {
   }
 
   @Override
-  protected UnknownType asUnknownType() {
-    return null;
-  }
-
-  @Override
-  protected VoidType asVoidType() {
-    return null;
-  }
-
-  @Override
-  protected Optional<PrimitiveType> toPrimitiveType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected Optional<ReferenceType> toReferenceType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected Optional<Type> toBottomType() {
-    return Optional.empty();
-  }
-
-  @Override
   protected Optional<Type> toTopType() {
     return Optional.of(this);
-  }
-
-  @Override
-  protected Optional<UnknownType> toUnknownType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected Optional<VoidType> toVoidType() {
-    return Optional.empty();
   }
 }

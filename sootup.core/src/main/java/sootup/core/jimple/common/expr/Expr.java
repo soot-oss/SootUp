@@ -29,201 +29,400 @@ import sootup.core.jimple.visitor.ExprVisitor;
 
 /*   An Expression is a Language construct that returns a Value  */
 public interface Expr extends Value, Acceptor<ExprVisitor> {
-  boolean isJAddExpr();
 
-  boolean isJAndExpr();
+  default boolean isJAddExpr() {
+    return false;
+  }
 
-  boolean isJCastExpr();
+  default boolean isJAndExpr() {
+    return false;
+  }
 
-  boolean isJCmpExpr();
+  default boolean isJCastExpr() {
+    return false;
+  }
 
-  boolean isJCmpgExpr();
+  default boolean isJCmpExpr() {
+    return false;
+  }
 
-  boolean isJCmplExpr();
+  default boolean isJCmpgExpr() {
+    return false;
+  }
 
-  boolean isJDivExpr();
+  default boolean isJCmplExpr() {
+    return false;
+  }
 
-  boolean isJDynamicInvokeExpr();
+  default boolean isJDivExpr() {
+    return false;
+  }
 
-  boolean isJEqExpr();
+  default boolean isJDynamicInvokeExpr() {
+    return false;
+  }
 
-  boolean isJGeExpr();
+  default boolean isJEqExpr() {
+    return false;
+  }
 
-  boolean isJGtExpr();
+  default boolean isJGeExpr() {
+    return false;
+  }
 
-  boolean isJInstanceOfExpr();
+  default boolean isJGtExpr() {
+    return false;
+  }
 
-  boolean isJInterfaceInvokeExpr();
+  default boolean isJInstanceOfExpr() {
+    return false;
+  }
 
-  boolean isJLeExpr();
+  default boolean isJInterfaceInvokeExpr() {
+    return false;
+  }
 
-  boolean isJLengthExpr();
+  default boolean isJLeExpr() {
+    return false;
+  }
 
-  boolean isJLtExpr();
+  default boolean isJLengthExpr() {
+    return false;
+  }
 
-  boolean isJMulExpr();
+  default boolean isJLtExpr() {
+    return false;
+  }
 
-  boolean isJNeExpr();
+  default boolean isJMulExpr() {
+    return false;
+  }
 
-  boolean isJNegExpr();
+  default boolean isJNeExpr() {
+    return false;
+  }
 
-  boolean isJNewArrayExpr();
+  default boolean isJNegExpr() {
+    return false;
+  }
 
-  boolean isJNewExpr();
+  default boolean isJNewArrayExpr() {
+    return false;
+  }
 
-  boolean isJNewMultiArrayExpr();
+  default boolean isJNewExpr() {
+    return false;
+  }
 
-  boolean isJOrExpr();
+  default boolean isJNewMultiArrayExpr() {
+    return false;
+  }
 
-  boolean isJPhiExpr();
+  default boolean isJOrExpr() {
+    return false;
+  }
 
-  boolean isJRemExpr();
+  default boolean isJPhiExpr() {
+    return false;
+  }
 
-  boolean isJShlExpr();
+  default boolean isJRemExpr() {
+    return false;
+  }
 
-  boolean isJShrExpr();
+  default boolean isJShlExpr() {
+    return false;
+  }
 
-  boolean isJSpecialInvokeExpr();
+  default boolean isJShrExpr() {
+    return false;
+  }
 
-  boolean isJStaticInvokeExpr();
+  default boolean isJSpecialInvokeExpr() {
+    return false;
+  }
 
-  boolean isJSubExpr();
+  default boolean isJStaticInvokeExpr() {
+    return false;
+  }
 
-  boolean isJUshrExpr();
+  default boolean isJSubExpr() {
+    return false;
+  }
 
-  boolean isJVirtualInvokeExpr();
+  default boolean isJUshrExpr() {
+    return false;
+  }
 
-  boolean isJXorExpr();
+  default boolean isJVirtualInvokeExpr() {
+    return false;
+  }
 
-  JAddExpr asJAddExpr();
+  default boolean isJXorExpr() {
+    return false;
+  }
 
-  JAndExpr asJAndExpr();
+  default JAddExpr asJAddExpr() {
+    return null;
+  }
 
-  JCastExpr asJCastExpr();
+  default JAndExpr asJAndExpr() {
+    return null;
+  }
 
-  JCmpExpr asJCmpExpr();
+  default JCastExpr asJCastExpr() {
+    return null;
+  }
 
-  JCmpgExpr asJCmpgExpr();
+  default JCmpExpr asJCmpExpr() {
+    return null;
+  }
 
-  JCmplExpr asJCmplExpr();
+  default JCmpgExpr asJCmpgExpr() {
+    return null;
+  }
 
-  JDivExpr asJDivExpr();
+  default JCmplExpr asJCmplExpr() {
+    return null;
+  }
 
-  JDynamicInvokeExpr asJDynamicInvokeExpr();
+  default JDivExpr asJDivExpr() {
+    return null;
+  }
 
-  JEqExpr asJEqExpr();
+  default JDynamicInvokeExpr asJDynamicInvokeExpr() {
+    return null;
+  }
 
-  JGeExpr asJGeExpr();
+  default JEqExpr asJEqExpr() {
+    return null;
+  }
 
-  JGtExpr asJGtExpr();
+  default JGeExpr asJGeExpr() {
+    return null;
+  }
 
-  JInstanceOfExpr asJInstanceOfExpr();
+  default JGtExpr asJGtExpr() {
+    return null;
+  }
 
-  JInterfaceInvokeExpr asJInterfaceInvokeExpr();
+  default JInstanceOfExpr asJInstanceOfExpr() {
+    return null;
+  }
 
-  JLeExpr asJLeExpr();
+  default JInterfaceInvokeExpr asJInterfaceInvokeExpr() {
+    return null;
+  }
 
-  JLengthExpr asJLengthExpr();
+  default JLeExpr asJLeExpr() {
+    return null;
+  }
 
-  JLtExpr asJLtExpr();
+  default JLengthExpr asJLengthExpr() {
+    return null;
+  }
 
-  JMulExpr asJMulExpr();
+  default JLtExpr asJLtExpr() {
+    return null;
+  }
 
-  JNeExpr asJNeExpr();
+  default JMulExpr asJMulExpr() {
+    return null;
+  }
 
-  JNegExpr asJNegExpr();
+  default JNeExpr asJNeExpr() {
+    return null;
+  }
 
-  JNewArrayExpr asJNewArrayExpr();
+  default JNegExpr asJNegExpr() {
+    return null;
+  }
 
-  JNewExpr asJNewExpr();
+  default JNewArrayExpr asJNewArrayExpr() {
+    return null;
+  }
 
-  JNewMultiArrayExpr asJNewMultiArrayExpr();
+  default JNewExpr asJNewExpr() {
+    return null;
+  }
 
-  JOrExpr asJOrExpr();
+  default JNewMultiArrayExpr asJNewMultiArrayExpr() {
+    return null;
+  }
 
-  JPhiExpr asJPhiExpr();
+  default JOrExpr asJOrExpr() {
+    return null;
+  }
 
-  JRemExpr asJRemExpr();
+  default JPhiExpr asJPhiExpr() {
+    return null;
+  }
 
-  JShlExpr asJShlExpr();
+  default JRemExpr asJRemExpr() {
+    return null;
+  }
 
-  JShrExpr asJShrExpr();
+  default JShlExpr asJShlExpr() {
+    return null;
+  }
 
-  JSpecialInvokeExpr asJSpecialInvokeExpr();
+  default JShrExpr asJShrExpr() {
+    return null;
+  }
 
-  JStaticInvokeExpr asJStaticInvokeExpr();
+  default JSpecialInvokeExpr asJSpecialInvokeExpr() {
+    return null;
+  }
 
-  JSubExpr asJSubExpr();
+  default JStaticInvokeExpr asJStaticInvokeExpr() {
+    return null;
+  }
 
-  JUshrExpr asJUshrExpr();
+  default JSubExpr asJSubExpr() {
+    return null;
+  }
 
-  JVirtualInvokeExpr asJVirtualInvokeExpr();
+  default JUshrExpr asJUshrExpr() {
+    return null;
+  }
 
-  JXorExpr asJXorExpr();
+  default JVirtualInvokeExpr asJVirtualInvokeExpr() {
+    return null;
+  }
 
-  Optional<JAddExpr> toJAddExpr();
+  default JXorExpr asJXorExpr() {
+    return null;
+  }
 
-  Optional<JAndExpr> toJAndExpr();
+  default Optional<JAddExpr> toJAddExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JCastExpr> toJCastExpr();
+  default Optional<JAndExpr> toJAndExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JCmpExpr> toJCmpExpr();
+  default Optional<JCastExpr> toJCastExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JCmpgExpr> toJCmpgExpr();
+  default Optional<JCmpExpr> toJCmpExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JCmplExpr> toJCmplExpr();
+  default Optional<JCmpgExpr> toJCmpgExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JDivExpr> toJDivExpr();
+  default Optional<JCmplExpr> toJCmplExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JDynamicInvokeExpr> toJDynamicInvokeExpr();
+  default Optional<JDivExpr> toJDivExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JEqExpr> toJEqExpr();
+  default Optional<JDynamicInvokeExpr> toJDynamicInvokeExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JGeExpr> toJGeExpr();
+  default Optional<JEqExpr> toJEqExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JGtExpr> toJGtExpr();
+  default Optional<JGeExpr> toJGeExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JInstanceOfExpr> toJInstanceOfExpr();
+  default Optional<JGtExpr> toJGtExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JInterfaceInvokeExpr> toJInterfaceInvokeExpr();
+  default Optional<JInstanceOfExpr> toJInstanceOfExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JLeExpr> toJLeExpr();
+  default Optional<JInterfaceInvokeExpr> toJInterfaceInvokeExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JLengthExpr> toJLengthExpr();
+  default Optional<JLeExpr> toJLeExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JLtExpr> toJLtExpr();
+  default Optional<JLengthExpr> toJLengthExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JMulExpr> toJMulExpr();
+  default Optional<JLtExpr> toJLtExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JNeExpr> toJNeExpr();
+  default Optional<JMulExpr> toJMulExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JNegExpr> toJNegExpr();
+  default Optional<JNeExpr> toJNeExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JNewArrayExpr> toJNewArrayExpr();
+  default Optional<JNegExpr> toJNegExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JNewExpr> toJNewExpr();
+  default Optional<JNewArrayExpr> toJNewArrayExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JNewMultiArrayExpr> toJNewMultiArrayExpr();
+  default Optional<JNewExpr> toJNewExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JOrExpr> toJOrExpr();
+  default Optional<JNewMultiArrayExpr> toJNewMultiArrayExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JPhiExpr> toJPhiExpr();
+  default Optional<JOrExpr> toJOrExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JRemExpr> toJRemExpr();
+  default Optional<JPhiExpr> toJPhiExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JShlExpr> toJShlExpr();
+  default Optional<JRemExpr> toJRemExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JShrExpr> toJShrExpr();
+  default Optional<JShlExpr> toJShlExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JSpecialInvokeExpr> toJSpecialInvokeExpr();
+  default Optional<JShrExpr> toJShrExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JStaticInvokeExpr> toJStaticInvokeExpr();
+  default Optional<JSpecialInvokeExpr> toJSpecialInvokeExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JSubExpr> toJSubExpr();
+  default Optional<JStaticInvokeExpr> toJStaticInvokeExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JUshrExpr> toJUshrExpr();
+  default Optional<JSubExpr> toJSubExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JVirtualInvokeExpr> toJVirtualInvokeExpr();
+  default Optional<JUshrExpr> toJUshrExpr() {
+    return Optional.empty();
+  }
 
-  Optional<JXorExpr> toJXorExpr();
+  default Optional<JVirtualInvokeExpr> toJVirtualInvokeExpr() {
+    return Optional.empty();
+  }
+
+  default Optional<JXorExpr> toJXorExpr() {
+    return Optional.empty();
+  }
 }

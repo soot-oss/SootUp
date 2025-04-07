@@ -47,23 +47,41 @@ public abstract class ClassType extends ReferenceType implements Signature {
     return v;
   }
 
-  protected abstract boolean isJavaClassType();
+  protected boolean isJavaClassType() {
+    return false;
+  }
 
-  protected abstract boolean isModuleJavaClassType();
+  protected boolean isModuleJavaClassType() {
+    return false;
+  }
 
-  protected abstract boolean isWeakObjectType();
+  protected boolean isWeakObjectType() {
+    return false;
+  }
 
-  protected abstract Type asJavaClassType();
+  protected Type asJavaClassType() {
+    return null;
+  }
 
-  protected abstract Type asModuleJavaClassType();
+  protected Type asModuleJavaClassType() {
+    return null;
+  }
 
-  protected abstract Type asWeakObjectType();
+  protected Type asWeakObjectType() {
+    return null;
+  }
 
-  protected abstract Optional<Type> toJavaClassType();
+  protected Optional<Type> toJavaClassType() {
+    return Optional.empty();
+  }
 
-  protected abstract Optional<Type> toModuleJavaClassType();
+  protected Optional<Type> toModuleJavaClassType() {
+    return Optional.empty();
+  }
 
-  protected abstract Optional<Type> toWeakObjectType();
+  protected Optional<Type> toWeakObjectType() {
+    return Optional.empty();
+  }
 
   @Override
   public boolean equals(Object o) {

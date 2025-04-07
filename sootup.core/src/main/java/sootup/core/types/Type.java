@@ -85,39 +85,75 @@ public abstract class Type implements Acceptor<TypeVisitor> {
     return 0;
   }
 
-  protected abstract boolean isPrimitiveType();
+  protected boolean isPrimitiveType() {
+    return false;
+  }
 
-  protected abstract boolean isReferenceType();
+  protected boolean isReferenceType() {
+    return false;
+  }
 
-  protected abstract boolean isBottomType();
+  protected boolean isBottomType() {
+    return false;
+  }
 
-  protected abstract boolean isTopType();
+  protected boolean isTopType() {
+    return false;
+  }
 
-  protected abstract boolean isUnknownType();
+  protected boolean isUnknownType() {
+    return false;
+  }
 
-  protected abstract boolean isVoidType();
+  protected boolean isVoidType() {
+    return false;
+  }
 
-  protected abstract PrimitiveType asPrimitiveType();
+  protected PrimitiveType asPrimitiveType() {
+    return null;
+  }
 
-  protected abstract ReferenceType asReferenceType();
+  protected ReferenceType asReferenceType() {
+    return null;
+  }
 
-  protected abstract Type asBottomType();
+  protected Type asBottomType() {
+    return null;
+  }
 
-  protected abstract Type asTopType();
+  protected Type asTopType() {
+    return null;
+  }
 
-  protected abstract UnknownType asUnknownType();
+  protected UnknownType asUnknownType() {
+    return null;
+  }
 
-  protected abstract VoidType asVoidType();
+  protected VoidType asVoidType() {
+    return null;
+  }
 
-  protected abstract Optional<PrimitiveType> toPrimitiveType();
+  protected Optional<PrimitiveType> toPrimitiveType() {
+    return Optional.empty();
+  }
 
-  protected abstract Optional<ReferenceType> toReferenceType();
+  protected Optional<ReferenceType> toReferenceType() {
+    return Optional.empty();
+  }
 
-  protected abstract Optional<Type> toBottomType();
+  protected Optional<Type> toBottomType() {
+    return Optional.empty();
+  }
 
-  protected abstract Optional<Type> toTopType();
+  protected Optional<Type> toTopType() {
+    return Optional.empty();
+  }
 
-  protected abstract Optional<UnknownType> toUnknownType();
+  protected Optional<UnknownType> toUnknownType() {
+    return Optional.empty();
+  }
 
-  protected abstract Optional<VoidType> toVoidType();
+  protected Optional<VoidType> toVoidType() {
+    return Optional.empty();
+  }
 }

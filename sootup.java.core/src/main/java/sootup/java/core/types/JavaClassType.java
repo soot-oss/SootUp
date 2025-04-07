@@ -128,28 +128,8 @@ public class JavaClassType extends ClassType {
   }
 
   @Override
-  protected boolean isArrayType() {
-    return false;
-  }
-
-  @Override
-  protected boolean isNullType() {
-    return false;
-  }
-
-  @Override
   protected boolean isJavaClassType() {
     return true;
-  }
-
-  @Override
-  protected boolean isModuleJavaClassType() {
-    return false;
-  }
-
-  @Override
-  protected boolean isWeakObjectType() {
-    return false;
   }
 
   @Override
@@ -158,28 +138,8 @@ public class JavaClassType extends ClassType {
   }
 
   @Override
-  protected ArrayType asArrayType() {
-    return null;
-  }
-
-  @Override
-  protected NullType asNullType() {
-    return null;
-  }
-
-  @Override
   protected Type asJavaClassType() {
     return this;
-  }
-
-  @Override
-  protected Type asModuleJavaClassType() {
-    return null;
-  }
-
-  @Override
-  protected Type asWeakObjectType() {
-    return null;
   }
 
   @Override
@@ -188,33 +148,8 @@ public class JavaClassType extends ClassType {
   }
 
   @Override
-  protected Optional<ArrayType> toArrayType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected Optional<NullType> toNullType() {
-    return Optional.empty();
-  }
-
-  @Override
   protected Optional<Type> toJavaClassType() {
     return Optional.of(this);
-  }
-
-  @Override
-  protected Optional<Type> toModuleJavaClassType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected Optional<Type> toWeakObjectType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected boolean isPrimitiveType() {
-    return false;
   }
 
   @Override
@@ -223,82 +158,12 @@ public class JavaClassType extends ClassType {
   }
 
   @Override
-  protected boolean isBottomType() {
-    return false;
-  }
-
-  @Override
-  protected boolean isTopType() {
-    return false;
-  }
-
-  @Override
-  protected boolean isUnknownType() {
-    return false;
-  }
-
-  @Override
-  protected boolean isVoidType() {
-    return false;
-  }
-
-  @Override
-  protected PrimitiveType asPrimitiveType() {
-    return null;
-  }
-
-  @Override
   protected ReferenceType asReferenceType() {
     return this;
   }
 
   @Override
-  protected Type asBottomType() {
-    return null;
-  }
-
-  @Override
-  protected Type asTopType() {
-    return null;
-  }
-
-  @Override
-  protected UnknownType asUnknownType() {
-    return null;
-  }
-
-  @Override
-  protected VoidType asVoidType() {
-    return null;
-  }
-
-  @Override
-  protected Optional<PrimitiveType> toPrimitiveType() {
-    return Optional.empty();
-  }
-
-  @Override
   protected Optional<ReferenceType> toReferenceType() {
     return Optional.of(this);
-  }
-
-  @Override
-  protected Optional<Type> toBottomType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected Optional<Type> toTopType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected Optional<UnknownType> toUnknownType() {
-    return Optional.empty();
-  }
-
-  @Override
-  protected Optional<VoidType> toVoidType() {
-    return Optional.empty();
   }
 }

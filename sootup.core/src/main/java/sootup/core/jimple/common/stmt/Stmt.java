@@ -74,87 +74,171 @@ public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
 
   InvokableStmt asInvokableStmt();
 
-  boolean isJAssignStmt();
+  default boolean isJAssignStmt() {
+    return false;
+  }
 
-  boolean isJBreakpointStmt();
+  default boolean isJBreakpointStmt() {
+    return false;
+  }
 
-  boolean isJEnterMonitorStmt();
+  default boolean isJEnterMonitorStmt() {
+    return false;
+  }
 
-  boolean isJExitMonitorStmt();
+  default boolean isJExitMonitorStmt() {
+    return false;
+  }
 
-  boolean isJGotoStmt();
+  default boolean isJGotoStmt() {
+    return false;
+  }
 
-  boolean isJIdentityStmt();
+  default boolean isJIdentityStmt() {
+    return false;
+  }
 
-  boolean isJIfStmt();
+  default boolean isJIfStmt() {
+    return false;
+  }
 
-  boolean isJInvokeStmt();
+  default boolean isJInvokeStmt() {
+    return false;
+  }
 
-  boolean isJNopStmt();
+  default boolean isJNopStmt() {
+    return false;
+  }
 
-  boolean isJRetStmt();
+  default boolean isJRetStmt() {
+    return false;
+  }
 
-  boolean isJReturnStmt();
+  default boolean isJReturnStmt() {
+    return false;
+  }
 
-  boolean isJReturnVoidStmt();
+  default boolean isJReturnVoidStmt() {
+    return false;
+  }
 
-  boolean isJSwitchStmt();
+  default boolean isJSwitchStmt() {
+    return false;
+  }
 
-  boolean isJThrowStmt();
+  default boolean isJThrowStmt() {
+    return false;
+  }
 
-  JAssignStmt asJAssignStmt();
+  default JAssignStmt asJAssignStmt() {
+    return null;
+  }
 
-  JBreakpointStmt asJBreakpointStmt();
+  default JBreakpointStmt asJBreakpointStmt() {
+    return null;
+  }
 
-  JEnterMonitorStmt asJEnterMonitorStmt();
+  default JEnterMonitorStmt asJEnterMonitorStmt() {
+    return null;
+  }
 
-  JExitMonitorStmt asJExitMonitorStmt();
+  default JExitMonitorStmt asJExitMonitorStmt() {
+    return null;
+  }
 
-  JGotoStmt asJGotoStmt();
+  default JGotoStmt asJGotoStmt() {
+    return null;
+  }
 
-  JIdentityStmt asJIdentityStmt();
+  default JIdentityStmt asJIdentityStmt() {
+    return null;
+  }
 
-  JIfStmt asJIfStmt();
+  default JIfStmt asJIfStmt() {
+    return null;
+  }
 
-  JInvokeStmt asJInvokeStmt();
+  default JInvokeStmt asJInvokeStmt() {
+    return null;
+  }
 
-  JNopStmt asJNopStmt();
+  default JNopStmt asJNopStmt() {
+    return null;
+  }
 
-  JRetStmt asJRetStmt();
+  default JRetStmt asJRetStmt() {
+    return null;
+  }
 
-  JReturnStmt asJReturnStmt();
+  default JReturnStmt asJReturnStmt() {
+    return null;
+  }
 
-  JReturnVoidStmt asJReturnVoidStmt();
+  default JReturnVoidStmt asJReturnVoidStmt() {
+    return null;
+  }
 
-  JSwitchStmt asJSwitchStmt();
+  default JSwitchStmt asJSwitchStmt() {
+    return null;
+  }
 
-  JThrowStmt asJThrowStmt();
+  default JThrowStmt asJThrowStmt() {
+    return null;
+  }
 
-  Optional<JAssignStmt> toJAssignStmt();
+  default Optional<JAssignStmt> toJAssignStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JBreakpointStmt> toJBreakpointStmt();
+  default Optional<JBreakpointStmt> toJBreakpointStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JEnterMonitorStmt> toJEnterMonitorStmt();
+  default Optional<JEnterMonitorStmt> toJEnterMonitorStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JExitMonitorStmt> toJExitMonitorStmt();
+  default Optional<JExitMonitorStmt> toJExitMonitorStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JGotoStmt> toJGotoStmt();
+  default Optional<JGotoStmt> toJGotoStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JIdentityStmt> toJIdentityStmt();
+  default Optional<JIdentityStmt> toJIdentityStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JIfStmt> toJIfStmt();
+  default Optional<JIfStmt> toJIfStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JInvokeStmt> toJInvokeStmt();
+  default Optional<JInvokeStmt> toJInvokeStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JNopStmt> toJNopStmt();
+  default Optional<JNopStmt> toJNopStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JRetStmt> toJRetStmt();
+  default Optional<JRetStmt> toJRetStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JReturnStmt> toJReturnStmt();
+  default Optional<JReturnStmt> toJReturnStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JReturnVoidStmt> toJReturnVoidStmt();
+  default Optional<JReturnVoidStmt> toJReturnVoidStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JSwitchStmt> toJSwitchStmt();
+  default Optional<JSwitchStmt> toJSwitchStmt() {
+    return Optional.empty();
+  }
 
-  Optional<JThrowStmt> toJThrowStmt();
+  default Optional<JThrowStmt> toJThrowStmt() {
+    return Optional.empty();
+  }
 }
