@@ -21,7 +21,7 @@ concurrency: pages
 
 jobs:
   deploy-snapshot:
-    uses: secure-software-engineering/actions/.github/workflows/pages-branch-snapshot.yml@roshansamantaray-patch-1
+    uses: secure-software-engineering/actions/.github/workflows/pages-branch-snapshot.yml@develop
     with:
       latest_branch: develop
       version: "maven"
