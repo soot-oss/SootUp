@@ -22,13 +22,13 @@ package sootup.analysis.interprocedural.ifds;
  * #L%
  */
 
-import heros.InterproceduralCFG;
+import heros.CustomInterProceduralCFG;
 import heros.template.DefaultIFDSTabulationProblem;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
 public abstract class DefaultJimpleIFDSTabulationProblem<
-        D, I extends InterproceduralCFG<Stmt, SootMethod>>
+        D, I extends CustomInterProceduralCFG<Stmt, SootMethod>>
     extends DefaultIFDSTabulationProblem<Stmt, D, SootMethod, I> {
 
   public DefaultJimpleIFDSTabulationProblem(I icfg) {

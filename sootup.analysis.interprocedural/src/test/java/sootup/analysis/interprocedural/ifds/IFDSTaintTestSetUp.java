@@ -24,7 +24,7 @@ package sootup.analysis.interprocedural.ifds;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import heros.InterproceduralCFG;
+import heros.CustomInterProceduralCFG;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,9 +46,9 @@ public class IFDSTaintTestSetUp {
   protected MethodSignature entryMethodSignature;
   protected SootMethod entryMethod;
 
-  private static JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> solved = null;
+  private static JimpleIFDSSolver<?, CustomInterProceduralCFG<Stmt, SootMethod>> solved = null;
 
-  protected JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> executeStaticAnalysis(
+  protected JimpleIFDSSolver<?, CustomInterProceduralCFG<Stmt, SootMethod>> executeStaticAnalysis(
       String targetTestClassName) {
     setupSoot(targetTestClassName);
     runAnalysis();
@@ -64,10 +64,13 @@ public class IFDSTaintTestSetUp {
         new JimpleBasedInterproceduralCFG(
             view, Collections.singletonList(entryMethodSignature), false, false);
     IFDSTaintAnalysisProblem problem = new IFDSTaintAnalysisProblem(icfg, entryMethod);
-    JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> solver =
+    JimpleIFDSSolver<?, CustomInterProceduralCFG<Stmt, SootMethod>> solver =
         new JimpleIFDSSolver(problem);
     solver.solve(entryMethod.getDeclaringClassType().getClassName());
     solved = solver;
+    //    for (MethodStats methodStats : MethodTracker.getInstance().methodStatsMap.values()) {
+    //      System.out.println(methodStats);
+    //    }
   }
 
   /*

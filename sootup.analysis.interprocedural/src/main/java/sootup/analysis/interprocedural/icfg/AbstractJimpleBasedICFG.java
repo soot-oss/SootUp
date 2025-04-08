@@ -25,6 +25,7 @@ package sootup.analysis.interprocedural.icfg;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import heros.DontSynchronize;
+import heros.MethodRepresentation;
 import heros.SynchronizedBy;
 import heros.solver.IDESolver;
 import java.util.*;
@@ -211,6 +212,14 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @Override
   public Set<Stmt> getCallsFromWithin(SootMethod m) {
     return methodToCallsFromWithin.getUnchecked(m);
+  }
+
+  @Override
+  public MethodRepresentation getMethodRepresentation(SootMethod sootMethod) {
+    return new MethodRepresentation(
+        sootMethod.getName(),
+        sootMethod.getDeclClassType().getClassName(),
+        sootMethod.getBody().getStmts().size());
   }
 
   public void initializeStmtToOwner(SootMethod m) {

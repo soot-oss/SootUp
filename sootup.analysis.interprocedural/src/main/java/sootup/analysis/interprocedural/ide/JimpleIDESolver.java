@@ -22,13 +22,13 @@ package sootup.analysis.interprocedural.ide;
  * #L%
  */
 
+import heros.CustomInterProceduralCFG;
 import heros.IDETabulationProblem;
-import heros.InterproceduralCFG;
 import heros.solver.IDESolver;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
-public class JimpleIDESolver<D, V, I extends InterproceduralCFG<Stmt, SootMethod>>
+public class JimpleIDESolver<D, V, I extends CustomInterProceduralCFG<Stmt, SootMethod>>
     extends IDESolver<Stmt, D, SootMethod, V, I> {
 
   public JimpleIDESolver(IDETabulationProblem<Stmt, D, SootMethod, V, I> problem) {

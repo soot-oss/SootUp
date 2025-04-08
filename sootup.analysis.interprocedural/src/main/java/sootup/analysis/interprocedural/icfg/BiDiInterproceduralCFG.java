@@ -22,7 +22,7 @@ package sootup.analysis.interprocedural.icfg;
  * #L%
  */
 
-import heros.InterproceduralCFG;
+import heros.CustomInterProceduralCFG;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +34,7 @@ import sootup.core.jimple.common.stmt.AbstractStmt;
  * @param <N> Nodes in the CFG, e.g. {@link AbstractStmt}
  * @param <M> Method representation, e.g. {@link sootup.core.model.SootMethod}
  */
-public interface BiDiInterproceduralCFG<N, M> extends InterproceduralCFG<N, M> {
+public interface BiDiInterproceduralCFG<N, M> extends CustomInterProceduralCFG<N, M> {
 
   /**
    * returns the predecessors of a node

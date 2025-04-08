@@ -396,7 +396,7 @@
         <dependency>
             <groupId>de.upb.cs.swt</groupId>
             <artifactId>heros</artifactId>
-            <version>1.2.3</version>
+            <version>1.2.3-Profile-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>

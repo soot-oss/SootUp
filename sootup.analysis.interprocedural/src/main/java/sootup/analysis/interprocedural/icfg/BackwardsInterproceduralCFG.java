@@ -22,6 +22,7 @@ package sootup.analysis.interprocedural.icfg;
  * #L%
  */
 
+import heros.MethodRepresentation;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -169,5 +170,10 @@ public class BackwardsInterproceduralCFG implements BiDiInterproceduralCFG<Stmt,
   @Override
   public boolean isReachable(Stmt u) {
     return delegate.isReachable(u);
+  }
+
+  @Override
+  public MethodRepresentation getMethodRepresentation(SootMethod sootMethod) {
+    return delegate.getMethodRepresentation(sootMethod);
   }
 }

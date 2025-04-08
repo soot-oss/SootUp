@@ -22,10 +22,7 @@ package sootup.analysis.interprocedural.ifds;
  * #L%
  */
 
-import heros.DefaultSeeds;
-import heros.FlowFunction;
-import heros.FlowFunctions;
-import heros.InterproceduralCFG;
+import heros.*;
 import heros.flowfunc.Gen;
 import heros.flowfunc.Identity;
 import heros.flowfunc.KillAll;
@@ -44,14 +41,14 @@ import sootup.core.model.SootMethod;
 import sootup.core.types.NullType;
 
 public class IFDSTaintAnalysisProblem
-    extends DefaultJimpleIFDSTabulationProblem<Value, InterproceduralCFG<Stmt, SootMethod>> {
+    extends DefaultJimpleIFDSTabulationProblem<Value, CustomInterProceduralCFG<Stmt, SootMethod>> {
 
   private final SootMethod entryMethod;
 
-  protected InterproceduralCFG<Stmt, SootMethod> icfg;
+  protected CustomInterProceduralCFG<Stmt, SootMethod> icfg;
 
   public IFDSTaintAnalysisProblem(
-      InterproceduralCFG<Stmt, SootMethod> icfg, SootMethod entryMethod) {
+      CustomInterProceduralCFG<Stmt, SootMethod> icfg, SootMethod entryMethod) {
     super(icfg);
     this.icfg = icfg;
     this.entryMethod = entryMethod;

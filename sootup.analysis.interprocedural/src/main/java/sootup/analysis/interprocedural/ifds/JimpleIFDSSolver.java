@@ -22,15 +22,15 @@ package sootup.analysis.interprocedural.ifds;
  * #L%
  */
 
+import heros.CustomInterProceduralCFG;
 import heros.IFDSTabulationProblem;
-import heros.InterproceduralCFG;
 import heros.solver.IFDSSolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
-public class JimpleIFDSSolver<D, I extends InterproceduralCFG<Stmt, SootMethod>>
+public class JimpleIFDSSolver<D, I extends CustomInterProceduralCFG<Stmt, SootMethod>>
     extends IFDSSolver<Stmt, D, SootMethod, I> {
   private static final Logger logger = LoggerFactory.getLogger(JimpleIFDSSolver.class);
 

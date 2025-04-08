@@ -25,7 +25,7 @@ package sootup.analysis.interprocedural.ifds;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import heros.InterproceduralCFG;
+import heros.CustomInterProceduralCFG;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,7 +43,7 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
   }
 
   Set<String> getResultsAtLastStatement(
-      JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis) {
+      JimpleIFDSSolver<?, CustomInterProceduralCFG<Stmt, SootMethod>> analysis) {
     SootMethod m = getEntryPointMethod();
     List<Stmt> stmts = m.getBody().getStmts();
     Set<?> rawSet = analysis.ifdsResultsAt(stmts.get(stmts.size() - 1));
@@ -68,7 +68,7 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
 
   @Test
   public void SimpleTaint() {
-    JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis =
+    JimpleIFDSSolver<?, CustomInterProceduralCFG<Stmt, SootMethod>> analysis =
         executeStaticAnalysis("SimpleTaint");
     Set<String> result = getResultsAtLastStatement(analysis);
     assertTrue(result.contains("l1"));
@@ -78,7 +78,7 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
 
   @Test
   public void SimpleTaintSanitized() {
-    JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis =
+    JimpleIFDSSolver<?, CustomInterProceduralCFG<Stmt, SootMethod>> analysis =
         executeStaticAnalysis("SimpleTaintSanitized");
     Set<String> result = getResultsAtLastStatement(analysis);
     assertTrue(result.contains("l1"));
@@ -86,7 +86,7 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
 
   @Test
   public void FunctionTaint() {
-    JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis =
+    JimpleIFDSSolver<?, CustomInterProceduralCFG<Stmt, SootMethod>> analysis =
         executeStaticAnalysis("FunctionTaint");
     Set<String> result = getResultsAtLastStatement(analysis);
     assertTrue(result.contains("l1"));
@@ -95,7 +95,7 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
 
   @Test
   public void FunctionTaintPropagated() {
-    JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis =
+    JimpleIFDSSolver<?, CustomInterProceduralCFG<Stmt, SootMethod>> analysis =
         executeStaticAnalysis("FunctionTaintPropagated");
     Set<String> result = getResultsAtLastStatement(analysis);
     assertTrue(result.contains("l1"), result + " is missing an element.");
@@ -104,7 +104,7 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
 
   @Test
   public void FunctionTaintSanitized() {
-    JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis =
+    JimpleIFDSSolver<?, CustomInterProceduralCFG<Stmt, SootMethod>> analysis =
         executeStaticAnalysis("FunctionTaintSanitized");
     Set<String> result = getResultsAtLastStatement(analysis);
     assertTrue(result.contains("l1"));
