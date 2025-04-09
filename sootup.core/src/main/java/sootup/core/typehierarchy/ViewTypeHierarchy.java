@@ -42,8 +42,8 @@ import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
- * Full documentation is in the <a
- * href="https://github.com/secure-software-engineering/soot-reloaded/wiki/Type-Hierarchy-Algorithm">wiki</a>.
+ * Documentation about how to use it is available
+ * <a href="https://soot-oss.github.io/SootUp/latest/typehierarchy/">here</a>.
  *
  * @author Christian Brüggemann
  */
