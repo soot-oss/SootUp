@@ -26,6 +26,11 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.interceptors</artifactId>
+            <version>{{ git_latest_release }}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
             <artifactId>sootup.java.bytecode.frontend</artifactId>
             <version>{{ git_latest_release }}</version>
         </dependency>
