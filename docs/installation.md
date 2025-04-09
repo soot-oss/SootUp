@@ -82,6 +82,7 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
     
     compile "org.soot-oss:sootup.core:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.java.core:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.interceptors:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.java.bytecode.frontend:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.jimple.frontend:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.apk.frontend:{{ git_latest_release }}"
