@@ -42,7 +42,10 @@
   {
     "version": "doc_listAllModules_preview",
     "title": "PR Preview doc_listAllModules",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "develop",
