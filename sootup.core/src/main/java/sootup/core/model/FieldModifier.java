@@ -24,14 +24,12 @@ package sootup.core.model;
  * #L%
  */
 
-import java.util.EnumSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 
 /**
- * An Enum that provides static methods and constants to represent and work with with Java modifiers
- * (ie public, final,...) Represents Java modifiers that can be packed and combined via EnumSet and
+ * An Enum that provides static methods and constants to represent and work with Java modifiers (ie
+ * public, final,...) Represents Java modifiers that can be packed and combined via EnumSet and
  * methods to query these.
  */
 public enum FieldModifier {
@@ -131,12 +129,6 @@ public enum FieldModifier {
       builder.setLength(lastCharPos);
     }
     return builder.toString();
-  }
-
-  @NonNull
-  // depends on the natural order of the Enums!
-  public static String toString(@NonNull EnumSet<FieldModifier> m) {
-    return m.stream().map((mod) -> mod.name().toLowerCase()).collect(Collectors.joining(" "));
   }
 
   /**

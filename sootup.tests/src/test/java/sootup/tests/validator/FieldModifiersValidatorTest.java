@@ -36,7 +36,7 @@ public class FieldModifiersValidatorTest {
   @BeforeEach
   public void setUp() {
     view = new JavaView(Collections.singletonList(new EagerInputLocation()));
-    fieldModifiersValidator = new FieldModifiersValidator();
+    fieldModifiersValidator = new FieldModifiersValidator(EnumSet.noneOf(FieldModifier.class));
   }
 
   public JavaSootClass testClassCreatorWithModifiers(
