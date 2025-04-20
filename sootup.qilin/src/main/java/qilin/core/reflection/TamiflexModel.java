@@ -51,6 +51,7 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ReferenceType;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -283,7 +284,11 @@ public class TamiflexModel extends ReflectionModel {
     for (String arrayType : arrayTypes) {
       ArrayType at = (ArrayType) ptaScene.getView().getIdentifierFactory().getType(arrayType);
       JNewArrayExpr newExpr =
-          JavaJimple.getInstance().newNewArrayExpr(at.getElementType(), IntConstant.getInstance(1));
+          JavaJimple.getInstance()
+              .newNewArrayExpr(
+                  at.getElementType(),
+                  IntConstant.getInstance(1),
+                  JavaIdentifierFactory.getInstance());
       if (s instanceof JAssignStmt) {
         LValue lvalue = ((JAssignStmt) s).getLeftOp();
         ret.add(new JAssignStmt(lvalue, newExpr, StmtPositionInfo.getNoStmtPositionInfo()));

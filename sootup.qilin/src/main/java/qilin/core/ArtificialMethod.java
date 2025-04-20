@@ -39,6 +39,7 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 public abstract class ArtificialMethod {
@@ -102,7 +103,9 @@ public abstract class ArtificialMethod {
   }
 
   protected Local getNewArray(ClassType type) {
-    Value newExpr = JavaJimple.getInstance().newNewArrayExpr(type, IntConstant.getInstance(1));
+    Value newExpr =
+        JavaJimple.getInstance()
+            .newNewArrayExpr(type, IntConstant.getInstance(1), JavaIdentifierFactory.getInstance());
     Local local = getNextLocal(new ArrayType(type, 1));
     addAssign(local, newExpr);
     return local;

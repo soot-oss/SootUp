@@ -50,6 +50,7 @@ import sootup.core.signatures.SootClassMemberSubSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.jimple.JimpleBaseVisitor;
 import sootup.jimple.JimpleParser;
@@ -623,7 +624,8 @@ public class JimpleConverter {
             }
 
             Immediate dim = visitImmediate(ctx.array_descriptor().immediate());
-            return JavaJimple.getInstance().newNewArrayExpr(type, dim);
+            return JavaJimple.getInstance()
+                .newNewArrayExpr(type, dim, JavaIdentifierFactory.getInstance());
           } else if (ctx.NEWMULTIARRAY() != null && ctx.immediate() != null) {
             final Type type = util.getType(ctx.multiarray_type.getText());
             if (!(type instanceof ReferenceType || type instanceof PrimitiveType)) {

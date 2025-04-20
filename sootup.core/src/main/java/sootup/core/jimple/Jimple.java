@@ -57,6 +57,7 @@ import sootup.core.util.StringTools;
  * Variable -&gt; Local | ArrayRef | InstanceFieldRef | StaticFieldRef <br>
  */
 public abstract class Jimple {
+  public IdentifierFactory identifierFactory;
   public static final String NEWARRAY = "newarray";
   public static final String NEWMULTIARRAY = "newmultiarray";
   public static final String NOP = "nop";
@@ -211,7 +212,9 @@ public abstract class Jimple {
     return sb.toString();
   }
 
-  public abstract IdentifierFactory getIdentifierFactory();
+  public IdentifierFactory getIdentifierFactory() {
+    return this.identifierFactory;
+  }
 
   /** Constructs a XorExpr(Immediate, Immediate) grammar chunk. */
   public static JXorExpr newXorExpr(Immediate op1, Immediate op2) {
@@ -334,8 +337,9 @@ public abstract class Jimple {
   }
 
   /** Constructs a NewArrayExpr(Type, Immediate) grammar chunk. */
-  public JNewArrayExpr newNewArrayExpr(Type type, Immediate size) {
-    return new JNewArrayExpr(type, size, getIdentifierFactory());
+  public static JNewArrayExpr newNewArrayExpr(
+      Type type, Immediate size, IdentifierFactory identifierFactory) {
+    return new JNewArrayExpr(type, size, identifierFactory);
   }
 
   public static JPhiExpr newPhiExpr(List<Local> args, Map<Local, BasicBlock<?>> argToBlock) {
@@ -542,7 +546,7 @@ public abstract class Jimple {
   }
 
   /** Constructs a ArrayRef(Local, Immediate) grammar chunk. */
-  public JArrayRef newArrayRef(Local base, Immediate index) {
+  public static JArrayRef newArrayRef(Local base, Immediate index) {
     return new JArrayRef(base, index);
   }
 

@@ -818,7 +818,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
       Operand size = operandStack.pop();
       merging.mergeInputs(size);
-      v = JavaJimple.getInstance().newNewArrayExpr(type, size.toImmediate());
+      v =
+          JavaJimple.getInstance()
+              .newNewArrayExpr(type, size.toImmediate(), JavaIdentifierFactory.getInstance());
     }
     Operand opr = new Operand(insn, v, this);
     merging.mergeOutput(opr);
@@ -1224,7 +1226,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           {
             val =
                 JavaJimple.getInstance()
-                    .newNewArrayExpr(AsmUtil.arrayTypetoJimpleType(insn.desc), op1.toImmediate());
+                    .newNewArrayExpr(
+                        AsmUtil.arrayTypetoJimpleType(insn.desc),
+                        op1.toImmediate(),
+                        JavaIdentifierFactory.getInstance());
             break;
           }
         case CHECKCAST:
