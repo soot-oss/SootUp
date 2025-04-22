@@ -129,7 +129,6 @@ public class DeadAssignmentEliminatorTest {
   }
 
   private static Body.BodyBuilder createBody(boolean essentialOption) {
-    JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
@@ -139,7 +138,7 @@ public class DeadAssignmentEliminatorTest {
     Local c = JavaJimple.newLocal("c", PrimitiveType.getInt());
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str"), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(a, noPositionInfo);
 
     Set<Local> locals = new LinkedHashSet<>(Arrays.asList(a, b, c));

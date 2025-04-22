@@ -45,7 +45,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
-import sootup.core.util.StringTools;
 
 /**
  * The Jimple class contains all the constructors for the components of the Jimple grammar for the
@@ -57,7 +56,6 @@ import sootup.core.util.StringTools;
  * Variable -&gt; Local | ArrayRef | InstanceFieldRef | StaticFieldRef <br>
  */
 public abstract class Jimple {
-  public IdentifierFactory identifierFactory;
   public static final String NEWARRAY = "newarray";
   public static final String NEWMULTIARRAY = "newmultiarray";
   public static final String NOP = "nop";
@@ -170,50 +168,6 @@ public abstract class Jimple {
             FALSE,
             PHI);
     return l;
-  }
-
-  /** Escapes reserved Jimple keywords e.g. used in (Stmt)Printer, necessary in the JimpleParser */
-  public static String escape(String str) {
-    if (str.length() == 0) {
-      return "\"\"";
-    }
-    return StringTools.getQuotedStringOf(str, jimpleKeywordList().contains(str));
-  }
-
-  public static String unescape(String str) {
-    StringBuilder sb = new StringBuilder();
-
-    // filter for only \ and not \\ preceeding a possible escapable char
-    boolean lastWasRealEscape = false;
-    int lastAppendedPos = 0;
-    int openHyphenPos = -1;
-    for (int i = 0; i < str.length(); i++) {
-      if ((str.charAt(i) == '"' || str.charAt(i) == '\'') && !lastWasRealEscape) {
-        if (openHyphenPos < 0) {
-          if (lastAppendedPos < i) {
-            sb.append(StringTools.getUnEscapedStringOf(str.substring(lastAppendedPos, i)));
-          }
-          openHyphenPos = i;
-          lastAppendedPos = i;
-        } else if (str.charAt(i) == str.charAt(openHyphenPos)) {
-          sb.append(StringTools.getUnEscapedStringOf(str.substring(openHyphenPos + 1, i)));
-          openHyphenPos = -1;
-          lastAppendedPos = i + 1;
-        }
-      }
-      lastWasRealEscape = !lastWasRealEscape && str.charAt(i) == '\\';
-    }
-
-    // if there has been nothing with hyphens etc.
-    if (lastAppendedPos < str.length()) {
-      sb.append(StringTools.getUnEscapedStringOf(str.substring(lastAppendedPos)));
-    }
-
-    return sb.toString();
-  }
-
-  public IdentifierFactory getIdentifierFactory() {
-    return this.identifierFactory;
   }
 
   /** Constructs a XorExpr(Immediate, Immediate) grammar chunk. */
@@ -549,9 +503,6 @@ public abstract class Jimple {
   public static JArrayRef newArrayRef(Local base, Immediate index) {
     return new JArrayRef(base, index);
   }
-
-  /** Constructs a CaughtExceptionRef() grammar chunk. */
-  public abstract JCaughtExceptionRef newCaughtExceptionRef();
 
   /** Constructs a NewExpr(RefType) grammar chunk. */
   public static JNewExpr newNewExpr(ClassType type) {

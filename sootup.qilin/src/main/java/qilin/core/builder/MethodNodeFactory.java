@@ -285,8 +285,8 @@ public class MethodNodeFactory {
     int pos = 0;
     AllocNode prevAn =
         pag.makeAllocNode(
-            JavaJimple.getInstance()
-                .newNewArrayExpr(type, nmae.getSize(pos), JavaIdentifierFactory.getInstance()),
+            JavaJimple.newNewArrayExpr(
+                type, nmae.getSize(pos), JavaIdentifierFactory.getInstance()),
             type,
             method);
     VarNode prevVn = pag.makeLocalVarNode(prevAn.getNewExpr(), prevAn.getType(), method);
@@ -307,8 +307,7 @@ public class MethodNodeFactory {
       }
       AllocNode an =
           pag.makeAllocNode(
-              JavaJimple.getInstance()
-                  .newNewArrayExpr(type, sizeVal, JavaIdentifierFactory.getInstance()),
+              JavaJimple.newNewArrayExpr(type, sizeVal, JavaIdentifierFactory.getInstance()),
               type,
               method);
       VarNode vn = pag.makeLocalVarNode(an.getNewExpr(), an.getType(), method);

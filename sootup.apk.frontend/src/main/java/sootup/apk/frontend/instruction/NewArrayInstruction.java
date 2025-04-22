@@ -54,8 +54,7 @@ public class NewArrayInstruction extends DexLibAbstractInstruction {
     Type elementType = ((ArrayType) t).getElementType();
 
     JNewArrayExpr jNewArrayExpr =
-        JavaJimple.getInstance()
-            .newNewArrayExpr(elementType, size, JavaIdentifierFactory.getInstance());
+        JavaJimple.newNewArrayExpr(elementType, size, JavaIdentifierFactory.getInstance());
 
     Local l = body.getRegisterLocal(dest);
     JAssignStmt assign =

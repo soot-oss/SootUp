@@ -67,8 +67,7 @@ public class FillArrayDataInstruction extends DexLibAbstractInstruction {
 
     Stmt firstAssign = null;
     for (int i = 0; i < numElements; i++) {
-      JArrayRef arrayRef =
-          JavaJimple.getInstance().newArrayRef(arrayReference, IntConstant.getInstance(i));
+      JArrayRef arrayRef = JavaJimple.newArrayRef(arrayReference, IntConstant.getInstance(i));
       NumericConstant element = getArrayElement(elements.get(i), body, destRegister);
       if (element == null) {
         break;

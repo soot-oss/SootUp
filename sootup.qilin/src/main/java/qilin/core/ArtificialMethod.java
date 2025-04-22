@@ -104,8 +104,8 @@ public abstract class ArtificialMethod {
 
   protected Local getNewArray(ClassType type) {
     Value newExpr =
-        JavaJimple.getInstance()
-            .newNewArrayExpr(type, IntConstant.getInstance(1), JavaIdentifierFactory.getInstance());
+        JavaJimple.newNewArrayExpr(
+            type, IntConstant.getInstance(1), JavaIdentifierFactory.getInstance());
     Local local = getNextLocal(new ArrayType(type, 1));
     addAssign(local, newExpr);
     return local;
@@ -134,7 +134,7 @@ public abstract class ArtificialMethod {
   }
 
   protected JArrayRef getArrayRef(Value base) {
-    return JavaJimple.getInstance().newArrayRef((Local) base, IntConstant.getInstance(0));
+    return JavaJimple.newArrayRef((Local) base, IntConstant.getInstance(0));
   }
 
   /** add an instance invocation receiver.sig(args) */

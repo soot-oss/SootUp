@@ -2,7 +2,7 @@ package sootup.jimple.frontend;
 
 /*-
  * #%L
- * SootUp
+ * SootUp\
  * %%
  * Copyright (C) 1997 - 2024 Raja Vallée-Rai and others
  * %%
@@ -35,6 +35,7 @@ import sootup.core.frontend.ResolveException;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
@@ -218,7 +219,7 @@ public class JimpleConverter {
           final JimpleParser.FieldContext fieldCtx = ctx.member(i).field();
           EnumSet<FieldModifier> modifier = getFieldModifiers(fieldCtx.field_modifier());
           final Position pos = JimpleConverterUtil.buildPositionFromCtx(fieldCtx);
-          final String fieldName = Jimple.unescape(fieldCtx.identifier().getText());
+          final String fieldName = JimpleUtils.unescape(fieldCtx.identifier().getText());
           final SootField f =
               new SootField(
                   identifierFactory.getFieldSignature(fieldName, clazz, fieldCtx.type().getText()),
@@ -306,7 +307,8 @@ public class JimpleConverter {
         List<Type> params = util.getTypeList(method_subsignatureContext.type_list());
 
         MethodSignature methodSignature =
-            identifierFactory.getMethodSignature(clazz, Jimple.unescape(methodname), type, params);
+            identifierFactory.getMethodSignature(
+                clazz, JimpleUtils.unescape(methodname), type, params);
 
         List<ClassType> exceptions =
             ctx.throws_clause() == null
@@ -536,7 +538,7 @@ public class JimpleConverter {
                   final JimpleParser.Identity_refContext identityRefCtx =
                       assignments.identity_ref();
                   if (identityRefCtx.caught != null) {
-                    ref = JavaJimple.getInstance().newCaughtExceptionRef();
+                    ref = JavaJimple.newCaughtExceptionRef();
                   } else {
                     final String type = assignments.identity_ref().type().getText();
                     if (identityRefCtx.parameter_idx != null) {
@@ -624,8 +626,7 @@ public class JimpleConverter {
             }
 
             Immediate dim = visitImmediate(ctx.array_descriptor().immediate());
-            return JavaJimple.getInstance()
-                .newNewArrayExpr(type, dim, JavaIdentifierFactory.getInstance());
+            return JavaJimple.newNewArrayExpr(type, dim, JavaIdentifierFactory.getInstance());
           } else if (ctx.NEWMULTIARRAY() != null && ctx.immediate() != null) {
             final Type type = util.getType(ctx.multiarray_type.getText());
             if (!(type instanceof ReferenceType || type instanceof PrimitiveType)) {
@@ -672,7 +673,7 @@ public class JimpleConverter {
             // array
             Immediate idx = visitImmediate(ctx.array_descriptor().immediate());
             Local type = getLocal(ctx.identifier().getText());
-            return JavaJimple.getInstance().newArrayRef(type, idx);
+            return JavaJimple.newArrayRef(type, idx);
           } else if (ctx.DOT() != null) {
             // instance field
             String base = ctx.identifier().getText();
@@ -766,11 +767,11 @@ public class JimpleConverter {
 
             return DoubleConstant.getInstance(Double.parseDouble(floatStr));
           } else if (ctx.CLASS() != null) {
-            final String text = Jimple.unescape(ctx.STRING_CONSTANT().getText());
-            return JavaJimple.getInstance().newClassConstant(text);
+            final String text = JimpleUtils.unescape(ctx.STRING_CONSTANT().getText());
+            return JavaJimple.newClassConstant(text);
           } else if (ctx.STRING_CONSTANT() != null) {
-            final String text = Jimple.unescape(ctx.STRING_CONSTANT().getText());
-            return JavaJimple.getInstance().newStringConstant(text);
+            final String text = JimpleUtils.unescape(ctx.STRING_CONSTANT().getText());
+            return JavaJimple.newStringConstant(text);
           } else if (ctx.BOOL_CONSTANT() != null) {
             final char firstChar = ctx.BOOL_CONSTANT().getText().charAt(0);
             return BooleanConstant.getInstance(firstChar == 't' || firstChar == 'T');
@@ -785,17 +786,14 @@ public class JimpleConverter {
                         ? util.getMethodSignature(
                             methodhandleContext.method_signature(), methodhandleContext)
                         : util.getFieldSignature(methodhandleContext.field_signature());
-            return JavaJimple.getInstance()
-                .newMethodHandle(
-                    referenceSignature,
-                    MethodHandle.Kind.getKind(kindName.substring(1, kindName.length() - 1)));
+            return JavaJimple.newMethodHandle(
+                referenceSignature,
+                MethodHandle.Kind.getKind(kindName.substring(1, kindName.length() - 1)));
           } else if (ctx.methodtype != null && ctx.method_subsignature() != null) {
             final JimpleParser.Type_listContext typelist = ctx.method_subsignature().type_list();
             final List<Type> typeList = util.getTypeList(typelist);
-            return JavaJimple.getInstance()
-                .newMethodType(
-                    typeList,
-                    identifierFactory.getType(ctx.method_subsignature().type().getText()));
+            return JavaJimple.newMethodType(
+                typeList, identifierFactory.getType(ctx.method_subsignature().type().getText()));
           }
           throw new ResolveException(
               "Unknown Constant.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));

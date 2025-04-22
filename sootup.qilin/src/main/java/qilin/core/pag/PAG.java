@@ -340,7 +340,7 @@ public class PAG {
   public AllocNode makeStringConstantNode(StringConstant sc) {
     StringConstant stringConstant = sc;
     if (!CoreConfig.v().getPtaConfig().stringConstants) {
-      stringConstant = JavaJimple.getInstance().newStringConstant(PointsToAnalysis.STRING_NODE);
+      stringConstant = JavaJimple.newStringConstant(PointsToAnalysis.STRING_NODE);
     }
     AllocNode ret = valToAllocNode.get(stringConstant);
     if (ret == null) {
@@ -604,10 +604,8 @@ public class PAG {
                   .add(new JAssignStmt(localDst, dstArr, StmtPositionInfo.getNoStmtPositionInfo()));
               dstArr = localDst;
             }
-            Value src =
-                JavaJimple.getInstance().newArrayRef((Local) srcArr, IntConstant.getInstance(0));
-            LValue dst =
-                JavaJimple.getInstance().newArrayRef((Local) dstArr, IntConstant.getInstance(0));
+            Value src = JavaJimple.newArrayRef((Local) srcArr, IntConstant.getInstance(0));
+            LValue dst = JavaJimple.newArrayRef((Local) dstArr, IntConstant.getInstance(0));
             Local local =
                 Jimple.newLocal(
                     "nativeArrayCopy" + (localCount++), PTAUtils.getClassType("java.lang.Object"));

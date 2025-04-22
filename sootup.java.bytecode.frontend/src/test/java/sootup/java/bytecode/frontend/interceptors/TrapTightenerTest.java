@@ -51,8 +51,7 @@ public class TrapTightenerTest {
   Local l3 = JavaJimple.newLocal("l3", intType);
 
   ClassType exception = factory.getClassType("java.lang.Throwable");
-  JavaJimple javaJimple = JavaJimple.getInstance();
-  IdentityRef caughtExceptionRef = javaJimple.newCaughtExceptionRef();
+  IdentityRef caughtExceptionRef = JavaJimple.newCaughtExceptionRef();
   FallsThroughStmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
   Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 

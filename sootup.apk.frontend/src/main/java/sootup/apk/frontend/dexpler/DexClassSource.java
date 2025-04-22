@@ -188,8 +188,7 @@ public class DexClassSource extends JavaSootClassSource {
 
   private static Object convertAnnotationValue(Object annotationValue) {
     if (annotationValue instanceof EncodedValue) {
-      ClassConstant classConstant =
-          JavaJimple.getInstance().newClassConstant(annotationValue.toString());
+      ClassConstant classConstant = JavaJimple.newClassConstant(annotationValue.toString());
       return ConstantUtil.fromObject(classConstant);
     }
     return ConstantUtil.fromObject(annotationValue);

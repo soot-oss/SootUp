@@ -49,14 +49,7 @@ import sootup.java.core.jimple.basic.JavaLocal;
  */
 public class JavaJimple extends Jimple {
 
-  private static final JavaJimple INSTANCE = new JavaJimple();
-
-  public static JavaJimple getInstance() {
-    return INSTANCE;
-  }
-
-  @Override
-  public IdentifierFactory getIdentifierFactory() {
+  public static IdentifierFactory getIdentifierFactory() {
     return JavaIdentifierFactory.getInstance();
   }
 
@@ -70,35 +63,37 @@ public class JavaJimple extends Jimple {
     return new JavaLocal(name, t, annotations);
   }
 
-  public JCaughtExceptionRef newCaughtExceptionRef() {
+  /** Constructs a CaughtExceptionRef() grammar chunk. */
+  public static JCaughtExceptionRef newCaughtExceptionRef() {
     return new JCaughtExceptionRef(getIdentifierFactory().getType("java.lang.Throwable"));
   }
 
-  public ClassConstant newClassConstant(String value) {
-    return new ClassConstant(value, getIdentifierFactory().getType("java.lang.Class"));
+  public static ClassConstant newClassConstant(String value) {
+    return new ClassConstant(value, JavaIdentifierFactory.getInstance().getType("java.lang.Class"));
   }
 
-  public EnumConstant newEnumConstant(String value, String type) {
-    return new EnumConstant(value, getIdentifierFactory().getClassType(type));
+  public static EnumConstant newEnumConstant(String value, String type) {
+    return new EnumConstant(value, JavaIdentifierFactory.getInstance().getClassType(type));
   }
 
-  public StringConstant newStringConstant(String value) {
-    return new StringConstant(value, getIdentifierFactory().getType("java.lang.String"));
+  public static StringConstant newStringConstant(String value) {
+    return new StringConstant(
+        value, JavaIdentifierFactory.getInstance().getType("java.lang.String"));
   }
 
-  public MethodHandle newMethodHandle(
+  public static MethodHandle newMethodHandle(
       SootClassMemberSignature<? extends SootClassMemberSubSignature> ref, int tag) {
     return new MethodHandle(
         ref, tag, getIdentifierFactory().getType("java.lang.invoke.MethodHandle"));
   }
 
-  public MethodHandle newMethodHandle(
+  public static MethodHandle newMethodHandle(
       SootClassMemberSignature<? extends SootClassMemberSubSignature> ref, MethodHandle.Kind kind) {
     return new MethodHandle(
         ref, kind, getIdentifierFactory().getType("java.lang.invoke.MethodHandle"));
   }
 
-  public MethodType newMethodType(List<Type> parameterTypes, Type returnType) {
+  public static MethodType newMethodType(List<Type> parameterTypes, Type returnType) {
     return new MethodType(
         getIdentifierFactory().getMethodSubSignature("__METHODTYPE__", returnType, parameterTypes),
         getIdentifierFactory().getClassType("java.lang.invoke.MethodType"));

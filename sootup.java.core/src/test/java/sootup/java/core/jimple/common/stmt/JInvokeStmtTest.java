@@ -97,8 +97,7 @@ public class JInvokeStmtTest {
     Stmt staticInvokeStmt =
         new JInvokeStmt(
             new JStaticInvokeExpr(
-                statMethodSig,
-                Collections.singletonList(JavaJimple.getInstance().newStringConstant("Towel"))),
+                statMethodSig, Collections.singletonList(JavaJimple.newStringConstant("Towel"))),
             nop);
 
     // toString

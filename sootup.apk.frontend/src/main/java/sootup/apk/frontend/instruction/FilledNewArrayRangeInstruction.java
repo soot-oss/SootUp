@@ -50,19 +50,15 @@ public class FilledNewArrayRangeInstruction extends FilledArrayInstruction {
     // NewArrayExpr needs the ElementType as it increases the array dimension by 1
     Type arrayType = ((ArrayType) t).getElementType();
     JNewArrayExpr arrayExpr =
-        JavaJimple.getInstance()
-            .newNewArrayExpr(
-                arrayType,
-                IntConstant.getInstance(usedRegister),
-                JavaIdentifierFactory.getInstance());
+        JavaJimple.newNewArrayExpr(
+            arrayType, IntConstant.getInstance(usedRegister), JavaIdentifierFactory.getInstance());
     Local arrayLocal = body.getStoreResultLocal();
     JAssignStmt assignStmt =
         Jimple.newAssignStmt(arrayLocal, arrayExpr, StmtPositionInfo.getNoStmtPositionInfo());
     body.add(assignStmt);
 
     for (int i = 0; i < usedRegister; i++) {
-      JArrayRef arrayRef =
-          JavaJimple.getInstance().newArrayRef(arrayLocal, IntConstant.getInstance(i));
+      JArrayRef arrayRef = JavaJimple.newArrayRef(arrayLocal, IntConstant.getInstance(i));
 
       JAssignStmt assign =
           Jimple.newAssignStmt(
