@@ -23,6 +23,7 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
@@ -147,5 +148,20 @@ public final class JNewMultiArrayExpr implements Expr {
 
   public boolean isArrayOfPrimitives() {
     return baseType.isArrayTypeOfPrimitives();
+  }
+
+  @Override
+  public boolean isJNewMultiArrayExpr() {
+    return true;
+  }
+
+  @Override
+  public JNewMultiArrayExpr asJNewMultiArrayExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JNewMultiArrayExpr> toJNewMultiArrayExpr() {
+    return Optional.of(this);
   }
 }

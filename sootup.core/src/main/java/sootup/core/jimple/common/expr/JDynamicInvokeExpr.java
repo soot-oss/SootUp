@@ -23,6 +23,7 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
@@ -209,5 +210,20 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr {
   public JDynamicInvokeExpr withMethodArgs(@NonNull List<Immediate> methodArgs) {
     return new JDynamicInvokeExpr(
         bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), methodArgs);
+  }
+
+  @Override
+  public boolean isJDynamicInvokeExpr() {
+    return true;
+  }
+
+  @Override
+  public JDynamicInvokeExpr asJDynamicInvokeExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JDynamicInvokeExpr> toJDynamicInvokeExpr() {
+    return Optional.of(this);
   }
 }

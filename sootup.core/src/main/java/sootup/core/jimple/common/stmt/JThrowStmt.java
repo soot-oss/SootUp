@@ -22,6 +22,7 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
@@ -52,6 +53,21 @@ public final class JThrowStmt extends AbstractStmt {
     up.literal(Jimple.THROW);
     up.literal(" ");
     op.toString(up);
+  }
+
+  @Override
+  public boolean isJThrowStmt() {
+    return true;
+  }
+
+  @Override
+  public JThrowStmt asJThrowStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JThrowStmt> toJThrowStmt() {
+    return Optional.of(this);
   }
 
   @Override

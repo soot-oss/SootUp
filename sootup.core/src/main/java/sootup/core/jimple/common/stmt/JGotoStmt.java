@@ -23,6 +23,7 @@ package sootup.core.jimple.common.stmt;
  */
 
 import java.util.List;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -50,6 +51,21 @@ public class JGotoStmt extends AbstractStmt implements BranchingStmt {
     stmtPrinter.literal(" ");
     // [ms] bounds are validated in Body if its a valid StmtGraph
     stmtPrinter.stmtRef(stmtPrinter.getGraph().getBranchTargetsOf(this).get(0), true);
+  }
+
+  @Override
+  public boolean isJGotoStmt() {
+    return true;
+  }
+
+  @Override
+  public JGotoStmt asJGotoStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JGotoStmt> toJGotoStmt() {
+    return Optional.of(this);
   }
 
   @Override

@@ -22,12 +22,12 @@ package sootup.core.jimple.javabytecode.stmt;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.stmt.AbstractStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -45,6 +45,21 @@ public final class JBreakpointStmt extends AbstractStmt implements FallsThroughS
   @Override
   public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.BREAKPOINT);
+  }
+
+  @Override
+  public boolean isJBreakpointStmt() {
+    return true;
+  }
+
+  @Override
+  public JBreakpointStmt asJBreakpointStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JBreakpointStmt> toJBreakpointStmt() {
+    return Optional.of(this);
   }
 
   @Override

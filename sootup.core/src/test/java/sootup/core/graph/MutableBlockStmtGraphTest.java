@@ -15,9 +15,7 @@ import sootup.core.jimple.common.expr.JNeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.UnknownType;
+import sootup.core.types.*;
 import sootup.core.util.printer.BriefStmtPrinter;
 
 public class MutableBlockStmtGraphTest {
