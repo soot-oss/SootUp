@@ -22,6 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
@@ -53,5 +54,20 @@ public final class JMulExpr extends AbstractFloatBinopExpr {
   @NonNull
   public JMulExpr withOp2(@NonNull Immediate op2) {
     return new JMulExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJMulExpr() {
+    return true;
+  }
+
+  @Override
+  public JMulExpr asJMulExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JMulExpr> toJMulExpr() {
+    return Optional.of(this);
   }
 }

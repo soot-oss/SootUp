@@ -22,6 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
@@ -53,5 +54,20 @@ public final class JDivExpr extends AbstractFloatBinopExpr {
   @NonNull
   public JDivExpr withOp2(@NonNull Immediate op2) {
     return new JDivExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJDivExpr() {
+    return true;
+  }
+
+  @Override
+  public JDivExpr asJDivExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JDivExpr> toJDivExpr() {
+    return Optional.of(this);
   }
 }

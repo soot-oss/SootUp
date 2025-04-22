@@ -23,11 +23,12 @@ package sootup.java.core.types;
  */
 
 import com.google.common.base.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
+import sootup.core.types.*;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
 public class JavaClassType extends ClassType {
@@ -119,5 +120,50 @@ public class JavaClassType extends ClassType {
   @NonNull
   public PackageName getPackageName() {
     return packageName;
+  }
+
+  @Override
+  protected boolean isClassType() {
+    return true;
+  }
+
+  @Override
+  protected boolean isJavaClassType() {
+    return true;
+  }
+
+  @Override
+  protected ClassType asClassType() {
+    return this;
+  }
+
+  @Override
+  protected Type asJavaClassType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<ClassType> toClassType() {
+    return Optional.of(this);
+  }
+
+  @Override
+  protected Optional<Type> toJavaClassType() {
+    return Optional.of(this);
+  }
+
+  @Override
+  protected boolean isReferenceType() {
+    return true;
+  }
+
+  @Override
+  protected ReferenceType asReferenceType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<ReferenceType> toReferenceType() {
+    return Optional.of(this);
   }
 }
