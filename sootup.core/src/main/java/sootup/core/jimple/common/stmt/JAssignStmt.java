@@ -197,6 +197,21 @@ public final class JAssignStmt extends AbstractDefinitionStmt
     }
   }
 
+  @Override
+  public boolean isJAssignStmt() {
+    return true;
+  }
+
+  @Override
+  public JAssignStmt asJAssignStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JAssignStmt> toJAssignStmt() {
+    return Optional.of(this);
+  }
+
   /*
    * (non-Javadoc)
    *

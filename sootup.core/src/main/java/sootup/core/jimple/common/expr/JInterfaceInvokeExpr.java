@@ -29,6 +29,7 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
@@ -117,5 +118,20 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   @Override
   public JInterfaceInvokeExpr withArgs(@NonNull List<Immediate> args) {
     return new JInterfaceInvokeExpr(getBase(), getMethodSignature(), args);
+  }
+
+  @Override
+  public boolean isJInterfaceInvokeExpr() {
+    return true;
+  }
+
+  @Override
+  public JInterfaceInvokeExpr asJInterfaceInvokeExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JInterfaceInvokeExpr> toJInterfaceInvokeExpr() {
+    return Optional.of(this);
   }
 }

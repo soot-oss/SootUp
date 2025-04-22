@@ -22,6 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
@@ -104,5 +105,20 @@ public final class JInstanceOfExpr implements Expr {
   @NonNull
   public JInstanceOfExpr withCheckType(@NonNull Type checkType) {
     return new JInstanceOfExpr(getOp(), checkType);
+  }
+
+  @Override
+  public boolean isJInstanceOfExpr() {
+    return true;
+  }
+
+  @Override
+  public JInstanceOfExpr asJInstanceOfExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JInstanceOfExpr> toJInstanceOfExpr() {
+    return Optional.of(this);
   }
 }

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
+import sootup.core.types.*;
 import sootup.core.validation.FieldRefValidator;
 import sootup.core.validation.ValidationException;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
@@ -32,7 +32,6 @@ public class FieldRefValidatorTest {
 
     ClassType classTypeFieldRefValidator =
         new ClassType() {
-
           @Override
           public String getFullyQualifiedName() {
             return "jimple.FieldRefValidator";

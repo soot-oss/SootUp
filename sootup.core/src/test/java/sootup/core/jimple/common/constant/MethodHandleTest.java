@@ -8,9 +8,8 @@ import sootup.core.jimple.common.constant.MethodHandle.Kind;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
+import sootup.core.types.*;
 import sootup.core.types.PrimitiveType.IntType;
-import sootup.core.types.VoidType;
 
 public class MethodHandleTest {
 
