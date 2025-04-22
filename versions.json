@@ -69,6 +69,11 @@
     }
   },
   {
+    "version": "196-fix-inconsistency-between-static-and-non-static-jimple-factory-methods-1_preview",
+    "title": "PR Preview 196-fix-inconsistency-between-static-and-non-static-jimple-factory-methods-1",
+    "aliases": []
+  },
+  {
     "version": "v2_0_0",
     "title": "v2_0_0",
     "aliases": [
