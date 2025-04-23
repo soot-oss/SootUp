@@ -1,233 +1,238 @@
 package sootup.java.bytecode.frontend.interceptors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableBlockStmtGraph;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
-import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.ref.IdentityRef;
-import sootup.core.jimple.common.stmt.BranchingStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
-import sootup.core.jimple.common.stmt.JGotoStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.Body;
-import sootup.core.model.Position;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
-import sootup.core.types.VoidType;
-import sootup.core.util.ImmutableUtils;
-import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.interceptors.TrapTightener;
+import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.language.JavaJimple;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 /**
  * @author Zun Wang
  */
-@Disabled("FIXME: needs .setTraps() adapted to MutableBlockStmtGraph")
 public class TrapTightenerTest {
-  public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();
+  final JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  final String location =
+      Paths.get(System.getProperty("user.dir")).getParent()
+          + File.separator
+          + "shared-test-resources/interceptors/";
+  final Path path = Paths.get(location + "TrapTightenerExamples.class");
+  List<BodyInterceptor> interceptorsWithTT = Arrays.asList(new TrapTightener());
+  PathBasedAnalysisInputLocation inputLocation =
+      new ClassFileBasedAnalysisInputLocation(
+          path, "", SourceType.Application, Collections.emptyList());
+  PathBasedAnalysisInputLocation inputLocationWithTT =
+      new ClassFileBasedAnalysisInputLocation(path, "", SourceType.Application, interceptorsWithTT);
+  AnalysisInputLocation javaInputLocation = new DefaultRuntimeAnalysisInputLocation();
+  JavaView view = new JavaView(Arrays.asList(inputLocation, javaInputLocation));
+  JavaView viewTT = new JavaView(Arrays.asList(inputLocationWithTT, javaInputLocation));
+  ClassType clazzType = factory.getClassType("TrapTightenerExamples");
 
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
-
-  JavaClassType intType = factory.getClassType("int");
-  JavaClassType classType = factory.getClassType("Test");
-  MethodSignature methodSignature =
-      new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
-  IdentityRef identityRef = JavaJimple.newThisRef(classType);
-
-  // build locals
-  Local l0 = JavaJimple.newLocal("l0", intType);
-  Local l1 = JavaJimple.newLocal("l1", intType);
-  Local l2 = JavaJimple.newLocal("l2", intType);
-  Local l3 = JavaJimple.newLocal("l3", intType);
-
-  ClassType exception = factory.getClassType("java.lang.Throwable");
-  JavaJimple javaJimple = JavaJimple.getInstance();
-  IdentityRef caughtExceptionRef = javaJimple.newCaughtExceptionRef();
-  FallsThroughStmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
-  Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
-
-  // stmts
-  FallsThroughStmt stmt1 =
-      JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
-  FallsThroughStmt stmt2 = JavaJimple.newEnterMonitorStmt(l1, noStmtPositionInfo);
-  FallsThroughStmt stmt3 = JavaJimple.newAssignStmt(l2, l1, noStmtPositionInfo);
-  FallsThroughStmt stmt4 = JavaJimple.newExitMonitorStmt(l2, noStmtPositionInfo);
-  BranchingStmt stmt5 = JavaJimple.newGotoStmt(noStmtPositionInfo);
-
-  FallsThroughStmt stmt6 = JavaJimple.newIdentityStmt(l3, caughtExceptionRef, noStmtPositionInfo);
-  FallsThroughStmt stmt7 =
-      JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
-  FallsThroughStmt stmt8 = JavaJimple.newExitMonitorStmt(l2, noStmtPositionInfo);
-  Stmt stmt9 = JavaJimple.newThrowStmt(l3, noStmtPositionInfo);
-  FallsThroughStmt stmt10 =
-      JavaJimple.newAssignStmt(l2, IntConstant.getInstance(3), noStmtPositionInfo);
-  FallsThroughStmt stmt11 =
-      JavaJimple.newAssignStmt(l2, IntConstant.getInstance(4), noStmtPositionInfo);
-  // trap
-  Trap trap1 = new Trap(exception, stmt2, stmt5, stmt6);
-  Trap trap2 = new Trap(exception, stmt1, stmt5, stmt6);
-  Trap trap3 = new Trap(exception, stmt7, stmt10, stmt6);
-
-  /**
-   *
-   *
-   * <pre>
-   *    l0 := @this Test;
-   *  label1:
-   *    l1 = 1;
-   *    l2 = 2;
-   *    l2 = 3;
-   *  label2:
-   *    goto label4;
-   *  label3:
-   *    l3 := @caughtexception;
-   *    l2 = 4;
-   *    throw l3;
-   *  label4:
-   *    return;
-   *  catch Exception from label1 to label2 with label3;
-   * </pre>
-   *
-   * after run trapTightener
-   *
-   * <pre>
-   *    l0 := @this Test;
-   *    l1 = 1;
-   *  label1:
-   *    l2 = 2;
-   *  label2:
-   *    l2 = 3;
-   *    goto label4;
-   *  label3:
-   *    l3 := @caughtexception;
-   *    l2 = 4;
-   *    throw l3;
-   *  label4:
-   *    return;
-   *  catch Exception from label1 to label2 with label3;
-   * </pre>
-   */
   @Test
-  public void testSimpleBody() {
+  public void testExample1() {
+    MethodSignature methodSignature =
+        factory.getMethodSignature(clazzType, "example1", "void", Collections.emptyList());
+    Body bodyAfterTT = viewTT.getMethod(methodSignature).get().getBody();
+    String exceptedBody =
+        "{\n"
+            + "    TrapTightenerExamples this;\n"
+            + "    unknown $stack4, l1, l2, l3;\n"
+            + "\n"
+            + "\n"
+            + "    this := @this: TrapTightenerExamples;\n"
+            + "    l1 = 1;\n"
+            + "    l2 = 0;\n"
+            + "    l3 = l1;\n"
+            + "\n"
+            + "  label1:\n"
+            + "    l2 = l3 / l1;\n"
+            + "\n"
+            + "  label2:\n"
+            + "    goto label4;\n"
+            + "\n"
+            + "  label3:\n"
+            + "    $stack4 := @caughtexception;\n"
+            + "    l3 = $stack4;\n"
+            + "\n"
+            + "    throw l3;\n"
+            + "\n"
+            + "  label4:\n"
+            + "    return;\n"
+            + "\n"
+            + " catch java.lang.ArithmeticException from label1 to label2 with label3;\n"
+            + "}\n";
 
-    Body body = createSimpleBody();
-    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
-
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    // modify exceptionalStmtGraph
-    stmtGraph.clearExceptionalEdges(stmt1);
-    stmtGraph.clearExceptionalEdges(stmt10);
-
-    TrapTightener trapTightener = new TrapTightener();
-    trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
-
-    List<Trap> excepted = new ArrayList<>();
-    excepted.add(trap3);
-    briefStmtPrinter.buildTraps(stmtGraph);
-    List<Trap> actual = briefStmtPrinter.getTraps();
-    AssertUtils.assertTrapsEquiv(excepted, actual);
+    assertEquals(exceptedBody, bodyAfterTT.toString());
   }
 
-  /**
-   *
-   *
-   * <pre>
-   *    l0 := @this Test;
-   *    l1 = 1;
-   *  label1:
-   *    entermonitor l1;
-   *    l2 = l1;
-   *    exitmonitor l2;
-   *  label2:
-   *    goto label4;
-   *  label3:
-   *    l3 := @caughtexception;
-   *    l2 = 2;
-   *    exitmonitor l2;
-   *    throw l3;
-   *  label4:
-   *    return;
-   *  catch Exception from label1 to label2 with label3;
-   * </pre>
-   */
   @Test
-  public void testMonitoredBody() {
-
-    Body.BodyBuilder builder = Body.builder(creatBodyWithMonitor(), Collections.emptySet());
-
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    // modify exceptionalStmtGraph
-    stmtGraph.clearExceptionalEdges(stmt2);
-    stmtGraph.clearExceptionalEdges(stmt4);
-    //  stmtGraph.putEdge(, stmt6);
-
-    TrapTightener trapTightener = new TrapTightener();
-    trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
-
-    List<Trap> excepted = new ArrayList<>();
-    excepted.add(trap1);
-    briefStmtPrinter.buildTraps(stmtGraph);
-    List<Trap> actual = briefStmtPrinter.getTraps();
-    AssertUtils.assertTrapsEquiv(excepted, actual);
+  public void testExample2() {
+    MethodSignature methodSignature =
+        factory.getMethodSignature(clazzType, "example2", "void", Collections.emptyList());
+    System.out.println(view.getMethod(methodSignature).get().getBody());
+    Body bodyAfterTT = viewTT.getMethod(methodSignature).get().getBody();
+    String exceptedBody =
+        "{\n"
+            + "    TrapTightenerExamples this;\n"
+            + "    unknown $stack6, l1, l2, l3, l4, l5;\n"
+            + "\n"
+            + "\n"
+            + "    this := @this: TrapTightenerExamples;\n"
+            + "    l1 = 1;\n"
+            + "    l2 = 0;\n"
+            + "    l3 = 2;\n"
+            + "\n"
+            + "  label1:\n"
+            + "    l4 = l2 / l1;\n"
+            + "\n"
+            + "  label2:\n"
+            + "    l5 = 0;\n"
+            + "\n"
+            + "  label3:\n"
+            + "    l5 = l1 / l2;\n"
+            + "\n"
+            + "  label4:\n"
+            + "    goto label6;\n"
+            + "\n"
+            + "  label5:\n"
+            + "    $stack6 := @caughtexception;\n"
+            + "    l3 = $stack6;\n"
+            + "\n"
+            + "    throw l3;\n"
+            + "\n"
+            + "  label6:\n"
+            + "    return;\n"
+            + "\n"
+            + " catch java.lang.ArithmeticException from label1 to label2 with label5;\n"
+            + " catch java.lang.ArithmeticException from label3 to label4 with label5;\n"
+            + "}\n";
+    assertEquals(exceptedBody, bodyAfterTT.toString());
   }
 
-  private Body createSimpleBody() {
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
-
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
-    builder.setLocals(locals);
-
-    // set graph
-    graph.addBlock(Arrays.asList(stmt1, stmt7, stmt10), Collections.singletonMap(exception, stmt6));
-    graph.putEdge(startingStmt, stmt1);
-    graph.putEdge(stmt10, stmt5);
-    graph.putEdge(stmt6, stmt11);
-    graph.putEdge(stmt11, stmt9);
-    graph.putEdge(stmt5, JGotoStmt.BRANCH_IDX, ret);
-
-    // build startingStmt
-    graph.setStartingStmt(startingStmt);
-
-    return builder.build();
+  @Test
+  public void testExample3() {
+    MethodSignature methodSignature =
+        factory.getMethodSignature(clazzType, "example3", "void", Collections.emptyList());
+    Body bodyAfterTT = viewTT.getMethod(methodSignature).get().getBody();
+    String exceptedBody =
+        "{\n"
+            + "    TrapTightenerExamples this;\n"
+            + "    unknown $stack4, l1, l2, l3;\n"
+            + "\n"
+            + "\n"
+            + "    this := @this: TrapTightenerExamples;\n"
+            + "    l1 = 1;\n"
+            + "    l2 = 0;\n"
+            + "\n"
+            + "  label1:\n"
+            + "    l3 = l2 / l1;\n"
+            + "\n"
+            + "  label2:\n"
+            + "    l1 = l2;\n"
+            + "\n"
+            + "    goto label4;\n"
+            + "\n"
+            + "  label3:\n"
+            + "    $stack4 := @caughtexception;\n"
+            + "    l3 = $stack4;\n"
+            + "\n"
+            + "    throw l3;\n"
+            + "\n"
+            + "  label4:\n"
+            + "    return;\n"
+            + "\n"
+            + " catch java.lang.ArithmeticException from label1 to label2 with label3;\n"
+            + "}\n";
+    assertEquals(exceptedBody, bodyAfterTT.toString());
   }
 
-  private Body creatBodyWithMonitor() {
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
+  @Test
+  public void testExample4() {
+    MethodSignature methodSignature =
+        factory.getMethodSignature(clazzType, "example4", "void", Collections.emptyList());
+    Body bodyAfterTT = viewTT.getMethod(methodSignature).get().getBody();
+    String exceptedBody =
+        "{\n"
+            + "    TrapTightenerExamples this;\n"
+            + "    unknown $stack4, l1, l2, l3;\n"
+            + "\n"
+            + "\n"
+            + "    this := @this: TrapTightenerExamples;\n"
+            + "    l1 = 1;\n"
+            + "    l2 = 0;\n"
+            + "    l1 = l2;\n"
+            + "\n"
+            + "    goto label1;\n"
+            + "\n"
+            + "  label1:\n"
+            + "    return;\n"
+            + "}\n";
+    assertEquals(exceptedBody, bodyAfterTT.toString());
+  }
 
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
-    builder.setLocals(locals);
-
-    // set graph
-    graph.addBlock(Arrays.asList(stmt6, stmt7, stmt8, stmt9), Collections.emptyMap());
-    graph.addBlock(Arrays.asList(startingStmt, stmt1), Collections.emptyMap());
-    graph.addBlock(Arrays.asList(stmt2, stmt3, stmt4), Collections.singletonMap(exception, stmt6));
-    graph.putEdge(stmt1, stmt2);
-    graph.putEdge(stmt4, stmt5);
-    graph.putEdge(stmt5, JGotoStmt.BRANCH_IDX, ret);
-
-    // build startingStmt
-    graph.setStartingStmt(startingStmt);
-
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    return builder.build();
+  @Test
+  public void testExample5() {
+    MethodSignature methodSignature =
+        factory.getMethodSignature(clazzType, "example5", "void", Collections.emptyList());
+    Body bodyAfterTT = viewTT.getMethod(methodSignature).get().getBody();
+    String exceptedBody =
+        "{\n"
+            + "    TrapTightenerExamples this;\n"
+            + "    unknown $stack7, $stack8, $stack9, l1, l2, l3, l4, l5, l6;\n"
+            + "\n"
+            + "\n"
+            + "    this := @this: TrapTightenerExamples;\n"
+            + "    l1 = 1;\n"
+            + "    l2 = 0;\n"
+            + "    $stack7 = newarray (int)[3];\n"
+            + "    $stack7[0] = 1;\n"
+            + "    $stack7[1] = 2;\n"
+            + "    $stack7[2] = 3;\n"
+            + "    l3 = $stack7;\n"
+            + "    l4 = 2;\n"
+            + "\n"
+            + "  label1:\n"
+            + "    l5 = l4 / l2;\n"
+            + "\n"
+            + "  label2:\n"
+            + "    l3[3] = l5;\n"
+            + "\n"
+            + "  label3:\n"
+            + "    l6 = 5;\n"
+            + "\n"
+            + "    goto label6;\n"
+            + "\n"
+            + "  label4:\n"
+            + "    $stack8 := @caughtexception;\n"
+            + "    l4 = $stack8;\n"
+            + "\n"
+            + "    throw l4;\n"
+            + "\n"
+            + "  label5:\n"
+            + "    $stack9 := @caughtexception;\n"
+            + "    l4 = $stack9;\n"
+            + "\n"
+            + "    throw l4;\n"
+            + "\n"
+            + "  label6:\n"
+            + "    return;\n"
+            + "\n"
+            + " catch java.lang.ArithmeticException from label1 to label2 with label5;\n"
+            + " catch java.lang.NullPointerException from label2 to label3 with label4;\n"
+            + "}\n";
+    assertEquals(exceptedBody, bodyAfterTT.toString());
   }
 }

@@ -640,8 +640,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
    * @return the splitted block with the splitStmt as head
    */
   @NonNull
-  private MutableBasicBlock splitAndExcludeStmtFromBlock(
+  public MutableBasicBlock splitAndExcludeStmtFromBlock(
       @NonNull Stmt splitStmt, MutableBasicBlock block) {
+
     if (block.getStmtCount() <= 1) {
       // just a single stmt in the block -> e.g. it is already the block we want
       return block;
@@ -687,10 +688,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         restOfOrigBlock.linkSuccessor(i, successor);
       }
       block.clearSuccessorBlocks();
+      if (block != excludedFromOrigBlock) {
+        block.linkSuccessor(0, excludedFromOrigBlock);
+      }
 
       // link third/leftover block with previous stmts from the separated block
       excludedFromOrigBlock.linkSuccessor(0, restOfOrigBlock);
-      block.clearSuccessorBlocks();
 
       // add blocks exceptional flows
       block
@@ -704,7 +707,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       blocks.add(restOfOrigBlock);
 
       // cleanup original block -> "beforeBlock" -> remove now copied Stmts
-      for (int i = blockStmts.size() - 1; i >= stmtIdx; i--) {
+      int toIdx = stmtIdx;
+      if (block == excludedFromOrigBlock) {
+        toIdx++;
+      }
+      for (int i = blockStmts.size() - 1; i >= toIdx; i--) {
         block.removeStmt(i);
       }
 
@@ -728,7 +735,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   /** Merges block into Predecessor/Successor if possible. */
-  private void tryMergeIntoSurroundingBlocks(@NonNull MutableBasicBlock block) {
+  public void tryMergeIntoSurroundingBlocks(@NonNull MutableBasicBlock block) {
     // merge with predecessor if possible
     block = tryMergeWithPredecessorBlock(block);
     // and/or merge with successorBlock
