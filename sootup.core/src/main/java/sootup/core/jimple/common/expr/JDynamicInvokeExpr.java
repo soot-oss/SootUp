@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Value;
@@ -144,7 +145,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr {
     final MethodSubSignature mSubSig = methodSignature.getSubSignature();
     // dont print methodname from methodsubsignature in the usual way
     up.literal(
-        " \"" + Jimple.escape(mSubSig.getName()) + "\" <" + getNamelessSubSig(mSubSig) + ">(");
+        " \"" + JimpleUtils.escape(mSubSig.getName()) + "\" <" + getNamelessSubSig(mSubSig) + ">(");
     argsToPrinter(up);
 
     up.literal(") ");

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.EagerInputLocation;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.model.*;
 import sootup.core.signatures.MethodSubSignature;
@@ -504,34 +504,39 @@ public class JimpleConverterTest {
 
   @Test
   public void testEscaping() {
-    assertEquals("αρετη", Jimple.unescape("\\u03b1\\u03c1\\u03b5\\u03c4\\u03b7"));
+    assertEquals("αρετη", JimpleUtils.unescape("\\u03b1\\u03c1\\u03b5\\u03c4\\u03b7"));
 
-    assertEquals("a", Jimple.escape("a"));
-    assertEquals("name$morename", Jimple.escape("name$morename"));
-    assertEquals("i0", Jimple.escape("i0"));
+    assertEquals("a", JimpleUtils.escape("a"));
+    assertEquals("name$morename", JimpleUtils.escape("name$morename"));
+    assertEquals("i0", JimpleUtils.escape("i0"));
 
     // keywords
-    assertEquals("\"class\"", Jimple.escape("class"));
-    assertEquals("\"throws\"", Jimple.escape("throws"));
+    assertEquals("\"class\"", JimpleUtils.escape("class"));
+    assertEquals("\"throws\"", JimpleUtils.escape("throws"));
 
     // unescape from old soot too (escaped package names partially)
-    assertEquals("java.annotation.something", Jimple.unescape("java.\"annotation\".something"));
-    assertEquals("java.annotation.something", Jimple.unescape("\"java\".\"annotation\".something"));
-    assertEquals("java.annotation.something", Jimple.unescape("java.\"annotation\".something"));
+    assertEquals(
+        "java.annotation.something", JimpleUtils.unescape("java.\"annotation\".something"));
+    assertEquals(
+        "java.annotation.something", JimpleUtils.unescape("\"java\".\"annotation\".something"));
+    assertEquals(
+        "java.annotation.something", JimpleUtils.unescape("java.\"annotation\".something"));
 
     // "normal" escaping / unescaping of a single item
     assertEquals(
-        "stringWithEscaped\"something", Jimple.unescape("\"stringWithEscaped\\\"something\""));
-    assertEquals("java.annotation.something", Jimple.unescape("\"java.\"annotation\".something\""));
+        "stringWithEscaped\"something", JimpleUtils.unescape("\"stringWithEscaped\\\"something\""));
+    assertEquals(
+        "java.annotation.something", JimpleUtils.unescape("\"java.\"annotation\".something\""));
 
     assertNotEquals(
-        "stringWithEscaped\\\"something", Jimple.unescape("\"stringWithEscaped\"something\""));
+        "stringWithEscaped\\\"something", JimpleUtils.unescape("\"stringWithEscaped\"something\""));
     assertNotEquals(
-        "stringWithEscaped\\\"something", Jimple.unescape("\"stringWithEscaped\"something"));
-    assertEquals("stringWithEscaped\"something", Jimple.unescape("stringWithEscaped\\\"something"));
+        "stringWithEscaped\\\"something", JimpleUtils.unescape("\"stringWithEscaped\"something"));
+    assertEquals(
+        "stringWithEscaped\"something", JimpleUtils.unescape("stringWithEscaped\\\"something"));
 
     // from: usual string constant assignment
-    assertEquals("usual string", Jimple.unescape("\"usual string\""));
+    assertEquals("usual string", JimpleUtils.unescape("\"usual string\""));
   }
 
   @Test
@@ -615,7 +620,7 @@ public class JimpleConverterTest {
     }
 
     {
-      assertEquals("'class'", Jimple.unescape("\"'class'\""));
+      assertEquals("'class'", JimpleUtils.unescape("\"'class'\""));
       CharStream cs =
           CharStreams.fromString(
               "public class \"'notescapedquotesinstring'\" extends java.lang.Object \n {}");
@@ -633,7 +638,7 @@ public class JimpleConverterTest {
           CharStreams.fromString("public class \\'class\\' extends java.lang.Object \n {}");
       SootClass sc = parseJimpleClass(cs);
 
-      assertEquals("'class'", Jimple.unescape("\\'class\\'"));
+      assertEquals("'class'", JimpleUtils.unescape("\\'class\\'"));
       assertEquals("'class'", sc.getClassSource().getClassType().toString());
     }
 
@@ -653,14 +658,14 @@ public class JimpleConverterTest {
     assertEquals("'", StringTools.getUnEscapedStringOf("\\'"));
     assertEquals("\"'", StringTools.getUnEscapedStringOf("\"\\'"));
 
-    assertEquals("'class'", Jimple.unescape("\"'class'\""));
-    assertEquals("'class'", Jimple.unescape("\"\\'class\\'\""));
-    assertEquals("'class'", Jimple.unescape("\\'class\\'"));
+    assertEquals("'class'", JimpleUtils.unescape("\"'class'\""));
+    assertEquals("'class'", JimpleUtils.unescape("\"\\'class\\'\""));
+    assertEquals("'class'", JimpleUtils.unescape("\\'class\\'"));
 
     // necessary inner escaping
-    assertEquals("\"class\"", Jimple.unescape("\"\\\"class\\\"\""));
+    assertEquals("\"class\"", JimpleUtils.unescape("\"\\\"class\\\"\""));
     // unnecessary inner escaping
-    assertEquals("'class'", Jimple.unescape("\"'class'\""));
+    assertEquals("'class'", JimpleUtils.unescape("\"'class'\""));
   }
 
   @Test

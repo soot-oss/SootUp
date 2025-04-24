@@ -601,7 +601,7 @@ public class DexBody {
             Stmt caughtStmt =
                 Jimple.newIdentityStmt(
                     local,
-                    JavaJimple.getInstance().newCaughtExceptionRef(),
+                    JavaJimple.newCaughtExceptionRef(),
                     StmtPositionInfo.getNoStmtPositionInfo());
             insertBefore(caughtStmt, instruction.getStmt());
             handlerStmt = caughtStmt;

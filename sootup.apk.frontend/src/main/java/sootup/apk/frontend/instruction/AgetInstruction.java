@@ -46,7 +46,7 @@ public class AgetInstruction extends DexLibAbstractInstruction {
     Local arrayBase = body.getRegisterLocal(aGetInstr.getRegisterB());
     Local index = body.getRegisterLocal(aGetInstr.getRegisterC());
 
-    JArrayRef jArrayRef = JavaJimple.getInstance().newArrayRef(arrayBase, index);
+    JArrayRef jArrayRef = JavaJimple.newArrayRef(arrayBase, index);
     Local l = body.getRegisterLocal(dest);
 
     JAssignStmt assignStmt =

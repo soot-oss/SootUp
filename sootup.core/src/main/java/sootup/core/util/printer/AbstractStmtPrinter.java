@@ -25,7 +25,7 @@ package sootup.core.util.printer;
 import java.util.HashMap;
 import java.util.Map;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -124,7 +124,7 @@ public abstract class AbstractStmtPrinter extends StmtPrinter {
     if (useImports) {
       if (type instanceof ClassType) {
         if (addImport(type)) {
-          output.append(Jimple.escape(((ClassType) type).getClassName()));
+          output.append(JimpleUtils.escape(((ClassType) type).getClassName()));
         }
       } else if (type instanceof ArrayType) {
         ((ArrayType) type).toString(this);
@@ -133,7 +133,7 @@ public abstract class AbstractStmtPrinter extends StmtPrinter {
         output.append(type.toString());
       }
     } else {
-      output.append(Jimple.escape(type.toString()));
+      output.append(JimpleUtils.escape(type.toString()));
     }
   }
 

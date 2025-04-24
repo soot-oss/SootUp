@@ -28,7 +28,7 @@ import org.antlr.v4.runtime.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.model.FullPosition;
 import sootup.core.model.Position;
 import sootup.core.signatures.FieldSignature;
@@ -61,7 +61,7 @@ public class JimpleConverterUtil {
   }
 
   public Type getType(String typename) {
-    typename = Jimple.unescape(typename);
+    typename = JimpleUtils.unescape(typename);
     PackageName packageName = imports.get(typename);
     return packageName == null
         ? identifierFactory.getType(typename)
@@ -69,7 +69,7 @@ public class JimpleConverterUtil {
   }
 
   public ClassType getClassType(String typename) {
-    typename = Jimple.unescape(typename);
+    typename = JimpleUtils.unescape(typename);
     PackageName packageName = this.imports.get(typename);
     return packageName == null
         ? this.identifierFactory.getClassType(typename)
@@ -107,7 +107,7 @@ public class JimpleConverterUtil {
       return;
     }
     final ClassType classType =
-        identifierFactory.getClassType(Jimple.unescape(item.location.getText()));
+        identifierFactory.getClassType(JimpleUtils.unescape(item.location.getText()));
     final PackageName duplicate =
         imports.putIfAbsent(classType.getClassName(), classType.getPackageName());
     if (duplicate != null && !duplicate.equals(classType.getPackageName())) {
@@ -152,15 +152,15 @@ public class JimpleConverterUtil {
           "MethodSignature is not well formed.", fileUri, buildPositionFromCtx(ctx));
     }
     Type type = getType(typeCtx.getText());
-    String methodname = Jimple.unescape(method_nameCtx.getText());
+    String methodname = JimpleUtils.unescape(method_nameCtx.getText());
     List<Type> params = getTypeList(ctx.type_list());
     return identifierFactory.getMethodSubSignature(methodname, type, params);
   }
 
   public FieldSignature getFieldSignature(JimpleParser.Field_signatureContext ctx) {
-    String classname = Jimple.unescape(ctx.classname.getText());
-    Type type = getType(Jimple.unescape(ctx.type().getText()));
-    String fieldname = Jimple.unescape(ctx.fieldname.getText());
+    String classname = JimpleUtils.unescape(ctx.classname.getText());
+    Type type = getType(JimpleUtils.unescape(ctx.type().getText()));
+    String fieldname = JimpleUtils.unescape(ctx.fieldname.getText());
     return identifierFactory.getFieldSignature(fieldname, getClassType(classname), type);
   }
 
@@ -175,7 +175,7 @@ public class JimpleConverterUtil {
     }
     List<Type> list = new ArrayList<>(size);
     for (JimpleParser.TypeContext typeContext : typeList) {
-      list.add(identifierFactory.getType(Jimple.unescape(typeContext.getText())));
+      list.add(identifierFactory.getType(JimpleUtils.unescape(typeContext.getText())));
     }
     return list;
   }
@@ -191,7 +191,7 @@ public class JimpleConverterUtil {
     }
     List<ClassType> list = new ArrayList<>(size);
     for (JimpleParser.TypeContext typeContext : typeList) {
-      list.add(identifierFactory.getClassType(Jimple.unescape(typeContext.getText())));
+      list.add(identifierFactory.getClassType(JimpleUtils.unescape(typeContext.getText())));
     }
     return list;
   }
@@ -207,7 +207,7 @@ public class JimpleConverterUtil {
     }
     Set<ClassType> set = new HashSet<>(size);
     for (JimpleParser.TypeContext typeContext : typeList) {
-      set.add(identifierFactory.getClassType(Jimple.unescape(typeContext.getText())));
+      set.add(identifierFactory.getClassType(JimpleUtils.unescape(typeContext.getText())));
     }
     return set;
   }

@@ -129,8 +129,7 @@ public class JAssignStmtTest {
     jAssignStmtField.getFieldRef();
 
     // test JFieldRef cast for ArrayRef - should not throw an Exception
-    final JArrayRef jArrayRef =
-        JavaJimple.getInstance().newArrayRef(someLocal, IntConstant.getInstance(2));
+    final JArrayRef jArrayRef = JavaJimple.newArrayRef(someLocal, IntConstant.getInstance(2));
     final JAssignStmt jAssignStmtArr =
         Jimple.newAssignStmt(someLocal, jArrayRef, StmtPositionInfo.getNoStmtPositionInfo());
     jAssignStmtArr.getArrayRef();

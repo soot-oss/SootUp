@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Value;
@@ -57,7 +58,7 @@ public final class JInstanceOfExpr implements Expr {
     up.literal(" ");
     up.literal(Jimple.INSTANCEOF);
     up.literal(" ");
-    up.literal(Jimple.escape(checkType.toString()));
+    up.literal(JimpleUtils.escape(checkType.toString()));
   }
 
   @Override

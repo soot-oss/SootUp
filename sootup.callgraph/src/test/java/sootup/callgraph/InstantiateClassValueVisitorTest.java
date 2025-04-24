@@ -140,9 +140,9 @@ public class InstantiateClassValueVisitorTest {
     listWithAllValues.add(IntConstant.getInstance(3));
     listWithAllValues.add(LongConstant.getInstance(3L));
     listWithAllValues.add(stringConstant);
-    listWithAllValues.add(JavaJimple.getInstance().newEnumConstant("3", "EnumTest"));
-    listWithAllValues.add(JavaJimple.getInstance().newClassConstant("java/lang/String"));
-    listWithAllValues.add(JavaJimple.getInstance().newMethodHandle(toStringMethod, 5));
+    listWithAllValues.add(JavaJimple.newEnumConstant("3", "EnumTest"));
+    listWithAllValues.add(JavaJimple.newClassConstant("java/lang/String"));
+    listWithAllValues.add(JavaJimple.newMethodHandle(toStringMethod, 5));
     listWithAllValues.add(new MethodType(toStringMethod.getSubSignature(), StringClass));
     listWithAllValues.add(new JAddExpr(stringConstant, stringConstant));
     listWithAllValues.add(new JAndExpr(stringConstant, stringConstant));
