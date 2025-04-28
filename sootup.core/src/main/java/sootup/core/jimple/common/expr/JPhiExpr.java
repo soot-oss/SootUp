@@ -200,4 +200,19 @@ public final class JPhiExpr implements Expr {
     v.casePhiExpr(this);
     return v;
   }
+
+  @Override
+  public boolean isJPhiExpr() {
+    return true;
+  }
+
+  @Override
+  public JPhiExpr asJPhiExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JPhiExpr> toJPhiExpr() {
+    return Optional.of(this);
+  }
 }

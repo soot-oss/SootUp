@@ -22,6 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
@@ -53,5 +54,20 @@ public final class JLeExpr extends AbstractConditionExpr {
   @NonNull
   public JLeExpr withOp2(@NonNull Immediate op2) {
     return new JLeExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJLeExpr() {
+    return true;
+  }
+
+  @Override
+  public JLeExpr asJLeExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JLeExpr> toJLeExpr() {
+    return Optional.of(this);
   }
 }

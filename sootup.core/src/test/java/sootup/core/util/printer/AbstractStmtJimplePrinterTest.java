@@ -9,8 +9,7 @@ import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
-import sootup.core.types.VoidType;
+import sootup.core.types.*;
 
 public class AbstractStmtJimplePrinterTest {
 

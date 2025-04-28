@@ -31,9 +31,7 @@ import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.stmt.AbstractStmt;
-import sootup.core.jimple.common.stmt.BranchingStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.model.Body;
 import sootup.core.util.printer.StmtPrinter;
@@ -210,6 +208,21 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
     stmtPrinter.newline();
     stmtPrinter.handleIndent();
     stmtPrinter.literal("}");
+  }
+
+  @Override
+  public boolean isJSwitchStmt() {
+    return true;
+  }
+
+  @Override
+  public JSwitchStmt asJSwitchStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JSwitchStmt> toJSwitchStmt() {
+    return Optional.of(this);
   }
 
   @NonNull

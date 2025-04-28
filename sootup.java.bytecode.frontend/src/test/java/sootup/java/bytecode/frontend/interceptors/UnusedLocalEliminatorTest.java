@@ -59,7 +59,6 @@ public class UnusedLocalEliminatorTest {
 
   private static Body.BodyBuilder createBody(boolean unusedLocals) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-    JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
@@ -76,7 +75,7 @@ public class UnusedLocalEliminatorTest {
     }
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str"), noPositionInfo);
     FallsThroughStmt bToA =
         JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);

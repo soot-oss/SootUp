@@ -32,7 +32,6 @@ import sootup.java.core.views.JavaView;
 public class LocalPackerTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  JavaJimple javaJimple = JavaJimple.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
   JavaClassType classType = factory.getClassType("Test");
@@ -43,7 +42,7 @@ public class LocalPackerTest {
 
   IdentityRef identityRef0 = JavaJimple.newParameterRef(intType, 0);
   IdentityRef identityRef1 = JavaJimple.newParameterRef(intType, 1);
-  IdentityRef caughtExceptionRef = javaJimple.newCaughtExceptionRef();
+  IdentityRef caughtExceptionRef = JavaJimple.newCaughtExceptionRef();
 
   // build locals
   Local l0 = JavaJimple.newLocal("l0", classType);

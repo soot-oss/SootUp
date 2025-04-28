@@ -387,8 +387,7 @@ public final class AsmUtil {
         // is a class constant
         // transform asm Type to ClassConstant
         ClassConstant classConstant =
-            JavaJimple.getInstance()
-                .newClassConstant(((org.objectweb.asm.Type) annotationValue).toString());
+            JavaJimple.newClassConstant(((org.objectweb.asm.Type) annotationValue).toString());
         return ConstantUtil.fromObject(classConstant);
       }
     }
