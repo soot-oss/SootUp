@@ -3,3 +3,6 @@ coverage:
     project:
       default:
         threshold: 1%
+  ignore:
+    - "sootup.examples"
+    - "sootup.qilin"
