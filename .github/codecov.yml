@@ -6,3 +6,53 @@ coverage:
   ignore:
     - "sootup.examples"
     - "sootup.qilin"
+
+  comment:
+    layout: "header, diff, flags, components"  # show component info in the PR comment
+
+  component_management:
+    default_rules: # default rules that will be inherited by all components
+      statuses:
+        - type: project # in this case every component that doens't have a status defined will have a project type one
+          target: auto
+    individual_components:
+      - component_id: sootup.core  # this is an identifier that should not be changed
+        name: core  # this is a display name, and can be changed freely
+        paths:
+          - sootup.core/**
+      - component_id: sootup.java.core  # this is an identifier that should not be changed
+        name: java.core  # this is a display name, and can be changed freely
+        paths:
+          - sootup.java.core/**
+      - component_id: sootup.java.bytecode.frontend  # this is an identifier that should not be changed
+        name: java.bytecode.frontend  # this is a display name, and can be changed freely
+        paths:
+          - sootup.java.bytecode.frontend/**
+      - component_id: sootup.jimple.frontend  # this is an identifier that should not be changed
+        name: jimple.frontend  # this is a display name, and can be changed freely
+        paths:
+          - sootup.jimple.frontend/**
+      - component_id: sootup.apk.frontend  # this is an identifier that should not be changed
+        name: apk.frontend  # this is a display name, and can be changed freely
+        paths:
+          - sootup.apk.frontend/**
+      - component_id: sootup.interceptors  # this is an identifier that should not be changed
+        name: interceptors  # this is a display name, and can be changed freely
+        paths:
+          - sootup.interceptors/**
+      - component_id: sootup.callgraph  # this is an identifier that should not be changed
+        name: callgraph  # this is a display name, and can be changed freely
+        paths:
+          - sootup.callgraph/**
+      - component_id: sootup.codepropertygraph  # this is an identifier that should not be changed
+        name: codepropertygraph  # this is a display name, and can be changed freely
+        paths:
+          - sootup.codepropertygraph/**
+      - component_id: sootup.analysis.intraprocedural  # this is an identifier that should not be changed
+        name: analysis.intraprocedural  # this is a display name, and can be changed freely
+        paths:
+          - sootup.analysis.intraprocedural/**
+      - component_id: sootup.analysis.interprocedural  # this is an identifier that should not be changed
+        name: analysis.interprocedural  # this is a display name, and can be changed freely
+        paths:
+          - sootup.analysis.interprocedural
