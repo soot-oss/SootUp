@@ -22,13 +22,15 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
 import sootup.core.util.printer.BriefStmtPrinter;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootClassSourceAdapter;
 import sootup.java.core.views.JavaView;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
 
 public class JimpleConverterTest {
 
-  private SootClass parseJimpleClass(CharStream cs) throws ResolveException {
+  private OverridingClassSource parseJimpleClass(CharStream cs) throws ResolveException {
     JimpleConverter jimpleVisitor = new JimpleConverter();
     EagerInputLocation eagerInputLocation = new EagerInputLocation();
     final OverridingClassSource scs =
@@ -38,14 +40,20 @@ public class JimpleConverterTest {
             Paths.get(""),
             Collections.emptyList(),
             new JavaView(eagerInputLocation));
-    return new SootClass(scs, SourceType.Application);
+    return scs;
   }
 
   @Test
   public void parseMinimalClass() {
 
     CharStream cs = CharStreams.fromString("class MinClass \n { }");
-    parseJimpleClass(cs);
+    OverridingClassSource overridingClassSource = parseJimpleClass(cs);
+    SootClass sootClass = new SootClass(overridingClassSource, SourceType.Application);
+    JavaSootClass javaSootClass =
+        JavaSootClassSourceAdapter.adapt(overridingClassSource).buildClass(SourceType.Application);
+    assertEquals(sootClass.getMethods().size(), javaSootClass.getMethods().size());
+    assertEquals(sootClass.getFields().size(), javaSootClass.getFields().size());
+    assertEquals(sootClass.getName(), javaSootClass.getName());
   }
 
   @Test
@@ -280,7 +288,7 @@ public class JimpleConverterTest {
                 + "/* SecondComment */"
                 + "} \n");
 
-    SootClass sc = parseJimpleClass(cs);
+    SootClass sc = new SootClass(parseJimpleClass(cs), SourceType.Application);
     assertTrue(
         sc.getMethod(
                 new MethodSubSignature("another", Collections.emptyList(), VoidType.getInstance()))
@@ -547,14 +555,14 @@ public class JimpleConverterTest {
     {
       CharStream cs =
           CharStreams.fromString("public class escaped.'class' extends java.lang.Object {}");
-      SootClass sc = parseJimpleClass(cs);
+      SootClass sc = new SootClass(parseJimpleClass(cs), SourceType.Application);
       assertEquals("escaped.class", sc.getClassSource().getClassType().toString());
     }
     // old kind of escaping: at the beginning
     {
       CharStream cs =
           CharStreams.fromString("public class 'class'.is.escaped extends java.lang.Object {}");
-      SootClass sc = parseJimpleClass(cs);
+      SootClass sc = new SootClass(parseJimpleClass(cs), SourceType.Application);
       assertEquals("class.is.escaped", sc.getClassSource().getClassType().toString());
     }
 
@@ -563,7 +571,7 @@ public class JimpleConverterTest {
       CharStream cs =
           CharStreams.fromString(
               "public class some.'pckg'.'class'.More extends java.lang.Object {}");
-      SootClass sc = parseJimpleClass(cs);
+      SootClass sc = new SootClass(parseJimpleClass(cs), SourceType.Application);
       assertEquals("some.pckg.class.More", sc.getClassSource().getClassType().toString());
     }
 
@@ -571,7 +579,7 @@ public class JimpleConverterTest {
       // current escaping
       CharStream cs =
           CharStreams.fromString("public class 'annotationinterface' extends java.lang.Object {}");
-      SootClass sc = parseJimpleClass(cs);
+      SootClass sc = new SootClass(parseJimpleClass(cs), SourceType.Application);
       assertEquals("annotationinterface", sc.getClassSource().getClassType().toString());
     }
 
@@ -579,7 +587,7 @@ public class JimpleConverterTest {
       // no escaping needed as "class" is not considered a token if its nested into more
       CharStream cs =
           CharStreams.fromString("public class some.pckg.class extends java.lang.Object \n {}");
-      SootClass sc = parseJimpleClass(cs);
+      SootClass sc = new SootClass(parseJimpleClass(cs), SourceType.Application);
       assertEquals("some.pckg.class", sc.getClassSource().getClassType().toString());
     }
 
@@ -598,7 +606,7 @@ public class JimpleConverterTest {
       CharStream cs =
           CharStreams.fromString(
               "public class \\'some.pckg.ClassObj\\' extends java.lang.Object \n {}");
-      SootClass sc = parseJimpleClass(cs);
+      SootClass sc = new SootClass(parseJimpleClass(cs), SourceType.Application);
       assertEquals("'some.pckg.ClassObj'", sc.getClassSource().getClassType().toString());
     }
 
@@ -607,7 +615,7 @@ public class JimpleConverterTest {
       CharStream cs =
           CharStreams.fromString(
               "public class 'some.'.pckg.'.ClassObj' extends java.lang.Object \n {}");
-      SootClass sc = parseJimpleClass(cs);
+      SootClass sc = new SootClass(parseJimpleClass(cs), SourceType.Application);
       assertEquals("some..pckg..ClassObj", sc.getClassSource().getClassType().toString());
     }
 
@@ -616,7 +624,7 @@ public class JimpleConverterTest {
       CharStream cs =
           CharStreams.fromString(
               "public class some.\\'.pckg.\\'.ClassObj extends java.lang.Object \n {}");
-      SootClass sc = parseJimpleClass(cs);
+      SootClass sc = new SootClass(parseJimpleClass(cs), SourceType.Application);
       assertEquals("some.'.pckg.'.ClassObj", sc.getClassSource().getClassType().toString());
     }
 
@@ -637,7 +645,7 @@ public class JimpleConverterTest {
       // escaped quotes in escaped sequence
       CharStream cs =
           CharStreams.fromString("public class \\'class\\' extends java.lang.Object \n {}");
-      SootClass sc = parseJimpleClass(cs);
+      SootClass sc = new SootClass(parseJimpleClass(cs), SourceType.Application);
 
       assertEquals("'class'", JimpleUtils.unescape("\\'class\\'"));
       assertEquals("'class'", sc.getClassSource().getClassType().toString());
@@ -794,9 +802,10 @@ public class JimpleConverterTest {
 
   @Test
   public void testQuotedTypeParsing() throws IOException {
-    SootClass clazz =
+    OverridingClassSource scs =
         parseJimpleClass(
             CharStreams.fromFileName("src/test/java/resources/jimple/SubTypeValidator.jimple"));
+    SootClass clazz = new SootClass(scs, SourceType.Application);
     Set<? extends SootMethod> methods = clazz.getMethods();
     SootMethod method = methods.iterator().next();
     Body body = method.getBody();
@@ -805,9 +814,10 @@ public class JimpleConverterTest {
 
   @Test
   public void testEdgeCaseDoubleParsing() throws IOException {
-    SootClass clazz =
+    OverridingClassSource scs =
         parseJimpleClass(
             CharStreams.fromFileName("src/test/java/resources/jimple/EdgeCaseDoubleNumber.jimple"));
+    SootClass clazz = new SootClass(scs, SourceType.Application);
     Set<? extends SootField> fields = clazz.getFields();
     for (SootField field : fields) {
       assertEquals(PrimitiveType.DoubleType.getInstance(), field.getType());
@@ -816,10 +826,11 @@ public class JimpleConverterTest {
 
   @Test
   public void testLegacyTransientMethodModifier() throws IOException {
-    SootClass clazz =
+    OverridingClassSource scs =
         parseJimpleClass(
             CharStreams.fromFileName(
                 "src/test/java/resources/jimple/LegacyTransientMethodModifier.jimple"));
+    SootClass clazz = new SootClass(scs, SourceType.Application);
     Set<? extends SootMethod> methods = clazz.getMethods();
     SootMethod method = methods.iterator().next();
     Set<MethodModifier> modifiers = method.getModifiers();
@@ -830,9 +841,10 @@ public class JimpleConverterTest {
 
   @Test
   public void testRedundantTrapHandler() throws IOException {
-    SootClass clazz =
+    OverridingClassSource scs =
         parseJimpleClass(
             CharStreams.fromFileName("src/test/java/resources/jimple/RedundantTrapHandler.jimple"));
+    SootClass clazz = new SootClass(scs, SourceType.Application);
     Set<? extends SootMethod> methods = clazz.getMethods();
     SootMethod method = methods.iterator().next();
 
