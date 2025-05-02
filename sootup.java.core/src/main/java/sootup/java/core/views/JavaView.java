@@ -152,7 +152,13 @@ public class JavaView extends AbstractView {
         // classpath the first is returned (see splitpackage)
         .limit(1)
         .map(Optional::get)
-        .map(classSource -> (JavaSootClassSource) classSource)
+        .map(
+            classSource -> {
+              if (classSource instanceof OverridingClassSource) {
+                return JavaSootClassSourceAdapter.adapt((OverridingClassSource) classSource);
+              }
+              return (JavaSootClassSource) classSource;
+            })
         .findAny();
   }
 
