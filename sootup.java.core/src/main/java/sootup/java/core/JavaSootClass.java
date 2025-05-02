@@ -71,7 +71,14 @@ public class JavaSootClass extends SootClass implements HasAnnotation {
   @Override
   public Set<JavaSootMethod> getMethods() {
     return super.getMethods().stream()
-        .map(method -> (JavaSootMethod) method)
+        .map(
+            method -> {
+              if (method instanceof JavaSootMethod) {
+                return (JavaSootMethod) method;
+              } else {
+                return new JavaSootMethodAdapter(method);
+              }
+            })
         .collect(Collectors.toSet());
   }
 
