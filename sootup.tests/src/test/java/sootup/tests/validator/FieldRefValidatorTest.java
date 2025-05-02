@@ -16,13 +16,14 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.core.validation.FieldRefValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
-import sootup.jimple.frontend.JimpleView;
 
 public class FieldRefValidatorTest {
 
   FieldRefValidator fieldRefValidator;
-  JimpleView jimpleView;
+  JavaView jimpleView;
   Collection<SootClass> classes;
 
   @BeforeEach
@@ -52,8 +53,8 @@ public class FieldRefValidatorTest {
     JimpleAnalysisInputLocation jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
-    jimpleView = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
+    jimpleView = new JavaView(jimpleInputLocation);
+    final Optional<JavaSootClass> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
     assertFalse(classSource1.isPresent());
 
     classes = new HashSet<>(); // Set to track the classes to check

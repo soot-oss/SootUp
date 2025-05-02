@@ -29,6 +29,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -39,6 +40,10 @@ public class JavaSootClass extends SootClass implements HasAnnotation {
 
   public JavaSootClass(JavaSootClassSource classSource, SourceType sourceType) {
     super(classSource, sourceType);
+  }
+
+  public JavaSootClass(SootClassSource sootClassSource, SourceType sourceType) {
+    super(sootClassSource, sourceType);
   }
 
   @NonNull

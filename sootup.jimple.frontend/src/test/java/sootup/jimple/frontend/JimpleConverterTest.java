@@ -22,6 +22,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
 import sootup.core.util.printer.BriefStmtPrinter;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
 
@@ -36,7 +37,7 @@ public class JimpleConverterTest {
             eagerInputLocation,
             Paths.get(""),
             Collections.emptyList(),
-            new JimpleView(eagerInputLocation));
+            new JavaView(eagerInputLocation));
     return new SootClass(scs, SourceType.Application);
   }
 

@@ -14,6 +14,8 @@ import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.interceptors.CopyPropagator;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.views.JavaView;
 
 public class JimpleAnalysisInputLocationTest {
 
@@ -82,22 +84,22 @@ public class JimpleAnalysisInputLocationTest {
     // files direct in dir
     final JimpleAnalysisInputLocation inputLocation1 =
         new JimpleAnalysisInputLocation(Paths.get(resourceDir + "/jimple/"));
-    JimpleView jv1 = new JimpleView(inputLocation1);
-    final Optional<SootClass> classSource1 = jv1.getClass(onlyClassNameType);
+    JavaView jv1 = new JavaView(inputLocation1);
+    final Optional<JavaSootClass> classSource1 = jv1.getClass(onlyClassNameType);
     assertTrue(classSource1.isPresent());
-    final Optional<SootClass> classSource2 = jv1.getClass(classType);
+    final Optional<JavaSootClass> classSource2 = jv1.getClass(classType);
     assertFalse(classSource2.isPresent());
-    final Optional<SootClass> classSourceNon = jv1.getClass(classTypeFake);
+    final Optional<JavaSootClass> classSourceNon = jv1.getClass(classTypeFake);
     assertFalse(classSourceNon.isPresent());
 
     // files in subdir structure
     final JimpleAnalysisInputLocation inputLocation2 =
         new JimpleAnalysisInputLocation(Paths.get(resourceDir));
-    JimpleView jv2 = new JimpleView(inputLocation2);
-    final Optional<SootClass> classSource3 = jv2.getClass(onlyClassNameType);
+    JavaView jv2 = new JavaView(inputLocation2);
+    final Optional<JavaSootClass> classSource3 = jv2.getClass(onlyClassNameType);
     assertFalse(classSource3.isPresent());
 
-    final Optional<SootClass> classSource4 = jv2.getClass(classType);
+    final Optional<JavaSootClass> classSource4 = jv2.getClass(classType);
     assertTrue(classSource4.isPresent());
   }
 
@@ -109,7 +111,7 @@ public class JimpleAnalysisInputLocationTest {
             Paths.get(resourceDir + "/jimple/testbodyinterceptorsinjimpleinputlocation"),
             SourceType.Application,
             Arrays.asList(new CopyPropagator()));
-    JimpleView jv1 = new JimpleView(inputLocation);
+    JavaView jv1 = new JavaView(inputLocation);
     List<SootClass> applicationClasses = jv1.getClasses().collect(Collectors.toList());
     applicationClasses.forEach(
         cls -> {
