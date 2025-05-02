@@ -86,7 +86,14 @@ public class JavaSootClass extends SootClass implements HasAnnotation {
   @Override
   public Set<JavaSootField> getFields() {
     return super.getFields().stream()
-        .map(field -> (JavaSootField) field)
+        .map(
+            field -> {
+              if (field instanceof JavaSootField) {
+                return (JavaSootField) field;
+              } else {
+                return new JavaSootFieldAdapter(field);
+              }
+            })
         .collect(Collectors.toSet());
   }
 
