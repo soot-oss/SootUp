@@ -80,7 +80,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   @NonNull
   protected Stream<MethodSignature> resolveCall(SootMethod method, InvokableStmt invokableStmt) {
     Optional<AbstractInvokeExpr> optInvokeExpr = invokableStmt.getInvokeExpr();
-    if (!optInvokeExpr.isPresent()) {
+    if (optInvokeExpr.isEmpty()) {
       return Stream.empty();
     }
     AbstractInvokeExpr invokeExpr = optInvokeExpr.get();
@@ -117,6 +117,11 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       }
       return targets.stream();
     }
+  }
+
+  @Override
+  protected @NonNull CallGraph implicitRunStartCG(List<MethodSignature> entryPoints, CallGraph callGraph) {
+    return null;
   }
 
   private List<MethodSignature> resolveAllCallTargets(

@@ -23,6 +23,8 @@ package sootup.callgraph;
  */
 
 import com.google.common.collect.ArrayListMultimap;
+
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,6 +40,8 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.core.model.SootMethod;
+import sootup.core.model.SootClass;
 
 /**
  * This class implements the Rapid Type Analysis call graph algorithm. In this algorithm, every
@@ -274,5 +278,29 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       @NonNull Deque<MethodSignature> workList,
       @NonNull MutableCallGraph cg) {
     //    not needed
+  }
+
+  /**
+   * Postprocessing is not needed in RTA
+   *
+   * @param entryPoints a list of method signatures that will be added to the work list in the call
+   *    graph generation.
+   * @param callGraph result CG without implicit calls
+   * @return callGraph after the added methods (implicit calls from run() to start())
+   */
+  @Override
+  protected @NonNull CallGraph implicitRunStartCG(List<MethodSignature> entryPoints, CallGraph callGraph) {
+    // search each class of the callGraph and for each method with exists in the class test if the method
+    // gets invoked --> if so add this method to the entryPoints and start a new process to get the new CG
+    ArrayList<String> implicitRunnableClasses = new ArrayList<>();
+    ArrayList<java.lang.Object> clazzes = new ArrayList<>();
+    for (int i=0; i<callGraph.getMethodSignatures().size(); i++) {
+      Class clazz = callGraph.getMethodSignatures().getClass();
+      clazzes.add(clazz);
+    }
+    // needs to look if any method gets called in the clazz with run()
+    // --> add to the entryPoints
+    List<MethodSignature> methodsToAdd = new ArrayList<>();
+    return null;
   }
 }

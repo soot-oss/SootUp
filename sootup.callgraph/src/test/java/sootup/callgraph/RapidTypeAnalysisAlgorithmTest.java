@@ -330,4 +330,12 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             instantiatedClassMethod,
             getInvokableStmt(mainMethodSignature, instantiatedClassMethod)));
   }
+
+  @Test
+  public void testImplicitRunStartCG() {
+      CallGraph cg = loadCallGraph("Implicit", "runner.Runner");
+
+    System.out.println(cg.exportAsDot());
+    assertTrue(cg.callCount() > 0);
+  }
 }

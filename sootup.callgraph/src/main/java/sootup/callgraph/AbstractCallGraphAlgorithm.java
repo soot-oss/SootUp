@@ -245,6 +245,17 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
+    // check classes of the cg for methods which run the method "run()" from Runnable
+    // --> add those to the entryPoints
+    String cgAsDot = cg.exportAsDot();
+    System.out.println("CG as Dot: " + cgAsDot);
+
+    /*for (SootClass clazz : cg.exportAsDot()) {
+
+    }
+    curClass = sourceMethod.getDeclClassType().get
+
+     */
 
     // collect all static initializer calls
     resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
@@ -561,4 +572,17 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             + " and in its superclasses and interfaces");
     return Optional.empty();
   }
+
+  /**
+   * This method adds the all methods to the entrypoints list which called run() in a classes from the cg. The results
+   * are dependable of the applied call graph algorithm. Therefore, it is abstract.
+   *
+   * @param entryPoints a list of method signatures that will be added to the work list in the call
+   *    graph generation.
+   * @param callGraph result CG without implicit calls
+   * @return callGraph after the added methods (implicit calls from run() to start())
+   */
+  @NonNull
+  protected abstract CallGraph implicitRunStartCG(
+          List<MethodSignature> entryPoints, CallGraph callGraph);
 }
