@@ -219,7 +219,8 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     return new MethodRepresentation(
         sootMethod.getName(),
         sootMethod.getDeclClassType().getClassName(),
-        sootMethod.getBody().getStmts().size());
+        sootMethod.getBody().getStmts().size(),
+        sootMethod.getSignature().toString());
   }
 
   public void initializeStmtToOwner(SootMethod m) {
