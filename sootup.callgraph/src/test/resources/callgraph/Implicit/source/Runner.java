@@ -1,5 +1,3 @@
-package run;
-
 public class Runner {
     public void executeRunnable(ImplicitRunStartRunnable r) {
         System.out.println("Calling run() directly...");
