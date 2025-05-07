@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.model.AbstractClass;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -77,5 +80,16 @@ public class JavaViewTest {
             .sorted(Comparator.comparing(Type::toString))
             .collect(Collectors.toList()),
         this.signatures);
+  }
+
+  @Test
+  public void testViewEagerLoading() {
+    AnalysisInputLocation inputLocation = new EagerInputLocation();
+    JavaView view = new JavaView(inputLocation);
+    assertFalse(view.isFullyResolved);
+
+    AnalysisInputLocation inputLocationEager = new EagerInputLocation();
+    JavaView viewEagerLoad = new JavaView(inputLocationEager, true);
+    assertTrue(viewEagerLoad.isFullyResolved);
   }
 }

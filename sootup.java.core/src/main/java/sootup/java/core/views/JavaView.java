@@ -60,14 +60,29 @@ public class JavaView extends AbstractView {
     this(Collections.singletonList(inputLocation));
   }
 
+  public JavaView(@NonNull AnalysisInputLocation inputLocation, boolean eagerLoad) {
+    this(Collections.singletonList(inputLocation), eagerLoad);
+  }
+
   public JavaView(@NonNull List<AnalysisInputLocation> inputLocations) {
     this(inputLocations, new FullCacheProvider());
+  }
+
+  public JavaView(@NonNull List<AnalysisInputLocation> inputLocations, boolean eagerLoad) {
+    this(inputLocations, new FullCacheProvider(), eagerLoad);
   }
 
   public JavaView(
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull ClassCacheProvider cacheProvider) {
     this(inputLocations, cacheProvider, JavaIdentifierFactory.getInstance());
+  }
+
+  public JavaView(
+      @NonNull List<AnalysisInputLocation> inputLocations,
+      @NonNull ClassCacheProvider cacheProvider,
+      boolean eagerLoad) {
+    this(inputLocations, cacheProvider, JavaIdentifierFactory.getInstance(), eagerLoad);
   }
 
   protected JavaView(
@@ -77,6 +92,23 @@ public class JavaView extends AbstractView {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
     this.identifierFactory = idf;
+  }
+
+  protected JavaView(
+      @NonNull List<AnalysisInputLocation> inputLocations,
+      @NonNull ClassCacheProvider cacheProvider,
+      @NonNull JavaIdentifierFactory idf,
+      boolean eagerLoad) {
+    this.inputLocations = inputLocations;
+    this.cache = cacheProvider.createCache();
+    this.identifierFactory = idf;
+    if (eagerLoad) eagerLoadClasses();
+  }
+
+  protected void eagerLoadClasses() {
+    if (!isFullyResolved) {
+      getClasses().forEach(c -> {}); // forces loading
+    }
   }
 
   /** Resolves all classes that are part of the view and stores them in the cache. */
