@@ -46,7 +46,6 @@ import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.util.ImmutableUtils;
 import sootup.core.util.printer.StmtPrinter;
-// TODO: add the method callsRun(), whichs checks if the method calls run() in the class
 /**
  * Soot's counterpart of the source language's method concept. Soot representation of a Java method.
  * Can be declared to belong to a SootClass. Does not contain the actual code, which belongs to a
@@ -436,11 +435,6 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
       return new SootMethod(
           getSource(), getSignature(), getModifiers(), getThrownExceptions(), position);
     }
-  }
-
-  public boolean callsRun() {
-
-    return true;
   }
 
   @Override

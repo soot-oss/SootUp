@@ -143,6 +143,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     System.out.println("Add Strings: " + addStrings);
     // make each string into a usable MethodSig
     for (String addString: addStrings) {
+      System.out.println("Matches: " + sc.getMethodsByName(addString));
       if (!sc.getMethodsByName(addString).isEmpty()) {
         Set setMethodsByName = sc.getMethodsByName(addString);
         System.out.println("Add Method: " + sc.getMethodsByName(addString));
