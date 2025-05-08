@@ -22,6 +22,7 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -44,6 +45,21 @@ public final class JNopStmt extends AbstractStmt implements FallsThroughStmt {
   @Override
   public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.NOP);
+  }
+
+  @Override
+  public boolean isJNopStmt() {
+    return true;
+  }
+
+  @Override
+  public JNopStmt asJNopStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JNopStmt> toJNopStmt() {
+    return Optional.of(this);
   }
 
   @Override

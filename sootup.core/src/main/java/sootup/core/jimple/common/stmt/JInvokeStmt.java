@@ -64,6 +64,21 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
   }
 
   @Override
+  public boolean isJInvokeStmt() {
+    return true;
+  }
+
+  @Override
+  public JInvokeStmt asJInvokeStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JInvokeStmt> toJInvokeStmt() {
+    return Optional.of(this);
+  }
+
+  @Override
   @NonNull
   public Optional<AbstractInvokeExpr> getInvokeExpr() {
     return Optional.of(invokeExpr);

@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import sootup.core.graph.*;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -228,7 +228,7 @@ public class JimplePrinter {
           printer.literal(" ");
         }
         printer.typeSignature(f.getType());
-        printer.literal(" " + Jimple.escape(f.getName()) + ";");
+        printer.literal(" " + JimpleUtils.escape(f.getName()) + ";");
         printer.newline();
         if (addJimpleLn()) {
           setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f.getSignature()));

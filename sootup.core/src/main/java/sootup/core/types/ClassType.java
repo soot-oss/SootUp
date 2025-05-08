@@ -22,6 +22,7 @@ package sootup.core.types;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 import sootup.core.signatures.PackageName;
@@ -44,6 +45,42 @@ public abstract class ClassType extends ReferenceType implements Signature {
   public <V extends TypeVisitor> V accept(@NonNull V v) {
     v.caseClassType(this);
     return v;
+  }
+
+  protected boolean isJavaClassType() {
+    return false;
+  }
+
+  protected boolean isModuleJavaClassType() {
+    return false;
+  }
+
+  protected boolean isWeakObjectType() {
+    return false;
+  }
+
+  protected Type asJavaClassType() {
+    return null;
+  }
+
+  protected Type asModuleJavaClassType() {
+    return null;
+  }
+
+  protected Type asWeakObjectType() {
+    return null;
+  }
+
+  protected Optional<Type> toJavaClassType() {
+    return Optional.empty();
+  }
+
+  protected Optional<Type> toModuleJavaClassType() {
+    return Optional.empty();
+  }
+
+  protected Optional<Type> toWeakObjectType() {
+    return Optional.empty();
   }
 
   @Override

@@ -13,7 +13,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
+import sootup.core.types.*;
 import sootup.core.validation.IdentityStmtsValidator;
 import sootup.core.validation.ValidationException;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
@@ -31,7 +31,6 @@ public class IdentityStmtsValidatorTest {
 
     ClassType classTypeFieldRefValidator =
         new ClassType() {
-
           @Override
           public String getFullyQualifiedName() {
             return "IdentityStmtsValidator";

@@ -25,7 +25,7 @@ package sootup.core.signatures;
 import com.google.common.base.Suppliers;
 import java.util.function.Supplier;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -65,6 +65,6 @@ public class FieldSubSignature extends SootClassMemberSubSignature
   public void toString(StmtPrinter printer) {
     printer.typeSignature(getType());
     printer.literal(" ");
-    printer.literal(Jimple.escape(getName()));
+    printer.literal(JimpleUtils.escape(getName()));
   }
 }

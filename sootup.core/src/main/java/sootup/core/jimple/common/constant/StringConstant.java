@@ -23,7 +23,7 @@ package sootup.core.jimple.common.constant;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.Type;
 
@@ -63,7 +63,7 @@ public class StringConstant implements Constant {
 
   @Override
   public String toString() {
-    final String escape = Jimple.escape(value);
+    final String escape = JimpleUtils.escape(value);
     if (escape.charAt(0) != '\"') {
       return "\"" + value + "\"";
     }

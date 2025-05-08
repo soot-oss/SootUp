@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -119,7 +119,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
   public void toString(StmtPrinter printer) {
     printer.typeSignature(getType());
     printer.literal(" ");
-    printer.literal(Jimple.escape(getName()));
+    printer.literal(JimpleUtils.escape(getName()));
     printer.literal("(");
 
     Iterator<Type> it = getParameterTypes().iterator();

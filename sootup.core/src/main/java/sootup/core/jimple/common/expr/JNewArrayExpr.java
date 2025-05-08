@@ -22,6 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
@@ -142,5 +143,20 @@ public final class JNewArrayExpr implements Expr {
       return ((ArrayType) baseType).isArrayTypeOfPrimitives();
     }
     return false;
+  }
+
+  @Override
+  public boolean isJNewArrayExpr() {
+    return true;
+  }
+
+  @Override
+  public JNewArrayExpr asJNewArrayExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JNewArrayExpr> toJNewArrayExpr() {
+    return Optional.of(this);
   }
 }
