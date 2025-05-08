@@ -68,6 +68,6 @@ public class BasicSetupTest {
                             .getInvokeExpr()
                             .get()
                             .getArg(0)
-                            .equivTo(JavaJimple.getInstance().newStringConstant("Hello World!"))));
+                            .equivTo(JavaJimple.newStringConstant("Hello World!"))));
   }
 }

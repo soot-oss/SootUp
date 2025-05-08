@@ -22,6 +22,7 @@ package sootup.interceptors.typeresolving.types;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 import sootup.core.types.PrimitiveType;
@@ -63,6 +64,21 @@ public abstract class AugmentIntegerTypes {
     public <V extends TypeVisitor> V accept(@NonNull V v) {
       throw new UnsupportedOperationException();
     }
+
+    @Override
+    protected boolean isInteger1Type() {
+      return true;
+    }
+
+    @Override
+    protected BooleanType asInteger1Type() {
+      return this;
+    }
+
+    @Override
+    protected Optional<BooleanType> toInteger1Type() {
+      return Optional.of(this);
+    }
   }
 
   /** This type is intermediate type and used for determining the ancestor of an integer type */
@@ -82,6 +98,21 @@ public abstract class AugmentIntegerTypes {
     public <V extends TypeVisitor> V accept(@NonNull V v) {
       throw new UnsupportedOperationException();
     }
+
+    @Override
+    protected boolean isInteger127Type() {
+      return true;
+    }
+
+    @Override
+    protected IntType asInteger127Type() {
+      return this;
+    }
+
+    @Override
+    protected Optional<IntType> toInteger127Type() {
+      return Optional.of(this);
+    }
   }
 
   /** This type is intermediate type and used for determining the ancestor of an integer type */
@@ -100,6 +131,21 @@ public abstract class AugmentIntegerTypes {
     @Override
     public <V extends TypeVisitor> V accept(@NonNull V v) {
       throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected boolean isInteger3276Type() {
+      return true;
+    }
+
+    @Override
+    protected IntType asInteger3276Type() {
+      return this;
+    }
+
+    @Override
+    protected Optional<IntType> toInteger3276Type() {
+      return Optional.of(this);
     }
   }
 }

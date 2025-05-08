@@ -26,7 +26,6 @@ import sootup.java.core.types.JavaClassType;
  */
 public class ReplaceUseStmtVisitorTest {
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  JavaJimple javaJimple = JavaJimple.getInstance();
   JavaClassType intType = factory.getClassType("int");
   JavaClassType testClass = factory.getClassType("TestClass");
   JavaClassType voidType = factory.getClassType("void");
@@ -72,12 +71,12 @@ public class ReplaceUseStmtVisitorTest {
     assertTrue(isExpected);
 
     // rValue is a Ref
-    Ref ref = javaJimple.newArrayRef(op1, op2);
+    Ref ref = JavaJimple.newArrayRef(op1, op2);
     stmt = JavaJimple.newAssignStmt(var, ref, noStmtPositionInfo);
     stmt.accept(visitor);
     newStmt = visitor.getResult();
 
-    expectedUses.set(0, javaJimple.newArrayRef(newOp, op2));
+    expectedUses.set(0, JavaJimple.newArrayRef(newOp, op2));
     expectedUses.set(1, newOp);
 
     isExpected = false;

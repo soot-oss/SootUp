@@ -36,7 +36,6 @@ public class StaticSingleAssignmentFormerTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
-  JavaJimple javaJimple = JavaJimple.getInstance();
   final String location =
       Paths.get(System.getProperty("user.dir")).getParent()
           + File.separator
@@ -49,7 +48,7 @@ public class StaticSingleAssignmentFormerTest {
       new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
   ClassType exceptionType = factory.getClassType("Exception");
-  IdentityRef caughtExceptionRef = javaJimple.newCaughtExceptionRef();
+  IdentityRef caughtExceptionRef = JavaJimple.newCaughtExceptionRef();
 
   // build locals
   Local l0 = JavaJimple.newLocal("l0", classType);

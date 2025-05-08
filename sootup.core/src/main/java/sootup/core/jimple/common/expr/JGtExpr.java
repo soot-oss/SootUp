@@ -22,6 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
@@ -53,5 +54,20 @@ public final class JGtExpr extends AbstractConditionExpr {
   @NonNull
   public JGtExpr withOp2(@NonNull Immediate op2) {
     return new JGtExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJGtExpr() {
+    return true;
+  }
+
+  @Override
+  public JGtExpr asJGtExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JGtExpr> toJGtExpr() {
+    return Optional.of(this);
   }
 }

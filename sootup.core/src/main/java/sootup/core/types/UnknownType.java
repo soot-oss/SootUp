@@ -22,6 +22,7 @@ package sootup.core.types;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 
@@ -51,5 +52,20 @@ public class UnknownType extends Type {
   public <V extends TypeVisitor> V accept(@NonNull V v) {
     v.caseUnknownType();
     return v;
+  }
+
+  @Override
+  protected boolean isUnknownType() {
+    return true;
+  }
+
+  @Override
+  protected UnknownType asUnknownType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<UnknownType> toUnknownType() {
+    return Optional.of(this);
   }
 }

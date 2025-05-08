@@ -48,7 +48,7 @@ package sootup.core.jimple.common.constant;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.Type;
 
@@ -186,6 +186,6 @@ public class ClassConstant implements Constant {
 
   @Override
   public String toString() {
-    return "class " + Jimple.escape(value);
+    return "class " + JimpleUtils.escape(value);
   }
 }

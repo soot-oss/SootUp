@@ -22,6 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
@@ -53,5 +54,20 @@ public final class JXorExpr extends AbstractIntLongBinopExpr {
   @NonNull
   public JXorExpr withOp2(@NonNull Immediate op2) {
     return new JXorExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJXorExpr() {
+    return true;
+  }
+
+  @Override
+  public JXorExpr asJXorExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JXorExpr> toJXorExpr() {
+    return Optional.of(this);
   }
 }
