@@ -334,7 +334,7 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
 
   @Test
   public void testImplicitRunStartCG() throws IOException {
-      CallGraph cg = loadCallGraphImplicitRunStart("Implicit", "Runner");
+      CallGraph cg = loadCallGraph("Implicit", "Runner");
 
     System.out.println(cg.exportAsDot());
     assertTrue(cg.callCount() > 0);

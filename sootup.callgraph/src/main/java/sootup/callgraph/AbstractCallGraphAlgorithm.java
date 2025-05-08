@@ -245,18 +245,25 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
-    // check classes of the cg for methods which run the method "run()" from Runnable
-    // --> add those to the entryPoints
-    String cgAsDot = cg.exportAsDot();
-    System.out.println("CG as Dot: " + cgAsDot);
 
-    /*for (SootClass clazz : cg.exportAsDot()) {
+    // Stmt include: virtualinvoke l1.<ImplicitRunStartRunnable: void run()>() or similar
+    System.out.println("Body Statements: " + sourceMethod.getBody().getStmts());
 
+    // look through each stmt and check for virtualinvoke with run()
+    for (Stmt stmt : sourceMethod.getBody().getStmts()) {
+      System.out.println("Stmt: " + stmt);
+      System.out.println("InvokableStmt?: " + stmt.isInvokableStmt());
+      System.out.println("Contains?: " + stmt.toString().contains("void run()"));
+      if (stmt.isInvokableStmt() && stmt.toString().contains("void run()")) {
+        System.out.println(stmt.getUsesAndDefs());
+        // TODO: Get methodSig and add to workList
+        MethodSignature addRunToWorkList = new MethodSignature("run", "run" , Collections.singletonList("java.lang.String[]"), "void");
+        boolean methodSigAdded = workList.offer(addRunToWorkList);
+        if (!methodSigAdded) {
+          System.out.println("The implicit run-call from the methodSignature " + addRunToWorkList + " wasn't added to the workList");
+        }
+      }
     }
-    curClass = sourceMethod.getDeclClassType().get
-
-     */
-
     // collect all static initializer calls
     resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
   }

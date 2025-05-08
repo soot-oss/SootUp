@@ -7,7 +7,9 @@ import org.objectweb.asm.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-
+import java.nio.file.Files;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;
@@ -80,48 +82,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     return cg;
   }
 
-  public static List<String> findMethodsCallingRun(Path classFilePath) throws IOException {
-    List<String> methodsCallingRun = new ArrayList<>();
-
-    ClassReader reader = new ClassReader(java.nio.file.Files.readAllBytes(classFilePath));
-    reader.accept(new ClassVisitor(Opcodes.ASM9) {
-      String currentClassName;
-
-      @Override
-      public void visit(int version, int access, String name, String signature,
-                        String superName, String[] interfaces) {
-        currentClassName = name;
-        super.visit(version, access, name, signature, superName, interfaces);
-      }
-
-      @Override
-      public MethodVisitor visitMethod(int access, String name, String descriptor,
-                                       String signature, String[] exceptions) {
-        return new MethodVisitor(Opcodes.ASM9) {
-          boolean callsRun = false;
-
-          @Override
-          public void visitMethodInsn(int opcode, String owner, String methodName,
-                                      String methodDescriptor, boolean isInterface) {
-            if ("run".equals(methodName) && "()V".equals(methodDescriptor)) {
-              callsRun = true;
-            }
-          }
-
-          @Override
-          public void visitEnd() {
-            if (callsRun) {
-              methodsCallingRun.add(name + descriptor);
-            }
-          }
-        };
-      }
-    }, 0);
-
-    return methodsCallingRun;
-  }
-
-  CallGraph loadCallGraphImplicitRunStart(String testDirectory, String className) throws IOException {
+  CallGraph loadCallGraphImplicitRunStart(String testDirectory, String className) {
     String classPath = "src/test/resources/callgraph/" + testDirectory + "/binary";
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
@@ -135,6 +96,12 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
 
+    // TODO: get the classSig from all objects which call .run()
+    // get the methodSigs for run() of the classes and add them to the entryPoints list
+    // create new cg
+
+
+    /*
     // search all methods of the class if they use .run()
     // if so add them to a list and this list is added in the entry points
     ArrayList<MethodSignature> addToEntryPoints = new ArrayList<>();
@@ -155,25 +122,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             }
           }
         }
-        /*
-        for (String entryPoint : addToEntryPoints) {
-          for (SootMethod method : sc.getMethods()) {
-            if (method.getName().equals(entryPoint)) {
-              addToEntryPoints.add(method.getSignature().getName());
-            }
-          }
-        }
-        */
       }
     }
-    /*
-    sc.getMethods().forEach(method -> {
-      System.out.println("ClassSource: " + sc.getClassSource());
-
-      if (sc.getClassSource().toString()
-            .contains(method.getName() + ".run()")) { addToEntryPoints.add(method.getSignature()); }});
-    */
-
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
     assertNotNull(m, mainMethodSignature + " not found in classloader");
 
@@ -189,6 +139,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(
             cg.containsMethod(mainMethodSignature), mainMethodSignature + " is not found in CallGraph");
     return cg;
+    */
+    return null;
   }
 
   protected InvokableStmt getInvokableStmt(
