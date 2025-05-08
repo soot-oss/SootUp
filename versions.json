@@ -45,6 +45,11 @@
     "aliases": []
   },
   {
+    "version": "develop_preview",
+    "title": "PR Preview develop",
+    "aliases": []
+  },
+  {
     "version": "bumpVersionsUp_preview",
     "title": "PR Preview bumpVersionsUp",
     "aliases": [],
