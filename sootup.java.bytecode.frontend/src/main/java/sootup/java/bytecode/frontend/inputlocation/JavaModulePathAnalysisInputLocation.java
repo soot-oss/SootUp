@@ -75,7 +75,8 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
 
   public JavaModulePathAnalysisInputLocation(
       @NonNull Path modulePath, @NonNull FileSystem fileSystem, @NonNull SourceType sourcetype) {
-    this(modulePath, fileSystem, sourcetype, BytecodeBodyInterceptors.Default.getBodyInterceptors());
+    this(
+        modulePath, fileSystem, sourcetype, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   /**
