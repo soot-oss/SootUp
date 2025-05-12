@@ -36,6 +36,7 @@ import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.*;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
@@ -74,7 +75,7 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
 
   public JavaModulePathAnalysisInputLocation(
       @NonNull Path modulePath, @NonNull FileSystem fileSystem, @NonNull SourceType sourcetype) {
-    this(modulePath, fileSystem, sourcetype, new ArrayList<>());
+    this(modulePath, fileSystem, sourcetype, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   /**
