@@ -32,7 +32,6 @@ import qilin.core.ArtificialMethod;
 import qilin.util.PTAUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.frontend.OverridingClassSource;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
@@ -52,6 +51,8 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.OverridingClassSource;
 
 public class FakeMainFactory extends ArtificialMethod {
   public static FakeMainFactory instance;
@@ -106,7 +107,7 @@ public class FakeMainFactory extends ArtificialMethod {
             NoPositionInformation.getInstance());
     this.method = dummyMainMethod;
     this.fakeClass =
-        new SootClass(
+        new JavaSootClass(
             new OverridingClassSource(
                 Collections.singleton(dummyMainMethod),
                 new LinkedHashSet<>(Arrays.asList(currentThread, globalThrow)),

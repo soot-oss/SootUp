@@ -22,29 +22,86 @@ package sootup.java.core;
  * #L%
  */
 
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableSet;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import sootup.core.frontend.ResolveException;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.core.util.ImmutableUtils;
+import sootup.core.util.printer.JimplePrinter;
 import sootup.java.core.types.JavaClassType;
 
-public class JavaSootClass extends SootClass implements HasAnnotation {
+public class JavaSootClass implements SootClass, HasAnnotation {
 
-  public JavaSootClass(JavaSootClassSource classSource, SourceType sourceType) {
-    super(classSource, sourceType);
+  @NonNull SourceType sourceType;
+  @NonNull JavaClassType classSignature;
+  @NonNull JavaSootClassSource classSource;
+
+  @NonNull Supplier<Set<? extends SootMethod>> _lazyMethods =
+      Suppliers.memoize(this::lazyMethodInitializer);
+
+  @NonNull Supplier<Set<? extends SootField>> _lazyFields =
+      Suppliers.memoize(this::lazyFieldInitializer);
+
+  Supplier<Set<ClassModifier>> lazyModifiers = Suppliers.memoize(classSource::resolveModifiers);
+
+  Supplier<Set<? extends ClassType>> lazyInterfaces =
+      Suppliers.memoize(classSource::resolveInterfaces);
+
+  Supplier<Optional<? extends ClassType>> lazySuperclass =
+      Suppliers.memoize(classSource::resolveSuperclass);
+
+  Supplier<Optional<? extends ClassType>> lazyOuterClass =
+      Suppliers.memoize(classSource::resolveOuterClass);
+
+  Supplier<Position> lazyPosition = Suppliers.memoize(classSource::resolvePosition);
+
+  public JavaSootClass(SootClassSource classSource, SourceType sourceType) {
+    this.classSource = (JavaSootClassSource) classSource;
+    this.sourceType = sourceType;
+    this.classSignature = (JavaClassType) classSource.getClassType();
   }
 
-  @NonNull
+  private JavaSootClass(
+      JavaSootClassSource classSource,
+      SourceType sourceType,
+      Set<? extends SootMethod> methods,
+      Set<? extends SootField> fields,
+      Set<ClassModifier> modifiers,
+      Set<? extends ClassType> interfaces,
+      Optional<? extends ClassType> superclass,
+      Optional<? extends ClassType> outerClass,
+      Position position) {
+    this.classSource = classSource;
+    this.sourceType = sourceType;
+    this.classSignature = (JavaClassType) classSource.getClassType();
+    this._lazyMethods = Suppliers.ofInstance(methods);
+    this._lazyFields = Suppliers.ofInstance(fields);
+    this.lazyModifiers = Suppliers.ofInstance(modifiers);
+    this.lazyInterfaces = Suppliers.ofInstance(interfaces);
+    this.lazySuperclass = Suppliers.ofInstance(superclass);
+    this.lazyOuterClass = Suppliers.ofInstance(outerClass);
+    this.lazyPosition = Suppliers.ofInstance(position);
+  }
+
+  /** Returns the ClassSignature of this class. */
   @Override
-  public JavaClassType getType() {
-    return (JavaClassType) super.getType();
+  public ClassType getType() {
+    return classSignature;
   }
 
   /**
@@ -59,13 +116,13 @@ public class JavaSootClass extends SootClass implements HasAnnotation {
   public Iterable<AnnotationUsage> getAnnotations() {
     // we should cache it in the future: for now, we do not cache it
     // because the underlying data structure might be mutable
-    return ((JavaSootClassSource) classSource).resolveAnnotations();
+    return classSource.resolveAnnotations();
   }
 
   @NonNull
   @Override
   public Set<JavaSootMethod> getMethods() {
-    return super.getMethods().stream()
+    return this._lazyMethods.get().stream()
         .map(method -> (JavaSootMethod) method)
         .collect(Collectors.toSet());
   }
@@ -73,7 +130,7 @@ public class JavaSootClass extends SootClass implements HasAnnotation {
   @NonNull
   @Override
   public Set<JavaSootField> getFields() {
-    return super.getFields().stream()
+    return this._lazyFields.get().stream()
         .map(field -> (JavaSootField) field)
         .collect(Collectors.toSet());
   }
@@ -81,52 +138,60 @@ public class JavaSootClass extends SootClass implements HasAnnotation {
   @NonNull
   @Override
   public Optional<JavaSootField> getField(@NonNull String name) {
-    return super.getField(name).map(field -> (JavaSootField) field);
+    return SootClass.super.getField(name).map(field -> (JavaSootField) field);
   }
 
   @NonNull
   @Override
   public Optional<JavaSootField> getField(@NonNull FieldSubSignature subSignature) {
-    return super.getField(subSignature).map(field -> (JavaSootField) field);
+    return SootClass.super.getField(subSignature).map(field -> (JavaSootField) field);
   }
 
   @NonNull
   @Override
   public Optional<JavaSootMethod> getMethod(
       @NonNull String name, @NonNull Iterable<? extends Type> parameterTypes) {
-    return super.getMethod(name, parameterTypes).map(method -> (JavaSootMethod) method);
+    return SootClass.super.getMethod(name, parameterTypes).map(method -> (JavaSootMethod) method);
   }
 
   @NonNull
   @Override
   public Set<JavaSootMethod> getMethodsByName(@NonNull String name) {
-    return super.getMethodsByName(name).stream()
+    return SootClass.super.getMethodsByName(name).stream()
         .map(method -> (JavaSootMethod) method)
         .collect(Collectors.toSet());
+  }
+
+  @Override
+  public Set<ClassModifier> getModifiers() {
+    return lazyModifiers.get();
+  }
+
+  @Override
+  public Set<? extends ClassType> getInterfaces() {
+    return lazyInterfaces.get();
   }
 
   @NonNull
   @Override
   public Optional<JavaSootMethod> getMethod(@NonNull MethodSubSignature subSignature) {
-    return super.getMethod(subSignature).map(method -> (JavaSootMethod) method);
+    return SootClass.super.getMethod(subSignature).map(method -> (JavaSootMethod) method);
   }
 
   @NonNull
   @Override
   public JavaSootClassSource getClassSource() {
-    return (JavaSootClassSource) super.getClassSource();
+    return classSource;
   }
 
   @NonNull
-  @Override
   public Optional<JavaClassType> getOuterClass() {
-    return super.getOuterClass().map(ct -> (JavaClassType) ct);
+    return lazyOuterClass.get().map(ct -> (JavaClassType) ct);
   }
 
   @NonNull
-  @Override
   public Optional<JavaClassType> getSuperclass() {
-    return super.getSuperclass().map(ct -> (JavaClassType) ct);
+    return lazySuperclass.get().map(ct -> (JavaClassType) ct);
   }
 
   // Convenience withers that delegate to an OverridingClassSource
@@ -196,5 +261,340 @@ public class JavaSootClass extends SootClass implements HasAnnotation {
   public JavaSootClass withPosition(@Nullable Position position) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withPosition(position), sourceType);
+  }
+
+  /** Defines a {@link SootClass} builder. */
+  public static class JavaSootClassBuilder {
+    @Nullable private JavaSootClassSource classSource;
+    @Nullable private SourceType sourceType;
+    @Nullable private Set<? extends SootMethod> methods = ImmutableSet.of();
+    @Nullable private Set<? extends SootField> fields = ImmutableSet.of();
+    @Nullable private Set<ClassModifier> modifiers = ImmutableSet.of();
+    @Nullable private Set<? extends ClassType> interfaces = ImmutableSet.of();
+    @Nullable private Optional<? extends ClassType> superclass = Optional.empty();
+    @Nullable private Optional<? extends ClassType> outerClass = Optional.empty();
+    @Nullable private Position position;
+
+    private JavaSootClassBuilder() {}
+
+    public static ClassSourceStep builder() {
+      return new Steps();
+    }
+
+    /** Step interface for setting the class source. */
+    public interface ClassSourceStep {
+      SourceTypeStep withClassSource(@NonNull SootClassSource classSource);
+    }
+
+    /** Step interface for setting the source type. */
+    public interface SourceTypeStep {
+      CompleteStep withSourceType(@NonNull SourceType sourceType);
+    }
+
+    /** Interface that accumulates all possible methods. */
+    public interface CompleteStep
+        extends InterfaceStep,
+            MethodStep,
+            FieldStep,
+            ModifierStep,
+            SuperclassStep,
+            OuterClassStep,
+            PositionStep,
+            Build {}
+
+    public interface MethodStep {
+      CompleteStep withMethod(@NonNull SootMethod method);
+
+      CompleteStep withMethods(@NonNull Set<? extends SootMethod> methods);
+    }
+
+    public interface FieldStep {
+      CompleteStep withField(@NonNull SootField field);
+
+      CompleteStep withFields(@NonNull Set<? extends SootField> fields);
+    }
+
+    public interface ModifierStep {
+      CompleteStep withModifier(@NonNull ClassModifier modifier);
+
+      CompleteStep withModifiers(@NonNull Set<ClassModifier> modifiers);
+    }
+
+    public interface InterfaceStep {
+      CompleteStep withInterface(@NonNull ClassType interfaceType);
+
+      CompleteStep withInterfaces(@NonNull Set<? extends ClassType> interfaceTypes);
+    }
+
+    public interface SuperclassStep {
+      CompleteStep withSuperclass(@NonNull Optional<? extends ClassType> superclass);
+    }
+
+    public interface OuterClassStep {
+      CompleteStep withOuterClass(@NonNull Optional<? extends ClassType> outerClass);
+    }
+
+    public interface PositionStep {
+      CompleteStep withPosition(@NonNull Position position);
+    }
+
+    public interface Build {
+      SootClass build();
+    }
+
+    /** Concrete implementation of the step builder. */
+    private static class Steps implements ClassSourceStep, SourceTypeStep, CompleteStep {
+      private final JavaSootClassBuilder instance = new JavaSootClassBuilder();
+
+      @Override
+      public SourceTypeStep withClassSource(@NonNull SootClassSource classSource) {
+        instance.classSource = (JavaSootClassSource) classSource;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withSourceType(@NonNull SourceType sourceType) {
+        instance.sourceType = sourceType;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withMethod(@NonNull SootMethod method) {
+        instance.methods = ImmutableSet.<SootMethod>builder().add(method).build();
+        return this;
+      }
+
+      @Override
+      public CompleteStep withMethods(@NonNull Set<? extends SootMethod> methods) {
+        instance.methods = ImmutableSet.<SootMethod>builder().addAll(methods).build();
+        return this;
+      }
+
+      @Override
+      public CompleteStep withField(@NonNull SootField field) {
+        instance.fields = ImmutableSet.<SootField>builder().add(field).build();
+        return this;
+      }
+
+      @Override
+      public CompleteStep withFields(@NonNull Set<? extends SootField> fields) {
+        instance.fields = ImmutableSet.<SootField>builder().addAll(fields).build();
+        return this;
+      }
+
+      @Override
+      public CompleteStep withModifier(@NonNull ClassModifier modifier) {
+        instance.modifiers = ImmutableSet.<ClassModifier>builder().add(modifier).build();
+        return this;
+      }
+
+      @Override
+      public CompleteStep withModifiers(@NonNull Set<ClassModifier> modifiers) {
+        instance.modifiers = ImmutableSet.<ClassModifier>builder().addAll(modifiers).build();
+        return this;
+      }
+
+      @Override
+      public CompleteStep withInterface(@NonNull ClassType interfaceType) {
+        instance.interfaces = ImmutableSet.<ClassType>builder().add(interfaceType).build();
+        return this;
+      }
+
+      @Override
+      public CompleteStep withInterfaces(@NonNull Set<? extends ClassType> interfaceTypes) {
+        instance.interfaces = ImmutableSet.<ClassType>builder().addAll(interfaceTypes).build();
+        return this;
+      }
+
+      @Override
+      public CompleteStep withSuperclass(@NonNull Optional<? extends ClassType> superclass) {
+        instance.superclass = superclass;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withOuterClass(@NonNull Optional<? extends ClassType> outerClass) {
+        instance.outerClass = outerClass;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withPosition(@NonNull Position position) {
+        instance.position = position;
+        return this;
+      }
+
+      @Override
+      public SootClass build() {
+        if (instance.classSource != null && instance.sourceType != null) {
+          return new JavaSootClass(instance.classSource, instance.sourceType);
+        }
+        return new JavaSootClass(
+            instance.classSource,
+            instance.sourceType,
+            instance.methods,
+            instance.fields,
+            instance.modifiers,
+            instance.interfaces,
+            instance.superclass,
+            instance.outerClass,
+            instance.position);
+      }
+    }
+  }
+
+  @NonNull
+  public Set<? extends SootField> lazyFieldInitializer() {
+    Set<SootField> fields;
+    try {
+      fields = ImmutableUtils.immutableSetOf(this.classSource.resolveFields());
+    } catch (ResolveException e) {
+      // TODO: [JMP] Exception handling
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
+    return fields;
+  }
+
+  @NonNull
+  public Set<? extends SootMethod> lazyMethodInitializer() {
+    Set<SootMethod> methods;
+    try {
+      methods = ImmutableUtils.immutableSetOf(this.classSource.resolveMethods());
+    } catch (ResolveException e) {
+      // TODO: [JMP] Exception handling
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
+    return methods;
+  }
+
+  /** Does this class directly implement the given interface? (see getInterfaceCount()) */
+  public boolean implementsInterface(@NonNull ClassType classSignature) {
+    for (ClassType sc : getInterfaces()) {
+      if (sc.equals(classSignature)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * WARNING: interfaces are subclasses of the java.lang.Object class! Does this class have a
+   * superclass? False implies that this is the java.lang.Object class. Note that interfaces are
+   * subclasses of the java.lang.Object class.
+   */
+  public boolean hasSuperclass() {
+    return lazySuperclass.get().isPresent();
+  }
+
+  public boolean hasOuterClass() {
+    return lazyOuterClass.get().isPresent();
+  }
+
+  public boolean isInnerClass() {
+    return hasOuterClass();
+  }
+
+  /** Convenience method; returns true if this class is an interface. */
+  public boolean isInterface() {
+    return ClassModifier.isInterface(this.getModifiers());
+  }
+
+  /** Convenience method; returns true if this class is an enumeration. */
+  public boolean isEnum() {
+    return ClassModifier.isEnum(this.getModifiers());
+  }
+
+  /** Convenience method; returns true if this class is synchronized. */
+  public boolean isSuper() {
+    return ClassModifier.isSuper(this.getModifiers());
+  }
+
+  /** Returns true if this class is not an interface and not abstract. */
+  public boolean isConcrete() {
+    return !isInterface() && !isAbstract();
+  }
+
+  /** Convenience method; returns true if this class is public. */
+  public boolean isPublic() {
+    return ClassModifier.isPublic(this.getModifiers());
+  }
+
+  /** Returns the name of this class. */
+  @Override
+  @NonNull
+  public String toString() {
+    return classSignature.toString();
+  }
+
+  /** Returns the serialized Jimple of this SootClass as String */
+  @NonNull
+  public String print() {
+    StringWriter output = new StringWriter();
+    JimplePrinter p = new JimplePrinter();
+    p.printTo(this, new PrintWriter(output));
+    return output.toString();
+  }
+
+  /** Returns true if this class is an application class. */
+  public boolean isApplicationClass() {
+    return sourceType == SourceType.Application;
+  }
+
+  /** Returns true if this class is a library class. */
+  public boolean isLibraryClass() {
+    return sourceType == SourceType.Library;
+  }
+
+  /** Convenience method returning true if this class is private. */
+  public boolean isPrivate() {
+    return ClassModifier.isPrivate(this.getModifiers());
+  }
+
+  /** Convenience method returning true if this class is protected. */
+  public boolean isProtected() {
+    return ClassModifier.isProtected(this.getModifiers());
+  }
+
+  /** Convenience method returning true if this class is abstract. */
+  public boolean isAbstract() {
+    return ClassModifier.isAbstract(this.getModifiers());
+  }
+
+  /** Convenience method returning true if this class is final. */
+  public boolean isFinal() {
+    return ClassModifier.isFinal(this.getModifiers());
+  }
+
+  /** Convenience method returning true if this class is static. */
+  public boolean isStatic() {
+    return ClassModifier.isStatic(this.getModifiers());
+  }
+
+  public boolean isAnnotation() {
+    return ClassModifier.isAnnotation(this.getModifiers());
+  }
+
+  @NonNull
+  @Override
+  public Position getPosition() {
+    return lazyPosition.get();
+  }
+
+  @Override
+  @NonNull
+  public String getName() {
+    return this.classSignature.getFullyQualifiedName();
+  }
+
+  @NonNull
+  public SootClass withClassSource(@NonNull JavaSootClassSource classSource) {
+    return new JavaSootClass(classSource, sourceType);
+  }
+
+  @NonNull
+  public SootClass withSourceType(@NonNull SourceType sourceType) {
+    return new JavaSootClass(classSource, sourceType);
   }
 }

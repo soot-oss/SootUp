@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.antlr.v4.runtime.CharStreams;
 import org.jspecify.annotations.NonNull;
-import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -37,6 +36,7 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.interceptors.BytecodeBodyInterceptors;
+import sootup.java.core.OverridingClassSource;
 
 /**
  * This AnalysisInputLocation encapsulates and represents a single Jimple "file" - the contents of

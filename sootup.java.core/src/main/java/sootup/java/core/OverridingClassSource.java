@@ -1,4 +1,4 @@
-package sootup.core.frontend;
+package sootup.java.core;
 
 /*-
  * #%L
@@ -27,6 +27,8 @@ import java.nio.file.Path;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import sootup.core.frontend.ResolveException;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.*;
 import sootup.core.types.ClassType;
@@ -169,7 +171,7 @@ public class OverridingClassSource extends SootClassSource {
 
   @Override
   public SootClass buildClass(@NonNull SourceType sourceType) {
-    return new SootClass(this, sourceType);
+    return new JavaSootClass(this, sourceType);
   }
 
   @Override

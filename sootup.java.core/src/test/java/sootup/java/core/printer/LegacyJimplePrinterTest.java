@@ -7,7 +7,6 @@ import java.io.StringWriter;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.frontend.OverridingClassSource;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -23,6 +22,8 @@ import sootup.core.util.EscapedWriter;
 import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.OverridingClassSource;
 import sootup.java.core.views.JavaView;
 
 public class LegacyJimplePrinterTest {
@@ -50,7 +51,7 @@ public class LegacyJimplePrinterTest {
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
-    return new SootClass(
+    return new JavaSootClass(
         new OverridingClassSource(
             Collections.singleton(dummyMainMethod),
             Collections.emptySet(),
