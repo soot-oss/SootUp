@@ -37,7 +37,7 @@ public class JimplePrinterTest {
 
     JimplePrinter p = new JimplePrinter(JimplePrinter.Option.UseImports);
     final StringWriter writer = new StringWriter();
-    SootClass sootClass = buildClass(false);
+    JavaSootClass sootClass = buildClass(false);
     p.printTo(sootClass, new PrintWriter(writer));
 
     assertEquals(
@@ -61,8 +61,8 @@ public class JimplePrinterTest {
         new JimplePrinter(JimplePrinter.Option.UseImports, JimplePrinter.Option.Deterministic);
     final StringWriter writer = new StringWriter();
     final StringWriter writer1 = new StringWriter();
-    SootClass sootClass = buildClass(false);
-    SootClass sootClassUsingBuilder = buildClass(true);
+    JavaSootClass sootClass = buildClass(false);
+    JavaSootClass sootClassUsingBuilder = buildClass(true);
     p.printTo(sootClass, new PrintWriter(writer));
     p.printTo(sootClassUsingBuilder, new PrintWriter(writer1));
     assertEquals(Utils.filterJimple(writer.toString()), Utils.filterJimple(writer1.toString()));
@@ -80,7 +80,7 @@ public class JimplePrinterTest {
         sootClassUsingBuilder.getSuperclass().get().getClassName());
   }
 
-  private SootClass buildClass(boolean buildUsingBuilder) {
+  private JavaSootClass buildClass(boolean buildUsingBuilder) {
     View view = new JavaView(new EagerInputLocation());
 
     String className = "some.package.SomeClass";
@@ -134,7 +134,7 @@ public class JimplePrinterTest {
     return getSootClass(dummyMainMethod, anotherMethod, className, view);
   }
 
-  private SootClass getSootClassUsingBuilder(
+  private JavaSootClass getSootClassUsingBuilder(
       SootMethod dummyMainMethod, SootMethod anotherMethod, String className, View view) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     SootField sootField =
@@ -157,15 +157,15 @@ public class JimplePrinterTest {
             .withAnalysisInputLocation(new EagerInputLocation())
             .build();
 
-    SootClass sootClass =
-        JavaSootClass.JavaSootClassBuilder.builder()
+    JavaSootClass sootClass =
+        JavaSootClass.SootClassBuilder.builder()
             .withClassSource(overridingClassSource)
             .withSourceType(SourceType.Application)
             .build();
     return sootClass;
   }
 
-  private SootClass getSootClass(
+  private JavaSootClass getSootClass(
       SootMethod dummyMainMethod, SootMethod anotherMethod, String className, View view) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     SootField sootField =

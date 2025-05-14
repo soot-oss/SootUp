@@ -22,12 +22,9 @@ package sootup.core.model;
  * #L%
  */
 
-import com.google.common.collect.Iterables;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
-import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -68,56 +65,23 @@ public interface SootClass extends HasPosition {
    * AmbiguousStateException if there are more than one method with the given subSignature. If no
    * method with the given is found, null is returned.
    */
-  @NonNull
-  default Optional<? extends SootMethod> getMethod(@NonNull MethodSubSignature subSignature) {
-    return getMethods().stream()
-        .filter(method -> method.getSignature().getSubSignature().equals(subSignature))
-        .findAny();
-  }
+  @NonNull Optional<? extends SootMethod> getMethod(@NonNull MethodSubSignature subSignature);
 
   /** Attemtps to retrieve the field with the given FieldSubSignature. */
-  @NonNull
-  default Optional<? extends SootField> getField(@NonNull FieldSubSignature subSignature) {
-    return getFields().stream()
-        .filter(f -> f.getSignature().getSubSignature().equals(subSignature))
-        .findAny();
-  }
+  @NonNull Optional<? extends SootField> getField(@NonNull FieldSubSignature subSignature);
 
   /**
    * Returns the field of this class with the given name. Throws a ResolveException if there is more
    * than one field with the given name. Returns null if no field with the given name exists.
    */
-  @NonNull
-  default Optional<? extends SootField> getField(@NonNull String name) {
-    return getFields().stream()
-        .filter(field -> field.getSignature().getName().equals(name))
-        .reduce(
-            (l, r) -> {
-              throw new ResolveException(
-                  "ambiguous field: " + name + " in " + getClassSource().getClassType(),
-                  getClassSource().getSourcePath());
-            });
-  }
+  @NonNull Optional<? extends SootField> getField(@NonNull String name);
 
   /**
    * Attempts to retrieve the method with the given name and parameters. This method may throw an
    * ResolveException if there is more than one method with the given name and parameter.
    */
-  @NonNull
-  default Optional<? extends SootMethod> getMethod(
-      @NonNull String name, @NonNull Iterable<? extends Type> parameterTypes) {
-    return this.getMethods().stream()
-        .filter(
-            method ->
-                method.getSignature().getName().equals(name)
-                    && Iterables.elementsEqual(parameterTypes, method.getParameterTypes()))
-        .reduce(
-            (l, r) -> {
-              throw new ResolveException(
-                  "ambiguous method: " + name + " in " + getClassSource().getClassType(),
-                  getClassSource().getSourcePath());
-            });
-  }
+  @NonNull Optional<? extends SootMethod> getMethod(
+      @NonNull String name, @NonNull Iterable<? extends Type> parameterTypes);
 
   /**
    * Attempts to retrieve the method with the given name. This method will return an empty Set if
@@ -126,12 +90,7 @@ public interface SootClass extends HasPosition {
    * @param name the name of the method
    * @return a set of methods that have the given name
    */
-  @NonNull
-  default Set<? extends SootMethod> getMethodsByName(@NonNull String name) {
-    return this.getMethods().stream()
-        .filter(m -> m.getSignature().getName().equals(name))
-        .collect(Collectors.toSet());
-  }
+  @NonNull Set<? extends SootMethod> getMethodsByName(@NonNull String name);
 
   /** Returns the modifiers of this class in an immutable set. */
   Set<ClassModifier> getModifiers();
@@ -145,7 +104,7 @@ public interface SootClass extends HasPosition {
   Set<? extends ClassType> getInterfaces();
 
   /** This method returns the outer class. */
-  @NonNull Optional<? extends ClassType> getOuterClass();
+  Optional<? extends ClassType> getOuterClass();
 
   /**
    * WARNING: interfaces in Java are subclasses of the java.lang.Object class! Returns the
@@ -186,4 +145,6 @@ public interface SootClass extends HasPosition {
   boolean hasOuterClass();
 
   Position getPosition();
+
+  String print();
 }
