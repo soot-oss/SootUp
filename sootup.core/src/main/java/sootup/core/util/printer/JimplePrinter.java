@@ -241,7 +241,7 @@ public class JimplePrinter {
 
   private void printMethods(SootClass cl, LabeledStmtPrinter printer) {
     Iterator<? extends SootMethod> methodIt =
-        getIterator(cl.getMethods(), SootClassMember::getSignature);
+        getIterator(cl.getMethods(), SootMethod::getSignature);
 
     if (methodIt.hasNext()) {
       printer.incIndent();

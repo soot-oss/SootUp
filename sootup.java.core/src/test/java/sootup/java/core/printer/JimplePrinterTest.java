@@ -21,6 +21,7 @@ import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingClassSource;
 import sootup.java.core.views.JavaView;
 
@@ -103,7 +104,7 @@ public class JimplePrinterTest {
     Body bodyOne = bodyBuilder.build();
 
     SootMethod dummyMainMethod =
-        new SootMethod(
+        new JavaSootMethod(
             new OverridingBodySource(methodSignatureOne, bodyOne),
             methodSignatureOne,
             EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
@@ -119,7 +120,7 @@ public class JimplePrinterTest {
     Body bodyTwo = bodyBuilder.build();
 
     SootMethod anotherMethod =
-        new SootMethod(
+        new JavaSootMethod(
             new OverridingBodySource(methodSignatureOne, bodyTwo),
             methodSignatureTwo,
             EnumSet.of(MethodModifier.PRIVATE),

@@ -51,6 +51,7 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingClassSource;
 import sootup.java.core.language.JavaJimple;
 import sootup.jimple.JimpleBaseVisitor;
@@ -205,7 +206,7 @@ public class JimpleConverter {
             }
             Body modifiedBody = bodyBuilder.build();
             SootMethod sm =
-                new SootMethod(
+                new JavaSootMethod(
                     new OverridingBodySource(m.getBodySource()).withBody(modifiedBody),
                     m.getSignature(),
                     m.getModifiers(),
@@ -457,7 +458,7 @@ public class JimpleConverter {
         }
 
         OverridingBodySource oms = new OverridingBodySource(methodSignature, build);
-        return new SootMethod(oms, methodSignature, modifier, exceptions, methodPosition);
+        return new JavaSootMethod(oms, methodSignature, modifier, exceptions, methodPosition);
       }
 
       private class StmtVisitor extends JimpleBaseVisitor<Stmt> {

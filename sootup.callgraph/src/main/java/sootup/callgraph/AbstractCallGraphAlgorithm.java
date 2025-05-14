@@ -118,7 +118,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   private Optional<MethodSignature> getSignatureOfImplementedStaticInitializer(
       ClassType classType) {
     return view.getMethod(view.getIdentifierFactory().getStaticInitializerSignature(classType))
-        .map(SootClassMember::getSignature);
+        .map(SootMethod::getSignature);
   }
 
   /**

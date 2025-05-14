@@ -25,6 +25,13 @@ package sootup.java.core;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.frontend.ResolveException;
@@ -38,14 +45,6 @@ import sootup.core.util.ImmutableUtils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.java.core.types.JavaClassType;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 public class JavaSootClass implements SootClass, HasAnnotation {
 
   final SootClassSource classSource;
@@ -57,7 +56,6 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   private Supplier<Optional<? extends ClassType>> lazySuperclass;
   private Supplier<Optional<? extends ClassType>> lazyOuterClass;
   private Supplier<Position> lazyPosition;
-
 
   public JavaSootClass(SootClassSource classSource, SourceType sourceType) {
     this.classSource = classSource;
@@ -71,15 +69,15 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   public JavaSootClass(
-          SootClassSource classSource,
-          SourceType sourceType,
-          Set<? extends SootMethod> methods,
-          Set<? extends SootField> fields,
-          Set<ClassModifier> modifiers,
-          Set<? extends ClassType> interfaces,
-          Optional<? extends ClassType> superclass,
-          Optional<? extends ClassType> outerClass,
-          Position position) {
+      SootClassSource classSource,
+      SourceType sourceType,
+      Set<? extends SootMethod> methods,
+      Set<? extends SootField> fields,
+      Set<ClassModifier> modifiers,
+      Set<? extends ClassType> interfaces,
+      Optional<? extends ClassType> superclass,
+      Optional<? extends ClassType> outerClass,
+      Position position) {
     this.classSource = classSource;
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
@@ -195,8 +193,6 @@ public class JavaSootClass implements SootClass, HasAnnotation {
         .map(field -> (JavaSootField) field)
         .collect(Collectors.toSet());
   }
-
-
 
   /** Returns the modifiers of this class in an immutable set. */
   @NonNull
@@ -597,7 +593,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
         if (instance.classSource != null && instance.sourceType != null) {
           return new JavaSootClass(instance.classSource, instance.sourceType);
         }
-          return new JavaSootClass(
+        return new JavaSootClass(
             instance.classSource,
             instance.sourceType,
             instance.methods,
