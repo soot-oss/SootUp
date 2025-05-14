@@ -288,11 +288,11 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
     @NonNull
     @Override
     public <T> T[] toArray(@NonNull T[] ts) {
-      T[] intConstants = (T[]) new Object[to - from + 1];
+      List<IntConstant> intConstants = new ArrayList<>(to - from + 1);
       for (int i = 0; i < size(); i++) {
-        intConstants[i] = (T) IntConstant.getInstance(from + i);
+        intConstants.add(IntConstant.getInstance(from + i));
       }
-      return intConstants;
+      return intConstants.toArray(ts);
     }
 
     @Override
