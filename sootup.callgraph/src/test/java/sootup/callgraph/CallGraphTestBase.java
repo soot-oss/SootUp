@@ -82,67 +82,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     return cg;
   }
 
-  CallGraph loadCallGraphImplicitRunStart(String testDirectory, String className) {
-    String classPath = "src/test/resources/callgraph/" + testDirectory + "/binary";
-
-    // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
-    view = createViewForClassPath(classPath);
-    identifierFactory = view.getIdentifierFactory();
-    mainClassSignature = identifierFactory.getClassType(className);
-    mainMethodSignature =
-            identifierFactory.getMethodSignature(
-                    mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
-
-    SootClass sc = view.getClass(mainClassSignature).orElse(null);
-    assertNotNull(sc);
-
-    // TODO: get the classSig from all objects which call .run()
-    // get the methodSigs for run() of the classes and add them to the entryPoints list
-    // create new cg
-
-
-    /*
-    // search all methods of the class if they use .run()
-    // if so add them to a list and this list is added in the entry points
-    ArrayList<MethodSignature> addToEntryPoints = new ArrayList<>();
-    Path path = Path.of(sc.getClassSource().toString());
-    List<String> addStrings = new ArrayList<>(findMethodsCallingRun(path));
-    System.out.println("Add Strings: " + addStrings);
-    // make each string into a usable MethodSig
-    for (String addString: addStrings) {
-      System.out.println("Matches: " + sc.getMethodsByName(addString));
-      if (!sc.getMethodsByName(addString).isEmpty()) {
-        Set setMethodsByName = sc.getMethodsByName(addString);
-        System.out.println("Add Method: " + sc.getMethodsByName(addString));
-        ArrayList<String> addToEntryPointsNew = new ArrayList<String>(setMethodsByName);
-        for (String entryPoint : addToEntryPointsNew) {
-          for (SootMethod method : sc.getMethods()) {
-            if (method.getName().equals(entryPoint)) {
-              addToEntryPoints.add(method.getSignature());
-            }
-          }
-        }
-      }
-    }
-    SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
-    assertNotNull(m, mainMethodSignature + " not found in classloader");
-
-    algorithm = createAlgorithm(view);
-    List<MethodSignature> entryPoints = Collections.singletonList(mainMethodSignature);
-    List<MethodSignature> allEntryPoints = new ArrayList<>(addToEntryPoints);
-    allEntryPoints.addAll(entryPoints);
-    CallGraph cg = algorithm.initialize(allEntryPoints);
-    System.out.println("CG Entry Points: ");
-    System.out.println(allEntryPoints);
-
-    assertNotNull(cg);
-    assertTrue(
-            cg.containsMethod(mainMethodSignature), mainMethodSignature + " is not found in CallGraph");
-    return cg;
-    */
-    return null;
-  }
-
   protected InvokableStmt getInvokableStmt(
       MethodSignature sourceMethod, MethodSignature staticTargetMethod) {
     return getInvokableStmt(sourceMethod, staticTargetMethod, 0);

@@ -46,6 +46,7 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.typehierarchy.HierarchyComparator;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
+import sootup.core.types.VoidType;
 import sootup.core.views.View;
 
 /**
@@ -245,7 +246,62 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
+    // check if Thread.start() gets called
+    for (Stmt stmt : sourceMethod.getBody().getStmts()) {
+      if (stmt.isInvokableStmt()) {
+        InvokableStmt invokableStmt = stmt.asInvokableStmt();
+        //System.out.println("InvokableStmt: " + invokableStmt);
+        //System.out.println("Resolved Call: " + resolveCall(sourceMethod, invokableStmt));
+        Stream<MethodSignature> resolveCallStream = resolveCall(sourceMethod, invokableStmt);
+        resolveCallStream.forEach(methodSignature -> {
+          if (methodSignature.getDeclClassType().getClassName().equals("Thread") // TODO: proper thread check
+                  && methodSignature.getType().toString().equals("void") // TODO: proper type check
+                  && methodSignature.getName().equals("start")
+                  && methodSignature.getParameterTypes().isEmpty()
+          ) {
+            // TODO: try catch block?
+            MethodSignature implicitRunMethodSig = new MethodSignature(methodSignature.getDeclClassType(), "run", methodSignature.getParameterTypes(), methodSignature.getType());
+//            System.out.println("MethodSignature: " + methodSignature);
+//            System.out.println("ReturnType: " + methodSignature.getType());
+//            System.out.println("ParameterTypes: " + methodSignature.getParameterTypes());
+//            System.out.println("ClassName: " + methodSignature.getDeclClassType());
+//            System.out.println("ClassName: " + methodSignature.getDeclClassType().getClassName());
+//            System.out.println("ClassName: " + methodSignature.getDeclClassType().getPackageName());
+//            System.out.println("ClassName: " + methodSignature.getDeclClassType().getFullyQualifiedName());
+//            System.out.println("Name: " + methodSignature.getName());
+            System.out.println("Implicit Run Method Sig: " + implicitRunMethodSig);
+            addCallToCG(methodSignature, implicitRunMethodSig, invokableStmt, cg, workList);
+            System.out.println("Old WorkList: " + workList);
+            workList.push(implicitRunMethodSig);
+            System.out.println("New WorkList: " + workList);
+          }
+        });
+      }
+    }
+    /*
+    sourceMethod.getBody().getStmts().stream()
+            .filter(Stmt::isInvokableStmt)
+            .map(Stmt::asInvokableStmt)
+            .forEach(invokableStmt -> resolveCall(sourceMethod, invokableStmt));
 
+    System.out.println("Body Statements: " + sourceMethod.getBody().getStmts());
+
+
+    // look through each stmt and check for virtualinvoke with start()
+    for (Stmt stmt : sourceMethod.getBody().getStmts()) {
+      System.out.println("Stmt: " + stmt);
+      System.out.println("InvokableStmt?: " + stmt.isInvokableStmt());
+      System.out.println("Contains?: " + stmt.toString().contains("void start()"));
+      if (stmt.isInvokableStmt() && stmt.toString().contains("void start()")) {
+        // TODO: Get methodSig and add to workList
+      }
+    }
+    */
+    // add the new edge to Thread.run()
+
+    // add the methodSignature of Thread.run() to the workList
+
+    /*
     // Stmt include: virtualinvoke l1.<ImplicitRunStartRunnable: void run()>() or similar
     System.out.println("Body Statements: " + sourceMethod.getBody().getStmts());
 
@@ -264,6 +320,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         }
       }
     }
+
+     */
     // collect all static initializer calls
     resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
   }
