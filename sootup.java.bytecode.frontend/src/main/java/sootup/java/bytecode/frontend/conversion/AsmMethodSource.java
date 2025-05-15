@@ -258,7 +258,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     if (a instanceof ArrayList) {
       List<Object> list = new ArrayList<>();
-      ((ArrayList) a).forEach(e -> list.add(resolveAnnotationsInDefaultValue(e)));
+      ((ArrayList<?>) a).forEach(e -> list.add(resolveAnnotationsInDefaultValue(e)));
       return list;
     }
     return AsmUtil.convertAnnotationValue(a);
