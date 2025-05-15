@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
+import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.views.JavaView;
 
@@ -334,9 +335,17 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
 
   @Test
   public void testImplicitRunStartCG() throws IOException {
-      CallGraph cg = loadCallGraph("Implicit", "Runner");
+    CallGraph cg = loadCallGraph("Implicit", "Runner");
 
     System.out.println(cg.exportAsDot());
     assertTrue(cg.callCount() > 0);
+  }
+
+  @Test
+  public  void testMethodSignature() {
+    CallGraph cg = loadCallGraph("Implicit", "TestMethodSignature");
+    System.out.println(cg.exportAsDot());
+    assertTrue(cg.callCount() > 0);
+
   }
 }

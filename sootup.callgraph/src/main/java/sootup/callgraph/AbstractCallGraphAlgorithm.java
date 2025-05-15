@@ -250,78 +250,23 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
       if (stmt.isInvokableStmt()) {
         InvokableStmt invokableStmt = stmt.asInvokableStmt();
-        //System.out.println("InvokableStmt: " + invokableStmt);
-        //System.out.println("Resolved Call: " + resolveCall(sourceMethod, invokableStmt));
         Stream<MethodSignature> resolveCallStream = resolveCall(sourceMethod, invokableStmt);
         resolveCallStream.forEach(methodSignature -> {
-          if (methodSignature.getDeclClassType().getClassName().equals("Thread") // TODO: proper thread check
-                  && methodSignature.getType().toString().equals("void") // TODO: proper type check
+          if (methodSignature.getDeclClassType().toString().equals("java.lang.Thread") // TODO: proper thread check
+                  && methodSignature.getType().equals(VoidType.getInstance()) // .toString().equals("void") TODO: proper type check
                   && methodSignature.getName().equals("start")
                   && methodSignature.getParameterTypes().isEmpty()
           ) {
-            // TODO: try catch block?
             MethodSignature implicitRunMethodSig = new MethodSignature(methodSignature.getDeclClassType(), "run", methodSignature.getParameterTypes(), methodSignature.getType());
-//            System.out.println("MethodSignature: " + methodSignature);
-//            System.out.println("ReturnType: " + methodSignature.getType());
-//            System.out.println("ParameterTypes: " + methodSignature.getParameterTypes());
-//            System.out.println("ClassName: " + methodSignature.getDeclClassType());
-//            System.out.println("ClassName: " + methodSignature.getDeclClassType().getClassName());
-//            System.out.println("ClassName: " + methodSignature.getDeclClassType().getPackageName());
-//            System.out.println("ClassName: " + methodSignature.getDeclClassType().getFullyQualifiedName());
-//            System.out.println("Name: " + methodSignature.getName());
             System.out.println("Implicit Run Method Sig: " + implicitRunMethodSig);
             addCallToCG(methodSignature, implicitRunMethodSig, invokableStmt, cg, workList);
-            System.out.println("Old WorkList: " + workList);
+            // System.out.println("Old WorkList: " + workList);
             workList.push(implicitRunMethodSig);
-            System.out.println("New WorkList: " + workList);
+            // System.out.println("New WorkList: " + workList);
           }
         });
       }
     }
-    /*
-    sourceMethod.getBody().getStmts().stream()
-            .filter(Stmt::isInvokableStmt)
-            .map(Stmt::asInvokableStmt)
-            .forEach(invokableStmt -> resolveCall(sourceMethod, invokableStmt));
-
-    System.out.println("Body Statements: " + sourceMethod.getBody().getStmts());
-
-
-    // look through each stmt and check for virtualinvoke with start()
-    for (Stmt stmt : sourceMethod.getBody().getStmts()) {
-      System.out.println("Stmt: " + stmt);
-      System.out.println("InvokableStmt?: " + stmt.isInvokableStmt());
-      System.out.println("Contains?: " + stmt.toString().contains("void start()"));
-      if (stmt.isInvokableStmt() && stmt.toString().contains("void start()")) {
-        // TODO: Get methodSig and add to workList
-      }
-    }
-    */
-    // add the new edge to Thread.run()
-
-    // add the methodSignature of Thread.run() to the workList
-
-    /*
-    // Stmt include: virtualinvoke l1.<ImplicitRunStartRunnable: void run()>() or similar
-    System.out.println("Body Statements: " + sourceMethod.getBody().getStmts());
-
-    // look through each stmt and check for virtualinvoke with run()
-    for (Stmt stmt : sourceMethod.getBody().getStmts()) {
-      System.out.println("Stmt: " + stmt);
-      System.out.println("InvokableStmt?: " + stmt.isInvokableStmt());
-      System.out.println("Contains?: " + stmt.toString().contains("void run()"));
-      if (stmt.isInvokableStmt() && stmt.toString().contains("void run()")) {
-        System.out.println(stmt.getUsesAndDefs());
-        // TODO: Get methodSig and add to workList
-        MethodSignature addRunToWorkList = new MethodSignature("run", "run" , Collections.singletonList("java.lang.String[]"), "void");
-        boolean methodSigAdded = workList.offer(addRunToWorkList);
-        if (!methodSigAdded) {
-          System.out.println("The implicit run-call from the methodSignature " + addRunToWorkList + " wasn't added to the workList");
-        }
-      }
-    }
-
-     */
     // collect all static initializer calls
     resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
   }
