@@ -65,7 +65,7 @@ public class IFDSTaintTestSetUp {
             view, Collections.singletonList(entryMethodSignature), false, false);
     IFDSTaintAnalysisProblem problem = new IFDSTaintAnalysisProblem(icfg, entryMethod);
     JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> solver =
-        new JimpleIFDSSolver(problem);
+        new JimpleIFDSSolver<>(problem);
     solver.solve(entryMethod.getDeclaringClassType().getClassName());
     solved = solver;
   }
