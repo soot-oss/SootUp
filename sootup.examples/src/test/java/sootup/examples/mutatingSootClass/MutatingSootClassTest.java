@@ -20,6 +20,7 @@ import sootup.core.types.PrimitiveType.IntType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.language.JavaJimple;
@@ -84,7 +85,7 @@ public class MutatingSootClassTest {
 
     // Create OverridingClassSource
     OverridingJavaClassSource overridingJavaClassSource =
-        new OverridingJavaClassSource(sootClass.getClassSource());
+        new OverridingJavaClassSource((JavaSootClassSource) sootClass.getClassSource());
 
     // Create new Method
     JavaSootMethod newMethod = method.withOverridingMethodSource(old -> newBodySource);

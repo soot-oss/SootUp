@@ -82,7 +82,6 @@ public abstract class SootClassMember<S extends SootClassMemberSignature> implem
 
   @NonNull
   public String getName() {
-
     return signature.getName();
   }
 

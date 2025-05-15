@@ -214,8 +214,7 @@ public class JimplePrinter {
   }
 
   private void printFields(SootClass cl, LabeledStmtPrinter printer) {
-    Iterator<? extends SootField> fieldIt =
-        getIterator(cl.getFields(), SootClassMember::getSignature);
+    Iterator<? extends SootField> fieldIt = getIterator(cl.getFields(), SootField::getSignature);
 
     if (fieldIt.hasNext()) {
       printer.incIndent();

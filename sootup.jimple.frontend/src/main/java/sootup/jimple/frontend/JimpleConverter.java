@@ -51,6 +51,7 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingClassSource;
 import sootup.java.core.language.JavaJimple;
@@ -222,7 +223,7 @@ public class JimpleConverter {
           final Position pos = JimpleConverterUtil.buildPositionFromCtx(fieldCtx);
           final String fieldName = JimpleUtils.unescape(fieldCtx.identifier().getText());
           final SootField f =
-              new SootField(
+              new JavaSootField(
                   identifierFactory.getFieldSignature(fieldName, clazz, fieldCtx.type().getText()),
                   modifier,
                   pos);

@@ -21,6 +21,7 @@ import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingClassSource;
 import sootup.java.core.views.JavaView;
@@ -62,7 +63,7 @@ public class JimplePrinterTest {
         new JimplePrinter(JimplePrinter.Option.UseImports, JimplePrinter.Option.Deterministic);
     final StringWriter writer = new StringWriter();
     final StringWriter writer1 = new StringWriter();
-    JavaSootClass sootClass = buildClass(false);
+    SootClass sootClass = buildClass(false);
     JavaSootClass sootClassUsingBuilder = buildClass(true);
     p.printTo(sootClass, new PrintWriter(writer));
     p.printTo(sootClassUsingBuilder, new PrintWriter(writer1));
@@ -139,7 +140,7 @@ public class JimplePrinterTest {
       SootMethod dummyMainMethod, SootMethod anotherMethod, String className, View view) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     SootField sootField =
-        new SootField(
+        new JavaSootField(
             identifierFactory.getFieldSignature(
                 "counter", identifierFactory.getClassType(className), PrimitiveType.getInt()),
             EnumSet.of(FieldModifier.PRIVATE),
@@ -170,7 +171,7 @@ public class JimplePrinterTest {
       SootMethod dummyMainMethod, SootMethod anotherMethod, String className, View view) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     SootField sootField =
-        new SootField(
+        new JavaSootField(
             identifierFactory.getFieldSignature(
                 "counter", identifierFactory.getClassType(className), PrimitiveType.getInt()),
             EnumSet.of(FieldModifier.PRIVATE),

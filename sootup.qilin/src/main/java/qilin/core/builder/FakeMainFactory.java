@@ -50,9 +50,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.OverridingClassSource;
+import sootup.java.core.*;
 
 public class FakeMainFactory extends ArtificialMethod {
   public static FakeMainFactory instance;
@@ -73,11 +71,13 @@ public class FakeMainFactory extends ArtificialMethod {
     FieldSignature ctSig =
         fact.getFieldSignature("currentThread", declaringClassSignature, "java.lang.Thread");
     SootField currentThread =
-        new SootField(ctSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
+        new JavaSootField(
+            ctSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
     FieldSignature gtSig =
         fact.getFieldSignature("globalThrow", declaringClassSignature, "java.lang.Exception");
     SootField globalThrow =
-        new SootField(gtSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
+        new JavaSootField(
+            gtSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
 
     MethodSignature methodSignatureOne =
         fact.getMethodSignature(className, "main", "void", Collections.emptyList());
@@ -99,7 +99,7 @@ public class FakeMainFactory extends ArtificialMethod {
 
     Body bodyOne = bodyBuilder.build();
     SootMethod dummyMainMethod =
-        new SootMethod(
+        new JavaSootMethod(
             new OverridingBodySource(methodSignatureOne, bodyOne),
             methodSignatureOne,
             EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),

@@ -71,7 +71,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   public JavaSootClass(
       SootClassSource classSource,
       SourceType sourceType,
-      Set<? extends SootMethod> methods,
+      Set<JavaSootMethod> methods,
       Set<? extends SootField> fields,
       Set<ClassModifier> modifiers,
       Set<? extends ClassType> interfaces,
@@ -117,7 +117,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   @Override
-  public Optional<? extends SootMethod> getMethod(
+  public Optional<JavaSootMethod> getMethod(
       @NonNull String name, @NonNull Iterable<? extends Type> parameterTypes) {
     return this.getMethods().stream()
         .filter(
@@ -133,7 +133,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   @Override
-  public Set<? extends SootMethod> getMethodsByName(@NonNull String name) {
+  public Set<JavaSootMethod> getMethodsByName(@NonNull String name) {
     return this.getMethods().stream()
         .filter(m -> m.getSignature().getName().equals(name))
         .collect(Collectors.toSet());
@@ -155,7 +155,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   @NonNull
-  private Set<? extends SootMethod> lazyMethodInitializer() {
+  private Set<SootMethod> lazyMethodInitializer() {
     Set<SootMethod> methods;
 
     try {
@@ -233,8 +233,8 @@ public class JavaSootClass implements SootClass, HasAnnotation {
    * WARNING: interfaces in Java are subclasses of the java.lang.Object class! Returns the
    * superclass of this class. (see hasSuperclass())
    */
-  public Optional<? extends ClassType> getSuperclass() {
-    return lazySuperclass.get();
+  public Optional<JavaClassType> getSuperclass() {
+    return (Optional<JavaClassType>) lazySuperclass.get();
   }
 
   public boolean hasOuterClass() {
@@ -346,8 +346,8 @@ public class JavaSootClass implements SootClass, HasAnnotation {
 
   @NonNull
   @Override
-  public JavaSootClassSource getClassSource() {
-    return (JavaSootClassSource) classSource;
+  public SootClassSource getClassSource() {
+    return classSource;
   }
 
   @Override
@@ -369,47 +369,67 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   @NonNull
   public JavaSootClass withMethods(@NonNull Collection<JavaSootMethod> methods) {
     return new JavaSootClass(
-        new OverridingJavaClassSource(getClassSource()).withMethods(methods), sourceType);
+        new OverridingJavaClassSource((JavaSootClassSource) getClassSource()).withMethods(methods),
+        sourceType);
   }
 
   @NonNull
   public JavaSootClass withReplacedField(
       @NonNull JavaSootField toReplace, @NonNull JavaSootField replacement) {
     return new JavaSootClass(
-        new OverridingJavaClassSource(getClassSource()).withReplacedField(toReplace, replacement),
+        new OverridingJavaClassSource((JavaSootClassSource) getClassSource())
+            .withReplacedField(toReplace, replacement),
         sourceType);
   }
 
   @NonNull
   public JavaSootClass withFields(@NonNull Collection<JavaSootField> fields) {
     return new JavaSootClass(
-        new OverridingJavaClassSource(getClassSource()).withFields(fields), sourceType);
+        new OverridingJavaClassSource((JavaSootClassSource) getClassSource()).withFields(fields),
+        sourceType);
   }
 
   @NonNull
   public JavaSootClass withModifiers(@NonNull Set<ClassModifier> modifiers) {
     return new JavaSootClass(
-        new OverridingJavaClassSource(getClassSource()).withModifiers(modifiers), sourceType);
+        new OverridingJavaClassSource((JavaSootClassSource) getClassSource())
+            .withModifiers(modifiers),
+        sourceType);
+  }
+
+  @NonNull
+  public JavaSootClass withReplacedMethod(
+      @NonNull JavaSootMethod toReplace, @NonNull JavaSootMethod replacement) {
+    return new JavaSootClass(
+        new OverridingJavaClassSource((JavaSootClassSource) getClassSource())
+            .withReplacedMethod(toReplace, replacement),
+        sourceType);
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   @NonNull
   public JavaSootClass withSuperclass(@NonNull Optional<JavaClassType> superclass) {
     return new JavaSootClass(
-        new OverridingJavaClassSource(getClassSource()).withSuperclass(superclass), sourceType);
+        new OverridingJavaClassSource((JavaSootClassSource) getClassSource())
+            .withSuperclass(superclass),
+        sourceType);
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   @NonNull
   public JavaSootClass withOuterClass(@NonNull Optional<JavaClassType> outerClass) {
     return new JavaSootClass(
-        new OverridingJavaClassSource(getClassSource()).withOuterClass(outerClass), sourceType);
+        new OverridingJavaClassSource((JavaSootClassSource) getClassSource())
+            .withOuterClass(outerClass),
+        sourceType);
   }
 
   @NonNull
   public JavaSootClass withPosition(@Nullable Position position) {
     return new JavaSootClass(
-        new OverridingJavaClassSource(getClassSource()).withPosition(position), sourceType);
+        new OverridingJavaClassSource((JavaSootClassSource) getClassSource())
+            .withPosition(position),
+        sourceType);
   }
 
   /**
@@ -431,8 +451,8 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   public static class SootClassBuilder {
     @Nullable private SootClassSource classSource;
     @Nullable private SourceType sourceType;
-    @Nullable private Set<? extends SootMethod> methods = ImmutableSet.of();
-    @Nullable private Set<? extends SootField> fields = ImmutableSet.of();
+    @Nullable private Set<JavaSootMethod> methods = ImmutableSet.of();
+    @Nullable private Set<JavaSootField> fields = ImmutableSet.of();
     @Nullable private Set<ClassModifier> modifiers = ImmutableSet.of();
     @Nullable private Set<? extends ClassType> interfaces = ImmutableSet.of();
     @Nullable private Optional<? extends ClassType> superclass = Optional.empty();
@@ -467,15 +487,15 @@ public class JavaSootClass implements SootClass, HasAnnotation {
             Build {}
 
     public interface MethodStep {
-      CompleteStep withMethod(@NonNull SootMethod method);
+      CompleteStep withMethod(@NonNull JavaSootMethod method);
 
-      CompleteStep withMethods(@NonNull Set<? extends SootMethod> methods);
+      CompleteStep withMethods(@NonNull Set<JavaSootMethod> methods);
     }
 
     public interface FieldStep {
-      CompleteStep withField(@NonNull SootField field);
+      CompleteStep withField(@NonNull JavaSootField field);
 
-      CompleteStep withFields(@NonNull Set<? extends SootField> fields);
+      CompleteStep withFields(@NonNull Set<JavaSootField> fields);
     }
 
     public interface ModifierStep {
@@ -523,26 +543,26 @@ public class JavaSootClass implements SootClass, HasAnnotation {
       }
 
       @Override
-      public CompleteStep withMethod(@NonNull SootMethod method) {
-        instance.methods = ImmutableSet.<SootMethod>builder().add(method).build();
+      public CompleteStep withMethod(@NonNull JavaSootMethod method) {
+        instance.methods =
+            ImmutableSet.<JavaSootMethod>builder().add((JavaSootMethod) method).build();
+        return this;
+      }
+
+      public CompleteStep withMethods(@NonNull Set<JavaSootMethod> methods) {
+        instance.methods = ImmutableSet.<JavaSootMethod>builder().addAll(methods).build();
         return this;
       }
 
       @Override
-      public CompleteStep withMethods(@NonNull Set<? extends SootMethod> methods) {
-        instance.methods = ImmutableSet.<SootMethod>builder().addAll(methods).build();
+      public CompleteStep withField(@NonNull JavaSootField field) {
+        instance.fields = ImmutableSet.<JavaSootField>builder().add(field).build();
         return this;
       }
 
       @Override
-      public CompleteStep withField(@NonNull SootField field) {
-        instance.fields = ImmutableSet.<SootField>builder().add(field).build();
-        return this;
-      }
-
-      @Override
-      public CompleteStep withFields(@NonNull Set<? extends SootField> fields) {
-        instance.fields = ImmutableSet.<SootField>builder().addAll(fields).build();
+      public CompleteStep withFields(@NonNull Set<JavaSootField> fields) {
+        instance.fields = ImmutableSet.<JavaSootField>builder().addAll(fields).build();
         return this;
       }
 
