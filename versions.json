@@ -71,7 +71,10 @@
   {
     "version": "756-make-jimpleanalysisinputlocation-compatible-with-javaview-mergeSootJavaSoot_preview",
     "title": "PR Preview 756-make-jimpleanalysisinputlocation-compatible-with-javaview-mergeSootJavaSoot",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "v2_0_0",
