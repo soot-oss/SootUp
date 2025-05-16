@@ -22,20 +22,37 @@ package sootup.java.core;
  * #L%
  */
 
+import com.google.common.base.Objects;
 import java.nio.file.Path;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 
-public abstract class JavaSootClassSource extends SootClassSource {
+public abstract class JavaSootClassSource implements SootClassSource {
+
+  // holds information about the class
+  protected final AnalysisInputLocation analysisInputLocation;
+  // the classType that identifies the containing class information
+  protected ClassType classSignature;
+  // holds information about the specific data unit where the information about a class is stored
+  protected final Path sourcePath;
 
   public JavaSootClassSource(
       @NonNull AnalysisInputLocation srcNamespace,
       @NonNull ClassType classSignature,
       @NonNull Path sourcePath) {
-    super(srcNamespace, classSignature, sourcePath);
+    this.analysisInputLocation = srcNamespace;
+    this.classSignature = classSignature;
+    this.sourcePath = sourcePath;
+  }
+
+  public JavaSootClassSource(SootClassSource delegate) {
+    this.analysisInputLocation = delegate.getAnalysisInputLocation();
+    this.classSignature = delegate.getClassType();
+    this.sourcePath = delegate.getSourcePath();
   }
 
   protected abstract Iterable<AnnotationUsage> resolveAnnotations();
@@ -46,7 +63,41 @@ public abstract class JavaSootClassSource extends SootClassSource {
     return new JavaSootClass(this, sourceType);
   }
 
-  protected JavaSootClassSource(SootClassSource delegate) {
-    super(delegate);
+  @Override
+  public ClassType getClassType() {
+    return classSignature;
+  }
+
+  public AnalysisInputLocation getAnalysisInputLocation() {
+    return analysisInputLocation;
+  }
+
+  public Path getSourcePath() {
+    return sourcePath;
+  }
+
+  /**
+   * Even if a the signature changes, the classource remains the same, e.g., if it is associated to
+   * an automatic module s
+   *
+   * @param o the object to compare with
+   * @return both objects are logically equal
+   */
+  @Override
+  public boolean equals(@Nullable Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    JavaSootClassSource that = (JavaSootClassSource) o;
+    return Objects.equal(analysisInputLocation, that.analysisInputLocation)
+        && Objects.equal(sourcePath, that.sourcePath);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(analysisInputLocation, sourcePath);
   }
 }

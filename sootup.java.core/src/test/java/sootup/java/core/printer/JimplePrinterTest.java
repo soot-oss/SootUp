@@ -37,7 +37,8 @@ public class JimplePrinterTest {
   @Test
   public void testPrintedExample() {
 
-    JimplePrinter p = new JimplePrinter(JimplePrinter.Option.UseImports);
+    JimplePrinter p =
+        new JimplePrinter(JimplePrinter.Option.Deterministic, JimplePrinter.Option.UseImports);
     final StringWriter writer = new StringWriter();
     JavaSootClass sootClass = buildClass(false);
     p.printTo(sootClass, new PrintWriter(writer));
@@ -48,10 +49,10 @@ public class JimplePrinterTest {
             "import some.great.Interface",
             "public class SomeClass extends Superclass implements Interface",
             "private int counter",
-            "public static void main()",
+            "private int otherMethod() throws FileNotFoundException",
             "nop",
             "return",
-            "private int otherMethod() throws FileNotFoundException",
+            "public static void main()",
             "nop",
             "return"),
         Utils.filterJimple(writer.toString()));

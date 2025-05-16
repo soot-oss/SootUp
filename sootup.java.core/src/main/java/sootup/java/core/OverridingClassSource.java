@@ -33,6 +33,7 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.*;
 import sootup.core.types.ClassType;
 import sootup.core.util.CollectionUtils;
+import sootup.core.util.ImmutableUtils;
 
 /**
  * Allows for replacing specific parts of a class, such as fields and methods or, allows to resolve
@@ -49,7 +50,7 @@ import sootup.core.util.CollectionUtils;
  * @author Christian Brüggemann, Hasitha Rajapakse
  */
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "OptionalAssignedToNull"})
-public class OverridingClassSource extends SootClassSource {
+public class OverridingClassSource extends JavaSootClassSource {
 
   @Nullable private final Collection<SootMethod> overriddenSootMethods;
   @Nullable private final Collection<SootField> overriddenSootFields;
@@ -71,6 +72,12 @@ public class OverridingClassSource extends SootClassSource {
     overriddenSuperclass = null;
     overriddenOuterClass = null;
     position = null;
+  }
+
+  @Override
+  protected Iterable<AnnotationUsage> resolveAnnotations() {
+    // Doesn't have annotations
+    return ImmutableUtils.emptyImmutableList();
   }
 
   private OverridingClassSource(
@@ -170,7 +177,7 @@ public class OverridingClassSource extends SootClassSource {
   }
 
   @Override
-  public SootClass buildClass(@NonNull SourceType sourceType) {
+  public JavaSootClass buildClass(@NonNull SourceType sourceType) {
     return new JavaSootClass(this, sourceType);
   }
 
