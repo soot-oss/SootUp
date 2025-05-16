@@ -32,25 +32,10 @@ import sootup.core.model.*;
 import sootup.core.types.ClassType;
 
 /**
- * Creates and a {@link SootClassSource} for a specific source file. The file should be passed as
- * {@link Path} and can be located in an arbitrary {@link java.nio.file.FileSystem}. Implementations
- * should use {@link java.nio.file.Files#newInputStream(Path, OpenOption...)} to access the file.
- *
- * @param srcNamespace The {@link AnalysisInputLocation} that holds the given file
- * @param sourcePath Path to the source file of the to-be-created {@link SootClassSource}. The given
- *     path has to exist and requires to be handled by this {@link ClassProvider}. Implementations
- *     might double check this if wanted.
- * @param classSignature the signature that has been used to resolve this class
- */
-
-/**
- * AbstractClassSource represents a Compilation Unit (Interpretation Unit for interpreted
+ * {@link SootClassSource} represents a Compilation Unit (Interpretation Unit for interpreted
  * languages). e.g. its connecting a file with source(code) to a {@link
- * sootup.core.signatures.Signature} that a {@link sootup.core.views.View} can resolve.
- */
-
-/**
- * Basic class for retrieving information that is needed to build a {@link SootClass}.
+ * sootup.core.signatures.Signature} that a {@link sootup.core.views.View} can resolve. Basic class
+ * for retrieving information that is needed to build a {@link SootClass}.
  *
  * @author Manuel Benz created on 22.05.18
  * @author Ben Hermann
@@ -59,7 +44,7 @@ import sootup.core.types.ClassType;
 public interface SootClassSource {
 
   /**
-   * @param sourceType instantiates the Subclass of AbstractClassSource to create a *SootClass
+   * @param sourceType instantiates the Subclass of SootClassSource to create a *SootClass
    * @return a *SootClass
    */
   SootClass buildClass(@NonNull SourceType sourceType);

@@ -33,7 +33,7 @@ public class JavaViewTest {
     this.signatures =
         Collections.unmodifiableList(
             inputLocation.getClassSources(DefaultIdentifierFactory.getInstance()).stream()
-                .map(AbstractClassSource::getClassType)
+                .map(SootClassSource::getClassType)
                 .sorted(Comparator.comparing(ClassType::toString))
                 .collect(Collectors.toList()));
 

@@ -23,6 +23,7 @@ package sootup.java.core;
  */
 
 import com.google.common.base.Objects;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -40,6 +41,18 @@ public abstract class JavaSootClassSource implements SootClassSource {
   // holds information about the specific data unit where the information about a class is stored
   protected final Path sourcePath;
 
+  /**
+   * Creates and a {@link SootClassSource} for a specific source file. The file should be passed as
+   * {@link Path} and can be located in an arbitrary {@link java.nio.file.FileSystem}.
+   * Implementations should use {@link java.nio.file.Files#newInputStream(Path, OpenOption...)}
+   * (Path, OpenOption...)} to access the file.
+   *
+   * @param srcNamespace The {@link AnalysisInputLocation} that holds the given file
+   * @param sourcePath Path to the source file of the to-be-created {@link SootClassSource}. The
+   *     given path has to exist and requires to be handled by this {@link
+   *     sootup.core.frontend.ClassProvider}. Implementations might double check this if wanted.
+   * @param classSignature the signature that has been used to resolve this class
+   */
   public JavaSootClassSource(
       @NonNull AnalysisInputLocation srcNamespace,
       @NonNull ClassType classSignature,
