@@ -280,125 +280,6 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
     }
   }
 
-  public interface MethodSourceStep {
-    @NonNull SignatureStep withSource(@NonNull BodySource value);
-  }
-
-  public interface SignatureStep {
-    @NonNull ModifierStep withSignature(@NonNull MethodSignature value);
-  }
-
-  public interface ModifierStep {
-    @NonNull ThrownExceptionsStep withModifier(@NonNull Iterable<MethodModifier> modifier);
-
-    @NonNull
-    default ThrownExceptionsStep withModifiers(
-        @NonNull MethodModifier first, @NonNull MethodModifier... rest) {
-      return withModifier(EnumSet.of(first, rest));
-    }
-  }
-
-  public interface ThrownExceptionsStep {
-    @NonNull BuildStep withThrownExceptions(@NonNull Iterable<ClassType> value);
-
-    @NonNull SootMethod build();
-  }
-
-  public interface BuildStep {
-    @NonNull SootMethod build();
-
-    @NonNull BuildStep withPosition(Position position);
-  }
-
-  /**
-   * Defines a {@link SootMethod} builder that provides a fluent API.
-   *
-   * @author Jan Martin Persch
-   */
-  public static class SootMethodBuilder
-      implements MethodSourceStep,
-          SignatureStep,
-          ModifierStep,
-          ThrownExceptionsStep,
-          BuildStep,
-          HasPosition {
-
-    @Nullable private BodySource source;
-    @NonNull private Iterable<MethodModifier> modifiers = Collections.emptyList();
-    @Nullable private MethodSignature methodSignature;
-    @NonNull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
-    @NonNull private Position position = NoPositionInformation.getInstance();
-
-    @NonNull
-    public Iterable<MethodModifier> getModifiers() {
-      return modifiers;
-    }
-
-    @Nullable
-    public BodySource getSource() {
-      return source;
-    }
-
-    @Nullable
-    public MethodSignature getSignature() {
-      return methodSignature;
-    }
-
-    @NonNull
-    @Override
-    public Position getPosition() {
-      return position;
-    }
-
-    @NonNull
-    public Iterable<ClassType> getThrownExceptions() {
-      return thrownExceptions;
-    }
-
-    @Override
-    @NonNull
-    public SignatureStep withSource(@NonNull BodySource source) {
-      this.source = source;
-      return this;
-    }
-
-    @Override
-    @NonNull
-    public ModifierStep withSignature(@NonNull MethodSignature methodSignature) {
-      this.methodSignature = methodSignature;
-      return this;
-    }
-
-    @Override
-    @NonNull
-    public ThrownExceptionsStep withModifier(@NonNull Iterable<MethodModifier> modifiers) {
-      this.modifiers = modifiers;
-      return this;
-    }
-
-    @Override
-    @NonNull
-    public BuildStep withThrownExceptions(@NonNull Iterable<ClassType> thrownExceptions) {
-      this.thrownExceptions = thrownExceptions;
-      return this;
-    }
-
-    @NonNull
-    public BuildStep withPosition(@NonNull Position position) {
-      this.position = position;
-      return this;
-    }
-
-    @Override
-    @NonNull
-    public SootMethod build() {
-      // nonnull is enforced by stepwise builder pattern - at least if s.o. doesn't force a null
-      // value as parameter
-      return new JavaSootMethod(
-          getSource(), getSignature(), getModifiers(), getThrownExceptions(), position);
-    }
-  }
-
   @Override
   public int hashCode() {
     return Objects.hash(
@@ -493,47 +374,123 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
         getPosition());
   }
 
-  @NonNull
-  public static AnnotationOrSignatureStep builder() {
-    return new JavaSootMethodBuilder();
-  }
-
-  public interface AnnotationOrSignatureStep extends MethodSourceStep {
-    BuildStep withAnnotation(@NonNull Iterable<AnnotationUsage> annotations);
-  }
-
   /**
-   * Defines a {@link JavaSootField.JavaSootFieldBuilder} to provide a fluent API.
+   * Defines a {@link JavaSootMethod.JavaSootMethodBuilder} to provide a fluent API.
    *
    * @author Markus Schmidt
    */
-  public static class JavaSootMethodBuilder extends SootMethodBuilder
-      implements AnnotationOrSignatureStep {
+  public static class JavaSootMethodBuilder {
 
-    private Iterable<AnnotationUsage> annotations = null;
+    @Nullable private BodySource source;
+    @Nullable private MethodSignature methodSignature;
+    @NonNull private Iterable<MethodModifier> modifiers = Collections.emptyList();
+    @NonNull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
+    @NonNull private Position position = NoPositionInformation.getInstance();
+    @Nullable private Iterable<AnnotationUsage> annotations;
 
-    @NonNull
-    public Iterable<AnnotationUsage> getAnnotations() {
-      return annotations != null ? annotations : Collections.emptyList();
+    private JavaSootMethodBuilder() {}
+
+    public static CompleteStep builder() {
+      return new JavaSootMethodBuilder.Steps();
     }
 
-    @Override
-    @NonNull
-    public BuildStep withAnnotation(@NonNull Iterable<AnnotationUsage> annotations) {
-      this.annotations = annotations;
-      return this;
+    public interface MethodSourceStep {
+      CompleteStep withSource(@NonNull BodySource value);
     }
 
-    @Override
-    @NonNull
-    public JavaSootMethod build() {
-      return new JavaSootMethod(
-          getSource(),
-          getSignature(),
-          getModifiers(),
-          getThrownExceptions(),
-          getAnnotations(),
-          getPosition());
+    public interface SignatureStep {
+      CompleteStep withSignature(@NonNull MethodSignature value);
+    }
+
+    public interface ModifierStep {
+      CompleteStep withModifier(@NonNull Iterable<MethodModifier> modifier);
+
+      default ThrownExceptionsStep withModifiers(
+          @NonNull MethodModifier first, @NonNull MethodModifier... rest) {
+        return withModifier(EnumSet.of(first, rest));
+      }
+    }
+
+    public interface ThrownExceptionsStep {
+      CompleteStep withThrownExceptions(@NonNull Iterable<ClassType> value);
+    }
+
+    public interface AnnotationsStep {
+      CompleteStep withAnnotation(@NonNull Iterable<AnnotationUsage> annotations);
+    }
+
+    public interface PositionStep {
+      CompleteStep withPosition(@NonNull Position position);
+    }
+
+    public interface BuildStep {
+      JavaSootMethod build();
+    }
+
+    public interface CompleteStep
+        extends MethodSourceStep,
+            SignatureStep,
+            ModifierStep,
+            ThrownExceptionsStep,
+            AnnotationsStep,
+            PositionStep,
+            BuildStep {}
+
+    private static class Steps implements CompleteStep {
+      private final JavaSootMethodBuilder instance = new JavaSootMethodBuilder();
+
+      @Override
+      public CompleteStep withSource(@NonNull BodySource source) {
+        instance.source = source;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withSignature(@NonNull MethodSignature methodSignature) {
+        instance.methodSignature = methodSignature;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withModifier(@NonNull Iterable<MethodModifier> modifiers) {
+        instance.modifiers = modifiers;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withModifiers(
+          @NonNull MethodModifier first, @NonNull MethodModifier... rest) {
+        return withModifier(EnumSet.of(first, rest));
+      }
+
+      @Override
+      public CompleteStep withThrownExceptions(@NonNull Iterable<ClassType> thrownExceptions) {
+        instance.thrownExceptions = thrownExceptions;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withAnnotation(@NonNull Iterable<AnnotationUsage> annotations) {
+        instance.annotations = annotations;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withPosition(@NonNull Position position) {
+        instance.position = position;
+        return this;
+      }
+
+      @Override
+      public JavaSootMethod build() {
+        return new JavaSootMethod(
+            instance.source,
+            instance.methodSignature,
+            instance.modifiers,
+            instance.thrownExceptions,
+            instance.annotations != null ? instance.annotations : Collections.emptyList(),
+            instance.position);
+      }
     }
   }
 }

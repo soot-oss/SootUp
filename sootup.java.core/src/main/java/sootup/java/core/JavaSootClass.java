@@ -448,6 +448,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   public static class JavaSootClassBuilder {
     @Nullable private SootClassSource classSource;
     @Nullable private SourceType sourceType;
+    @Nullable private ClassType classSignature;
     @Nullable private Set<JavaSootMethod> methods = ImmutableSet.of();
     @Nullable private Set<JavaSootField> fields = ImmutableSet.of();
     @Nullable private Set<ClassModifier> modifiers = ImmutableSet.of();
@@ -472,16 +473,9 @@ public class JavaSootClass implements SootClass, HasAnnotation {
       CompleteStep withSourceType(@NonNull SourceType sourceType);
     }
 
-    /** Interface that accumulates all possible methods. */
-    public interface CompleteStep
-        extends InterfaceStep,
-            MethodStep,
-            FieldStep,
-            ModifierStep,
-            SuperclassStep,
-            OuterClassStep,
-            PositionStep,
-            Build {}
+    public interface ClassTypeStep {
+      CompleteStep withClassType(@NonNull ClassType classType);
+    }
 
     public interface MethodStep {
       CompleteStep withMethod(@NonNull JavaSootMethod method);
@@ -522,6 +516,18 @@ public class JavaSootClass implements SootClass, HasAnnotation {
     public interface Build {
       JavaSootClass build();
     }
+
+    /** Interface that accumulates all possible methods. */
+    public interface CompleteStep
+        extends ClassTypeStep,
+            InterfaceStep,
+            MethodStep,
+            FieldStep,
+            ModifierStep,
+            SuperclassStep,
+            OuterClassStep,
+            PositionStep,
+            Build {}
 
     /** Concrete implementation of the step builder. */
     private static class Steps implements ClassSourceStep, SourceTypeStep, CompleteStep {
@@ -601,6 +607,12 @@ public class JavaSootClass implements SootClass, HasAnnotation {
       @Override
       public CompleteStep withPosition(@NonNull Position position) {
         instance.position = position;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withClassType(@NonNull ClassType classType) {
+        instance.classSignature = classType;
         return this;
       }
 

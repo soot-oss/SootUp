@@ -40,7 +40,7 @@ public class JimplePrinterTest {
     JimplePrinter p =
         new JimplePrinter(JimplePrinter.Option.Deterministic, JimplePrinter.Option.UseImports);
     final StringWriter writer = new StringWriter();
-    JavaSootClass sootClass = buildClass(false);
+    JavaSootClass sootClass = buildClass(false, false);
     p.printTo(sootClass, new PrintWriter(writer));
 
     assertEquals(
@@ -64,11 +64,15 @@ public class JimplePrinterTest {
         new JimplePrinter(JimplePrinter.Option.UseImports, JimplePrinter.Option.Deterministic);
     final StringWriter writer = new StringWriter();
     final StringWriter writer1 = new StringWriter();
-    SootClass sootClass = buildClass(false);
-    JavaSootClass sootClassUsingBuilder = buildClass(true);
+    final StringWriter writer2 = new StringWriter();
+    SootClass sootClass = buildClass(false, false);
+    JavaSootClass sootClassUsingBuilder = buildClass(true, false);
+    JavaSootClass sootClassUsingBuilderWithMembers = buildClass(true, true);
     p.printTo(sootClass, new PrintWriter(writer));
     p.printTo(sootClassUsingBuilder, new PrintWriter(writer1));
+    p.printTo(sootClassUsingBuilderWithMembers, new PrintWriter(writer2));
     assertEquals(Utils.filterJimple(writer.toString()), Utils.filterJimple(writer1.toString()));
+    assertEquals(Utils.filterJimple(writer1.toString()), Utils.filterJimple(writer2.toString()));
 
     // assert if sootClass and sootClassUsingBuilder are same
     assertEquals(
@@ -83,7 +87,7 @@ public class JimplePrinterTest {
         sootClassUsingBuilder.getSuperclass().get().getClassName());
   }
 
-  private JavaSootClass buildClass(boolean buildUsingBuilder) {
+  private JavaSootClass buildClass(boolean buildUsingBuilder, boolean buildWithClassMembers) {
     View view = new JavaView(new EagerInputLocation());
 
     String className = "some.package.SomeClass";
@@ -105,13 +109,25 @@ public class JimplePrinterTest {
         .setPosition(NoPositionInformation.getInstance());
     Body bodyOne = bodyBuilder.build();
 
-    SootMethod dummyMainMethod =
-        new JavaSootMethod(
-            new OverridingBodySource(methodSignatureOne, bodyOne),
-            methodSignatureOne,
-            EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
-            Collections.emptyList(),
-            NoPositionInformation.getInstance());
+    JavaSootMethod dummyMainMethod;
+    if (buildUsingBuilder) {
+      dummyMainMethod =
+          JavaSootMethod.JavaSootMethodBuilder.builder()
+              .withSource(new OverridingBodySource(methodSignatureOne, bodyOne))
+              .withSignature(methodSignatureOne)
+              .withModifier(EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC))
+              .withAnnotation(Collections.emptyList())
+              .withPosition(NoPositionInformation.getInstance())
+              .build();
+    } else {
+      dummyMainMethod =
+          new JavaSootMethod(
+              new OverridingBodySource(methodSignatureOne, bodyOne),
+              methodSignatureOne,
+              EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
+              Collections.emptyList(),
+              NoPositionInformation.getInstance());
+    }
 
     MethodSignature methodSignatureTwo =
         identifierFactory.getMethodSignature(
@@ -121,7 +137,7 @@ public class JimplePrinterTest {
         .setPosition(NoPositionInformation.getInstance());
     Body bodyTwo = bodyBuilder.build();
 
-    SootMethod anotherMethod =
+    JavaSootMethod anotherMethod =
         new JavaSootMethod(
             new OverridingBodySource(methodSignatureOne, bodyTwo),
             methodSignatureTwo,
@@ -131,16 +147,21 @@ public class JimplePrinterTest {
             NoPositionInformation.getInstance());
 
     if (buildUsingBuilder) {
-      return getSootClassUsingBuilder(dummyMainMethod, anotherMethod, className, view);
+      return getSootClassUsingBuilder(
+          dummyMainMethod, anotherMethod, className, view, buildWithClassMembers);
     }
 
     return getSootClass(dummyMainMethod, anotherMethod, className, view);
   }
 
   private JavaSootClass getSootClassUsingBuilder(
-      SootMethod dummyMainMethod, SootMethod anotherMethod, String className, View view) {
+      JavaSootMethod dummyMainMethod,
+      JavaSootMethod anotherMethod,
+      String className,
+      View view,
+      boolean buildWithClassMembers) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
-    SootField sootField =
+    JavaSootField sootField =
         new JavaSootField(
             identifierFactory.getFieldSignature(
                 "counter", identifierFactory.getClassType(className), PrimitiveType.getInt()),
@@ -160,12 +181,25 @@ public class JimplePrinterTest {
             .withAnalysisInputLocation(new EagerInputLocation())
             .build();
 
-    JavaSootClass sootClass =
-        JavaSootClass.JavaSootClassBuilder.builder()
-            .withClassSource(overridingClassSource)
-            .withSourceType(SourceType.Application)
-            .build();
-    return sootClass;
+    if (buildWithClassMembers) {
+      return JavaSootClass.JavaSootClassBuilder.builder()
+          .withClassSource(overridingClassSource)
+          .withSourceType(SourceType.Application)
+          .withMethods(new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)))
+          .withField(sootField)
+          .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+          .withInterfaces(
+              Collections.singleton(identifierFactory.getClassType("some.great.Interface")))
+          .withSuperclass(Optional.of(identifierFactory.getClassType("some.great.Superclass")))
+          .withPosition(NoPositionInformation.getInstance())
+          .withClassType(identifierFactory.getClassType(className))
+          .build();
+    }
+
+    return JavaSootClass.JavaSootClassBuilder.builder()
+        .withClassSource(overridingClassSource)
+        .withSourceType(SourceType.Application)
+        .build();
   }
 
   private JavaSootClass getSootClass(
