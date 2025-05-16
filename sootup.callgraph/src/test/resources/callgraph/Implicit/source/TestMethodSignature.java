@@ -5,7 +5,8 @@ public class TestMethodSignature implements Runnable {
     }
     public static void main (String[] args) {
         TestMethodSignature task = new TestMethodSignature();
-        Thread t = new Thread(task);
-        t.run();
+        task.run();
+        //Thread t = new Thread(task);
+        //t.run();
     }
 }

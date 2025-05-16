@@ -252,17 +252,23 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         InvokableStmt invokableStmt = stmt.asInvokableStmt();
         Stream<MethodSignature> resolveCallStream = resolveCall(sourceMethod, invokableStmt);
         resolveCallStream.forEach(methodSignature -> {
-          if (methodSignature.getDeclClassType().toString().equals("java.lang.Thread") // TODO: proper thread check
-                  && methodSignature.getType().equals(VoidType.getInstance()) // .toString().equals("void") TODO: proper type check
+          System.out.println("MethodSignature: " + methodSignature);
+          System.out.println("MethodSignature DeclClassType: " + methodSignature.getDeclClassType());
+          // TODO: 1. check which start is called
+          if ((methodSignature.getDeclClassType().toString().equals("java.lang.Thread") || methodSignature.getDeclClassType().toString().equals("UpdatedThread")) // TODO: proper thread check
+                  && methodSignature.getType().equals(VoidType.getInstance())
                   && methodSignature.getName().equals("start")
                   && methodSignature.getParameterTypes().isEmpty()
           ) {
-            MethodSignature implicitRunMethodSig = new MethodSignature(methodSignature.getDeclClassType(), "run", methodSignature.getParameterTypes(), methodSignature.getType());
+            Optional<SootMethod> concreteMethod = findConcreteMethod(view,methodSignature);
+            if (concreteMethod.isEmpty()) {
+              return;
+            }
+            System.out.println("ConcreteMethod: " + concreteMethod);
+            MethodSignature concreteMethodSignature = concreteMethod.get().getSignature();
+            MethodSignature implicitRunMethodSig = new MethodSignature(concreteMethodSignature.getDeclClassType(), "run", concreteMethodSignature.getParameterTypes(), concreteMethodSignature.getType());
             System.out.println("Implicit Run Method Sig: " + implicitRunMethodSig);
-            addCallToCG(methodSignature, implicitRunMethodSig, invokableStmt, cg, workList);
-            // System.out.println("Old WorkList: " + workList);
-            workList.push(implicitRunMethodSig);
-            // System.out.println("New WorkList: " + workList);
+            addCallToCG(concreteMethodSignature, implicitRunMethodSig, invokableStmt, cg, workList);
           }
         });
       }

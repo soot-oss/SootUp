@@ -344,8 +344,11 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
   @Test
   public  void testMethodSignature() {
     CallGraph cg = loadCallGraph("Implicit", "TestMethodSignature");
+    cg.getMethodSignatures().forEach(methodSignature -> {
+      System.out.println("MethodSignature: ");
+      System.out.println(methodSignature);
+    });
     System.out.println(cg.exportAsDot());
     assertTrue(cg.callCount() > 0);
-
   }
 }
