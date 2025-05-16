@@ -54,10 +54,8 @@ public interface SootClass extends HasPosition {
 
   ClassType getType();
 
-  /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
   @NonNull Set<? extends SootField> getFields();
 
-  /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */
   @NonNull Set<? extends SootMethod> getMethods();
 
   /**

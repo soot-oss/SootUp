@@ -51,11 +51,15 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   final SourceType sourceType;
   final ClassType classSignature;
 
-  private Supplier<Set<ClassModifier>> lazyModifiers;
-  private Supplier<Set<? extends ClassType>> lazyInterfaces;
-  private Supplier<Optional<? extends ClassType>> lazySuperclass;
-  private Supplier<Optional<? extends ClassType>> lazyOuterClass;
-  private Supplier<Position> lazyPosition;
+  private final Supplier<Set<ClassModifier>> lazyModifiers;
+  private final Supplier<Set<? extends ClassType>> lazyInterfaces;
+  private final Supplier<Optional<? extends ClassType>> lazySuperclass;
+  private final Supplier<Optional<? extends ClassType>> lazyOuterClass;
+  private final Supplier<Position> lazyPosition;
+
+  @NonNull private final Supplier<Set<? extends SootMethod>> _lazyMethods;
+
+  @NonNull private final Supplier<Set<? extends SootField>> _lazyFields;
 
   public JavaSootClass(SootClassSource classSource, SourceType sourceType) {
     this.classSource = classSource;
@@ -66,6 +70,8 @@ public class JavaSootClass implements SootClass, HasAnnotation {
     this.lazySuperclass = Suppliers.memoize(classSource::resolveSuperclass);
     this.lazyOuterClass = Suppliers.memoize(classSource::resolveOuterClass);
     this.lazyPosition = Suppliers.memoize(classSource::resolvePosition);
+    this._lazyMethods = Suppliers.memoize(this::lazyMethodInitializer);
+    this._lazyFields = Suppliers.memoize(this::lazyFieldInitializer);
   }
 
   public JavaSootClass(
@@ -169,10 +175,6 @@ public class JavaSootClass implements SootClass, HasAnnotation {
     return methods;
   }
 
-  @NonNull
-  private Supplier<Set<? extends SootMethod>> _lazyMethods =
-      Suppliers.memoize(this::lazyMethodInitializer);
-
   /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */
   @NonNull
   public Set<JavaSootMethod> getMethods() {
@@ -180,10 +182,6 @@ public class JavaSootClass implements SootClass, HasAnnotation {
         .map(method -> (JavaSootMethod) method)
         .collect(Collectors.toSet());
   }
-
-  @NonNull
-  private Supplier<Set<? extends SootField>> _lazyFields =
-      Suppliers.memoize(this::lazyFieldInitializer);
 
   /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
   @Override
@@ -252,10 +250,9 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   /** Returns the ClassSignature of this class. */
-  @NonNull
   @Override
-  public JavaClassType getType() {
-    return (JavaClassType) classSignature;
+  public ClassType getType() {
+    return classSignature;
   }
 
   /** Convenience method; returns true if this class is an interface. */
@@ -448,7 +445,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   /** Defines a {@link SootClass} builder. */
-  public static class SootClassBuilder {
+  public static class JavaSootClassBuilder {
     @Nullable private SootClassSource classSource;
     @Nullable private SourceType sourceType;
     @Nullable private Set<JavaSootMethod> methods = ImmutableSet.of();
@@ -459,10 +456,10 @@ public class JavaSootClass implements SootClass, HasAnnotation {
     @Nullable private Optional<? extends ClassType> outerClass = Optional.empty();
     @Nullable private Position position;
 
-    private SootClassBuilder() {}
+    private JavaSootClassBuilder() {}
 
     public static ClassSourceStep builder() {
-      return new SootClassBuilder.Steps();
+      return new JavaSootClassBuilder.Steps();
     }
 
     /** Step interface for setting the class source. */
@@ -528,7 +525,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
 
     /** Concrete implementation of the step builder. */
     private static class Steps implements ClassSourceStep, SourceTypeStep, CompleteStep {
-      private final SootClassBuilder instance = new SootClassBuilder();
+      private final JavaSootClassBuilder instance = new JavaSootClassBuilder();
 
       @Override
       public SourceTypeStep withClassSource(SootClassSource classSource) {
@@ -544,8 +541,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
 
       @Override
       public CompleteStep withMethod(@NonNull JavaSootMethod method) {
-        instance.methods =
-            ImmutableSet.<JavaSootMethod>builder().add((JavaSootMethod) method).build();
+        instance.methods = ImmutableSet.<JavaSootMethod>builder().add(method).build();
         return this;
       }
 

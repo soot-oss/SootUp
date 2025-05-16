@@ -160,7 +160,7 @@ public class JimplePrinterTest {
             .build();
 
     JavaSootClass sootClass =
-        JavaSootClass.SootClassBuilder.builder()
+        JavaSootClass.JavaSootClassBuilder.builder()
             .withClassSource(overridingClassSource)
             .withSourceType(SourceType.Application)
             .build();
