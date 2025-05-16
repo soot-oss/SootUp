@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.tools.*;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.EquivTo;
 import sootup.core.model.Body;
