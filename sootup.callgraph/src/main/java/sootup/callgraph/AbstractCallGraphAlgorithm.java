@@ -235,17 +235,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * It resolves all implicit calls caused by the given source method
+   * It resolves the start-run implicit calls caused by the given source method
    *
    * @param sourceMethod the inspected source method
-   * @param cg new calls will be added to the call graph
-   * @param workList new target methods will be added to the work list
+   * @param cg implicit start-run calls will be added to the call graph
+   * @param workList new run methods will be added to the work list
    */
-  protected void resolveAllImplicitCallsFromSourceMethod(
-      SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
-    if (sourceMethod == null || !sourceMethod.hasBody()) {
-      return;
-    }
+  protected void implicitStartRunCall (
+          SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList
+  ) {
     // check if Thread.start() gets called
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
       if (stmt.isInvokableStmt()) {
@@ -254,9 +252,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         resolveCallStream.forEach(methodSignature -> {
           System.out.println("MethodSignature: " + methodSignature);
           System.out.println("MethodSignature DeclClassType: " + methodSignature.getDeclClassType());
-          // TODO: 1. check which start is called
-          if ((methodSignature.getDeclClassType().toString().equals("java.lang.Thread") || methodSignature.getDeclClassType().toString().equals("UpdatedThread")) // TODO: proper thread check
-                  && methodSignature.getType().equals(VoidType.getInstance())
+          if (methodSignature.getType().equals(VoidType.getInstance())
                   && methodSignature.getName().equals("start")
                   && methodSignature.getParameterTypes().isEmpty()
           ) {
@@ -273,6 +269,21 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         });
       }
     }
+  }
+
+  /**
+   * It resolves all implicit calls caused by the given source method
+   *
+   * @param sourceMethod the inspected source method
+   * @param cg new calls will be added to the call graph
+   * @param workList new target methods will be added to the work list
+   */
+  protected void resolveAllImplicitCallsFromSourceMethod(
+      SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
+    if (sourceMethod == null || !sourceMethod.hasBody()) {
+      return;
+    }
+    implicitStartRunCall(sourceMethod, cg, workList);
     // collect all static initializer calls
     resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
   }
