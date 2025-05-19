@@ -36,7 +36,7 @@ public class DominanceTree {
 
   private List<BasicBlock<?>> blocks;
   private Map<BasicBlock<?>, Integer> blockToIdx;
-  private List<Integer>[] children;
+  private List<List<Integer>> children;
   private int[] parents;
 
   public DominanceTree(@NonNull DominanceFinder dominanceFinder) {
@@ -44,17 +44,17 @@ public class DominanceTree {
     this.blockToIdx = dominanceFinder.getBlockToIdx();
     int[] iDoms = dominanceFinder.getImmediateDominators();
     int treeSize = iDoms.length;
-    children = new ArrayList[treeSize];
+    children = new ArrayList<>(treeSize);
     parents = new int[treeSize];
     for (int i = 0; i < treeSize; i++) {
-      children[i] = new ArrayList<>();
+      children.add(new ArrayList<>());
       parents[i] = -1;
     }
 
     for (int i = 0; i < treeSize; i++) {
       if (iDoms[i] != -1 && iDoms[i] != i) {
         parents[i] = iDoms[i];
-        children[iDoms[i]].add(i);
+        children.get(iDoms[i]).add(i);
       }
     }
   }
@@ -63,7 +63,7 @@ public class DominanceTree {
   public List<BasicBlock<?>> getChildren(@NonNull BasicBlock<?> block) {
     List<BasicBlock<?>> childList = new ArrayList<>();
     int idx = blockToIdx.get(block);
-    for (int i : children[idx]) {
+    for (int i : children.get(idx)) {
       childList.add(blocks.get(i));
     }
     return childList;
