@@ -85,9 +85,9 @@ public class CallGraphTest {
     for (Stmt stmt : method.getBody().getStmts()) {
       if (stmt.isInvokableStmt()
           && stmt.asInvokableStmt().containsInvokeExpr()
+          && stmt.asInvokableStmt().getInvokeExpr().isPresent()
           && stmt.asInvokableStmt()
-              .getInvokeExpr().isPresent()
-          && stmt.asInvokableStmt().getInvokeExpr()
+              .getInvokeExpr()
               .get()
               .getMethodSignature()
               .equals(staticTargetMethod)) {
@@ -325,62 +325,82 @@ public class CallGraphTest {
   public void checkCallGraphDotExporter() {
     algorithmName = "RTA";
     CallGraph cg = loadCallGraph();
-    //unsorted
-    List<String> actualContent = Arrays.stream(cg.exportAsDot()
-        .replace("\t","")
-        .split("\n")).toList();
-    assertTrue(actualContent.size()>1);
+    // unsorted
+    List<String> actualContent =
+        Arrays.stream(cg.exportAsDot().replace("\t", "").split("\n")).toList();
+    assertTrue(actualContent.size() > 1);
     assertEquals("strict digraph ObjectGraph {", actualContent.get(0));
     assertEquals("}", actualContent.get(actualContent.size() - 1));
-    assertTrue(actualContent.contains("\"<SubClassMethodNotImplemented: void <init>()>\"->\"<MethodImplementedInstantiatedInSubClass: void <init>()>\"[label=\"1\"]"));
-    assertTrue(actualContent.contains("\"<Main: void main(java.lang.String[])>\"->\"<InterfaceImplementation: int defaultMethod()>\"[label=\"9\"]"));
-    assertTrue(actualContent.contains("\"<Main: void main(java.lang.String[])>\"->\"<InterfaceNoImplementation: void <init>()>\"[label=\"7\"]"));
-    assertTrue(actualContent.contains("\"<Main: void main(java.lang.String[])>\"->\"<SubClassMethodImplemented: int method()>\"[label=\"5\"]"));
+    assertTrue(
+        actualContent.contains(
+            "\"<SubClassMethodNotImplemented: void <init>()>\"->\"<MethodImplementedInstantiatedInSubClass: void <init>()>\"[label=\"1\"]"));
+    assertTrue(
+        actualContent.contains(
+            "\"<Main: void main(java.lang.String[])>\"->\"<InterfaceImplementation: int defaultMethod()>\"[label=\"9\"]"));
+    assertTrue(
+        actualContent.contains(
+            "\"<Main: void main(java.lang.String[])>\"->\"<InterfaceNoImplementation: void <init>()>\"[label=\"7\"]"));
+    assertTrue(
+        actualContent.contains(
+            "\"<Main: void main(java.lang.String[])>\"->\"<SubClassMethodImplemented: int method()>\"[label=\"5\"]"));
 
     // sorted
-    List<String> actualContentSorted = Arrays.stream(cg.exportAsDotSorted()
-        .replace("\t","")
-        .split("\n")).toList();
-    assertTrue(actualContentSorted.size()>1);
+    List<String> actualContentSorted =
+        Arrays.stream(cg.exportAsDotSorted().replace("\t", "").split("\n")).toList();
+    assertTrue(actualContentSorted.size() > 1);
     assertEquals("strict digraph ObjectGraph {", actualContentSorted.get(0));
     assertEquals("}", actualContentSorted.get(actualContentSorted.size() - 1));
 
-    int call1=actualContentSorted.indexOf("\"<SubClassMethodNotImplemented: void <init>()>\"->\"<MethodImplementedInstantiatedInSubClass: void <init>()>\"[label=\"1\"]");
-    int call2=actualContentSorted.indexOf("\"<Main: void main(java.lang.String[])>\"->\"<InterfaceImplementation: int defaultMethod()>\"[label=\"9\"]");
-    int call3=actualContentSorted.indexOf("\"<Main: void main(java.lang.String[])>\"->\"<InterfaceNoImplementation: void <init>()>\"[label=\"7\"]");
-    int call4=actualContentSorted.indexOf("\"<Main: void main(java.lang.String[])>\"->\"<SubClassMethodImplemented: int method()>\"[label=\"5\"]");
-    assertTrue(call1>=0);
-    assertTrue(call2>=0);
-    assertTrue(call3>=0);
-    assertTrue(call4>=0);
+    int call1 =
+        actualContentSorted.indexOf(
+            "\"<SubClassMethodNotImplemented: void <init>()>\"->\"<MethodImplementedInstantiatedInSubClass: void <init>()>\"[label=\"1\"]");
+    int call2 =
+        actualContentSorted.indexOf(
+            "\"<Main: void main(java.lang.String[])>\"->\"<InterfaceImplementation: int defaultMethod()>\"[label=\"9\"]");
+    int call3 =
+        actualContentSorted.indexOf(
+            "\"<Main: void main(java.lang.String[])>\"->\"<InterfaceNoImplementation: void <init>()>\"[label=\"7\"]");
+    int call4 =
+        actualContentSorted.indexOf(
+            "\"<Main: void main(java.lang.String[])>\"->\"<SubClassMethodImplemented: int method()>\"[label=\"5\"]");
+    assertTrue(call1 >= 0);
+    assertTrue(call2 >= 0);
+    assertTrue(call3 >= 0);
+    assertTrue(call4 >= 0);
 
-    List<Integer> sorted= Stream.of(call1,call2,call3,call4).sorted().toList();
-    assertEquals(call2,sorted.get(0));
-    assertEquals(call3,sorted.get(1));
-    assertEquals(call4,sorted.get(2));
-    assertEquals(call1,sorted.get(3));
+    List<Integer> sorted = Stream.of(call1, call2, call3, call4).sorted().toList();
+    assertEquals(call2, sorted.get(0));
+    assertEquals(call3, sorted.get(1));
+    assertEquals(call4, sorted.get(2));
+    assertEquals(call1, sorted.get(3));
 
-    //line sorted
-    List<String> actualContentLineSorted = Arrays.stream(cg.exportAsDotSortedByLine()
-        .replace("\t","")
-        .split("\n")).toList();
-    assertTrue(actualContentLineSorted.size()>1);
+    // line sorted
+    List<String> actualContentLineSorted =
+        Arrays.stream(cg.exportAsDotSortedByLine().replace("\t", "").split("\n")).toList();
+    assertTrue(actualContentLineSorted.size() > 1);
     assertEquals("strict digraph ObjectGraph {", actualContentLineSorted.get(0));
     assertEquals("}", actualContentLineSorted.get(actualContentLineSorted.size() - 1));
-    int call1LN=actualContentLineSorted.indexOf("\"<SubClassMethodNotImplemented: void <init>()>\"->\"<MethodImplementedInstantiatedInSubClass: void <init>()>\"[label=\"1\"]");
-    int call2LN=actualContentLineSorted.indexOf("\"<Main: void main(java.lang.String[])>\"->\"<InterfaceImplementation: int defaultMethod()>\"[label=\"9\"]");
-    int call3LN=actualContentLineSorted.indexOf("\"<Main: void main(java.lang.String[])>\"->\"<InterfaceNoImplementation: void <init>()>\"[label=\"7\"]");
-    int call4LN=actualContentLineSorted.indexOf("\"<Main: void main(java.lang.String[])>\"->\"<SubClassMethodImplemented: int method()>\"[label=\"5\"]");
-    assertTrue(call1LN>=0);
-    assertTrue(call2LN>=0);
-    assertTrue(call3LN>=0);
-    assertTrue(call4LN>=0);
+    int call1LN =
+        actualContentLineSorted.indexOf(
+            "\"<SubClassMethodNotImplemented: void <init>()>\"->\"<MethodImplementedInstantiatedInSubClass: void <init>()>\"[label=\"1\"]");
+    int call2LN =
+        actualContentLineSorted.indexOf(
+            "\"<Main: void main(java.lang.String[])>\"->\"<InterfaceImplementation: int defaultMethod()>\"[label=\"9\"]");
+    int call3LN =
+        actualContentLineSorted.indexOf(
+            "\"<Main: void main(java.lang.String[])>\"->\"<InterfaceNoImplementation: void <init>()>\"[label=\"7\"]");
+    int call4LN =
+        actualContentLineSorted.indexOf(
+            "\"<Main: void main(java.lang.String[])>\"->\"<SubClassMethodImplemented: int method()>\"[label=\"5\"]");
+    assertTrue(call1LN >= 0);
+    assertTrue(call2LN >= 0);
+    assertTrue(call3LN >= 0);
+    assertTrue(call4LN >= 0);
 
-    List<Integer> sortedLine= Stream.of(call1LN,call2LN,call3LN,call4LN).sorted().toList();
-    assertEquals(call4LN,sortedLine.get(0));
-    assertEquals(call3LN,sortedLine.get(1));
-    assertEquals(call2LN,sortedLine.get(2));
-    assertEquals(call1LN,sortedLine.get(3));
+    List<Integer> sortedLine = Stream.of(call1LN, call2LN, call3LN, call4LN).sorted().toList();
+    assertEquals(call4LN, sortedLine.get(0));
+    assertEquals(call3LN, sortedLine.get(1));
+    assertEquals(call2LN, sortedLine.get(2));
+    assertEquals(call1LN, sortedLine.get(3));
   }
-
 }
