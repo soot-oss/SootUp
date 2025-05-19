@@ -22,8 +22,10 @@ package sootup.callgraph;
  * #L%
  */
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.signatures.MethodSignature;
@@ -58,6 +60,15 @@ public interface CallGraph {
     @NonNull
     public InvokableStmt getInvokableStmt() {
       return invokableStmt;
+    }
+
+    /**
+     * The line number of the stmt causing the call
+     *
+     * @return the line number of the stmt. If the position is unknown, it will return -1
+     */
+    public int getLineNumber() {
+      return invokableStmt.getPositionInfo().getStmtPosition().getFirstLine();
     }
 
     @Override
@@ -180,8 +191,101 @@ public interface CallGraph {
    */
   int callCount();
 
-  /** This method converts the call graph object into dot format and write it to a string file. */
-  String exportAsDot();
+  /**
+   * exports a call of the call graph to an edge in a dot file
+   *
+   * @param call the data of the call
+   * @return an edge defining the call in the dot file
+   */
+  default String toDotEdge(Call call) {
+    return "\""
+        + call.getSourceMethodSignature()
+        + "\"->\""
+        + call.getTargetMethodSignature()
+        + "\"[label=\""
+        + call.getLineNumber()
+        + "\"]";
+  }
+
+  /**
+   * This method converts the call graph object into dot format and write it to a string file.
+   *
+   * @return a String containing all edges of the call graph in the dot format
+   */
+  default String exportAsDot() {
+    String content =
+        getMethodSignatures().stream()
+            .flatMap(methodSignature -> callsFrom(methodSignature).stream())
+            .map(edge -> "\t" + toDotEdge(edge) + "\n")
+            .collect(Collectors.joining());
+    return "strict digraph ObjectGraph {\n" + content + "}";
+  }
+
+  /**
+   * This method converts the call graph object into dot format and writes it to a string file. The
+   * calls are sorted by the given Comparator for Call Objects.
+   *
+   * @param callComparator the comparator responsible for sorting the calls
+   * @return a String containing all edges of the call graph in the dot format
+   */
+  default String exportAsDot(Comparator<Call> callComparator) {
+    String content =
+        getMethodSignatures().stream()
+            .flatMap(methodSignature -> callsFrom(methodSignature).stream())
+            .sorted(callComparator)
+            .map(edge -> "\t" + toDotEdge(edge) + "\n")
+            .collect(Collectors.joining());
+    return "strict digraph ObjectGraph {\n" + content + "}";
+  }
+
+  /**
+   * This method converts the call graph object into dot format and writes it to a string file. The
+   * calls are sorted in order by the source and target method signature. These signatures are in
+   * order by the class name, the method name, and the parameter list
+   *
+   * @return a String containing all edges of the call graph in the dot format
+   */
+  default String exportAsDotSorted() {
+    // src class name
+    return exportAsDot(
+        Comparator.comparing(
+                (Call call) ->
+                    call.getSourceMethodSignature().getDeclClassType().getFullyQualifiedName())
+            // src method name
+            .thenComparing(call -> call.getSourceMethodSignature().getName())
+            // src parameter list
+            .thenComparing(call -> call.getSourceMethodSignature().getParameterTypes().toString())
+            // target class name
+            .thenComparing(
+                call -> call.getTargetMethodSignature().getDeclClassType().getClassName())
+            // target method name
+            .thenComparing(call -> call.getTargetMethodSignature().getName())
+            // target parameter list
+            .thenComparing(call -> call.getTargetMethodSignature().getParameterTypes().toString()));
+  }
+
+  /**
+   * This method converts the call graph object into dot format and writes it to a string file. The
+   * calls are sorted in order by the source method signature and the line number. These signatures
+   * are in order by the class name, the method name, and the parameter list
+   *
+   * @return a String containing all edges of the call graph in the dot format
+   */
+  default String exportAsDotSortedByLine() {
+    // src class name
+    return exportAsDot(
+        Comparator.comparing(
+                (Call call) ->
+                    call.getSourceMethodSignature().getDeclClassType().getFullyQualifiedName())
+            // src method name
+            .thenComparing(call -> call.getSourceMethodSignature().getName())
+            // src parameter list
+            .thenComparing(call -> call.getSourceMethodSignature().getParameterTypes().toString())
+            // line number
+            .thenComparing(
+                call ->
+                    call.getInvokableStmt().getPositionInfo().getStmtPosition().getFirstLine()));
+  }
 
   /**
    * This method copies a call graph.

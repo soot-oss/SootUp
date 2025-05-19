@@ -168,61 +168,6 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     return graph.edgeSet().size();
   }
 
-  @Override
-  public String exportAsDot() {
-    StringBuilder dotFormatBuilder = new StringBuilder();
-    // The edgeSet is first sorted with the sourceMethod first and then targetMethod. It is sorted
-    // by className, then the method name
-    // and then the parameters.
-    graph.edgeSet().stream()
-        .sorted(
-            Comparator.comparing(
-                    (Call call) -> {
-                      Vertex edgeSource = graph.getEdgeSource(call);
-                      return edgeSource.methodSignature.getDeclClassType().getFullyQualifiedName();
-                    })
-                .thenComparing(
-                    (Call call) -> {
-                      Vertex edgeSource = graph.getEdgeSource(call);
-                      return edgeSource.methodSignature.getName();
-                    })
-                .thenComparing(
-                    (Call call) -> {
-                      Vertex edgeSource = graph.getEdgeSource(call);
-                      return edgeSource.methodSignature.getParameterTypes().toString();
-                    })
-                .thenComparing(
-                    (Call call) -> {
-                      Vertex edgeTarget = graph.getEdgeTarget(call);
-                      return edgeTarget.methodSignature.getDeclClassType().getClassName();
-                    })
-                .thenComparing(
-                    (Call call) -> {
-                      Vertex edgeTarget = graph.getEdgeTarget(call);
-                      return edgeTarget.methodSignature.getName();
-                    })
-                .thenComparing(
-                    (Call call) -> {
-                      Vertex edgeTarget = graph.getEdgeTarget(call);
-                      return edgeTarget.methodSignature.getParameterTypes().toString();
-                    }))
-        .forEach(edge -> dotFormatBuilder.append("\t").append(toDotEdge(edge)).append("\n"));
-
-    return "strict digraph ObjectGraph {\n" + dotFormatBuilder + "}";
-  }
-
-  /**
-   * exports a call of the call graph to an edge in a dot file
-   *
-   * @param call the data of the call
-   * @return an edge defining the call in the dot file
-   */
-  protected String toDotEdge(CallGraph.Call call) {
-    Vertex sourceVertex = graph.getEdgeSource(call);
-    Vertex targetVertex = graph.getEdgeTarget(call);
-    return "\"" + sourceVertex.methodSignature + "\" -> \"" + targetVertex.methodSignature + "\";";
-  }
-
   @SuppressWarnings("unchecked") // (graph.clone() preserves generic properties)
   @NonNull
   @Override

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
@@ -323,29 +324,62 @@ public class CallGraphTest {
   public void checkCallGraphDotExporter() {
     algorithmName = "RTA";
     CallGraph cg = loadCallGraph();
-    List<String> actualContent = Arrays.stream(cg.exportAsDot().split("\n")).toList();
-    List<String> expectedContent =
-        Arrays.stream(
-                ("strict digraph ObjectGraph {\n"
-                        + "\t\"<AbstractClass: void <init>()>\" -> \"<java.lang.Object: void <init>()>\";\n"
-                        + "\t\"<InterfaceImplementation: void <init>()>\" -> \"<java.lang.Object: void <init>()>\";\n"
-                        + "\t\"<InterfaceNoImplementation: void <init>()>\" -> \"<java.lang.Object: void <init>()>\";\n"
-                        + "\t\"<Main: void main(java.lang.String[])>\" -> \"<Interface: int defaultMethod()>\";\n"
-                        + "\t\"<Main: void main(java.lang.String[])>\" -> \"<InterfaceImplementation: void <init>()>\";\n"
-                        + "\t\"<Main: void main(java.lang.String[])>\" -> \"<InterfaceImplementation: int defaultMethod()>\";\n"
-                        + "\t\"<Main: void main(java.lang.String[])>\" -> \"<InterfaceNoImplementation: void <init>()>\";\n"
-                        + "\t\"<Main: void main(java.lang.String[])>\" -> \"<MethodImplementedInstantiatedInSubClass: int method()>\";\n"
-                        + "\t\"<Main: void main(java.lang.String[])>\" -> \"<SubClassMethodImplemented: void <init>()>\";\n"
-                        + "\t\"<Main: void main(java.lang.String[])>\" -> \"<SubClassMethodImplemented: int method()>\";\n"
-                        + "\t\"<Main: void main(java.lang.String[])>\" -> \"<SubClassMethodNotImplemented: void <init>()>\";\n"
-                        + "\t\"<MethodImplemented: void <init>()>\" -> \"<AbstractClass: void <init>()>\";\n"
-                        + "\t\"<MethodImplementedInstantiatedInSubClass: void <init>()>\" -> \"<AbstractClass: void <init>()>\";\n"
-                        + "\t\"<SubClassMethodImplemented: void <init>()>\" -> \"<MethodImplemented: void <init>()>\";\n"
-                        + "\t\"<SubClassMethodNotImplemented: void <init>()>\" -> \"<MethodImplementedInstantiatedInSubClass: void <init>()>\";\n"
-                        + "}")
-                    .split("\n"))
-            .toList();
+    //unsorted
+    List<String> actualContent = Arrays.stream(cg.exportAsDot()
+        .replace("\t","")
+        .split("\n")).toList();
+    assertTrue(actualContent.size()>1);
+    assertEquals("strict digraph ObjectGraph {", actualContent.get(0));
+    assertEquals("}", actualContent.get(actualContent.size() - 1));
+    assertTrue(actualContent.contains("\"<SubClassMethodNotImplemented: void <init>()>\"->\"<MethodImplementedInstantiatedInSubClass: void <init>()>\"[label=\"1\"]"));
+    assertTrue(actualContent.contains("\"<Main: void main(java.lang.String[])>\"->\"<InterfaceImplementation: int defaultMethod()>\"[label=\"9\"]"));
+    assertTrue(actualContent.contains("\"<Main: void main(java.lang.String[])>\"->\"<InterfaceNoImplementation: void <init>()>\"[label=\"7\"]"));
+    assertTrue(actualContent.contains("\"<Main: void main(java.lang.String[])>\"->\"<SubClassMethodImplemented: int method()>\"[label=\"5\"]"));
 
-    assertTrue(actualContent.containsAll(expectedContent));
+    // sorted
+    List<String> actualContentSorted = Arrays.stream(cg.exportAsDotSorted()
+        .replace("\t","")
+        .split("\n")).toList();
+    assertTrue(actualContentSorted.size()>1);
+    assertEquals("strict digraph ObjectGraph {", actualContentSorted.get(0));
+    assertEquals("}", actualContentSorted.get(actualContentSorted.size() - 1));
+
+    int call1=actualContentSorted.indexOf("\"<SubClassMethodNotImplemented: void <init>()>\"->\"<MethodImplementedInstantiatedInSubClass: void <init>()>\"[label=\"1\"]");
+    int call2=actualContentSorted.indexOf("\"<Main: void main(java.lang.String[])>\"->\"<InterfaceImplementation: int defaultMethod()>\"[label=\"9\"]");
+    int call3=actualContentSorted.indexOf("\"<Main: void main(java.lang.String[])>\"->\"<InterfaceNoImplementation: void <init>()>\"[label=\"7\"]");
+    int call4=actualContentSorted.indexOf("\"<Main: void main(java.lang.String[])>\"->\"<SubClassMethodImplemented: int method()>\"[label=\"5\"]");
+    assertTrue(call1>=0);
+    assertTrue(call2>=0);
+    assertTrue(call3>=0);
+    assertTrue(call4>=0);
+
+    List<Integer> sorted= Stream.of(call1,call2,call3,call4).sorted().toList();
+    assertEquals(call2,sorted.get(0));
+    assertEquals(call3,sorted.get(1));
+    assertEquals(call4,sorted.get(2));
+    assertEquals(call1,sorted.get(3));
+
+    //line sorted
+    List<String> actualContentLineSorted = Arrays.stream(cg.exportAsDotSortedByLine()
+        .replace("\t","")
+        .split("\n")).toList();
+    assertTrue(actualContentLineSorted.size()>1);
+    assertEquals("strict digraph ObjectGraph {", actualContentLineSorted.get(0));
+    assertEquals("}", actualContentLineSorted.get(actualContentLineSorted.size() - 1));
+    int call1LN=actualContentLineSorted.indexOf("\"<SubClassMethodNotImplemented: void <init>()>\"->\"<MethodImplementedInstantiatedInSubClass: void <init>()>\"[label=\"1\"]");
+    int call2LN=actualContentLineSorted.indexOf("\"<Main: void main(java.lang.String[])>\"->\"<InterfaceImplementation: int defaultMethod()>\"[label=\"9\"]");
+    int call3LN=actualContentLineSorted.indexOf("\"<Main: void main(java.lang.String[])>\"->\"<InterfaceNoImplementation: void <init>()>\"[label=\"7\"]");
+    int call4LN=actualContentLineSorted.indexOf("\"<Main: void main(java.lang.String[])>\"->\"<SubClassMethodImplemented: int method()>\"[label=\"5\"]");
+    assertTrue(call1LN>=0);
+    assertTrue(call2LN>=0);
+    assertTrue(call3LN>=0);
+    assertTrue(call4LN>=0);
+
+    List<Integer> sortedLine= Stream.of(call1LN,call2LN,call3LN,call4LN).sorted().toList();
+    assertEquals(call4LN,sortedLine.get(0));
+    assertEquals(call3LN,sortedLine.get(1));
+    assertEquals(call2LN,sortedLine.get(2));
+    assertEquals(call1LN,sortedLine.get(3));
   }
+
 }
