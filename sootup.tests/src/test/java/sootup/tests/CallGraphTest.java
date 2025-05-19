@@ -86,7 +86,8 @@ public class CallGraphTest {
       if (stmt.isInvokableStmt()
           && stmt.asInvokableStmt().containsInvokeExpr()
           && stmt.asInvokableStmt()
-              .getInvokeExpr()
+              .getInvokeExpr().isPresent()
+          && stmt.asInvokableStmt().getInvokeExpr()
               .get()
               .getMethodSignature()
               .equals(staticTargetMethod)) {
