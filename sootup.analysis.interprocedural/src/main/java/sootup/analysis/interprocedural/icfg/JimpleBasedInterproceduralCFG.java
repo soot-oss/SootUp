@@ -71,6 +71,12 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
           if (!stmt.isInvokableStmt() && !stmt.asInvokableStmt().containsInvokeExpr()) return res;
           MethodSignature methodSignature =
               stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature();
+
+          if (!cg.containsMethod(methodSignature)) {
+            logger.warn(
+                "Method {} is not reachable in the Call Graph!", methodSignature, new Exception());
+            return res;
+          }
           Optional<? extends SootMethod> smOpt = view.getMethod(methodSignature);
           if (smOpt.isPresent()) {
             SootMethod sm = smOpt.get();

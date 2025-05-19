@@ -35,7 +35,10 @@ public class PostOrderBlockIterator implements BlockIterator {
 
   public PostOrderBlockIterator(@NonNull BasicBlock<?> startNode) {
     visitNode(startNode);
-    stack.push(new Frame(startNode, ((List<BasicBlock<?>>) startNode.getSuccessors()).iterator()));
+    stack.push(
+        new Frame(
+            startNode,
+            Collections.<BasicBlock<?>>unmodifiableList(startNode.getSuccessors()).iterator()));
   }
 
   private boolean visitNode(@NonNull BasicBlock<?> node) {
@@ -57,7 +60,7 @@ public class PostOrderBlockIterator implements BlockIterator {
         if (visitNode(succ)) {
           List<BasicBlock<?>> esuccs =
               succ.getExceptionalSuccessors().values().stream().collect(Collectors.toList());
-          List<BasicBlock<?>> succs = (List<BasicBlock<?>>) succ.getSuccessors();
+          List<BasicBlock<?>> succs = new ArrayList<>(succ.getSuccessors());
           succs.addAll(esuccs);
           stack.push(new Frame(succ, succs.iterator()));
         }
