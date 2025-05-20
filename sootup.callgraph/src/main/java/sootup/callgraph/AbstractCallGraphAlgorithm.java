@@ -250,8 +250,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         InvokableStmt invokableStmt = stmt.asInvokableStmt();
         Stream<MethodSignature> resolveCallStream = resolveCall(sourceMethod, invokableStmt);
         resolveCallStream.forEach(methodSignature -> {
-          System.out.println("MethodSignature: " + methodSignature);
-          System.out.println("MethodSignature DeclClassType: " + methodSignature.getDeclClassType());
+          //System.out.println("MethodSignature: " + methodSignature);
+          //System.out.println("MethodSignature DeclClassType: " + methodSignature.getDeclClassType());
           if (methodSignature.getType().equals(VoidType.getInstance())
                   && methodSignature.getName().equals("start")
                   && methodSignature.getParameterTypes().isEmpty()
@@ -260,11 +260,21 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             if (concreteMethod.isEmpty()) {
               return;
             }
+            Set<MethodSignature> callSources = cg.callSourcesTo(methodSignature);
+            System.out.println("Call Sources: " + callSources);
+            if (callSources.isEmpty()) {
+              return;
+            }
             System.out.println("ConcreteMethod: " + concreteMethod);
             MethodSignature concreteMethodSignature = concreteMethod.get().getSignature();
             MethodSignature implicitRunMethodSig = new MethodSignature(concreteMethodSignature.getDeclClassType(), "run", concreteMethodSignature.getParameterTypes(), concreteMethodSignature.getType());
             System.out.println("Implicit Run Method Sig: " + implicitRunMethodSig);
-            addCallToCG(concreteMethodSignature, implicitRunMethodSig, invokableStmt, cg, workList);
+            for (MethodSignature sourceSig : callSources) {
+              if (view.getMethod(implicitRunMethodSig).isPresent()) {
+                addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
+                System.out.println("Updated WorkList: " + workList);
+              }
+            }
           }
         });
       }
