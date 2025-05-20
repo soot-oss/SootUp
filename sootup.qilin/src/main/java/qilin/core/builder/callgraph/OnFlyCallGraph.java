@@ -501,11 +501,6 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
     return callCnt;
   }
 
-  @Override
-  public String exportAsDot() {
-    throw new UnsupportedOperationException();
-  }
-
   @NonNull
   @Override
   public Set<Call> callsFrom(@NonNull MethodSignature sourceMethod) {
