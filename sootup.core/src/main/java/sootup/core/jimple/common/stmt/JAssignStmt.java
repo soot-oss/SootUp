@@ -98,16 +98,6 @@ public final class JAssignStmt extends AbstractDefinitionStmt
     return rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see de.upb.sootup.jimple.common.stmt.AbstractStmt#containsInvokeExpr()
-   */
-  @Override
-  public boolean containsInvokeExpr() {
-    return getRightOp() instanceof AbstractInvokeExpr;
-  }
-
   @Override
   public boolean invokesStaticInitializer() {
     if (getInvokeExpr().isPresent() && getInvokeExpr().get() instanceof JStaticInvokeExpr) {
@@ -136,10 +126,10 @@ public final class JAssignStmt extends AbstractDefinitionStmt
    */
   @Override
   public Optional<AbstractInvokeExpr> getInvokeExpr() {
-    if (!containsInvokeExpr()) {
-      return Optional.empty();
+    if (getRightOp() instanceof AbstractInvokeExpr) {
+      return Optional.of((AbstractInvokeExpr) getRightOp());
     }
-    return Optional.of((AbstractInvokeExpr) getRightOp());
+    return Optional.empty();
   }
 
   /*

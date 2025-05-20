@@ -85,7 +85,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertNotNull(method);
     for (Stmt invokableStmt : method.getBody().getStmts()) {
       if (invokableStmt instanceof InvokableStmt
-          && ((InvokableStmt) invokableStmt).containsInvokeExpr()) {
+          && ((InvokableStmt) invokableStmt).getInvokeExpr().isPresent()) {
         AbstractInvokeExpr stmt = ((InvokableStmt) invokableStmt).getInvokeExpr().orElse(null);
         assertNotNull(stmt);
         if (stmt.getMethodSignature().equals(staticTargetMethod)) {
@@ -116,7 +116,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
       // look only at assigments which do Invoke but does not contain a direct invoke expr
       // static fields and new array expressions
       if (invokableStmt instanceof JAssignStmt
-          && !((InvokableStmt) invokableStmt).containsInvokeExpr()
+          && ((InvokableStmt) invokableStmt).getInvokeExpr().isEmpty()
           && ((InvokableStmt) invokableStmt).invokesStaticInitializer()) {
         Value expr;
         // look at the left or right side of the assigment
