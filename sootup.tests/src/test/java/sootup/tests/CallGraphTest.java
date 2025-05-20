@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
+import sootup.callgraph.CallGraph.Call;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.RapidTypeAnalysisAlgorithm;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -346,7 +348,20 @@ public class CallGraphTest {
 
     // sorted
     List<String> actualContentSorted =
-        Arrays.stream(cg.exportAsDotSorted().replace("\t", "").split("\n")).toList();
+        Arrays.stream(cg.exportAsDot(Comparator.comparing(
+                (Call call) ->
+                    call.getSourceMethodSignature().getDeclClassType().getFullyQualifiedName())
+            // src method name
+            .thenComparing(call -> call.getSourceMethodSignature().getName())
+            // src parameter list
+            .thenComparing(call -> call.getSourceMethodSignature().getParameterTypes().toString())
+            // target class name
+            .thenComparing(
+                call -> call.getTargetMethodSignature().getDeclClassType().getClassName())
+            // target method name
+            .thenComparing(call -> call.getTargetMethodSignature().getName())
+            // target parameter list
+            .thenComparing(call -> call.getTargetMethodSignature().getParameterTypes().toString())).replace("\t", "").split("\n")).toList();
     assertTrue(actualContentSorted.size() > 1);
     assertEquals("strict digraph ObjectGraph {", actualContentSorted.get(0));
     assertEquals("}", actualContentSorted.get(actualContentSorted.size() - 1));
@@ -373,34 +388,5 @@ public class CallGraphTest {
     assertEquals(call3, sorted.get(1));
     assertEquals(call4, sorted.get(2));
     assertEquals(call1, sorted.get(3));
-
-    // line sorted
-    List<String> actualContentLineSorted =
-        Arrays.stream(cg.exportAsDotSortedByLine().replace("\t", "").split("\n")).toList();
-    assertTrue(actualContentLineSorted.size() > 1);
-    assertEquals("strict digraph ObjectGraph {", actualContentLineSorted.get(0));
-    assertEquals("}", actualContentLineSorted.get(actualContentLineSorted.size() - 1));
-    int call1LN =
-        actualContentLineSorted.indexOf(
-            "\"<SubClassMethodNotImplemented: void <init>()>\"->\"<MethodImplementedInstantiatedInSubClass: void <init>()>\"[label=\"1\"]");
-    int call2LN =
-        actualContentLineSorted.indexOf(
-            "\"<Main: void main(java.lang.String[])>\"->\"<InterfaceImplementation: int defaultMethod()>\"[label=\"9\"]");
-    int call3LN =
-        actualContentLineSorted.indexOf(
-            "\"<Main: void main(java.lang.String[])>\"->\"<InterfaceNoImplementation: void <init>()>\"[label=\"7\"]");
-    int call4LN =
-        actualContentLineSorted.indexOf(
-            "\"<Main: void main(java.lang.String[])>\"->\"<SubClassMethodImplemented: int method()>\"[label=\"5\"]");
-    assertTrue(call1LN >= 0);
-    assertTrue(call2LN >= 0);
-    assertTrue(call3LN >= 0);
-    assertTrue(call4LN >= 0);
-
-    List<Integer> sortedLine = Stream.of(call1LN, call2LN, call3LN, call4LN).sorted().toList();
-    assertEquals(call4LN, sortedLine.get(0));
-    assertEquals(call3LN, sortedLine.get(1));
-    assertEquals(call2LN, sortedLine.get(2));
-    assertEquals(call1LN, sortedLine.get(3));
   }
 }

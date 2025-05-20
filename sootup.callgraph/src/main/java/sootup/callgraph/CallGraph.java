@@ -205,14 +205,14 @@ public interface CallGraph {
    * @param call the data of the call
    * @return an edge defining the call in the dot file
    */
-  default String toDotEdge(Call call) {
-    return "\""
-        + call.getSourceMethodSignature()
-        + "\"->\""
-        + call.getTargetMethodSignature()
-        + "\"[label=\""
-        + call.getLineNumber()
-        + "\"]";
+  default StringBuilder toDotEdge(Call call) {
+    return new StringBuilder("\t\"")
+        .append(call.getSourceMethodSignature())
+        .append("\"->\"")
+        .append(call.getTargetMethodSignature())
+        .append("\"[label=\"")
+        .append(call.getLineNumber())
+        .append("\"]\n");
   }
 
   /**
@@ -221,10 +221,8 @@ public interface CallGraph {
    * @return a String containing all edges of the call graph in the dot format
    */
   default String exportAsDot() {
-    String content =
-        getMethodSignatures().stream()
-            .flatMap(methodSignature -> callsFrom(methodSignature).stream())
-            .map(edge -> "\t" + toDotEdge(edge) + "\n")
+    String content = getCalls().stream()
+            .map(this::toDotEdge)
             .collect(Collectors.joining());
     return "strict digraph ObjectGraph {\n" + content + "}";
   }
@@ -238,61 +236,11 @@ public interface CallGraph {
    */
   default String exportAsDot(Comparator<Call> callComparator) {
     String content =
-        getMethodSignatures().stream()
-            .flatMap(methodSignature -> callsFrom(methodSignature).stream())
+        getCalls().stream()
             .sorted(callComparator)
-            .map(edge -> "\t" + toDotEdge(edge) + "\n")
+            .map(this::toDotEdge)
             .collect(Collectors.joining());
     return "strict digraph ObjectGraph {\n" + content + "}";
-  }
-
-  /**
-   * This method converts the call graph object into dot format and writes it to a string file. The
-   * calls are sorted in order by the source and target method signature. These signatures are in
-   * order by the class name, the method name, and the parameter list
-   *
-   * @return a String containing all edges of the call graph in the dot format
-   */
-  default String exportAsDotSorted() {
-    // src class name
-    return exportAsDot(
-        Comparator.comparing(
-                (Call call) ->
-                    call.getSourceMethodSignature().getDeclClassType().getFullyQualifiedName())
-            // src method name
-            .thenComparing(call -> call.getSourceMethodSignature().getName())
-            // src parameter list
-            .thenComparing(call -> call.getSourceMethodSignature().getParameterTypes().toString())
-            // target class name
-            .thenComparing(
-                call -> call.getTargetMethodSignature().getDeclClassType().getClassName())
-            // target method name
-            .thenComparing(call -> call.getTargetMethodSignature().getName())
-            // target parameter list
-            .thenComparing(call -> call.getTargetMethodSignature().getParameterTypes().toString()));
-  }
-
-  /**
-   * This method converts the call graph object into dot format and writes it to a string file. The
-   * calls are sorted in order by the source method signature and the line number. These signatures
-   * are in order by the class name, the method name, and the parameter list
-   *
-   * @return a String containing all edges of the call graph in the dot format
-   */
-  default String exportAsDotSortedByLine() {
-    // src class name
-    return exportAsDot(
-        Comparator.comparing(
-                (Call call) ->
-                    call.getSourceMethodSignature().getDeclClassType().getFullyQualifiedName())
-            // src method name
-            .thenComparing(call -> call.getSourceMethodSignature().getName())
-            // src parameter list
-            .thenComparing(call -> call.getSourceMethodSignature().getParameterTypes().toString())
-            // line number
-            .thenComparing(
-                call ->
-                    call.getInvokableStmt().getPositionInfo().getStmtPosition().getFirstLine()));
   }
 
   /**
