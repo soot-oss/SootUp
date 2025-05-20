@@ -3,9 +3,7 @@ package sootup.java.core.model;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.*;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
@@ -22,6 +20,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
+import sootup.core.util.Utils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
@@ -70,28 +69,58 @@ public class SootMethodTest {
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
-    JavaSootClass mainClass =
-        new JavaSootClass(
-            new OverridingJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                view.getIdentifierFactory().getClassType("dummyMain"),
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.emptySet(),
-                Collections.singleton(dummyMainMethod),
-                NoPositionInformation.getInstance(),
-                EnumSet.of(ClassModifier.PUBLIC),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
-            SourceType.Application);
+    OverridingJavaClassSource overridingJavaClassSource =
+        new OverridingJavaClassSource(
+            new EagerInputLocation(),
+            null,
+            view.getIdentifierFactory().getClassType("dummyMain"),
+            null,
+            Collections.emptySet(),
+            null,
+            Collections.emptySet(),
+            Collections.singleton(dummyMainMethod),
+            NoPositionInformation.getInstance(),
+            EnumSet.of(ClassModifier.PUBLIC),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList());
+    JavaSootClass mainClass = new JavaSootClass(overridingJavaClassSource, SourceType.Application);
 
-    assertEquals(mainClass.getMethods().size(), 1);
+    JavaSootClass javaSootClassUsingBuilder =
+        JavaSootClass.JavaSootClassBuilder.builder()
+            .withClassSource(overridingJavaClassSource)
+            .withSourceType(null)
+            .withMethods(mainClass.getMethods())
+            .withFields(mainClass.getFields())
+            .withModifiers(mainClass.getModifiers())
+            .withInterfaces(mainClass.getInterfaces())
+            .withSuperclass(mainClass.getSuperclass())
+            .withOuterClass(mainClass.getOuterClass())
+            .withPosition(mainClass.getPosition())
+            .build();
 
+    assertFalse(
+        javaSootClassUsingBuilder.implementsInterface(
+            view.getIdentifierFactory().getClassType("dummyMainInterface")));
+    assertFalse(javaSootClassUsingBuilder.hasOuterClass());
+    assertEquals(javaSootClassUsingBuilder.getOuterClass(), Optional.empty());
+    assertFalse(javaSootClassUsingBuilder.isInnerClass());
+    assertTrue(javaSootClassUsingBuilder.isPublic());
+    assertEquals("dummyMain", javaSootClassUsingBuilder.toString());
+    assertEquals(
+        Arrays.asList(
+            "public static void main()",
+            "java.lang.String r0",
+            "r0 := @parameter0: java.lang.String",
+            "return"),
+        Utils.filterJimple(javaSootClassUsingBuilder.print()));
+    assertEquals(1, javaSootClassUsingBuilder.getMethods().size());
+    assertFalse(javaSootClassUsingBuilder.isPrivate());
+    assertFalse(javaSootClassUsingBuilder.isProtected());
+    assertFalse(javaSootClassUsingBuilder.isStatic());
+    assertEquals("dummyMain", javaSootClassUsingBuilder.getName());
     assertTrue(
-        mainClass
+        javaSootClassUsingBuilder
             .getMethod(methodSignature.getSubSignature())
             .orElseThrow(() -> new RuntimeException("Failed getting method " + methodSignature))
             .hasBody());
