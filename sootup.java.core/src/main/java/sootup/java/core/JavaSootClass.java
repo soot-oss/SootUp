@@ -97,6 +97,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   @Override
+  @NonNull
   public Optional<JavaSootMethod> getMethod(@NonNull MethodSubSignature subSignature) {
     return getMethods().stream()
         .filter(method -> method.getSignature().getSubSignature().equals(subSignature))
@@ -104,6 +105,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   @Override
+  @NonNull
   public Optional<JavaSootField> getField(@NonNull FieldSubSignature subSignature) {
     return getFields().stream()
         .filter(f -> f.getSignature().getSubSignature().equals(subSignature))
@@ -111,6 +113,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   @Override
+  @NonNull
   public Optional<JavaSootField> getField(@NonNull String name) {
     return getFields().stream()
         .filter(field -> field.getSignature().getName().equals(name))
@@ -123,6 +126,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   @Override
+  @NonNull
   public Optional<JavaSootMethod> getMethod(
       @NonNull String name, @NonNull Iterable<? extends Type> parameterTypes) {
     return this.getMethods().stream()
@@ -139,6 +143,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   @Override
+  @NonNull
   public Set<JavaSootMethod> getMethodsByName(@NonNull String name) {
     return this.getMethods().stream()
         .filter(m -> m.getSignature().getName().equals(name))
@@ -434,8 +439,6 @@ public class JavaSootClass implements SootClass, HasAnnotation {
    *
    * <p>This includes "visible" and "invisible" annotations. Note that inherited annotations are not
    * part of this iterable.
-   *
-   * @return
    */
   @Override
   public Iterable<AnnotationUsage> getAnnotations() {
@@ -534,7 +537,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
       private final JavaSootClassBuilder instance = new JavaSootClassBuilder();
 
       @Override
-      public SourceTypeStep withClassSource(SootClassSource classSource) {
+      public SourceTypeStep withClassSource(@NonNull SootClassSource classSource) {
         instance.classSource = classSource;
         return this;
       }
@@ -621,6 +624,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
         if (instance.classSource != null && instance.sourceType != null) {
           return new JavaSootClass(instance.classSource, instance.sourceType);
         }
+        assert instance.classSource != null;
         return new JavaSootClass(
             instance.classSource,
             instance.sourceType,

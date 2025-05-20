@@ -177,8 +177,9 @@ public class OverridingClassSource extends JavaSootClassSource {
   }
 
   @Override
+  @NonNull
   public JavaSootClass buildClass(@NonNull SourceType sourceType) {
-    return new JavaSootClass(this, sourceType);
+    return super.buildClass(sourceType);
   }
 
   @Override

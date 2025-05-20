@@ -156,7 +156,7 @@ public class JavaSootField extends SootClassMember<FieldSignature>
   public interface BuildStep {
     JavaSootField.BuildStep withPosition(@NonNull Position pos);
 
-    @NonNull SootField build();
+    @NonNull JavaSootField build();
   }
 
   /**
@@ -210,7 +210,7 @@ public class JavaSootField extends SootClassMember<FieldSignature>
 
     @Override
     @NonNull
-    public SootField build() {
+    public JavaSootField build() {
       return new JavaSootField(getSignature(), getModifiers(), getPosition());
     }
   }

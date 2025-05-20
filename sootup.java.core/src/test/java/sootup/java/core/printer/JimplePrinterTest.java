@@ -15,6 +15,7 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.*;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.Utils;
@@ -161,12 +162,24 @@ public class JimplePrinterTest {
       View view,
       boolean buildWithClassMembers) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
-    JavaSootField sootField =
-        new JavaSootField(
-            identifierFactory.getFieldSignature(
-                "counter", identifierFactory.getClassType(className), PrimitiveType.getInt()),
-            EnumSet.of(FieldModifier.PRIVATE),
-            NoPositionInformation.getInstance());
+    JavaSootField sootField;
+    FieldSignature fieldSignature =
+        identifierFactory.getFieldSignature(
+            "counter", identifierFactory.getClassType(className), PrimitiveType.getInt());
+    if (buildWithClassMembers) {
+      sootField =
+          JavaSootField.builder()
+              .withSignature(fieldSignature)
+              .withModifier(EnumSet.of(FieldModifier.PRIVATE))
+              .withPosition(NoPositionInformation.getInstance())
+              .build();
+    } else {
+      sootField =
+          new JavaSootField(
+              fieldSignature,
+              EnumSet.of(FieldModifier.PRIVATE),
+              NoPositionInformation.getInstance());
+    }
 
     OverridingClassSource overridingClassSource =
         OverridingClassSource.OverridingClassSourceBuilder.builder()
