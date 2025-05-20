@@ -490,10 +490,11 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
   @Override
   public boolean containsCall(@NonNull Call call) {
-    if (this.calls.containsKey(call.sourceMethodSignature())) {
-      return this.calls.get(call.sourceMethodSignature()).contains(call);
+    Set<Call> c = this.calls.get(call.sourceMethodSignature());
+    if (c == null || c.isEmpty()) {
+      return false;
     }
-    return false;
+    return c.contains(call);
   }
 
   @Override
