@@ -52,8 +52,7 @@ public class NewValidator implements BodyValidator {
 
     StmtGraph<?> g = body.getStmtGraph();
     for (Stmt u : body.getStmts()) {
-      if (u instanceof JAssignStmt) {
-        JAssignStmt assign = (JAssignStmt) u;
+      if (u instanceof JAssignStmt assign) {
 
         // First seek for a JNewExpr.
         if (assign.getRightOp() instanceof JNewExpr) {
@@ -98,7 +97,7 @@ public class NewValidator implements BodyValidator {
       if (!newStmt.equals(curStmt)) {
         if (curStmt.isInvokableStmt() && curStmt.asInvokableStmt().getInvokeExpr().isPresent()) {
           AbstractInvokeExpr expr = curStmt.asInvokableStmt().getInvokeExpr().get();
-          if (!(expr instanceof JSpecialInvokeExpr)) {
+          if (!(expr instanceof JSpecialInvokeExpr invoke)) {
             exception.add(
                 new ValidationException(
                     expr,
@@ -115,7 +114,6 @@ public class NewValidator implements BodyValidator {
             return true;
           }
 
-          JSpecialInvokeExpr invoke = (JSpecialInvokeExpr) expr;
           if (aliasingLocals.contains(invoke.getBase())) {
             // We are happy now,continue the loop and check other paths
             continue;
@@ -124,8 +122,7 @@ public class NewValidator implements BodyValidator {
 
         // We are still in the loop, so this was not the constructor call we were looking for
         boolean creatingAlias = false;
-        if (curStmt instanceof JAssignStmt) {
-          JAssignStmt assignCheck = (JAssignStmt) curStmt;
+        if (curStmt instanceof JAssignStmt assignCheck) {
           if (assignCheck.getLeftOp() instanceof Local) {
             if (aliasingLocals.contains(assignCheck.getRightOp())) {
               // A new alias is created.

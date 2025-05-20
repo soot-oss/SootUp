@@ -49,7 +49,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @SynchronizedBy("by use of synchronized LoadingCache class")
   protected LoadingCache<Body, StmtGraph<?>> bodyToStmtGraph =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<Body, StmtGraph<?>>() {
+          new CacheLoader<>() {
             @NonNull
             @Override
             public StmtGraph<?> load(@NonNull Body body) {
@@ -60,7 +60,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @SynchronizedBy("by use of synchronized LoadingCache class")
   protected LoadingCache<SootMethod, List<Value>> methodToParameterRefs =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<SootMethod, List<Value>>() {
+          new CacheLoader<>() {
             @NonNull
             @Override
             public List<Value> load(@NonNull SootMethod m) {
@@ -71,7 +71,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @SynchronizedBy("by use of synchronized LoadingCache class")
   protected LoadingCache<SootMethod, Set<Stmt>> methodToCallsFromWithin =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<SootMethod, Set<Stmt>>() {
+          new CacheLoader<>() {
             @NonNull
             @Override
             public Set<Stmt> load(@NonNull SootMethod m) {

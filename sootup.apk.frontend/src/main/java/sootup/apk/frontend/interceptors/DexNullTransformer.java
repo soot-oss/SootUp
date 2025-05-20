@@ -70,10 +70,8 @@ public class DexNullTransformer extends AbstractNullTransformer {
             if (r instanceof JFieldRef) {
               usedAsObject = isObject(r.getType());
               doBreak = true;
-            } else if (r instanceof JArrayRef) {
-              JArrayRef ar = (JArrayRef) r;
-              if (ar.getType() instanceof UnknownType) {
-              } else {
+            } else if (r instanceof JArrayRef ar) {
+              if (!(ar.getType() instanceof UnknownType)) {
                 usedAsObject = isObject(ar.getType());
               }
               doBreak = true;
@@ -129,6 +127,8 @@ public class DexNullTransformer extends AbstractNullTransformer {
 
           @Override
           public void caseInvokeStmt(@NonNull JInvokeStmt stmt) {
+            if (stmt.getInvokeExpr().isEmpty())
+              return;
             AbstractInvokeExpr e = stmt.getInvokeExpr().get();
             usedAsObject = examineInvokeExpr(e);
             doBreak = true;
@@ -139,8 +139,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
             Value left = stmt.getLeftOp();
             Value r = stmt.getRightOp();
 
-            if (left instanceof JArrayRef) {
-              JArrayRef ar = (JArrayRef) left;
+            if (left instanceof JArrayRef ar) {
               if (ar.getIndex() == l) {
                 doBreak = true;
                 return;
@@ -151,8 +150,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
               }
             }
 
-            if (left instanceof JInstanceFieldRef) {
-              JInstanceFieldRef ifr = (JInstanceFieldRef) left;
+            if (left instanceof JInstanceFieldRef ifr) {
               if (ifr.getBase() == l) {
                 usedAsObject = true;
                 doBreak = true;
@@ -173,8 +171,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
                 return;
               } else if (l instanceof JArrayRef) {
                 Type aType = l.getType();
-                if (aType instanceof UnknownType) {
-                } else {
+                if (!(aType instanceof UnknownType)) {
                   usedAsObject = isObject(aType);
                 }
                 doBreak = true;
@@ -187,8 +184,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
               usedAsObject = true; // isObject(((FieldRef)
               // r).getFieldRef().type());
               doBreak = true;
-            } else if (r instanceof JArrayRef) {
-              JArrayRef ar = (JArrayRef) r;
+            } else if (r instanceof JArrayRef ar) {
               // used as index
               usedAsObject = ar.getBase() == l;
               doBreak = true;
@@ -291,9 +287,9 @@ public class DexNullTransformer extends AbstractNullTransformer {
           Local l = (Local) ((AbstractDefinitionStmt) u).getLeftOp();
           for (Stmt uuse : localDefs.getUsesOf(l)) {
             // If we have a[x] = 0 and a is an object, we may not conclude 0 -> null
-            if (!((Stmt) uuse).containsArrayRef()
-                || !defLocals.contains(((Stmt) uuse).getArrayRef().getBase())) {
-              replaceWithNull((Stmt) uuse);
+            if (!uuse.containsArrayRef()
+                || !defLocals.contains(uuse.getArrayRef().getBase())) {
+              replaceWithNull(uuse);
             }
           }
         }
@@ -316,16 +312,14 @@ public class DexNullTransformer extends AbstractNullTransformer {
             }
 
             // Case a = (Object) 0
-            if (stmt.getRightOp() instanceof JCastExpr) {
-              JCastExpr ce = (JCastExpr) stmt.getRightOp();
+            if (stmt.getRightOp() instanceof JCastExpr ce) {
               if (isObject(ce.getType()) && isConstZero(ce.getOp())) {
                 stmt.withRValue(nullConstant);
               }
             }
 
             // Case a[0] = 0
-            if (stmt.getLeftOp() instanceof JArrayRef && isConstZero(stmt.getRightOp())) {
-              JArrayRef ar = (JArrayRef) stmt.getLeftOp();
+            if (stmt.getLeftOp() instanceof JArrayRef ar && isConstZero(stmt.getRightOp())) {
               if (objects == null) {
                 objects = getObjectArray(builder);
               }
@@ -358,10 +352,9 @@ public class DexNullTransformer extends AbstractNullTransformer {
 
           @Override
           public void caseReturnStmt(@NonNull JReturnStmt stmt) {
-            if (stmt.getOp() instanceof IntConstant) {
+            if (stmt.getOp() instanceof IntConstant iconst) {
               assert builder.getMethodSignature() != null;
               if (isObject(builder.getMethodSignature().getType())) {
-                IntConstant iconst = (IntConstant) stmt.getOp();
                 assert iconst.getValue() == 0;
                 stmt.withReturnValue(nullConstant);
               }
@@ -378,8 +371,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
           AbstractInvokeExpr invExpr = invokableStmt.getInvokeExpr().get();
           for (int i = 0; i < invExpr.getArgCount(); i++) {
             if (isObject(invExpr.getMethodSignature().getParameterTypes().get(i))) {
-              if (invExpr.getArg(i) instanceof IntConstant) {
-                IntConstant iconst = (IntConstant) invExpr.getArg(i);
+              if (invExpr.getArg(i) instanceof IntConstant iconst) {
                 assert iconst.getValue() == 0;
                 if (invExpr instanceof AbstractInstanceInvokeExpr) {
                   invExpr =
@@ -395,17 +387,14 @@ public class DexNullTransformer extends AbstractNullTransformer {
   }
 
   private static Set<Value> getObjectArray(Body.BodyBuilder bodyBuilder) {
-    Set<Value> objArrays = new HashSet<Value>();
+    Set<Value> objArrays = new HashSet<>();
     for (Stmt u : bodyBuilder.getStmts()) {
-      if (u instanceof JAssignStmt) {
-        JAssignStmt assign = (JAssignStmt) u;
-        if (assign.getRightOp() instanceof JNewArrayExpr) {
-          JNewArrayExpr nea = (JNewArrayExpr) assign.getRightOp();
+      if (u instanceof JAssignStmt assign) {
+        if (assign.getRightOp() instanceof JNewArrayExpr nea) {
           if (isObject(nea.getBaseType())) {
             objArrays.add(assign.getLeftOp());
           }
-        } else if (assign.getRightOp() instanceof JFieldRef) {
-          JFieldRef fr = (JFieldRef) assign.getRightOp();
+        } else if (assign.getRightOp() instanceof JFieldRef fr) {
           if (fr.getType() instanceof ArrayType) {
             if (isObject(((ArrayType) fr.getType()).getElementType())) {
               objArrays.add(assign.getLeftOp());
@@ -426,17 +415,15 @@ public class DexNullTransformer extends AbstractNullTransformer {
   private Set<Local> getNullCandidates(Body.BodyBuilder bodyBuilder) {
     Set<Local> candidates = null;
     for (Stmt stmt : bodyBuilder.getStmts()) {
-      if (stmt instanceof JAssignStmt) {
-        JAssignStmt a = (JAssignStmt) stmt;
-        if (!(a.getLeftOp() instanceof Local)) {
+      if (stmt instanceof JAssignStmt a) {
+        if (!(a.getLeftOp() instanceof Local l)) {
           continue;
         }
-        Local l = (Local) a.getLeftOp();
         Value r = a.getRightOp();
         if ((r instanceof IntConstant && ((IntConstant) r).getValue() == 0)
             || (r instanceof LongConstant && ((LongConstant) r).getValue() == 0)) {
           if (candidates == null) {
-            candidates = new HashSet<Local>();
+            candidates = new HashSet<>();
           }
           candidates.add(l);
         }
@@ -444,13 +431,13 @@ public class DexNullTransformer extends AbstractNullTransformer {
         AbstractConditionExpr expr = ((JIfStmt) stmt).getCondition();
         if (isZeroComparison(expr) && expr.getOp1() instanceof Local) {
           if (candidates == null) {
-            candidates = new HashSet<Local>();
+            candidates = new HashSet<>();
           }
           candidates.add((Local) expr.getOp1());
         }
       }
     }
 
-    return candidates == null ? Collections.<Local>emptySet() : candidates;
+    return candidates == null ? Collections.emptySet() : candidates;
   }
 }

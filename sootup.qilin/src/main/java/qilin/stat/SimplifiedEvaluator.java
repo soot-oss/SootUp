@@ -169,7 +169,7 @@ public class SimplifiedEvaluator implements IEvaluator {
         continue;
       }
       final Set<Object> callocSites = getPointsToNewExpr(pta.reachingObjects(lvn));
-      if (callocSites.size() > 0) {
+      if (!callocSites.isEmpty()) {
         if (!handledNatives.contains(sm.toString())) {
           ptsCntNoNative += callocSites.size();
           varCntNoNative++;

@@ -90,10 +90,11 @@ public class JAssignStmtTest {
     JInstanceFieldRef instanceFieldRef = TestUtil.createDummyInstanceFieldRef();
     Local local = TestUtil.createDummyLocalForInt();
 
+    InvokableStmt stmt = TestUtil.createDummyAssignStmtWithExpr(
+        TestUtil.createDummyStaticInvokeExpr());
+    assertTrue(stmt.getInvokeExpr().isPresent());
     assertEquals(
-        TestUtil.createDummyStaticInvokeExpr().toString(),
-        TestUtil.createDummyAssignStmtWithExpr(TestUtil.createDummyStaticInvokeExpr())
-            .getInvokeExpr()
+        TestUtil.createDummyStaticInvokeExpr().toString(), stmt.getInvokeExpr()
             .get()
             .toString());
 

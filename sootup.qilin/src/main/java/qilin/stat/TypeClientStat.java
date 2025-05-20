@@ -76,7 +76,7 @@ public class TypeClientStat implements AbstractStat {
     for (SootMethod sm : reachableMethods) {
       View view = pta.getView();
       Optional<? extends SootClass> osc = view.getClass(sm.getDeclaringClassType());
-      if (!osc.isPresent()) {
+      if (osc.isEmpty()) {
         continue;
       }
       SootClass sc = osc.get();
@@ -100,7 +100,7 @@ public class TypeClientStat implements AbstractStat {
 
             for (Iterator<Edge> it = callGraph.edgesOutOf(st); it.hasNext(); )
               targets.add(it.next().tgt());
-            if (targets.size() == 0) {
+            if (targets.isEmpty()) {
               unreachable++;
             }
             if (targets.size() > 1) {
@@ -112,8 +112,7 @@ public class TypeClientStat implements AbstractStat {
               }
             }
           }
-        } else if (st instanceof JAssignStmt) {
-          JAssignStmt assignStmt = (JAssignStmt) st;
+        } else if (st instanceof JAssignStmt assignStmt) {
           Value rhs = assignStmt.getRightOp();
           Value lhs = assignStmt.getLeftOp();
           if (rhs instanceof JCastExpr && lhs.getType() instanceof ReferenceType) {

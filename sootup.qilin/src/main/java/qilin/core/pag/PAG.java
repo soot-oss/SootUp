@@ -79,7 +79,7 @@ public class PAG {
   protected ArrayNumberer<AllocNode> allocNodeNumberer = new ArrayNumberer<>();
   protected ArrayNumberer<ValNode> valNodeNumberer = new ArrayNumberer<>();
   protected ArrayNumberer<FieldRefNode> fieldRefNodeNumberer = new ArrayNumberer<>();
-  private static AtomicInteger maxFinishNumber = new AtomicInteger(0);
+  private static final AtomicInteger maxFinishNumber = new AtomicInteger(0);
 
   // ========================= ir to Node ==============================================
   protected final Map<Object, AllocNode> valToAllocNode;
@@ -299,8 +299,7 @@ public class PAG {
 
   /** Finds the ValNode for the variable value, or returns null. */
   public ValNode findValNode(Object value, SootMethod containingMethod) {
-    if (value instanceof Local) {
-      Local local = (Local) value;
+    if (value instanceof Local local) {
       Triple<SootMethod, Object, Type> localTriple =
           new Triple<>(containingMethod, local, local.getType());
       return valToValNode.get(localTriple);
@@ -315,8 +314,7 @@ public class PAG {
 
   // ==========================create nodes==================================
   public AllocNode makeAllocNode(Object newExpr, Type type, SootMethod m) {
-    if (type instanceof ClassType) {
-      ClassType rt = (ClassType) type;
+    if (type instanceof ClassType rt) {
       View view = pta.getView();
       Optional<? extends SootClass> osc = view.getClass(rt);
       if (osc.isPresent() && osc.get().isAbstract()) {
@@ -384,8 +382,7 @@ public class PAG {
     if (ret == null) {
       valToValNode.put(localTriple, ret = new LocalVarNode(value, type, method));
       valNodeNumberer.add(ret);
-      if (value instanceof Local) {
-        Local local = (Local) value;
+      if (value instanceof Local local) {
         locals.add(new Triple<>(method, local, type));
       }
     } else if (!(ret.getType().equals(type))) {
