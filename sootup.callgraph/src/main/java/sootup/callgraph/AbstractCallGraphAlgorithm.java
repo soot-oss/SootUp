@@ -249,7 +249,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       if (stmt.isInvokableStmt()) {
         InvokableStmt invokableStmt = stmt.asInvokableStmt();
         System.out.println("InvokableStmt: " + invokableStmt);
-        // TODO: add check!
         if (invokableStmt.getInvokeExpr().isPresent()) {
           if (!invokableStmt.getInvokeExpr().get().isJSpecialInvokeExpr()) {
             Stream<MethodSignature> resolveCallStream = resolveCall(sourceMethod, invokableStmt);
