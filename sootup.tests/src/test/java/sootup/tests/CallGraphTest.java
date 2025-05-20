@@ -327,7 +327,7 @@ public class CallGraphTest {
     algorithmName = "RTA";
     CallGraph cg = loadCallGraph();
     // unsorted
-    List<String> actualContent = cg.exportAsDot();
+    List<String> actualContent = cg.exportAsDot().toList();
     assertTrue(actualContent.size() > 1);
     assertEquals("strict digraph ObjectGraph {", actualContent.get(0));
     assertEquals("}", actualContent.get(actualContent.size() - 1));
@@ -347,21 +347,23 @@ public class CallGraphTest {
     // sorted
     List<String> actualContentSorted =
         cg.exportAsDot(
-            Comparator.comparing(
-                    (Call call) ->
-                        call.sourceMethodSignature().getDeclClassType().getFullyQualifiedName())
-                // src method name
-                .thenComparing(call -> call.sourceMethodSignature().getName())
-                // src parameter list
-                .thenComparing(call -> call.sourceMethodSignature().getParameterTypes().toString())
-                // target class name
-                .thenComparing(
-                    call -> call.targetMethodSignature().getDeclClassType().getClassName())
-                // target method name
-                .thenComparing(call -> call.targetMethodSignature().getName())
-                // target parameter list
-                .thenComparing(
-                    call -> call.targetMethodSignature().getParameterTypes().toString()));
+                Comparator.comparing(
+                        (Call call) ->
+                            call.sourceMethodSignature().getDeclClassType().getFullyQualifiedName())
+                    // src method name
+                    .thenComparing(call -> call.sourceMethodSignature().getName())
+                    // src parameter list
+                    .thenComparing(
+                        call -> call.sourceMethodSignature().getParameterTypes().toString())
+                    // target class name
+                    .thenComparing(
+                        call -> call.targetMethodSignature().getDeclClassType().getClassName())
+                    // target method name
+                    .thenComparing(call -> call.targetMethodSignature().getName())
+                    // target parameter list
+                    .thenComparing(
+                        call -> call.targetMethodSignature().getParameterTypes().toString()))
+            .toList();
     assertTrue(actualContentSorted.size() > 1);
     assertEquals("strict digraph ObjectGraph {", actualContentSorted.get(0));
     assertEquals("}", actualContentSorted.get(actualContentSorted.size() - 1));

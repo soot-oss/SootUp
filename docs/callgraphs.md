@@ -203,14 +203,14 @@ The exported call graph can be sorted by providing a `Comparator` for **Calls**.
 
     ```java
     CallGraph cg =cha.initialize(Collections.singletonList(entryMethodSignature))
-    System.out.println(cg.exportAsDot());
+    cg.exportAsDot().forEach(System.out::println);
     ```
 
 === "sorted"
 
     ```java
     CallGraph cg =cha.initialize(Collections.singletonList(entryMethodSignature))
-    System.out.println(cg.exportAsDot(
+    cg.exportAsDot(
         Comparator.comparing(
             (Call call) ->
                 call.sourceMethodSignature().getDeclClassType().getFullyQualifiedName())
@@ -228,5 +228,6 @@ The exported call graph can be sorted by providing a `Comparator` for **Calls**.
         // target parameter list
         .thenComparing(
             call ->
-                call.targetMethodSignature().getParameterTypes().toString())));
+                call.targetMethodSignature().getParameterTypes().toString()))
+        .forEach(System.out::println);;
     ```

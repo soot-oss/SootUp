@@ -22,11 +22,10 @@ package sootup.callgraph;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.signatures.MethodSignature;
@@ -189,34 +188,31 @@ public interface CallGraph {
    * This method converts the call graph object into dot format and write it to a string file. The
    * first entry contains the graph info and the last entry closes the graph.
    *
-   * @return a List containing all edges as Strings in the dot format
+   * @return a stream containing all edges as Strings in the dot format
    */
-  default List<String> exportAsDot() {
-    ArrayList<String> result = new ArrayList<>();
-    result.add("strict digraph ObjectGraph {");
-    result.addAll(getCalls().stream().map(call -> toDotEdge(call).toString()).toList());
-    result.add("}");
-    return Collections.unmodifiableList(result);
+  default Stream<String> exportAsDot() {
+    return Stream.concat(
+        Stream.concat(
+            Stream.of("strict digraph ObjectGraph {"),
+            getCalls().stream().map(call -> toDotEdge(call).toString())),
+        Stream.of("}"));
   }
 
   /**
    * This method converts the call graph object into dot format and writes it to a string file. The
-   * calls are sorted by the given Comparator for Call Objects. The first entry contains the graph
-   * info and the last entry closes the graph.
+   * calls are sorted by the given Comparator for Call Objects. The first entry opens the graph and
+   * the last entry closes the graph.
    *
    * @param callComparator the comparator responsible for sorting the calls
-   * @return a List containing all edges as Strings in the dot format sorted by the given Comparator
+   * @return a stream containing all edges as Strings in the dot format sorted by the given
+   *     Comparator
    */
-  default List<String> exportAsDot(Comparator<Call> callComparator) {
-    ArrayList<String> result = new ArrayList<>();
-    result.add("strict digraph ObjectGraph {");
-    result.addAll(
-        getCalls().stream()
-            .sorted(callComparator)
-            .map(call -> toDotEdge(call).toString())
-            .toList());
-    result.add("}");
-    return Collections.unmodifiableList(result);
+  default Stream<String> exportAsDot(Comparator<Call> callComparator) {
+    return Stream.concat(
+        Stream.concat(
+            Stream.of("strict digraph ObjectGraph {"),
+            getCalls().stream().sorted(callComparator).map(call -> toDotEdge(call).toString())),
+        Stream.of("}"));
   }
 
   /**
