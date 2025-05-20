@@ -127,8 +127,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
 
           @Override
           public void caseInvokeStmt(@NonNull JInvokeStmt stmt) {
-            if (stmt.getInvokeExpr().isEmpty())
-              return;
+            if (stmt.getInvokeExpr().isEmpty()) return;
             AbstractInvokeExpr e = stmt.getInvokeExpr().get();
             usedAsObject = examineInvokeExpr(e);
             doBreak = true;
@@ -287,8 +286,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
           Local l = (Local) ((AbstractDefinitionStmt) u).getLeftOp();
           for (Stmt uuse : localDefs.getUsesOf(l)) {
             // If we have a[x] = 0 and a is an object, we may not conclude 0 -> null
-            if (!uuse.containsArrayRef()
-                || !defLocals.contains(uuse.getArrayRef().getBase())) {
+            if (!uuse.containsArrayRef() || !defLocals.contains(uuse.getArrayRef().getBase())) {
               replaceWithNull(uuse);
             }
           }

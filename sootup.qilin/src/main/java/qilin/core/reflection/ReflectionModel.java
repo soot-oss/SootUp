@@ -78,8 +78,7 @@ public abstract class ReflectionModel {
   }
 
   private Collection<Stmt> transform(InvokableStmt s) {
-    if (s.getInvokeExpr().isEmpty())
-      return Collections.emptyList();
+    if (s.getInvokeExpr().isEmpty()) return Collections.emptyList();
     AbstractInvokeExpr ie = s.getInvokeExpr().get();
     return switch (ie.getMethodSignature().toString()) {
       case sigForName, sigForName2 -> transformClassForName(s);

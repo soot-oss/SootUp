@@ -23,7 +23,6 @@ package sootup.interceptors;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.analysis.intraprocedural.reachingdefs.ReachingDefs;
 import sootup.core.graph.MutableStmtGraph;
@@ -91,8 +90,8 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
         if (lhs instanceof Local
             && (!eliminateOnlyStackLocals
-            || ((Local) lhs).getName().startsWith("$")
-            || lhs.getType() instanceof NullType)) {
+                || ((Local) lhs).getName().startsWith("$")
+                || lhs.getType() instanceof NullType)) {
           isEssential = false;
 
           if (!containsInvoke) {
@@ -140,8 +139,8 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             isEssential =
                 type2Int
                     || type1 instanceof PrimitiveType
-                    && (type1.equals(PrimitiveType.getInt())
-                    || type1.equals(PrimitiveType.getLong()))
+                        && (type1.equals(PrimitiveType.getInt())
+                            || type1.equals(PrimitiveType.getLong()))
                     || type2 instanceof PrimitiveType && type2.equals(PrimitiveType.getLong())
                     || type1 instanceof UnknownType
                     || type2 instanceof UnknownType;
@@ -232,8 +231,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     // change JAssignStmt+InvokeExpr where the lhs is not used/essential to an JInvokeStmt
     for (JAssignStmt assignStmt : postProcess) {
       // Transform it into a simple invoke
-     if (assignStmt.getInvokeExpr().isEmpty())
-       continue;
+      if (assignStmt.getInvokeExpr().isEmpty()) continue;
       Stmt newInvoke =
           Jimple.newInvokeStmt(assignStmt.getInvokeExpr().get(), assignStmt.getPositionInfo());
       stmtGraph.replaceNode(assignStmt, newInvoke);
