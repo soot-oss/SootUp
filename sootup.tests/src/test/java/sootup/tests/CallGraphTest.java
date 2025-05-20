@@ -328,8 +328,7 @@ public class CallGraphTest {
     algorithmName = "RTA";
     CallGraph cg = loadCallGraph();
     // unsorted
-    List<String> actualContent =
-        Arrays.stream(cg.exportAsDot().replace("\t", "").split("\n")).toList();
+    List<String> actualContent =cg.exportAsDot();
     assertTrue(actualContent.size() > 1);
     assertEquals("strict digraph ObjectGraph {", actualContent.get(0));
     assertEquals("}", actualContent.get(actualContent.size() - 1));
@@ -347,9 +346,7 @@ public class CallGraphTest {
             "\"<Main: void main(java.lang.String[])>\"->\"<SubClassMethodImplemented: int method()>\"[label=\"5\"]"));
 
     // sorted
-    List<String> actualContentSorted =
-        Arrays.stream(
-                cg.exportAsDot(
+    List<String> actualContentSorted =cg.exportAsDot(
                         Comparator.comparing(
                                 (Call call) ->
                                     call.sourceMethodSignature()
@@ -369,10 +366,7 @@ public class CallGraphTest {
                             // target parameter list
                             .thenComparing(
                                 call ->
-                                    call.targetMethodSignature().getParameterTypes().toString()))
-                    .replace("\t", "")
-                    .split("\n"))
-            .toList();
+                                    call.targetMethodSignature().getParameterTypes().toString()));
     assertTrue(actualContentSorted.size() > 1);
     assertEquals("strict digraph ObjectGraph {", actualContentSorted.get(0));
     assertEquals("}", actualContentSorted.get(actualContentSorted.size() - 1));
