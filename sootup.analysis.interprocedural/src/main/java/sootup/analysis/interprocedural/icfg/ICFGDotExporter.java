@@ -72,7 +72,7 @@ public class ICFGDotExporter {
       for (BasicBlock<?> block : blocks) {
         List<Stmt> stmts = block.getStmts();
         for (Stmt stmt : stmts) {
-          if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
+          if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
             MethodSignature target =
                 stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature();
             int hashCode = stmt.hashCode();

@@ -374,7 +374,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
       stmt.accept(inlinedZeroValues);
       if (stmt.isInvokableStmt()) {
         InvokableStmt invokableStmt = stmt.asInvokableStmt();
-        if (invokableStmt.containsInvokeExpr()) {
+        if (invokableStmt.getInvokeExpr().isPresent()) {
           AbstractInvokeExpr invExpr = invokableStmt.getInvokeExpr().get();
           for (int i = 0; i < invExpr.getArgCount(); i++) {
             if (isObject(invExpr.getMethodSignature().getParameterTypes().get(i))) {

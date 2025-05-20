@@ -19,16 +19,16 @@ public class JInvokeStmtTest {
     SimpleStmtPositionInfo pos = new SimpleStmtPositionInfo(1);
 
     JInvokeStmt invokeStmt = new JInvokeStmt(TestUtil.createDummyStaticInvokeExpr(), pos);
-    assertTrue(invokeStmt.containsInvokeExpr());
+    assertTrue(invokeStmt.getInvokeExpr().isPresent());
 
     JInvokeStmt invokeStmt1 = new JInvokeStmt(TestUtil.createDummyInterfaceInvokeExpr(), pos);
-    assertTrue(invokeStmt1.containsInvokeExpr());
+    assertTrue(invokeStmt1.getInvokeExpr().isPresent());
 
     JInvokeStmt invokeStmt2 = new JInvokeStmt(TestUtil.createDummySpecialInvokeExpr(), pos);
-    assertTrue(invokeStmt2.containsInvokeExpr());
+    assertTrue(invokeStmt2.getInvokeExpr().isPresent());
 
     JInvokeStmt invokeStmt3 = new JInvokeStmt(TestUtil.createDummyVirtualInvokeExpr(), pos);
-    assertTrue(invokeStmt3.containsInvokeExpr());
+    assertTrue(invokeStmt3.getInvokeExpr().isPresent());
   }
 
   @Test

@@ -186,7 +186,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public boolean isCallStmt(Stmt stmt) {
-    return stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr();
+    return stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent();
   }
 
   @Override

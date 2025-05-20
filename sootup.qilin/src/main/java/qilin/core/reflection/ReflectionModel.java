@@ -113,7 +113,7 @@ public abstract class ReflectionModel {
     Body body = PTAUtils.getMethodBody(m);
     List<Stmt> units = body.getStmts();
     for (final Stmt u : units) {
-      if (u.isInvokableStmt() && u.asInvokableStmt().containsInvokeExpr()) {
+      if (u.isInvokableStmt() && u.asInvokableStmt().getInvokeExpr().isPresent()) {
         newUnits.put(u, transform(u.asInvokableStmt()));
       }
     }

@@ -96,7 +96,7 @@ public class NewValidator implements BodyValidator {
         continue;
       }
       if (!newStmt.equals(curStmt)) {
-        if (curStmt.isInvokableStmt() && curStmt.asInvokableStmt().containsInvokeExpr()) {
+        if (curStmt.isInvokableStmt() && curStmt.asInvokableStmt().getInvokeExpr().isPresent()) {
           AbstractInvokeExpr expr = curStmt.asInvokableStmt().getInvokeExpr().get();
           if (!(expr instanceof JSpecialInvokeExpr)) {
             exception.add(

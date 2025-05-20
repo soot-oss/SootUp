@@ -86,7 +86,7 @@ public class CallGraphTest {
     assertNotNull(method);
     for (Stmt stmt : method.getBody().getStmts()) {
       if (stmt.isInvokableStmt()
-          && stmt.asInvokableStmt().containsInvokeExpr()
+          && stmt.asInvokableStmt().getInvokeExpr().isPresent()
           && stmt.asInvokableStmt().getInvokeExpr().isPresent()
           && stmt.asInvokableStmt()
               .getInvokeExpr()
@@ -348,20 +348,31 @@ public class CallGraphTest {
 
     // sorted
     List<String> actualContentSorted =
-        Arrays.stream(cg.exportAsDot(Comparator.comparing(
-                (Call call) ->
-                    call.sourceMethodSignature().getDeclClassType().getFullyQualifiedName())
-            // src method name
-            .thenComparing(call -> call.sourceMethodSignature().getName())
-            // src parameter list
-            .thenComparing(call -> call.sourceMethodSignature().getParameterTypes().toString())
-            // target class name
-            .thenComparing(
-                call -> call.targetMethodSignature().getDeclClassType().getClassName())
-            // target method name
-            .thenComparing(call -> call.targetMethodSignature().getName())
-            // target parameter list
-            .thenComparing(call -> call.targetMethodSignature().getParameterTypes().toString())).replace("\t", "").split("\n")).toList();
+        Arrays.stream(
+                cg.exportAsDot(
+                        Comparator.comparing(
+                                (Call call) ->
+                                    call.sourceMethodSignature()
+                                        .getDeclClassType()
+                                        .getFullyQualifiedName())
+                            // src method name
+                            .thenComparing(call -> call.sourceMethodSignature().getName())
+                            // src parameter list
+                            .thenComparing(
+                                call -> call.sourceMethodSignature().getParameterTypes().toString())
+                            // target class name
+                            .thenComparing(
+                                call ->
+                                    call.targetMethodSignature().getDeclClassType().getClassName())
+                            // target method name
+                            .thenComparing(call -> call.targetMethodSignature().getName())
+                            // target parameter list
+                            .thenComparing(
+                                call ->
+                                    call.targetMethodSignature().getParameterTypes().toString()))
+                    .replace("\t", "")
+                    .split("\n"))
+            .toList();
     assertTrue(actualContentSorted.size() > 1);
     assertEquals("strict digraph ObjectGraph {", actualContentSorted.get(0));
     assertEquals("}", actualContentSorted.get(actualContentSorted.size() - 1));

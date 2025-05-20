@@ -33,45 +33,47 @@ import sootup.core.signatures.MethodSignature;
 /** The interface of all implemented call graph data structures */
 public interface CallGraph {
 
-  record Call(@NonNull MethodSignature sourceMethodSignature,
-              @NonNull MethodSignature targetMethodSignature,
-              @NonNull InvokableStmt invokableStmt) {
+  record Call(
+      @NonNull MethodSignature sourceMethodSignature,
+      @NonNull MethodSignature targetMethodSignature,
+      @NonNull InvokableStmt invokableStmt) {
 
     /**
-       * The line number of the stmt causing the call
-       *
-       * @return the line number of the stmt. If the position is unknown, it will return -1
-       */
-      public int getLineNumber() {
-        return invokableStmt.getPositionInfo().getStmtPosition().getFirstLine();
-      }
-
-      @Override
-      public boolean equals(Object o) {
-        if (this == o) {
-          return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-          return false;
-        }
-
-        Call call = (Call) o;
-        return sourceMethodSignature.equals(call.sourceMethodSignature)
-            && targetMethodSignature.equals(call.targetMethodSignature)
-            && invokableStmt.equals(call.invokableStmt);
-      }
+     * The line number of the stmt causing the call
+     *
+     * @return the line number of the stmt. If the position is unknown, it will return -1
+     */
+    public int getLineNumber() {
+      return invokableStmt.getPositionInfo().getStmtPosition().getFirstLine();
+    }
 
     @Override
-      public String toString() {
-        return "Call:"
-            + sourceMethodSignature
-            + " -> "
-            + targetMethodSignature
-            + " via "
-            + invokableStmt
-            + ";";
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
       }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+
+      Call call = (Call) o;
+      return sourceMethodSignature.equals(call.sourceMethodSignature)
+          && targetMethodSignature.equals(call.targetMethodSignature)
+          && invokableStmt.equals(call.invokableStmt);
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+      return "Call:"
+          + sourceMethodSignature
+          + " -> "
+          + targetMethodSignature
+          + " via "
+          + invokableStmt
+          + ";";
+    }
+  }
 
   /**
    * This method returns method signatures in the call graph. A method signature is a node in the
@@ -82,8 +84,8 @@ public interface CallGraph {
   @NonNull Set<MethodSignature> getMethodSignatures();
 
   /**
-   * This method returns all calls in the call graph. Calls are a edges in the
-   * call graph. They contain the source, target and calling stmt.
+   * This method returns all calls in the call graph. Calls are a edges in the call graph. They
+   * contain the source, target and calling stmt.
    *
    * @return a set containing all calls in the call graph.
    */
@@ -188,9 +190,7 @@ public interface CallGraph {
    * @return a String containing all edges of the call graph in the dot format
    */
   default String exportAsDot() {
-    String content = getCalls().stream()
-            .map(this::toDotEdge)
-            .collect(Collectors.joining());
+    String content = getCalls().stream().map(this::toDotEdge).collect(Collectors.joining());
     return "strict digraph ObjectGraph {\n" + content + "}";
   }
 

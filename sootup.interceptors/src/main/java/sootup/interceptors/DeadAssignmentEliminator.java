@@ -99,12 +99,11 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
           if (!containsInvoke) {
             // performance optimization: to not repeat containsInvokeExpr()
-            containsInvoke = assignStmt.containsInvokeExpr();
+            containsInvoke = assignStmt.getInvokeExpr().isPresent();
           }
 
-          if (rhs instanceof JCastExpr) {
+          if (rhs instanceof JCastExpr castExpr) {
             // CastExpr: can trigger ClassCastException, but null-casts never fail
-            JCastExpr castExpr = (JCastExpr) rhs;
             Type type = castExpr.getType();
             Value value = castExpr.getOp();
             isEssential = !(value instanceof NullConstant) && type instanceof ReferenceType;
@@ -216,9 +215,8 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
     List<JAssignStmt> postProcess = new ArrayList<>();
     for (Stmt stmt : stmts) {
-      if (stmt instanceof JAssignStmt) {
-        JAssignStmt assignStmt = (JAssignStmt) stmt;
-        if (assignStmt.containsInvokeExpr()) {
+      if (stmt instanceof JAssignStmt assignStmt) {
+        if (assignStmt.getInvokeExpr().isPresent()) {
           // find at least one use of Value which is in an essential stmt
           boolean deadAssignment = true;
 

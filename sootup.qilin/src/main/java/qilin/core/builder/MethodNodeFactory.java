@@ -134,7 +134,7 @@ public class MethodNodeFactory {
 
   /** Adds the edges required for this statement to the graph. */
   public final void handleStmt(Stmt s) {
-    if (s.isInvokableStmt() && s.asInvokableStmt().containsInvokeExpr()) {
+    if (s.isInvokableStmt() && s.asInvokableStmt().getInvokeExpr().isPresent()) {
       mpag.addCallStmt(s.asInvokableStmt());
       handleInvokeStmt(s.asInvokableStmt());
     } else {
