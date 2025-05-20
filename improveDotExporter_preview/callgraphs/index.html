@@ -726,6 +726,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#exporting-the-call-graph-in-a-dot-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exporting the call graph in a Dot format
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1120,6 +1129,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#exporting-the-call-graph-in-a-dot-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exporting the call graph in a Dot format
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1397,6 +1415,65 @@ You can construct a call graph with Qilin as follows:</p>
 <span class="n">PTA</span><span class="w"> </span><span class="n">pta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PTAFactory</span><span class="p">.</span><span class="na">createPTA</span><span class="p">(</span><span class="n">PTAConfig</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getPtaConfig</span><span class="p">().</span><span class="na">ptaPattern</span><span class="p">,</span><span class="w"> </span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="p">);</span>
 <span class="n">pta</span><span class="p">.</span><span class="na">run</span><span class="p">();</span>
 <span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">getCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h2 id="exporting-the-call-graph-in-a-dot-format">Exporting the call graph in a Dot format</h2>
+<p>This guide describes how to export a <strong>call graph</strong> created by one of the call graph algorithms to a <code>.dot</code> format for visualization with tools like <a href="https://graphviz.org/">Graphviz</a>.<br />
+The nodes represent method signatures, and the edges contain labels showing the line numbers of the invoking statements.<br />
+In this example, the call graph was created using <strong>CHA</strong>.<br />
+The exported call graph can be sorted by providing a <code>Comparator</code> for <strong>Calls</strong>.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">unsorted</label><label for="__tabbed_6_2">sorted</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="n">cha</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">))</span>
+<span class="n">cg</span><span class="p">.</span><span class="na">exportAsDot</span><span class="p">().</span><span class="na">forEach</span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">::</span><span class="n">println</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="n">cha</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">))</span>
+<span class="n">cg</span><span class="p">.</span><span class="na">exportAsDot</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Comparator</span><span class="p">.</span><span class="na">comparing</span><span class="p">(</span>
+<span class="w">        </span><span class="p">(</span><span class="n">Call</span><span class="w"> </span><span class="n">call</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="n">call</span><span class="p">.</span><span class="na">sourceMethodSignature</span><span class="p">().</span><span class="na">getDeclClassType</span><span class="p">().</span><span class="na">getFullyQualifiedName</span><span class="p">())</span>
+<span class="w">    </span><span class="c1">// src method name</span>
+<span class="w">    </span><span class="p">.</span><span class="na">thenComparing</span><span class="p">(</span><span class="n">call</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">call</span><span class="p">.</span><span class="na">sourceMethodSignature</span><span class="p">().</span><span class="na">getName</span><span class="p">())</span>
+<span class="w">    </span><span class="c1">// src parameter list</span>
+<span class="w">    </span><span class="p">.</span><span class="na">thenComparing</span><span class="p">(</span>
+<span class="w">        </span><span class="n">call</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">call</span><span class="p">.</span><span class="na">sourceMethodSignature</span><span class="p">().</span><span class="na">getParameterTypes</span><span class="p">().</span><span class="na">toString</span><span class="p">())</span>
+<span class="w">    </span><span class="c1">// target class name</span>
+<span class="w">    </span><span class="p">.</span><span class="na">thenComparing</span><span class="p">(</span>
+<span class="w">        </span><span class="n">call</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="n">call</span><span class="p">.</span><span class="na">targetMethodSignature</span><span class="p">().</span><span class="na">getDeclClassType</span><span class="p">().</span><span class="na">getClassName</span><span class="p">())</span>
+<span class="w">    </span><span class="c1">// target method name</span>
+<span class="w">    </span><span class="p">.</span><span class="na">thenComparing</span><span class="p">(</span><span class="n">call</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">call</span><span class="p">.</span><span class="na">targetMethodSignature</span><span class="p">().</span><span class="na">getName</span><span class="p">())</span>
+<span class="w">    </span><span class="c1">// target parameter list</span>
+<span class="w">    </span><span class="p">.</span><span class="na">thenComparing</span><span class="p">(</span>
+<span class="w">        </span><span class="n">call</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="n">call</span><span class="p">.</span><span class="na">targetMethodSignature</span><span class="p">().</span><span class="na">getParameterTypes</span><span class="p">().</span><span class="na">toString</span><span class="p">()))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">::</span><span class="n">println</span><span class="p">);;</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
