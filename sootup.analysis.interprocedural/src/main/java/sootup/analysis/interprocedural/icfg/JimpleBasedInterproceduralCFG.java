@@ -103,7 +103,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         public Collection<Stmt> load(SootMethod method) {
           Set<CallGraph.Call> calls = cg.callsTo(method.getSignature());
           Set<Stmt> callerStmts =
-              calls.stream().map(Call::getInvokableStmt).collect(Collectors.toSet());
+              calls.stream().map(Call::invokableStmt).collect(Collectors.toSet());
           return callerStmts;
         }
       };

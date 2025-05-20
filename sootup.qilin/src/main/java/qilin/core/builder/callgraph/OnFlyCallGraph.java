@@ -447,7 +447,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   @Override
   public void addCall(@NonNull Call call) {
     addCall(
-        call.getSourceMethodSignature(), call.getTargetMethodSignature(), call.getInvokableStmt());
+        call.sourceMethodSignature(), call.targetMethodSignature(), call.invokableStmt());
   }
 
   @NonNull
@@ -483,8 +483,8 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
   @Override
   public boolean containsCall(@NonNull Call call) {
-    if (this.calls.containsKey(call.getSourceMethodSignature())) {
-      return this.calls.get(call.getSourceMethodSignature()).contains(call);
+    if (this.calls.containsKey(call.sourceMethodSignature())) {
+      return this.calls.get(call.sourceMethodSignature()).contains(call);
     }
     return false;
   }
@@ -515,7 +515,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   @Override
   public Set<MethodSignature> callTargetsFrom(@NonNull MethodSignature sourceMethod) {
     return callsFrom(sourceMethod).stream()
-        .map(Call::getTargetMethodSignature)
+        .map(Call::targetMethodSignature)
         .collect(Collectors.toSet());
   }
 
@@ -523,7 +523,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   @Override
   public Set<MethodSignature> callSourcesTo(@NonNull MethodSignature targetMethod) {
     return callsTo(targetMethod).stream()
-        .map(Call::getSourceMethodSignature)
+        .map(Call::sourceMethodSignature)
         .collect(Collectors.toSet());
   }
 

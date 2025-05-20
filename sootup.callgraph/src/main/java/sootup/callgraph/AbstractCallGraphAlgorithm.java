@@ -418,9 +418,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               if (updated.containsMethod(overriddenMethodSig)) {
                 for (Call calls : updated.callsTo(overriddenMethodSig)) {
                   updated.addCall(
-                      calls.getSourceMethodSignature(),
+                      calls.sourceMethodSignature(),
                       overridingMethodSig,
-                      calls.getInvokableStmt());
+                      calls.invokableStmt());
                 }
               }
             });

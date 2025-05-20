@@ -33,78 +33,45 @@ import sootup.core.signatures.MethodSignature;
 /** The interface of all implemented call graph data structures */
 public interface CallGraph {
 
-  class Call {
-    @NonNull private final MethodSignature sourceMethodSignature;
-    @NonNull private final MethodSignature targetMethodSignature;
-    @NonNull private final InvokableStmt invokableStmt;
-
-    public Call(
-        @NonNull MethodSignature sourceMethodSignature,
-        @NonNull MethodSignature targetMethodSignature,
-        @NonNull InvokableStmt invokableStmt) {
-      this.sourceMethodSignature = sourceMethodSignature;
-      this.invokableStmt = invokableStmt;
-      this.targetMethodSignature = targetMethodSignature;
-    }
-
-    @NonNull
-    public MethodSignature getSourceMethodSignature() {
-      return sourceMethodSignature;
-    }
-
-    @NonNull
-    public MethodSignature getTargetMethodSignature() {
-      return targetMethodSignature;
-    }
-
-    @NonNull
-    public InvokableStmt getInvokableStmt() {
-      return invokableStmt;
-    }
+  record Call(@NonNull MethodSignature sourceMethodSignature,
+              @NonNull MethodSignature targetMethodSignature,
+              @NonNull InvokableStmt invokableStmt) {
 
     /**
-     * The line number of the stmt causing the call
-     *
-     * @return the line number of the stmt. If the position is unknown, it will return -1
-     */
-    public int getLineNumber() {
-      return invokableStmt.getPositionInfo().getStmtPosition().getFirstLine();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
+       * The line number of the stmt causing the call
+       *
+       * @return the line number of the stmt. If the position is unknown, it will return -1
+       */
+      public int getLineNumber() {
+        return invokableStmt.getPositionInfo().getStmtPosition().getFirstLine();
       }
 
-      Call call = (Call) o;
-      return sourceMethodSignature.equals(call.sourceMethodSignature)
-          && targetMethodSignature.equals(call.targetMethodSignature)
-          && invokableStmt.equals(call.invokableStmt);
-    }
+      @Override
+      public boolean equals(Object o) {
+        if (this == o) {
+          return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+          return false;
+        }
+
+        Call call = (Call) o;
+        return sourceMethodSignature.equals(call.sourceMethodSignature)
+            && targetMethodSignature.equals(call.targetMethodSignature)
+            && invokableStmt.equals(call.invokableStmt);
+      }
 
     @Override
-    public int hashCode() {
-      int result = sourceMethodSignature.hashCode();
-      result = 31 * result + targetMethodSignature.hashCode();
-      result = 31 * result + invokableStmt.hashCode();
-      return result;
+      public String toString() {
+        return "Call:"
+            + sourceMethodSignature
+            + " -> "
+            + targetMethodSignature
+            + " via "
+            + invokableStmt
+            + ";";
+      }
     }
-
-    @Override
-    public String toString() {
-      return "Call:"
-          + sourceMethodSignature
-          + " -> "
-          + targetMethodSignature
-          + " via "
-          + invokableStmt
-          + ";";
-    }
-  }
 
   /**
    * This method returns method signatures in the call graph. A method signature is a node in the
@@ -207,9 +174,9 @@ public interface CallGraph {
    */
   default StringBuilder toDotEdge(Call call) {
     return new StringBuilder("\t\"")
-        .append(call.getSourceMethodSignature())
+        .append(call.sourceMethodSignature())
         .append("\"->\"")
-        .append(call.getTargetMethodSignature())
+        .append(call.targetMethodSignature())
         .append("\"[label=\"")
         .append(call.getLineNumber())
         .append("\"]\n");

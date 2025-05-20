@@ -350,18 +350,18 @@ public class CallGraphTest {
     List<String> actualContentSorted =
         Arrays.stream(cg.exportAsDot(Comparator.comparing(
                 (Call call) ->
-                    call.getSourceMethodSignature().getDeclClassType().getFullyQualifiedName())
+                    call.sourceMethodSignature().getDeclClassType().getFullyQualifiedName())
             // src method name
-            .thenComparing(call -> call.getSourceMethodSignature().getName())
+            .thenComparing(call -> call.sourceMethodSignature().getName())
             // src parameter list
-            .thenComparing(call -> call.getSourceMethodSignature().getParameterTypes().toString())
+            .thenComparing(call -> call.sourceMethodSignature().getParameterTypes().toString())
             // target class name
             .thenComparing(
-                call -> call.getTargetMethodSignature().getDeclClassType().getClassName())
+                call -> call.targetMethodSignature().getDeclClassType().getClassName())
             // target method name
-            .thenComparing(call -> call.getTargetMethodSignature().getName())
+            .thenComparing(call -> call.targetMethodSignature().getName())
             // target parameter list
-            .thenComparing(call -> call.getTargetMethodSignature().getParameterTypes().toString())).replace("\t", "").split("\n")).toList();
+            .thenComparing(call -> call.targetMethodSignature().getParameterTypes().toString())).replace("\t", "").split("\n")).toList();
     assertTrue(actualContentSorted.size() > 1);
     assertEquals("strict digraph ObjectGraph {", actualContentSorted.get(0));
     assertEquals("}", actualContentSorted.get(actualContentSorted.size() - 1));
