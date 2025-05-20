@@ -115,6 +115,14 @@ public interface CallGraph {
   @NonNull Set<MethodSignature> getMethodSignatures();
 
   /**
+   * This method returns all calls in the call graph. Calls are a edges in the
+   * call graph. They contain the source, target and calling stmt.
+   *
+   * @return a set containing all calls in the call graph.
+   */
+  @NonNull Set<Call> getCalls();
+
+  /**
    * This method returns all method signatures that are called by a given method signature. It
    * returns the targets of outgoing edges of the given node (method signature) in the call graph
    *

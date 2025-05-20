@@ -116,6 +116,12 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @NonNull
   @Override
+  public Set<Call> getCalls() {
+    return graph.edgeSet();
+  }
+
+  @NonNull
+  @Override
   public Set<MethodSignature> callTargetsFrom(@NonNull MethodSignature sourceMethod) {
     return callsFrom(sourceMethod).stream()
         .map(Call::getTargetMethodSignature)
