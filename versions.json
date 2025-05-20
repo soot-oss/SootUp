@@ -34,7 +34,10 @@
   {
     "version": "improveDotExporter_preview",
     "title": "PR Preview improveDotExporter",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "fix_changeLogLevel_preview",
