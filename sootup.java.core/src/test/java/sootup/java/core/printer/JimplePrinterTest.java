@@ -138,14 +138,28 @@ public class JimplePrinterTest {
         .setPosition(NoPositionInformation.getInstance());
     Body bodyTwo = bodyBuilder.build();
 
-    JavaSootMethod anotherMethod =
-        new JavaSootMethod(
-            new OverridingBodySource(methodSignatureOne, bodyTwo),
-            methodSignatureTwo,
-            EnumSet.of(MethodModifier.PRIVATE),
-            Collections.singletonList(
-                identifierFactory.getClassType("files.stuff.FileNotFoundException")),
-            NoPositionInformation.getInstance());
+    JavaSootMethod anotherMethod;
+    if (buildUsingBuilder) {
+      anotherMethod =
+          JavaSootMethod.JavaSootMethodBuilder.builder()
+              .withSource(new OverridingBodySource(methodSignatureOne, bodyTwo))
+              .withSignature(methodSignatureTwo)
+              .withModifiers(MethodModifier.PRIVATE)
+              .withThrownExceptions(
+                  Collections.singletonList(
+                      identifierFactory.getClassType("files.stuff.FileNotFoundException")))
+              .withPosition(NoPositionInformation.getInstance())
+              .build();
+    } else {
+      anotherMethod =
+          new JavaSootMethod(
+              new OverridingBodySource(methodSignatureOne, bodyTwo),
+              methodSignatureTwo,
+              EnumSet.of(MethodModifier.PRIVATE),
+              Collections.singletonList(
+                  identifierFactory.getClassType("files.stuff.FileNotFoundException")),
+              NoPositionInformation.getInstance());
+    }
 
     if (buildUsingBuilder) {
       return getSootClassUsingBuilder(
@@ -168,9 +182,9 @@ public class JimplePrinterTest {
             "counter", identifierFactory.getClassType(className), PrimitiveType.getInt());
     if (buildWithClassMembers) {
       sootField =
-          JavaSootField.builder()
+          JavaSootField.JavaSootFieldBuilder.builder()
               .withSignature(fieldSignature)
-              .withModifier(EnumSet.of(FieldModifier.PRIVATE))
+              .withModifiers(FieldModifier.PRIVATE)
               .withPosition(NoPositionInformation.getInstance())
               .build();
     } else {
