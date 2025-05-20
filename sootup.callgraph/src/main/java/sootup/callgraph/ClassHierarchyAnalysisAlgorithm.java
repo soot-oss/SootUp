@@ -119,11 +119,6 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     }
   }
 
-  @Override
-  protected @NonNull CallGraph implicitRunStartCG(List<MethodSignature> entryPoints, CallGraph callGraph) {
-    return null;
-  }
-
   private List<MethodSignature> resolveAllCallTargets(
       MethodSignature targetMethodSignature, ArrayList<ClassType> noImplementedMethod) {
     ArrayList<MethodSignature> targets = new ArrayList<>();

@@ -248,35 +248,41 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
       if (stmt.isInvokableStmt()) {
         InvokableStmt invokableStmt = stmt.asInvokableStmt();
-        Stream<MethodSignature> resolveCallStream = resolveCall(sourceMethod, invokableStmt);
-        resolveCallStream.forEach(methodSignature -> {
-          //System.out.println("MethodSignature: " + methodSignature);
-          //System.out.println("MethodSignature DeclClassType: " + methodSignature.getDeclClassType());
-          if (methodSignature.getType().equals(VoidType.getInstance())
-                  && methodSignature.getName().equals("start")
-                  && methodSignature.getParameterTypes().isEmpty()
-          ) {
-            Optional<SootMethod> concreteMethod = findConcreteMethod(view,methodSignature);
-            if (concreteMethod.isEmpty()) {
-              return;
-            }
-            Set<MethodSignature> callSources = cg.callSourcesTo(methodSignature);
-            System.out.println("Call Sources: " + callSources);
-            if (callSources.isEmpty()) {
-              return;
-            }
-            System.out.println("ConcreteMethod: " + concreteMethod);
-            MethodSignature concreteMethodSignature = concreteMethod.get().getSignature();
-            MethodSignature implicitRunMethodSig = new MethodSignature(concreteMethodSignature.getDeclClassType(), "run", concreteMethodSignature.getParameterTypes(), concreteMethodSignature.getType());
-            System.out.println("Implicit Run Method Sig: " + implicitRunMethodSig);
-            for (MethodSignature sourceSig : callSources) {
-              if (view.getMethod(implicitRunMethodSig).isPresent()) {
-                addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
-                System.out.println("Updated WorkList: " + workList);
+        System.out.println("InvokableStmt: " + invokableStmt);
+        // TODO: add check!
+        if (invokableStmt.getInvokeExpr().isPresent()) {
+          if (!invokableStmt.getInvokeExpr().get().isJSpecialInvokeExpr()) {
+            Stream<MethodSignature> resolveCallStream = resolveCall(sourceMethod, invokableStmt);
+            resolveCallStream.forEach(methodSignature -> {
+              //System.out.println("MethodSignature: " + methodSignature);
+              //System.out.println("MethodSignature DeclClassType: " + methodSignature.getDeclClassType());
+              if (methodSignature.getType().equals(VoidType.getInstance())
+                      && methodSignature.getName().equals("start")
+                      && methodSignature.getParameterTypes().isEmpty()
+              ) {
+                Optional<SootMethod> concreteMethod = findConcreteMethod(view,methodSignature);
+                if (concreteMethod.isEmpty()) {
+                  return;
+                }
+                Set<MethodSignature> callSources = cg.callSourcesTo(methodSignature);
+                System.out.println("Call Sources: " + callSources);
+                if (callSources.isEmpty()) {
+                  return;
+                }
+                System.out.println("ConcreteMethod: " + concreteMethod);
+                MethodSignature concreteMethodSignature = concreteMethod.get().getSignature();
+                MethodSignature implicitRunMethodSig = new MethodSignature(concreteMethodSignature.getDeclClassType(), "run", concreteMethodSignature.getParameterTypes(), concreteMethodSignature.getType());
+                System.out.println("Implicit Run Method Sig: " + implicitRunMethodSig);
+                for (MethodSignature sourceSig : callSources) {
+                  if (view.getMethod(implicitRunMethodSig).isPresent()) {
+                    addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
+                    System.out.println("Updated WorkList: " + workList);
+                  }
+                }
               }
-            }
+            });
           }
-        });
+        }
       }
     }
   }
@@ -609,17 +615,4 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             + " and in its superclasses and interfaces");
     return Optional.empty();
   }
-
-  /**
-   * This method adds the all methods to the entrypoints list which called run() in a classes from the cg. The results
-   * are dependable of the applied call graph algorithm. Therefore, it is abstract.
-   *
-   * @param entryPoints a list of method signatures that will be added to the work list in the call
-   *    graph generation.
-   * @param callGraph result CG without implicit calls
-   * @return callGraph after the added methods (implicit calls from run() to start())
-   */
-  @NonNull
-  protected abstract CallGraph implicitRunStartCG(
-          List<MethodSignature> entryPoints, CallGraph callGraph);
 }
