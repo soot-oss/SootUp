@@ -191,3 +191,42 @@ You can construct a call graph with Qilin as follows:
     pta.run();
     CallGraph cg = pta.getCallGraph();
     ```
+
+## Exporting the call graph in a Dot format 
+This guide describes how to export a **call graph** created by one of the call graph algorithms to a `.dot` format for visualization with tools like [Graphviz](https://graphviz.org/).  
+The nodes represent method signatures, and the edges contain labels showing the line numbers of the invoking statements.  
+In this example, the call graph was created using **CHA**.  
+The exported call graph can be sorted by providing a `Comparator` for **Calls**.
+
+
+=== "unsorted"
+
+    ```java
+    CallGraph cg =cha.initialize(Collections.singletonList(entryMethodSignature))
+    System.out.println(cg.exportAsDot());
+    ```
+
+=== "sorted"
+
+    ```java
+    CallGraph cg =cha.initialize(Collections.singletonList(entryMethodSignature))
+    System.out.println(cg.exportAsDot(
+        Comparator.comparing(
+            (Call call) ->
+                call.sourceMethodSignature().getDeclClassType().getFullyQualifiedName())
+        // src method name
+        .thenComparing(call -> call.sourceMethodSignature().getName())
+        // src parameter list
+        .thenComparing(
+            call -> call.sourceMethodSignature().getParameterTypes().toString())
+        // target class name
+        .thenComparing(
+            call ->
+                call.targetMethodSignature().getDeclClassType().getClassName())
+        // target method name
+        .thenComparing(call -> call.targetMethodSignature().getName())
+        // target parameter list
+        .thenComparing(
+            call ->
+                call.targetMethodSignature().getParameterTypes().toString())));
+    ```
