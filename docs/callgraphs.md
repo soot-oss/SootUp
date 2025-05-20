@@ -186,8 +186,8 @@ You can construct a call graph with Qilin as follows:
 
     ```java
     String MAINCLASS = "dacapo.antlr.Main"; // just an example
-    PTAPattern ptaPattern = new PTAPattern("insens"); // "2o"=>2OBJ, "1c"=>1CFA, etc.
-    PTA pta = PTAFactory.createPTA(ptaPattern, view, MAINCLASS);
+    PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern("insens"); // "2o"=>2OBJ, "1c"=>1CFA, etc.
+    PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern, view, MAINCLASS);
     pta.run();
     CallGraph cg = pta.getCallGraph();
     ```
