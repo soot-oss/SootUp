@@ -38,7 +38,7 @@ public abstract class BaseFixJarsTest {
           try {
             javaSootMethod.getBody();
           } catch (Exception exception) {
-            failedMethodSignature = javaSootMethod.getDeclClassType().toString();
+            failedMethodSignature = javaSootMethod.getSignature().toString();
             throw exception;
           }
         }
