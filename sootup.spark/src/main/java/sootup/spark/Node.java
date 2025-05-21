@@ -1,10 +1,16 @@
 package sootup.spark;
 
-import sootup.core.jimple.basic.Value;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
 import sootup.core.types.Type;
 
+@Getter
+@Builder
 public class Node {
-    public Node(String name, Type type){
+    @NonNull
+    private final String Name;
+    @NonNull
+    private final Type type;
 
-    }
 }
