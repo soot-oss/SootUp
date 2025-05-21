@@ -284,6 +284,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         }
       }
     }
+    System.out.println("Current CallGraph: " + cg.exportAsDot());
   }
 
   /**
