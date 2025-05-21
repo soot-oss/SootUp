@@ -7,6 +7,7 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
+import sootup.spark.node.Node;
 
 public class Spark {
   public Spark(View view, CallGraph callGraph) {}
