@@ -25,16 +25,16 @@ package sootup.callgraph;
 import java.util.*;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
-import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
-import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootClassMember;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -80,7 +80,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   @NonNull
   protected Stream<MethodSignature> resolveCall(SootMethod method, InvokableStmt invokableStmt) {
     Optional<AbstractInvokeExpr> optInvokeExpr = invokableStmt.getInvokeExpr();
-    if (!optInvokeExpr.isPresent()) {
+    if (optInvokeExpr.isEmpty()) {
       return Stream.empty();
     }
     AbstractInvokeExpr invokeExpr = optInvokeExpr.get();
@@ -89,75 +89,114 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       return Stream.empty();
     }
 
-    SootMethod targetMethod = findConcreteMethod(view, targetMethodSignature).orElse(null);
-
-    if (targetMethod == null
-        || MethodModifier.isStatic(targetMethod.getModifiers())
-        || (invokeExpr instanceof JSpecialInvokeExpr)) {
-      return Stream.of(targetMethodSignature);
-    } else {
-      ArrayList<ClassType> noImplementedMethod = new ArrayList<>();
-      List<MethodSignature> targets =
-          resolveAllCallTargets(targetMethodSignature, noImplementedMethod);
-      if (!targetMethod.isAbstract()) {
-        targets.add(targetMethod.getSignature());
+    SootMethod actualTargetMethod = view.getMethod(targetMethodSignature).orElse(null);
+    if (actualTargetMethod == null) {
+      // method not implemented, search for implementation in super classes or ínterfaces
+      actualTargetMethod = findConcreteMethod(view, targetMethodSignature).orElse(null);
+      // method implementation isn't contained in the view. return the called method as target
+      if (actualTargetMethod == null) {
+        return Stream.of(targetMethodSignature);
       }
-      if (invokeExpr instanceof JInterfaceInvokeExpr) {
-        IdentifierFactory factory = view.getIdentifierFactory();
-        noImplementedMethod.stream()
-            .map(
-                classType ->
-                    resolveConcreteDispatch(
-                        view,
-                        factory.getMethodSignature(
-                            classType, targetMethodSignature.getSubSignature())))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .forEach(targets::add);
-      }
-      return targets.stream();
     }
+
+    // special invokes and static invokes can only have one specific target
+    if (MethodModifier.isStatic(actualTargetMethod.getModifiers())
+        || (invokeExpr instanceof JSpecialInvokeExpr)) {
+      return Stream.of(actualTargetMethod.getSignature());
+    }
+
+    // get all subclasses
+    // the target method is used since this is the type of the invoke
+    List<? extends SootClass> subclasses =
+        view.getTypeHierarchy()
+            .subtypesOf(targetMethodSignature.getDeclClassType())
+            .flatMap(classType -> view.getClass(classType).stream())
+            .toList();
+
+    // get all targets of these subtypes
+    Stream<MethodSignature> targets = resolveAllCallTargets(subclasses, targetMethodSignature);
+
+    // if the current implementation of the method is a default method the algorithm changes
+    // because superclasses can overwrite default methods which are not subtypes of the interface
+    if (view.getClass(actualTargetMethod.getDeclClassType()).stream()
+        .anyMatch(SootClass::isInterface)) {
+      // get all default methods of sub-interfaces of the interface
+      // which are interfaces of the subtypes
+      targets =
+          Stream.concat(
+              targets,
+              resolveAllDefaultTargets(
+                  subclasses,
+                  actualTargetMethod.getDeclClassType(),
+                  targetMethodSignature.getSubSignature()));
+      // all subtypes that do not have an implementation of the method
+      // can have an implementation in the supertype
+      targets =
+          Stream.concat(targets, resolveAllOverwrittenTargets(subclasses, targetMethodSignature));
+    }
+
+    // if the base method is abstract it cannot be called by the invoke
+    if (actualTargetMethod.isAbstract()) {
+      return targets;
+    }
+    return Stream.concat(Stream.of(actualTargetMethod.getSignature()), targets);
   }
 
-  private List<MethodSignature> resolveAllCallTargets(
-      MethodSignature targetMethodSignature, ArrayList<ClassType> noImplementedMethod) {
-    ArrayList<MethodSignature> targets = new ArrayList<>();
-    view.getTypeHierarchy()
-        .subtypesOf(targetMethodSignature.getDeclClassType())
-        .forEach(
-            classType -> {
-              SootClass clazz = view.getClass(classType).orElse(null);
-              if (clazz == null) {
-                return;
-              }
-              // check if method is implemented
-              SootMethod method =
-                  clazz.getMethod(targetMethodSignature.getSubSignature()).orElse(null);
-              if (method != null && !method.isAbstract()) {
-                targets.add(method.getSignature());
-              }
-              // save classes with no implementation of the searched method
-              if (method == null && !clazz.isInterface()) {
-                noImplementedMethod.add(classType);
-              }
-              // collect all default methods
-              clazz
-                  .getInterfaces()
-                  .forEach(
-                      interfaceType -> {
-                        SootMethod defaultMethod =
-                            view.getMethod(
-                                    view.getIdentifierFactory()
-                                        .getMethodSignature(
-                                            interfaceType, targetMethodSignature.getSubSignature()))
-                                .orElse(null);
-                        // contains an implemented default method
-                        if (defaultMethod != null && !defaultMethod.isAbstract()) {
-                          targets.add(defaultMethod.getSignature());
-                        }
-                      });
-            });
-    return targets;
+  private Stream<MethodSignature> resolveAllCallTargets(
+      List<? extends SootClass> subclasses, MethodSignature targetMethodSignature) {
+    return subclasses.stream()
+        .flatMap(sootClass -> sootClass.getMethod(targetMethodSignature.getSubSignature()).stream())
+        .filter(sootMethod -> !sootMethod.isAbstract())
+        .map(SootClassMember::getSignature);
+  }
+
+  private Stream<MethodSignature> resolveAllDefaultTargets(
+      List<? extends SootClass> subclasses,
+      ClassType interfaceClassType,
+      MethodSubSignature targetSubSignature) {
+    List<? extends ClassType> interfaces =
+        subclasses.stream().flatMap(sootClass -> sootClass.getInterfaces().stream()).toList();
+    return view.getTypeHierarchy()
+        .subtypesOf(interfaceClassType)
+        .flatMap(classType -> view.getClass(classType).stream())
+        .filter(SootClass::isInterface)
+        .filter(sootClass -> interfaces.contains(sootClass.getType()))
+        .flatMap(sootClass -> sootClass.getMethod(targetSubSignature).stream())
+        .map(SootClassMember::getSignature);
+  }
+
+  private Stream<MethodSignature> resolveAllOverwrittenTargets(
+      List<? extends SootClass> subclasses, MethodSignature targetMethodSignature) {
+    return subclasses.stream()
+        .filter(sootClass -> sootClass.getMethod(targetMethodSignature.getSubSignature()).isEmpty())
+        .flatMap(
+            sootClass ->
+                findMethodInSuperClasses(sootClass, targetMethodSignature.getSubSignature())
+                    .stream());
+  }
+
+  private Optional<MethodSignature> findMethodInSuperClasses(
+      SootClass sootClass, MethodSubSignature targetMethodSignature) {
+    ClassType superClassType = sootClass.getSuperclass().orElse(null);
+    // does not have a superclass
+    if (superClassType == null) {
+      return Optional.empty();
+    }
+    SootClass superclass = view.getClass(superClassType).orElse(null);
+    // superclass is mot in the view
+    if (superclass == null) {
+      return Optional.empty();
+    }
+    SootMethod target = superclass.getMethod(targetMethodSignature).orElse(null);
+    // method isn't found, continue with the superclass
+    if (target == null) {
+      return findMethodInSuperClasses(superclass, targetMethodSignature);
+    }
+    // found method cannot be called method
+    if (target.isAbstract()) {
+      return Optional.empty();
+    }
+    return Optional.of(target.getSignature());
   }
 
   @Override
