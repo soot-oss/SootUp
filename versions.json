@@ -47,7 +47,10 @@
   {
     "version": "develop_preview",
     "title": "PR Preview develop",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "bumpVersionsUp_preview",
