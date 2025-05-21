@@ -2,10 +2,9 @@ package sootup.callgraph;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.IOException;
 import java.util.Collections;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
-import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.views.JavaView;
 
@@ -334,7 +333,7 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
   }
 
   @Test
-  public void testImplicitRunStartCG() throws IOException {
+  public void testImplicitRunStartCG() {
     CallGraph cg = loadCallGraph("Implicit", "Runner");
 
     System.out.println(cg.exportAsDot());
@@ -350,5 +349,42 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     });
     System.out.println(cg.exportAsDot());
     assertTrue(cg.callCount() > 0);
+  }
+
+  @Test
+  public  void testOverwrittenRun() {
+    CallGraph cg = loadCallGraph("Implicit", "t1.OverwrittenRun");
+    System.out.println(cg.exportAsDot());
+
+    MethodSignature updatedRunMethodSig =
+            identifierFactory.getMethodSignature(
+                    identifierFactory.getClassType("t1.UpdatedThread"),
+                    "run",
+                    "void",
+                    Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+    /*
+    assertTrue(
+            cg.containsCall(
+                    mainMethodSignature,
+                    updatedRunMethodSig,
+                    getInvokableStmt(mainMethodSignature, updatedRunMethodSig)));
+    */
+  }
+
+  @Test
+  public void testThreadRun() {
+    CallGraph cg = loadCallGraph("Implicit", "t2.ThreadRun");
+    System.out.println(cg.exportAsDot());
+
+    MethodSignature updatedRunMethodSig =
+            identifierFactory.getMethodSignature(
+                    identifierFactory.getClassType("java.lang.Thread"),
+                    "run",
+                    "void",
+                    Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
   }
 }
