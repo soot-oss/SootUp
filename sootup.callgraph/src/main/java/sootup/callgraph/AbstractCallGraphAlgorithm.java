@@ -248,13 +248,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
       if (stmt.isInvokableStmt()) {
         InvokableStmt invokableStmt = stmt.asInvokableStmt();
-        System.out.println("InvokableStmt: " + invokableStmt);
         if (invokableStmt.getInvokeExpr().isPresent()) {
           if (!invokableStmt.getInvokeExpr().get().isJSpecialInvokeExpr()) {
             Stream<MethodSignature> resolveCallStream = resolveCall(sourceMethod, invokableStmt);
             resolveCallStream.forEach(methodSignature -> {
-              //System.out.println("MethodSignature: " + methodSignature);
-              //System.out.println("MethodSignature DeclClassType: " + methodSignature.getDeclClassType());
               if (methodSignature.getType().equals(VoidType.getInstance())
                       && methodSignature.getName().equals("start")
                       && methodSignature.getParameterTypes().isEmpty()
@@ -264,18 +261,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   return;
                 }
                 Set<MethodSignature> callSources = cg.callSourcesTo(methodSignature);
-                System.out.println("Call Sources: " + callSources);
                 if (callSources.isEmpty()) {
                   return;
                 }
-                System.out.println("ConcreteMethod: " + concreteMethod);
                 MethodSignature concreteMethodSignature = concreteMethod.get().getSignature();
                 MethodSignature implicitRunMethodSig = new MethodSignature(concreteMethodSignature.getDeclClassType(), "run", concreteMethodSignature.getParameterTypes(), concreteMethodSignature.getType());
-                System.out.println("Implicit Run Method Sig: " + implicitRunMethodSig);
                 for (MethodSignature sourceSig : callSources) {
                   if (view.getMethod(implicitRunMethodSig).isPresent()) {
                     addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
-                    System.out.println("Updated WorkList: " + workList);
                   }
                 }
               }
@@ -284,7 +277,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         }
       }
     }
-    System.out.println("Current CallGraph: " + cg.exportAsDot());
   }
 
   /**

@@ -2,14 +2,7 @@ package sootup.callgraph;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.objectweb.asm.*;
-
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
-import java.nio.file.Files;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;
@@ -73,8 +66,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
-    System.out.println("CG Entry Points: ");
-    System.out.println(Collections.singletonList(mainMethodSignature));
 
     assertNotNull(cg);
     assertTrue(

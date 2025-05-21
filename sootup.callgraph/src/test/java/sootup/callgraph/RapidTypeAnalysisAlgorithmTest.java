@@ -333,28 +333,8 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
   }
 
   @Test
-  public void testImplicitRunStartCG() {
-    CallGraph cg = loadCallGraph("Implicit", "Runner");
-
-    System.out.println(cg.exportAsDot());
-    assertTrue(cg.callCount() > 0);
-  }
-
-  @Test
-  public  void testMethodSignature() {
-    CallGraph cg = loadCallGraph("Implicit", "TestMethodSignature");
-    cg.getMethodSignatures().forEach(methodSignature -> {
-      System.out.println("MethodSignature: ");
-      System.out.println(methodSignature);
-    });
-    System.out.println(cg.exportAsDot());
-    assertTrue(cg.callCount() > 0);
-  }
-
-  @Test
   public  void testOverwrittenRun() {
     CallGraph cg = loadCallGraph("Implicit", "t1.OverwrittenRun");
-    System.out.println(cg.exportAsDot());
 
     MethodSignature updatedRunMethodSig =
             identifierFactory.getMethodSignature(
@@ -376,7 +356,6 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
   @Test
   public void testThreadRun() {
     CallGraph cg = loadCallGraph("Implicit", "t2.ThreadRun");
-    System.out.println(cg.exportAsDot());
 
     MethodSignature updatedRunMethodSig =
             identifierFactory.getMethodSignature(
