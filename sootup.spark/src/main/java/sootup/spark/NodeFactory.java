@@ -3,7 +3,7 @@ package sootup.spark;
 import lombok.NonNull;
 import sootup.core.jimple.basic.Value;
 import sootup.spark.node.Node;
-import sootup.spark.node.NodeValueVisitor;
+import sootup.spark.node.ValueToNodeConversionVisitor;
 
 import java.util.Optional;
 
@@ -18,7 +18,7 @@ public class NodeFactory {
 
     @NonNull
     public static Optional<Node> createNode(@NonNull Value value){
-        NodeValueVisitor visitor = new NodeValueVisitor();
+        ValueToNodeConversionVisitor visitor = new ValueToNodeConversionVisitor();
         value.accept(visitor);
         return visitor.get();
     }

@@ -1,14 +1,15 @@
 package sootup.spark.node;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.visitor.ValueVisitor;
 
-public abstract class AbstractNodeValueVisitor implements ValueVisitor {
+@Slf4j
+public abstract class AbstractValueToNodeConversionVisitor implements ValueVisitor {
     @Override
     public void caseBooleanConstant(@NonNull BooleanConstant constant) {
         defaultCaseValue(constant);
@@ -190,6 +191,36 @@ public abstract class AbstractNodeValueVisitor implements ValueVisitor {
     }
 
     @Override
+    public void caseSpecialInvokeExpr(JSpecialInvokeExpr expr) {
+        defaultCaseValue(expr);
+    }
+
+    @Override
+    public void caseVirtualInvokeExpr(JVirtualInvokeExpr expr) {
+        defaultCaseValue(expr);
+    }
+
+    @Override
+    public void caseInterfaceInvokeExpr(JInterfaceInvokeExpr expr) {
+        defaultCaseValue(expr);
+    }
+
+    @Override
+    public void caseStaticInvokeExpr(JStaticInvokeExpr expr) {
+        defaultCaseValue(expr);
+    }
+
+    @Override
+    public void caseDynamicInvokeExpr(JDynamicInvokeExpr expr) {
+        defaultCaseValue(expr);
+    }
+
+    @Override
+    public void caseCaughtExceptionRef(JCaughtExceptionRef ref) {
+        defaultCaseValue(ref);
+    }
+
+    @Override
     public void defaultCaseExpr(Expr expr) {
         defaultCaseValue(expr);
     }
@@ -201,6 +232,6 @@ public abstract class AbstractNodeValueVisitor implements ValueVisitor {
 
     @Override
     public void defaultCaseValue(@NonNull Value v) {
-
+        log.warn("Unimplemented node conversion for value: {} of type: {}", v, v.getClass());
     }
 }
