@@ -24,7 +24,7 @@ import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingClassSource;
+import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 
 public class LegacyJimplePrinterTest {
@@ -44,7 +44,7 @@ public class LegacyJimplePrinterTest {
 
     ArrayList<String> listOfStrings = Utils.filterJimple(Utils.bodyStmtsAsStrings(body).stream());
 
-    SootMethod dummyMainMethod =
+    JavaSootMethod dummyMainMethod =
         new JavaSootMethod(
             new OverridingBodySource(methodSignature, body),
             methodSignature,
@@ -53,7 +53,7 @@ public class LegacyJimplePrinterTest {
             NoPositionInformation.getInstance());
 
     return new JavaSootClass(
-        new OverridingClassSource(
+        new OverridingJavaClassSource(
             Collections.singleton(dummyMainMethod),
             Collections.emptySet(),
             EnumSet.of(ClassModifier.PUBLIC),

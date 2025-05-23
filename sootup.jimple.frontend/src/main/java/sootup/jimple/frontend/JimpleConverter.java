@@ -53,14 +53,15 @@ import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingClassSource;
+import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.language.JavaJimple;
+import sootup.java.core.types.JavaClassType;
 import sootup.jimple.JimpleBaseVisitor;
 import sootup.jimple.JimpleParser;
 
 public class JimpleConverter {
 
-  public OverridingClassSource run(
+  public OverridingJavaClassSource run(
       @NonNull CharStream charStream,
       @NonNull AnalysisInputLocation inputlocation,
       @NonNull Path sourcePath,
@@ -74,7 +75,7 @@ public class JimpleConverter {
     return run(jimpleParser, inputlocation, sourcePath, bodyInterceptors, view);
   }
 
-  public OverridingClassSource run(
+  public OverridingJavaClassSource run(
       @NonNull JimpleParser parser,
       @NonNull AnalysisInputLocation inputlocation,
       @NonNull Path sourcePath,
@@ -89,7 +90,7 @@ public class JimpleConverter {
       throw new ResolveException("Syntax Error", sourcePath, ex);
     }
 
-    return new OverridingClassSource(
+    return new OverridingJavaClassSource(
         classVisitor.methods,
         classVisitor.fields,
         classVisitor.modifiers,
@@ -121,11 +122,12 @@ public class JimpleConverter {
     }
 
     private ClassType clazz = null;
-    Set<SootField> fields = new HashSet<>();
-    Set<SootMethod> methods = new HashSet<>();
-    ClassType superclass = null;
-    Set<ClassType> interfaces = null;
-    ClassType outerclass = null; // currently not determined in Java etc -> heuristic will be used
+    Set<JavaSootField> fields = new HashSet<>();
+    Set<JavaSootMethod> methods = new HashSet<>();
+    JavaClassType superclass = null;
+    Set<JavaClassType> interfaces = null;
+    JavaClassType outerclass =
+        null; // currently not determined in Java etc -> heuristic will be used
     Position position = NoPositionInformation.getInstance();
     EnumSet<ClassModifier> modifiers = null;
 
@@ -145,7 +147,7 @@ public class JimpleConverter {
         final String classname = ctx.classname.getText();
         final int dollarPostition = classname.indexOf('$');
         if (dollarPostition > -1) {
-          outerclass = util.getClassType(classname.substring(0, dollarPostition));
+          outerclass = (JavaClassType) util.getClassType(classname.substring(0, dollarPostition));
         }
         clazz = util.getClassType(classname);
 
@@ -167,7 +169,7 @@ public class JimpleConverter {
 
       // extends_clause
       if (ctx.extends_clause() != null) {
-        superclass = util.getClassType(ctx.extends_clause().classname.getText());
+        superclass = (JavaClassType) util.getClassType(ctx.extends_clause().classname.getText());
       } else {
         superclass = null;
       }
@@ -182,7 +184,7 @@ public class JimpleConverter {
       // member
       for (int i = 0; i < ctx.member().size(); i++) {
         if (ctx.member(i).method() != null) {
-          final SootMethod m = new MethodVisitor().visitMember(ctx.member(i));
+          final JavaSootMethod m = (JavaSootMethod) new MethodVisitor().visitMember(ctx.member(i));
           if (methods.stream()
               .anyMatch(
                   meth -> {
@@ -206,7 +208,7 @@ public class JimpleConverter {
               }
             }
             Body modifiedBody = bodyBuilder.build();
-            SootMethod sm =
+            JavaSootMethod sm =
                 new JavaSootMethod(
                     new OverridingBodySource(m.getBodySource()).withBody(modifiedBody),
                     m.getSignature(),
@@ -222,7 +224,7 @@ public class JimpleConverter {
           EnumSet<FieldModifier> modifier = getFieldModifiers(fieldCtx.field_modifier());
           final Position pos = JimpleConverterUtil.buildPositionFromCtx(fieldCtx);
           final String fieldName = JimpleUtils.unescape(fieldCtx.identifier().getText());
-          final SootField f =
+          final JavaSootField f =
               new JavaSootField(
                   identifierFactory.getFieldSignature(fieldName, clazz, fieldCtx.type().getText()),
                   modifier,

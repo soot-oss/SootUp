@@ -51,6 +51,7 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.*;
+import sootup.java.core.types.JavaClassType;
 
 public class FakeMainFactory extends ArtificialMethod {
   public static FakeMainFactory instance;
@@ -70,12 +71,12 @@ public class FakeMainFactory extends ArtificialMethod {
     ClassType declaringClassSignature = fact.getClassType(className);
     FieldSignature ctSig =
         fact.getFieldSignature("currentThread", declaringClassSignature, "java.lang.Thread");
-    SootField currentThread =
+    JavaSootField currentThread =
         new JavaSootField(
             ctSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
     FieldSignature gtSig =
         fact.getFieldSignature("globalThrow", declaringClassSignature, "java.lang.Exception");
-    SootField globalThrow =
+    JavaSootField globalThrow =
         new JavaSootField(
             gtSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
 
@@ -98,7 +99,7 @@ public class FakeMainFactory extends ArtificialMethod {
         .setPosition(NoPositionInformation.getInstance());
 
     Body bodyOne = bodyBuilder.build();
-    SootMethod dummyMainMethod =
+    JavaSootMethod dummyMainMethod =
         new JavaSootMethod(
             new OverridingBodySource(methodSignatureOne, bodyOne),
             methodSignatureOne,
@@ -108,12 +109,12 @@ public class FakeMainFactory extends ArtificialMethod {
     this.method = dummyMainMethod;
     this.fakeClass =
         new JavaSootClass(
-            new OverridingClassSource(
+            new OverridingJavaClassSource(
                 Collections.singleton(dummyMainMethod),
                 new LinkedHashSet<>(Arrays.asList(currentThread, globalThrow)),
                 EnumSet.of(ClassModifier.PUBLIC),
                 null,
-                fact.getClassType("java.lang.Object"),
+                (JavaClassType) fact.getClassType("java.lang.Object"),
                 null,
                 NoPositionInformation.getInstance(),
                 null,

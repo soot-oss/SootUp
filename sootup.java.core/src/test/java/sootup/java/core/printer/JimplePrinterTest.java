@@ -21,10 +21,8 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootField;
-import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingClassSource;
+import sootup.java.core.*;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -195,14 +193,17 @@ public class JimplePrinterTest {
               NoPositionInformation.getInstance());
     }
 
-    OverridingClassSource overridingClassSource =
-        OverridingClassSource.OverridingClassSourceBuilder.builder()
+    OverridingJavaClassSource overridingClassSource =
+        OverridingJavaClassSource.OverridingJavaClassSourceBuilder.builder()
             .withMethods(new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)))
             .withField(sootField)
             .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
             .withInterfaces(
-                Collections.singleton(identifierFactory.getClassType("some.great.Interface")))
-            .withSuperclass(Optional.of(identifierFactory.getClassType("some.great.Superclass")))
+                Collections.singleton(
+                    (JavaClassType) identifierFactory.getClassType("some.great.Interface")))
+            .withSuperclass(
+                Optional.of(
+                    (JavaClassType) identifierFactory.getClassType("some.great.Superclass")))
             .withPosition(NoPositionInformation.getInstance())
             .withClassType(identifierFactory.getClassType(className))
             .withAnalysisInputLocation(new EagerInputLocation())
@@ -230,21 +231,22 @@ public class JimplePrinterTest {
   }
 
   private JavaSootClass getSootClass(
-      SootMethod dummyMainMethod, SootMethod anotherMethod, String className, View view) {
+      JavaSootMethod dummyMainMethod, JavaSootMethod anotherMethod, String className, View view) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
-    SootField sootField =
+    JavaSootField sootField =
         new JavaSootField(
             identifierFactory.getFieldSignature(
                 "counter", identifierFactory.getClassType(className), PrimitiveType.getInt()),
             EnumSet.of(FieldModifier.PRIVATE),
             NoPositionInformation.getInstance());
-    OverridingClassSource overridingClassSource =
-        new OverridingClassSource(
+    OverridingJavaClassSource overridingClassSource =
+        new OverridingJavaClassSource(
             new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
             Collections.singleton(sootField),
             EnumSet.of(ClassModifier.PUBLIC),
-            Collections.singleton(identifierFactory.getClassType("some.great.Interface")),
-            identifierFactory.getClassType("some.great.Superclass"),
+            Collections.singleton(
+                (JavaClassType) identifierFactory.getClassType("some.great.Interface")),
+            (JavaClassType) identifierFactory.getClassType("some.great.Superclass"),
             null,
             NoPositionInformation.getInstance(),
             null,

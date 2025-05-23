@@ -83,7 +83,7 @@ public class MutatingSootClassTest {
     OverridingBodySource newBodySource =
         new OverridingBodySource(method.getBodySource()).withBody(newBody);
 
-    // Create OverridingClassSource
+    // Create OverridingJavaClassSource
     OverridingJavaClassSource overridingJavaClassSource =
         new OverridingJavaClassSource((JavaSootClassSource) sootClass.getClassSource());
 
