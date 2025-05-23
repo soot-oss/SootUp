@@ -135,7 +135,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
           Stream.concat(targets, resolveAllOverwrittenTargets(subclasses, targetMethodSignature));
     }
 
-    // if the base method is abstract it cannot be called by the invoke
+    // if the actual base method is abstract it cannot be called by the invoke
     if (actualTargetMethod.isAbstract()) {
       return targets;
     }
@@ -173,30 +173,6 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
             sootClass ->
                 findMethodInSuperClasses(sootClass, targetMethodSignature.getSubSignature())
                     .stream());
-  }
-
-  private Optional<MethodSignature> findMethodInSuperClasses(
-      SootClass sootClass, MethodSubSignature targetMethodSignature) {
-    ClassType superClassType = sootClass.getSuperclass().orElse(null);
-    // does not have a superclass
-    if (superClassType == null) {
-      return Optional.empty();
-    }
-    SootClass superclass = view.getClass(superClassType).orElse(null);
-    // superclass is mot in the view
-    if (superclass == null) {
-      return Optional.empty();
-    }
-    SootMethod target = superclass.getMethod(targetMethodSignature).orElse(null);
-    // method isn't found, continue with the superclass
-    if (target == null) {
-      return findMethodInSuperClasses(superclass, targetMethodSignature);
-    }
-    // found method cannot be called method
-    if (target.isAbstract()) {
-      return Optional.empty();
-    }
-    return Optional.of(target.getSignature());
   }
 
   @Override

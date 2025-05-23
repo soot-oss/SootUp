@@ -205,6 +205,25 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
+   * Adds the defined call to the given call graph. If the source or target method was added as
+   * vertex to the call graph, they will be added to the worklist
+   *
+   * @param call the call that should be added to the call graph
+   * @param cg the call graph that will be updated
+   * @param workList the worklist in which the method signature of newly added vertexes will be
+   *     added
+   */
+  protected void addCallToCG(
+      @NonNull Call call, @NonNull MutableCallGraph cg, @NonNull Deque<MethodSignature> workList) {
+    addCallToCG(
+        call.sourceMethodSignature(),
+        call.targetMethodSignature(),
+        call.invokableStmt(),
+        cg,
+        workList);
+  }
+
+  /**
    * This method resolves all calls from a given source method. resolveCall is called for each
    * invokable statements in the body of the source method that is implemented in the corresponding
    * call graph algorithm. If new methods will be added as vertexes in the call graph, the work list
@@ -479,7 +498,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (methodOp.isPresent()) {
       SootMethod method = methodOp.get();
       if (method.isAbstract()) {
-        return Optional.empty();
+        return java.util.Optional.empty();
       }
       return Optional.of(method.getSignature());
     }
@@ -496,8 +515,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   public static Optional<SootMethod> findConcreteMethod(
       @NonNull View view, @NonNull MethodSignature sig) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
-    SootClass startclass = view.getClass(sig.getDeclClassType()).orElse(null);
-    if (startclass == null) {
+    SootClass startClass = view.getClass(sig.getDeclClassType()).orElse(null);
+    if (startClass == null) {
       logger.warn(
           "Could not find \""
               + sig.getDeclClassType()
@@ -507,7 +526,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       return Optional.empty();
     }
     Optional<SootMethod> startMethod =
-        startclass.getMethod(sig.getSubSignature()).map(method -> (SootMethod) method);
+        startClass.getMethod(sig.getSubSignature()).map(method -> (SootMethod) method);
     if (startMethod.isPresent()) {
       return startMethod;
     }
@@ -556,5 +575,33 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             + sig.getDeclClassType().getClassName()
             + " and in its superclasses and interfaces");
     return Optional.empty();
+  }
+
+  protected Optional<MethodSignature> findMethodInSuperClasses(
+      SootClass sootClass, MethodSubSignature targetMethodSignature) {
+    ClassType superClassType = sootClass.getSuperclass().orElse(null);
+    // does not have a superclass
+    if (superClassType == null) {
+      return Optional.empty();
+    }
+    SootClass superclass = view.getClass(superClassType).orElse(null);
+    // superclass is mot in the view
+    if (superclass == null) {
+      return Optional.empty();
+    }
+    SootMethod target = superclass.getMethod(targetMethodSignature).orElse(null);
+    // method isn't found, continue with the superclass
+    if (target == null) {
+      return findMethodInSuperClasses(superclass, targetMethodSignature);
+    }
+    // found method cannot be called method
+    if (target.isAbstract()) {
+      return Optional.empty();
+    }
+    return Optional.of(target.getSignature());
+  }
+
+  protected boolean isInterface(ClassType classType) {
+    return view.getClass(classType).stream().anyMatch(SootClass::isInterface);
   }
 }
