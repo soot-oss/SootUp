@@ -5,7 +5,6 @@ import lombok.val;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
-import sootup.core.signatures.FieldSignature;
 import sootup.java.core.JavaIdentifierFactory;
 
 import java.util.Optional;
@@ -29,17 +28,20 @@ public class ValueToNodeConversionVisitor extends AbstractValueToNodeConversionV
 
     @Override
     public void caseCastExpr(JCastExpr expr) {
-
+        // TODO: wip
+        defaultCaseValue(expr);
     }
 
     @Override
     public void caseNewArrayExpr(JNewArrayExpr expr) {
-
+        // TODO: wip
+        defaultCaseValue(expr);
     }
 
     @Override
     public void caseNewMultiArrayExpr(JNewMultiArrayExpr expr) {
-
+        // TODO: wip
+        defaultCaseValue(expr);
     }
 
     @Override
@@ -68,14 +70,17 @@ public class ValueToNodeConversionVisitor extends AbstractValueToNodeConversionV
 
     @Override
     public void caseParameterRef(JParameterRef ref) {
-
+        // TODO: wip
+        defaultCaseValue(ref);
     }
 
 
     @Override
     public void caseThisRef(JThisRef ref) {
-
+        // TODO: wip
+        defaultCaseValue(ref);
     }
+
 
     @Override
     public void caseLocal(Local local) {

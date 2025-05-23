@@ -15,4 +15,9 @@ public class FieldRefNode extends Node {
     VariableNode base;
     @NonNull
     FieldSignature field;
+
+    @Override
+    public String toString() {
+        return String.format("\"%s(%s %s).%s\"", field.getType(), base.getType(), base.getName(), field.getName());
+    }
 }

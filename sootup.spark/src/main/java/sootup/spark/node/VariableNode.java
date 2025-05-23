@@ -14,4 +14,8 @@ public class VariableNode extends Node {
     @NonNull
     String name;
 
+    @Override
+    public String toString() {
+        return String.format("\"%s %s\"", getType(), getName());
+    }
 }

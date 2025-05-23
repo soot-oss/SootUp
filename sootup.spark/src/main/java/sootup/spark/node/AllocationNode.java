@@ -10,4 +10,9 @@ public class AllocationNode extends Node {
 
     //TODO: we might have to distinguish different allocation sites
 
+
+    @Override
+    public String toString() {
+        return String.format("\"new %s\"", getType());
+    }
 }

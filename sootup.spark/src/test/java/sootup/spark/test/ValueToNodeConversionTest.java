@@ -5,19 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import lombok.val;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
-import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.spark.NodeFactory;
 import sootup.spark.node.AllocationNode;
@@ -25,31 +19,12 @@ import sootup.spark.node.FieldRefNode;
 import sootup.spark.node.VariableNode;
 
 
-public class NodeTest {
-
-    private ClassType simpleType(String name){
-        return new ClassType() {
-            @Override
-            public String getFullyQualifiedName() {
-                return name;
-            }
-
-            @Override
-            public String getClassName() {
-                return name;
-            }
-
-            @Override
-            public PackageName getPackageName() {
-                return new PackageName("");
-            }
-        };
-    }
+public class ValueToNodeConversionTest {
 
     @Test
     public void testValueToNodeConversions(){
-        val aType = simpleType("A");
-        val bType = simpleType("B");
+        val aType = SparkTestUtil.simpleType("A");
+        val bType = SparkTestUtil.simpleType("B");
 
         // Local variable
         val local = new Local("a", aType);
@@ -106,12 +81,6 @@ public class NodeTest {
         assertEquals("array", arrayRefNode.getBase().getName());
         assertEquals("42", arrayRefNode.getField().getName());
         assertEquals(aType, arrayRef.getType());
-    }
-
-    public void testStatementToEdgeConversions(){
-        LValue left = new Local("a", simpleType("A"));
-        Value right = new JNewExpr(simpleType("A"));
-        JAssignStmt assignStmt = new JAssignStmt(left, right, StmtPositionInfo.getNoStmtPositionInfo());
     }
 
 }
