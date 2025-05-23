@@ -1,6 +1,7 @@
 package sootup.spark.test;
 
 import lombok.val;
+import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.nio.dot.DOTExporter;
 import sootup.core.signatures.PackageName;
@@ -31,12 +32,12 @@ public class SparkTestUtil {
         };
     }
 
-    public static void vizualizeMehodPAG(MethodPAG methodPAG){
+    public static void vizualizeMehodPAG(Graph<Node, DefaultEdge> pag){
         val exporter = new DOTExporter<Node, DefaultEdge>(
                 v -> v.toString()
         );
         StringWriter writer = new StringWriter();
-        exporter.exportGraph(methodPAG.getDelegate(), writer);
+        exporter.exportGraph(pag, writer);
         System.out.println(writer);
     }
 
