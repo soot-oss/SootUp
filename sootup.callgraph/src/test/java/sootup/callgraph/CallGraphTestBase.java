@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Value;
@@ -525,7 +524,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertFalse(cg.containsMethod(uncalledMethod));
   }
 
-  @Disabled // soundness feature currently not supported by SootUp will be addressed in Issue #1194
   @Test
   public void testNonVirtualCall4() {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc4.Class");
