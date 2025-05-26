@@ -1010,7 +1010,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   @Test
   public void testNoMainMethod() {
 
-    JavaView view = createViewForClassPath("src/test/resources/callgraph/NoMainMethod");
+    JavaView view = createViewForClassPath("src/test/resources/callgraph/NoMainMethod/binary");
 
     CallGraphAlgorithm algorithm = createAlgorithm(view);
     try {
