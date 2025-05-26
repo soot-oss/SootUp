@@ -351,7 +351,7 @@ public class JavaModuleView extends JavaView {
               return Collections.emptyList();
           }
 
-          Stream<? extends AbstractClassSource<JavaSootClass>> stream;
+          Stream<? extends SootClassSource<JavaSootClass>> stream;
           JavaModuleInfo moduleInfo = startOpt.get();
           if (moduleInfo.isUnnamedModule()) {
               // unnamed module -> access to all (non)modules
