@@ -551,10 +551,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     SootMethod target = sootClass.getMethod(targetMethodSignature).orElse(null);
     // check current class
     if (target != null) {
-      // found method cannot be called method
-      if (target.isAbstract()) {
-        return Optional.empty();
-      }
       return Optional.of(target);
     }
 
