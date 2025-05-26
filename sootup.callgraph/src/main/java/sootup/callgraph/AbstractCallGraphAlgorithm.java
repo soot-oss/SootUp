@@ -29,7 +29,6 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
-import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
@@ -42,8 +41,6 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
-import sootup.core.typehierarchy.HierarchyComparator;
-import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -497,7 +494,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (methodOp.isPresent()) {
       SootMethod method = methodOp.get();
       if (method.isAbstract()) {
-        return java.util.Optional.empty();
+        return Optional.empty();
       }
       return Optional.of(method.getSignature());
     }
@@ -511,10 +508,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param sig the signature of the searched method
    * @return the found method object, or null if the method was not found.
    */
-  public static Optional<SootMethod> findConcreteMethod(
+  protected static Optional<? extends SootMethod> findConcreteMethod(
       @NonNull View view, @NonNull MethodSignature sig) {
-    IdentifierFactory identifierFactory = view.getIdentifierFactory();
     SootClass startClass = view.getClass(sig.getDeclClassType()).orElse(null);
+
     if (startClass == null) {
       logger.warn(
           "Could not find \""
@@ -524,49 +521,20 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               + " to resolve the concrete method");
       return Optional.empty();
     }
-    Optional<SootMethod> startMethod =
-        startClass.getMethod(sig.getSubSignature()).map(method -> (SootMethod) method);
-    if (startMethod.isPresent()) {
-      return startMethod;
-    }
-    TypeHierarchy typeHierarchy = view.getTypeHierarchy();
+    MethodSubSignature methodSig = sig.getSubSignature();
 
-    Stream<ClassType> superClasses = typeHierarchy.superClassesOf(sig.getDeclClassType());
-    Iterator<ClassType> iterator = superClasses.iterator();
-    while (iterator.hasNext()) {
-      ClassType superClassType = iterator.next();
-      Optional<SootMethod> method =
-          view.getMethod(
-                  identifierFactory.getMethodSignature(superClassType, sig.getSubSignature()))
-              .map(sm -> (SootMethod) sm);
-      if (method.isPresent()) {
-        return method;
-      }
+    // search method current class and in superclasses
+    Optional<? extends SootMethod> method = findMethodInHierarchy(view, startClass, methodSig);
+    if (method.isPresent()) {
+      return method;
     }
 
-    // interface1 is a sub-interface of interface2
-    // interface1 is a super-interface of interface2
-    // due to multiple inheritance in interfaces
-    final HierarchyComparator hierarchyComparator =
-        new HierarchyComparator(view.getTypeHierarchy());
-    Optional<SootMethod> defaultMethod =
-        typeHierarchy
-            .implementedInterfacesOf(sig.getDeclClassType())
-            .map(
-                classType ->
-                    view.getMethod(
-                        identifierFactory.getMethodSignature(classType, sig.getSubSignature())))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .min(
-                (m1, m2) ->
-                    hierarchyComparator.compare(
-                        m1.getDeclaringClassType(), m2.getDeclaringClassType()))
-            .map(method -> (SootMethod) method);
-
+    // search method in interfaces
+    Optional<? extends SootMethod> defaultMethod = findDefaultMethod(view, startClass, methodSig);
     if (defaultMethod.isPresent()) {
       return defaultMethod;
     }
+
     logger.warn(
         "Could not find \""
             + sig.getSubSignature()
@@ -576,8 +544,20 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     return Optional.empty();
   }
 
-  protected Optional<MethodSignature> findMethodInSuperClasses(
-      SootClass sootClass, MethodSubSignature targetMethodSignature) {
+  protected static Optional<SootMethod> findMethodInHierarchy(
+      @NonNull View view,
+      @NonNull SootClass sootClass,
+      @NonNull MethodSubSignature targetMethodSignature) {
+    SootMethod target = sootClass.getMethod(targetMethodSignature).orElse(null);
+    // check current class
+    if (target != null) {
+      // found method cannot be called method
+      if (target.isAbstract()) {
+        return Optional.empty();
+      }
+      return Optional.of(target);
+    }
+
     ClassType superClassType = sootClass.getSuperclass().orElse(null);
     // does not have a superclass
     if (superClassType == null) {
@@ -588,19 +568,75 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (superclass == null) {
       return Optional.empty();
     }
-    SootMethod target = superclass.getMethod(targetMethodSignature).orElse(null);
+
     // method isn't found, continue with the superclass
-    if (target == null) {
-      return findMethodInSuperClasses(superclass, targetMethodSignature);
+    return findMethodInHierarchy(view, superclass, targetMethodSignature);
+  }
+
+  /**
+   * Searches the default method that would be used as a target of the given SootClass and
+   * MethodSubSignature. All interfaces are checked and it returns that SootMethod object of the
+   * interface which is the subtype of all possible fitting default method.
+   *
+   * @param view The view contains the hierarchy information and the classes and methods
+   * @param sootClass the sootClass which defines the start of the search
+   * @param defaultSignature the method-subsignature which defines the target method
+   * @return An Optional containing the default method or an empty Optional if there is no default
+   *     method, or a superclass is not in the view.
+   */
+  protected static Optional<SootMethod> findDefaultMethod(
+      @NonNull View view,
+      @NonNull SootClass sootClass,
+      @NonNull MethodSubSignature defaultSignature) {
+    return findDefaultMethod(view, sootClass, defaultSignature, new ArrayList<>(), null);
+  }
+
+  private static Optional<SootMethod> findDefaultMethod(
+      @NonNull View view,
+      @NonNull SootClass sootClass,
+      @NonNull MethodSubSignature targetMethodSignature,
+      List<ClassType> checkedInterfaces,
+      SootMethod defaultMethod) {
+    // get all possible default method targets
+    List<? extends SootMethod> fittingDefaultMethods =
+        view.getTypeHierarchy()
+            .implementedInterfacesOf(sootClass.getType())
+            .flatMap(
+                classType ->
+                    view
+                        .getMethod(
+                            view.getIdentifierFactory()
+                                .getMethodSignature(classType, targetMethodSignature))
+                        .stream())
+            .toList();
+
+    // find default method
+    if (!fittingDefaultMethods.isEmpty()) {
+      for (SootMethod fittingDefaultMethod : fittingDefaultMethods) {
+        // first found default method
+        if (defaultMethod == null) {
+          defaultMethod = fittingDefaultMethod;
+          continue;
+        }
+        // is the same interface method
+        if (fittingDefaultMethod.getSignature().equals(defaultMethod.getSignature())) {
+          continue;
+        }
+        // is subtype of the current default method
+        if (view.getTypeHierarchy()
+            .isSubtype(
+                defaultMethod.getDeclaringClassType(),
+                fittingDefaultMethod.getDeclaringClassType())) {
+          defaultMethod = fittingDefaultMethod;
+        }
+        // save interface as checked
+        checkedInterfaces.add(fittingDefaultMethod.getDeclaringClassType());
+      }
     }
-    // found method cannot be called method
-    if (target.isAbstract()) {
-      return Optional.empty();
-    }
-    return Optional.of(target.getSignature());
+    return Optional.ofNullable(defaultMethod);
   }
 
   protected boolean isInterface(ClassType classType) {
-    return view.getClass(classType).stream().anyMatch(SootClass::isInterface);
+    return view.getTypeHierarchy().isInterface(classType);
   }
 }

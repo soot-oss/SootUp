@@ -36,7 +36,6 @@ import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootClassMember;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -194,8 +193,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     if (instantiatedClasses.contains(targetMethodSignature.getDeclClassType())
         || (isDefaultMethod && isInterface(targetMethodSignature.getDeclClassType()))) {
       // the call is created with the actual base target
-      return Stream.concat(Stream.of(actualTargetMethod.getSignature()), targets)
-          .peek(System.out::println);
+      return Stream.concat(Stream.of(actualTargetMethod.getSignature()), targets);
     }
     // save the ignored call
     saveIgnoredCall(sourceMethod.getSignature(), actualTargetMethod.getSignature(), invokableStmt);
@@ -230,20 +228,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
                     invokableStmt);
                 return Stream.empty();
               }
-              MethodSignature targetMethod =
-                  sootClass.getMethod(targetBase.getSubSignature()).stream()
-                      .map(SootClassMember::getSignature)
-                      .findAny()
-                      .orElse(null);
-              if (targetMethod == null) {
-                targetMethod =
-                    findMethodInSuperClasses(sootClass, targetBase.getSubSignature()).orElse(null);
-                if (targetMethod == null) {
-                  return Stream.empty();
-                }
-              }
-              return Stream.of(targetMethod);
-            });
+              SootMethod targetMethod =
+                  findMethodInHierarchy(view, sootClass, targetBase.getSubSignature()).orElse(null);
+              ;
+              return Stream.ofNullable(targetMethod);
+            })
+        .map(SootMethod::getSignature);
   }
 
   private Stream<MethodSignature> resolveAllDefaultTargets(
@@ -284,7 +274,9 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     return subclasses.stream()
         .filter(sootClass -> sootClass.getMethod(targetMethodSignature).isEmpty())
         .filter(sootClass -> instantiatedClasses.contains(sootClass.getType()))
-        .flatMap(sootClass -> findMethodInSuperClasses(sootClass, targetMethodSignature).stream());
+        .flatMap(
+            sootClass -> findMethodInHierarchy(view, sootClass, targetMethodSignature).stream())
+        .map(SootMethod::getSignature);
   }
 
   /**

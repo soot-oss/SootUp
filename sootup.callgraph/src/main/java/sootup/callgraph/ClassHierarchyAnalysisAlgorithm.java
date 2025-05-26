@@ -31,7 +31,6 @@ import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootClassMember;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -118,8 +117,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
 
     // if the current implementation of the method is a default method the algorithm changes
     // because superclasses can overwrite default methods which are not subtypes of the interface
-    if (view.getClass(actualTargetMethod.getDeclClassType()).stream()
-        .anyMatch(SootClass::isInterface)) {
+    if (isInterface(actualTargetMethod.getDeclClassType())) {
       // get all default methods of sub-interfaces of the interface
       // which are interfaces of the subtypes
       targets =
@@ -147,7 +145,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     return subclasses.stream()
         .flatMap(sootClass -> sootClass.getMethod(targetMethodSignature.getSubSignature()).stream())
         .filter(sootMethod -> !sootMethod.isAbstract())
-        .map(SootClassMember::getSignature);
+        .map(SootMethod::getSignature);
   }
 
   private Stream<MethodSignature> resolveAllDefaultTargets(
@@ -162,7 +160,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         .filter(SootClass::isInterface)
         .filter(sootClass -> interfaces.contains(sootClass.getType()))
         .flatMap(sootClass -> sootClass.getMethod(targetSubSignature).stream())
-        .map(SootClassMember::getSignature);
+        .map(SootMethod::getSignature);
   }
 
   private Stream<MethodSignature> resolveAllOverwrittenTargets(
@@ -171,8 +169,9 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         .filter(sootClass -> sootClass.getMethod(targetMethodSignature.getSubSignature()).isEmpty())
         .flatMap(
             sootClass ->
-                findMethodInSuperClasses(sootClass, targetMethodSignature.getSubSignature())
-                    .stream());
+                findMethodInHierarchy(view, sootClass, targetMethodSignature.getSubSignature())
+                    .stream())
+        .map(SootMethod::getSignature);
   }
 
   @Override
