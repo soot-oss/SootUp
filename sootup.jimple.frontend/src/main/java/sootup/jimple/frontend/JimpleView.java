@@ -33,7 +33,6 @@ import sootup.core.IdentifierFactory;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -132,7 +131,7 @@ public class JimpleView extends AbstractView {
   }
 
   @NonNull
-  private synchronized SootClass buildClassFrom(AbstractClassSource classSource) {
+  private synchronized SootClass buildClassFrom(SootClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
     SootClass theClass;

@@ -25,14 +25,12 @@ package sootup.java.core.views;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
@@ -155,8 +153,8 @@ public class JavaView extends AbstractView {
         .map(Optional::get)
         .map(
             classSource -> {
-              if (classSource instanceof OverridingClassSource) {
-                return JavaSootClassSourceAdapter.adapt((OverridingClassSource) classSource);
+              if (classSource instanceof OverridingJavaClassSource) {
+                return JavaSootClassSourceAdapter.adapt((OverridingJavaClassSource) classSource);
               }
               return (JavaSootClassSource) classSource;
             })
@@ -171,11 +169,9 @@ public class JavaView extends AbstractView {
     if (cache.hasClass(classType)) {
       theClass = (JavaSootClass) cache.getClass(classType);
     } else {
-      if (classSource instanceof OverridingClassSource) {
+      if (classSource instanceof OverridingJavaClassSource) {
         theClass =
-            new JavaSootClass(
-                (OverridingClassSource) classSource,
-                classSource.getAnalysisInputLocation().getSourceType());
+            new JavaSootClass(classSource, classSource.getAnalysisInputLocation().getSourceType());
         cache.putClass(classType, theClass);
       } else {
         theClass =

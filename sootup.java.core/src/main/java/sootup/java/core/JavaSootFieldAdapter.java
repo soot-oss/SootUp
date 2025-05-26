@@ -29,7 +29,7 @@ public class JavaSootFieldAdapter extends JavaSootField {
 
   private final SootField sootField;
 
-  public JavaSootFieldAdapter(SootField sootField) {
+  public JavaSootFieldAdapter(JavaSootField sootField) {
     super(
         sootField.getSignature(),
         sootField.getModifiers(),

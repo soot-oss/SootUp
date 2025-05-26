@@ -24,7 +24,6 @@ package sootup.java.core;
 
 import java.util.*;
 import org.jspecify.annotations.NonNull;
-import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.Position;
@@ -34,14 +33,14 @@ import sootup.core.types.ClassType;
 
 public class JavaSootClassSourceAdapter extends JavaSootClassSource {
 
-  private final OverridingClassSource overridingClassSource;
+  private final OverridingJavaClassSource overridingClassSource;
 
-  public JavaSootClassSourceAdapter(@NonNull OverridingClassSource overridingClassSource) {
+  public JavaSootClassSourceAdapter(@NonNull OverridingJavaClassSource overridingClassSource) {
     super(overridingClassSource);
     this.overridingClassSource = overridingClassSource;
   }
 
-  public static JavaSootClassSource adapt(@NonNull OverridingClassSource source) {
+  public static JavaSootClassSource adapt(@NonNull OverridingJavaClassSource source) {
     return new JavaSootClassSourceAdapter(source);
   }
 

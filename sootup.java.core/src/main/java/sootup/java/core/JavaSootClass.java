@@ -74,10 +74,6 @@ public class JavaSootClass implements SootClass, HasAnnotation {
     this._lazyFields = Suppliers.memoize(this::lazyFieldInitializer);
   }
 
-    public JavaSootClass(SootClassSource sootClassSource, SourceType sourceType) {
-        super(sootClassSource, sourceType);
-    }
-
   public JavaSootClass(
       SootClassSource classSource,
       SourceType sourceType,
@@ -188,8 +184,6 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   @NonNull
   public Set<JavaSootMethod> getMethods() {
     return this._lazyMethods.get().stream()
-        .map(method -> (JavaSootMethod) method)
-    return super.getMethods().stream()
         .map(
             method -> {
               if (method instanceof JavaSootMethod) {
@@ -206,16 +200,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   @NonNull
   public Set<JavaSootField> getFields() {
     return this._lazyFields.get().stream()
-        .map(field -> (JavaSootField) field)
-    return super.getFields().stream()
-        .map(
-            field -> {
-              if (field instanceof JavaSootField) {
-                return (JavaSootField) field;
-              } else {
-                return new JavaSootFieldAdapter(field);
-              }
-            })
+        .map(sootField -> (JavaSootField) sootField)
         .collect(Collectors.toSet());
   }
 
