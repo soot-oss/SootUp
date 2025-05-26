@@ -434,7 +434,7 @@ public class TamiflexModel extends ReflectionModel {
     for (SootMethod sm : sourceMethods) {
       Body body = PTAUtils.getMethodBody(sm);
       for (Stmt stmt : body.getStmts()) {
-        if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
+        if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
           String methodSig =
               stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature().toString();
           if (matchReflectionKind(kind, methodSig)) {

@@ -120,7 +120,7 @@ public class OverridingClassSource extends SootClassSource {
   public Collection<SootMethod> resolveMethods() throws ResolveException {
     return overriddenSootMethods != null
         ? overriddenSootMethods
-        : (Collection<SootMethod>) delegate.resolveMethods();
+        : Collections.unmodifiableCollection(delegate.resolveMethods());
   }
 
   @NonNull
@@ -128,7 +128,7 @@ public class OverridingClassSource extends SootClassSource {
   public Collection<SootField> resolveFields() throws ResolveException {
     return overriddenSootFields != null
         ? overriddenSootFields
-        : (Collection<SootField>) delegate.resolveFields();
+        : Collections.unmodifiableCollection(delegate.resolveFields());
   }
 
   @NonNull
@@ -142,7 +142,7 @@ public class OverridingClassSource extends SootClassSource {
   public Set<ClassType> resolveInterfaces() {
     return overriddenInterfaces != null
         ? overriddenInterfaces
-        : (Set<ClassType>) delegate.resolveInterfaces();
+        : Collections.unmodifiableSet(delegate.resolveInterfaces());
   }
 
   @NonNull
@@ -150,7 +150,7 @@ public class OverridingClassSource extends SootClassSource {
   public Optional<ClassType> resolveSuperclass() {
     return overriddenSuperclass != null
         ? overriddenSuperclass
-        : (Optional<ClassType>) delegate.resolveSuperclass();
+        : delegate.resolveSuperclass().map(c -> (ClassType) c);
   }
 
   @NonNull
@@ -158,7 +158,7 @@ public class OverridingClassSource extends SootClassSource {
   public Optional<ClassType> resolveOuterClass() {
     return overriddenOuterClass != null
         ? overriddenOuterClass
-        : (Optional<ClassType>) delegate.resolveOuterClass();
+        : delegate.resolveOuterClass().map(c -> (ClassType) c);
   }
 
   @NonNull

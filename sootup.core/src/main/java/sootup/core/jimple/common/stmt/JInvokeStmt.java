@@ -44,11 +44,6 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
   }
 
   @Override
-  public boolean containsInvokeExpr() {
-    return true;
-  }
-
-  @Override
   public boolean invokesStaticInitializer() {
     return invokeExpr instanceof JStaticInvokeExpr;
   }

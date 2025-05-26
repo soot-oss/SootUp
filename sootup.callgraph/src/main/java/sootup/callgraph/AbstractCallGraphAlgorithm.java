@@ -277,11 +277,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                     sourceMethod.getSignature(), targetClass, invokableStmt, cg, workList);
               }
               // static method
-              if (invokableStmt.containsInvokeExpr()) {
+              if (invokableStmt.getInvokeExpr().isPresent()) {
                 // static method call
-                Optional<AbstractInvokeExpr> exprOptional = invokableStmt.getInvokeExpr();
-                if (exprOptional.isEmpty()) return;
-                AbstractInvokeExpr expr = exprOptional.get();
+                AbstractInvokeExpr expr = invokableStmt.getInvokeExpr().get();
                 if (expr instanceof JStaticInvokeExpr) {
                   ClassType newTargetClass = expr.getMethodSignature().getDeclClassType();
                   // checks if the field points to the same clinit
@@ -418,9 +416,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               if (updated.containsMethod(overriddenMethodSig)) {
                 for (Call calls : updated.callsTo(overriddenMethodSig)) {
                   updated.addCall(
-                      calls.getSourceMethodSignature(),
-                      overridingMethodSig,
-                      calls.getInvokableStmt());
+                      calls.sourceMethodSignature(), overridingMethodSig, calls.invokableStmt());
                 }
               }
             });
