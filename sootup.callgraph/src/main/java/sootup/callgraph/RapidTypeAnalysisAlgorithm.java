@@ -230,7 +230,6 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
               }
               SootMethod targetMethod =
                   findMethodInHierarchy(view, sootClass, targetBase.getSubSignature()).orElse(null);
-              ;
               return Stream.ofNullable(targetMethod);
             })
         .map(SootMethod::getSignature);

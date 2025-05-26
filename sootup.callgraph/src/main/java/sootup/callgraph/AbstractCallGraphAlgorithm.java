@@ -588,15 +588,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull View view,
       @NonNull SootClass sootClass,
       @NonNull MethodSubSignature defaultSignature) {
-    return findDefaultMethod(view, sootClass, defaultSignature, new ArrayList<>(), null);
-  }
 
-  private static Optional<SootMethod> findDefaultMethod(
-      @NonNull View view,
-      @NonNull SootClass sootClass,
-      @NonNull MethodSubSignature targetMethodSignature,
-      List<ClassType> checkedInterfaces,
-      SootMethod defaultMethod) {
     // get all possible default method targets
     List<? extends SootMethod> fittingDefaultMethods =
         view.getTypeHierarchy()
@@ -606,10 +598,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                     view
                         .getMethod(
                             view.getIdentifierFactory()
-                                .getMethodSignature(classType, targetMethodSignature))
+                                .getMethodSignature(classType, defaultSignature))
                         .stream())
             .toList();
 
+    SootMethod defaultMethod = null;
     // find default method
     if (!fittingDefaultMethods.isEmpty()) {
       for (SootMethod fittingDefaultMethod : fittingDefaultMethods) {
@@ -629,8 +622,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                 fittingDefaultMethod.getDeclaringClassType())) {
           defaultMethod = fittingDefaultMethod;
         }
-        // save interface as checked
-        checkedInterfaces.add(fittingDefaultMethod.getDeclaringClassType());
       }
     }
     return Optional.ofNullable(defaultMethod);
