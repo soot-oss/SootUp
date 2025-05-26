@@ -67,6 +67,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootField;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -268,7 +269,7 @@ public class MethodNodeFactory {
     SootField sf;
     if (!osf.isPresent()) {
       sf =
-          new SootField(
+          new JavaSootField(
               fieldSig,
               Collections.singleton(FieldModifier.PUBLIC),
               NoPositionInformation.getInstance());

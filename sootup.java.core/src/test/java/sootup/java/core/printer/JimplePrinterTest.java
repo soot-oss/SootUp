@@ -8,7 +8,6 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.frontend.OverridingClassSource;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -16,11 +15,14 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.*;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
+import sootup.java.core.*;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -34,9 +36,10 @@ public class JimplePrinterTest {
   @Test
   public void testPrintedExample() {
 
-    JimplePrinter p = new JimplePrinter(JimplePrinter.Option.UseImports);
+    JimplePrinter p =
+        new JimplePrinter(JimplePrinter.Option.Deterministic, JimplePrinter.Option.UseImports);
     final StringWriter writer = new StringWriter();
-    SootClass sootClass = buildClass(false);
+    JavaSootClass sootClass = buildClass(false, false);
     p.printTo(sootClass, new PrintWriter(writer));
 
     assertEquals(
@@ -45,10 +48,10 @@ public class JimplePrinterTest {
             "import some.great.Interface",
             "public class SomeClass extends Superclass implements Interface",
             "private int counter",
-            "public static void main()",
+            "private int otherMethod() throws FileNotFoundException",
             "nop",
             "return",
-            "private int otherMethod() throws FileNotFoundException",
+            "public static void main()",
             "nop",
             "return"),
         Utils.filterJimple(writer.toString()));
@@ -60,11 +63,15 @@ public class JimplePrinterTest {
         new JimplePrinter(JimplePrinter.Option.UseImports, JimplePrinter.Option.Deterministic);
     final StringWriter writer = new StringWriter();
     final StringWriter writer1 = new StringWriter();
-    SootClass sootClass = buildClass(false);
-    SootClass sootClassUsingBuilder = buildClass(true);
+    final StringWriter writer2 = new StringWriter();
+    SootClass sootClass = buildClass(false, false);
+    JavaSootClass sootClassUsingBuilder = buildClass(true, false);
+    JavaSootClass sootClassUsingBuilderWithMembers = buildClass(true, true);
     p.printTo(sootClass, new PrintWriter(writer));
     p.printTo(sootClassUsingBuilder, new PrintWriter(writer1));
+    p.printTo(sootClassUsingBuilderWithMembers, new PrintWriter(writer2));
     assertEquals(Utils.filterJimple(writer.toString()), Utils.filterJimple(writer1.toString()));
+    assertEquals(Utils.filterJimple(writer1.toString()), Utils.filterJimple(writer2.toString()));
 
     // assert if sootClass and sootClassUsingBuilder are same
     assertEquals(
@@ -79,7 +86,7 @@ public class JimplePrinterTest {
         sootClassUsingBuilder.getSuperclass().get().getClassName());
   }
 
-  private SootClass buildClass(boolean buildUsingBuilder) {
+  private JavaSootClass buildClass(boolean buildUsingBuilder, boolean buildWithClassMembers) {
     View view = new JavaView(new EagerInputLocation());
 
     String className = "some.package.SomeClass";
@@ -101,13 +108,25 @@ public class JimplePrinterTest {
         .setPosition(NoPositionInformation.getInstance());
     Body bodyOne = bodyBuilder.build();
 
-    SootMethod dummyMainMethod =
-        new SootMethod(
-            new OverridingBodySource(methodSignatureOne, bodyOne),
-            methodSignatureOne,
-            EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
-            Collections.emptyList(),
-            NoPositionInformation.getInstance());
+    JavaSootMethod dummyMainMethod;
+    if (buildUsingBuilder) {
+      dummyMainMethod =
+          JavaSootMethod.JavaSootMethodBuilder.builder()
+              .withSource(new OverridingBodySource(methodSignatureOne, bodyOne))
+              .withSignature(methodSignatureOne)
+              .withModifier(EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC))
+              .withAnnotation(Collections.emptyList())
+              .withPosition(NoPositionInformation.getInstance())
+              .build();
+    } else {
+      dummyMainMethod =
+          new JavaSootMethod(
+              new OverridingBodySource(methodSignatureOne, bodyOne),
+              methodSignatureOne,
+              EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
+              Collections.emptyList(),
+              NoPositionInformation.getInstance());
+    }
 
     MethodSignature methodSignatureTwo =
         identifierFactory.getMethodSignature(
@@ -117,74 +136,122 @@ public class JimplePrinterTest {
         .setPosition(NoPositionInformation.getInstance());
     Body bodyTwo = bodyBuilder.build();
 
-    SootMethod anotherMethod =
-        new SootMethod(
-            new OverridingBodySource(methodSignatureOne, bodyTwo),
-            methodSignatureTwo,
-            EnumSet.of(MethodModifier.PRIVATE),
-            Collections.singletonList(
-                identifierFactory.getClassType("files.stuff.FileNotFoundException")),
-            NoPositionInformation.getInstance());
+    JavaSootMethod anotherMethod;
+    if (buildUsingBuilder) {
+      anotherMethod =
+          JavaSootMethod.JavaSootMethodBuilder.builder()
+              .withSource(new OverridingBodySource(methodSignatureOne, bodyTwo))
+              .withSignature(methodSignatureTwo)
+              .withModifiers(MethodModifier.PRIVATE)
+              .withThrownExceptions(
+                  Collections.singletonList(
+                      identifierFactory.getClassType("files.stuff.FileNotFoundException")))
+              .withPosition(NoPositionInformation.getInstance())
+              .build();
+    } else {
+      anotherMethod =
+          new JavaSootMethod(
+              new OverridingBodySource(methodSignatureOne, bodyTwo),
+              methodSignatureTwo,
+              EnumSet.of(MethodModifier.PRIVATE),
+              Collections.singletonList(
+                  identifierFactory.getClassType("files.stuff.FileNotFoundException")),
+              NoPositionInformation.getInstance());
+    }
 
     if (buildUsingBuilder) {
-      return getSootClassUsingBuilder(dummyMainMethod, anotherMethod, className, view);
+      return getSootClassUsingBuilder(
+          dummyMainMethod, anotherMethod, className, view, buildWithClassMembers);
     }
 
     return getSootClass(dummyMainMethod, anotherMethod, className, view);
   }
 
-  private SootClass getSootClassUsingBuilder(
-      SootMethod dummyMainMethod, SootMethod anotherMethod, String className, View view) {
+  private JavaSootClass getSootClassUsingBuilder(
+      JavaSootMethod dummyMainMethod,
+      JavaSootMethod anotherMethod,
+      String className,
+      View view,
+      boolean buildWithClassMembers) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
-    SootField sootField =
-        new SootField(
-            identifierFactory.getFieldSignature(
-                "counter", identifierFactory.getClassType(className), PrimitiveType.getInt()),
-            EnumSet.of(FieldModifier.PRIVATE),
-            NoPositionInformation.getInstance());
+    JavaSootField sootField;
+    FieldSignature fieldSignature =
+        identifierFactory.getFieldSignature(
+            "counter", identifierFactory.getClassType(className), PrimitiveType.getInt());
+    if (buildWithClassMembers) {
+      sootField =
+          JavaSootField.JavaSootFieldBuilder.builder()
+              .withSignature(fieldSignature)
+              .withModifiers(FieldModifier.PRIVATE)
+              .withPosition(NoPositionInformation.getInstance())
+              .build();
+    } else {
+      sootField =
+          new JavaSootField(
+              fieldSignature,
+              EnumSet.of(FieldModifier.PRIVATE),
+              NoPositionInformation.getInstance());
+    }
 
-    OverridingClassSource overridingClassSource =
-        OverridingClassSource.OverridingClassSourceBuilder.builder()
+    OverridingJavaClassSource overridingClassSource =
+        OverridingJavaClassSource.OverridingJavaClassSourceBuilder.builder()
             .withMethods(new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)))
             .withField(sootField)
             .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
             .withInterfaces(
-                Collections.singleton(identifierFactory.getClassType("some.great.Interface")))
-            .withSuperclass(Optional.of(identifierFactory.getClassType("some.great.Superclass")))
+                Collections.singleton(
+                    (JavaClassType) identifierFactory.getClassType("some.great.Interface")))
+            .withSuperclass(
+                Optional.of(
+                    (JavaClassType) identifierFactory.getClassType("some.great.Superclass")))
             .withPosition(NoPositionInformation.getInstance())
             .withClassType(identifierFactory.getClassType(className))
             .withAnalysisInputLocation(new EagerInputLocation())
             .build();
 
-    SootClass sootClass =
-        SootClass.SootClassBuilder.builder()
-            .withClassSource(overridingClassSource)
-            .withSourceType(SourceType.Application)
-            .build();
-    return sootClass;
+    if (buildWithClassMembers) {
+      return JavaSootClass.JavaSootClassBuilder.builder()
+          .withClassSource(overridingClassSource)
+          .withSourceType(SourceType.Application)
+          .withMethods(new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)))
+          .withField(sootField)
+          .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+          .withInterfaces(
+              Collections.singleton(identifierFactory.getClassType("some.great.Interface")))
+          .withSuperclass(Optional.of(identifierFactory.getClassType("some.great.Superclass")))
+          .withPosition(NoPositionInformation.getInstance())
+          .withClassType(identifierFactory.getClassType(className))
+          .build();
+    }
+
+    return JavaSootClass.JavaSootClassBuilder.builder()
+        .withClassSource(overridingClassSource)
+        .withSourceType(SourceType.Application)
+        .build();
   }
 
-  private SootClass getSootClass(
-      SootMethod dummyMainMethod, SootMethod anotherMethod, String className, View view) {
+  private JavaSootClass getSootClass(
+      JavaSootMethod dummyMainMethod, JavaSootMethod anotherMethod, String className, View view) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
-    SootField sootField =
-        new SootField(
+    JavaSootField sootField =
+        new JavaSootField(
             identifierFactory.getFieldSignature(
                 "counter", identifierFactory.getClassType(className), PrimitiveType.getInt()),
             EnumSet.of(FieldModifier.PRIVATE),
             NoPositionInformation.getInstance());
-    OverridingClassSource overridingClassSource =
-        new OverridingClassSource(
+    OverridingJavaClassSource overridingClassSource =
+        new OverridingJavaClassSource(
             new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
             Collections.singleton(sootField),
             EnumSet.of(ClassModifier.PUBLIC),
-            Collections.singleton(identifierFactory.getClassType("some.great.Interface")),
-            identifierFactory.getClassType("some.great.Superclass"),
+            Collections.singleton(
+                (JavaClassType) identifierFactory.getClassType("some.great.Interface")),
+            (JavaClassType) identifierFactory.getClassType("some.great.Superclass"),
             null,
             NoPositionInformation.getInstance(),
             null,
             identifierFactory.getClassType(className),
             new EagerInputLocation());
-    return new SootClass(overridingClassSource, SourceType.Application);
+    return new JavaSootClass(overridingClassSource, SourceType.Application);
   }
 }

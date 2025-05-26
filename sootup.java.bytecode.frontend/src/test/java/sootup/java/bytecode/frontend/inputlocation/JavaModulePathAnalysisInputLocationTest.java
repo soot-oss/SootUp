@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -106,7 +105,7 @@ public class JavaModulePathAnalysisInputLocationTest {
 
     final Optional<? extends SootClassSource> clazzOpt = inputLocation.getClassSource(sig, view);
     assertTrue(clazzOpt.isPresent());
-    AbstractClassSource scs = clazzOpt.get();
+    SootClassSource scs = clazzOpt.get();
     assertEquals(sig, scs.getClassType());
     assertEquals("modules/java.base/java/lang/String.class", scs.getSourcePath().toString());
     JavaSootClass javaSootClass = (JavaSootClass) scs.buildClass(SourceType.Application);

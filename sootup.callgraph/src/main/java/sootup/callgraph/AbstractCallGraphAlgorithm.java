@@ -39,7 +39,6 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootClassMember;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -118,7 +117,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   private Optional<MethodSignature> getSignatureOfImplementedStaticInitializer(
       ClassType classType) {
     return view.getMethod(view.getIdentifierFactory().getStaticInitializerSignature(classType))
-        .map(SootClassMember::getSignature);
+        .map(SootMethod::getSignature);
   }
 
   /**
