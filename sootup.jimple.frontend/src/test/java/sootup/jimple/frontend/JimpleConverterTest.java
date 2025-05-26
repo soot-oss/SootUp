@@ -23,6 +23,8 @@ import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
 import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSourceAdapter;
 import sootup.java.core.views.JavaView;
 import sootup.jimple.JimpleLexer;
@@ -33,12 +35,14 @@ public class JimpleConverterTest {
   private OverridingClassSource parseJimpleClass(CharStream cs) throws ResolveException {
     JimpleConverter jimpleVisitor = new JimpleConverter();
     EagerInputLocation eagerInputLocation = new EagerInputLocation();
-    final OverridingClassSource scs =
+    final OverridingJavaClassSource scs =
         jimpleVisitor.run(
             cs,
             eagerInputLocation,
             Paths.get(""),
             Collections.emptyList(),
+            new JimpleView(eagerInputLocation));
+    return new JavaSootClass(scs, SourceType.Application);
             new JavaView(eagerInputLocation));
     return scs;
   }
@@ -48,7 +52,7 @@ public class JimpleConverterTest {
 
     CharStream cs = CharStreams.fromString("class MinClass \n { }");
     OverridingClassSource overridingClassSource = parseJimpleClass(cs);
-    SootClass sootClass = new SootClass(overridingClassSource, SourceType.Application);
+    SootClass sootClass = new JavaSootClass(overridingClassSource, SourceType.Application);
     JavaSootClass javaSootClass =
         JavaSootClassSourceAdapter.adapt(overridingClassSource).buildClass(SourceType.Application);
     assertEquals(sootClass.getMethods().size(), javaSootClass.getMethods().size());
@@ -288,7 +292,7 @@ public class JimpleConverterTest {
                 + "/* SecondComment */"
                 + "} \n");
 
-    SootClass sc = new SootClass(parseJimpleClass(cs), SourceType.Application);
+    SootClass sc = new JavaSootClass(parseJimpleClass(cs), SourceType.Application);
     assertTrue(
         sc.getMethod(
                 new MethodSubSignature("another", Collections.emptyList(), VoidType.getInstance()))

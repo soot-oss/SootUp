@@ -38,6 +38,7 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.types.JavaClassType;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
 
@@ -196,7 +197,7 @@ public class JimpleConverterUtil {
     return list;
   }
 
-  public Set<ClassType> getClassTypeSet(JimpleParser.Type_listContext type_list) {
+  public Set<JavaClassType> getClassTypeSet(JimpleParser.Type_listContext type_list) {
     if (type_list == null) {
       return Collections.emptySet();
     }
@@ -205,9 +206,11 @@ public class JimpleConverterUtil {
     if (size < 1) {
       return Collections.emptySet();
     }
-    Set<ClassType> set = new HashSet<>(size);
+    Set<JavaClassType> set = new HashSet<>(size);
     for (JimpleParser.TypeContext typeContext : typeList) {
-      set.add(identifierFactory.getClassType(JimpleUtils.unescape(typeContext.getText())));
+      set.add(
+          (JavaClassType)
+              identifierFactory.getClassType(JimpleUtils.unescape(typeContext.getText())));
     }
     return set;
   }

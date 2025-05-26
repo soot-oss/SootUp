@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
-import sootup.core.model.AbstractClass;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.java.core.JavaSootClass;
@@ -34,7 +33,7 @@ public class JavaViewTest {
     this.signatures =
         Collections.unmodifiableList(
             inputLocation.getClassSources(DefaultIdentifierFactory.getInstance()).stream()
-                .map(AbstractClassSource::getClassType)
+                .map(SootClassSource::getClassType)
                 .sorted(Comparator.comparing(ClassType::toString))
                 .collect(Collectors.toList()));
 
@@ -73,7 +72,7 @@ public class JavaViewTest {
 
     assertEquals(
         classes
-            .map(AbstractClass::getType)
+            .map(JavaSootClass::getType)
             .sorted(Comparator.comparing(Type::toString))
             .collect(Collectors.toList()),
         this.signatures);
