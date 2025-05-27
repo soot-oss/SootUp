@@ -87,8 +87,7 @@ public class JavaViewTest {
     JavaView view = new JavaView(inputLocation);
     assertFalse(view.isFullyResolved);
 
-    AnalysisInputLocation inputLocationEager = new EagerInputLocation();
-    JavaView viewEagerLoad = new JavaView(inputLocationEager, true);
+    JavaEagerView viewEagerLoad = new JavaEagerView(inputLocation);
     assertTrue(viewEagerLoad.isFullyResolved);
   }
 }
