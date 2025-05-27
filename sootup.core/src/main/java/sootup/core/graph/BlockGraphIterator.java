@@ -34,14 +34,14 @@ import sootup.core.util.DotExporter;
 /** Iterates over the blocks */
 public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
 
-  private final StmtGraph stmtGraph;
+  private final StmtGraph<?> stmtGraph;
   @NonNull private final ArrayDeque<BasicBlock<?>> trapHandlerBlocks = new ArrayDeque<>();
 
   @NonNull private final ArrayDeque<BasicBlock<?>> nestedBlocks = new ArrayDeque<>();
   @NonNull private final ArrayDeque<BasicBlock<?>> otherBlocks = new ArrayDeque<>();
   @NonNull private final Set<BasicBlock<?>> iteratedBlocks;
 
-  public BlockGraphIterator(StmtGraph stmtGraph) {
+  public BlockGraphIterator(StmtGraph<?> stmtGraph) {
     this.stmtGraph = stmtGraph;
     final Collection<? extends BasicBlock<?>> blocks = stmtGraph.getBlocks();
     iteratedBlocks = new LinkedHashSet<>(blocks.size(), 1);

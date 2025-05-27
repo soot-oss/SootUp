@@ -31,9 +31,7 @@ import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.stmt.AbstractStmt;
-import sootup.core.jimple.common.stmt.BranchingStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.model.Body;
 import sootup.core.util.printer.StmtPrinter;
@@ -212,6 +210,21 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
     stmtPrinter.literal("}");
   }
 
+  @Override
+  public boolean isJSwitchStmt() {
+    return true;
+  }
+
+  @Override
+  public JSwitchStmt asJSwitchStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JSwitchStmt> toJSwitchStmt() {
+    return Optional.of(this);
+  }
+
   @NonNull
   public JSwitchStmt withKey(@NonNull Immediate key) {
     return new JSwitchStmt(key, getValues(), getPositionInfo());
@@ -275,11 +288,11 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
     @NonNull
     @Override
     public <T> T[] toArray(@NonNull T[] ts) {
-      T[] intConstants = (T[]) new Object[to - from + 1];
+      List<IntConstant> intConstants = new ArrayList<>(to - from + 1);
       for (int i = 0; i < size(); i++) {
-        intConstants[i] = (T) IntConstant.getInstance(from + i);
+        intConstants.add(IntConstant.getInstance(from + i));
       }
-      return intConstants;
+      return intConstants.toArray(ts);
     }
 
     @Override

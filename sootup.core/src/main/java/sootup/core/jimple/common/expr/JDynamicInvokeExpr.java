@@ -23,9 +23,11 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Value;
@@ -143,7 +145,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr {
     final MethodSubSignature mSubSig = methodSignature.getSubSignature();
     // dont print methodname from methodsubsignature in the usual way
     up.literal(
-        " \"" + Jimple.escape(mSubSig.getName()) + "\" <" + getNamelessSubSig(mSubSig) + ">(");
+        " \"" + JimpleUtils.escape(mSubSig.getName()) + "\" <" + getNamelessSubSig(mSubSig) + ">(");
     argsToPrinter(up);
 
     up.literal(") ");
@@ -209,5 +211,20 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr {
   public JDynamicInvokeExpr withMethodArgs(@NonNull List<Immediate> methodArgs) {
     return new JDynamicInvokeExpr(
         bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), methodArgs);
+  }
+
+  @Override
+  public boolean isJDynamicInvokeExpr() {
+    return true;
+  }
+
+  @Override
+  public JDynamicInvokeExpr asJDynamicInvokeExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JDynamicInvokeExpr> toJDynamicInvokeExpr() {
+    return Optional.of(this);
   }
 }

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
+import sootup.core.types.*;
 import sootup.core.validation.NewValidator;
 import sootup.core.validation.ValidationException;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;

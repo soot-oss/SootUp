@@ -346,8 +346,8 @@ public final class AsmUtil {
           if (annotationValue instanceof ArrayList
               && !((ArrayList<?>) annotationValue).isEmpty()
               && ((ArrayList<?>) annotationValue).get(0) instanceof AnnotationNode) {
-            final ArrayList<AnnotationNode> annotationValueList =
-                (ArrayList<AnnotationNode>) annotationValue;
+            final List<AnnotationNode> annotationValueList =
+                ((ArrayList<?>) annotationValue).stream().map(av -> (AnnotationNode) av).toList();
 
             paramMap.put(annotationName, createAnnotationUsage(annotationValueList));
           } else if (annotationValue instanceof AnnotationNode) {
@@ -387,8 +387,7 @@ public final class AsmUtil {
         // is a class constant
         // transform asm Type to ClassConstant
         ClassConstant classConstant =
-            JavaJimple.getInstance()
-                .newClassConstant(((org.objectweb.asm.Type) annotationValue).toString());
+            JavaJimple.newClassConstant(((org.objectweb.asm.Type) annotationValue).toString());
         return ConstantUtil.fromObject(classConstant);
       }
     }

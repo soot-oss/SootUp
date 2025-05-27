@@ -26,7 +26,7 @@ import com.google.common.collect.ComparisonChain;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.*;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.*;
@@ -83,9 +83,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
       String label = labels.get(stmt);
       if (label == null) {
-        output.append("[?= ").append(Jimple.escape(stmt.toString())).append(']');
+        output.append("[?= ").append(JimpleUtils.escape(stmt.toString())).append(']');
       } else {
-        output.append(Jimple.escape(label));
+        output.append(JimpleUtils.escape(label));
       }
 
     } else {
@@ -97,9 +97,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
         handleIndent();
         setIndent(indentStep / 2);
 
-        output.append('(').append(Jimple.escape(ref)).append(')');
+        output.append('(').append(JimpleUtils.escape(ref)).append(')');
       } else {
-        output.append(Jimple.escape(ref));
+        output.append(JimpleUtils.escape(ref));
       }
     }
   }
@@ -176,7 +176,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     typeSignature(methodSig.getDeclClassType());
     output.append(": ");
     typeSignature(methodSig.getType());
-    output.append(' ').append(Jimple.escape(methodSig.getName())).append('(');
+    output.append(' ').append(JimpleUtils.escape(methodSig.getName())).append('(');
 
     final List<Type> parameterTypes = methodSig.getSubSignature().getParameterTypes();
     final int parameterTypesSize = parameterTypes.size();
@@ -197,7 +197,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     output.append(": ");
     final FieldSubSignature subSignature = fieldSig.getSubSignature();
     typeSignature(subSignature.getType());
-    output.append(' ').append(Jimple.escape(subSignature.getName())).append('>');
+    output.append(' ').append(JimpleUtils.escape(subSignature.getName())).append('>');
   }
 
   /**
@@ -254,7 +254,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
    * @return A collection of all the Stmts that are targets of a BranchingStmt
    */
   @NonNull
-  public Collection<Stmt> getLabeledStmts(StmtGraph stmtGraph, List<Trap> traps) {
+  public Collection<Stmt> getLabeledStmts(StmtGraph<?> stmtGraph, List<Trap> traps) {
     Set<Stmt> stmtList = new HashSet<>();
     Collection<Stmt> stmtGraphNodes = stmtGraph.getNodes();
     for (Stmt stmt : stmtGraphNodes) {

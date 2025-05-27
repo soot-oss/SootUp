@@ -23,6 +23,7 @@ package sootup.core.jimple.common.stmt;
  */
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
@@ -67,6 +68,21 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
     stmtPrinter.literal(" ");
     // [ms] bounds are validated in Body
     stmtPrinter.stmtRef(stmtPrinter.getGraph().getBranchTargetsOf(this).get(0), true);
+  }
+
+  @Override
+  public boolean isJIfStmt() {
+    return true;
+  }
+
+  @Override
+  public JIfStmt asJIfStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JIfStmt> toJIfStmt() {
+    return Optional.of(this);
   }
 
   @NonNull

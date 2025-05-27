@@ -63,14 +63,22 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   protected final CallGraph cg;
 
   protected CacheLoader<Stmt, Collection<SootMethod>> loaderUnitToCallees =
-      new CacheLoader<Stmt, Collection<SootMethod>>() {
+      new CacheLoader<>() {
         @NonNull
         @Override
         public Collection<SootMethod> load(Stmt stmt) {
           ArrayList<SootMethod> res = new ArrayList<>();
-          if (!stmt.isInvokableStmt() && !stmt.asInvokableStmt().containsInvokeExpr()) return res;
+          if (!stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isEmpty()) {
+            return res;
+          }
           MethodSignature methodSignature =
               stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature();
+
+          if (!cg.containsMethod(methodSignature)) {
+            logger.warn(
+                "Method {} is not reachable in the Call Graph!", methodSignature, new Exception());
+            return res;
+          }
           Optional<? extends SootMethod> smOpt = view.getMethod(methodSignature);
           if (smOpt.isPresent()) {
             SootMethod sm = smOpt.get();
@@ -91,14 +99,12 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
       IDESolver.DEFAULT_CACHE_BUILDER.build(loaderUnitToCallees);
 
   protected CacheLoader<SootMethod, Collection<Stmt>> loaderMethodToCallers =
-      new CacheLoader<SootMethod, Collection<Stmt>>() {
+      new CacheLoader<>() {
         @NonNull
         @Override
         public Collection<Stmt> load(SootMethod method) {
           Set<CallGraph.Call> calls = cg.callsTo(method.getSignature());
-          Set<Stmt> callerStmts =
-              calls.stream().map(Call::getInvokableStmt).collect(Collectors.toSet());
-          return callerStmts;
+          return calls.stream().map(Call::invokableStmt).collect(Collectors.toSet());
         }
       };
 

@@ -22,6 +22,7 @@ package sootup.core.types;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 
@@ -47,5 +48,35 @@ public class NullType extends ReferenceType {
   public <V extends TypeVisitor> V accept(@NonNull V v) {
     v.caseNullType();
     return v;
+  }
+
+  @Override
+  protected boolean isNullType() {
+    return true;
+  }
+
+  @Override
+  protected NullType asNullType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<NullType> toNullType() {
+    return Optional.of(this);
+  }
+
+  @Override
+  protected boolean isReferenceType() {
+    return true;
+  }
+
+  @Override
+  protected ReferenceType asReferenceType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<ReferenceType> toReferenceType() {
+    return Optional.of(this);
   }
 }

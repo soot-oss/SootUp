@@ -446,14 +446,21 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
   @Override
   public void addCall(@NonNull Call call) {
-    addCall(
-        call.getSourceMethodSignature(), call.getTargetMethodSignature(), call.getInvokableStmt());
+    addCall(call.sourceMethodSignature(), call.targetMethodSignature(), call.invokableStmt());
   }
 
   @NonNull
   @Override
   public Set<MethodSignature> getMethodSignatures() {
     return new HashSet<>(this.methods);
+  }
+
+  @NonNull
+  @Override
+  public Set<Call> getCalls() {
+    return calls.entrySet().stream()
+        .flatMap(e -> e.getValue().stream())
+        .collect(Collectors.toSet());
   }
 
   @NonNull
@@ -483,20 +490,16 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
   @Override
   public boolean containsCall(@NonNull Call call) {
-    if (this.calls.containsKey(call.getSourceMethodSignature())) {
-      return this.calls.get(call.getSourceMethodSignature()).contains(call);
+    Set<Call> c = this.calls.get(call.sourceMethodSignature());
+    if (c == null || c.isEmpty()) {
+      return false;
     }
-    return false;
+    return c.contains(call);
   }
 
   @Override
   public int callCount() {
     return callCnt;
-  }
-
-  @Override
-  public String exportAsDot() {
-    throw new UnsupportedOperationException();
   }
 
   @NonNull
@@ -515,7 +518,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   @Override
   public Set<MethodSignature> callTargetsFrom(@NonNull MethodSignature sourceMethod) {
     return callsFrom(sourceMethod).stream()
-        .map(Call::getTargetMethodSignature)
+        .map(Call::targetMethodSignature)
         .collect(Collectors.toSet());
   }
 
@@ -523,7 +526,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   @Override
   public Set<MethodSignature> callSourcesTo(@NonNull MethodSignature targetMethod) {
     return callsTo(targetMethod).stream()
-        .map(Call::getSourceMethodSignature)
+        .map(Call::sourceMethodSignature)
         .collect(Collectors.toSet());
   }
 

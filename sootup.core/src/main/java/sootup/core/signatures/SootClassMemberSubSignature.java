@@ -27,7 +27,7 @@ import com.google.common.base.Suppliers;
 import java.util.function.Supplier;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -102,7 +102,8 @@ public abstract class SootClassMemberSubSignature {
       Suppliers.memoize(
           () ->
               String.format(
-                  "%s %s", Jimple.escape(getType().toString()), Jimple.escape(getName())));
+                  "%s %s",
+                  JimpleUtils.escape(getType().toString()), JimpleUtils.escape(getName())));
 
   @Override
   @NonNull
