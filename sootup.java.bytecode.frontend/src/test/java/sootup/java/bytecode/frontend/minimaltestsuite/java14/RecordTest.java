@@ -59,13 +59,12 @@ public class RecordTest extends MinimalBytecodeTestSuiteBase {
         method.getBody().getStmts().stream()
             .filter(stmt -> stmt instanceof InvokableStmt)
             .map(stmt -> (InvokableStmt) stmt)
-            .filter(InvokableStmt::containsInvokeExpr)
             .map(InvokableStmt::getInvokeExpr)
             .filter(Optional::isPresent)
             .map(Optional::get)
             .filter(abstractInvokeExpr -> abstractInvokeExpr instanceof JDynamicInvokeExpr)
             .map(abstractInvokeExpr -> (JDynamicInvokeExpr) abstractInvokeExpr)
-            .collect(Collectors.toList());
+            .toList();
     assertEquals(1, dynamicInvokes.size());
     JDynamicInvokeExpr invoke = dynamicInvokes.get(0);
 

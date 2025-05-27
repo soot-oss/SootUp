@@ -33,7 +33,6 @@ import sootup.core.IdentifierFactory;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -42,6 +41,7 @@ import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.views.AbstractView;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootClassSource;
 
 /**
  * The Class JimpleView manages the Sootclasses of the application being analyzed.
@@ -128,11 +128,11 @@ public class JimpleView extends AbstractView {
                   .collect(Collectors.joining(",")),
           foundClassSources.get(0).getSourcePath());
     }
-    return Optional.of(buildClassFrom(foundClassSources.get(0)));
+    return Optional.of(buildClassFrom((JavaSootClassSource) foundClassSources.get(0)));
   }
 
   @NonNull
-  private synchronized SootClass buildClassFrom(AbstractClassSource classSource) {
+  private synchronized SootClass buildClassFrom(JavaSootClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
     SootClass theClass;
@@ -153,6 +153,7 @@ public class JimpleView extends AbstractView {
 
     inputLocations.stream()
         .flatMap(location -> location.getClassSources(this))
+        .map(sootClassSource -> (JavaSootClassSource) sootClassSource)
         .forEach(this::buildClassFrom);
     isFullyResolved = true;
   }

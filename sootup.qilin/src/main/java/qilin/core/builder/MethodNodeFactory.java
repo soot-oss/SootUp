@@ -67,6 +67,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootField;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -134,7 +135,7 @@ public class MethodNodeFactory {
 
   /** Adds the edges required for this statement to the graph. */
   public final void handleStmt(Stmt s) {
-    if (s.isInvokableStmt() && s.asInvokableStmt().containsInvokeExpr()) {
+    if (s.isInvokableStmt() && s.asInvokableStmt().getInvokeExpr().isPresent()) {
       mpag.addCallStmt(s.asInvokableStmt());
       handleInvokeStmt(s.asInvokableStmt());
     } else {
@@ -268,7 +269,7 @@ public class MethodNodeFactory {
     SootField sf;
     if (!osf.isPresent()) {
       sf =
-          new SootField(
+          new JavaSootField(
               fieldSig,
               Collections.singleton(FieldModifier.PUBLIC),
               NoPositionInformation.getInstance());

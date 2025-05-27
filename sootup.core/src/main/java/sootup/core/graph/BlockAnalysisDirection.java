@@ -36,7 +36,7 @@ public enum BlockAnalysisDirection {
   POSTORDERBACKWARD {
     @Override
     @NonNull List<BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
-      return (List<BasicBlock<?>>) block.getSuccessors();
+      return Collections.unmodifiableList(block.getSuccessors());
     }
 
     @NonNull
@@ -49,7 +49,7 @@ public enum BlockAnalysisDirection {
   REVERSEPOSTORDERFORWARD {
     @Override
     @NonNull List<BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
-      return (List<BasicBlock<?>>) block.getPredecessors();
+      return Collections.unmodifiableList(block.getPredecessors());
     }
 
     @NonNull
