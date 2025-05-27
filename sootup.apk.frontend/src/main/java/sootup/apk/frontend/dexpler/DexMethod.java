@@ -60,11 +60,12 @@ public class DexMethod {
               .map(methodParameter -> DexUtil.toSootType(methodParameter.getType(), 0))
               .collect(Collectors.toList());
       MethodSignature methodSignature =
-          new MethodSignature(
-              declaringclassType,
-              method.getName(),
-              parameters,
-              DexUtil.toSootType(method.getReturnType(), 0));
+          view.getIdentifierFactory()
+              .getMethodSignature(
+                  declaringclassType,
+                  method.getName(),
+                  DexUtil.toSootType(method.getReturnType(), 0),
+                  parameters);
       DexMethodSource dexMethodSource =
           new DexMethodSource(
               Collections.emptySet(),

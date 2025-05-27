@@ -88,7 +88,9 @@ public class ApkToDexTest {
     SootClass sootClass = view.getClass(classType).get();
     // write MethodSignature
     MethodSignature methodSignature =
-        new MethodSignature(classType, methodName, Collections.emptyList(), VoidType.getInstance());
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                classType, methodName, VoidType.getInstance(), Collections.emptyList());
     // Retrieve method
     assertTrue(sootClass.getMethod(methodSignature.getSubSignature()).isPresent());
     SootMethod sootMethod = sootClass.getMethod(methodSignature.getSubSignature()).get();
