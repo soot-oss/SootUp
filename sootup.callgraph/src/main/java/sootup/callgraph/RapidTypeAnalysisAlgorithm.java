@@ -255,7 +255,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
                         view.getIdentifierFactory()
                             .getMethodSignature(sootClass, targetSignature.getSubSignature()))
                     .stream())
-        .filter(interfaces::containsKey)
+        .filter(sootMethod -> interfaces.containsKey(sootMethod.getDeclaringClassType()))
         .flatMap(
             interfaceMethod -> {
               // check if any of the classes which implement the interface are initialized

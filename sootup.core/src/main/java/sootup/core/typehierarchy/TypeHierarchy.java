@@ -120,13 +120,11 @@ public interface TypeHierarchy {
     final String jlObject = "java.lang.Object";
     final String jiSerializable = "java.io.Serializable";
     final String jlCloneable = "java.lang.Cloneable";
-    if (supertype instanceof ArrayType) {
-      if (!(potentialSubtype instanceof ArrayType)) {
+    if (supertype instanceof ArrayType superArrayType) {
+      if (!(potentialSubtype instanceof ArrayType potentialSubArrayType)) {
         return false;
       }
 
-      ArrayType superArrayType = (ArrayType) supertype;
-      ArrayType potentialSubArrayType = (ArrayType) potentialSubtype;
       if (superArrayType.getBaseType() instanceof PrimitiveType) {
         // Arrays of primitives have no subtypes
         return false;

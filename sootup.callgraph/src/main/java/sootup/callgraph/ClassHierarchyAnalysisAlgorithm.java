@@ -154,8 +154,9 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       ClassType interfaceClassType,
       MethodSubSignature targetSubSignature) {
     Set<? extends ClassType> interfaces =
-        subclasses.stream().flatMap(sootClass -> sootClass.getInterfaces().stream()).collect(
-            Collectors.toSet());
+        subclasses.stream()
+            .flatMap(sootClass -> sootClass.getInterfaces().stream())
+            .collect(Collectors.toSet());
     return view.getTypeHierarchy()
         .subinterfacesOf(interfaceClassType)
         .flatMap(
