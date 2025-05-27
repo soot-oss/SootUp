@@ -25,6 +25,7 @@ package sootup.apk.frontend.dexpler;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MultiDexContainer;
@@ -35,6 +36,7 @@ import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
+import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootMethod;
 
@@ -53,12 +55,17 @@ public class DexMethod {
       final Method method, List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
     int modifierFlags = method.getAccessFlags();
     if (Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)) {
+      List<Type> parameters =
+          method.getParameters().stream()
+              .map(methodParameter -> DexUtil.toSootType(methodParameter.getType(), 0))
+              .collect(Collectors.toList());
       MethodSignature methodSignature =
-          new MethodSignature(
-              declaringclassType,
-              method.getName(),
-              Collections.emptyList(),
-              DexUtil.toSootType(method.getReturnType(), 0));
+          view.getIdentifierFactory()
+              .getMethodSignature(
+                  declaringclassType,
+                  method.getName(),
+                  DexUtil.toSootType(method.getReturnType(), 0),
+                  parameters);
       DexMethodSource dexMethodSource =
           new DexMethodSource(
               Collections.emptySet(),
