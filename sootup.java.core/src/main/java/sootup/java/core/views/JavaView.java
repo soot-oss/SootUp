@@ -78,16 +78,6 @@ public class JavaView extends AbstractView {
     this.identifierFactory = idf;
   }
 
-  protected JavaView(
-      @NonNull List<AnalysisInputLocation> inputLocations,
-      @NonNull ClassCacheProvider cacheProvider,
-      @NonNull JavaIdentifierFactory idf,
-      boolean eagerLoad) {
-    this.inputLocations = inputLocations;
-    this.cache = cacheProvider.createCache();
-    this.identifierFactory = idf;
-  }
-
   /** Resolves all classes that are part of the view and stores them in the cache. */
   @Override
   @NonNull
