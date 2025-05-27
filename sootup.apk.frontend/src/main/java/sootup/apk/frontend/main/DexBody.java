@@ -331,11 +331,12 @@ public class DexBody {
     // It is only for the case where there is a JNop Statement after the return statement. Crazy
     // android code :(
     MethodSignature methodSignature =
-        new MethodSignature(
-            classType,
-            method.getName(),
-            parameterTypes,
-            DexUtil.toSootType(method.getReturnType(), 0));
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                classType,
+                method.getName(),
+                DexUtil.toSootType(method.getReturnType(), 0),
+                parameterTypes);
     while (stmtList.get(stmtList.size() - 1) instanceof JNopStmt) {
       stmtList.remove(stmtList.size() - 1);
     }
