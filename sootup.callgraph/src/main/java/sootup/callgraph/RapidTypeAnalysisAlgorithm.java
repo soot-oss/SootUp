@@ -170,7 +170,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
     // if the current implementation of the method is a default method the algorithm changes
     // because superclasses can overwrite default methods which are not subtypes of the interface
-    boolean isDefaultMethod = isInterface(actualTargetMethod.getDeclClassType());
+    boolean isDefaultMethod = actualTargetMethod.getClass().isInterface();
     if (isDefaultMethod) {
       // get all default methods of sub-interfaces of the interface
       // which are interfaces of the subtypes
@@ -247,12 +247,15 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
                 .forEach(interfaceClass -> interfaces.put(interfaceClass, sootClass.getType())));
 
     return view.getTypeHierarchy()
-        .subtypesOf(targetSignature.getDeclClassType())
-        .flatMap(classType -> view.getClass(classType).stream())
-        .filter(SootClass::isInterface)
-        .filter(sootClass -> interfaces.containsKey(sootClass.getType()))
-        .flatMap(sootClass -> sootClass.getMethod(targetSignature.getSubSignature()).stream())
-        .filter(sootMethod -> !sootMethod.getSignature().equals(targetSignature))
+        .subinterfacesOf(targetSignature.getDeclClassType())
+        .flatMap(
+            sootClass ->
+                view
+                    .getMethod(
+                        view.getIdentifierFactory()
+                            .getMethodSignature(sootClass, targetSignature.getSubSignature()))
+                    .stream())
+        .filter(interfaces::containsKey)
         .flatMap(
             interfaceMethod -> {
               // check if any of the classes which implement the interface are initialized
@@ -271,8 +274,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   private Stream<MethodSignature> resolveAllOverwrittenTargets(
       List<? extends SootClass> subclasses, MethodSubSignature targetMethodSignature) {
     return subclasses.stream()
-        .filter(sootClass -> sootClass.getMethod(targetMethodSignature).isEmpty())
         .filter(sootClass -> instantiatedClasses.contains(sootClass.getType()))
+        .filter(sootClass -> sootClass.getMethod(targetMethodSignature).isEmpty())
         .flatMap(
             sootClass -> findMethodInHierarchy(view, sootClass, targetMethodSignature).stream())
         .map(SootMethod::getSignature);

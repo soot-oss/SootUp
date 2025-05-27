@@ -23,6 +23,7 @@ package sootup.callgraph;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -117,7 +118,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
 
     // if the current implementation of the method is a default method the algorithm changes
     // because superclasses can overwrite default methods which are not subtypes of the interface
-    if (isInterface(actualTargetMethod.getDeclClassType())) {
+    if (actualTargetMethod.getClass().isInterface()) {
       // get all default methods of sub-interfaces of the interface
       // which are interfaces of the subtypes
       targets =
@@ -152,14 +153,19 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       List<? extends SootClass> subclasses,
       ClassType interfaceClassType,
       MethodSubSignature targetSubSignature) {
-    List<? extends ClassType> interfaces =
-        subclasses.stream().flatMap(sootClass -> sootClass.getInterfaces().stream()).toList();
+    Set<? extends ClassType> interfaces =
+        subclasses.stream().flatMap(sootClass -> sootClass.getInterfaces().stream()).collect(
+            Collectors.toSet());
     return view.getTypeHierarchy()
-        .subtypesOf(interfaceClassType)
-        .flatMap(classType -> view.getClass(classType).stream())
-        .filter(SootClass::isInterface)
-        .filter(sootClass -> interfaces.contains(sootClass.getType()))
-        .flatMap(sootClass -> sootClass.getMethod(targetSubSignature).stream())
+        .subinterfacesOf(interfaceClassType)
+        .flatMap(
+            classType ->
+                view
+                    .getMethod(
+                        view.getIdentifierFactory()
+                            .getMethodSignature(classType, targetSubSignature))
+                    .stream())
+        .filter(sootMethod -> interfaces.contains(sootMethod.getDeclClassType()))
         .map(SootMethod::getSignature);
   }
 
