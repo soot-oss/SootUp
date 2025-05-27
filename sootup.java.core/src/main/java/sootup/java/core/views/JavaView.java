@@ -151,13 +151,7 @@ public class JavaView extends AbstractView {
         // classpath the first is returned (see splitpackage)
         .limit(1)
         .map(Optional::get)
-        .map(
-            classSource -> {
-              if (classSource instanceof OverridingJavaClassSource) {
-                return JavaSootClassSourceAdapter.adapt((OverridingJavaClassSource) classSource);
-              }
-              return (JavaSootClassSource) classSource;
-            })
+        .map(classSource -> (JavaSootClassSource) classSource)
         .findAny();
   }
 
@@ -169,16 +163,10 @@ public class JavaView extends AbstractView {
     if (cache.hasClass(classType)) {
       theClass = (JavaSootClass) cache.getClass(classType);
     } else {
-      if (classSource instanceof OverridingJavaClassSource) {
-        theClass =
-            new JavaSootClass(classSource, classSource.getAnalysisInputLocation().getSourceType());
-        cache.putClass(classType, theClass);
-      } else {
-        theClass =
-            (JavaSootClass)
-                classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
-        cache.putClass(classType, theClass);
-      }
+      theClass =
+          (JavaSootClass)
+              classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
+      cache.putClass(classType, theClass);
     }
     return theClass;
   }

@@ -184,14 +184,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   @NonNull
   public Set<JavaSootMethod> getMethods() {
     return this._lazyMethods.get().stream()
-        .map(
-            method -> {
-              if (method instanceof JavaSootMethod) {
-                return (JavaSootMethod) method;
-              } else {
-                return new JavaSootMethodAdapter(method);
-              }
-            })
+        .map(method -> (JavaSootMethod) method)
         .collect(Collectors.toSet());
   }
 

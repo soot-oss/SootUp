@@ -134,11 +134,7 @@ public class JavaModuleView extends JavaView {
             .map(src -> (JavaSootClassSource) src)
             .findAny();
 
-    if (cs.isPresent()) {
-      return cs;
-    }
-
-    return super.getClassSource(type);
+    return cs;
   }
 
   @NonNull

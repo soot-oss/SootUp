@@ -22,8 +22,8 @@ import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
 import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootClassSourceAdapter;
 import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
 
@@ -38,21 +38,14 @@ public class JimpleConverterTest {
             eagerInputLocation,
             Paths.get(""),
             Collections.emptyList(),
-            new JimpleView(eagerInputLocation));
+            new JavaView(eagerInputLocation));
     return scs;
   }
 
   @Test
   public void parseMinimalClass() {
-
     CharStream cs = CharStreams.fromString("class MinClass \n { }");
-    OverridingJavaClassSource overridingClassSource = parseJimpleClass(cs);
-    SootClass sootClass = new JavaSootClass(overridingClassSource, SourceType.Application);
-    JavaSootClass javaSootClass =
-        JavaSootClassSourceAdapter.adapt(overridingClassSource).buildClass(SourceType.Application);
-    assertEquals(sootClass.getMethods().size(), javaSootClass.getMethods().size());
-    assertEquals(sootClass.getFields().size(), javaSootClass.getFields().size());
-    assertEquals(sootClass.getName(), javaSootClass.getName());
+    parseJimpleClass(cs);
   }
 
   @Test
