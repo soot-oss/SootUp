@@ -118,7 +118,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
 
     // if the current implementation of the method is a default method the algorithm changes
     // because superclasses can overwrite default methods which are not subtypes of the interface
-    if (actualTargetMethod.getClass().isInterface()) {
+    if (isInterface(actualTargetMethod.getDeclaringClassType())) {
       // get all default methods of sub-interfaces of the interface
       // which are interfaces of the subtypes
       targets =

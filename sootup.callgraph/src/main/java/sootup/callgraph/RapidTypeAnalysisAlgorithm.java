@@ -170,7 +170,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
     // if the current implementation of the method is a default method the algorithm changes
     // because superclasses can overwrite default methods which are not subtypes of the interface
-    boolean isDefaultMethod = actualTargetMethod.getClass().isInterface();
+    boolean isDefaultMethod = isInterface(actualTargetMethod.getDeclaringClassType());
     if (isDefaultMethod) {
       // get all default methods of sub-interfaces of the interface
       // which are interfaces of the subtypes
