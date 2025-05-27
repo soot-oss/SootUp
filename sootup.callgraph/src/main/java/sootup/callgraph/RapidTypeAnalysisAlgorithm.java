@@ -155,7 +155,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     // get all instantiated subclasses
     // the target method is used since this is the type of the invoke
     List<? extends SootClass> subclasses =
-        view.getTypeHierarchy()
+        typeHierarchy
             .subtypesOf(targetMethodSignature.getDeclClassType())
             .flatMap(classType -> view.getClass(classType).stream())
             .toList();
@@ -246,7 +246,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
                 .getInterfaces()
                 .forEach(interfaceClass -> interfaces.put(interfaceClass, sootClass.getType())));
 
-    return view.getTypeHierarchy()
+    return typeHierarchy
         .subinterfacesOf(targetSignature.getDeclClassType())
         .flatMap(
             sootClass ->

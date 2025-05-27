@@ -41,6 +41,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -54,9 +55,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   private static final Logger logger = LoggerFactory.getLogger(AbstractCallGraphAlgorithm.class);
 
   @NonNull protected final View view;
+  @NonNull protected final TypeHierarchy typeHierarchy;
 
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
     this.view = view;
+    this.typeHierarchy = view.getTypeHierarchy();
   }
 
   /**
@@ -343,7 +346,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             targetSig ->
                 addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList));
     // static initializer calls of all superclasses
-    view.getTypeHierarchy()
+    typeHierarchy
         .superClassesOf(targetClass)
         .map(
             classType ->
@@ -404,9 +407,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     processWorkList(workList, processed, updated);
 
     // Step 2: Add edges from old methods to methods overridden in the new class
-    Stream<ClassType> superClasses = view.getTypeHierarchy().superClassesOf(classType);
-    Stream<ClassType> implementedInterfaces =
-        view.getTypeHierarchy().implementedInterfacesOf(classType);
+    Stream<ClassType> superClasses = typeHierarchy.superClassesOf(classType);
+    Stream<ClassType> implementedInterfaces = typeHierarchy.implementedInterfacesOf(classType);
     Stream<ClassType> superTypes = Stream.concat(superClasses, implementedInterfaces);
 
     Set<MethodSubSignature> newMethodSubSigs =
@@ -580,50 +582,29 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return An Optional containing the default method or an empty Optional if there is no default
    *     method, or a superclass is not in the view.
    */
-  protected static Optional<SootMethod> findDefaultMethod(
+  protected static Optional<? extends SootMethod> findDefaultMethod(
       @NonNull View view,
       @NonNull SootClass sootClass,
       @NonNull MethodSubSignature defaultSignature) {
-
-    // get all possible default method targets
-    List<? extends SootMethod> fittingDefaultMethods =
-        view.getTypeHierarchy()
-            .implementedInterfacesOf(sootClass.getType())
-            .flatMap(
-                classType ->
-                    view
-                        .getMethod(
-                            view.getIdentifierFactory()
-                                .getMethodSignature(classType, defaultSignature))
-                        .stream())
-            .toList();
-
-    SootMethod defaultMethod = null;
-    // find default method
-    if (!fittingDefaultMethods.isEmpty()) {
-      for (SootMethod fittingDefaultMethod : fittingDefaultMethods) {
-        // first found default method
-        if (defaultMethod == null) {
-          defaultMethod = fittingDefaultMethod;
-          continue;
-        }
-        // is the same interface method
-        if (fittingDefaultMethod.getSignature().equals(defaultMethod.getSignature())) {
-          continue;
-        }
-        // is subtype of the current default method
-        if (view.getTypeHierarchy()
-            .isSubtype(
-                defaultMethod.getDeclaringClassType(),
-                fittingDefaultMethod.getDeclaringClassType())) {
-          defaultMethod = fittingDefaultMethod;
-        }
-      }
-    }
-    return Optional.ofNullable(defaultMethod);
+    TypeHierarchy typeHierarchy = view.getTypeHierarchy();
+    return typeHierarchy
+        .implementedInterfacesOf(sootClass.getType())
+        .flatMap(
+            classType ->
+                view
+                    .getMethod(
+                        view.getIdentifierFactory().getMethodSignature(classType, defaultSignature))
+                    .stream())
+        .reduce(
+            (currentLeastSubMethod, sootMethod) ->
+                typeHierarchy.isSubtype(
+                        currentLeastSubMethod.getDeclaringClassType(),
+                        sootMethod.getDeclaringClassType())
+                    ? sootMethod
+                    : currentLeastSubMethod);
   }
 
   protected boolean isInterface(ClassType classType) {
-    return view.getTypeHierarchy().isInterface(classType);
+    return typeHierarchy.isInterface(classType);
   }
 }

@@ -108,7 +108,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     // get all subclasses
     // the target method is used since this is the type of the invoke
     List<? extends SootClass> subclasses =
-        view.getTypeHierarchy()
+        typeHierarchy
             .subtypesOf(targetMethodSignature.getDeclClassType())
             .flatMap(classType -> view.getClass(classType).stream())
             .toList();
@@ -157,7 +157,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         subclasses.stream()
             .flatMap(sootClass -> sootClass.getInterfaces().stream())
             .collect(Collectors.toSet());
-    return view.getTypeHierarchy()
+    return typeHierarchy
         .subinterfacesOf(interfaceClassType)
         .flatMap(
             classType ->
