@@ -306,6 +306,8 @@
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <argLine>-Xmx4096M ${surefireArgLine}</argLine>
                     <trimStackTrace>false</trimStackTrace>
+                    <parallel>all</parallel>
+                    <useUnlimitedThreads>true</useUnlimitedThreads>
                 </configuration>
             </plugin>
             <plugin>
