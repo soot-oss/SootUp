@@ -1,8 +1,5 @@
 package sootup.jimple.frontend;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,6 +15,8 @@ import sootup.interceptors.CopyPropagator;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 import sootup.java.core.views.JavaEagerView;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JimpleAnalysisInputLocationTest {
 
