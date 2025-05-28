@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import sootup.core.types.*;
 import sootup.interceptors.CopyPropagator;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
+import sootup.java.core.views.JavaEagerView;
 
 public class JimpleAnalysisInputLocationTest {
 
@@ -105,12 +107,7 @@ public class JimpleAnalysisInputLocationTest {
 
   @Test
   public void testIfBodyInterceptorsApplied() {
-    final String resourceDir = "src/test/java/resources/";
-    final JimpleAnalysisInputLocation inputLocation =
-        new JimpleAnalysisInputLocation(
-            Paths.get(resourceDir + "/jimple/testbodyinterceptorsinjimpleinputlocation"),
-            SourceType.Application,
-            Arrays.asList(new CopyPropagator()));
+    final JimpleAnalysisInputLocation inputLocation = getJimpleAnalysisInputLocation();
     JavaView jv1 = new JavaView(inputLocation);
     List<SootClass> applicationClasses = jv1.getClasses().collect(Collectors.toList());
     applicationClasses.forEach(
@@ -123,5 +120,22 @@ public class JimpleAnalysisInputLocationTest {
                     }
                   });
         });
+  }
+
+  private JimpleAnalysisInputLocation getJimpleAnalysisInputLocation() {
+    final String resourceDir = "src/test/java/resources/";
+    final JimpleAnalysisInputLocation inputLocation =
+        new JimpleAnalysisInputLocation(
+            Paths.get(resourceDir + "/jimple/testbodyinterceptorsinjimpleinputlocation"),
+            SourceType.Application,
+            Arrays.asList(new CopyPropagator()));
+    return inputLocation;
+  }
+
+  @Test
+  public void testJavaViewEagerLoading() {
+    final JimpleAnalysisInputLocation inputLocation = getJimpleAnalysisInputLocation();
+    JavaEagerView javaEagerView = new JavaEagerView(Collections.singletonList(inputLocation));
+    assertEquals(1, javaEagerView.getCachedClassesCount());
   }
 }

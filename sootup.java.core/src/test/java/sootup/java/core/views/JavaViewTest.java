@@ -2,12 +2,17 @@ package sootup.java.core.views;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import sootup.core.cache.provider.FullCacheProvider;
+import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.java.core.JavaSootClass;
@@ -76,5 +81,22 @@ public class JavaViewTest {
             .sorted(Comparator.comparing(Type::toString))
             .collect(Collectors.toList()),
         this.signatures);
+  }
+
+  @Test
+  public void testViewEagerLoading() {
+    AnalysisInputLocation inputLocation = new EagerInputLocation();
+    JavaView view = new JavaView(inputLocation);
+    assertFalse(view.isFullyResolved);
+
+    JavaEagerView viewEagerLoad = new JavaEagerView(inputLocation);
+    assertTrue(viewEagerLoad.isFullyResolved);
+
+    JavaEagerView viewEagerLoad1 = new JavaEagerView(Collections.singletonList(inputLocation));
+    assertTrue(viewEagerLoad1.isFullyResolved);
+
+    JavaEagerView viewEagerLoad2 =
+        new JavaEagerView(Collections.singletonList(inputLocation), new FullCacheProvider());
+    assertTrue(viewEagerLoad2.isFullyResolved);
   }
 }
