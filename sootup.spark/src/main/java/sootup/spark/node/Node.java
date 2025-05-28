@@ -34,9 +34,4 @@ import sootup.core.types.Type;
 @SuperBuilder
 public class Node {
   @NonNull Type type;
-
-  @Override
-  public String toString() {
-    return String.format("\"%s\"", getType());
-  }
 }

@@ -1,4 +1,4 @@
-package sootup.spark;
+package sootup.spark.node;
 
 /*-
  * #%L
@@ -22,17 +22,22 @@ package sootup.spark;
  * #L%
  */
 
-import sootup.callgraph.CallGraph;
-import sootup.core.views.View;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
+import sootup.core.signatures.FieldSignature;
 
-public class PAGBuilder {
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Getter
+@SuperBuilder
+public class StaticFieldRefNode extends Node {
 
-  public PAGBuilder(View view, CallGraph callGraph) {
-    // TODO
-    /* 1. Worklist logic use callgraph.getMethodSignatures()
-      2. For every method, create a MethodPAG and add it to the methodPAGs list
-      3. Link every parameter and arguments to the Global PAG
-    */
+  @NonNull FieldSignature field;
 
+  @Override
+  public String toString() {
+    return String.format("\"%s %s.%s\"", field.getType(), getType(), field.getName());
   }
 }

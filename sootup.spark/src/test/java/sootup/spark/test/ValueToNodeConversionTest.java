@@ -3,6 +3,7 @@ package sootup.spark.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
@@ -11,76 +12,141 @@ import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.language.JavaJimple;
 import sootup.spark.NodeFactory;
 import sootup.spark.node.AllocationNode;
-import sootup.spark.node.FieldRefNode;
+import sootup.spark.node.InstanceFieldRefNode;
+import sootup.spark.node.StaticFieldRefNode;
 import sootup.spark.node.VariableNode;
 
+class ValueToNodeConversionTest {
 
-public class ValueToNodeConversionTest {
+  ClassType aType = SparkTestUtil.simpleType("A");
+  ClassType bType = SparkTestUtil.simpleType("B");
+  FieldSignature fieldSig =
+      JavaIdentifierFactory.getInstance().getFieldSignature("f", aType, bType);
 
-    @Test
-    public void testValueToNodeConversions(){
-        val aType = SparkTestUtil.simpleType("A");
-        val bType = SparkTestUtil.simpleType("B");
+  @Test
+  void testLocalToNodeConversion() {
+    // Local variable
+    val local = new Local("a", aType);
+    val varNodeOpt = NodeFactory.createNode(local);
+    assertTrue(varNodeOpt.isPresent());
+    val varNode = varNodeOpt.get();
+    assertTrue(varNode instanceof VariableNode);
+    VariableNode variableNode = (VariableNode) varNode;
+    assertEquals(aType, variableNode.getType());
+    assertEquals(local.getName(), variableNode.getName());
+    assertEquals("\"A a\"", variableNode.toString());
+  }
 
-        // Local variable
-        val local = new Local("a", aType);
-        val varNodeOpt = NodeFactory.createNode(local);
-        assertTrue(varNodeOpt.isPresent());
-        val varNode = varNodeOpt.get();
-        assertTrue(varNode instanceof VariableNode);
-        VariableNode variableNode = (VariableNode) varNode;
-        assertEquals(aType, variableNode.getType());
-        assertEquals(local.getName(), variableNode.getName());
+  @Test
+  void testNewExprToNodeConversion() {
+    // New allocation
+    val newExpr = new JNewExpr(aType);
+    val allocNodeOpt = NodeFactory.createNode(newExpr);
+    assertTrue(allocNodeOpt.isPresent());
+    val allocNode = allocNodeOpt.get();
+    assertTrue(allocNode instanceof AllocationNode);
+    assertEquals(aType, allocNode.getType());
+    assertEquals("\"new A\"", allocNode.toString());
+  }
 
-        // New allocation
-        val newExpr = new JNewExpr(aType);
-        val allocNodeOpt = NodeFactory.createNode(newExpr);
-        assertTrue(allocNodeOpt.isPresent());
-        val allocNode  = allocNodeOpt.get();
-        assertTrue(allocNode instanceof AllocationNode);
-        assertEquals(aType, allocNode.getType());
+  @Test
+  void testInstanceFieldRefToNodeConversion() {
+    // Instance FieldRef class A{B someB.f}
+    val base = new Local("someB", aType);
+    val instanceFieldRef = new JInstanceFieldRef(base, fieldSig);
+    val instanceFieldRefNodeOpt = NodeFactory.createNode(instanceFieldRef);
+    assertTrue(instanceFieldRefNodeOpt.isPresent());
+    val refNode = instanceFieldRefNodeOpt.get();
+    assertTrue(refNode instanceof InstanceFieldRefNode);
+    val instanceFieldRefNode = (InstanceFieldRefNode) refNode;
+    assertEquals(bType, instanceFieldRefNode.getType());
+    assertEquals(fieldSig, instanceFieldRefNode.getField());
+    assertEquals(base.getName(), instanceFieldRefNode.getBase().getName());
+    assertEquals(base.getType(), instanceFieldRefNode.getBase().getType());
+    assertEquals("\"B (A someB).f\"", instanceFieldRefNode.toString());
+  }
 
-        // Instance FieldRef class A{B someB.f}
-        val fieldSig = JavaIdentifierFactory.getInstance().getFieldSignature("f", aType, bType);
-        val base = new Local("someB", aType);
-        val instanceFieldRef = new JInstanceFieldRef(base, fieldSig);
-        val instanceFieldRefNodeOpt = NodeFactory.createNode(instanceFieldRef);
-        assertTrue(instanceFieldRefNodeOpt.isPresent());
-        val refNode = instanceFieldRefNodeOpt.get();
-        assertTrue(refNode instanceof FieldRefNode);
-        val instanceFieldRefNode = (FieldRefNode) refNode;
-        assertEquals(bType, instanceFieldRefNode.getType());
-        assertEquals(fieldSig, instanceFieldRefNode.getField());
-        assertEquals(base.getName(), instanceFieldRefNode.getBase().getName());
-        assertEquals(base.getType(), instanceFieldRefNode.getBase().getType());
+  @Test
+  void testStaticFieldRefToNodeConversion() {
+    // Static FieldRef A{B f}
+    val staticFieldRef = new JStaticFieldRef(fieldSig);
+    val staticFieldRefNodeOpt = NodeFactory.createNode(staticFieldRef);
+    assertTrue(staticFieldRefNodeOpt.isPresent());
+    val sRefNode = staticFieldRefNodeOpt.get();
+    assertTrue(sRefNode instanceof StaticFieldRefNode);
+    val staticRefNode = (StaticFieldRefNode) sRefNode;
+    assertEquals(fieldSig, staticRefNode.getField());
+    assertEquals(aType, staticRefNode.getType());
+    assertEquals("\"B A.f\"", staticRefNode.toString());
+  }
 
-        // Static FieldRef A{B f}
-        val staticFieldRef = new JStaticFieldRef(fieldSig);
-        val staticFieldRefNodeOpt = NodeFactory.createNode(staticFieldRef);
-        assertTrue(staticFieldRefNodeOpt.isPresent());
-        val sRefNode = staticFieldRefNodeOpt.get();
-        assertTrue(sRefNode instanceof FieldRefNode);
-        val staticRefNode = (FieldRefNode) sRefNode;
-        assertEquals(fieldSig, staticRefNode.getField());
-        assertEquals(null, staticRefNode.getBase());
-        assertEquals(bType, staticRefNode.getType());
+  @Test
+  void testArrayElementToNodeConversion() {
+    // Array Element
+    val arrayType = ArrayType.createArrayType(aType, 1);
+    val arrayRef = new JArrayRef(new Local("array", arrayType), IntConstant.getInstance(42));
+    val arrayRefNodeOpt = NodeFactory.createNode(arrayRef);
+    assertTrue(arrayRefNodeOpt.isPresent());
+    val arrayNode = arrayRefNodeOpt.get();
+    assertTrue(arrayNode instanceof InstanceFieldRefNode);
+    val arrayRefNode = (InstanceFieldRefNode) arrayNode;
+    assertEquals(arrayType, arrayRefNode.getBase().getType());
+    assertEquals("array", arrayRefNode.getBase().getName());
+    assertEquals("42", arrayRefNode.getField().getName());
+    assertEquals(aType, arrayRef.getType());
+    assertEquals("\"A (A[] array).42\"", arrayRefNode.toString());
+  }
 
-        // Array Element
-        val arrayType = ArrayType.createArrayType(aType, 1);
-        val arrayRef = new JArrayRef(new Local("array", arrayType), IntConstant.getInstance(42));
-        val arrayRefNodeOpt = NodeFactory.createNode(arrayRef);
-        assertTrue(arrayRefNodeOpt.isPresent());
-        val arrayNode = arrayRefNodeOpt.get();
-        assertTrue(arrayNode instanceof FieldRefNode);
-        val arrayRefNode = (FieldRefNode) arrayNode;
-        assertEquals(arrayType, arrayRefNode.getBase().getType());
-        assertEquals("array", arrayRefNode.getBase().getName());
-        assertEquals("42", arrayRefNode.getField().getName());
-        assertEquals(aType, arrayRef.getType());
-    }
+  /** TODO: how to handle cast expr */
+  @Test
+  void testCastExprToNodeConversion() {
+    val local = JavaJimple.newLocal("r0", bType);
+    val jcastExpr = JavaJimple.newCastExpr(local, aType);
+    val node = NodeFactory.createNode(jcastExpr);
+    assertTrue(node.isEmpty());
+  }
 
+  /** TODO: how to handle new array expr */
+  @Test
+  void testNewArrayExprToNodeConversion() {
+    val newArrayExpr =
+        JavaJimple.newNewArrayExpr(
+            aType, IntConstant.getInstance(1), JavaIdentifierFactory.getInstance());
+    val node = NodeFactory.createNode(newArrayExpr);
+    assertTrue(node.isEmpty());
+  }
+
+  /** TODO: how to handle new multi array expr */
+  @Test
+  void testNewMultiArrayExprToNodeConversion() {
+    val arrayType = ArrayType.createArrayType(aType, 2);
+    val newMultiArrayExpr =
+        JavaJimple.newNewMultiArrayExpr(
+            arrayType, List.of(IntConstant.getInstance(1), IntConstant.getInstance(1)));
+    val node = NodeFactory.createNode(newMultiArrayExpr);
+    assertTrue(node.isEmpty());
+  }
+
+  /** TODO: how to handle parameter ref */
+  @Test
+  void testParameterRefToNodeConversion() {
+    val paramRef = JavaJimple.newParameterRef(aType, 1);
+    val node = NodeFactory.createNode(paramRef);
+    assertTrue(node.isEmpty());
+  }
+
+  /** TODO: how to handle this ref */
+  @Test
+  void testThisRefToNodeConversion() {
+    val thisRef = JavaJimple.newThisRef(aType);
+    val node = NodeFactory.createNode(thisRef);
+    assertTrue(node.isEmpty());
+  }
 }

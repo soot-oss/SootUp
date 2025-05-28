@@ -32,7 +32,7 @@ import sootup.core.signatures.FieldSignature;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 @SuperBuilder
-public class FieldRefNode extends Node {
+public class InstanceFieldRefNode extends Node {
 
   VariableNode base;
   @NonNull FieldSignature field;
@@ -40,6 +40,6 @@ public class FieldRefNode extends Node {
   @Override
   public String toString() {
     return String.format(
-        "\"%s(%s %s).%s\"", field.getType(), base.getType(), base.getName(), field.getName());
+        "\"%s (%s %s).%s\"", field.getType(), base.getType(), base.getName(), field.getName());
   }
 }

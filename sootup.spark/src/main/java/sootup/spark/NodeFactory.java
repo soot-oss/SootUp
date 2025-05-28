@@ -24,6 +24,7 @@ package sootup.spark;
 
 import java.util.Optional;
 import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 import sootup.core.jimple.basic.Value;
 import sootup.spark.node.Node;
 import sootup.spark.node.ValueToNodeConversionVisitor;
@@ -31,6 +32,7 @@ import sootup.spark.node.ValueToNodeConversionVisitor;
 /*
 It is responsible for creating a SPARK representative nodes (3 nodes present in SPARK, AllocNode, FieldRef Node, and VarNode)
  */
+@UtilityClass
 public class NodeFactory {
 
   /*
