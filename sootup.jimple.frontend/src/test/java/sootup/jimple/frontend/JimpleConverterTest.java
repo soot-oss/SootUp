@@ -11,7 +11,6 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.junit.jupiter.api.Test;
-import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.JimpleUtils;
@@ -22,6 +21,8 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
 import sootup.core.util.printer.BriefStmtPrinter;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.OverridingJavaClassSource;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
 
@@ -30,14 +31,14 @@ public class JimpleConverterTest {
   private SootClass parseJimpleClass(CharStream cs) throws ResolveException {
     JimpleConverter jimpleVisitor = new JimpleConverter();
     EagerInputLocation eagerInputLocation = new EagerInputLocation();
-    final OverridingClassSource scs =
+    final OverridingJavaClassSource scs =
         jimpleVisitor.run(
             cs,
             eagerInputLocation,
             Paths.get(""),
             Collections.emptyList(),
             new JimpleView(eagerInputLocation));
-    return new SootClass(scs, SourceType.Application);
+    return new JavaSootClass(scs, SourceType.Application);
   }
 
   @Test

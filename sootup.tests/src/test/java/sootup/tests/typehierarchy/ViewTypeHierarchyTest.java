@@ -24,6 +24,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 
@@ -184,7 +185,7 @@ public class ViewTypeHierarchyTest {
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList());
-    SootClass sootClass = new SootClass(classSource, SourceType.Application);
+    SootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
 
     typeHierarchy.addType(sootClass);
 

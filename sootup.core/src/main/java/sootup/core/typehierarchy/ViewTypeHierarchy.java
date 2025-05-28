@@ -89,6 +89,18 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @NonNull
   @Override
+  public Stream<ClassType> subinterfacesOf(@NonNull ClassType interfaceType) {
+    ScanResult scanResult = lazyScanResult.get();
+    Vertex vertex = scanResult.typeToVertex.get(interfaceType);
+    if (vertex == null) {
+      throw new IllegalArgumentException(
+          "Could not find interface '" + interfaceType + "' in hierarchy.");
+    }
+    return visitInterfaceSubgraph(scanResult.graph, vertex, false);
+  }
+
+  @NonNull
+  @Override
   public Stream<ClassType> subtypesOf(@NonNull ClassType type) {
     ScanResult scanResult = lazyScanResult.get();
     Vertex vertex = scanResult.typeToVertex.get(type);
@@ -351,6 +363,22 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
               .map(graph::getEdgeSource)
               .flatMap(directSubclass -> visitSubgraph(graph, directSubclass, true)));
     }
+  }
+
+  /**
+   * Visits the subgraph of the specified <code>vertex</code> and calls the <code>visitor</code> for
+   * each vertex in the subgraph that is an interface. If <code>includeSelf</code> is true, the
+   * <code>visitor</code> is also called with the <code>vertex</code>.
+   */
+  private Stream<ClassType> visitInterfaceSubgraph(
+      Graph<Vertex, Edge> graph, Vertex vertex, boolean includeSelf) {
+    Stream<ClassType> subgraph = includeSelf ? Stream.of(vertex.javaClassType) : Stream.empty();
+    return Stream.concat(
+        subgraph,
+        graph.incomingEdgesOf(vertex).stream()
+            .filter(edge -> edge.type == EdgeType.InterfaceDirectlyExtends)
+            .map(graph::getEdgeSource)
+            .flatMap(directSubtype -> visitInterfaceSubgraph(graph, directSubtype, true)));
   }
 
   /**

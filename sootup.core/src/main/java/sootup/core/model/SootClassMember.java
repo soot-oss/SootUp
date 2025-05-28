@@ -34,11 +34,11 @@ import sootup.core.types.ClassType;
  */
 public abstract class SootClassMember<S extends SootClassMemberSignature> implements HasPosition {
 
-  @NonNull private final S signature;
+  @NonNull protected final S signature;
 
-  @NonNull private final Position position;
+  @NonNull protected final Position position;
 
-  SootClassMember(@NonNull S signature, @NonNull Position position) {
+  public SootClassMember(@NonNull S signature, @NonNull Position position) {
     this.signature = signature;
     this.position = position;
   }
@@ -82,7 +82,6 @@ public abstract class SootClassMember<S extends SootClassMemberSignature> implem
 
   @NonNull
   public String getName() {
-
     return signature.getName();
   }
 
