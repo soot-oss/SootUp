@@ -1,5 +1,7 @@
 package sootup.jimple.frontend;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,10 +15,8 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.interceptors.CopyPropagator;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.views.JavaView;
 import sootup.java.core.views.JavaEagerView;
-
-import static org.junit.jupiter.api.Assertions.*;
+import sootup.java.core.views.JavaView;
 
 public class JimpleAnalysisInputLocationTest {
 
