@@ -27,6 +27,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import sootup.core.model.SootMethod;
 
+/** Builds PAG for an individual method */
 @Getter
 @Builder
 public class MethodPAGBuilder {

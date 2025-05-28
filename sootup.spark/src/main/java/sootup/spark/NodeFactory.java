@@ -29,20 +29,23 @@ import sootup.core.jimple.basic.Value;
 import sootup.spark.node.Node;
 import sootup.spark.node.ValueToNodeConversionVisitor;
 
-/*
-It is responsible for creating a SPARK representative nodes (3 nodes present in SPARK, AllocNode, FieldRef Node, and VarNode)
+/**
+ * It is responsible for creating a SPARK representative nodes (nodes present in SPARK, AllocNode,
+ * FieldRef Node, and VarNode)
  */
 @UtilityClass
 public class NodeFactory {
 
-  /*
-  1. Whenever we encounter a assign statement, we need to create a localVarNode for both the right and left hand operator
+  /**
+   * creates a PAG node for a given Jimple value
+   *
+   * @param value a jimple value, typically a local, field ref, or an allocation expression
+   * @return a PAG node
    */
-
   @NonNull
   public static Optional<Node> createNode(@NonNull Value value) {
     ValueToNodeConversionVisitor visitor = new ValueToNodeConversionVisitor();
     value.accept(visitor);
-    return visitor.get();
+    return visitor.getResult();
   }
 }

@@ -1,13 +1,17 @@
 package sootup.spark.node;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
 import sootup.core.jimple.common.ref.*;
+import sootup.core.jimple.visitor.AbstractValueVisitor;
 import sootup.java.core.JavaIdentifierFactory;
 
 /**
@@ -18,12 +22,19 @@ import sootup.java.core.JavaIdentifierFactory;
  *   <li>AllocationNode
  *   <li>VariableNode
  *   <li>FieldRefNode
+ * </ul>
  */
-public class ValueToNodeConversionVisitor extends AbstractValueToNodeConversionVisitor {
+@Slf4j
+public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   private Node node;
 
-  public Optional<Node> get() {
+  /**
+   * returns a node as a result of the value to node conversion
+   *
+   * @return an optional PAG node
+   */
+  public Optional<Node> getResult() {
     return Optional.ofNullable(node);
   }
 
@@ -98,5 +109,10 @@ public class ValueToNodeConversionVisitor extends AbstractValueToNodeConversionV
   @Override
   public void caseLocal(Local local) {
     this.node = VariableNode.builder().type(local.getType()).name(local.getName()).build();
+  }
+
+  @Override
+  public void defaultCaseValue(@NonNull Value v) {
+    log.warn("Unimplemented node conversion for value: {} of type: {}", v, v.getClass());
   }
 }
