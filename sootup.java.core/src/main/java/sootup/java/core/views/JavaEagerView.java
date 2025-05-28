@@ -51,7 +51,24 @@ public class JavaEagerView extends JavaView {
 
   protected void eagerLoadClasses() {
     if (!isFullyResolved) {
-      getClasses().forEach(c -> {}); // forces loading
+      getClasses()
+          .forEach(
+              c -> {
+                c.getModifiers();
+                c.getFields();
+                c.getInterfaces();
+                c.getAnnotations();
+                c.getSuperclass();
+                c.getOuterClass();
+                c.getPosition();
+                c.getMethods()
+                    .forEach(
+                        m -> {
+                          if (m.hasBody()) {
+                            m.getBody().getStmts();
+                          }
+                        });
+              }); // forces loading
     }
   }
 }
