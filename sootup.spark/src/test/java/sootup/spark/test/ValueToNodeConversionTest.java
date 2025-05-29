@@ -15,6 +15,7 @@ import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.spark.NodeFactory;
@@ -29,6 +30,7 @@ class ValueToNodeConversionTest {
   ClassType bType = SparkTestUtil.simpleType("B");
   FieldSignature fieldSig =
       JavaIdentifierFactory.getInstance().getFieldSignature("f", aType, bType);
+  View view;
 
   @Test
   void testLocalToNodeConversion() {

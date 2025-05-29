@@ -23,9 +23,11 @@ package sootup.spark.node;
  */
 
 import java.util.Optional;
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.JCastExpr;
@@ -34,7 +36,9 @@ import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.visitor.AbstractValueVisitor;
-import sootup.java.core.JavaIdentifierFactory;
+import sootup.core.signatures.FieldSignature;
+import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
 
 /**
  * {@link sootup.core.jimple.basic.Value} to {@link Node} converter. Supported nodes according to
@@ -47,9 +51,10 @@ import sootup.java.core.JavaIdentifierFactory;
  * </ul>
  */
 @Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
-  private Node node;
+  Node node;
 
   /**
    * returns a node as a result of the value to node conversion
@@ -61,30 +66,30 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   }
 
   @Override
-  public void caseCastExpr(JCastExpr expr) {
+  public void caseCastExpr(@NonNull JCastExpr expr) {
     // TODO: wip
     defaultCaseValue(expr);
   }
 
   @Override
-  public void caseNewArrayExpr(JNewArrayExpr expr) {
+  public void caseNewArrayExpr(@NonNull JNewArrayExpr expr) {
     // TODO: wip
     defaultCaseValue(expr);
   }
 
   @Override
-  public void caseNewMultiArrayExpr(JNewMultiArrayExpr expr) {
+  public void caseNewMultiArrayExpr(@NonNull JNewMultiArrayExpr expr) {
     // TODO: wip
     defaultCaseValue(expr);
   }
 
   @Override
-  public void caseNewExpr(JNewExpr expr) {
+  public void caseNewExpr(@NonNull JNewExpr expr) {
     this.node = AllocationNode.builder().type(expr.getType()).build();
   }
 
   @Override
-  public void caseStaticFieldRef(JStaticFieldRef ref) {
+  public void caseStaticFieldRef(@NonNull JStaticFieldRef ref) {
     this.node =
         StaticFieldRefNode.builder()
             .field(ref.getFieldSignature())
@@ -93,7 +98,7 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   }
 
   @Override
-  public void caseInstanceFieldRef(JInstanceFieldRef ref) {
+  public void caseInstanceFieldRef(@NonNull JInstanceFieldRef ref) {
     val base =
         VariableNode.builder().name(ref.getBase().getName()).type(ref.getBase().getType()).build();
     this.node =
@@ -105,31 +110,40 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   }
 
   @Override
-  public void caseArrayRef(JArrayRef ref) {
-    val base =
-        VariableNode.builder().name(ref.getBase().getName()).type(ref.getBase().getType()).build();
-    val declaringClassType =
-        JavaIdentifierFactory.getInstance().getClassType(ref.getBase().getType().toString());
-    val field =
-        JavaIdentifierFactory.getInstance()
-            .getFieldSignature(String.valueOf(ref.getIndex()), declaringClassType, ref.getType());
-    this.node = InstanceFieldRefNode.builder().base(base).field(field).type(ref.getType()).build();
+  public void caseArrayRef(@NonNull JArrayRef ref) {
+    val type = ref.getBase().getType();
+    if (type instanceof ArrayType) {
+      val arrayType = (ArrayType) type;
+      val baseType = arrayType.getBaseType();
+      if (baseType instanceof ClassType) {
+        val declaringClassType = (ClassType) baseType;
+        val field =
+            new FieldSignature(declaringClassType, String.valueOf(ref.getIndex()), ref.getType());
+        val base =
+            VariableNode.builder()
+                .name(ref.getBase().getName())
+                .type(ref.getBase().getType())
+                .build();
+        this.node =
+            InstanceFieldRefNode.builder().base(base).field(field).type(ref.getType()).build();
+      }
+    }
   }
 
   @Override
-  public void caseParameterRef(JParameterRef ref) {
+  public void caseParameterRef(@NonNull JParameterRef ref) {
     // TODO: wip
     defaultCaseValue(ref);
   }
 
   @Override
-  public void caseThisRef(JThisRef ref) {
+  public void caseThisRef(@NonNull JThisRef ref) {
     // TODO: wip
     defaultCaseValue(ref);
   }
 
   @Override
-  public void caseLocal(Local local) {
+  public void caseLocal(@NonNull Local local) {
     this.node = VariableNode.builder().type(local.getType()).name(local.getName()).build();
   }
 

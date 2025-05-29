@@ -43,7 +43,7 @@ public class NodeFactory {
    * @return a PAG node
    */
   @NonNull
-  public static Optional<Node> createNode(@NonNull Value value) {
+  public Optional<Node> createNode(@NonNull Value value) {
     ValueToNodeConversionVisitor visitor = new ValueToNodeConversionVisitor();
     value.accept(visitor);
     return visitor.getResult();

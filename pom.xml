@@ -402,6 +402,11 @@
             <version>1.5.2</version>
         </dependency>
         <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-io</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
             <groupId>de.upb.cs.swt</groupId>
             <artifactId>heros</artifactId>
             <version>1.2.3</version>
@@ -447,6 +452,12 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.13.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.38</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- testing -->

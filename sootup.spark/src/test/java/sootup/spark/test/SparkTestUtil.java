@@ -36,6 +36,5 @@ public class SparkTestUtil {
     val exporter = new DOTExporter<Node, DefaultEdge>(Node::toString);
     StringWriter writer = new StringWriter();
     exporter.exportGraph(pag, writer);
-    System.out.println(writer);
   }
 }
