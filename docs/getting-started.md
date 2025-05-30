@@ -50,7 +50,7 @@ If you have a [Jimple](../jimple) file, you can create a view for analyzing jimp
     AnalysisInputLocation inputLocation = 
             new JimpleAnalysisInputLocation(pathToJimple);
     
-    JimpleView view = new JimpleView(inputLocation);
+    JavaView view = new JavaView(inputLocation);
     ~~~
 
 <!---

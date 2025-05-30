@@ -13,11 +13,10 @@ import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
-import sootup.jimple.frontend.JimpleView;
 
 public class BenchmarkTestSuiteBase {
   private final JavaView minimalTsView;
-  private final JimpleView testResourcesView;
+  private final JavaView testResourcesView;
 
   public BenchmarkTestSuiteBase() {
     String MINIMAL_TEST_SUITE_DIR = "../shared-test-resources/miniTestSuite/java6/binary";
@@ -30,7 +29,7 @@ public class BenchmarkTestSuiteBase {
 
     String TEST_RESOURCES_DIR = "src/test/resources";
     testResourcesView =
-        new JimpleView(new JimpleAnalysisInputLocation(Paths.get(TEST_RESOURCES_DIR)));
+        new JavaView(new JimpleAnalysisInputLocation(Paths.get(TEST_RESOURCES_DIR)));
   }
 
   protected ClassType getClassType(String className) {
