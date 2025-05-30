@@ -23,12 +23,13 @@ import sootup.core.util.StringTools;
 import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
 
 public class JimpleConverterTest {
 
-  private SootClass parseJimpleClass(CharStream cs) throws ResolveException {
+  private JavaSootClass parseJimpleClass(CharStream cs) throws ResolveException {
     JimpleConverter jimpleVisitor = new JimpleConverter();
     EagerInputLocation eagerInputLocation = new EagerInputLocation();
     final OverridingJavaClassSource scs =
@@ -37,13 +38,12 @@ public class JimpleConverterTest {
             eagerInputLocation,
             Paths.get(""),
             Collections.emptyList(),
-            new JimpleView(eagerInputLocation));
+            new JavaView(eagerInputLocation));
     return new JavaSootClass(scs, SourceType.Application);
   }
 
   @Test
   public void parseMinimalClass() {
-
     CharStream cs = CharStreams.fromString("class MinClass \n { }");
     parseJimpleClass(cs);
   }

@@ -9,18 +9,18 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
-import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.core.validation.TrapsValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
-import sootup.jimple.frontend.JimpleView;
 
 public class TrapsValidatorTest {
   TrapsValidator trapsValidator;
-  JimpleView jimpleView;
+  JavaView jimpleView;
 
   @BeforeEach
   public void Setup() {
@@ -50,8 +50,8 @@ public class TrapsValidatorTest {
     JimpleAnalysisInputLocation jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
-    jimpleView = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeCheckInitValidator);
+    jimpleView = new JavaView(jimpleInputLocation);
+    final Optional<JavaSootClass> classSource1 = jimpleView.getClass(classTypeCheckInitValidator);
     assertFalse(classSource1.isPresent());
   }
 
