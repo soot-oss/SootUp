@@ -93,3 +93,5 @@ sootup.java.core.types
 sootup.java.core.views
 sootup.jimple
 sootup.jimple.frontend
+sootup.spark
+sootup.spark.node
