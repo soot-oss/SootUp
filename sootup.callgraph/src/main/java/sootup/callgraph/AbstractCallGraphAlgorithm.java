@@ -32,6 +32,7 @@ import sootup.callgraph.CallGraph.Call;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.InvokableStmt;
@@ -246,36 +247,81 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   ) {
     // check if Thread.start() gets called
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
-      if (stmt.isInvokableStmt()) {
-        InvokableStmt invokableStmt = stmt.asInvokableStmt();
-        if (invokableStmt.getInvokeExpr().isPresent()) {
-          if (!invokableStmt.getInvokeExpr().get().isJSpecialInvokeExpr()) {
-            Stream<MethodSignature> resolveCallStream = resolveCall(sourceMethod, invokableStmt);
-            resolveCallStream.forEach(methodSignature -> {
-              if (methodSignature.getType().equals(VoidType.getInstance())
-                      && methodSignature.getName().equals("start")
-                      && methodSignature.getParameterTypes().isEmpty()
-              ) {
-                Optional<SootMethod> concreteMethod = findConcreteMethod(view,methodSignature);
-                if (concreteMethod.isEmpty()) {
-                  return;
-                }
-                Set<MethodSignature> callSources = cg.callSourcesTo(methodSignature);
-                if (callSources.isEmpty()) {
-                  return;
-                }
-                MethodSignature concreteMethodSignature = concreteMethod.get().getSignature();
-                MethodSignature implicitRunMethodSig = new MethodSignature(concreteMethodSignature.getDeclClassType(), "run", concreteMethodSignature.getParameterTypes(), concreteMethodSignature.getType());
-                for (MethodSignature sourceSig : callSources) {
-                  if (view.getMethod(implicitRunMethodSig).isPresent()) {
-                    addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
-                  }
-                }
-              }
-            });
-          }
-        }
+      if (!stmt.isInvokableStmt()) {
+        continue;
       }
+      InvokableStmt invokableStmt = stmt.asInvokableStmt();
+      if (invokableStmt.getInvokeExpr().isEmpty()) {
+        continue;
+      }
+      // check for specialInvokes (super.start())
+      if (invokableStmt.getInvokeExpr().get().isJSpecialInvokeExpr()) {
+          continue;
+      }
+      Stream<MethodSignature> resolveCallStream = resolveCall(sourceMethod, invokableStmt);
+      resolveCallStream.forEach(methodSignature -> {
+        if (methodSignature.getType().equals(VoidType.getInstance())
+              && methodSignature.getParameterTypes().isEmpty()
+              && view.getMethod(methodSignature).isPresent()
+        ) {
+          // java.lang.Thread void start() methodSig
+          IdentifierFactory idFactory = view.getIdentifierFactory();
+          ClassType threadType = idFactory.getClassType("java.lang.Thread");
+          MethodSignature startMethodSig = idFactory.getMethodSignature(
+                  threadType,
+                  "start",
+                  "void",
+                  Collections.emptyList()
+          );
+          // check if method calls super.start()
+          view.getMethod(methodSignature).get().getBody().getStmts().stream()
+                  .filter(Stmt::isInvokableStmt)
+                  .map(Stmt::asInvokableStmt)
+                  .filter(invokableStmt1 -> invokableStmt1.getInvokeExpr().isPresent())
+                  .filter(invokableStmt1 -> invokableStmt1.getInvokeExpr().get().isJSpecialInvokeExpr())
+                  .forEach(bodyStmt -> {
+                    System.out.println("Final MethodSig: " + methodSignature);
+                    System.out.println("Final BodyStmt: " + bodyStmt);
+                    System.out.println("Stmt Args: " + bodyStmt.getInvokeExpr().get().getArgs());
+                    System.out.println("Stmt MethodSig: " + bodyStmt.getInvokeExpr().get().getMethodSignature());
+                    if (bodyStmt.getInvokeExpr().get().getMethodSignature().equals(startMethodSig)) {
+                      Optional<SootMethod> concreteMethod = findConcreteMethod(view,methodSignature);
+                      if (concreteMethod.isEmpty()) {
+                        return;
+                      }
+                      Set<MethodSignature> callSources = cg.callSourcesTo(methodSignature);
+                      if (callSources.isEmpty()) {
+                        return;
+                      }
+                      MethodSignature concreteMethodSignature = concreteMethod.get().getSignature();
+                      MethodSignature implicitRunMethodSig = new MethodSignature(concreteMethodSignature.getDeclClassType(), "run", concreteMethodSignature.getParameterTypes(), concreteMethodSignature.getType());
+                      for (MethodSignature sourceSig : callSources) {
+                        if (view.getMethod(implicitRunMethodSig).isPresent()) {
+                          System.out.println("Added call. SourceSig: " + sourceSig + " TargetSig: " + implicitRunMethodSig);
+                          addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
+                        }
+                      }
+                    }
+                  });
+
+//          Optional<SootMethod> concreteMethod = findConcreteMethod(view,methodSignature);
+//          if (concreteMethod.isEmpty()) {
+//            return;
+//          }
+//          Set<MethodSignature> callSources = cg.callSourcesTo(methodSignature);
+//          if (callSources.isEmpty()) {
+//            return;
+//          }
+//          MethodSignature concreteMethodSignature = concreteMethod.get().getSignature();
+//          MethodSignature implicitRunMethodSig = new MethodSignature(concreteMethodSignature.getDeclClassType(), "run", concreteMethodSignature.getParameterTypes(), concreteMethodSignature.getType());
+//          for (MethodSignature sourceSig : callSources) {
+//            if (view.getMethod(implicitRunMethodSig).isPresent()) {
+//              System.out.println("Added call. SourceSig: " + sourceSig + " TargetSig: " + implicitRunMethodSig);
+//              addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
+//            }
+//          }
+        }
+      });
     }
   }
 
