@@ -32,7 +32,6 @@ import sootup.callgraph.CallGraph.Call;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.InvokableStmt;
@@ -284,7 +283,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                     System.out.println("Final BodyStmt: " + bodyStmt);
                     System.out.println("Stmt Args: " + bodyStmt.getInvokeExpr().get().getArgs());
                     System.out.println("Stmt MethodSig: " + bodyStmt.getInvokeExpr().get().getMethodSignature());
-                    if (bodyStmt.getInvokeExpr().get().getMethodSignature().equals(startMethodSig)) {
+                    if (!bodyStmt.getInvokeExpr().get().getMethodSignature().equals(startMethodSig)) { // Undo !
                       Optional<SootMethod> concreteMethod = findConcreteMethod(view,methodSignature);
                       if (concreteMethod.isEmpty()) {
                         return;
@@ -295,6 +294,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                       }
                       MethodSignature concreteMethodSignature = concreteMethod.get().getSignature();
                       MethodSignature implicitRunMethodSig = new MethodSignature(concreteMethodSignature.getDeclClassType(), "run", concreteMethodSignature.getParameterTypes(), concreteMethodSignature.getType());
+                      System.out.println("Implicit Run MethodSig: " + implicitRunMethodSig);
                       for (MethodSignature sourceSig : callSources) {
                         if (view.getMethod(implicitRunMethodSig).isPresent()) {
                           System.out.println("Added call. SourceSig: " + sourceSig + " TargetSig: " + implicitRunMethodSig);

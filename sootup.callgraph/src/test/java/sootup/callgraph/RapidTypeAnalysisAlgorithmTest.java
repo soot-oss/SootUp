@@ -364,10 +364,7 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
                     "run",
                     "void",
                     Collections.emptyList());
-    System.out.println(cg.exportAsDot());
-    assertTrue(cg.callCount() > 0);
-    //original
-    //Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
-    //assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
   }
 }
