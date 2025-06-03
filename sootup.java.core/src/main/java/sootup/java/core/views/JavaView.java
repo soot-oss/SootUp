@@ -25,7 +25,6 @@ package sootup.java.core.views;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.cache.ClassCache;
@@ -91,7 +90,7 @@ public class JavaView extends AbstractView {
             .flatMap(
                 location -> {
                   // TODO: [ms] find a way to not stream().collect().stream()
-                  return location.getClassSources(this).collect(Collectors.toList()).stream();
+                  return location.getClassSources(this).toList().stream();
                 })
             .map(sootClassSource -> (JavaSootClassSource) sootClassSource)
             .map(this::buildClassFrom);

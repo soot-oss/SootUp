@@ -193,7 +193,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   @NonNull
   public Set<JavaSootField> getFields() {
     return this._lazyFields.get().stream()
-        .map(field -> (JavaSootField) field)
+        .map(sootField -> (JavaSootField) sootField)
         .collect(Collectors.toSet());
   }
 

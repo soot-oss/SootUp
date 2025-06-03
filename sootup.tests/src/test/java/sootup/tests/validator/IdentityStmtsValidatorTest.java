@@ -9,20 +9,20 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
-import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.core.validation.IdentityStmtsValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
-import sootup.jimple.frontend.JimpleView;
 
 public class IdentityStmtsValidatorTest {
 
   IdentityStmtsValidator identityStmtsValidator;
-  JimpleView jimpleView;
+  JavaView jimpleView;
 
   @BeforeEach
   public void Setup() {
@@ -51,8 +51,8 @@ public class IdentityStmtsValidatorTest {
     JimpleAnalysisInputLocation jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
-    jimpleView = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass> scOpt = jimpleView.getClass(classTypeFieldRefValidator);
+    jimpleView = new JavaView(jimpleInputLocation);
+    final Optional<JavaSootClass> scOpt = jimpleView.getClass(classTypeFieldRefValidator);
     assertTrue(scOpt.isPresent());
   }
 

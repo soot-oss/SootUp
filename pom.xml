@@ -66,6 +66,7 @@
         <module>sootup.interceptors</module>
         <module>sootup.java.bytecode.frontend</module>
         <module>sootup.callgraph</module>
+        <module>sootup.spark</module>
         <module>sootup.qilin</module>
         <module>sootup.analysis.interprocedural</module>
         <module>sootup.analysis.intraprocedural</module>
@@ -401,6 +402,11 @@
             <version>1.5.2</version>
         </dependency>
         <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-io</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
             <groupId>de.upb.cs.swt</groupId>
             <artifactId>heros</artifactId>
             <version>1.2.3</version>
@@ -440,31 +446,37 @@
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>6.8.1</version>
+            <version>6.8.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.13.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.38</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.12.2</version>
+            <version>5.13.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.12.2</version>
+            <version>5.13.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.12.2</version>
+            <version>5.13.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
