@@ -295,7 +295,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                       MethodSignature concreteMethodSignature = concreteMethod.get().getSignature();
                       MethodSignature implicitRunMethodSig = new MethodSignature(concreteMethodSignature.getDeclClassType(), "run", concreteMethodSignature.getParameterTypes(), concreteMethodSignature.getType());
                       System.out.println("Implicit Run MethodSig: " + implicitRunMethodSig);
+                      Optional<SootMethod> implicitRunMethod = findConcreteMethod(view,implicitRunMethodSig);
+                      if (implicitRunMethod.isPresent()) {
+                        System.out.println("ImplicitRunMethod: " + implicitRunMethod);
+                      }
                       for (MethodSignature sourceSig : callSources) {
+                        // here java.lang.run() is present but not the highest in the hierarchy -> check for highest run in hierarchy
                         if (view.getMethod(implicitRunMethodSig).isPresent()) {
                           System.out.println("Added call. SourceSig: " + sourceSig + " TargetSig: " + implicitRunMethodSig);
                           addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
@@ -303,23 +308,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                       }
                     }
                   });
-
-//          Optional<SootMethod> concreteMethod = findConcreteMethod(view,methodSignature);
-//          if (concreteMethod.isEmpty()) {
-//            return;
-//          }
-//          Set<MethodSignature> callSources = cg.callSourcesTo(methodSignature);
-//          if (callSources.isEmpty()) {
-//            return;
-//          }
-//          MethodSignature concreteMethodSignature = concreteMethod.get().getSignature();
-//          MethodSignature implicitRunMethodSig = new MethodSignature(concreteMethodSignature.getDeclClassType(), "run", concreteMethodSignature.getParameterTypes(), concreteMethodSignature.getType());
-//          for (MethodSignature sourceSig : callSources) {
-//            if (view.getMethod(implicitRunMethodSig).isPresent()) {
-//              System.out.println("Added call. SourceSig: " + sourceSig + " TargetSig: " + implicitRunMethodSig);
-//              addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
-//            }
-//          }
         }
       });
     }
