@@ -84,7 +84,7 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
       @NonNull Path path,
       @NonNull SourceType srcType,
       @NonNull List<BodyInterceptor> bodyInterceptors) {
-    this(path, srcType, bodyInterceptors,  Collections.singletonList(Paths.get("/META-INF")));
+    this(path, srcType, bodyInterceptors, Collections.singletonList(Paths.get("/META-INF")));
   }
 
   public ArchiveBasedAnalysisInputLocation(
