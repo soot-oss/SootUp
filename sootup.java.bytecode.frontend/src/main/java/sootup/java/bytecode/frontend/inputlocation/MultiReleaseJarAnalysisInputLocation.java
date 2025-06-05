@@ -65,21 +65,6 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
   private final int version;
 
-  public static AnalysisInputLocation create(
-      @NonNull Path path,
-      @NonNull SourceType srcType,
-      int version,
-      List<BodyInterceptor> bodyInterceptors) {
-
-    if (isMultiReleaseJar(path)) {
-      return new MultiReleaseJarAnalysisInputLocation(
-          path, srcType, version, bodyInterceptors, true);
-    }
-
-    return create(
-        path, srcType, bodyInterceptors, Collections.singletonList(Paths.get("/META-INF")));
-  }
-
   public MultiReleaseJarAnalysisInputLocation(@NonNull Path path, int version) {
     this(path, SourceType.Application, version);
   }
@@ -94,7 +79,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
       @NonNull SourceType srcType,
       int version,
       @NonNull List<BodyInterceptor> bodyInterceptors) {
-    this(path, srcType, version, bodyInterceptors, isMultiReleaseJar(path));
+    this(path, srcType, version, bodyInterceptors, Collections.emptyList());
   }
 
   protected MultiReleaseJarAnalysisInputLocation(
@@ -102,6 +87,16 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
       @NonNull SourceType srcType,
       int version,
       @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull Collection<Path> ignoredPaths) {
+    this(path, srcType, version, bodyInterceptors, ignoredPaths, isMultiReleaseJar(path));
+  }
+
+  protected MultiReleaseJarAnalysisInputLocation(
+      @NonNull Path path,
+      @NonNull SourceType srcType,
+      int version,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull Collection<Path> ignoredPaths,
       boolean isMultiRelease) {
     super(path, srcType);
     this.version = version;

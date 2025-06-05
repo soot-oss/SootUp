@@ -126,7 +126,12 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       return new DirectoryBasedAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.JAR)) {
-        return new ArchiveBasedAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
+        return new MultiReleaseJarAnalysisInputLocation(
+            path,
+            srcType,
+            MultiReleaseJarAnalysisInputLocation.DEFAULT_VERSION,
+            bodyInterceptors,
+            ignoredPaths);
       } else if (PathUtils.hasExtension(path, FileType.WAR)) {
         try {
           return new WarArchiveAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
