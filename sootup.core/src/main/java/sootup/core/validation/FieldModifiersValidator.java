@@ -29,6 +29,7 @@ import java.util.Set;
 import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
+import sootup.core.views.View;
 
 /** Validator that checks for impossible combinations of field modifiers */
 public class FieldModifiersValidator implements ClassValidator {
@@ -98,7 +99,7 @@ public class FieldModifiersValidator implements ClassValidator {
   }
 
   @Override
-  public void validate(SootClass sc, List<ValidationException> exceptions) {
+  public void validate(SootClass sc, List<ValidationException> exceptions, View view) {
     for (SootField sf : sc.getFields()) {
       if ((sf.isPrivate() || sf.isProtected()) && (sf.isPublic()) || sf.isProtected()) {
         exceptions.add(
