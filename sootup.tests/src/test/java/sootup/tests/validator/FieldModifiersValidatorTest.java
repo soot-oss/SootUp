@@ -121,7 +121,7 @@ public class FieldModifiersValidatorTest {
             EnumSet.of(ClassModifier.INTERFACE),
             EnumSet.of(FieldModifier.PUBLIC, FieldModifier.STATIC, FieldModifier.FINAL));
 
-    fieldModifiersValidator.validate(javaSootClass, validationExceptions_success);
+    fieldModifiersValidator.validate(javaSootClass, validationExceptions_success, view);
 
     assertEquals(0, validationExceptions_success.size());
   }
@@ -135,7 +135,7 @@ public class FieldModifiersValidatorTest {
             EnumSet.of(ClassModifier.PUBLIC),
             EnumSet.of(FieldModifier.PUBLIC, FieldModifier.PRIVATE));
 
-    fieldModifiersValidator.validate(javaSootClass, validationExceptions_fail1);
+    fieldModifiersValidator.validate(javaSootClass, validationExceptions_fail1, view);
 
     assertEquals(1, validationExceptions_fail1.size());
   }
@@ -178,7 +178,7 @@ public class FieldModifiersValidatorTest {
         testClassCreatorWithModifiers(
             EnumSet.of(ClassModifier.INTERFACE), EnumSet.of(FieldModifier.PRIVATE));
 
-    fieldModifiersValidator.validate(javaSootClass, validationExceptions_fail1);
+    fieldModifiersValidator.validate(javaSootClass, validationExceptions_fail1, view);
 
     assertEquals(3, validationExceptions_fail1.size());
   }

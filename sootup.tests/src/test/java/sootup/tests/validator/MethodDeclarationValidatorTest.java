@@ -103,7 +103,7 @@ public class MethodDeclarationValidatorTest {
             EnumSet.of(MethodModifier.ABSTRACT, MethodModifier.PUBLIC),
             Collections.emptyList());
 
-    methodDeclarationValidator.validate(javaSootClass, validationExceptions_success);
+    methodDeclarationValidator.validate(javaSootClass, validationExceptions_success, view);
 
     assertEquals(0, validationExceptions_success.size());
   }
@@ -125,7 +125,7 @@ public class MethodDeclarationValidatorTest {
                 MethodModifier.PROTECTED),
             Collections.emptyList());
 
-    methodDeclarationValidator.validate(javaSootClass, validationExceptions_fail1);
+    methodDeclarationValidator.validate(javaSootClass, validationExceptions_fail1, view);
 
     assertEquals(10, validationExceptions_fail1.size());
   }
@@ -140,7 +140,7 @@ public class MethodDeclarationValidatorTest {
             EnumSet.of(MethodModifier.PUBLIC),
             Stream.of("void", "null").collect(Collectors.toList()));
 
-    methodDeclarationValidator.validate(javaSootClass, validationExceptions_fail2);
+    methodDeclarationValidator.validate(javaSootClass, validationExceptions_fail2, view);
 
     assertEquals(2, validationExceptions_fail2.size());
   }
