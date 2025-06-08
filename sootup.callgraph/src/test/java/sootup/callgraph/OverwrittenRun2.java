@@ -1,13 +1,9 @@
-package t1;
+package sootup.callgraph;
 
 class UpdatedThread extends Thread {
-    public UpdatedThread(Runnable target) {
-        super(target);
-    }
-
     @Override
     public void run() {
-        super.run();
+        System.out.println("TestTestTest");
         System.out.println("Running Thread: " + Thread.currentThread().getName());
     }
 
@@ -18,11 +14,9 @@ class UpdatedThread extends Thread {
     }
 }
 
-public class OverwrittenRun {
+public class OverwrittenRun2 {
     public static void main(String[] args) {
-        StartRunRunnable task = new StartRunRunnable();
-
-        UpdatedThread thread = new UpdatedThread(task);
+        UpdatedThread thread = new UpdatedThread();
         thread.start();
     }
 }
