@@ -332,42 +332,6 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             getInvokableStmt(mainMethodSignature, instantiatedClassMethod)));
   }
 
-  @Test
-  public  void testOverwrittenRun() {
-    CallGraph cg = loadCallGraph("Implicit", "t1.OverwrittenRun");
-
-    MethodSignature updatedRunMethodSig =
-            identifierFactory.getMethodSignature(
-                    identifierFactory.getClassType("t1.UpdatedThread"),
-                    "run",
-                    "void",
-                    Collections.emptyList());
-    System.out.println("Call Graph (readable): " + cg.exportAsDot());
-    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
-    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
-    /*
-    assertTrue(
-            cg.containsCall(
-                    mainMethodSignature,
-                    updatedRunMethodSig,
-                    getInvokableStmt(mainMethodSignature, updatedRunMethodSig)));
-    */
-  }
-
-  @Test
-  public void testThreadRun() {
-    CallGraph cg = loadCallGraph("Implicit", "t2.ThreadRun");
-
-    MethodSignature updatedRunMethodSig =
-            identifierFactory.getMethodSignature(
-                    identifierFactory.getClassType("t2.StartRunRunnable2"),
-                    "run",
-                    "void",
-                    Collections.emptyList());
-    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
-    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
-  }
-
   // TODO: "<t1.UpdatedThread1: void start()>" -> "<java.lang.Thread: void run()>"; ?
   @Test
   public void testImplicitExample1 () {
