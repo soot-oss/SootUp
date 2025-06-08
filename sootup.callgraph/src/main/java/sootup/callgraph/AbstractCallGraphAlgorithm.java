@@ -261,14 +261,21 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
       System.out.println("MethodSig: " + methodSig);
-      callSources.addAll(cg.callSourcesTo(methodSig));
+      MethodSignature cMethodSig = resolveConcreteDispatch(view, methodSig).get();
+      System.out.println("CMethodSig: " + cMethodSig);
+      callSources.addAll(cg.callSourcesTo(cMethodSig));
       System.out.println("CallSources: " + callSources);
       if (callSources.isEmpty()) {
           return;
       }
       MethodSignature implicitRunMethodSig = new MethodSignature(methodSig.getDeclClassType(), "run", methodSig.getParameterTypes(), methodSig.getType());
+      Optional<MethodSignature> concreteMethodSig = resolveConcreteDispatch(view, implicitRunMethodSig);
       System.out.println("Implicit Run MethodSig: " + implicitRunMethodSig);
-      if (view.getMethod(implicitRunMethodSig).isEmpty()) {
+      //MethodSignature cMethodSig = null;
+      if (concreteMethodSig.isPresent()) {
+        cMethodSig = concreteMethodSig.get();
+      }
+        if (view.getMethod(cMethodSig).isEmpty()) {
           return;
       }
       for (MethodSignature sourceSig : callSources) {
