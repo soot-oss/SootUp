@@ -260,22 +260,17 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       ) {
         continue;
       }
-      System.out.println("MethodSig: " + methodSig);
       Optional<MethodSignature> cMethodSigOpt = resolveConcreteDispatch(view, methodSig);
       if (cMethodSigOpt.isEmpty()) {
         continue;
       }
       MethodSignature cMethodSig = cMethodSigOpt.get();
-      System.out.println("CMethodSig: " + cMethodSig);
       callSources.addAll(cg.callSourcesTo(cMethodSig));
-      System.out.println("CallSources: " + callSources);
       if (callSources.isEmpty()) {
           return;
       }
       MethodSignature implicitRunMethodSig = new MethodSignature(methodSig.getDeclClassType(), "run", methodSig.getParameterTypes(), methodSig.getType());
       Optional<MethodSignature> concreteMethodSig = resolveConcreteDispatch(view, implicitRunMethodSig);
-      System.out.println("Implicit Run MethodSig: " + implicitRunMethodSig);
-      //MethodSignature cMethodSig = null;
       if (concreteMethodSig.isPresent()) {
         cMethodSig = concreteMethodSig.get();
       }
@@ -283,8 +278,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           return;
       }
       for (MethodSignature sourceSig : callSources) {
-          // here java.lang.run() is present but not the highest in the hierarchy -> check for highest run in hierarchy
-          System.out.println("Added call. SourceSig: " + sourceSig + " TargetSig: " + implicitRunMethodSig);
           addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
       }
     }

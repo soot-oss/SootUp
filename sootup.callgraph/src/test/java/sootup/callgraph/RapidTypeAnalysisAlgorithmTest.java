@@ -332,11 +332,10 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             getInvokableStmt(mainMethodSignature, instantiatedClassMethod)));
   }
 
-  // TODO: "<t1.UpdatedThread1: void start()>" -> "<java.lang.Thread: void run()>"; ?
   @Test
   public void testImplicitExample1 () {
     CallGraph cg = loadCallGraph("Implicit", "t1.Example1");
-    System.out.println("Call Graph (Example1): " + cg.exportAsDot());
+    // System.out.println("Call Graph (Example1): " + cg.exportAsDot());
     MethodSignature updatedRunMethodSig =
             identifierFactory.getMethodSignature(
                     identifierFactory.getClassType("t1.UpdatedThread1"),
@@ -350,7 +349,7 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
   @Test
   public void testImplicitExample2 () {
     CallGraph cg = loadCallGraph("Implicit", "t2.Example2");
-    System.out.println("Call Graph (Example2): " + cg.exportAsDot());
+    // System.out.println("Call Graph (Example2): " + cg.exportAsDot());
     MethodSignature updatedRunMethodSig =
             identifierFactory.getMethodSignature(
                     identifierFactory.getClassType("t2.UpdatedThreadInner"),
@@ -364,7 +363,7 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
   @Test
   public void testImplicitExample3 () {
     CallGraph cg = loadCallGraph("Implicit", "t3.Example3");
-    System.out.println("Call Graph (Example3): " + cg.exportAsDot());
+    // System.out.println("Call Graph (Example3): " + cg.exportAsDot());
     MethodSignature updatedRunMethodSig =
             identifierFactory.getMethodSignature(
                     identifierFactory.getClassType("t3.UpdatedThreadOuter"),
@@ -378,7 +377,7 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
   @Test
   public void testImplicitExample4 () {
     CallGraph cg = loadCallGraph("Implicit", "t4.Example4");
-    System.out.println("Call Graph (Example4): " + cg.exportAsDot());
+    // System.out.println("Call Graph (Example4): " + cg.exportAsDot());
     MethodSignature updatedRunMethodSig =
             identifierFactory.getMethodSignature(
                     identifierFactory.getClassType("t4.UpdatedThreadInner"),
