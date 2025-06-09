@@ -48,6 +48,9 @@ public class ConstantUtil {
     if (obj instanceof Integer) {
       return IntConstant.getInstance((Integer) obj);
     }
+    if (obj instanceof Short) {
+      return IntConstant.getInstance(((Short) obj).intValue());
+    }
     if (obj instanceof Long) {
       return LongConstant.getInstance((Long) obj);
     }
