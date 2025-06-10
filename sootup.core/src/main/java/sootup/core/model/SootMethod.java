@@ -46,6 +46,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.util.ImmutableUtils;
 import sootup.core.util.printer.StmtPrinter;
+
 /**
  * Soot's counterpart of the source language's method concept. Soot representation of a Java method.
  * Can be declared to belong to a SootClass. Does not contain the actual code, which belongs to a

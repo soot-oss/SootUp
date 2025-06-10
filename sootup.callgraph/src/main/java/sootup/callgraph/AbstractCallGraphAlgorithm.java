@@ -235,6 +235,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   Set<MethodSignature> callSources = new HashSet<>();
+
   /**
    * It resolves the start-run implicit calls caused by the given source method
    *
@@ -242,9 +243,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param cg implicit start-run calls will be added to the call graph
    * @param workList new run methods will be added to the work list
    */
-  protected void implicitStartRunCall (
-          SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList
-  ) {
+  protected void implicitStartRunCall(
+      SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
       if (!stmt.isInvokableStmt()) {
         continue;
@@ -255,9 +255,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       }
       MethodSignature methodSig = invokableStmt.getInvokeExpr().get().getMethodSignature();
       if (!methodSig.getType().equals(VoidType.getInstance())
-              || !methodSig.getParameterTypes().isEmpty()
-              || !methodSig.getName().equals("start")
-      ) {
+          || !methodSig.getParameterTypes().isEmpty()
+          || !methodSig.getName().equals("start")) {
         continue;
       }
       Optional<MethodSignature> cMethodSigOpt = resolveConcreteDispatch(view, methodSig);
@@ -267,18 +266,24 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       MethodSignature cMethodSig = cMethodSigOpt.get();
       callSources.addAll(cg.callSourcesTo(cMethodSig));
       if (callSources.isEmpty()) {
-          return;
+        return;
       }
-      MethodSignature implicitRunMethodSig = new MethodSignature(methodSig.getDeclClassType(), "run", methodSig.getParameterTypes(), methodSig.getType());
-      Optional<MethodSignature> concreteMethodSig = resolveConcreteDispatch(view, implicitRunMethodSig);
+      MethodSignature implicitRunMethodSig =
+          new MethodSignature(
+              methodSig.getDeclClassType(),
+              "run",
+              methodSig.getParameterTypes(),
+              methodSig.getType());
+      Optional<MethodSignature> concreteMethodSig =
+          resolveConcreteDispatch(view, implicitRunMethodSig);
       if (concreteMethodSig.isPresent()) {
         cMethodSig = concreteMethodSig.get();
       }
-        if (view.getMethod(cMethodSig).isEmpty()) {
-          return;
+      if (view.getMethod(cMethodSig).isEmpty()) {
+        return;
       }
       for (MethodSignature sourceSig : callSources) {
-          addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
+        addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
       }
     }
   }

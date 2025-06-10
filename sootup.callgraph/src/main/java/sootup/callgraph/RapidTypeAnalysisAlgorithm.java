@@ -23,8 +23,6 @@ package sootup.callgraph;
  */
 
 import com.google.common.collect.ArrayListMultimap;
-
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,8 +38,6 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.core.model.SootMethod;
-import sootup.core.model.SootClass;
 
 /**
  * This class implements the Rapid Type Analysis call graph algorithm. In this algorithm, every
