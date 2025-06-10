@@ -63,6 +63,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   @NonNull
   protected final Map<Integer, AnalysisInputLocation> inputLocations = new LinkedHashMap<>();
 
+  /** resembles the desired java version of the used view for this (MultiRelease) Jar  */
   private final int version;
 
   public MultiReleaseJarAnalysisInputLocation(@NonNull Path path, int version) {
@@ -88,33 +89,20 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
       int version,
       @NonNull List<BodyInterceptor> bodyInterceptors,
       @NonNull Collection<Path> ignoredPaths) {
-    this(path, srcType, version, bodyInterceptors, ignoredPaths, isMultiReleaseJar(path));
-  }
-
-  protected MultiReleaseJarAnalysisInputLocation(
-      @NonNull Path path,
-      @NonNull SourceType srcType,
-      int version,
-      @NonNull List<BodyInterceptor> bodyInterceptors,
-      @NonNull Collection<Path> ignoredPaths,
-      boolean isMultiRelease) {
     super(path, srcType);
     this.version = version;
     this.bodyInterceptors = bodyInterceptors;
-
-    if (!isMultiRelease) {
-      throw new IllegalArgumentException("The given path does not point to a multi release jar.");
-    }
 
     FileSystem fs;
     try {
       fs = fileSystemCache.get(path);
     } catch (ExecutionException e) {
-      throw new IllegalArgumentException("Could not open filesystemcache.", e);
+      throw new IllegalStateException("Could not open filesystemcache.", e);
     }
 
     final Path archiveRoot = fs.getPath("/");
-    Path versionedRoot = archiveRoot.getFileSystem().getPath("/META-INF/versions/");
+    FileSystem fileSystem = archiveRoot.getFileSystem();
+    Path versionedRoot = fileSystem.getPath("/META-INF/versions/");
 
     try (Stream<Path> list = Files.list(versionedRoot)) {
       list.map(dir -> dir.getFileName().toString())
@@ -124,18 +112,20 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
           .forEach(
               ver -> {
                 final Path versionRoot =
-                    archiveRoot.getFileSystem().getPath("/META-INF", "versions", ver.toString());
+                    fileSystem.getPath("/META-INF", "versions", ver.toString());
                 inputLocations.put(
                     ver,
-                    create(versionRoot, sourceType, bodyInterceptors, Collections.emptyList()));
+                    create(versionRoot, sourceType, bodyInterceptors, ignoredPaths));
               });
-
-      inputLocations.put(
-          DEFAULT_VERSION,
-          createAnalysisInputLocation(archiveRoot, srcType, getBodyInterceptors()));
     } catch (IOException e) {
       throw new IllegalStateException("Can not index the given file.", e);
     }
+
+    // add default path - as with a regular jar.
+    inputLocations.put(
+            DEFAULT_VERSION,
+            createAnalysisInputLocation(archiveRoot, srcType, getBodyInterceptors()));
+
   }
 
   protected AnalysisInputLocation createAnalysisInputLocation(
@@ -191,7 +181,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     return version;
   }
 
-  public static boolean isMultiReleaseJar(Path path) {
+  public static boolean isMultiReleaseJar(@NonNull Path path) {
     try (FileInputStream inputStream = new FileInputStream(path.toFile());
         JarInputStream jarStream = new JarInputStream(inputStream)) {
       Manifest mf = jarStream.getManifest();
