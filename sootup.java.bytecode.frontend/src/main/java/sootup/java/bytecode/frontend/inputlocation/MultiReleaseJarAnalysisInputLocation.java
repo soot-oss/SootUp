@@ -58,8 +58,6 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   // "usual" Jar
   protected static final Integer DEFAULT_VERSION = 0;
 
-  @NonNull private final List<BodyInterceptor> bodyInterceptors;
-
   @NonNull
   protected final Map<Integer, AnalysisInputLocation> inputLocations = new LinkedHashMap<>();
 
@@ -89,9 +87,8 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
       int version,
       @NonNull List<BodyInterceptor> bodyInterceptors,
       @NonNull Collection<Path> ignoredPaths) {
-    super(path, srcType);
+    super(path, srcType, bodyInterceptors);
     this.version = version;
-    this.bodyInterceptors = bodyInterceptors;
 
     FileSystem fs;
     try {
