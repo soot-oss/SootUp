@@ -36,6 +36,8 @@ import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -54,6 +56,9 @@ import sootup.java.core.JavaSootClassSource;
  */
 public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
 
+  private static final @NonNull Logger logger =
+      LoggerFactory.getLogger(MultiReleaseJarAnalysisInputLocation.class);
+
   // ModularInputLocations exist since Java 9 -> in previous language levels its structured like a
   // "usual" Jar
   protected static final Integer DEFAULT_VERSION = 0;
@@ -61,7 +66,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   @NonNull
   protected final Map<Integer, AnalysisInputLocation> inputLocations = new LinkedHashMap<>();
 
-  /** resembles the desired java version of the used view for this (MultiRelease) Jar  */
+  /** resembles the desired java version of the used view for this (MultiRelease) Jar */
   private final int version;
 
   public MultiReleaseJarAnalysisInputLocation(@NonNull Path path, int version) {
@@ -101,28 +106,29 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     FileSystem fileSystem = archiveRoot.getFileSystem();
     Path versionedRoot = fileSystem.getPath("/META-INF/versions/");
 
-    try (Stream<Path> list = Files.list(versionedRoot)) {
-      list.map(dir -> dir.getFileName().toString())
-          .map(Integer::valueOf)
-          .filter(ver -> ver <= version)
-          .sorted(Comparator.reverseOrder())
-          .forEach(
-              ver -> {
-                final Path versionRoot =
-                    fileSystem.getPath("/META-INF", "versions", ver.toString());
-                inputLocations.put(
-                    ver,
-                    create(versionRoot, sourceType, bodyInterceptors, ignoredPaths));
-              });
-    } catch (IOException e) {
-      throw new IllegalStateException("Can not index the given file.", e);
+    if (Files.exists(versionedRoot)) {
+      try (Stream<Path> list = Files.list(versionedRoot)) {
+        list.map(dir -> dir.getFileName().toString())
+            .map(Integer::valueOf)
+            .filter(ver -> ver <= version)
+            .sorted(Comparator.reverseOrder())
+            .forEach(
+                ver -> {
+                  final Path versionRoot =
+                      fileSystem.getPath("/META-INF", "versions", ver.toString());
+                  inputLocations.put(
+                      ver, create(versionRoot, sourceType, bodyInterceptors, ignoredPaths));
+                });
+      } catch (IOException e) {
+        throw new IllegalStateException("Can not index the given file.", e);
+      }
+    } else {
+      logger.debug(path + " is not pointing to a multi release jar.");
     }
 
     // add default path - as with a regular jar.
     inputLocations.put(
-            DEFAULT_VERSION,
-            createAnalysisInputLocation(archiveRoot, srcType, getBodyInterceptors()));
-
+        DEFAULT_VERSION, createAnalysisInputLocation(archiveRoot, srcType, getBodyInterceptors()));
   }
 
   protected AnalysisInputLocation createAnalysisInputLocation(
