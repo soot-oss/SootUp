@@ -43,7 +43,8 @@ public enum BodyValidators {
       new StmtsValidator(),
       new TrapsValidator(),
       new TypesValidator(),
-      new UsesValidator());
+      new UsesValidator(),
+      new CheckEscapingValidator());
 
   @NonNull private final List<BodyValidator> bodyValidators;
 
