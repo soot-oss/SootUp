@@ -45,7 +45,8 @@ public enum BodyValidators {
       new TypesValidator(),
       new UsesValidator(),
       new CheckEscapingValidator(),
-      new CheckVoidLocalesValidator());
+      new CheckVoidLocalesValidator(),
+      new InvokeValidator());
 
   @NonNull private final List<BodyValidator> bodyValidators;
 
