@@ -2,6 +2,7 @@ package sootup.java.bytecode.frontend.minimaltestsuite.java6;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -29,7 +30,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
   // we can only read: RetentionPolicy.RUNTIME annotations
 
   private boolean hasAnnotationByName(ClassType classType, String annotationName) {
-    JavaSootClass sootClass = getJavaView().getClass(classType).get();
+    JavaSootClass sootClass = getJavaView().getClass(classType).orElse(null);
+    assertNotNull(sootClass);
     Iterable<AnnotationUsage> annotations = sootClass.getAnnotations();
     return StreamSupport.stream(annotations.spliterator(), false)
         .anyMatch(au -> au.getAnnotation().getClassName().equals(annotationName));
@@ -368,7 +370,6 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                   .getSubSignature());
       assertTrue(someMethod.isPresent());
       Body body = someMethod.get().getBody();
-      assert body != null;
       JavaLocal parameterLocal = (JavaLocal) body.getParameterLocal(0);
 
       // parameter local annotation

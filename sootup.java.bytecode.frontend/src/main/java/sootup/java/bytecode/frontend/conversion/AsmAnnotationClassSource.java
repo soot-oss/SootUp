@@ -104,8 +104,8 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
               AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
               asmClassClassSourceContent.setDeclaringClass(cs);
 
-              List<ClassType> exceptions = new ArrayList<>();
-              exceptions.addAll(AsmUtil.asmIdToSignature(methodSource.exceptions));
+              List<ClassType> exceptions =
+                  new ArrayList<>(AsmUtil.asmIdToSignature(methodSource.exceptions));
 
               String methodName = methodSource.name;
               EnumSet<MethodModifier> modifiers = Modifiers.getMethodModifiers(methodSource.access);
@@ -189,7 +189,7 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
     if (classNode.superName == null) {
       return Optional.empty();
     }
-    return Optional.ofNullable(AsmUtil.toJimpleClassType(classNode.superName));
+    return Optional.of(AsmUtil.toJimpleClassType(classNode.superName));
   }
 
   @NonNull

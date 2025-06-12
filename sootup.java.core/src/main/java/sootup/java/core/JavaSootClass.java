@@ -186,9 +186,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */
   @NonNull
   public Set<JavaSootMethod> getMethods() {
-    return this._lazyMethods.get().stream()
-        .map(method -> (JavaSootMethod) method)
-        .collect(Collectors.toSet());
+    return this._lazyMethods.get();
   }
 
   /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
