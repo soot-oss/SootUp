@@ -234,8 +234,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                                 sourceMethod.getSignature(), targetMethod, stmt, cg, workList)));
   }
 
-  Set<MethodSignature> callSources = new HashSet<>();
-
   /**
    * It resolves the start-run implicit calls caused by the given source method
    *
@@ -259,14 +257,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           || !methodSig.getName().equals("start")) {
         continue;
       }
-      Optional<MethodSignature> cMethodSigOpt = resolveConcreteDispatch(view, methodSig);
-      if (cMethodSigOpt.isEmpty()) {
+      // check if java.lang.Thread is superClass of methodSig.classType()
+      ClassType methodSigClassType = methodSig.getDeclClassType();
+      if (!superClassOfThread(methodSigClassType)) {
         continue;
-      }
-      MethodSignature cMethodSig = cMethodSigOpt.get();
-      callSources.addAll(cg.callSourcesTo(cMethodSig));
-      if (callSources.isEmpty()) {
-        return;
       }
       MethodSignature implicitRunMethodSig =
           new MethodSignature(
@@ -274,18 +268,42 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               "run",
               methodSig.getParameterTypes(),
               methodSig.getType());
-      Optional<MethodSignature> concreteMethodSig =
-          resolveConcreteDispatch(view, implicitRunMethodSig);
-      if (concreteMethodSig.isPresent()) {
-        cMethodSig = concreteMethodSig.get();
+      Optional<MethodSignature> concreteRunMethodSigOpt = resolveConcreteDispatch(view, implicitRunMethodSig);
+//      Stream<MethodSignature> runMethodStream = resolveCall(view.getMethod(implicitRunMethodSig).get(), invokableStmt);
+//      runMethodStream.forEach(System.out::println);
+      if (concreteRunMethodSigOpt.isEmpty()) {
+        continue;
       }
-      if (view.getMethod(cMethodSig).isEmpty()) {
+      MethodSignature concreteRunMethodSig = concreteRunMethodSigOpt.get();
+      if (view.getMethod(concreteRunMethodSig).isEmpty()) {
         return;
       }
-      for (MethodSignature sourceSig : callSources) {
-        addCallToCG(sourceSig, implicitRunMethodSig, invokableStmt, cg, workList);
+      // getting the sourceSig directly from the sourceMethod
+      addCallToCG(sourceMethod.getSignature(), concreteRunMethodSig, invokableStmt, cg, workList);
+    }
+  }
+
+  /**
+   * Checks all super-classes of the given classType and returns true if java.lang.Thread is among them.
+   *
+   * @param classType type of class which is checked
+   */
+  protected boolean superClassOfThread(@NonNull ClassType classType) {
+    // java.lang.Thread and java.lang.Object classTypes
+    ClassType threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
+    ClassType objectType = view.getIdentifierFactory().getClassType("java.lang.Object");
+    Optional<ClassType> superClassOpt = view.getTypeHierarchy().superClassOf(classType);
+    while (superClassOpt.isPresent()) {
+      ClassType superClass = superClassOpt.get();
+      if (superClass.equals(objectType)) {
+        return false;
+      } else if (superClass.equals(threadType)) {
+        return true;
+      } else {
+        superClassOpt = view.getTypeHierarchy().superClassOf(superClass);
       }
     }
+    return false;
   }
 
   /**
