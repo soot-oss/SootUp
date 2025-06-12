@@ -50,12 +50,12 @@ import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.util.Modifiers;
 import sootup.java.core.AnnotationUsage;
-import sootup.java.core.JavaAnnotationSootClassSource;
-import sootup.java.core.JavaAnnotationSootMethod;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootField;
+import sootup.java.core.JavaSootMethod;
 
-public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
+public class AsmAnnotationClassSource extends JavaSootClassSource {
 
   @NonNull protected final ClassNode classNode;
 
@@ -96,7 +96,7 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
         .collect(Collectors.toSet());
   }
 
-  private static Stream<JavaAnnotationSootMethod> resolveMethods(
+  private static Stream<JavaSootMethod> resolveMethods(
       List<MethodNode> methodNodes, IdentifierFactory signatureFactory, ClassType cs) {
     return methodNodes.stream()
         .map(
@@ -125,7 +125,7 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
 
               // TODO: position/line numbers if possible
 
-              return new JavaAnnotationSootMethod(
+              return new JavaSootMethod(
                   asmClassClassSourceContent,
                   methodSignature,
                   modifiers,

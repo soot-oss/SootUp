@@ -113,8 +113,8 @@ public class JavaView extends AbstractView {
   }
 
   @NonNull
-  public Optional<JavaAnnotationSootClass> getAnnotationClass(@NonNull ClassType type) {
-    return getClass(type).filter(SootClass::isAnnotation).map(sc -> (JavaAnnotationSootClass) sc);
+  public Optional<JavaSootClass> getAnnotationClass(@NonNull ClassType type) {
+    return getClass(type).filter(SootClass::isAnnotation);
   }
 
   @Override
