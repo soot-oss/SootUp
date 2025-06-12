@@ -34,7 +34,6 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.Position;
 import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
 import sootup.core.util.CollectionUtils;
 import sootup.java.core.types.JavaClassType;
@@ -169,8 +168,10 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   @NonNull
   @Override
   public Collection<JavaSootMethod> resolveMethods() throws ResolveException {
-    Collection<? extends SootMethod> sootMethods =
-        overriddenSootMethods != null ? overriddenSootMethods : delegate.resolveMethods();
+    Collection<JavaSootMethod> sootMethods =
+        overriddenSootMethods != null
+            ? overriddenSootMethods
+            : (Collection<JavaSootMethod>) delegate.resolveMethods();
     return sootMethods.stream().map(method -> (JavaSootMethod) method).collect(Collectors.toList());
   }
 

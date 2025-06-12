@@ -59,7 +59,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   private final Supplier<Optional<? extends ClassType>> lazyOuterClass;
   private final Supplier<Position> lazyPosition;
 
-  @NonNull private final Supplier<Set<? extends SootMethod>> _lazyMethods;
+  @NonNull private final Supplier<Set<JavaSootMethod>> _lazyMethods;
 
   @NonNull private final Supplier<Set<? extends SootField>> _lazyFields;
 
@@ -168,11 +168,12 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   @NonNull
-  private Set<SootMethod> lazyMethodInitializer() {
-    Set<SootMethod> methods;
+  private Set<JavaSootMethod> lazyMethodInitializer() {
+    Set<JavaSootMethod> methods;
 
     try {
-      methods = ImmutableUtils.immutableSetOf(this.classSource.resolveMethods());
+      methods =
+          (Set<JavaSootMethod>) ImmutableUtils.immutableSetOf(this.classSource.resolveMethods());
     } catch (ResolveException e) {
       // TODO: [JMP] Exception handling
       e.printStackTrace();

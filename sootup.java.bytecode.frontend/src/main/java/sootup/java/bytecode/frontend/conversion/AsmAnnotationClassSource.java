@@ -90,7 +90,7 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
   }
 
   @NonNull
-  public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
+  public Collection<JavaSootMethod> resolveMethods() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveMethods(classNode.methods, identifierFactory, classSignature)
         .collect(Collectors.toSet());

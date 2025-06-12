@@ -24,6 +24,7 @@ import sootup.interceptors.typeresolving.TypeResolver;
 import sootup.interceptors.typeresolving.types.TopType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaPackageName;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -109,7 +110,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature("NewArrayInstance", "entry", "void", Collections.emptyList());
-    final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
+    final Optional<JavaSootMethod> methodOpt = view.getMethod(methodSignature);
     final SootMethod sootMethod = methodOpt.get();
     final Body.BodyBuilder builder =
         Body.builder(sootMethod.getBody(), EnumSet.noneOf(MethodModifier.class));
