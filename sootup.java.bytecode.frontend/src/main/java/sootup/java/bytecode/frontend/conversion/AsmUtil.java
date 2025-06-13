@@ -163,7 +163,7 @@ public final class AsmUtil {
   }
 
   @NonNull
-  public static Collection<JavaClassType> asmIdToSignature(
+  public static Collection<JavaClassType> asmIdToSignatures(
       @Nullable Iterable<String> asmClassNames) {
     if (asmClassNames == null) {
       return Collections.emptyList();

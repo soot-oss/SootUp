@@ -154,7 +154,7 @@ public class AsmModuleSource extends JavaModuleInfo {
         throw new IllegalStateException("provides entry without 'with' .");
       }
       Iterable<JavaClassType> providersSignatures =
-          AsmUtil.asmIdToSignature(moduleProvideNode.providers);
+          AsmUtil.asmIdToSignatures(moduleProvideNode.providers);
       for (JavaClassType sootClassSignature : providersSignatures) {
         providers.add(new InterfaceReference(sootClassSignature, serviceSignature));
       }

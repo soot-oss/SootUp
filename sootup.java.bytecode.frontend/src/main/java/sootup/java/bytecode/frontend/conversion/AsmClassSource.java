@@ -31,6 +31,7 @@ import java.util.stream.StreamSupport;
 import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.tree.*;
 import sootup.core.IdentifierFactory;
+import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -101,15 +102,17 @@ class AsmClassSource extends JavaSootClassSource {
 
   @NonNull
   public Set<JavaSootMethod> resolveMethods() throws ResolveException {
+    // FIXME: [ms] don't create a new instance of the identifierfactory!
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    return classNode.methods.stream()
+
+    return classNode.methods.parallelStream()
         .map(
             methodSource -> {
               AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
               asmClassClassSourceContent.setDeclaringClass(classSignature);
 
               List<ClassType> exceptions =
-                  new ArrayList<>(AsmUtil.asmIdToSignature(methodSource.exceptions));
+                  new ArrayList<>(AsmUtil.asmIdToSignatures(methodSource.exceptions));
 
               String methodName = methodSource.name;
               EnumSet<MethodModifier> modifiers = Modifiers.getMethodModifiers(methodSource.access);
@@ -120,9 +123,15 @@ class AsmClassSource extends JavaSootClassSource {
                   identifierFactory.getMethodSignature(
                       classSignature, methodName, retType, sigTypes);
 
-              // TODO: position/line numbers if possible
+              // copy to eager load the method and release the asm library memory
+              OverridingBodySource obs =
+                  new OverridingBodySource(
+                      methodSignature, asmClassClassSourceContent.resolveBody(modifiers));
+
+              // TODO: position/line numbers if possible.. e.g. get min/max line entry in
+              // LineNumberTable of each method to at least specify a region..
               return new JavaSootMethod(
-                  asmClassClassSourceContent,
+                  obs,
                   methodSignature,
                   modifiers,
                   exceptions,
@@ -149,7 +158,7 @@ class AsmClassSource extends JavaSootClassSource {
 
   @NonNull
   public Set<JavaClassType> resolveInterfaces() {
-    return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
+    return new HashSet<>(AsmUtil.asmIdToSignatures(classNode.interfaces));
   }
 
   @NonNull
@@ -170,7 +179,7 @@ class AsmClassSource extends JavaSootClassSource {
 
   @NonNull
   public Position resolvePosition() {
-    // TODO [ms]: implement line numbers for bytecode
+    // TODO [ms]: augment line numbers from bytecode
     return NoPositionInformation.getInstance();
   }
 

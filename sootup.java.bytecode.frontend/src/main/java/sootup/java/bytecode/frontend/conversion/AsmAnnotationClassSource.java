@@ -105,7 +105,7 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
               asmClassClassSourceContent.setDeclaringClass(cs);
 
               List<ClassType> exceptions = new ArrayList<>();
-              exceptions.addAll(AsmUtil.asmIdToSignature(methodSource.exceptions));
+              exceptions.addAll(AsmUtil.asmIdToSignatures(methodSource.exceptions));
 
               String methodName = methodSource.name;
               EnumSet<MethodModifier> modifiers = Modifiers.getMethodModifiers(methodSource.access);
@@ -181,7 +181,7 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
 
   @NonNull
   public Set<? extends ClassType> resolveInterfaces() {
-    return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
+    return new HashSet<>(AsmUtil.asmIdToSignatures(classNode.interfaces));
   }
 
   @NonNull

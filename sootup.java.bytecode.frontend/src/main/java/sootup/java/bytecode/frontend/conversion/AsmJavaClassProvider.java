@@ -66,7 +66,7 @@ public class AsmJavaClassProvider implements ClassProvider {
       return Optional.empty();
     }
 
-    if (actualClassFQNOpt.isPresent() && !actualClassFQNOpt.get().equals(requestedClassFQN)) {
+    if (!actualClassFQNOpt.get().equals(requestedClassFQN)) {
       logger.warn(
           "Class names do not match. Actual:{}, Requested:{}",
           actualClassFQNOpt.get(),
