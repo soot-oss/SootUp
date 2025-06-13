@@ -11,7 +11,7 @@ import sootup.core.graph.BlockGraphIterator;
 import sootup.core.graph.MutableBasicBlockImpl;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;

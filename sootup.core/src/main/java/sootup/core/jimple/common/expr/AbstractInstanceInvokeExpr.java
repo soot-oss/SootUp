@@ -25,9 +25,9 @@ package sootup.core.jimple.common.expr;
 import java.util.List;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.signatures.MethodSignature;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {

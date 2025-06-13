@@ -9,7 +9,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Disabled;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.signatures.MethodSignature;

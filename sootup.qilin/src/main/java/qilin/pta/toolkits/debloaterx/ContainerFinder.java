@@ -9,7 +9,7 @@ import qilin.core.pag.ArrayElement;
 import qilin.core.pag.PAG;
 import qilin.core.pag.SparkField;
 import qilin.util.Stopwatch;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.types.ArrayType;

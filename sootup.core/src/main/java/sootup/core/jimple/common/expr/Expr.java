@@ -23,7 +23,7 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.Optional;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.ExprVisitor;
 

@@ -28,8 +28,8 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -41,8 +41,7 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 
 /**
- * {@link sootup.core.jimple.basic.Value} to {@link Node} converter. Supported nodes according to
- * the Spark thesis:
+ * {@link Value} to {@link Node} converter. Supported nodes according to the Spark thesis:
  *
  * <ul>
  *   <li>AllocationNode

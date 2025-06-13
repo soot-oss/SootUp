@@ -18,7 +18,7 @@
 
 package qilin.core.natives;
 
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 

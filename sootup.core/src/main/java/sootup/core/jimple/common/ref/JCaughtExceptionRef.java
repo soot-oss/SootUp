@@ -25,7 +25,7 @@ package sootup.core.jimple.common.ref;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.RefVisitor;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;

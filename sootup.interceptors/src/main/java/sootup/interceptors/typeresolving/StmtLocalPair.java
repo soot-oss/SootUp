@@ -22,7 +22,7 @@ package sootup.interceptors.typeresolving;
  * #L%
  */
 
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 
 // FIXME: ms: refactor to Pair<Stmt, Local>

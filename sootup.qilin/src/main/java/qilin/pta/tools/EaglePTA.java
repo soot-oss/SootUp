@@ -28,7 +28,7 @@ import qilin.core.pag.Parm;
 import qilin.pta.toolkits.eagle.Eagle;
 import qilin.util.Pair;
 import qilin.util.Stopwatch;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.stmt.Stmt;

@@ -19,8 +19,8 @@
 package qilin.core.natives;
 
 import qilin.util.PTAUtils;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 

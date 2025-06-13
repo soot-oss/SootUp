@@ -1,10 +1,10 @@
-package sootup.core.jimple.basic;
+package sootup.core.jimple.common;
 
 /*-
  * #%L
- * SootUp
+ * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997 - 2024 Raja Vallée-Rai and others
+ * Copyright (C) 2004-2020 Ondrej Lhotak, Linghui Luo and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,5 +22,9 @@ package sootup.core.jimple.basic;
  * #L%
  */
 
-/** Marker interface for Values that can be on the left side of an Assignment */
-public interface LValue extends Value {}
+/**
+ * Immediate is a local or a constant.
+ *
+ * @author Linghui Luo
+ */
+public interface Immediate extends Value {}
