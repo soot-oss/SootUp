@@ -63,6 +63,7 @@ sootup.core.graph
 sootup.core.inputlocation
 sootup.core.jimple
 sootup.core.jimple.basic
+sootup.core.jimple.common
 sootup.core.jimple.common.constant
 sootup.core.jimple.common.expr
 sootup.core.jimple.common.ref
