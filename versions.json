@@ -40,6 +40,11 @@
     }
   },
   {
+    "version": "eagerload_complete_class_from_bytecode_preview",
+    "title": "PR Preview eagerload_complete_class_from_bytecode",
+    "aliases": []
+  },
+  {
     "version": "develop",
     "title": "develop",
     "aliases": []
