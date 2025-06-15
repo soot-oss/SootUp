@@ -265,6 +265,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected void implicitStartRunCall(
       SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
+    ClassType threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
+    SootClass threadClass = view.getClassOrThrow(threadType);
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
       if (!stmt.isInvokableStmt()) {
         continue;
@@ -281,8 +283,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
       // check if java.lang.Thread is superClass of methodSig.classType()
-      ClassType methodSigClassType = methodSig.getDeclClassType();
-      if (!superClassOfThread(methodSigClassType)) {
+      if (findMethodInHierarchy(view, threadClass, methodSig.getSubSignature())
+          .equals(Optional.empty())) {
         continue;
       }
       MethodSignature implicitRunMethodSig =
@@ -291,10 +293,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               "run",
               methodSig.getParameterTypes(),
               methodSig.getType());
-      // List<NullConstant> emptyList = new ArrayList<>();
-      // AbstractInvokeExpr runInvokeExpr = new JVirtualInvokeExpr(, implicitRunMethodSig,
-      // emptyList);
-      // TODO: removes specialInvokes (Question, if okay)
       if (!sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
         continue;
       }
@@ -318,31 +316,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                 }
               });
     }
-  }
-
-  // TODO: replace with already implemented method -> findMethodInHierrchy() only in newer versions
-  /**
-   * Checks all super-classes of the given classType and returns true if java.lang.Thread is among
-   * them.
-   *
-   * @param classType type of class which is checked
-   */
-  protected boolean superClassOfThread(@NonNull ClassType classType) {
-    // java.lang.Thread and java.lang.Object classTypes
-    ClassType threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
-    ClassType objectType = view.getIdentifierFactory().getClassType("java.lang.Object");
-    Optional<ClassType> superClassOpt = view.getTypeHierarchy().superClassOf(classType);
-    while (superClassOpt.isPresent()) {
-      ClassType superClass = superClassOpt.get();
-      if (superClass.equals(objectType)) {
-        return false;
-      } else if (superClass.equals(threadType)) {
-        return true;
-      } else {
-        superClassOpt = view.getTypeHierarchy().superClassOf(superClass);
-      }
-    }
-    return false;
   }
 
   /**
