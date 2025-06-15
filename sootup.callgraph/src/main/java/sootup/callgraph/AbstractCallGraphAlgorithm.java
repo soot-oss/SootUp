@@ -22,6 +22,8 @@ package sootup.callgraph;
  * #L%
  */
 
+import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,9 +35,11 @@ import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
@@ -251,7 +255,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       if (invokableStmt.getInvokeExpr().isEmpty()) {
         continue;
       }
-      MethodSignature methodSig = invokableStmt.getInvokeExpr().get().getMethodSignature();
+      AbstractInvokeExpr sourceMethodInvokeExpr = invokableStmt.getInvokeExpr().get();
+      MethodSignature methodSig = sourceMethodInvokeExpr.getMethodSignature();
       if (!methodSig.getType().equals(VoidType.getInstance())
           || !methodSig.getParameterTypes().isEmpty()
           || !methodSig.getName().equals("start")) {
@@ -268,23 +273,39 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               "run",
               methodSig.getParameterTypes(),
               methodSig.getType());
-      Optional<MethodSignature> concreteRunMethodSigOpt = resolveConcreteDispatch(view, implicitRunMethodSig);
-//      Stream<MethodSignature> runMethodStream = resolveCall(view.getMethod(implicitRunMethodSig).get(), invokableStmt);
-//      runMethodStream.forEach(System.out::println);
-      if (concreteRunMethodSigOpt.isEmpty()) {
+      // List<NullConstant> emptyList = new ArrayList<>();
+      // AbstractInvokeExpr runInvokeExpr = new JVirtualInvokeExpr(, implicitRunMethodSig,
+      // emptyList);
+      // TODO: removes specialInvokes (Question, if okay)
+      if (!sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
         continue;
       }
-      MethodSignature concreteRunMethodSig = concreteRunMethodSigOpt.get();
-      if (view.getMethod(concreteRunMethodSig).isEmpty()) {
-        return;
-      }
-      // getting the sourceSig directly from the sourceMethod
-      addCallToCG(sourceMethod.getSignature(), concreteRunMethodSig, invokableStmt, cg, workList);
+      JVirtualInvokeExpr runInvokeExpr =
+          invokableStmt
+              .getInvokeExpr()
+              .get()
+              .asJVirtualInvokeExpr()
+              .withMethodSignature(implicitRunMethodSig);
+      InvokableStmt runInvokableStmt = new JInvokeStmt(runInvokeExpr, getNoStmtPositionInfo());
+      resolveCall(sourceMethod, runInvokableStmt)
+          .forEach(
+              runMethodSignature -> {
+                if (view.getMethod(runMethodSignature).isPresent()) {
+                  addCallToCG(
+                      sourceMethod.getSignature(),
+                      runMethodSignature,
+                      runInvokableStmt,
+                      cg,
+                      workList);
+                }
+              });
     }
   }
 
+  // TODO: replace with already implemented method -> findMethodInHierrchy() only in newer versions
   /**
-   * Checks all super-classes of the given classType and returns true if java.lang.Thread is among them.
+   * Checks all super-classes of the given classType and returns true if java.lang.Thread is among
+   * them.
    *
    * @param classType type of class which is checked
    */

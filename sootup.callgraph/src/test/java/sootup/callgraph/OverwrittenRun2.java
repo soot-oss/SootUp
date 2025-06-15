@@ -3,14 +3,7 @@ package sootup.callgraph;
 class UpdatedThread extends Thread {
   @Override
   public void run() {
-    System.out.println("TestTestTest");
     System.out.println("Running Thread: " + Thread.currentThread().getName());
-  }
-
-  @Override
-  public synchronized void start() {
-    super.start();
-    System.out.println("Starting Thread: " + Thread.currentThread().getName());
   }
 }
 

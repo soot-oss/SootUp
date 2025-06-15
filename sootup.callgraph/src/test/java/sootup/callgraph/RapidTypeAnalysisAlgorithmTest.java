@@ -387,4 +387,18 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
     assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
   }
+
+  @Test
+  public void testImplicitExample5() {
+    CallGraph cg = loadCallGraph("Implicit", "t5.Example5");
+    System.out.println("Call Graph (Example5): " + cg.exportAsDot());
+    MethodSignature updatedRunMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t5.UpdatedThread2"),
+            "run",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
 }
