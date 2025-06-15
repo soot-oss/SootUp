@@ -21,7 +21,7 @@ package qilin.core;
 import qilin.core.context.Context;
 import qilin.core.pag.Node;
 import qilin.core.sets.PointsToSet;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 

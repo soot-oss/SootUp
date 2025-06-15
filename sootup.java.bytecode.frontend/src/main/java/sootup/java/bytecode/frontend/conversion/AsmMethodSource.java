@@ -44,6 +44,10 @@ import sootup.core.frontend.BodySource;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Trap;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
@@ -258,7 +262,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     if (a instanceof ArrayList) {
       List<Object> list = new ArrayList<>();
-      ((ArrayList) a).forEach(e -> list.add(resolveAnnotationsInDefaultValue(e)));
+      ((ArrayList<?>) a).forEach(e -> list.add(resolveAnnotationsInDefaultValue(e)));
       return list;
     }
     return AsmUtil.convertAnnotationValue(a);

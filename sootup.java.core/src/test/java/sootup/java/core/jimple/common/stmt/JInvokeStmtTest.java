@@ -35,10 +35,10 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.EagerInputLocation;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -50,10 +50,7 @@ import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootField;
-import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.*;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
@@ -88,7 +85,7 @@ public class JInvokeStmtTest {
             Collections.emptyList(),
             Collections.emptyList());
 
-    SootClass sootClass = new SootClass(javaClassSource, SourceType.Application);
+    SootClass sootClass = new JavaSootClass(javaClassSource, SourceType.Application);
 
     // JStaticInvokeExpr
     MethodSignature statMethodSig =

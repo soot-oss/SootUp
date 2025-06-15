@@ -24,8 +24,8 @@ package sootup.interceptors.typeresolving;
 
 import java.util.Collection;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;

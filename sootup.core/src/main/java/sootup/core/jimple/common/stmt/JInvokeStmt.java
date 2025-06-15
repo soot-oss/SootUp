@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.visitor.StmtVisitor;
@@ -41,11 +41,6 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
       @NonNull AbstractInvokeExpr invokeExpr, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.invokeExpr = invokeExpr;
-  }
-
-  @Override
-  public boolean containsInvokeExpr() {
-    return true;
   }
 
   @Override

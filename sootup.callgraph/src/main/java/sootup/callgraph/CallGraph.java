@@ -22,8 +22,10 @@ package sootup.callgraph;
  * #L%
  */
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.signatures.MethodSignature;
@@ -31,33 +33,18 @@ import sootup.core.signatures.MethodSignature;
 /** The interface of all implemented call graph data structures */
 public interface CallGraph {
 
-  class Call {
-    @NonNull private final MethodSignature sourceMethodSignature;
-    @NonNull private final MethodSignature targetMethodSignature;
-    @NonNull private final InvokableStmt invokableStmt;
+  record Call(
+      @NonNull MethodSignature sourceMethodSignature,
+      @NonNull MethodSignature targetMethodSignature,
+      @NonNull InvokableStmt invokableStmt) {
 
-    public Call(
-        @NonNull MethodSignature sourceMethodSignature,
-        @NonNull MethodSignature targetMethodSignature,
-        @NonNull InvokableStmt invokableStmt) {
-      this.sourceMethodSignature = sourceMethodSignature;
-      this.invokableStmt = invokableStmt;
-      this.targetMethodSignature = targetMethodSignature;
-    }
-
-    @NonNull
-    public MethodSignature getSourceMethodSignature() {
-      return sourceMethodSignature;
-    }
-
-    @NonNull
-    public MethodSignature getTargetMethodSignature() {
-      return targetMethodSignature;
-    }
-
-    @NonNull
-    public InvokableStmt getInvokableStmt() {
-      return invokableStmt;
+    /**
+     * The line number of the stmt causing the call
+     *
+     * @return the line number of the stmt. If the position is unknown, it will return -1
+     */
+    public int getLineNumber() {
+      return invokableStmt.getPositionInfo().getStmtPosition().getFirstLine();
     }
 
     @Override
@@ -76,14 +63,7 @@ public interface CallGraph {
     }
 
     @Override
-    public int hashCode() {
-      int result = sourceMethodSignature.hashCode();
-      result = 31 * result + targetMethodSignature.hashCode();
-      result = 31 * result + invokableStmt.hashCode();
-      return result;
-    }
-
-    @Override
+    @NonNull
     public String toString() {
       return "Call:"
           + sourceMethodSignature
@@ -102,6 +82,14 @@ public interface CallGraph {
    * @return a set containing all method signatures in the call graph.
    */
   @NonNull Set<MethodSignature> getMethodSignatures();
+
+  /**
+   * This method returns all calls in the call graph. Calls are a edges in the call graph. They
+   * contain the source, target and calling stmt.
+   *
+   * @return a set containing all calls in the call graph.
+   */
+  @NonNull Set<Call> getCalls();
 
   /**
    * This method returns all method signatures that are called by a given method signature. It
@@ -180,8 +168,52 @@ public interface CallGraph {
    */
   int callCount();
 
-  /** This method converts the call graph object into dot format and write it to a string file. */
-  String exportAsDot();
+  /**
+   * exports a call of the call graph to an edge in a dot file
+   *
+   * @param call the data of the call
+   * @return an edge defining the call in the dot file
+   */
+  default StringBuilder toDotEdge(Call call) {
+    return new StringBuilder("\"")
+        .append(call.sourceMethodSignature())
+        .append("\"->\"")
+        .append(call.targetMethodSignature())
+        .append("\"[label=\"")
+        .append(call.getLineNumber())
+        .append("\"]");
+  }
+
+  /**
+   * This method converts the call graph object into dot format and write it to a string file. The
+   * first entry contains the graph info and the last entry closes the graph.
+   *
+   * @return a stream containing all edges as Strings in the dot format
+   */
+  default Stream<String> exportAsDot() {
+    return Stream.concat(
+        Stream.concat(
+            Stream.of("strict digraph ObjectGraph {"),
+            getCalls().stream().map(call -> toDotEdge(call).toString())),
+        Stream.of("}"));
+  }
+
+  /**
+   * This method converts the call graph object into dot format and writes it to a string file. The
+   * calls are sorted by the given Comparator for Call Objects. The first entry opens the graph and
+   * the last entry closes the graph.
+   *
+   * @param callComparator the comparator responsible for sorting the calls
+   * @return a stream containing all edges as Strings in the dot format sorted by the given
+   *     Comparator
+   */
+  default Stream<String> exportAsDot(Comparator<Call> callComparator) {
+    return Stream.concat(
+        Stream.concat(
+            Stream.of("strict digraph ObjectGraph {"),
+            getCalls().stream().sorted(callComparator).map(call -> toDotEdge(call).toString())),
+        Stream.of("}"));
+  }
 
   /**
    * This method copies a call graph.

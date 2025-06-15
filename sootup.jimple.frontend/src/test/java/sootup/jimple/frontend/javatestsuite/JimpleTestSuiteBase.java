@@ -13,9 +13,10 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.util.Utils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
-import sootup.jimple.frontend.JimpleView;
 
 /**
  * @author Markus Schmidt
@@ -24,11 +25,11 @@ public abstract class JimpleTestSuiteBase {
 
   static final String baseDir = "src/test/java/resources/jimple/";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-  private JimpleView view;
+  private JavaView view;
 
   @BeforeEach
   public void setup() {
-    view = new JimpleView(new JimpleAnalysisInputLocation(Paths.get(baseDir)));
+    view = new JavaView(new JimpleAnalysisInputLocation(Paths.get(baseDir)));
   }
 
   /**
@@ -62,7 +63,7 @@ public abstract class JimpleTestSuiteBase {
 
   public SootClass loadClass(ClassType clazz) {
 
-    Optional<SootClass> cs = view.getClass(clazz);
+    Optional<JavaSootClass> cs = view.getClass(clazz);
     assertTrue(cs.isPresent(), "no matching class for " + clazz + " found");
     return cs.get();
   }

@@ -1,4 +1,4 @@
-public class InfiniteLoops {
+public abstract class InfiniteLoops {
     void tc1() {
         int x = 10;
         while (true) {
@@ -24,4 +24,6 @@ public class InfiniteLoops {
             if (mul > 1000) break;
         }
     }
+
+    abstract void tc3NotPresent();
 }

@@ -1,4 +1,4 @@
-package sootup.core.jimple.basic;
+package sootup.core.jimple.common;
 
 /*-
  * #%L
@@ -28,6 +28,8 @@ import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.JimpleComparator;
+import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.Acceptor;

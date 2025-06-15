@@ -67,15 +67,18 @@ public class FieldModifiersValidatorTest {
         bodyBuilder.setMethodSignature(methodSignature).setLocals(generator.getLocals()).build();
     assertEquals(1, body.getLocalCount());
 
+    FieldSignature fieldSignature =
+        new FieldSignature(
+            new JavaClassType("FieldModifiersValidator", PackageName.DEFAULT_PACKAGE),
+            "i",
+            PrimitiveType.IntType.getInstance());
     JavaSootField dummyField =
-        new JavaSootField(
-            new FieldSignature(
-                new JavaClassType("FieldModifiersValidator", PackageName.DEFAULT_PACKAGE),
-                "i",
-                PrimitiveType.IntType.getInstance()),
-            fieldModifierEnumSet,
-            Collections.emptyList(),
-            NoPositionInformation.getInstance());
+        JavaSootField.JavaSootFieldBuilder.builder()
+            .withSignature(fieldSignature)
+            .withModifier(fieldModifierEnumSet)
+            .withAnnotation(Collections.emptyList())
+            .withPosition(NoPositionInformation.getInstance())
+            .build();
 
     JavaSootMethod dummyMainMethod =
         new JavaSootMethod(

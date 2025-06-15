@@ -27,7 +27,7 @@ import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.*;
 import sootup.core.jimple.JimpleUtils;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
@@ -254,7 +254,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
    * @return A collection of all the Stmts that are targets of a BranchingStmt
    */
   @NonNull
-  public Collection<Stmt> getLabeledStmts(StmtGraph stmtGraph, List<Trap> traps) {
+  public Collection<Stmt> getLabeledStmts(StmtGraph<?> stmtGraph, List<Trap> traps) {
     Set<Stmt> stmtList = new HashSet<>();
     Collection<Stmt> stmtGraphNodes = stmtGraph.getNodes();
     for (Stmt stmt : stmtGraphNodes) {

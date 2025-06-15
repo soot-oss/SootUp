@@ -52,10 +52,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
-import sootup.java.core.AnnotationUsage;
-import sootup.java.core.ConstantUtil;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.ModuleModifier;
+import sootup.java.core.*;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
@@ -96,7 +93,25 @@ public final class AsmUtil {
     if ((classNode.access & Opcodes.ACC_ANNOTATION) == Opcodes.ACC_ANNOTATION) {
       return new AsmAnnotationClassSource(analysisInputLocation, sourcePath, classType, classNode);
     }
-    return new AsmClassSource(analysisInputLocation, sourcePath, classType, classNode);
+
+    AsmClassSource asmClassSource =
+        new AsmClassSource(analysisInputLocation, sourcePath, classType, classNode);
+    // copy and load the complete class at once into memory so the newly created asmClassSource can
+    // release the memory and structures from the asm library
+    return new OverridingJavaClassSource(
+        asmClassSource.getAnalysisInputLocation(),
+        asmClassSource.getSourcePath(),
+        asmClassSource.getClassType(),
+        asmClassSource.resolveSuperclass().orElse(null),
+        asmClassSource.resolveInterfaces(),
+        asmClassSource.resolveOuterClass().orElse(null),
+        asmClassSource.resolveFields(),
+        asmClassSource.resolveMethods(),
+        asmClassSource.resolvePosition(),
+        asmClassSource.resolveModifiers(),
+        asmClassSource.resolveAnnotations(),
+        Collections.emptyList(), // TODO! implement
+        Collections.emptyList());
   }
 
   /**
@@ -346,8 +361,8 @@ public final class AsmUtil {
           if (annotationValue instanceof ArrayList
               && !((ArrayList<?>) annotationValue).isEmpty()
               && ((ArrayList<?>) annotationValue).get(0) instanceof AnnotationNode) {
-            final ArrayList<AnnotationNode> annotationValueList =
-                (ArrayList<AnnotationNode>) annotationValue;
+            final List<AnnotationNode> annotationValueList =
+                ((ArrayList<?>) annotationValue).stream().map(av -> (AnnotationNode) av).toList();
 
             paramMap.put(annotationName, createAnnotationUsage(annotationValueList));
           } else if (annotationValue instanceof AnnotationNode) {

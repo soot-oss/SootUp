@@ -5,10 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -85,7 +84,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertNotNull(method);
     for (Stmt invokableStmt : method.getBody().getStmts()) {
       if (invokableStmt instanceof InvokableStmt
-          && ((InvokableStmt) invokableStmt).containsInvokeExpr()) {
+          && ((InvokableStmt) invokableStmt).getInvokeExpr().isPresent()) {
         AbstractInvokeExpr stmt = ((InvokableStmt) invokableStmt).getInvokeExpr().orElse(null);
         assertNotNull(stmt);
         if (stmt.getMethodSignature().equals(staticTargetMethod)) {
@@ -116,7 +115,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
       // look only at assigments which do Invoke but does not contain a direct invoke expr
       // static fields and new array expressions
       if (invokableStmt instanceof JAssignStmt
-          && !((InvokableStmt) invokableStmt).containsInvokeExpr()
+          && ((InvokableStmt) invokableStmt).getInvokeExpr().isEmpty()
           && ((InvokableStmt) invokableStmt).invokesStaticInitializer()) {
         Value expr;
         // look at the left or right side of the assigment
@@ -525,7 +524,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertFalse(cg.containsMethod(uncalledMethod));
   }
 
-  @Disabled // soundness feature currently not supported by SootUp will be addressed in Issue #1194
   @Test
   public void testNonVirtualCall4() {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc4.Class");
@@ -1012,7 +1010,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   @Test
   public void testNoMainMethod() {
 
-    JavaView view = createViewForClassPath("src/test/resources/callgraph/NoMainMethod");
+    JavaView view = createViewForClassPath("src/test/resources/callgraph/NoMainMethod/binary");
 
     CallGraphAlgorithm algorithm = createAlgorithm(view);
     try {

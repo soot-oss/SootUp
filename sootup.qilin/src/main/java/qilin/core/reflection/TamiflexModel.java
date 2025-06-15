@@ -28,6 +28,10 @@ import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -434,7 +438,7 @@ public class TamiflexModel extends ReflectionModel {
     for (SootMethod sm : sourceMethods) {
       Body body = PTAUtils.getMethodBody(sm);
       for (Stmt stmt : body.getStmts()) {
-        if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
+        if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
           String methodSig =
               stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature().toString();
           if (matchReflectionKind(kind, methodSig)) {

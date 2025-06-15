@@ -31,10 +31,10 @@ import qilin.core.pag.*;
 import qilin.core.pag.Field;
 import qilin.util.PTAUtils;
 import qilin.util.queue.UniqueQueue;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -67,6 +67,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootField;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -134,7 +135,7 @@ public class MethodNodeFactory {
 
   /** Adds the edges required for this statement to the graph. */
   public final void handleStmt(Stmt s) {
-    if (s.isInvokableStmt() && s.asInvokableStmt().containsInvokeExpr()) {
+    if (s.isInvokableStmt() && s.asInvokableStmt().getInvokeExpr().isPresent()) {
       mpag.addCallStmt(s.asInvokableStmt());
       handleInvokeStmt(s.asInvokableStmt());
     } else {
@@ -268,7 +269,7 @@ public class MethodNodeFactory {
     SootField sf;
     if (!osf.isPresent()) {
       sf =
-          new SootField(
+          new JavaSootField(
               fieldSig,
               Collections.singleton(FieldModifier.PUBLIC),
               NoPositionInformation.getInstance());

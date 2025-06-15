@@ -26,10 +26,10 @@ import java.util.*;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.StmtVisitor;
@@ -288,11 +288,11 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
     @NonNull
     @Override
     public <T> T[] toArray(@NonNull T[] ts) {
-      T[] intConstants = (T[]) new Object[to - from + 1];
+      List<IntConstant> intConstants = new ArrayList<>(to - from + 1);
       for (int i = 0; i < size(); i++) {
-        intConstants[i] = (T) IntConstant.getInstance(from + i);
+        intConstants.add(IntConstant.getInstance(from + i));
       }
-      return intConstants;
+      return intConstants.toArray(ts);
     }
 
     @Override

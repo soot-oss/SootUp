@@ -23,7 +23,7 @@ package sootup.core.jimple.common.ref;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.LValue;
+import sootup.core.jimple.common.LValue;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.Type;
 
@@ -46,11 +46,15 @@ public abstract class JFieldRef implements ConcreteRef, LValue {
     return fieldSignature.getType();
   }
 
-  public boolean equals(JFieldRef ref) {
-    if (this == ref) {
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
       return true;
     }
-    return this.getFieldSignature().equals(ref.getFieldSignature());
+    if ((!(o instanceof JFieldRef))) {
+      return false;
+    }
+    return this.getFieldSignature().equals(((JFieldRef) o).getFieldSignature());
   }
 
   @NonNull

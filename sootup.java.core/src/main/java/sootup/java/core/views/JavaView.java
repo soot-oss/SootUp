@@ -25,14 +25,12 @@ package sootup.java.core.views;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
@@ -92,8 +90,9 @@ public class JavaView extends AbstractView {
             .flatMap(
                 location -> {
                   // TODO: [ms] find a way to not stream().collect().stream()
-                  return location.getClassSources(this).collect(Collectors.toList()).stream();
+                  return location.getClassSources(this).toList().stream();
                 })
+            .map(sootClassSource -> (JavaSootClassSource) sootClassSource)
             .map(this::buildClassFrom);
 
     isFullyResolved = true;
@@ -157,7 +156,7 @@ public class JavaView extends AbstractView {
   }
 
   @NonNull
-  protected synchronized JavaSootClass buildClassFrom(AbstractClassSource classSource) {
+  protected synchronized JavaSootClass buildClassFrom(JavaSootClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
     JavaSootClass theClass;

@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
@@ -83,7 +84,7 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
       @NonNull Path path,
       @NonNull SourceType srcType,
       @NonNull List<BodyInterceptor> bodyInterceptors) {
-    this(path, srcType, bodyInterceptors, Collections.emptyList());
+    this(path, srcType, bodyInterceptors, Collections.singletonList(Paths.get("/META-INF")));
   }
 
   public ArchiveBasedAnalysisInputLocation(

@@ -62,6 +62,14 @@ public interface TypeHierarchy {
   @NonNull Stream<ClassType> subclassesOf(@NonNull ClassType classType);
 
   /**
+   * Returns all interfaces that extend the specified class. This is transitive: If <code>
+   * A extends B
+   * </code> and <code>B extends classType</code>, then this method will return both A and B as
+   * extenders of <code>classType</code>.
+   */
+  @NonNull Stream<ClassType> subinterfacesOf(@NonNull ClassType classType);
+
+  /**
    * Returns the interfaces implemented by <code>type</code> if it is a class or extended by <code>
    * type</code> if it is an interface. This includes interfaces implemented by superclasses and
    * also covers the case where <code>classType</code> directly or indirectly implements an
@@ -112,13 +120,11 @@ public interface TypeHierarchy {
     final String jlObject = "java.lang.Object";
     final String jiSerializable = "java.io.Serializable";
     final String jlCloneable = "java.lang.Cloneable";
-    if (supertype instanceof ArrayType) {
-      if (!(potentialSubtype instanceof ArrayType)) {
+    if (supertype instanceof ArrayType superArrayType) {
+      if (!(potentialSubtype instanceof ArrayType potentialSubArrayType)) {
         return false;
       }
 
-      ArrayType superArrayType = (ArrayType) supertype;
-      ArrayType potentialSubArrayType = (ArrayType) potentialSubtype;
       if (superArrayType.getBaseType() instanceof PrimitiveType) {
         // Arrays of primitives have no subtypes
         return false;
