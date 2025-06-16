@@ -124,14 +124,23 @@ class AsmClassSource extends JavaSootClassSource {
                       classSignature, methodName, retType, sigTypes);
 
               // copy to eager load the method and release the asm library memory
-              OverridingBodySource obs =
-                  new OverridingBodySource(
-                      methodSignature, asmClassClassSourceContent.resolveBody(modifiers));
+              Body body;
+              if (MethodModifier.isAbstract(modifiers) || MethodModifier.isNative(modifiers)) {
+                // empty body as method is e.g. abstract or native.
+                body =
+                    Body.builder()
+                        .setMethodSignature(methodSignature)
+                        .setModifiers(modifiers)
+                        .build();
+              } else {
+                body = asmClassClassSourceContent.resolveBody(modifiers);
+              }
+              OverridingBodySource bs = new OverridingBodySource(methodSignature, body);
 
               // TODO: position/line numbers if possible.. e.g. get min/max line entry in
               // LineNumberTable of each method to at least specify a region..
               return new JavaSootMethod(
-                  obs,
+                  bs,
                   methodSignature,
                   modifiers,
                   exceptions,
