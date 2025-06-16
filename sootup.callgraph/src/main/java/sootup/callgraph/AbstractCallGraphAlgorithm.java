@@ -271,11 +271,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       if (!stmt.isInvokableStmt()) {
         continue;
       }
-      InvokableStmt invokableStmt = stmt.asInvokableStmt();
-      if (invokableStmt.getInvokeExpr().isEmpty()) {
+      Optional<AbstractInvokeExpr> sourceMetInvokeExprOpt = stmt.asInvokableStmt().getInvokeExpr();
+      if (sourceMetInvokeExprOpt.isEmpty()) {
         continue;
       }
-      AbstractInvokeExpr sourceMethodInvokeExpr = invokableStmt.getInvokeExpr().get();
+      AbstractInvokeExpr sourceMethodInvokeExpr = sourceMetInvokeExprOpt.get();
+      if (!sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
+        continue;
+      }
       MethodSignature methodSig = sourceMethodInvokeExpr.getMethodSignature();
       if (!methodSig.getType().equals(VoidType.getInstance())
           || !methodSig.getParameterTypes().isEmpty()
@@ -283,8 +286,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
       // check if java.lang.Thread is superClass of methodSig.classType()
-      if (findMethodInHierarchy(view, threadClass, methodSig.getSubSignature())
-          .equals(Optional.empty())) {
+      if (findMethodInHierarchy(view, threadClass, methodSig.getSubSignature()).isEmpty()) {
         continue;
       }
       MethodSignature implicitRunMethodSig =
@@ -297,11 +299,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
       JVirtualInvokeExpr runInvokeExpr =
-          invokableStmt
-              .getInvokeExpr()
-              .get()
-              .asJVirtualInvokeExpr()
-              .withMethodSignature(implicitRunMethodSig);
+          sourceMethodInvokeExpr.asJVirtualInvokeExpr().withMethodSignature(implicitRunMethodSig);
       InvokableStmt runInvokableStmt = new JInvokeStmt(runInvokeExpr, getNoStmtPositionInfo());
       resolveCall(sourceMethod, runInvokableStmt)
           .forEach(
