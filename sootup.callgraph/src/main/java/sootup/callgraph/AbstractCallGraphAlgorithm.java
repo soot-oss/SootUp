@@ -266,17 +266,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   protected void implicitStartRunCall(
       SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
     ClassType threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
-    SootClass threadClass = view.getClassOrThrow(threadType);
+    SootClass threadClass = view.getClass(threadType).orElse(null);
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
       if (!stmt.isInvokableStmt()) {
         continue;
       }
-      Optional<AbstractInvokeExpr> sourceMetInvokeExprOpt = stmt.asInvokableStmt().getInvokeExpr();
-      if (sourceMetInvokeExprOpt.isEmpty()) {
-        continue;
-      }
-      AbstractInvokeExpr sourceMethodInvokeExpr = sourceMetInvokeExprOpt.get();
-      if (!sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
+      AbstractInvokeExpr sourceMethodInvokeExpr =
+          stmt.asInvokableStmt().getInvokeExpr().orElse(null);
+      if (sourceMethodInvokeExpr == null || !sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
         continue;
       }
       MethodSignature methodSig = sourceMethodInvokeExpr.getMethodSignature();
@@ -286,7 +283,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
       // check if java.lang.Thread is superClass of methodSig.classType()
-      if (findMethodInHierarchy(view, threadClass, methodSig.getSubSignature()).isEmpty()) {
+      if (threadClass == null
+          || findMethodInHierarchy(view, threadClass, methodSig.getSubSignature()).isEmpty()) {
         continue;
       }
       MethodSignature implicitRunMethodSig =
@@ -295,9 +293,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               "run",
               methodSig.getParameterTypes(),
               methodSig.getType());
-      if (!sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
-        continue;
-      }
       JVirtualInvokeExpr runInvokeExpr =
           sourceMethodInvokeExpr.asJVirtualInvokeExpr().withMethodSignature(implicitRunMethodSig);
       InvokableStmt runInvokableStmt = new JInvokeStmt(runInvokeExpr, getNoStmtPositionInfo());
