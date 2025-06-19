@@ -28,7 +28,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.analysis.intraprocedural.ForwardFlowAnalysis;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 

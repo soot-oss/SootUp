@@ -25,7 +25,7 @@ package sootup.spark;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.spark.node.Node;
 import sootup.spark.node.ValueToNodeConversionVisitor;
 

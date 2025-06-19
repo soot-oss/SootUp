@@ -23,7 +23,7 @@ package sootup.core.jimple.common.ref;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.LValue;
+import sootup.core.jimple.common.LValue;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.Type;
 

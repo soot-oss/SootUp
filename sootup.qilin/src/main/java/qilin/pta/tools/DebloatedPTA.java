@@ -34,7 +34,7 @@ import qilin.pta.toolkits.debloaterx.CollectionHeuristic;
 import qilin.pta.toolkits.debloaterx.DebloaterX;
 import qilin.stat.IEvaluator;
 import qilin.util.Stopwatch;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 
