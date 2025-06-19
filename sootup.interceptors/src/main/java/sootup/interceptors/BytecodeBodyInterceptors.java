@@ -42,7 +42,9 @@ public enum BytecodeBodyInterceptors {
       new ConstantPropagatorAndFolder(),
       // new DeadAssignmentEliminator(), bug: creates unconnected exceptional flows - see
       // RuntimeJarConversionTests
-      new TypeAssigner());
+      new TypeAssigner(),
+      new BodyValidationInterceptor(),
+      new ClassValidationInterceptor());
 
   @NonNull private final List<BodyInterceptor> bodyInterceptors;
 

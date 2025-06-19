@@ -40,7 +40,6 @@ public enum BodyValidators {
       new LocalsValidator(),
       new MethodValidator(),
       new NewValidator(),
-      new StmtsValidator(),
       new TrapsValidator(),
       new TypesValidator(),
       new UsesValidator(),

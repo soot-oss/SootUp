@@ -30,6 +30,7 @@ import sootup.core.model.SootClass;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.validation.ClassValidator;
+import sootup.core.validation.ValidationException;
 import sootup.core.views.View;
 
 public class ClassValidationInterceptor implements BodyInterceptor {
@@ -42,7 +43,8 @@ public class ClassValidationInterceptor implements BodyInterceptor {
       try {
         SootClass sootClass =
             view.getClass((ClassType) builder.build().getThisLocal().getType()).orElseThrow();
-        classValidator.validate(sootClass, Collections.emptyList(), view);
+        List<ValidationException> validationExceptionList = Collections.emptyList();
+        classValidator.validate(sootClass, validationExceptionList, view);
       } catch (Exception e) {
         throw new IllegalStateException("Failed to apply " + classValidator + " to " + builder, e);
       }

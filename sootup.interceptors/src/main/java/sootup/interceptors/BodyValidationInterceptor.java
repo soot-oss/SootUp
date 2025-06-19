@@ -27,6 +27,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.validation.BodyValidator;
+import sootup.core.validation.ValidationException;
 import sootup.core.views.View;
 
 public class BodyValidationInterceptor implements BodyInterceptor {
@@ -37,7 +38,8 @@ public class BodyValidationInterceptor implements BodyInterceptor {
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     for (BodyValidator bodyValidator : bodyValidators) {
       try {
-        bodyValidator.validate(builder.build(), view);
+        List<ValidationException> validationExceptionList =
+            bodyValidator.validate(builder.build(), view);
       } catch (Exception e) {
         throw new IllegalStateException("Failed to apply " + bodyValidator + " to " + builder, e);
       }
