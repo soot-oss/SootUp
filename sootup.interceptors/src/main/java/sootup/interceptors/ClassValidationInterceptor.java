@@ -24,11 +24,12 @@ package sootup.interceptors;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
 import sootup.core.transform.BodyInterceptor;
-import sootup.core.types.ClassType;
 import sootup.core.validation.ClassValidator;
 import sootup.core.validation.ValidationException;
 import sootup.core.views.View;
@@ -41,10 +42,16 @@ public class ClassValidationInterceptor implements BodyInterceptor {
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     for (ClassValidator classValidator : classValidators) {
       try {
-        SootClass sootClass =
-            view.getClass((ClassType) builder.build().getThisLocal().getType()).orElseThrow();
-        List<ValidationException> validationExceptionList = Collections.emptyList();
-        classValidator.validate(sootClass, validationExceptionList, view);
+        Optional<? extends SootMethod> sootMethod =
+            view.getMethod(builder.build().getMethodSignature());
+        if (sootMethod.isPresent()) {
+          Optional<? extends SootClass> declSootClass =
+              view.getClass(sootMethod.get().getDeclClassType());
+          if (declSootClass.isPresent()) {
+            List<ValidationException> validationExceptionList = Collections.emptyList();
+            classValidator.validate(declSootClass.get(), validationExceptionList, view);
+          }
+        }
       } catch (Exception e) {
         throw new IllegalStateException("Failed to apply " + classValidator + " to " + builder, e);
       }
