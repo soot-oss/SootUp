@@ -73,10 +73,6 @@ public class MutatingSootClassTest {
     JavaSootMethod method = view.getMethod(methodSignature).get();
     Body oldBody = method.getBody();
 
-    // Create OverridingBodySource
-    OverridingBodySource overridingBodySource =
-        new OverridingBodySource(methodSignature, method.getBody());
-
     // Create Local
     Local newLocal = JavaJimple.newLocal("helloWorldLocal", IntType.getInt());
 
