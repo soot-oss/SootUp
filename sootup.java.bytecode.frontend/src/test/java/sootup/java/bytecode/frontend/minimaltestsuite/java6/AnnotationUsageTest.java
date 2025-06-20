@@ -82,7 +82,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     ClassType annotatedAnnotationInterfaceType =
         identifierFactory.getClassType("AnnotatedAnnotationInterface");
     Optional<JavaSootClass> classOptional =
-        getJavaView().getAnnotationClass(annotatedAnnotationInterfaceType);
+        getJavaView().getClass(annotatedAnnotationInterfaceType);
     assertTrue(classOptional.isPresent());
     JavaSootClass annotationSootClass = classOptional.get();
 
@@ -103,7 +103,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void testDefaultValues() {
     ClassType onFieldType = identifierFactory.getClassType("OnField");
-    Optional<JavaSootClass> classOptional = getJavaView().getAnnotationClass(onFieldType);
+    Optional<JavaSootClass> classOptional = getJavaView().getClass(onFieldType);
     assertTrue(classOptional.isPresent());
     JavaSootClass annotationSootClass = classOptional.get();
 
@@ -115,9 +115,18 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
   }
 
   @Test
+  public void testDefaultValuesOnClass() {
+    ClassType nonAnnotation = identifierFactory.getClassType("AnnotationUsage");
+    JavaSootClass classSootClass = getJavaView().getClass(nonAnnotation).orElse(null);
+    assertNotNull(classSootClass);
+
+    assertEquals(0, classSootClass.getDefaultValues().size());
+  }
+
+  @Test
   public void testArrayDefaultValues() {
     ClassType arrayConstantType = identifierFactory.getClassType("ArrayConstant");
-    Optional<JavaSootClass> classOptional = getJavaView().getAnnotationClass(arrayConstantType);
+    Optional<JavaSootClass> classOptional = getJavaView().getClass(arrayConstantType);
     assertTrue(classOptional.isPresent());
     JavaSootClass annotationSootClass = classOptional.get();
 
@@ -132,7 +141,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void testEnumDefaultValues() {
     ClassType enumAnnotationType = identifierFactory.getClassType("EnumAnnotation");
-    Optional<JavaSootClass> classOptional = getJavaView().getAnnotationClass(enumAnnotationType);
+    Optional<JavaSootClass> classOptional = getJavaView().getClass(enumAnnotationType);
     assertTrue(classOptional.isPresent());
     JavaSootClass annotationSootClass = classOptional.get();
     SootClass enumClass =
@@ -154,7 +163,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void testClassDefaultValues() {
     ClassType classAnnotationType = identifierFactory.getClassType("ClassAnnotation");
-    Optional<JavaSootClass> classOptional = getJavaView().getAnnotationClass(classAnnotationType);
+    Optional<JavaSootClass> classOptional = getJavaView().getClass(classAnnotationType);
     assertTrue(classOptional.isPresent());
     JavaSootClass annotationSootClass = classOptional.get();
 
@@ -171,8 +180,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void testContainerAnnotationDefaultValues() {
     ClassType onMethodRepeatablesType = identifierFactory.getClassType("OnMethodRepeatables");
-    Optional<JavaSootClass> classOptional =
-        getJavaView().getAnnotationClass(onMethodRepeatablesType);
+    Optional<JavaSootClass> classOptional = getJavaView().getClass(onMethodRepeatablesType);
     assertTrue(classOptional.isPresent());
     JavaSootClass annotationSootClass = classOptional.get();
 
@@ -192,8 +200,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
   public void testAnnotationWithNestedAnnotationDefaultValues() {
     ClassType annotationInterfaceNested2Type =
         identifierFactory.getClassType("AnnotationInterfaceNested2");
-    Optional<JavaSootClass> classOptional =
-        getJavaView().getAnnotationClass(annotationInterfaceNested2Type);
+    Optional<JavaSootClass> classOptional = getJavaView().getClass(annotationInterfaceNested2Type);
     assertTrue(classOptional.isPresent());
     JavaSootClass annotationSootClass = classOptional.get();
 
