@@ -171,10 +171,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
     if (overriddenSootMethods != null) {
       return overriddenSootMethods;
     }
-    if (delegate != null) {
-      return delegate.resolveMethods();
-    }
-    return List.of();
+    assert delegate != null;
+    return delegate.resolveMethods();
   }
 
   @NonNull
@@ -183,10 +181,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
     if (overriddenSootFields != null) {
       return overriddenSootFields;
     }
-    if (delegate != null) {
-      return delegate.resolveFields();
-    }
-    return List.of();
+    assert delegate != null;
+    return delegate.resolveFields();
   }
 
   @NonNull
@@ -195,10 +191,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
     if (overriddenModifiers != null) {
       return overriddenModifiers;
     }
-    if (delegate != null) {
-      return delegate.resolveModifiers();
-    }
-    return Set.of();
+    assert delegate != null;
+    return delegate.resolveModifiers();
   }
 
   @NonNull
@@ -207,10 +201,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
     if (overriddenInterfaces != null) {
       return overriddenInterfaces;
     }
-    if (delegate != null) {
-      return delegate.resolveInterfaces();
-    }
-    return Set.of();
+    assert delegate != null;
+    return delegate.resolveInterfaces();
   }
 
   @NonNull
@@ -219,10 +211,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
     if (overriddenSuperclass != null) {
       return overriddenSuperclass;
     }
-    if (delegate != null) {
-      return delegate.resolveSuperclass();
-    }
-    return Optional.empty();
+    assert delegate != null;
+    return delegate.resolveSuperclass();
   }
 
   @NonNull
@@ -231,10 +221,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
     if (overriddenOuterClass != null) {
       return overriddenOuterClass;
     }
-    if (delegate != null) {
-      return delegate.resolveOuterClass();
-    }
-    return Optional.empty();
+    assert delegate != null;
+    return delegate.resolveOuterClass();
   }
 
   @NonNull
