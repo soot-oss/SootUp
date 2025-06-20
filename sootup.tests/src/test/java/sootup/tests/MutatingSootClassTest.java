@@ -7,11 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
+import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
@@ -80,6 +83,13 @@ public class MutatingSootClassTest {
     // Create OverridingJavaClassSource
     OverridingJavaClassSource overridingJavaClassSource =
         new OverridingJavaClassSource((JavaSootClassSource) sootClass.getClassSource());
+
+    assertTrue(overridingJavaClassSource.resolveOuterClass().isEmpty());
+    assertTrue(overridingJavaClassSource.resolveFields().isEmpty());
+    assertTrue(overridingJavaClassSource.resolveInterfaces().isEmpty());
+    assertEquals(NoPositionInformation.getInstance(), overridingJavaClassSource.resolvePosition());
+    Set<ClassModifier> modifiers = Set.of(ClassModifier.PUBLIC, ClassModifier.SUPER);
+    assertEquals(modifiers, overridingJavaClassSource.resolveModifiers());
 
     // Create new Method
     JavaSootMethod newMethod = method.withOverridingMethodSource(old -> newBodySource);
