@@ -31,7 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;

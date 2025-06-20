@@ -23,9 +23,9 @@ package sootup.core.jimple.visitor;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.Expr;

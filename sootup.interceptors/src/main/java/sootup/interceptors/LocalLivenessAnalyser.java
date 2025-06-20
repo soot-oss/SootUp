@@ -25,9 +25,9 @@ package sootup.interceptors;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 
 /**

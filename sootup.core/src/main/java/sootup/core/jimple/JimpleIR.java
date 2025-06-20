@@ -1,10 +1,10 @@
-package sootup.core.jimple.common.expr;
+package sootup.core.jimple;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1999-2020 Patrick Lam, Linghui Luo, Zun Wang and others
+ * Copyright (C) 2018-2026 Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,27 +22,5 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.stream.Stream;
-import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.common.Immediate;
-import sootup.core.jimple.common.Value;
-
-public abstract class AbstractUnopExpr implements Expr {
-
-  @NonNull private final Immediate op;
-
-  AbstractUnopExpr(@NonNull Immediate op) {
-    this.op = op;
-  }
-
-  @NonNull
-  public Immediate getOp() {
-    return op;
-  }
-
-  @Override
-  @NonNull
-  public final Stream<Value> getUses() {
-    return Stream.concat(op.getUses(), Stream.of(op));
-  }
-}
+/** Marker interface to show whats considered Jimple IR */
+public interface JimpleIR {}

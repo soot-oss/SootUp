@@ -1,4 +1,4 @@
-package sootup.core.jimple.basic;
+package sootup.core.jimple.common;
 
 /*-
  * #%L

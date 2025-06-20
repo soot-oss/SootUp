@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.JimpleUtils;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.signatures.PackageName;

@@ -24,7 +24,7 @@ package sootup.core.jimple.common.expr;
 
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that computes a binary OR of two operands. */

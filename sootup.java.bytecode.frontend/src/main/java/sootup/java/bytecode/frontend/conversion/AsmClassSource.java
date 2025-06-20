@@ -100,7 +100,7 @@ class AsmClassSource extends JavaSootClassSource {
   }
 
   @NonNull
-  public Collection<JavaSootMethod> resolveMethods() throws ResolveException {
+  public Set<JavaSootMethod> resolveMethods() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return classNode.methods.stream()
         .map(
@@ -137,7 +137,7 @@ class AsmClassSource extends JavaSootClassSource {
 
   @Override
   @NonNull
-  public Collection<JavaSootField> resolveFields() throws ResolveException {
+  public Set<JavaSootField> resolveFields() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveFields(classNode.fields, identifierFactory, classSignature);
   }

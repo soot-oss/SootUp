@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.ref.JArrayRef;

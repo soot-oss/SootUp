@@ -27,7 +27,7 @@ import qilin.util.PTAUtils;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;

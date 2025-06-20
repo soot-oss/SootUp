@@ -26,7 +26,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.*;
 import sootup.codepropertygraph.propertygraph.nodes.*;
-import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.visitor.AbstractExprVisitor;
 

@@ -32,7 +32,7 @@ import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.CtxSelector;
 import qilin.util.PTAUtils;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;

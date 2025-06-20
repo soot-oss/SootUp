@@ -36,6 +36,7 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.*;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.IdentityRef;
