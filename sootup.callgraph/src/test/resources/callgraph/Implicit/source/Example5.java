@@ -3,7 +3,7 @@ package t5;
 class UpdatedThread2 extends Thread {
     @Override
     public void run() {
-        System.out.println("Example5 run() executed.");
+
     }
 }
 
