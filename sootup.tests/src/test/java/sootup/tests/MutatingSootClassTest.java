@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
 import java.util.Collections;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -27,7 +26,6 @@ import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
-
 
 public class MutatingSootClassTest {
 
@@ -62,8 +60,6 @@ public class MutatingSootClassTest {
     JavaSootMethod method = view.getMethod(methodSignature).get();
     Body oldBody = method.getBody();
 
-    System.out.println(oldBody);
-
     // Create OverridingBodySource
     OverridingBodySource overridingBodySource =
         new OverridingBodySource(methodSignature, method.getBody());
@@ -88,8 +84,6 @@ public class MutatingSootClassTest {
     OverridingJavaClassSource newClassSource =
         overridingJavaClassSource.withReplacedMethod(method, newMethod);
     SootClass newClass = sootClass.withClassSource(newClassSource);
-
-    System.out.println(newClass.getMethods().stream().findFirst().get().getBody());
 
     // assert that only our newly created local exists
     assertEquals(
