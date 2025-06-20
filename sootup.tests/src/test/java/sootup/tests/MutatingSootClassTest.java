@@ -1,4 +1,4 @@
-package sootup.examples.mutatingSootClass;
+package sootup.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Paths;
 import java.util.Collections;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.Local;
@@ -27,22 +28,16 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/**
- * This example shows how to change a method inside a SootClass using OverridingBodySources and
- * OverridingClassSources.
- *
- * @author Bastian Haverkamp
- */
-@Disabled
+
 public class MutatingSootClassTest {
 
-  @Disabled
+  @Test
   public void test() {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
     AnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(
-            Paths.get("src/test/resources/BasicSetup/binary"), null);
+            Paths.get("src/test/resources/mutation/binary"), null);
 
     // Create a view for project, which allows us to retrieve classes
     JavaView view = new JavaView(inputLocation);
