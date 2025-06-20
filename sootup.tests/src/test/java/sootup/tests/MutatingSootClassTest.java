@@ -93,6 +93,8 @@ public class MutatingSootClassTest {
     assertEquals(NoPositionInformation.getInstance(), overridingJavaClassSource.resolvePosition());
     Set<ClassModifier> modifiers = Set.of(ClassModifier.PUBLIC, ClassModifier.SUPER);
     assertEquals(modifiers, overridingJavaClassSource.resolveModifiers());
+    assertFalse(overridingJavaClassSource.resolveAnnotations().iterator().hasNext());
+    overridingJavaClassSource.resolveSuperclass().ifPresent(classType1 -> assertEquals("java.lang.Object",classType1.getFullyQualifiedName()));
 
     // Create new Method
     JavaSootMethod newMethod = method.withOverridingMethodSource(old -> newBodySource);

@@ -238,7 +238,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
 
   @Override
   @NonNull
-  protected Iterable<AnnotationUsage> resolveAnnotations() {
+  public Iterable<AnnotationUsage> resolveAnnotations() {
     if (annotations != null) {
       return annotations;
     } else {

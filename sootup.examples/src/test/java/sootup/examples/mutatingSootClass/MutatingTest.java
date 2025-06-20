@@ -37,7 +37,7 @@ import sootup.java.core.views.JavaView;
 @Disabled
 public class MutatingTest {
 
-  @Test
+  @Disabled
   public void test() {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
