@@ -15,18 +15,25 @@ import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.ClassModifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
+import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
+import sootup.core.types.PrimitiveType.BooleanType;
 import sootup.core.types.PrimitiveType.IntType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
+import sootup.java.core.JavaSootField;
+import sootup.java.core.JavaSootField.JavaSootFieldBuilder;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.language.JavaJimple;
@@ -93,10 +100,22 @@ public class MutatingSootClassTest {
 
     // Create new Method
     JavaSootMethod newMethod = method.withOverridingMethodSource(old -> newBodySource);
+    JavaSootField newField =
+        JavaSootFieldBuilder.builder()
+            .withModifier(Collections.singletonList(FieldModifier.PUBLIC))
+            .withPosition(NoPositionInformation.getInstance())
+            .withSignature(
+                new FieldSignature(
+                    sootClass.getType(), new FieldSubSignature("g", IntType.getInt())))
+            .build();
 
     OverridingJavaClassSource newClassSource =
-        overridingJavaClassSource.withReplacedMethod(method, newMethod);
+        overridingJavaClassSource
+            .withReplacedMethod(method, newMethod)
+            .withFields(Collections.singletonList(newField));
     SootClass newClass = sootClass.withClassSource(newClassSource);
+
+    assertEquals(newField, newClass.getField("g").orElse(null));
 
     // assert that only our newly created local exists
     SootMethod methodNew =
@@ -133,5 +152,21 @@ public class MutatingSootClassTest {
             .orElse(null);
     assertNotNull(oldMethod);
     assertTrue(oldMethod.getBody().getLocals().stream().noneMatch(local -> local.equals(newLocal)));
+
+    JavaSootField replacedField =
+        newField
+            .withModifiers(Collections.singletonList(FieldModifier.PRIVATE))
+            .withSignature(
+                new FieldSignature(
+                    newField.getDeclaringClassType(),
+                    new FieldSubSignature(newField.getName(), BooleanType.getInstance())));
+    OverridingJavaClassSource newerClassSource =
+        overridingJavaClassSource.withReplacedField(newField, replacedField);
+    SootClass newerClass = sootClass.withClassSource(newerClassSource);
+
+    SootField checkedField = newerClass.getField("g").orElse(null);
+    assertNotNull(checkedField);
+    assertEquals(BooleanType.getInstance(), checkedField.getType());
+    assertEquals(Set.of(FieldModifier.PRIVATE), checkedField.getModifiers());
   }
 }
