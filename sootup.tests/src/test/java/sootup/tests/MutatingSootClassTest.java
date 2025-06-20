@@ -2,6 +2,7 @@ package sootup.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
@@ -12,6 +13,8 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
@@ -35,7 +38,7 @@ public class MutatingSootClassTest {
     // from the directory
     AnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(
-            Paths.get("src/test/resources/mutation/binary"), null);
+            Paths.get("src/test/resources/mutation/binary"), SourceType.Application);
 
     // Create a view for project, which allows us to retrieve classes
     JavaView view = new JavaView(inputLocation);
@@ -86,8 +89,7 @@ public class MutatingSootClassTest {
     SootClass newClass = sootClass.withClassSource(newClassSource);
 
     // assert that only our newly created local exists
-    assertEquals(
-        newLocal,
+    SootMethod methodNew =
         newClass
             .getMethod(
                 new MethodSubSignature(
@@ -96,23 +98,20 @@ public class MutatingSootClassTest {
                         new ArrayType(
                             new JavaClassType("String", new PackageName("java.lang")), 1)),
                     VoidType.getInstance()))
-            .get()
-            .getBody()
-            .getLocals()
-            .stream()
-            .findFirst()
-            .get());
+            .orElse(null);
+    assertNotNull(methodNew);
+    assertEquals(newLocal, methodNew.getBody().getLocals().stream().findFirst().orElse(null));
 
     // assert that old soot class remains unchanged
-    assertFalse(
+    SootMethod constructorNew =
         sootClass
             .getMethod(
                 new MethodSubSignature("<init>", Collections.emptyList(), VoidType.getInstance()))
-            .get()
-            .getBody()
-            .getLocals()
-            .isEmpty());
-    assertTrue(
+            .orElse(null);
+    assertNotNull(constructorNew);
+    assertFalse(constructorNew.getBody().getLocals().isEmpty());
+
+    SootMethod oldMethod =
         sootClass
             .getMethod(
                 new MethodSubSignature(
@@ -121,13 +120,8 @@ public class MutatingSootClassTest {
                         new ArrayType(
                             new JavaClassType("String", new PackageName("java.lang")), 1)),
                     VoidType.getInstance()))
-            .get()
-            .getBody()
-            .getLocals()
-            .stream()
-            .noneMatch(local -> local.equals(newLocal)));
-
-    // Please note that the jimple code of our newly modified method is not correct anymore, as we
-    // deleted the two old locals which are used in the body.
+            .orElse(null);
+    assertNotNull(oldMethod);
+    assertTrue(oldMethod.getBody().getLocals().stream().noneMatch(local -> local.equals(newLocal)));
   }
 }
