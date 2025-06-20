@@ -266,7 +266,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   protected void implicitStartRunCall(
       SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
     ClassType threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
-    SootClass threadClass = view.getClass(threadType).orElse(null);
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
       if (!stmt.isInvokableStmt()) {
         continue;
@@ -283,8 +282,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
       // check if java.lang.Thread is superClass of methodSig.classType()
-      if (threadClass == null
-          || findMethodInHierarchy(view, threadClass, methodSig.getSubSignature()).isEmpty()) {
+      if (typeHierarchy.superClassesOf(methodSig.getDeclClassType()).noneMatch(classType -> classType.equals(threadType))) {
         continue;
       }
       MethodSignature implicitRunMethodSig =
