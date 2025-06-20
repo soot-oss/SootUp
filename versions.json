@@ -18,7 +18,10 @@
   {
     "version": "removeSootAnnotation_preview",
     "title": "PR Preview removeSootAnnotation",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "refactor_moveSourceFrontendToExperimental_preview",
