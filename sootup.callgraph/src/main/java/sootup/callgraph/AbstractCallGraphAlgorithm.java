@@ -282,7 +282,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
       // check if java.lang.Thread is superClass of methodSig.classType()
-      if (typeHierarchy.superClassesOf(methodSig.getDeclClassType()).noneMatch(classType -> classType.equals(threadType))) {
+      if (typeHierarchy
+          .superClassesOf(methodSig.getDeclClassType())
+          .noneMatch(classType -> classType.equals(threadType))) {
         continue;
       }
       MethodSignature implicitRunMethodSig =
