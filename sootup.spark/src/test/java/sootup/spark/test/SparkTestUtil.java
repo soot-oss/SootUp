@@ -1,12 +1,10 @@
 package sootup.spark.test;
 
-import java.io.StringWriter;
 import lombok.experimental.UtilityClass;
-import lombok.val;
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.nio.dot.DOTExporter;
+import org.graph4j.Edge;
+import org.graph4j.Graph;
 import sootup.core.signatures.PackageName;
+import sootup.core.typehierarchy.PAGVisualizer;
 import sootup.core.types.ClassType;
 import sootup.spark.node.Node;
 
@@ -32,9 +30,8 @@ public class SparkTestUtil {
     };
   }
 
-  public static void vizualizeMehodPAG(Graph<Node, DefaultEdge> pag) {
-    val exporter = new DOTExporter<Node, DefaultEdge>(Node::toString);
-    StringWriter writer = new StringWriter();
-    exporter.exportGraph(pag, writer);
+  public static String vizualizeMehodPAG(Graph<Node, Edge> pag) {
+    String dotOutput = PAGVisualizer.visualizeMethodPAG(pag, Node::toString);
+    return dotOutput;
   }
 }
