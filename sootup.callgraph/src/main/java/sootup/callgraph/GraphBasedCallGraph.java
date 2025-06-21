@@ -41,14 +41,13 @@ public class GraphBasedCallGraph implements MutableCallGraph {
    */
   protected static class Vertex {
     @NonNull final MethodSignature methodSignature;
-    @NonNull private final int id;
+    private final int id;
 
-    protected Vertex(@NonNull MethodSignature methodSignature, @NonNull int id) {
+    protected Vertex(@NonNull MethodSignature methodSignature, int id) {
       this.methodSignature = methodSignature;
       this.id = id;
     }
 
-    @NonNull
     protected int getId() {
       return id;
     }
@@ -110,7 +109,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
       addMethod(call.targetMethodSignature());
     }
     Vertex target = vertexOf(call.targetMethodSignature());
-    graph.addLabeledEdge(source, target, call);
+    graph.addLabeledEdge(source.getId(), target.getId(), call);
   }
 
   @NonNull

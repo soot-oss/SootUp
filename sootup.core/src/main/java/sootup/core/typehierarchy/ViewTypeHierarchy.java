@@ -427,7 +427,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
             typeToVertex.computeIfAbsent(
                 extendedInterface, type -> createAndAddInterfaceVertex(graph, type));
         graph.addLabeledEdge(
-            vertex, extendedInterfaceVertex, new Edge(EdgeType.InterfaceDirectlyExtends));
+            vertex.getId(),
+            extendedInterfaceVertex.getId(),
+            new Edge(EdgeType.InterfaceDirectlyExtends));
       }
     } else {
       Vertex vertex =
@@ -438,7 +440,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
             typeToVertex.computeIfAbsent(
                 implementedInterface, type -> createAndAddInterfaceVertex(graph, type));
         graph.addLabeledEdge(
-            vertex, implementedInterfaceVertex, new Edge(EdgeType.ClassDirectlyImplements));
+            vertex.getId(),
+            implementedInterfaceVertex.getId(),
+            new Edge(EdgeType.ClassDirectlyImplements));
       }
       sootClass
           .getSuperclass()
@@ -448,22 +452,24 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
                     typeToVertex.computeIfAbsent(
                         superClass, type -> createAndAddClassVertex(graph, type));
                 graph.addLabeledEdge(
-                    vertex, superClassVertex, new Edge(EdgeType.ClassDirectlyExtends));
+                    vertex.getId(),
+                    superClassVertex.getId(),
+                    new Edge(EdgeType.ClassDirectlyExtends));
               });
     }
   }
 
   @NonNull
   private static Vertex createAndAddClassVertex(Digraph<Vertex, Edge> graph, ClassType type) {
-    Vertex classVertex = new ScanResult.ClassVertex(type);
-    graph.addVertex(classVertex.getId());
+    Vertex classVertex = new ScanResult.ClassVertex(type, vertexIdCounter++);
+    graph.addLabeledVertex(classVertex.getId(), classVertex);
     return classVertex;
   }
 
   @NonNull
   private static Vertex createAndAddInterfaceVertex(Digraph<Vertex, Edge> graph, ClassType type) {
-    Vertex interfaceVertex = new ScanResult.InterfaceVertex(type);
-    graph.addVertex(interfaceVertex.getId());
+    Vertex interfaceVertex = new ScanResult.InterfaceVertex(type, vertexIdCounter++);
+    graph.addLabeledVertex(interfaceVertex.getId(), interfaceVertex);
     return interfaceVertex;
   }
 
@@ -497,8 +503,8 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     }
 
     private static class InterfaceVertex extends Vertex {
-      public InterfaceVertex(ClassType javaClassType) {
-        super(javaClassType, vertexIdCounter++);
+      public InterfaceVertex(ClassType javaClassType, int vertexIdCounter) {
+        super(javaClassType, vertexIdCounter);
       }
 
       public Stream<ClassType> directSubTypesOf(Digraph<Vertex, Edge> graph, Vertex vertex) {
@@ -515,8 +521,8 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     }
 
     private static class ClassVertex extends Vertex {
-      public ClassVertex(ClassType javaClassType) {
-        super(javaClassType, vertexIdCounter++);
+      public ClassVertex(ClassType javaClassType, int vertexIdCounter) {
+        super(javaClassType, vertexIdCounter);
       }
 
       @Override
