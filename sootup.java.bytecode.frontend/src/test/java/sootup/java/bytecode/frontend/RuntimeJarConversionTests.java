@@ -25,6 +25,7 @@ import sootup.interceptors.DeadAssignmentEliminator;
 import sootup.interceptors.TypeAssigner;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.views.JavaEagerView;
 import sootup.java.core.views.JavaView;
 
 public class RuntimeJarConversionTests {
@@ -32,12 +33,12 @@ public class RuntimeJarConversionTests {
   @Test
   public void testJarWithDefaultInterceptors() {
     AnalysisInputLocation inputLocation =
-        new DefaultRuntimeAnalysisInputLocation(SourceType.Library);
+        new DefaultRuntimeAnalysisInputLocation(SourceType.Library, Collections.emptyList());
     convertInputLocation(inputLocation);
   }
 
   private static void convertInputLocation(AnalysisInputLocation inputLocation) {
-    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+    JavaView view = new JavaEagerView(Collections.singletonList(inputLocation));
     int[] failedConversions = {0};
     long[] count = {0};
     view.getClasses()

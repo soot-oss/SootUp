@@ -65,7 +65,7 @@ public class JavaEagerView extends JavaView {
                     .forEach(
                         m -> {
                           if (m.hasBody()) {
-                            m.getBody().getStmts();
+                            m.getBody();
                           }
                         });
               }); // forces loading
