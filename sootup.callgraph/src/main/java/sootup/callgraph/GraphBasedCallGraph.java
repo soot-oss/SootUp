@@ -35,60 +35,26 @@ import sootup.core.signatures.SootClassMemberSignature;
 /** This class implements a mutable call graph as a graph. */
 public class GraphBasedCallGraph implements MutableCallGraph {
 
-  /**
-   * This internal class is used to describe a vertex in the graph. The vertex is defined by a
-   * method signature that describes the method.
-   */
-  protected static class Vertex {
-    @NonNull final MethodSignature methodSignature;
-    private final int id;
-
-    protected Vertex(@NonNull MethodSignature methodSignature, int id) {
-      this.methodSignature = methodSignature;
-      this.id = id;
-    }
-
-    protected int getId() {
-      return id;
-    }
-
-    @NonNull
-    protected MethodSignature getMethodSignature() {
-      return methodSignature;
-    }
-  }
-
-  @NonNull private final DirectedPseudograph<Vertex, Call> graph;
-  @NonNull private final Map<MethodSignature, Vertex> signatureToVertex;
+  @NonNull private final DirectedPseudograph<MethodSignature, Call> graph;
   @NonNull private final List<MethodSignature> entryMethods;
-  private int vertexIdCounter = 0;
 
   /** The constructor of the graph based call graph. it initializes the call graph object. */
-  public GraphBasedCallGraph(List<MethodSignature> entryMethods) {
-    this(GraphBuilder.empty().buildDirectedPseudograph(), new HashMap<>(), entryMethods);
+  public GraphBasedCallGraph(@NonNull List<MethodSignature> entryMethods) {
+    this(GraphBuilder.empty().buildDirectedPseudograph(), entryMethods);
   }
 
   protected GraphBasedCallGraph(
-      @NonNull DirectedPseudograph<Vertex, Call> graph,
-      @NonNull Map<MethodSignature, Vertex> signatureToVertex,
+      @NonNull DirectedPseudograph<MethodSignature, Call> graph,
       @NonNull List<MethodSignature> entryMethods) {
     this.graph = graph;
-    this.signatureToVertex = signatureToVertex;
     this.entryMethods = entryMethods;
   }
 
-  @Override
   public void addMethod(@NonNull MethodSignature calledMethod) {
-    Vertex v = new Vertex(calledMethod, vertexIdCounter++);
-    addMethod(calledMethod, v);
-  }
-
-  protected void addMethod(@NonNull MethodSignature calledMethod, Vertex vertex) {
     if (containsMethod(calledMethod)) {
       return;
     }
-    graph.addLabeledVertex(vertex);
-    signatureToVertex.put(calledMethod, vertex);
+    graph.addLabeledVertex(calledMethod);
   }
 
   @Override
@@ -104,18 +70,18 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     if (!containsMethod(call.sourceMethodSignature())) {
       addMethod(call.sourceMethodSignature());
     }
-    Vertex source = vertexOf(call.sourceMethodSignature());
+    int source = vertexOf(call.sourceMethodSignature());
     if (!containsMethod(call.targetMethodSignature())) {
       addMethod(call.targetMethodSignature());
     }
-    Vertex target = vertexOf(call.targetMethodSignature());
-    graph.addLabeledEdge(source.getId(), target.getId(), call);
+    int target = vertexOf(call.targetMethodSignature());
+    graph.addLabeledEdge(source, target, call);
   }
 
   @NonNull
   @Override
   public Set<MethodSignature> getMethodSignatures() {
-    return signatureToVertex.keySet();
+    return Arrays.stream(graph.vertices()).mapToObj(graph::getVertexLabel).collect(Collectors.toSet());
   }
 
   @NonNull
@@ -145,7 +111,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @NonNull
   @Override
   public Set<Call> callsFrom(@NonNull MethodSignature sourceMethod) {
-    return Arrays.stream(graph.outgoingEdgesFrom(vertexOf(sourceMethod).getId()))
+    return Arrays.stream(graph.outgoingEdgesFrom(vertexOf(sourceMethod)))
         .map(e -> (Call) e.label())
         .collect(Collectors.toSet());
   }
@@ -153,14 +119,14 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @NonNull
   @Override
   public Set<Call> callsTo(@NonNull MethodSignature targetMethod) {
-    return Arrays.stream(graph.incomingEdgesTo(vertexOf(targetMethod).getId()))
+    return Arrays.stream(graph.incomingEdgesTo(vertexOf(targetMethod)))
         .map(e -> (Call) e.label())
         .collect(Collectors.toSet());
   }
 
   @Override
   public boolean containsMethod(@NonNull MethodSignature method) {
-    return signatureToVertex.containsKey(method);
+    return graph.findVertex(method) != -1;
   }
 
   @Override
@@ -195,7 +161,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public MutableCallGraph copy() {
     return new GraphBasedCallGraph(
-        graph.copy(), new HashMap<>(signatureToVertex), new ArrayList<>(entryMethods));
+        graph.copy(), new ArrayList<>(entryMethods));
   }
 
   @NonNull
@@ -212,10 +178,9 @@ public class GraphBasedCallGraph implements MutableCallGraph {
    * @return the vertex of the requested method signature in optional otherwise an empty optional.
    * @throws IllegalArgumentException if there is no vertex for the requested method signature
    */
-  @NonNull
-  protected Vertex vertexOf(@NonNull MethodSignature method) {
-    Vertex methodVertex = signatureToVertex.get(method);
-    if (methodVertex == null) {
+  protected int vertexOf(@NonNull MethodSignature method) {
+    int methodVertex = graph.findVertex(method);
+    if (methodVertex < 0) {
       throw new IllegalArgumentException("Vertex of Method signature " + method + " not found");
     }
     return methodVertex;
@@ -235,12 +200,12 @@ public class GraphBasedCallGraph implements MutableCallGraph {
       @NonNull MethodSignature source,
       @NonNull MethodSignature target,
       @NonNull InvokableStmt invokableStmt) {
-    Vertex sourceVertexOpt = vertexOf(source);
-    Vertex targetVertexOpt = vertexOf(target);
+    int sourceVertexOpt = vertexOf(source);
+    int targetVertexOpt = vertexOf(target);
 
     // Iterate through outgoing edges from source to target
-    for (Edge edge : graph.outgoingEdgesFrom(sourceVertexOpt.getId())) {
-      if (edge.target() == targetVertexOpt.getId()) {
+    for (Edge edge : graph.outgoingEdgesFrom(sourceVertexOpt)) {
+      if (edge.target() == targetVertexOpt) {
         Call call = (Call) edge.label();
         if (call.invokableStmt() == invokableStmt) {
           return call;
