@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
@@ -166,7 +167,9 @@ public class MutatingSootClassTest {
         overridingJavaClassSource
             .withReplacedField(newField, replacedField)
             .withModifiers(Set.of(ClassModifier.PRIVATE))
-            .withPosition(new LinePosition(1));
+            .withPosition(new LinePosition(1))
+            .withOuterClass(Optional.empty())
+            .withInterfaces(Set.of());
     SootClass newerClass = sootClass.withClassSource(newerClassSource);
 
     assertEquals(Set.of(ClassModifier.PRIVATE), newerClass.getModifiers());

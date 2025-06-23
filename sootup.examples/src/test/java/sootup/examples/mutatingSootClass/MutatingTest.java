@@ -2,6 +2,7 @@ package sootup.examples.mutatingSootClass;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
@@ -12,6 +13,8 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
@@ -37,12 +40,12 @@ import sootup.java.core.views.JavaView;
 public class MutatingTest {
 
   @Disabled
-  public void test() {
+  public void testMutation() {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
     AnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(
-            Paths.get("src/test/resources/BasicSetup/binary"), null);
+            Paths.get("src/test/resources/BasicSetup/binary"), SourceType.Application);
 
     // Create a view for project, which allows us to retrieve classes
     JavaView view = new JavaView(inputLocation);
@@ -69,10 +72,6 @@ public class MutatingTest {
 
     System.out.println(oldBody);
 
-    // Create OverridingBodySource
-    OverridingBodySource overridingBodySource =
-        new OverridingBodySource(methodSignature, method.getBody());
-
     // Create Local
     Local newLocal = JavaJimple.newLocal("helloWorldLocal", IntType.getInt());
 
@@ -94,11 +93,10 @@ public class MutatingTest {
         overridingJavaClassSource.withReplacedMethod(method, newMethod);
     SootClass newClass = sootClass.withClassSource(newClassSource);
 
-    System.out.println(newClass.getMethods().stream().findFirst().get().getBody());
+    newClass.getMethods().stream().findFirst().ifPresent(a -> System.out.println(a.getBody()));
 
     // assert that only our newly created local exists
-    assertEquals(
-        newLocal,
+    SootMethod main =
         newClass
             .getMethod(
                 new MethodSubSignature(
@@ -107,23 +105,20 @@ public class MutatingTest {
                         new ArrayType(
                             new JavaClassType("String", new PackageName("java.lang")), 1)),
                     VoidType.getInstance()))
-            .get()
-            .getBody()
-            .getLocals()
-            .stream()
-            .findFirst()
-            .get());
+            .orElse(null);
+
+    assertNotNull(main);
+    assertEquals(newLocal, main.getBody().getLocals().stream().findFirst().orElse(null));
 
     // assert that old soot class remains unchanged
-    assertFalse(
+    SootMethod constructor =
         sootClass
             .getMethod(
                 new MethodSubSignature("<init>", Collections.emptyList(), VoidType.getInstance()))
-            .get()
-            .getBody()
-            .getLocals()
-            .isEmpty());
-    assertTrue(
+            .orElse(null);
+    assertNotNull(constructor);
+    assertFalse(constructor.getBody().getLocals().isEmpty());
+    SootMethod olderMain =
         sootClass
             .getMethod(
                 new MethodSubSignature(
@@ -132,11 +127,9 @@ public class MutatingTest {
                         new ArrayType(
                             new JavaClassType("String", new PackageName("java.lang")), 1)),
                     VoidType.getInstance()))
-            .get()
-            .getBody()
-            .getLocals()
-            .stream()
-            .noneMatch(local -> local.equals(newLocal)));
+            .orElse(null);
+    assertNotNull(olderMain);
+    assertTrue(olderMain.getBody().getLocals().stream().noneMatch(local -> local.equals(newLocal)));
 
     // Please note that the jimple code of our newly modified method is not correct anymore, as we
     // deleted the two old locals which are used in the body.
