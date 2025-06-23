@@ -16,6 +16,7 @@ import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.FieldModifier;
+import sootup.core.model.LinePosition;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -162,9 +163,14 @@ public class MutatingSootClassTest {
                     newField.getDeclaringClassType(),
                     new FieldSubSignature(newField.getName(), BooleanType.getInstance())));
     OverridingJavaClassSource newerClassSource =
-        overridingJavaClassSource.withReplacedField(newField, replacedField);
+        overridingJavaClassSource
+            .withReplacedField(newField, replacedField)
+            .withModifiers(Set.of(ClassModifier.PRIVATE))
+            .withPosition(new LinePosition(1));
     SootClass newerClass = sootClass.withClassSource(newerClassSource);
 
+    assertEquals(Set.of(ClassModifier.PRIVATE), newerClass.getModifiers());
+    assertEquals(1, newerClass.getPosition().getFirstLine());
     SootField checkedField = newerClass.getField("g").orElse(null);
     assertNotNull(checkedField);
     assertEquals(BooleanType.getInstance(), checkedField.getType());
