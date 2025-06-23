@@ -81,7 +81,9 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @NonNull
   @Override
   public Set<MethodSignature> getMethodSignatures() {
-    return Arrays.stream(graph.vertices()).mapToObj(graph::getVertexLabel).collect(Collectors.toSet());
+    return Arrays.stream(graph.vertices())
+        .mapToObj(graph::getVertexLabel)
+        .collect(Collectors.toSet());
   }
 
   @NonNull
@@ -160,8 +162,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @NonNull
   @Override
   public MutableCallGraph copy() {
-    return new GraphBasedCallGraph(
-        graph.copy(), new ArrayList<>(entryMethods));
+    return new GraphBasedCallGraph(graph.copy(), new ArrayList<>(entryMethods));
   }
 
   @NonNull
