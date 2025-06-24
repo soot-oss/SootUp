@@ -28,6 +28,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Streams;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.graph4j.Digraph;
 import org.graph4j.GraphBuilder;
@@ -381,14 +384,17 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
     Stream<ClassType> subgraph = includeSelf ? Stream.of(graph.getVertexLabel(vertex)) : Stream.empty();
     if (lazyScanResult.get().isInterface.get(vertex)) {
+      org.graph4j.Edge[] incomingEdges = graph.incomingEdgesTo(vertex);
       return Stream.concat(
           subgraph,
-          Arrays.stream(graph.incomingEdgesTo(vertex))
+          Arrays.stream(incomingEdges)
               .map(edge -> {
                   if(edge == null){
+                    System.out.println("vertex");
+                    System.out.println(vertex);
 
                     System.out.println("incomingEdges");
-                    System.out.println(Arrays.toString(graph.incomingEdgesTo(vertex)));
+                    System.out.println(Arrays.toString(incomingEdges));
 
                     System.out.println("vertices");
 
