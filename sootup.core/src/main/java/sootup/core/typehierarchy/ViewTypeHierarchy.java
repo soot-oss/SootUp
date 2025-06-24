@@ -380,7 +380,27 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       return Stream.concat(
           subgraph,
           Arrays.stream(graph.incomingEdgesTo(vertex))
-              .map(edge -> graph.getEdgeLabel(edge.source(), edge.target()))
+              .map(edge -> {
+                  if(edge == null){
+
+                    System.out.println("incomingEdges");
+                    System.out.println(Arrays.toString(graph.incomingEdgesTo(vertex)));
+
+                    System.out.println("vertices");
+
+                    System.out.println(
+                            Arrays.toString(graph.vertices())
+                    );
+
+                    System.out.println("edges");
+
+                    System.out.println(
+                            Arrays.toString(graph.edges())
+                    );
+
+                  }
+                  return graph.getEdgeLabel(edge.source(), edge.target());
+              })
               .filter(
                   edge ->
                       edge.type == EdgeType.ClassDirectlyImplements
