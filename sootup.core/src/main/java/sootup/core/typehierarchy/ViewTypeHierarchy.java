@@ -252,8 +252,10 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     ancestorsOfA.retainAll(ancestorsOfB);
     boolean notLca = false;
     for (ClassType ca : ancestorsOfA) {
+      int vertex = graph.findVertex(ca);
+      assert vertex > -1;
       Set<Edge> incomingEdges =
-          Arrays.stream(graph.incomingEdgesTo(graph.findVertex(ca)))
+          Arrays.stream(graph.incomingEdgesTo(vertex))
               .map(edge -> graph.getEdgeLabel(edge.source(), edge.target()))
               .collect(Collectors.toSet());
       for (Edge ie : incomingEdges) {
@@ -375,6 +377,8 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
    */
   private Stream<ClassType> visitSubgraph(
       Digraph<ClassType, Edge> graph, int vertex, boolean includeSelf) {
+    assert vertex > -1;
+
     Stream<ClassType> subgraph = includeSelf ? Stream.of(graph.getVertexLabel(vertex)) : Stream.empty();
     if (lazyScanResult.get().isInterface.get(vertex)) {
       return Stream.concat(
