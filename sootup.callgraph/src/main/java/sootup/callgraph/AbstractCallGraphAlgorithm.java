@@ -67,33 +67,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * Attempts to resolve a previously unresolved method signature by comparing it with all known
-   * method signatures annotated with {@code @PolymorphicSignature}. If a match is found (ignoring
-   * the parameters), the corresponding SootMethod is returned.
-   *
-   * @param targetMethodSignature the signature of the searched method
-   * @return the found method object, or null if the method was not found.
-   */
-  protected Optional<? extends SootMethod> findMatchingPolymorphicMethod(
-      @NonNull MethodSignature targetMethodSignature) {
-    for (MethodSignature polymorphicMethodSigs : preanalysis) {
-      if (targetMethodSignature.getDeclClassType().equals(polymorphicMethodSigs.getDeclClassType())
-          && targetMethodSignature.getName().equals(polymorphicMethodSigs.getName())) { // && targetMethodSignature.getType().equals(polymorphicMethodSigs.getType())
-        // return the actualTargetMethodOpt
-        System.out.println("Actual: " + view.getMethod(polymorphicMethodSigs).map(sootMethod -> (SootMethod) sootMethod));
-        return view.getMethod(polymorphicMethodSigs).map(sootMethod -> (SootMethod) sootMethod);
-      }
-    }
-    logger.warn(
-        "Could not find \""
-            + targetMethodSignature.getSubSignature()
-            + "\" in "
-            + targetMethodSignature.getDeclClassType().getClassName()
-            + " and in its superclasses and interfaces");
-    return Optional.empty();
-  }
-
-  /**
    * Collects all method signatures from the current view that are annotated with {@code
    * java.lang.invoke.MethodHandle$PolymorphicSignature}.
    *
@@ -120,11 +93,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                 }
               }
             });
-    // TODO: delete later
-    System.out.println("Number of MethodSigs found: " + polymorphicMethodSigs.size());
-    for (MethodSignature methodSig : polymorphicMethodSigs) {
-      System.out.println(methodSig);
-    }
     return polymorphicMethodSigs;
   }
 
@@ -661,5 +629,31 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   protected boolean isInterface(ClassType classType) {
     return typeHierarchy.isInterface(classType);
+  }
+
+  /**
+   * Attempts to resolve a previously unresolved method signature by comparing it with all known
+   * method signatures annotated with {@code @PolymorphicSignature}. If a match is found (ignoring
+   * the parameters), the corresponding SootMethod is returned.
+   *
+   * @param targetMethodSignature the signature of the searched method
+   * @return the found method object, or null if the method was not found.
+   */
+  protected Optional<? extends SootMethod> findMatchingPolymorphicMethod(
+          @NonNull MethodSignature targetMethodSignature) {
+    for (MethodSignature polymorphicMethodSigs : preanalysis) {
+      if (targetMethodSignature.getDeclClassType().equals(polymorphicMethodSigs.getDeclClassType())
+              && targetMethodSignature.getName().equals(polymorphicMethodSigs.getName())) {
+        // return the actualTargetMethodOpt
+        return view.getMethod(polymorphicMethodSigs).map(sootMethod -> (SootMethod) sootMethod);
+      }
+    }
+    logger.warn(
+            "Could not find \""
+                    + targetMethodSignature.getSubSignature()
+                    + "\" in "
+                    + targetMethodSignature.getDeclClassType().getClassName()
+                    + " and in its superclasses and interfaces");
+    return Optional.empty();
   }
 }
