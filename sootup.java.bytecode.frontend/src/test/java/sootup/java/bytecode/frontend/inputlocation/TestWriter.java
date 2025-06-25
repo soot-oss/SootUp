@@ -47,7 +47,12 @@ public class TestWriter {
 
   public String getTestContent() {
     StringBuilder content = new StringBuilder(templateStart);
-    for (JarFailureRecord record : getRecords()) {
+    List<JarFailureRecord> records = getRecords();
+    if(records.isEmpty()){
+      System.out.println("No failed jars information found, so nothing to write");
+      return "";
+    }
+    for (JarFailureRecord record : records) {
       content.append(getMethodString(record.download_url, record.failedMethodSignature));
     }
     content.append(templateEnd);

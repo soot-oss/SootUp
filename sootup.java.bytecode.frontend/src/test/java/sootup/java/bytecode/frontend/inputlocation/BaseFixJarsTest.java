@@ -32,7 +32,7 @@ public abstract class BaseFixJarsTest {
   }
 
   public void assertJar(JavaView javaView) {
-    for (JavaSootClass clazz : javaView.getClasses().collect(Collectors.toList())) {
+    for (JavaSootClass clazz : javaView.getClasses().toList()) {
       for (JavaSootMethod javaSootMethod : clazz.getMethods()) {
         if (javaSootMethod.hasBody()) {
           try {
