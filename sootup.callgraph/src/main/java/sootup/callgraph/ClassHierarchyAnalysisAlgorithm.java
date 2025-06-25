@@ -93,9 +93,14 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     if (actualTargetMethod == null) {
       // method not implemented, search for implementation in super classes or ínterfaces
       actualTargetMethod = findConcreteMethod(view, targetMethodSignature).orElse(null);
-      // method implementation isn't contained in the view. return the called method as target
       if (actualTargetMethod == null) {
-        return Stream.of(targetMethodSignature);
+        // method implementation isn't contained in the view.
+        // check if method got the PolymorphicSignature annotation
+        actualTargetMethod = findMatchingPolymorphicMethod(targetMethodSignature).orElse(null);
+        if (actualTargetMethod == null) {
+          // method couldn't be resolved, return the called method as target
+          return Stream.of(targetMethodSignature);
+        }
       }
     }
 

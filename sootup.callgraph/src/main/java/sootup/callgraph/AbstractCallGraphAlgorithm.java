@@ -44,6 +44,8 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.java.core.AnnotationUsage;
+import sootup.java.core.JavaSootClass;
 
 /**
  * The AbstractCallGraphAlgorithm class is the super class of all call graph algorithm. It provides
@@ -56,10 +58,74 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   @NonNull protected final View view;
   @NonNull protected final TypeHierarchy typeHierarchy;
+  @NonNull protected final List<MethodSignature> preanalysis;
 
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
+    this.preanalysis = getMethodsWithPolymorphicAnnotation();
+  }
+
+  /**
+   * Attempts to resolve a previously unresolved method signature by comparing it with all known
+   * method signatures annotated with {@code @PolymorphicSignature}. If a match is found (ignoring
+   * the parameters), the corresponding SootMethod is returned.
+   *
+   * @param targetMethodSignature the signature of the searched method
+   * @return the found method object, or null if the method was not found.
+   */
+  protected Optional<? extends SootMethod> findMatchingPolymorphicMethod(
+      @NonNull MethodSignature targetMethodSignature) {
+    for (MethodSignature polymorphicMethodSigs : preanalysis) {
+      if (targetMethodSignature.getDeclClassType().equals(polymorphicMethodSigs.getDeclClassType())
+          && targetMethodSignature.getName().equals(polymorphicMethodSigs.getName())) { // && targetMethodSignature.getType().equals(polymorphicMethodSigs.getType())
+        // return the actualTargetMethodOpt
+        System.out.println("Actual: " + view.getMethod(polymorphicMethodSigs).map(sootMethod -> (SootMethod) sootMethod));
+        return view.getMethod(polymorphicMethodSigs).map(sootMethod -> (SootMethod) sootMethod);
+      }
+    }
+    logger.warn(
+        "Could not find \""
+            + targetMethodSignature.getSubSignature()
+            + "\" in "
+            + targetMethodSignature.getDeclClassType().getClassName()
+            + " and in its superclasses and interfaces");
+    return Optional.empty();
+  }
+
+  /**
+   * Collects all method signatures from the current view that are annotated with {@code
+   * java.lang.invoke.MethodHandle$PolymorphicSignature}.
+   *
+   * @return a list of method signatures annotated with {@code @PolymorphicSignature}
+   */
+  protected List<MethodSignature> getMethodsWithPolymorphicAnnotation() {
+    List<MethodSignature> polymorphicMethodSigs = new ArrayList<>();
+    ClassType polymorphicAnnotationType =
+        view.getIdentifierFactory()
+            .getClassType("java.lang.invoke.MethodHandle$PolymorphicSignature");
+    view.getClasses()
+        .filter(sootClass -> sootClass instanceof JavaSootClass)
+        .map(sootClass -> (JavaSootClass) sootClass)
+        .flatMap(javaSootClass -> javaSootClass.getMethods().stream())
+        .forEach(
+            javaSootMethod -> {
+              Iterable<AnnotationUsage> annotationUsages = javaSootMethod.getAnnotations();
+              if (annotationUsages.equals(Collections.emptyList())) {
+                return;
+              }
+              for (AnnotationUsage annotationUsage : annotationUsages) {
+                if (annotationUsage.getAnnotation().equals(polymorphicAnnotationType)) {
+                  polymorphicMethodSigs.add(javaSootMethod.getSignature());
+                }
+              }
+            });
+    // TODO: delete later
+    System.out.println("Number of MethodSigs found: " + polymorphicMethodSigs.size());
+    for (MethodSignature methodSig : polymorphicMethodSigs) {
+      System.out.println(methodSig);
+    }
+    return polymorphicMethodSigs;
   }
 
   /**
@@ -532,18 +598,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
 
     // search method in interfaces
-    Optional<? extends SootMethod> defaultMethod = findDefaultMethod(view, startClass, methodSig);
-    if (defaultMethod.isPresent()) {
-      return defaultMethod;
-    }
-
-    logger.warn(
-        "Could not find \""
-            + sig.getSubSignature()
-            + "\" in "
-            + sig.getDeclClassType().getClassName()
-            + " and in its superclasses and interfaces");
-    return Optional.empty();
+    return findDefaultMethod(view, startClass, methodSig);
   }
 
   protected static Optional<SootMethod> findMethodInHierarchy(

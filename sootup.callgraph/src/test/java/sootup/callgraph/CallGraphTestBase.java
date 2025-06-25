@@ -1193,25 +1193,34 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         cg.containsCall(closingCall, closingCall, getInvokableStmt(closingCall, closingCall, 0)));
   }
 
-  // [main] WARN sootup.callgraph.AbstractCallGraphAlgorithm - Could not find "void invoke(java.lang.String)" in MethodHandle and in its superclasses and interfaces
+  // [main] WARN sootup.callgraph.AbstractCallGraphAlgorithm - Could not find "void
+  // invoke(java.lang.String)" in MethodHandle and in its superclasses and interfaces
   @Test
   public void testMethodHandleInvokeExample1() {
     CallGraph cg = loadCallGraph("Polymorphic", "e1.MethodHandleInvokeExample1");
     System.out.println("MethodHandle Example1 CG: " + cg.exportAsDot());
     MethodSignature invoke =
-            identifierFactory.getMethodSignature(
-                    identifierFactory.getClassType("e1.MethodHandleInvokeExample1"), "invoke", "Object", Collections.singletonList("java.lang.String"));
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("e1.MethodHandleInvokeExample1"),
+            "invoke",
+            "Object",
+            Collections.singletonList("java.lang.String"));
     Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(invoke);
     assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
   }
-  // [main] WARN sootup.callgraph.AbstractCallGraphAlgorithm - Could not find "void invoke(java.lang.String,int,int)" in MethodHandle and in its superclasses and interfaces
+
+  // [main] WARN sootup.callgraph.AbstractCallGraphAlgorithm - Could not find "void
+  // invoke(java.lang.String,int,int)" in MethodHandle and in its superclasses and interfaces
   @Test
   public void testMethodHandleInvokeExample2() {
     CallGraph cg = loadCallGraph("Polymorphic", "e2.MethodHandleInvokeExample2");
     System.out.println("MethodHandle Example2 CG: " + cg.exportAsDot());
     MethodSignature invoke =
-            identifierFactory.getMethodSignature(
-                    identifierFactory.getClassType("e2.MethodHandleInvokeExample2"), "invoke", "Object", List.of("java.lang.String", "int", "int"));
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("e2.MethodHandleInvokeExample2"),
+            "invoke",
+            "Object",
+            List.of("java.lang.String", "int", "int"));
     Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(invoke);
     assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
   }
