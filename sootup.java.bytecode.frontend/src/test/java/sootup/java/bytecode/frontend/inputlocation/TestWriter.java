@@ -49,7 +49,6 @@ public class TestWriter {
     StringBuilder content = new StringBuilder(templateStart);
     List<JarFailureRecord> records = getRecords();
     if (records.isEmpty()) {
-      System.out.println("No failed jars information found, so nothing to write");
       return "";
     }
     for (JarFailureRecord record : records) {
