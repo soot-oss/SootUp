@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.JimpleUtils;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Trap;
 import sootup.core.model.*;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.PrimitiveType;

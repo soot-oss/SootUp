@@ -24,7 +24,7 @@ package sootup.core.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.util.printer.BriefStmtPrinter;

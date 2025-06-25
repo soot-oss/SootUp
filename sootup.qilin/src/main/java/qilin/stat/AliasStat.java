@@ -35,7 +35,7 @@ import qilin.core.sets.PointsToSet;
 import qilin.util.Pair;
 import qilin.util.Util;
 import qilin.util.queue.QueueReader;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.SootMethod;
 
 public class AliasStat implements AbstractStat {

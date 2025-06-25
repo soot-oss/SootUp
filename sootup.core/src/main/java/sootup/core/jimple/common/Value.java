@@ -1,4 +1,4 @@
-package sootup.core.jimple.basic;
+package sootup.core.jimple.common;
 
 /*-
  * #%L
@@ -24,6 +24,8 @@ package sootup.core.jimple.basic;
 
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.JimpleIR;
+import sootup.core.jimple.basic.EquivTo;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.ref.Ref;
@@ -37,7 +39,7 @@ import sootup.core.util.printer.StmtPrinter;
  *
  * <p>Values are typed, clonable and must declare which other Values they use (contain).
  */
-public interface Value extends EquivTo {
+public interface Value extends EquivTo, JimpleIR {
 
   /**
    * Returns a List of Locals,FieldRefs,ArrayRefs which are used by (ie contained within) this

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;

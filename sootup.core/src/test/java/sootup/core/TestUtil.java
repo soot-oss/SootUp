@@ -1,10 +1,10 @@
 package sootup.core;
 
 import java.util.Collections;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;

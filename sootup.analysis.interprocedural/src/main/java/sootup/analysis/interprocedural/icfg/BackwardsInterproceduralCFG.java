@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 

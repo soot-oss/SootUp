@@ -27,7 +27,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;

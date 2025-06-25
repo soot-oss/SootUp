@@ -24,8 +24,8 @@ package sootup.core.jimple.common.expr;
 
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;

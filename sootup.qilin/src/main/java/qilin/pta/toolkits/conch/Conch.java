@@ -26,7 +26,7 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;

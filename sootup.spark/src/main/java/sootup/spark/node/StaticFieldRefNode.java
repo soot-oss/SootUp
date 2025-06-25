@@ -1,10 +1,10 @@
-package sootup.core.jimple.basic;
+package sootup.spark.node;
 
 /*-
  * #%L
  * SootUp
  * %%
- * Copyright (C) 1997 - 2024 Raja Vallée-Rai and others
+ * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya, Palaniappan Muthuraman
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,5 +22,23 @@ package sootup.core.jimple.basic;
  * #L%
  */
 
-/** Marker interface for Values that can be on the left side of an Assignment */
-public interface LValue extends Value {}
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
+import sootup.core.signatures.FieldSignature;
+
+/** Models PAG node for a static field reference */
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Getter
+@SuperBuilder
+public class StaticFieldRefNode extends Node {
+
+  @NonNull FieldSignature field;
+
+  @Override
+  public String toString() {
+    return String.format("\"%s %s.%s\"", field.getType(), getType(), field.getName());
+  }
+}

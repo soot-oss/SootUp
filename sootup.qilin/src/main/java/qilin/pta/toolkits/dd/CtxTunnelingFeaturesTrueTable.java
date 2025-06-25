@@ -19,8 +19,8 @@
 package qilin.pta.toolkits.dd;
 
 import qilin.util.PTAUtils;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;

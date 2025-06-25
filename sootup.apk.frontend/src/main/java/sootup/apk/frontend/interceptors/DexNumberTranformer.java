@@ -24,8 +24,8 @@ package sootup.apk.frontend.interceptors;
 
 import java.util.*;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.DoubleConstant;
 import sootup.core.jimple.common.constant.FloatConstant;
 import sootup.core.jimple.common.constant.IntConstant;
