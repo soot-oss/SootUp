@@ -27,7 +27,7 @@ import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.*;
 import sootup.core.jimple.JimpleUtils;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;

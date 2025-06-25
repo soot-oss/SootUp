@@ -23,7 +23,7 @@ package sootup.java.core.jimple.basic;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.types.Type;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.HasAnnotation;

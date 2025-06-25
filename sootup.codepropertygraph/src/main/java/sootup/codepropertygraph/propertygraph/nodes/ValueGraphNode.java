@@ -22,7 +22,7 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 * #L%
 */
 
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 
 public interface ValueGraphNode {
   Value getValue();

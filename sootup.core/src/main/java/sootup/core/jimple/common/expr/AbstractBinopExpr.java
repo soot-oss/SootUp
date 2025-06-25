@@ -24,9 +24,9 @@ package sootup.core.jimple.common.expr;
 
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.util.printer.StmtPrinter;
 
 public abstract class AbstractBinopExpr implements Expr {

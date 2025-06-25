@@ -24,7 +24,7 @@ package sootup.core.util.printer;
 
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.Stmt;

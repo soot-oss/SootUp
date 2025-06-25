@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 
 /** simple dataflow fact for interprocedural dataflow analysis adaptable with a state enum * */
 public class Fact<S> {
