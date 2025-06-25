@@ -394,6 +394,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
                     System.out.println(vertex);
 
                     System.out.println("incomingEdges");
+                    System.out.println(incomingEdges);
                     System.out.println(Arrays.toString(incomingEdges));
 
                     System.out.println("vertices");
