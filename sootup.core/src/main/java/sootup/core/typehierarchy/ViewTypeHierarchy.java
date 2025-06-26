@@ -493,7 +493,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       }
     }
 
-    @NonNull final Digraph<ClassType, Edge> graph = GraphBuilder.empty().buildDigraph();
+    @NonNull final Digraph<ClassType, Edge> graph = GraphBuilder.empty().buildDirectedMultigraph();
     @NonNull final BitSet isInterface = new BitSet();
 
     private ScanResult() {
