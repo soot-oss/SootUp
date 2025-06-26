@@ -1256,4 +1256,13 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
     assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
   }
+
+  @Test
+  public void testImplicitExample6() {
+    CallGraph cg = loadCallGraph("Implicit", "t6.Example6");
+    MethodSignature runMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t6.NoThread"), "run", "void", Collections.emptyList());
+    assertFalse(cg.containsMethod(runMethodSig));
+  }
 }
