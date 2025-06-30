@@ -200,8 +200,19 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       // the call is created with the actual base target
       return Stream.concat(Stream.of(actualTargetMethod.getSignature()), targets);
     }
+    instantiatedClasses.addAll(collectInstantiatedClassesInMethod(sourceMethod));
+    //    System.out.println("SourceMeth: " + sourceMethod);
+    //    System.out.println("New instantiated classes: " + instantiatedClasses);
     // save the ignored call
     saveIgnoredCall(sourceMethod.getSignature(), actualTargetMethod.getSignature(), invokableStmt);
+    //    System.out.println(ignoredCalls.size());
+    //    System.out.println("Under ignored calls?: " + ignoredCalls);
+    for (Call call : ignoredCalls.values()) {
+      MethodSignature polymorphicCall = call.targetMethodSignature();
+      if (polymorphicCall.toString().contains("java.lang.invoke.")) {
+        targets = Stream.concat(targets, Stream.of(polymorphicCall));
+      }
+    }
     return targets;
   }
 

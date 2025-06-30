@@ -640,20 +640,20 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return the found method object, or null if the method was not found.
    */
   protected Optional<? extends SootMethod> findMatchingPolymorphicMethod(
-          @NonNull MethodSignature targetMethodSignature) {
+      @NonNull MethodSignature targetMethodSignature) {
     for (MethodSignature polymorphicMethodSigs : preanalysis) {
       if (targetMethodSignature.getDeclClassType().equals(polymorphicMethodSigs.getDeclClassType())
-              && targetMethodSignature.getName().equals(polymorphicMethodSigs.getName())) {
+          && targetMethodSignature.getName().equals(polymorphicMethodSigs.getName())) {
         // return the actualTargetMethodOpt
         return view.getMethod(polymorphicMethodSigs).map(sootMethod -> (SootMethod) sootMethod);
       }
     }
     logger.warn(
-            "Could not find \""
-                    + targetMethodSignature.getSubSignature()
-                    + "\" in "
-                    + targetMethodSignature.getDeclClassType().getClassName()
-                    + " and in its superclasses and interfaces");
+        "Could not find \""
+            + targetMethodSignature.getSubSignature()
+            + "\" in "
+            + targetMethodSignature.getDeclClassType().getClassName()
+            + " and in its superclasses and interfaces");
     return Optional.empty();
   }
 }
