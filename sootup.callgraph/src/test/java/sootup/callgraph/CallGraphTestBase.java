@@ -1199,26 +1199,39 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     for (CallGraph.Call call : cg.getCalls()) {
       System.out.println(call);
     }
-    MethodSignature invoke =
+    MethodSignature invokeMethodSig =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("java.lang.invoke.MethodHandle"),
             "invoke",
             "java.lang.Object",
             Collections.singletonList("java.lang.Object[]"));
-    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(invoke);
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(invokeMethodSig);
     assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
   }
 
   @Test
   public void testMethodHandleInvokeExample2() {
     CallGraph cg = loadCallGraph("Polymorphic", "e2.MethodHandleInvokeExample2");
-    MethodSignature invoke =
+    MethodSignature invokeMethodSig =
             identifierFactory.getMethodSignature(
                     identifierFactory.getClassType("java.lang.invoke.MethodHandle"),
                     "invoke",
                     "java.lang.Object",
                     Collections.singletonList("java.lang.Object[]"));
-    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(invoke);
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(invokeMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testVarHandleGetExample3() {
+    CallGraph cg = loadCallGraph("Polymorphic", "e3.VarHandleGetExample3");
+    MethodSignature getMethodSig =
+            identifierFactory.getMethodSignature(
+                    identifierFactory.getClassType("java.lang.invoke.VarHandle"),
+                    "get",
+                    "java.lang.Object",
+                    Collections.singletonList("java.lang.Object[]"));
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(getMethodSig);
     assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
   }
 }
