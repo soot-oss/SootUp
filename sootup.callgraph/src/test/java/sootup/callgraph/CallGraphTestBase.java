@@ -2,6 +2,7 @@ package sootup.callgraph;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -1191,6 +1192,80 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     assertTrue(
         cg.containsCall(closingCall, closingCall, getInvokableStmt(closingCall, closingCall, 0)));
+  }
+
+  @Test
+  public void testImplicitExample1() {
+    CallGraph cg = loadCallGraph("Implicit", "t1.Example1");
+    MethodSignature updatedRunMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t1.UpdatedThread1"),
+            "run",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testImplicitExample2() {
+    CallGraph cg = loadCallGraph("Implicit", "t2.Example2");
+    MethodSignature updatedRunMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t2.UpdatedThreadInner"),
+            "run",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testImplicitExample3() {
+    CallGraph cg = loadCallGraph("Implicit", "t3.Example3");
+    MethodSignature updatedRunMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t3.UpdatedThreadOuter"),
+            "run",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testImplicitExample4() {
+    CallGraph cg = loadCallGraph("Implicit", "t4.Example4");
+    MethodSignature updatedRunMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t4.UpdatedThreadInner"),
+            "run",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testImplicitExample5() {
+    CallGraph cg = loadCallGraph("Implicit", "t5.Example5");
+    MethodSignature updatedRunMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t5.UpdatedThread2"),
+            "run",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testImplicitExample6() {
+    CallGraph cg = loadCallGraph("Implicit", "t6.Example6");
+    MethodSignature runMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t6.NoThread"), "run", "void", Collections.emptyList());
+    assertFalse(cg.containsMethod(runMethodSig));
   }
 
   @Test

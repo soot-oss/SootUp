@@ -22,6 +22,8 @@ package sootup.callgraph;
  * #L%
  */
 
+import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,9 +34,11 @@ import sootup.callgraph.CallGraph.Call;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
@@ -43,6 +47,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
+import sootup.core.types.VoidType;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootClass;
@@ -286,6 +291,61 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
+   * It resolves the start-run implicit calls caused by the given source method
+   *
+   * @param sourceMethod the inspected source method
+   * @param cg implicit start-run calls will be added to the call graph
+   * @param workList new run methods will be added to the work list
+   */
+  protected void implicitStartRunCall(
+      SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
+    ClassType threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
+    for (Stmt stmt : sourceMethod.getBody().getStmts()) {
+      if (!stmt.isInvokableStmt()) {
+        continue;
+      }
+      AbstractInvokeExpr sourceMethodInvokeExpr =
+          stmt.asInvokableStmt().getInvokeExpr().orElse(null);
+      if (sourceMethodInvokeExpr == null || !sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
+        continue;
+      }
+      MethodSignature methodSig = sourceMethodInvokeExpr.getMethodSignature();
+      if (!methodSig.getType().equals(VoidType.getInstance())
+          || !methodSig.getParameterTypes().isEmpty()
+          || !methodSig.getName().equals("start")) {
+        continue;
+      }
+      // check if java.lang.Thread is superClass of methodSig.classType()
+      if (typeHierarchy
+          .superClassesOf(methodSig.getDeclClassType())
+          .noneMatch(classType -> classType.equals(threadType))) {
+        continue;
+      }
+      MethodSignature implicitRunMethodSig =
+          new MethodSignature(
+              methodSig.getDeclClassType(),
+              "run",
+              methodSig.getParameterTypes(),
+              methodSig.getType());
+      JVirtualInvokeExpr runInvokeExpr =
+          sourceMethodInvokeExpr.asJVirtualInvokeExpr().withMethodSignature(implicitRunMethodSig);
+      InvokableStmt runInvokableStmt = new JInvokeStmt(runInvokeExpr, getNoStmtPositionInfo());
+      resolveCall(sourceMethod, runInvokableStmt)
+          .forEach(
+              runMethodSignature -> {
+                if (view.getMethod(runMethodSignature).isPresent()) {
+                  addCallToCG(
+                      sourceMethod.getSignature(),
+                      runMethodSignature,
+                      runInvokableStmt,
+                      cg,
+                      workList);
+                }
+              });
+    }
+  }
+
+  /**
    * It resolves all implicit calls caused by the given source method
    *
    * @param sourceMethod the inspected source method
@@ -297,7 +357,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
-
+    implicitStartRunCall(sourceMethod, cg, workList);
     // collect all static initializer calls
     resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
   }
