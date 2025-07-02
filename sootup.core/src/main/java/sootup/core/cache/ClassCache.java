@@ -23,16 +23,21 @@ package sootup.core.cache;
  */
 
 import java.util.Collection;
+import java.util.stream.Stream;
+
 import org.jspecify.annotations.NonNull;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
 /** Interface for different caching strategies of resolved classes. */
 public interface ClassCache {
-
+  /**
+   * @return null if classType is not in the cache
+   * */
   SootClass getClass(ClassType classType);
 
-  @NonNull Collection<SootClass> getClasses();
+  @NonNull
+  Stream<SootClass> getClasses();
 
   void putClass(ClassType classType, SootClass sootClass);
 

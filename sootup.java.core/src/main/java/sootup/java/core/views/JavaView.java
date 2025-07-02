@@ -160,12 +160,9 @@ public class JavaView extends AbstractView {
 
     ClassType classType = classSource.getClassType();
     JavaSootClass theClass;
-    if (cache.hasClass(classType)) {
-      theClass = (JavaSootClass) cache.getClass(classType);
-    } else {
-      theClass =
-          (JavaSootClass)
-              classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
+    theClass = (JavaSootClass) cache.getClass(classType);
+    if (theClass == null) {
+      theClass = classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
       cache.putClass(classType, theClass);
     }
     return theClass;
