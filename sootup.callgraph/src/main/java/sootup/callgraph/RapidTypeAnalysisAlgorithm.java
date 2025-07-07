@@ -159,12 +159,13 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
     // get all instantiated subclasses
     // the target method is used since this is the type of the invoke
+    System.out.println("TargetMethod: " + targetMethodSignature);
     List<? extends SootClass> subclasses =
         typeHierarchy
             .subtypesOf(targetMethodSignature.getDeclClassType())
             .flatMap(classType -> view.getClass(classType).stream())
             .toList();
-
+    System.out.println("Subclasses: " + subclasses);
     // get all targets of these subtypes
     Stream<MethodSignature> targets =
         resolveAllCallTargets(
@@ -207,12 +208,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     saveIgnoredCall(sourceMethod.getSignature(), actualTargetMethod.getSignature(), invokableStmt);
     //    System.out.println(ignoredCalls.size());
     //    System.out.println("Under ignored calls?: " + ignoredCalls);
-    for (Call call : ignoredCalls.values()) {
-      MethodSignature polymorphicCall = call.targetMethodSignature();
-      if (polymorphicCall.toString().contains("java.lang.invoke.")) {
-        targets = Stream.concat(targets, Stream.of(polymorphicCall));
-      }
-    }
+//    for (Call call : ignoredCalls.values()) {
+//      MethodSignature polymorphicCall = call.targetMethodSignature();
+//      if (polymorphicCall.toString().contains("java.lang.invoke.")) {
+//        targets = Stream.concat(targets, Stream.of(polymorphicCall));
+//      }
+//    }
     return targets;
   }
 

@@ -43,7 +43,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   private JavaView createViewForClassPath(String classPath) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation()); // SourceType.Application
     inputLocations.add(new JavaClassPathAnalysisInputLocation(classPath));
 
     return new JavaView(inputLocations);
@@ -1271,6 +1271,9 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   @Test
   public void testMethodHandleInvokeExample1() {
     CallGraph cg = loadCallGraph("Polymorphic", "e1.MethodHandleInvokeExample1");
+    for (CallGraph.Call call : cg.getCalls()){
+      System.out.println(call);
+    }
     MethodSignature invokeMethodSig =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("java.lang.invoke.MethodHandle"),
