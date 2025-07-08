@@ -21,6 +21,7 @@ package sootup.java.bytecode.frontend.conversion;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -136,14 +137,14 @@ public class AsmJavaClassProvider implements ClassProvider {
      * @return the actual class signature found in the compilation unit
      */
     protected Optional<String> readClassName(@NonNull final Path classSource) {
-      try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
-        ClassReader classReader = new ClassReader(sourceFileInputStream);
+      try (InputStream sourceFileInputStream = Files.newInputStream(classSource); BufferedInputStream bis = new BufferedInputStream(sourceFileInputStream)) {
+        ClassReader classReader = new ClassReader(bis);
         classReader.accept(this, ClassReader.SKIP_FRAMES);
         return Optional.of(classReader.getClassName().replace('/', '.'));
       } catch (IOException exception) {
-        logger.warn("Cannot create class source for {}", classSource, exception);
+        logger.debug("Cannot create class source for {}", classSource, exception);
       } catch (IllegalArgumentException exception) {
-        logger.warn("Cannot create class source for {}", classSource, exception);
+        logger.debug("Cannot create class source for {}", classSource, exception);
       }
       return Optional.empty();
     }
