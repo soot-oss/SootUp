@@ -34,7 +34,7 @@ public class MutableFullCache extends FullCache implements MutableClassCache {
 
   @Override
   public SootClass removeClass(@NonNull ClassType classType) {
-    if (this.hasClass(classType)) {
+    if (hasClass(classType)) {
       return cache.remove(classType);
     }
     return null;

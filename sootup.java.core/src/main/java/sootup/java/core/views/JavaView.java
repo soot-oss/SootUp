@@ -82,7 +82,7 @@ public class JavaView extends AbstractView {
   @NonNull
   public synchronized Stream<JavaSootClass> getClasses() {
     if (isFullyResolved && cache instanceof FullCache) {
-      return cache.getClasses().stream().map(clazz -> (JavaSootClass) clazz);
+      return cache.getClasses().map(clazz -> (JavaSootClass) clazz);
     }
 
     Stream<JavaSootClass> resolvedClasses =
@@ -166,5 +166,11 @@ public class JavaView extends AbstractView {
       cache.putClass(classType, theClass);
     }
     return theClass;
+  }
+
+  private JavaSootClass buildAndCache(JavaSootClassSource classSource) {
+    JavaSootClass sootClass = classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
+    cache.putClass(classSource.getClassType(), sootClass);
+    return sootClass;
   }
 }

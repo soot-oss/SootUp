@@ -33,13 +33,11 @@ import sootup.java.core.JavaIdentifierFactory;
 public class JavaEagerView extends JavaView {
 
   public JavaEagerView(@NonNull AnalysisInputLocation inputLocation) {
-    super(Collections.singletonList(inputLocation));
-    eagerLoadClasses();
+    this(Collections.singletonList(inputLocation));
   }
 
   public JavaEagerView(@NonNull List<AnalysisInputLocation> inputLocations) {
-    super(inputLocations, new FullCacheProvider());
-    eagerLoadClasses();
+    this(inputLocations, new FullCacheProvider());
   }
 
   public JavaEagerView(
@@ -50,7 +48,6 @@ public class JavaEagerView extends JavaView {
   }
 
   protected void eagerLoadClasses() {
-    if (!isFullyResolved) {
       getClasses()
           .forEach(
               c -> {
@@ -69,6 +66,5 @@ public class JavaEagerView extends JavaView {
                           }
                         });
               }); // forces loading
-    }
   }
 }
