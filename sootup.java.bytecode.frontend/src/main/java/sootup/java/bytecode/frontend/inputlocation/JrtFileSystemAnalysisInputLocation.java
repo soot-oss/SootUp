@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 import org.apache.commons.io.FilenameUtils;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -83,7 +83,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
       @NonNull ClassType classType, @NonNull View view) {
     JavaClassType klassType = (JavaClassType) classType;
 
-    ClassProvider classProvider = getClassProvider(view);
+    PathbasedClassProvider classProvider = getClassProvider(view);
     Path filepath =
         theFileSystem.getPath(
             klassType.getFullyQualifiedName().replace('.', '/')
@@ -142,7 +142,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
       @NonNull IdentifierFactory identifierFactory,
       @NonNull View view) {
 
-    ClassProvider classProvider = getClassProvider(view);
+    PathbasedClassProvider classProvider = getClassProvider(view);
 
     String moduleInfoFilename =
         JavaModuleIdentifierFactory.MODULE_INFO_FILE
@@ -176,7 +176,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
     }
   }
 
-  protected ClassProvider getClassProvider(@NonNull View view) {
+  protected PathbasedClassProvider getClassProvider(@NonNull View view) {
     return new AsmJavaClassProvider(view);
   }
 

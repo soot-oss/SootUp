@@ -22,22 +22,20 @@ package sootup.core.frontend;
  * #L%
  */
 
-import org.jspecify.annotations.NonNull;
+import java.nio.file.Path;
+import java.util.Optional;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.types.ClassType;
 
-import java.nio.file.Path;
-import java.util.Optional;
-
 /**
- * Responsible for creating {@link SootClassSource}es
+ * Responsible for creating {@link SootClassSource}es based on the handled file type (.class,
+ * .jimple, .java, .dex, etc).
  *
  * @author Manuel Benz
  */
-public interface ClassProvider<E> {
+public interface PathbasedClassProvider extends ClassProvider<Path>{
 
-  Optional<? extends SootClassSource> createClassSource(
-          @NonNull AnalysisInputLocation inputLocation, @NonNull E item, @NonNull ClassType classSignature);
-
+  /** Returns the file type that is handled by this provider, e.g. class, jimple, java */
+  FileType getHandledFileType();
 }

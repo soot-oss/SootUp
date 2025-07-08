@@ -35,7 +35,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
@@ -45,8 +45,8 @@ import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.types.ModuleJavaClassType;
 
-/** A {@link ClassProvider} capable of handling Java bytecode */
-public class AsmJavaClassProvider implements ClassProvider {
+/** A {@link PathbasedClassProvider} capable of handling Java bytecode */
+public class AsmJavaClassProvider implements PathbasedClassProvider {
 
   @NonNull private final View view;
   private static final @NonNull Logger logger = LoggerFactory.getLogger(AsmJavaClassProvider.class);
@@ -66,6 +66,8 @@ public class AsmJavaClassProvider implements ClassProvider {
 
     AsmClassSource asmClassSource =
         new AsmClassSource(analysisInputLocation, sourcePath, classType, classNode);
+
+    /*
     // copy and load the complete class at once into memory so the newly created asmClassSource can
     // release the memory and structures from the asm library
     return new OverridingJavaClassSource(
@@ -82,6 +84,9 @@ public class AsmJavaClassProvider implements ClassProvider {
         asmClassSource.resolveAnnotations(),
         Collections.emptyList(), // TODO! implement
         Collections.emptyList());
+
+     */
+    return asmClassSource;
   }
 
   @Override
