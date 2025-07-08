@@ -27,7 +27,7 @@ import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableBasicBlock;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.views.View;
 
 /**

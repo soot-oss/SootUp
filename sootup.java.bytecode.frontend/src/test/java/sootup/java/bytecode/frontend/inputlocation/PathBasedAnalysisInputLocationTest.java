@@ -27,8 +27,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -51,6 +55,23 @@ import sootup.java.core.views.JavaView;
  * @author Kaustubh Kelkar updated on 16.04.2020
  */
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
+
+  @Test
+  void testResourceLeaks() throws IOException {
+    Path path = Paths.get("./target/sootup.java.bytecode.frontend-2.0.0-SNAPSHOT.jar");
+      try (FileSystem fileSystem = FileSystems.newFileSystem(Objects.requireNonNull(path), (ClassLoader) null)) {
+
+          assertTrue(fileSystem.isOpen());
+
+          try (Stream<Path> stream = Files.walk(fileSystem.getPath("."))) {
+              stream.filter(p -> Files.isRegularFile(p) && Files.isReadable(p) && p.toString().endsWith(".jar")).map(p -> p).forEach(p -> {
+                  System.out.println(p);
+              });
+          }
+          assertTrue(fileSystem.isOpen());
+      }
+
+  }
 
   @Test
   public void testSingleClass() {

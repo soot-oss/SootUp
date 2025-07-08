@@ -24,7 +24,7 @@ package sootup.interceptors;
 
 import org.jspecify.annotations.NonNull;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.views.View;
 import sootup.interceptors.typeresolving.TypeResolver;
 import sootup.java.core.views.JavaView;

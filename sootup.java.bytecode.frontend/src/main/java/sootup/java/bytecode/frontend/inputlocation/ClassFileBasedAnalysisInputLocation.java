@@ -31,7 +31,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.interceptors.BytecodeBodyInterceptors;

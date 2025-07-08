@@ -48,7 +48,7 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.SootClassMemberSignature;
 import sootup.core.signatures.SootClassMemberSubSignature;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;

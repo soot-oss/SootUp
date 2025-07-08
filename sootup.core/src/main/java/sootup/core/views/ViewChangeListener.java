@@ -1,10 +1,10 @@
-package sootup.core.jimple;
+package sootup.core.views;
 
 /*-
  * #%L
- * Soot
+ * SootUp
  * %%
- * Copyright (C) 2018-2020 Markus Schmidt and others
+ * Copyright (C) 1997 - 2024 Raja Vallée-Rai and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,15 +22,16 @@ package sootup.core.jimple;
  * #L%
  */
 
-import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.common.Local;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
 
-public class IgnoreLocalNameComparator extends JimpleComparator {
+/** Interface that defines notifications that are triggered when a mutable view is modified. */
+public interface ViewChangeListener {
+  void classAdded(SootClass sc);
 
-  public boolean caseLocal(Local obj, Object o) {
-    if (!(o instanceof Local)) {
-      return false;
-    }
-    return obj.getType().equals(((Local) o).getType());
-  }
+  void classRemoved(SootClass sc);
+
+  void methodAdded(SootMethod m);
+
+  void methodRemoved(SootMethod m);
 }

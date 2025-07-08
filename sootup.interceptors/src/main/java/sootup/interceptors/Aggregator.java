@@ -37,7 +37,7 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 

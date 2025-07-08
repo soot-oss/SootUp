@@ -18,7 +18,7 @@ import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.model.Body;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;

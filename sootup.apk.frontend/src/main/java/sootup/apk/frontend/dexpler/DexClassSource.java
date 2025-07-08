@@ -40,7 +40,7 @@ import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.util.Modifiers;

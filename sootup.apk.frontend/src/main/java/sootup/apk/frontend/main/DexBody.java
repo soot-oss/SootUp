@@ -48,7 +48,7 @@ import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;

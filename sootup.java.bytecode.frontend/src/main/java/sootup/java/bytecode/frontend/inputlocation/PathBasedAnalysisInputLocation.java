@@ -13,7 +13,7 @@ import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.java.core.*;

@@ -39,7 +39,7 @@ import org.jspecify.annotations.Nullable;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.util.PathUtils;
 import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.java.bytecode.frontend.conversion.AsmModuleSource;

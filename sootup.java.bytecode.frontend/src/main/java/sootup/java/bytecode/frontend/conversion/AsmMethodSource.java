@@ -56,7 +56,7 @@ import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;

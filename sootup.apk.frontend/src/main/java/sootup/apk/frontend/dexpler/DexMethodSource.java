@@ -40,7 +40,7 @@ import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootMethod;

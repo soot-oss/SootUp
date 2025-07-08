@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.ViewChangeListener;
+import sootup.core.views.ViewChangeListener;
 import sootup.core.cache.MutableClassCache;
 import sootup.core.cache.provider.MutableFullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;

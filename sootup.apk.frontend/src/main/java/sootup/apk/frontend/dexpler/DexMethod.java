@@ -34,7 +34,7 @@ import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;

@@ -38,7 +38,7 @@ import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.types.ArrayType;
 import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
