@@ -1271,9 +1271,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   @Test
   public void testMethodHandleInvokeExample1() {
     CallGraph cg = loadCallGraph("Polymorphic", "e1.MethodHandleInvokeExample1");
-    for (CallGraph.Call call : cg.getCalls()){
-      System.out.println(call);
-    }
     MethodSignature invokeMethodSig =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("java.lang.invoke.MethodHandle"),

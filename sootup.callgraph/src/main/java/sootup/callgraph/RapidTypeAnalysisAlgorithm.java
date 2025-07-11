@@ -34,6 +34,7 @@ import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -96,7 +97,17 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     if (method == null || method.isAbstract() || method.isNative()) {
       return Collections.emptyList();
     }
-
+    ClassType methodHandleType = view.getIdentifierFactory().getClassType("java.lang.invoke.MethodHandle");
+    ClassType varHandleType = view.getIdentifierFactory().getClassType("java.lang.invoke.VarHandle");
+    Set<ClassType> handleInstantiated = method.getBody().getStmts().stream()
+            .filter(Stmt::isJAssignStmt)
+            .map(stmt -> ((JAssignStmt) stmt).getRightOp())
+            .filter(value -> value instanceof AbstractInvokeExpr)
+            .map(AbstractInvokeExpr.class::cast)
+            .filter(abstractInvokeExpr -> abstractInvokeExpr.getType().equals(methodHandleType) || abstractInvokeExpr.getType().equals(varHandleType))
+            .map(abstractInvokeExpr -> (ClassType) abstractInvokeExpr.getType())
+            .collect(Collectors.toSet());
+    // System.out.println("MethodHandle instantiated: " + handleInstantiated);
     Set<ClassType> instantiated =
         method.getBody().getStmts().stream()
             .filter(stmt -> stmt instanceof JAssignStmt)
@@ -104,6 +115,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             .filter(value -> value instanceof JNewExpr)
             .map(value -> ((JNewExpr) value).getType())
             .collect(Collectors.toSet());
+    instantiated.addAll(handleInstantiated);
     List<ClassType> newInstantiatedClassTypes =
         instantiated.stream()
             .filter(classType -> !instantiatedClasses.contains(classType))
@@ -159,13 +171,11 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
     // get all instantiated subclasses
     // the target method is used since this is the type of the invoke
-    System.out.println("TargetMethod: " + targetMethodSignature);
     List<? extends SootClass> subclasses =
         typeHierarchy
             .subtypesOf(targetMethodSignature.getDeclClassType())
             .flatMap(classType -> view.getClass(classType).stream())
             .toList();
-    System.out.println("Subclasses: " + subclasses);
     // get all targets of these subtypes
     Stream<MethodSignature> targets =
         resolveAllCallTargets(
@@ -206,8 +216,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     //    System.out.println("New instantiated classes: " + instantiatedClasses);
     // save the ignored call
     saveIgnoredCall(sourceMethod.getSignature(), actualTargetMethod.getSignature(), invokableStmt);
-    //    System.out.println(ignoredCalls.size());
-    //    System.out.println("Under ignored calls?: " + ignoredCalls);
+//    System.out.println(ignoredCalls.size());
+//    System.out.println("Under ignored calls?: " + ignoredCalls);
 //    for (Call call : ignoredCalls.values()) {
 //      MethodSignature polymorphicCall = call.targetMethodSignature();
 //      if (polymorphicCall.toString().contains("java.lang.invoke.")) {
@@ -334,8 +344,9 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     if (method == null) {
       return;
     }
-
+    System.out.println("PreProcessed Method: " + method);
     List<ClassType> newInstantiatedClasses = collectInstantiatedClassesInMethod(method);
+    System.out.println("New Instantiated Classes: " + newInstantiatedClasses);
     newInstantiatedClasses.forEach(
         classType -> includeIgnoredCallsToClass(classType, cg, workList));
   }
