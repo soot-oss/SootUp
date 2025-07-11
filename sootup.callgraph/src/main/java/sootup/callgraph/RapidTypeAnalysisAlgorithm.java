@@ -101,34 +101,18 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
         method.getBody().getStmts().stream()
             .filter(Stmt::isJAssignStmt)
             .map(stmt -> ((JAssignStmt) stmt).getRightOp())
-            .flatMap(value -> {
-              // ClassType as returnType
-              if (value instanceof AbstractInvokeExpr && value.getType() instanceof ClassType) {
-                return Stream.of((ClassType) value.getType());
-              // new-expression
-              } else if (value instanceof JNewExpr) {
-                return Stream.of(((JNewExpr) value).getType());
-              }
-              return Stream.empty();
-            })
+            .flatMap(
+                value -> {
+                  // ClassType as returnType
+                  if (value instanceof AbstractInvokeExpr && value.getType() instanceof ClassType) {
+                    return Stream.of((ClassType) value.getType());
+                    // new-expression
+                  } else if (value instanceof JNewExpr) {
+                    return Stream.of(((JNewExpr) value).getType());
+                  }
+                  return Stream.empty();
+                })
             .collect(Collectors.toSet());
-//    Set<ClassType> handleInstantiated = method.getBody().getStmts().stream()
-//            .filter(Stmt::isJAssignStmt)
-//            .map(stmt -> ((JAssignStmt) stmt).getRightOp())
-//            .filter(value -> value instanceof AbstractInvokeExpr)
-//            .map(AbstractInvokeExpr.class::cast)
-//            .map(AbstractInvokeExpr::getType)
-//            .filter(returnType -> returnType instanceof ClassType)
-//            .map(returnType -> (ClassType) returnType)
-//            .collect(Collectors.toSet());
-//    Set<ClassType> instantiated =
-//        method.getBody().getStmts().stream()
-//            .filter(stmt -> stmt instanceof JAssignStmt)
-//            .map(stmt -> ((JAssignStmt) stmt).getRightOp())
-//            .filter(value -> value instanceof JNewExpr)
-//            .map(value -> ((JNewExpr) value).getType())
-//            .collect(Collectors.toSet());
-//    instantiated.addAll(handleInstantiated);
     List<ClassType> newInstantiatedClassTypes =
         instantiated.stream()
             .filter(classType -> !instantiatedClasses.contains(classType))
@@ -224,19 +208,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       // the call is created with the actual base target
       return Stream.concat(Stream.of(actualTargetMethod.getSignature()), targets);
     }
-    instantiatedClasses.addAll(collectInstantiatedClassesInMethod(sourceMethod));
-    //    System.out.println("SourceMeth: " + sourceMethod);
-    //    System.out.println("New instantiated classes: " + instantiatedClasses);
     // save the ignored call
     saveIgnoredCall(sourceMethod.getSignature(), actualTargetMethod.getSignature(), invokableStmt);
-//    System.out.println(ignoredCalls.size());
-//    System.out.println("Under ignored calls?: " + ignoredCalls);
-//    for (Call call : ignoredCalls.values()) {
-//      MethodSignature polymorphicCall = call.targetMethodSignature();
-//      if (polymorphicCall.toString().contains("java.lang.invoke.")) {
-//        targets = Stream.concat(targets, Stream.of(polymorphicCall));
-//      }
-//    }
     return targets;
   }
 
