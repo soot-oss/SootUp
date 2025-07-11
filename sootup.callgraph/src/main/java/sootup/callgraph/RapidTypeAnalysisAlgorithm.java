@@ -97,25 +97,38 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     if (method == null || method.isAbstract() || method.isNative()) {
       return Collections.emptyList();
     }
-    ClassType methodHandleType = view.getIdentifierFactory().getClassType("java.lang.invoke.MethodHandle");
-    ClassType varHandleType = view.getIdentifierFactory().getClassType("java.lang.invoke.VarHandle");
-    Set<ClassType> handleInstantiated = method.getBody().getStmts().stream()
-            .filter(Stmt::isJAssignStmt)
-            .map(stmt -> ((JAssignStmt) stmt).getRightOp())
-            .filter(value -> value instanceof AbstractInvokeExpr)
-            .map(AbstractInvokeExpr.class::cast)
-            .filter(abstractInvokeExpr -> abstractInvokeExpr.getType().equals(methodHandleType) || abstractInvokeExpr.getType().equals(varHandleType))
-            .map(abstractInvokeExpr -> (ClassType) abstractInvokeExpr.getType())
-            .collect(Collectors.toSet());
-    // System.out.println("MethodHandle instantiated: " + handleInstantiated);
     Set<ClassType> instantiated =
         method.getBody().getStmts().stream()
-            .filter(stmt -> stmt instanceof JAssignStmt)
+            .filter(Stmt::isJAssignStmt)
             .map(stmt -> ((JAssignStmt) stmt).getRightOp())
-            .filter(value -> value instanceof JNewExpr)
-            .map(value -> ((JNewExpr) value).getType())
+            .flatMap(value -> {
+              // ClassType as returnType
+              if (value instanceof AbstractInvokeExpr && value.getType() instanceof ClassType) {
+                return Stream.of((ClassType) value.getType());
+              // new-expression
+              } else if (value instanceof JNewExpr) {
+                return Stream.of(((JNewExpr) value).getType());
+              }
+              return Stream.empty();
+            })
             .collect(Collectors.toSet());
-    instantiated.addAll(handleInstantiated);
+//    Set<ClassType> handleInstantiated = method.getBody().getStmts().stream()
+//            .filter(Stmt::isJAssignStmt)
+//            .map(stmt -> ((JAssignStmt) stmt).getRightOp())
+//            .filter(value -> value instanceof AbstractInvokeExpr)
+//            .map(AbstractInvokeExpr.class::cast)
+//            .map(AbstractInvokeExpr::getType)
+//            .filter(returnType -> returnType instanceof ClassType)
+//            .map(returnType -> (ClassType) returnType)
+//            .collect(Collectors.toSet());
+//    Set<ClassType> instantiated =
+//        method.getBody().getStmts().stream()
+//            .filter(stmt -> stmt instanceof JAssignStmt)
+//            .map(stmt -> ((JAssignStmt) stmt).getRightOp())
+//            .filter(value -> value instanceof JNewExpr)
+//            .map(value -> ((JNewExpr) value).getType())
+//            .collect(Collectors.toSet());
+//    instantiated.addAll(handleInstantiated);
     List<ClassType> newInstantiatedClassTypes =
         instantiated.stream()
             .filter(classType -> !instantiatedClasses.contains(classType))

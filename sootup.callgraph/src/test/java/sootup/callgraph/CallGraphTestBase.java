@@ -2,7 +2,6 @@ package sootup.callgraph;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
