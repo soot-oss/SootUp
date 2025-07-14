@@ -6,9 +6,9 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.ref.IdentityRef;
@@ -34,7 +34,6 @@ public class UnreachableCodeEliminatorTest {
   public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  JavaJimple javaJimple = JavaJimple.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
@@ -51,7 +50,7 @@ public class UnreachableCodeEliminatorTest {
   Local l3 = JavaJimple.newLocal("l3", PrimitiveType.getInt());
   Local l4 = JavaJimple.newLocal("l3", PrimitiveType.getInt());
   Local stack0 = JavaJimple.newLocal("stack0", refType);
-  IdentityRef idRef = javaJimple.newCaughtExceptionRef();
+  IdentityRef idRef = JavaJimple.newCaughtExceptionRef();
 
   // build stmts
   FallsThroughStmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);

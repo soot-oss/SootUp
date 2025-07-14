@@ -28,9 +28,9 @@ import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.IgnoreLocalNameComparator;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
@@ -129,8 +129,7 @@ public class JAssignStmtTest {
     jAssignStmtField.getFieldRef();
 
     // test JFieldRef cast for ArrayRef - should not throw an Exception
-    final JArrayRef jArrayRef =
-        JavaJimple.getInstance().newArrayRef(someLocal, IntConstant.getInstance(2));
+    final JArrayRef jArrayRef = JavaJimple.newArrayRef(someLocal, IntConstant.getInstance(2));
     final JAssignStmt jAssignStmtArr =
         Jimple.newAssignStmt(someLocal, jArrayRef, StmtPositionInfo.getNoStmtPositionInfo());
     jAssignStmtArr.getArrayRef();

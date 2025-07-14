@@ -32,15 +32,14 @@ import qilin.core.ArtificialMethod;
 import qilin.util.PTAUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.frontend.OverridingClassSource;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
@@ -51,7 +50,8 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.*;
+import sootup.java.core.types.JavaClassType;
 
 public class FakeMainFactory extends ArtificialMethod {
   public static FakeMainFactory instance;
@@ -71,12 +71,14 @@ public class FakeMainFactory extends ArtificialMethod {
     ClassType declaringClassSignature = fact.getClassType(className);
     FieldSignature ctSig =
         fact.getFieldSignature("currentThread", declaringClassSignature, "java.lang.Thread");
-    SootField currentThread =
-        new SootField(ctSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
+    JavaSootField currentThread =
+        new JavaSootField(
+            ctSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
     FieldSignature gtSig =
         fact.getFieldSignature("globalThrow", declaringClassSignature, "java.lang.Exception");
-    SootField globalThrow =
-        new SootField(gtSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
+    JavaSootField globalThrow =
+        new JavaSootField(
+            gtSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
 
     MethodSignature methodSignatureOne =
         fact.getMethodSignature(className, "main", "void", Collections.emptyList());
@@ -97,8 +99,8 @@ public class FakeMainFactory extends ArtificialMethod {
         .setPosition(NoPositionInformation.getInstance());
 
     Body bodyOne = bodyBuilder.build();
-    SootMethod dummyMainMethod =
-        new SootMethod(
+    JavaSootMethod dummyMainMethod =
+        new JavaSootMethod(
             new OverridingBodySource(methodSignatureOne, bodyOne),
             methodSignatureOne,
             EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
@@ -106,13 +108,13 @@ public class FakeMainFactory extends ArtificialMethod {
             NoPositionInformation.getInstance());
     this.method = dummyMainMethod;
     this.fakeClass =
-        new SootClass(
-            new OverridingClassSource(
+        new JavaSootClass(
+            new OverridingJavaClassSource(
                 Collections.singleton(dummyMainMethod),
                 new LinkedHashSet<>(Arrays.asList(currentThread, globalThrow)),
                 EnumSet.of(ClassModifier.PUBLIC),
                 null,
-                fact.getClassType("java.lang.Object"),
+                (JavaClassType) fact.getClassType("java.lang.Object"),
                 null,
                 NoPositionInformation.getInstance(),
                 null,

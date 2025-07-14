@@ -29,8 +29,8 @@ import org.jspecify.annotations.Nullable;
 import sootup.core.graph.BasicBlock;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
@@ -199,5 +199,20 @@ public final class JPhiExpr implements Expr {
   public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.casePhiExpr(this);
     return v;
+  }
+
+  @Override
+  public boolean isJPhiExpr() {
+    return true;
+  }
+
+  @Override
+  public JPhiExpr asJPhiExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JPhiExpr> toJPhiExpr() {
+    return Optional.of(this);
   }
 }

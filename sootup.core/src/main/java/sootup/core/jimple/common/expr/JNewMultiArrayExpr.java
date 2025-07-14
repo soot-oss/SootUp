@@ -23,12 +23,13 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
@@ -147,5 +148,20 @@ public final class JNewMultiArrayExpr implements Expr {
 
   public boolean isArrayOfPrimitives() {
     return baseType.isArrayTypeOfPrimitives();
+  }
+
+  @Override
+  public boolean isJNewMultiArrayExpr() {
+    return true;
+  }
+
+  @Override
+  public JNewMultiArrayExpr asJNewMultiArrayExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JNewMultiArrayExpr> toJNewMultiArrayExpr() {
+    return Optional.of(this);
   }
 }

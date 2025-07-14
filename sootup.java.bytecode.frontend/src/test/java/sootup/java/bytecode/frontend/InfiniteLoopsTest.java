@@ -1,12 +1,12 @@
 package sootup.java.bytecode.frontend;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
+import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.Body;
 import sootup.core.model.SourceType;
@@ -42,8 +42,13 @@ public class InfiniteLoopsTest {
     final MethodSignature methodSignature3 =
         view.getIdentifierFactory()
             .getMethodSignature("InfiniteLoops", "tc3", "void", Collections.emptyList());
+    final MethodSignature methodSignatureNotPresent =
+        view.getIdentifierFactory()
+            .getMethodSignature("InfiniteLoops", "tc3NotPresent", "void", Collections.emptyList());
     Body body3 = view.getMethod(methodSignature3).get().getBody();
     assertFalse(body3.getStmts().isEmpty());
     assertDoesNotThrow(() -> view.getMethod(methodSignature3).get().getBody());
+    assertThrows(
+        ResolveException.class, () -> view.getMethod(methodSignatureNotPresent).get().getBody());
   }
 }

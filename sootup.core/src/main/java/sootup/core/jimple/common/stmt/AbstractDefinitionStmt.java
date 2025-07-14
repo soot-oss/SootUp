@@ -25,10 +25,10 @@ package sootup.core.jimple.common.stmt;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.types.Type;
 
 public abstract class AbstractDefinitionStmt extends AbstractStmt {

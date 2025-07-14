@@ -9,12 +9,13 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.DoubleConstant;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
@@ -25,7 +26,6 @@ import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLo
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -56,7 +56,7 @@ public class WitherTest {
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
     JavaSootClass clazz = loader.getClass(declareClassSig).orElse(null);
     assertNotNull(clazz);
-    JavaSootClassSource classSource = clazz.getClassSource();
+    SootClassSource classSource = clazz.getClassSource();
     JavaSootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
 
     MethodSignature methodSignature =

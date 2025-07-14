@@ -23,11 +23,12 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.util.printer.StmtPrinter;
@@ -96,5 +97,20 @@ public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   @NonNull
   public JSpecialInvokeExpr withArgs(@NonNull List<Immediate> args) {
     return new JSpecialInvokeExpr(getBase(), getMethodSignature(), args);
+  }
+
+  @Override
+  public boolean isJSpecialInvokeExpr() {
+    return true;
+  }
+
+  @Override
+  public JSpecialInvokeExpr asJSpecialInvokeExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JSpecialInvokeExpr> toJSpecialInvokeExpr() {
+    return Optional.of(this);
   }
 }

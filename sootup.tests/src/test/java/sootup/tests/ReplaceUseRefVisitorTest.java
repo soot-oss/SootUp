@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.Ref;
@@ -22,7 +22,6 @@ import sootup.java.core.types.JavaClassType;
  */
 public class ReplaceUseRefVisitorTest {
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  JavaJimple javaJimple = JavaJimple.getInstance();
   JavaClassType intType = factory.getClassType("int");
   JavaClassType arrayType = factory.getClassType("Array");
 
@@ -44,7 +43,7 @@ public class ReplaceUseRefVisitorTest {
     // replace base with newUse
     ReplaceUseRefVisitor visitor = new ReplaceUseRefVisitor();
     visitor.init(base, newBase);
-    Ref ref = javaJimple.newArrayRef(base, conIndex);
+    Ref ref = JavaJimple.newArrayRef(base, conIndex);
     ref.accept(visitor);
     Ref newRef = visitor.getResult();
 
@@ -58,7 +57,7 @@ public class ReplaceUseRefVisitorTest {
     // replace constant index with newUse
     visitor = new ReplaceUseRefVisitor();
     visitor.init(conIndex, conNewIndex);
-    ref = javaJimple.newArrayRef(base, conIndex);
+    ref = JavaJimple.newArrayRef(base, conIndex);
     ref.accept(visitor);
     newRef = visitor.getResult();
 
@@ -70,7 +69,7 @@ public class ReplaceUseRefVisitorTest {
     // replace local index with newUse
     visitor = new ReplaceUseRefVisitor();
     visitor.init(localIndex, localNewIndex);
-    ref = javaJimple.newArrayRef(base, localIndex);
+    ref = JavaJimple.newArrayRef(base, localIndex);
     ref.accept(visitor);
     newRef = visitor.getResult();
 
@@ -80,7 +79,7 @@ public class ReplaceUseRefVisitorTest {
     expectedUses.clear();
 
     // no matched use
-    ref = javaJimple.newArrayRef(base, conIndex);
+    ref = JavaJimple.newArrayRef(base, conIndex);
     ref.accept(visitor);
     assertEquals(visitor.getResult(), ref);
   }

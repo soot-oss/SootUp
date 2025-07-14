@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JGotoStmt;
@@ -48,7 +48,6 @@ public class CastAndReturnInlinerTest {
   @Test
   public void testModification() {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-    JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
@@ -57,7 +56,7 @@ public class CastAndReturnInlinerTest {
     Local b = JavaJimple.newLocal("b", stringType);
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str"), noPositionInfo);
     FallsThroughStmt bToA =
         JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
@@ -108,7 +107,6 @@ public class CastAndReturnInlinerTest {
   @Test
   public void testNoModification() {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-    JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
@@ -118,9 +116,9 @@ public class CastAndReturnInlinerTest {
     Local c = JavaJimple.newLocal("c", stringType);
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str"), noPositionInfo);
     FallsThroughStmt strToC =
-        JavaJimple.newAssignStmt(c, javaJimple.newStringConstant("str2"), noPositionInfo);
+        JavaJimple.newAssignStmt(c, JavaJimple.newStringConstant("str2"), noPositionInfo);
     FallsThroughStmt bToA =
         JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     // Note this returns c, not b, hence the cast and return must not be inlined

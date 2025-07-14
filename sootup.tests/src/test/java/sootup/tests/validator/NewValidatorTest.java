@@ -13,16 +13,17 @@ import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
+import sootup.core.types.*;
 import sootup.core.validation.NewValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
-import sootup.jimple.frontend.JimpleView;
 
 public class NewValidatorTest {
 
   NewValidator validator;
-  JimpleView view;
+  JavaView view;
   Collection<SootClass> classes;
 
   @BeforeEach
@@ -53,8 +54,8 @@ public class NewValidatorTest {
     JimpleAnalysisInputLocation jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
-    view = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass> classSource1 = view.getClass(classTypeNewValidator);
+    view = new JavaView(jimpleInputLocation);
+    final Optional<JavaSootClass> classSource1 = view.getClass(classTypeNewValidator);
     assertFalse(classSource1.isPresent());
 
     classes = new HashSet<>(); // Set to track the classes to check

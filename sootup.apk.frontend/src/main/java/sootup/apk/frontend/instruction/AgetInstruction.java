@@ -26,8 +26,8 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction23x;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.java.core.language.JavaJimple;
@@ -46,7 +46,7 @@ public class AgetInstruction extends DexLibAbstractInstruction {
     Local arrayBase = body.getRegisterLocal(aGetInstr.getRegisterB());
     Local index = body.getRegisterLocal(aGetInstr.getRegisterC());
 
-    JArrayRef jArrayRef = JavaJimple.getInstance().newArrayRef(arrayBase, index);
+    JArrayRef jArrayRef = JavaJimple.newArrayRef(arrayBase, index);
     Local l = body.getRegisterLocal(dest);
 
     JAssignStmt assignStmt =

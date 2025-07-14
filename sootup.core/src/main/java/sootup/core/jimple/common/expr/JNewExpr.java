@@ -22,11 +22,12 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.ClassType;
 import sootup.core.util.printer.StmtPrinter;
@@ -84,5 +85,20 @@ public final class JNewExpr implements Expr {
   @NonNull
   public JNewExpr withType(@NonNull ClassType type) {
     return new JNewExpr(type);
+  }
+
+  @Override
+  public boolean isJNewExpr() {
+    return true;
+  }
+
+  @Override
+  public JNewExpr asJNewExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JNewExpr> toJNewExpr() {
+    return Optional.of(this);
   }
 }

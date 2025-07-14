@@ -23,6 +23,7 @@ package sootup.core.types;
  */
 
 import com.google.common.base.Objects;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 import sootup.core.util.printer.StmtPrinter;
@@ -97,7 +98,7 @@ public class ArrayType extends ReferenceType {
 
   @Override
   public <V extends TypeVisitor> V accept(@NonNull V v) {
-    v.caseArrayType();
+    v.caseArrayType(this);
     return v;
   }
 
@@ -113,5 +114,35 @@ public class ArrayType extends ReferenceType {
       return isArrayTypeOfPrimitives(((ArrayType) type).getBaseType());
     }
     return false;
+  }
+
+  @Override
+  protected boolean isArrayType() {
+    return true;
+  }
+
+  @Override
+  protected ArrayType asArrayType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<ArrayType> toArrayType() {
+    return Optional.of(this);
+  }
+
+  @Override
+  protected boolean isReferenceType() {
+    return true;
+  }
+
+  @Override
+  protected ReferenceType asReferenceType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<ReferenceType> toReferenceType() {
+    return Optional.of(this);
   }
 }

@@ -74,4 +74,5 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           files: sootup.report/target/jacoco-aggregate/jacoco.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
 

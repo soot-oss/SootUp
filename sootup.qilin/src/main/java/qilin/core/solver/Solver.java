@@ -34,7 +34,7 @@ import qilin.core.sets.PointsToSetInternal;
 import qilin.util.PTAUtils;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
@@ -135,7 +135,7 @@ public class Solver extends Propagator {
 
   private void recordCallStmts(ContextMethod m, Collection<InvokableStmt> units) {
     for (final InvokableStmt s : units) {
-      if (s.containsInvokeExpr()) {
+      if (s.getInvokeExpr().isPresent()) {
         AbstractInvokeExpr ie = s.getInvokeExpr().get();
         if (ie instanceof AbstractInstanceInvokeExpr) {
           AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
@@ -174,7 +174,7 @@ public class Solver extends Propagator {
       MethodPAG mpag = pag.getMethodPAG(sm);
       MethodNodeFactory nodeFactory = mpag.nodeFactory();
       Node src;
-      if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
+      if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
         src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, sm);
       } else {
         assert stmt instanceof JThrowStmt;

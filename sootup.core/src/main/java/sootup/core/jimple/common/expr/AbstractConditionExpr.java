@@ -23,7 +23,7 @@ package sootup.core.jimple.common.expr;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.common.Immediate;
 
 public abstract class AbstractConditionExpr extends AbstractIntBinopExpr {
 

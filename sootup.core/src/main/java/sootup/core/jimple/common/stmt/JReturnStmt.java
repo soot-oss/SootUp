@@ -22,13 +22,14 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -52,6 +53,21 @@ public final class JReturnStmt extends AbstractStmt {
     up.literal(Jimple.RETURN);
     up.literal(" ");
     op.toString(up);
+  }
+
+  @Override
+  public boolean isJReturnStmt() {
+    return true;
+  }
+
+  @Override
+  public JReturnStmt asJReturnStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JReturnStmt> toJReturnStmt() {
+    return Optional.of(this);
   }
 
   @Override

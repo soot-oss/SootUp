@@ -22,15 +22,15 @@ package sootup.core.jimple.javabytecode.stmt;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.stmt.AbstractStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -54,6 +54,21 @@ public final class JExitMonitorStmt extends AbstractStmt implements FallsThrough
     up.literal(Jimple.EXITMONITOR);
     up.literal(" ");
     op.toString(up);
+  }
+
+  @Override
+  public boolean isJExitMonitorStmt() {
+    return true;
+  }
+
+  @Override
+  public JExitMonitorStmt asJExitMonitorStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JExitMonitorStmt> toJExitMonitorStmt() {
+    return Optional.of(this);
   }
 
   @Override

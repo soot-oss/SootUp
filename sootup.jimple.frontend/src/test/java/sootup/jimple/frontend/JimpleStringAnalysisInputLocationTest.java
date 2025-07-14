@@ -31,6 +31,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.VoidType;
 import sootup.core.views.View;
 import sootup.interceptors.DeadAssignmentEliminator;
+import sootup.java.core.views.JavaView;
 
 public class JimpleStringAnalysisInputLocationTest {
 
@@ -42,7 +43,7 @@ public class JimpleStringAnalysisInputLocationTest {
         () -> {
           JimpleStringAnalysisInputLocation analysisInputLocation =
               new JimpleStringAnalysisInputLocation(methodStr);
-          JimpleView view = new JimpleView(analysisInputLocation);
+          JavaView view = new JavaView(analysisInputLocation);
           analysisInputLocation.getClassSources(view);
         });
   }
@@ -64,7 +65,7 @@ public class JimpleStringAnalysisInputLocationTest {
             SourceType.Application,
             Collections.singletonList(new DeadAssignmentEliminator()));
 
-    View view = new JimpleView(Collections.singletonList(analysisInputLocation));
+    View view = new JavaView(Collections.singletonList(analysisInputLocation));
     assertNotNull(view.getIdentifierFactory().getClassType("DummyClass"));
 
     MethodSignature methodSig =

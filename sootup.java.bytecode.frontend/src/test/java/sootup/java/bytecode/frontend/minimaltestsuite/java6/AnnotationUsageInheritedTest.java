@@ -52,7 +52,7 @@ public class AnnotationUsageInheritedTest extends MinimalBytecodeTestSuiteBase {
     JavaClassType onClassType = identifierFactory.getClassType("OnClass");
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put("sthBlue", IntConstant.getInstance(42));
-    elementValueMap.put("author", JavaJimple.getInstance().newStringConstant("GeorgeLucas"));
+    elementValueMap.put("author", JavaJimple.newStringConstant("GeorgeLucas"));
     assertEquals(
         Collections.singletonList(new AnnotationUsage(onClassType, elementValueMap)),
         actualInheritedAnnotationUsages);

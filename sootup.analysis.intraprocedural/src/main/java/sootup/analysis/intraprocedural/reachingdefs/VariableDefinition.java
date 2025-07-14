@@ -24,7 +24,7 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 
 import java.util.Objects;
 import java.util.Optional;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 
 class VariableDefinition {

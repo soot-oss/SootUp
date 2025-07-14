@@ -22,9 +22,10 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 public final class JCmplExpr extends AbstractIntBinopExpr {
@@ -53,5 +54,20 @@ public final class JCmplExpr extends AbstractIntBinopExpr {
   @NonNull
   public JCmplExpr withOp2(@NonNull Immediate op2) {
     return new JCmplExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJCmplExpr() {
+    return true;
+  }
+
+  @Override
+  public JCmplExpr asJCmplExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JCmplExpr> toJCmplExpr() {
+    return Optional.of(this);
   }
 }

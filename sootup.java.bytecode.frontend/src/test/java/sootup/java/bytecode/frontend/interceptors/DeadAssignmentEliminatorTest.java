@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
@@ -129,7 +129,6 @@ public class DeadAssignmentEliminatorTest {
   }
 
   private static Body.BodyBuilder createBody(boolean essentialOption) {
-    JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
@@ -139,7 +138,7 @@ public class DeadAssignmentEliminatorTest {
     Local c = JavaJimple.newLocal("c", PrimitiveType.getInt());
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str"), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(a, noPositionInfo);
 
     Set<Local> locals = new LinkedHashSet<>(Arrays.asList(a, b, c));

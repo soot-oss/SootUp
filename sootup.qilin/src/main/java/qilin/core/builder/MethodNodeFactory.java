@@ -31,10 +31,10 @@ import qilin.core.pag.*;
 import qilin.core.pag.Field;
 import qilin.util.PTAUtils;
 import qilin.util.queue.UniqueQueue;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -66,6 +66,8 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
+import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootField;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -133,7 +135,7 @@ public class MethodNodeFactory {
 
   /** Adds the edges required for this statement to the graph. */
   public final void handleStmt(Stmt s) {
-    if (s.isInvokableStmt() && s.asInvokableStmt().containsInvokeExpr()) {
+    if (s.isInvokableStmt() && s.asInvokableStmt().getInvokeExpr().isPresent()) {
       mpag.addCallStmt(s.asInvokableStmt());
       handleInvokeStmt(s.asInvokableStmt());
     } else {
@@ -267,7 +269,7 @@ public class MethodNodeFactory {
     SootField sf;
     if (!osf.isPresent()) {
       sf =
-          new SootField(
+          new JavaSootField(
               fieldSig,
               Collections.singleton(FieldModifier.PUBLIC),
               NoPositionInformation.getInstance());
@@ -284,7 +286,10 @@ public class MethodNodeFactory {
     int pos = 0;
     AllocNode prevAn =
         pag.makeAllocNode(
-            JavaJimple.getInstance().newNewArrayExpr(type, nmae.getSize(pos)), type, method);
+            JavaJimple.newNewArrayExpr(
+                type, nmae.getSize(pos), JavaIdentifierFactory.getInstance()),
+            type,
+            method);
     VarNode prevVn = pag.makeLocalVarNode(prevAn.getNewExpr(), prevAn.getType(), method);
     mpag.addInternalEdge(prevAn, prevVn); // new
     VarNode ret = prevVn;
@@ -302,7 +307,10 @@ public class MethodNodeFactory {
         sizeVal = IntConstant.getInstance(1);
       }
       AllocNode an =
-          pag.makeAllocNode(JavaJimple.getInstance().newNewArrayExpr(type, sizeVal), type, method);
+          pag.makeAllocNode(
+              JavaJimple.newNewArrayExpr(type, sizeVal, JavaIdentifierFactory.getInstance()),
+              type,
+              method);
       VarNode vn = pag.makeLocalVarNode(an.getNewExpr(), an.getType(), method);
       mpag.addInternalEdge(an, vn); // new
       mpag.addInternalEdge(vn, pag.makeFieldRefNode(prevVn, ArrayElement.v())); // store

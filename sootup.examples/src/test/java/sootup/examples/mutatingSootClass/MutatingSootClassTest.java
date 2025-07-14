@@ -9,7 +9,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Disabled;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.signatures.MethodSignature;
@@ -20,6 +20,7 @@ import sootup.core.types.PrimitiveType.IntType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.language.JavaJimple;
@@ -82,9 +83,9 @@ public class MutatingSootClassTest {
     OverridingBodySource newBodySource =
         new OverridingBodySource(method.getBodySource()).withBody(newBody);
 
-    // Create OverridingClassSource
+    // Create OverridingJavaClassSource
     OverridingJavaClassSource overridingJavaClassSource =
-        new OverridingJavaClassSource(sootClass.getClassSource());
+        new OverridingJavaClassSource((JavaSootClassSource) sootClass.getClassSource());
 
     // Create new Method
     JavaSootMethod newMethod = method.withOverridingMethodSource(old -> newBodySource);

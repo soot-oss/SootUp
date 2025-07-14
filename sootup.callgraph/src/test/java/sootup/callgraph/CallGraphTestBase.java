@@ -2,13 +2,12 @@ package sootup.callgraph;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -85,7 +84,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertNotNull(method);
     for (Stmt invokableStmt : method.getBody().getStmts()) {
       if (invokableStmt instanceof InvokableStmt
-          && ((InvokableStmt) invokableStmt).containsInvokeExpr()) {
+          && ((InvokableStmt) invokableStmt).getInvokeExpr().isPresent()) {
         AbstractInvokeExpr stmt = ((InvokableStmt) invokableStmt).getInvokeExpr().orElse(null);
         assertNotNull(stmt);
         if (stmt.getMethodSignature().equals(staticTargetMethod)) {
@@ -116,7 +115,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
       // look only at assigments which do Invoke but does not contain a direct invoke expr
       // static fields and new array expressions
       if (invokableStmt instanceof JAssignStmt
-          && !((InvokableStmt) invokableStmt).containsInvokeExpr()
+          && ((InvokableStmt) invokableStmt).getInvokeExpr().isEmpty()
           && ((InvokableStmt) invokableStmt).invokesStaticInitializer()) {
         Value expr;
         // look at the left or right side of the assigment
@@ -525,7 +524,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertFalse(cg.containsMethod(uncalledMethod));
   }
 
-  @Disabled // soundness feature currently not supported by SootUp will be addressed in Issue #1194
   @Test
   public void testNonVirtualCall4() {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc4.Class");
@@ -1012,7 +1010,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   @Test
   public void testNoMainMethod() {
 
-    JavaView view = createViewForClassPath("src/test/resources/callgraph/NoMainMethod");
+    JavaView view = createViewForClassPath("src/test/resources/callgraph/NoMainMethod/binary");
 
     CallGraphAlgorithm algorithm = createAlgorithm(view);
     try {
@@ -1192,5 +1190,79 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     assertTrue(
         cg.containsCall(closingCall, closingCall, getInvokableStmt(closingCall, closingCall, 0)));
+  }
+
+  @Test
+  public void testImplicitExample1() {
+    CallGraph cg = loadCallGraph("Implicit", "t1.Example1");
+    MethodSignature updatedRunMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t1.UpdatedThread1"),
+            "run",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testImplicitExample2() {
+    CallGraph cg = loadCallGraph("Implicit", "t2.Example2");
+    MethodSignature updatedRunMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t2.UpdatedThreadInner"),
+            "run",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testImplicitExample3() {
+    CallGraph cg = loadCallGraph("Implicit", "t3.Example3");
+    MethodSignature updatedRunMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t3.UpdatedThreadOuter"),
+            "run",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testImplicitExample4() {
+    CallGraph cg = loadCallGraph("Implicit", "t4.Example4");
+    MethodSignature updatedRunMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t4.UpdatedThreadInner"),
+            "run",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testImplicitExample5() {
+    CallGraph cg = loadCallGraph("Implicit", "t5.Example5");
+    MethodSignature updatedRunMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t5.UpdatedThread2"),
+            "run",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(updatedRunMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testImplicitExample6() {
+    CallGraph cg = loadCallGraph("Implicit", "t6.Example6");
+    MethodSignature runMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("t6.NoThread"), "run", "void", Collections.emptyList());
+    assertFalse(cg.containsMethod(runMethodSig));
   }
 }

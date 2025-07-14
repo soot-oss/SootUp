@@ -23,7 +23,7 @@ package sootup.core.jimple.visitor;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 
 public interface ValueVisitor extends ImmediateVisitor, ExprVisitor, RefVisitor {
 

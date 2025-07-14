@@ -22,8 +22,9 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that checks whether operand 1 &gt;= operand 2. */
@@ -53,5 +54,20 @@ public final class JGeExpr extends AbstractConditionExpr {
   @NonNull
   public JGeExpr withOp2(@NonNull Immediate op2) {
     return new JGeExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJGeExpr() {
+    return true;
+  }
+
+  @Override
+  public JGeExpr asJGeExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JGeExpr> toJGeExpr() {
+    return Optional.of(this);
   }
 }

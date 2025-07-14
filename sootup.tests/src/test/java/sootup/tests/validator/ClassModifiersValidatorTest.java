@@ -68,25 +68,27 @@ public class ClassModifiersValidatorTest {
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
+    OverridingJavaClassSource overridingJavaClassSource =
+        new OverridingJavaClassSource(
+            new EagerInputLocation(),
+            null,
+            view.getIdentifierFactory().getClassType("dummyMain"),
+            null,
+            Collections.emptySet(),
+            null,
+            Collections.emptySet(),
+            Collections.singleton(dummyMainMethod),
+            NoPositionInformation.getInstance(),
+            modifierEnumSet,
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList());
     JavaSootClass mainClass =
-        new JavaSootClass(
-            new OverridingJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                view.getIdentifierFactory().getClassType("dummyMain"),
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.emptySet(),
-                Collections.singleton(dummyMainMethod),
-                NoPositionInformation.getInstance(),
-                modifierEnumSet,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
-            SourceType.Application);
-    assertEquals(mainClass.getMethods().size(), 1);
-
+        JavaSootClass.JavaSootClassBuilder.builder()
+            .withClassSource(overridingJavaClassSource)
+            .withSourceType(SourceType.Application)
+            .build();
+    assertEquals(1, mainClass.getMethods().size());
     return mainClass;
   }
 

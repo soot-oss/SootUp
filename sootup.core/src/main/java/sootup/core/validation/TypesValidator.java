@@ -25,7 +25,7 @@ package sootup.core.validation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.types.*;

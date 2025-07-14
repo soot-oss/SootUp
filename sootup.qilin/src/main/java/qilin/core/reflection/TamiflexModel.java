@@ -28,6 +28,10 @@ import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -51,6 +55,7 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ReferenceType;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -77,7 +82,7 @@ public class TamiflexModel extends ReflectionModel {
       Collection<String> fornames = classForNames.get(s);
       for (String clazz : fornames) {
         // !TODO potential bug
-        ClassConstant cc = JavaJimple.getInstance().newClassConstant(dot2slashStyle(clazz));
+        ClassConstant cc = JavaJimple.newClassConstant(dot2slashStyle(clazz));
         if (s instanceof JAssignStmt) {
           LValue lvalue = ((JAssignStmt) s).getLeftOp();
           ret.add(new JAssignStmt(lvalue, cc, StmtPositionInfo.getNoStmtPositionInfo()));
@@ -138,8 +143,7 @@ public class TamiflexModel extends ReflectionModel {
       Collection<String> constructorSignatures = constructorNewInstances.get(s);
       AbstractInvokeExpr iie = s.asInvokableStmt().getInvokeExpr().get();
       Value args = iie.getArg(0);
-      JArrayRef arrayRef =
-          JavaJimple.getInstance().newArrayRef((Local) args, IntConstant.getInstance(0));
+      JArrayRef arrayRef = JavaJimple.newArrayRef((Local) args, IntConstant.getInstance(0));
       Local arg =
           Jimple.newLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
       ret.add(new JAssignStmt(arg, arrayRef, StmtPositionInfo.getNoStmtPositionInfo()));
@@ -174,8 +178,7 @@ public class TamiflexModel extends ReflectionModel {
       Value args = iie.getArg(1);
       Local arg = null;
       if (args.getType() instanceof ArrayType) {
-        JArrayRef arrayRef =
-            JavaJimple.getInstance().newArrayRef((Local) args, IntConstant.getInstance(0));
+        JArrayRef arrayRef = JavaJimple.newArrayRef((Local) args, IntConstant.getInstance(0));
         arg =
             Jimple.newLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
         ret.add(new JAssignStmt(arg, arrayRef, StmtPositionInfo.getNoStmtPositionInfo()));
@@ -283,7 +286,8 @@ public class TamiflexModel extends ReflectionModel {
     for (String arrayType : arrayTypes) {
       ArrayType at = (ArrayType) ptaScene.getView().getIdentifierFactory().getType(arrayType);
       JNewArrayExpr newExpr =
-          JavaJimple.getInstance().newNewArrayExpr(at.getElementType(), IntConstant.getInstance(1));
+          JavaJimple.newNewArrayExpr(
+              at.getElementType(), IntConstant.getInstance(1), JavaIdentifierFactory.getInstance());
       if (s instanceof JAssignStmt) {
         LValue lvalue = ((JAssignStmt) s).getLeftOp();
         ret.add(new JAssignStmt(lvalue, newExpr, StmtPositionInfo.getNoStmtPositionInfo()));
@@ -301,14 +305,14 @@ public class TamiflexModel extends ReflectionModel {
       LValue lvalue = ((JAssignStmt) s).getLeftOp();
       Value arrayRef = null;
       if (base.getType() instanceof ArrayType) {
-        arrayRef = JavaJimple.getInstance().newArrayRef((Local) base, IntConstant.getInstance(0));
+        arrayRef = JavaJimple.newArrayRef((Local) base, IntConstant.getInstance(0));
       } else if (base.getType() == PTAUtils.getClassType("java.lang.Object")) {
         Local local =
             Jimple.newLocal(
                 "intermediate/" + base,
                 new ArrayType(PTAUtils.getClassType("java.lang.Object"), 1));
         ret.add(new JAssignStmt(local, base, StmtPositionInfo.getNoStmtPositionInfo()));
-        arrayRef = JavaJimple.getInstance().newArrayRef(local, IntConstant.getInstance(0));
+        arrayRef = JavaJimple.newArrayRef(local, IntConstant.getInstance(0));
       }
       if (arrayRef != null) {
         ret.add(new JAssignStmt(lvalue, arrayRef, StmtPositionInfo.getNoStmtPositionInfo()));
@@ -324,8 +328,7 @@ public class TamiflexModel extends ReflectionModel {
     Value base = iie.getArg(0);
     if (base.getType() instanceof ArrayType) {
       Value from = iie.getArg(2);
-      JArrayRef arrayRef =
-          JavaJimple.getInstance().newArrayRef((Local) base, IntConstant.getInstance(0));
+      JArrayRef arrayRef = JavaJimple.newArrayRef((Local) base, IntConstant.getInstance(0));
       ret.add(new JAssignStmt(arrayRef, from, StmtPositionInfo.getNoStmtPositionInfo()));
     }
     return ret;
@@ -435,7 +438,7 @@ public class TamiflexModel extends ReflectionModel {
     for (SootMethod sm : sourceMethods) {
       Body body = PTAUtils.getMethodBody(sm);
       for (Stmt stmt : body.getStmts()) {
-        if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
+        if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
           String methodSig =
               stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature().toString();
           if (matchReflectionKind(kind, methodSig)) {
