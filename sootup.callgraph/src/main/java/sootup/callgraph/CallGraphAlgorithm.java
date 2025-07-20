@@ -48,6 +48,17 @@ public interface CallGraphAlgorithm {
    */
   @NonNull CallGraph initialize(@NonNull List<MethodSignature> entryPoints);
 
+//  /**
+//   * This method initializes and starts the call graph algorithm with a given call graph.
+//   * TODO: What are the entryPoints?
+//   * TODO: Question: A usecase could be we already constructed a CG for a smaller part of a program. Now, we want to construct a CG over the whole program. Use the already constructed CG as base. We would need extra information (--> entryPoints) to construct the rest.
+//   *
+//   * @param callGraph a call graph to  of entry points for the call graph algorithm. The algorithm starts at
+//   *     these methods and inspects all reachable methods.
+//   * @return a generated call graph with the given call graph as base.
+//   */
+//  @NonNull CallGraph initialize(@NonNull CallGraph callGraph);
+
   /**
    * Adds a class to the call graph. All methods will be set as entry points in the call graph
    * algorithm. Starts the call graph algorithm. The found edges will be added to the call graph.

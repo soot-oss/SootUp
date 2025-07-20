@@ -52,6 +52,7 @@ import sootup.core.views.View;
  */
 public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
+  private Set<ClassType> preInstantiatedClasses = null;
   @NonNull protected Set<ClassType> instantiatedClasses = Collections.emptySet();
   @NonNull protected ArrayListMultimap<ClassType, Call> ignoredCalls = ArrayListMultimap.create();
 
@@ -67,6 +68,10 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @NonNull
   @Override
   public CallGraph initialize() {
+    if (preInstantiatedClasses != null) {
+      instantiatedClasses = preInstantiatedClasses;
+      preInstantiatedClasses = null;
+    }
     List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod());
     return initialize(entryPoints);
   }
@@ -75,7 +80,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Override
   public CallGraph initialize(@NonNull List<MethodSignature> entryPoints) {
     // init helper data structures
-    instantiatedClasses = new HashSet<>();
+    if (preInstantiatedClasses != null) {
+      instantiatedClasses = new HashSet<>(preInstantiatedClasses);
+      preInstantiatedClasses = null;
+    } else {
+      instantiatedClasses = new HashSet<>();
+    }
     ignoredCalls = ArrayListMultimap.create();
 
     CallGraph cg = constructCompleteCallGraph(entryPoints);
@@ -84,6 +94,10 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     instantiatedClasses = Collections.emptySet();
     ignoredCalls = ArrayListMultimap.create();
     return cg;
+  }
+
+  public void setPreInstantiatedClasses(Set<ClassType> preInstantiatedClasses) {
+    this.preInstantiatedClasses = preInstantiatedClasses;
   }
 
   /**

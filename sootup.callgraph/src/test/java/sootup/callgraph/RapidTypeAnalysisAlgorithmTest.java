@@ -3,8 +3,12 @@ package sootup.callgraph;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -17,6 +21,27 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     return new RapidTypeAnalysisAlgorithm(view);
   }
 
+  CallGraph loadCallGraphWithPreInstantiatedClasses(JavaView view, String className, Set<ClassType> preInstantiatedClasses) {
+    identifierFactory = view.getIdentifierFactory();
+    mainClassSignature = identifierFactory.getClassType(className);
+    mainMethodSignature =
+            identifierFactory.getMethodSignature(
+                    mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
+
+    SootClass sc = view.getClass(mainClassSignature).orElse(null);
+    assertNotNull(sc);
+    SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
+    assertNotNull(m, mainMethodSignature + " not found in classloader");
+
+    RapidTypeAnalysisAlgorithm rta = createAlgorithm(view);
+    rta.setPreInstantiatedClasses(preInstantiatedClasses);
+    CallGraph cg = rta.initialize(Collections.singletonList(mainMethodSignature));
+
+    assertNotNull(cg);
+    assertTrue(
+            cg.containsMethod(mainMethodSignature), mainMethodSignature + " is not found in CallGraph");
+    return cg;
+  }
   /**
    * Testing the call graph generation using RTA on a code example
    *
@@ -329,5 +354,20 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             mainMethodSignature,
             instantiatedClassMethod,
             getInvokableStmt(mainMethodSignature, instantiatedClassMethod)));
+  }
+
+  @Test
+  public void testDefinedInstantiatedClass() {
+    String classPath = "src/test/resources/callgraph/RTA/binary";
+    view = createViewForClassPath(classPath);
+    ClassType classTypeDog = view.getIdentifierFactory().getClassType("dic.ClassB");
+    CallGraph cg = loadCallGraphWithPreInstantiatedClasses(view, "dic.DefinedInstantiatedClass", Set.of(classTypeDog));
+    MethodSignature instantiatedClassMethod =
+            identifierFactory.getMethodSignature(
+                    identifierFactory.getClassType("dic.ClassB"),
+                    "sound",
+                    "void",
+                    Collections.emptyList());
+    assertFalse(cg.callsTo(instantiatedClassMethod).isEmpty());
   }
 }
