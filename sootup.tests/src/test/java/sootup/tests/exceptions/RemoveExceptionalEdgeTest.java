@@ -34,7 +34,7 @@ public class RemoveExceptionalEdgeTest {
       Stmt head = basicBlock.getHead();
 
       stmtGraph.removeExceptionalEdge(
-          head, view.getIdentifierFactory().getClassType("java.lange.Throwable"));
+          head, view.getIdentifierFactory().getClassType("java.lang.Throwable"));
       if (basicBlock.getSuccessors().size() == 0) {
         stmtGraph.removeBlock(basicBlock);
       }
