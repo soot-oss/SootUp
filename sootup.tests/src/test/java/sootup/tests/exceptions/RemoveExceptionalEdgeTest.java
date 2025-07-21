@@ -1,5 +1,7 @@
 package sootup.tests.exceptions;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.*;
@@ -17,37 +19,41 @@ import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaEagerView;
 import sootup.java.core.views.JavaView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 public class RemoveExceptionalEdgeTest {
 
-    static class ExceptionalEdgeInterceptor implements BodyInterceptor {
+  static class ExceptionalEdgeInterceptor implements BodyInterceptor {
 
-        @Override
-        public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
-            MethodSignature methodSignature = view.getIdentifierFactory().parseMethodSignature("<org.atmosphere.util.Version: void <clinit>()>");
-            if (!builder.getMethodSignature().equals(methodSignature)) return;
+    @Override
+    public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
+      MethodSignature methodSignature =
+          view.getIdentifierFactory()
+              .parseMethodSignature("<org.atmosphere.util.Version: void <clinit>()>");
+      if (!builder.getMethodSignature().equals(methodSignature)) return;
 
-            MutableStmtGraph stmtGraph = builder.getStmtGraph();
-            List<? extends BasicBlock<?>> blocks = stmtGraph.getBlocks().stream().toList();
-            BasicBlock<?> basicBlock = blocks.get(11);
-            Stmt head =  basicBlock.getHead();
+      MutableStmtGraph stmtGraph = builder.getStmtGraph();
+      List<? extends BasicBlock<?>> blocks = stmtGraph.getBlocks().stream().toList();
+      BasicBlock<?> basicBlock = blocks.get(11);
+      Stmt head = basicBlock.getHead();
 
-            stmtGraph.removeExceptionalEdge(head, new JavaClassType("Throwable", new PackageName("java.lang")));
-        }
+      stmtGraph.removeExceptionalEdge(
+          head, new JavaClassType("Throwable", new PackageName("java.lang")));
+      if (basicBlock.getSuccessors().size() == 0) {
+        stmtGraph.removeBlock(basicBlock);
+      }
     }
+  }
 
-    @Test
-    public void testRemoveExceptionalEdgeAndMerge() {
-        List<BodyInterceptor> interceptors = new ArrayList<>(BytecodeBodyInterceptors.Default.getBodyInterceptors());
-        interceptors.add(new ExceptionalEdgeInterceptor());
+  @Test
+  public void testRemoveExceptionalEdgeAndMerge() {
+    List<BodyInterceptor> interceptors =
+        new ArrayList<>(BytecodeBodyInterceptors.Default.getBodyInterceptors());
+    interceptors.add(new ExceptionalEdgeInterceptor());
 
-        AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation("src/test/resources/exception/removeExceptionalEdge/", SourceType.Application,
-                interceptors);
-        JavaView view =  new JavaEagerView(inputLocation);
-    }
-
-
+    AnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            "src/test/resources/exception/removeExceptionalEdge/",
+            SourceType.Application,
+            interceptors);
+    JavaView view = new JavaEagerView(inputLocation);
+  }
 }
