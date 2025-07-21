@@ -10,12 +10,10 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaEagerView;
 import sootup.java.core.views.JavaView;
 
@@ -36,7 +34,7 @@ public class RemoveExceptionalEdgeTest {
       Stmt head = basicBlock.getHead();
 
       stmtGraph.removeExceptionalEdge(
-          head, new JavaClassType("Throwable", new PackageName("java.lang")));
+          head, view.getIdentifierFactory().getClassType("java.lange.Throwable"));
       if (basicBlock.getSuccessors().size() == 0) {
         stmtGraph.removeBlock(basicBlock);
       }
