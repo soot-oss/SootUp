@@ -63,7 +63,10 @@
   {
     "version": "adapt_deployment_preview",
     "title": "PR Preview adapt_deployment",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "1034-bug-fix-bodyinterceptor-dead-assignment-eliminator_preview",
