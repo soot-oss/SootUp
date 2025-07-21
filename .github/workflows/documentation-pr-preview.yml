@@ -1,4 +1,4 @@
-name: PR Documentation Preview
+name: Deploy Documentation Preview
 
 permissions:
   pages: write
@@ -13,7 +13,7 @@ on:
       - 'mkdocs.yml'
       - 'sootup.examples/**'
       - 'docs/**'
-      - '.github/workflows/deploy-pr-preview.yml'
+      - 'documentation-pr-preview.yml'
 
 concurrency: pages
 
