@@ -836,7 +836,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         ClassType exType = entry.getKey();
         MutableBasicBlock exSucc = entry.getValue();
         firstBlock.linkExceptionalSuccessorBlock(exType, exSucc);
-        exSucc.removePredecessorBlock(exSucc);
+        exSucc.removePredecessorBlock(followingBlock);
       }
       followingBlock.clearExceptionalSuccessorBlocks();
 
