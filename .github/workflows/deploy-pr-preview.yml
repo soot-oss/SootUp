@@ -19,7 +19,7 @@ concurrency: pages
 
 jobs:
   deploy-preview:
-    uses: secure-software-engineering/actions/pages/pr-review-action.yml@develop
+    uses: secure-software-engineering/actions/documentation/handle-pr-preview/action.yml@develop
     with:
       enable_comment: true
       title_prefix: "SootUp PR Preview: "
