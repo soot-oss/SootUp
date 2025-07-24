@@ -23,6 +23,7 @@ package sootup.spark.node;
  */
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
@@ -33,6 +34,8 @@ import sootup.core.types.Type;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 @SuperBuilder
+@EqualsAndHashCode
 public class Node {
   @NonNull Type type;
+
 }

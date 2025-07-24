@@ -23,6 +23,7 @@ package sootup.spark.node;
  */
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
@@ -33,6 +34,7 @@ import sootup.core.signatures.FieldSignature;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 @SuperBuilder
+@EqualsAndHashCode(callSuper=true)
 public class StaticFieldRefNode extends Node {
 
   @NonNull FieldSignature field;
