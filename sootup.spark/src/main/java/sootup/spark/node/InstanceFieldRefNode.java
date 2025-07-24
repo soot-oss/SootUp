@@ -34,7 +34,7 @@ import sootup.core.signatures.FieldSignature;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 @SuperBuilder
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class InstanceFieldRefNode extends Node {
 
   VariableNode base;

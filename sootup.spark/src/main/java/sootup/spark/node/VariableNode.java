@@ -33,7 +33,7 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 @SuperBuilder
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class VariableNode extends Node {
 
   @NonNull String name;
@@ -42,5 +42,4 @@ public class VariableNode extends Node {
   public String toString() {
     return String.format("\"%s %s\"", getType(), getName());
   }
-
 }

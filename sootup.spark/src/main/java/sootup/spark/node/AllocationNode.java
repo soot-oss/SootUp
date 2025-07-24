@@ -30,7 +30,7 @@ import lombok.experimental.SuperBuilder;
 /** Models PAG node object allocation */
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @SuperBuilder
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class AllocationNode extends Node {
 
   // TODO: we might have to distinguish different allocation sites

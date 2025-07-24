@@ -37,5 +37,4 @@ import sootup.core.types.Type;
 @EqualsAndHashCode
 public class Node {
   @NonNull Type type;
-
 }
