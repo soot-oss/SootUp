@@ -2,7 +2,13 @@ name: Deploy to Maven Central
 run-name: Deploy run ${{ github.run_number }} # Enumerates entries in the "workflow runs" view
 
 on:
-  workflow_dispatch: # Only run when manually started
+  push:
+    branches:
+      - develop
+      - master
+
+env:
+  SNAPSHOT_BRANCH_NAME: snapshot_version
 
 jobs:
   deployment:
@@ -23,6 +29,12 @@ jobs:
           server-password: MAVEN_CENTRAL_TOKEN            # Env var that holds the central publisher user token
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} # Substituted with the value stored in the referenced secret
           gpg-passphrase: MAVEN_GPG_PASSPHRASE            # Env var that holds the key's passphrase
+
+      - name: SNAPSHOT version integrity check on develop   # enforce earlier? e.g. in the PR
+        if: ${{ github.ref_name == 'develop' }}
+        run: |
+          mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -q -- '-SNAPSHOT$'
+
       - name: Deploy
         run: |
           # -U force updates just to make sure we are using latest dependencies
@@ -34,11 +46,11 @@ jobs:
           MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PW }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
 
-  snapshot-version-update:
+  upgrade-snapshot-version:
     runs-on: ubuntu-latest
     needs: deployment
     steps:
-      - name: Checkout
+      - name: Checkout source code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -47,16 +59,16 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git checkout -b snapshot_version master
+          git checkout -b ${{ env.SNAPSHOT_BRANCH_NAME }} master
           mvn versions:set versions:commit -DnextSnapshot
           git ls-files | grep 'pom.xml$' | xargs git add
           git commit --allow-empty -am "Update version to next SNAPSHOT"
-          git push origin snapshot_version
+          git push origin ${{ env.SNAPSHOT_BRANCH_NAME }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create PR for SNAPSHOT version
         run: |
-          gh pr create -B develop -H version_${{ steps.versioning.outputs.version }}_SNAPSHOT -t "Update to next SNAPSHOT version" -b "Update to next SNAPSHOT version"
+          gh pr create --draft -B develop -H ${{ env.SNAPSHOT_BRANCH_NAME }} -t "Update to next SNAPSHOT version" -b "Update to next SNAPSHOT version"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
