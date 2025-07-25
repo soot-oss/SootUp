@@ -35,6 +35,24 @@ jobs:
         run: |
           mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -q -- '-SNAPSHOT$'
 
+      - name: Ensure the proposed new version is higher than the latest
+        run: |
+          PROPOSED_NEW_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version)
+          TMP_POM=$(mktemp)
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3.raw" \
+                -O \
+                https://api.github.com/repos/${{ github.repository }}/contents/pom.xml?ref=${{ github.ref_name }}
+                -o "$TMP_POM"
+          LATEST_VERSION=$(mvn -f "$TMP_POM" org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version)
+          rm "$TMP_POM"
+          
+          if [ "$(printf "%s\n%s" "$PROPOSED_NEW_VERSION" "$LATEST_VERSION" | sort -V | head -n1)" = "$PROPOSED_NEW_VERSION" ]; then
+            echo "Proposed new version is lower than the latest version!"
+            echo "$PROPOSED_NEW_VERSION <= $LATEST_VERSION"
+            exit 1
+          fi
+
       - name: Deploy
         run: |
           # -U force updates just to make sure we are using latest dependencies
