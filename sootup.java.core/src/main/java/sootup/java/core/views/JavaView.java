@@ -86,9 +86,13 @@ public class JavaView extends AbstractView {
 
     Stream<JavaSootClass> resolvedClasses =
         inputLocations.stream()
-            .flatMap(location -> location.getClassSources(this))
-            .map(sootClassSource -> buildClassFrom((JavaSootClassSource) sootClassSource));
-
+            .flatMap(
+                location -> {
+                  // TODO: [ms] find a way to not stream().collect().stream()
+                  return location.getClassSources(this).toList().stream();
+                })
+            .map(sootClassSource -> (JavaSootClassSource) sootClassSource)
+            .map(this::buildClassFrom);
     isFullyResolved = true;
     return resolvedClasses;
   }
