@@ -830,6 +830,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       }
       followingBlock.clearSuccessorBlocks();
 
+      Map<ClassType, MutableBasicBlock> exceptionalSuccessors =
+          followingBlock.getExceptionalSuccessors();
+      for (Map.Entry<ClassType, MutableBasicBlock> entry : exceptionalSuccessors.entrySet()) {
+        ClassType exType = entry.getKey();
+        MutableBasicBlock exSucc = entry.getValue();
+        firstBlock.linkExceptionalSuccessorBlock(exType, exSucc);
+        exSucc.removePredecessorBlock(followingBlock);
+      }
+      followingBlock.clearExceptionalSuccessorBlocks();
+
       blocks.remove(followingBlock);
 
       // cleanup old block.

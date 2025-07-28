@@ -47,7 +47,11 @@ public class TestWriter {
 
   public String getTestContent() {
     StringBuilder content = new StringBuilder(templateStart);
-    for (JarFailureRecord record : getRecords()) {
+    List<JarFailureRecord> records = getRecords();
+    if (records.isEmpty()) {
+      return "";
+    }
+    for (JarFailureRecord record : records) {
       content.append(getMethodString(record.download_url, record.failedMethodSignature));
     }
     content.append(templateEnd);
