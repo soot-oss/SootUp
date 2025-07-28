@@ -562,7 +562,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       @Override
       public CompleteStep withMethods(@NonNull Set<JavaSootMethod> methods) {
         if (instance.overriddenSootMethods == null) {
-          instance.overriddenSootMethods=new HashSet<>(methods);
+          instance.overriddenSootMethods = new HashSet<>(methods);
           return this;
         }
         instance.overriddenSootMethods.addAll(methods);
@@ -578,7 +578,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       @Override
       public CompleteStep withFields(@NonNull Set<JavaSootField> fields) {
         if (instance.overriddenSootFields == null) {
-          instance.overriddenSootFields=new HashSet<>(fields);
+          instance.overriddenSootFields = new HashSet<>(fields);
           return this;
         }
         instance.overriddenSootFields.addAll(fields);
@@ -594,7 +594,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       @Override
       public CompleteStep withModifiers(@NonNull EnumSet<ClassModifier> modifiers) {
         if (instance.overriddenModifiers == null) {
-          instance.overriddenModifiers=EnumSet.noneOf(ClassModifier.class);
+          instance.overriddenModifiers = EnumSet.noneOf(ClassModifier.class);
         }
         instance.overriddenModifiers.addAll(modifiers);
         return this;
@@ -610,7 +610,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       @Override
       public CompleteStep withInterfaces(@NonNull Set<JavaClassType> interfaces) {
         if (instance.overriddenInterfaces == null) {
-          instance.overriddenInterfaces=new HashSet<>(interfaces);
+          instance.overriddenInterfaces = new HashSet<>(interfaces);
           return this;
         }
         instance.overriddenInterfaces.addAll(interfaces);
@@ -682,9 +682,13 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
               instance.srcNamespace,
               instance.sourcePath,
               instance.classType,
-              instance.overriddenSuperclass==null?null:instance.overriddenSuperclass.orElse(null),
+              instance.overriddenSuperclass == null
+                  ? null
+                  : instance.overriddenSuperclass.orElse(null),
               instance.overriddenInterfaces,
-              instance.overriddenOuterClass==null?null:instance.overriddenOuterClass.orElse(null),
+              instance.overriddenOuterClass == null
+                  ? null
+                  : instance.overriddenOuterClass.orElse(null),
               instance.overriddenSootFields,
               instance.overriddenSootMethods,
               instance.position,
