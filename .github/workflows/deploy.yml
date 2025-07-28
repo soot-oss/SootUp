@@ -53,7 +53,7 @@ jobs:
             exit 1
           fi
 
-      - name: Deploy
+      - name: Deploy on Maven Central
         run: |
           # -U force updates just to make sure we are using latest dependencies
           # -B Batch mode (do not ask for user input), just in case
@@ -63,6 +63,15 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.SONATYPE_USER }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PW }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+
+      - name: Get latest tag
+        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Create GitHub release
+        run: |
+          gh release create ${{ env.tag }} --title ${{ env.tag }} --generate-notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   upgrade-snapshot-version:
     runs-on: ubuntu-latest
