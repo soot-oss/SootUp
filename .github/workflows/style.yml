@@ -47,3 +47,36 @@ jobs:
               exit 1
             fi
           fi
+
+      - name: Ensure the proposed new version is higher than the latest version on the base branch
+        run: |
+          PROPOSED_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          TMP_POM=$(mktemp)
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3.raw" \
+                https://api.github.com/repos/${{ github.repository }}/contents/pom.xml?ref=${{ github.base_ref }} \
+                -o "$TMP_POM" \
+                --no-progress-meter
+          echo "base branch pom downloaded.";
+
+          # hint: unfortunately mvn (as used above) fails if the downloaded pom is an aggregator pom and needs child poms as well
+          LATEST_VERSION=$(grep -m1 '<version>' $TMP_POM | sed -E 's/.*<version>(.+)<\/version>.*/\1/')
+          rm "$TMP_POM"
+
+          # did the version not change? if not: master fails, other branches: ok      
+          if [ "$LATEST_VERSION" == "$PROPOSED_VERSION" ]; then
+            if [ "${{ github.base_ref }}" != "${{ env.FINAL_BRANCH_NAME }}" ]; then
+              echo "no version change necessary on ${{ github.base_ref }}";
+              exit 0
+            else
+              echo "version change necessary to merge into ${{ github.base_ref }}!";
+              exit 1
+            fi
+          fi
+
+          # is the new version higher? hint: does not handle 0.1.3-alpha versions.. just numbers! (or both with the same suffix like -SNAPHSOT)
+          if [ "$(printf "%s\n%s" "$PROPOSED_VERSION" "$LATEST_VERSION" | sort -V | head -n1)" = "$PROPOSED_VERSION" ]; then
+              echo "Proposed new version is lower than the latest version!"
+              echo "$PROPOSED_VERSION <= $LATEST_VERSION"
+              exit 1
+          fi
