@@ -288,7 +288,7 @@
                         <configuration>
                             <fileSets>
                                 <fileSet>
-                                    <!-- path refers to artifact download folder structure in maven.yml -->
+                                    <!-- path refers to artifact download folder structure in tests.yml -->
                                     <directory>${project.build.directory}/coverage-reports/</directory>
                                     <includes>
                                         <include>jacoco-ut*.exec</include>

@@ -8,6 +8,7 @@ on:
       - master
 
 env:
+  LATEST_BRANCH_NAME: develop
   SNAPSHOT_BRANCH_NAME: snapshot_version
 
 jobs:
@@ -30,14 +31,14 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} # Substituted with the value stored in the referenced secret
           gpg-passphrase: MAVEN_GPG_PASSPHRASE            # Env var that holds the key's passphrase
 
-      - name: SNAPSHOT version integrity check on develop   # enforce earlier? e.g. in the PR
-        if: ${{ github.ref_name == 'develop' }}
+      - name: SNAPSHOT version integrity check on latest branch   # enforce earlier? e.g. in the PR
+        if: ${{ github.ref_name == env.LATEST_BRANCH_NAME }}
         run: |
           mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -q -- '-SNAPSHOT$'
 
       - name: Ensure the proposed new version is higher than the latest   # enforce earlier? e.g. in the PR
         run: |
-          PROPOSED_NEW_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version)
+          echo "PROPOSED_NEW_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version)" >> $GITHUB_ENV
           TMP_POM=$(mktemp)
           curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                 -H "Accept: application/vnd.github.v3.raw" \
@@ -47,10 +48,20 @@ jobs:
           LATEST_VERSION=$(mvn -f "$TMP_POM" org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version)
           rm "$TMP_POM"
           
-          if [ "$(printf "%s\n%s" "$PROPOSED_NEW_VERSION" "$LATEST_VERSION" | sort -V | head -n1)" = "$PROPOSED_NEW_VERSION" ]; then
-            echo "Proposed new version is lower than the latest version!"
-            echo "$PROPOSED_NEW_VERSION <= $LATEST_VERSION"
-            exit 1
+          # did the version not change?      
+          if [ "$LATEST_VERSION" == "${{ env.PROPOSED_NEW_VERSION }}" ]; then
+            if [ "${{ github.ref_name }}" == "${{ env.LATEST_BRANCH_NAME }}" ]; then
+              exit 0
+            else
+              exit 1
+            fi
+          fi
+          
+          # is the new version higher? hint: does not handle 0.1.3-alpha versions.. just numbers! 
+          if [ "$(printf "%s\n%s" "${{ env.PROPOSED_NEW_VERSION }}" "$LATEST_VERSION" | sort -V | head -n1)" = "${{ env.PROPOSED_NEW_VERSION }}" ]; then
+              echo "Proposed new version is lower than the latest version!"
+              echo "${{ env.PROPOSED_NEW_VERSION }} <= $LATEST_VERSION"
+              exit 1
           fi
 
       - name: Deploy on Maven Central
@@ -64,16 +75,23 @@ jobs:
           MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PW }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
 
-      - name: Get latest tag
-        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+      - name: Tag new version
+        if: ${{ github.ref_name == 'master' }}
+        run: |
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git tag -a ${{ env.PROPOSED_NEW_VERSION }} -m "version ${{ env.PROPOSED_NEW_VERSION }}"
+          git push origin ${{ env.PROPOSED_NEW_VERSION }}
 
       - name: Create GitHub release
+        if: ${{ github.ref_name == 'master' }}
         run: |
-          gh release create ${{ env.tag }} --title ${{ env.tag }} --generate-notes
+          gh release create ${{ env.PROPOSED_NEW_VERSION }} --title ${{ env.PROPOSED_NEW_VERSION }} --generate-notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   increase-snapshot-version:
+    if: ${{ github.ref_name == 'master' }}
     runs-on: ubuntu-latest
     needs: deployment
     steps:
@@ -84,8 +102,8 @@ jobs:
 
       - name: Create branch and update to next SNAPSHOT version
         run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
           git checkout -b ${{ env.SNAPSHOT_BRANCH_NAME }} master
           mvn versions:set versions:commit -DnextSnapshot
           git ls-files | grep 'pom.xml$' | xargs git add
@@ -94,8 +112,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create PR for SNAPSHOT version
+      - name: Create PR for SNAPSHOT increment
         run: |
-          gh pr create --draft -B develop -H ${{ env.SNAPSHOT_BRANCH_NAME }} -t "Update to next SNAPSHOT version" -b "Update to next SNAPSHOT version"
+          gh pr create
+                -B ${{ env.LATEST_BRANCH_NAME }}
+                -H ${{ env.SNAPSHOT_BRANCH_NAME }}
+                -t "Update to next SNAPSHOT version"
+                -b "Update to next SNAPSHOT version"
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable Auto Merge on that PR
+        run: |
+          gh pr merge $(gh pr view --json number -q .number) --auto --merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
