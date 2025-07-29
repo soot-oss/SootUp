@@ -330,9 +330,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     if (method == null) {
       return;
     }
-    System.out.println("PreProcessed Method: " + method);
     List<ClassType> newInstantiatedClasses = collectInstantiatedClassesInMethod(method);
-    System.out.println("New Instantiated Classes: " + newInstantiatedClasses);
     newInstantiatedClasses.forEach(
         classType -> includeIgnoredCallsToClass(classType, cg, workList));
   }

@@ -42,7 +42,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   private JavaView createViewForClassPath(String classPath) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new DefaultRuntimeAnalysisInputLocation()); // SourceType.Application
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation(classPath));
 
     return new JavaView(inputLocations);
