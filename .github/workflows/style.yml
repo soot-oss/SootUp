@@ -1,7 +1,12 @@
-name: Style & License Header Check
-description: Check the formatting. Use "mvn com.spotify.fmt:fmt-maven-plugin:format" to format the code.
+name: Check Formalities (Style, License, ... )
 
-on: [pull_request, merge_group]
+on:
+  pull_request:
+  merge_group:
+
+env:
+  LATEST_BRANCH_NAME: develop
+  FINAL_BRANCH_NAME: master
 
 jobs:
   check-formatting:
@@ -19,6 +24,7 @@ jobs:
           java-version: 17
 
       - name: Check Format
+        # Checks the formatting. Use "mvn com.spotify.fmt:fmt-maven-plugin:format" to format the code.
         run: mvn -B com.spotify.fmt:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: License Headers
@@ -26,3 +32,18 @@ jobs:
 
       - name: Check Javadoc
         run: mvn -B javadoc:aggregate -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+      - name: Enfore -SNAPSHOT version suffix on every other branch than master
+        run: |
+          HAS_SNAPSHOT_SUFFIX=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -q -- "-SNAPSHOT$")
+          if [ "${{ github.base_ref == env.FINAL_BRANCH_NAME }}" ]; then
+            if [ "$HAS_SNAPSHOT_SUFFIX" -eq 1 ]; then       # hint: command return values not boolean representation
+              echo "To merge into ${{ github.base_ref }} a -SNAPSHOT suffix is allowed!"
+              exit 1
+            fi
+          else
+            if [ "$HAS_SNAPSHOT_SUFFIX" -eq 0 ]; then       # hint: command return values not boolean representation
+              echo "To merge into ${{ github.base_ref }} a -SNAPSHOT suffix is needed!"
+              exit 1
+            fi
+          fi
