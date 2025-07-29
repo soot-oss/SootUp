@@ -1268,6 +1268,19 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   }
 
   @Test
+  public void testMethodHandleDiffParamExample1() {
+    CallGraph cg = loadCallGraph("Polymorphic", "e1.MethodHandleDiffParamExample1");
+    MethodSignature invokeMethodSig =
+            identifierFactory.getMethodSignature(
+                    identifierFactory.getClassType("java.lang.invoke.MethodHandle"),
+                    "invoke",
+                    "java.lang.Object",
+                    Collections.singletonList("java.lang.Object[]"));
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(invokeMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
   public void testMethodHandleInvokeExample2() {
     CallGraph cg = loadCallGraph("Polymorphic", "e2.MethodHandleInvokeExample2");
     MethodSignature invokeMethodSig =
@@ -1290,6 +1303,19 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "java.lang.Object",
             Collections.singletonList("java.lang.Object[]"));
     Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(getMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testMethodHandleSuperClassExample4() {
+    CallGraph cg = loadCallGraph("Polymorphic", "e4.MethodHandleSuperClassExample4");
+    MethodSignature invokeMethodSig =
+            identifierFactory.getMethodSignature(
+                    identifierFactory.getClassType("java.lang.invoke.MethodHandle"),
+                    "invoke",
+                    "java.lang.Object",
+                    Collections.singletonList("java.lang.Object[]"));
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(invokeMethodSig);
     assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
   }
 }

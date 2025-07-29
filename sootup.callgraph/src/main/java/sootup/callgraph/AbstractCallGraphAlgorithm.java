@@ -91,7 +91,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               Iterable<AnnotationUsage> annotationUsages = javaSootMethod.getAnnotations();
               for (AnnotationUsage annotationUsage : annotationUsages) {
                 if (annotationUsage.getAnnotation().equals(polymorphicAnnotationType)) {
-                  System.out.println("Annotation: " + annotationUsage);
                   polymorphicMethodSigs.add(javaSootMethod.getSignature());
                   break;
                 }
