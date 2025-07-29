@@ -111,7 +111,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     elementValueMap.put("isRipe", JavaJimple.newStringConstant("false"));
     elementValueMap.put("sthNew", IntConstant.getInstance(789));
 
-    assertEquals(elementValueMap, annotationSootClass.getDefaultValues());
+    assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
   @Test
@@ -120,7 +120,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     JavaSootClass classSootClass = getJavaView().getClass(nonAnnotation).orElse(null);
     assertNotNull(classSootClass);
 
-    assertEquals(0, classSootClass.getDefaultValues().size());
+    assertEquals(0, classSootClass.getAnnotationDefaultValues().size());
   }
 
   @Test
@@ -135,7 +135,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
         "value",
         Arrays.asList(
             JavaJimple.newStringConstant("first"), JavaJimple.newStringConstant("second")));
-    assertEquals(elementValueMap, annotationSootClass.getDefaultValues());
+    assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
   @Test
@@ -157,7 +157,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             JavaJimple.newEnumConstant("ENUM2", enumClass.getType().getFullyQualifiedName())));
     elementValueMap.put(
         "single", JavaJimple.newEnumConstant("ENUM3", enumClass.getType().getFullyQualifiedName()));
-    assertEquals(elementValueMap, annotationSootClass.getDefaultValues());
+    assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
   @Test
@@ -174,7 +174,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             JavaJimple.newClassConstant("Ljava/lang/Boolean;"),
             JavaJimple.newClassConstant("Ljava/lang/Double;")));
     elementValueMap.put("single", JavaJimple.newClassConstant("Ljava/lang/Integer;"));
-    assertEquals(elementValueMap, annotationSootClass.getDefaultValues());
+    assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
   @Test
@@ -193,7 +193,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put("containerValue", JavaJimple.newStringConstant("defaultValue"));
     elementValueMap.put("value", Collections.singletonList(baseAnnotationUsage));
-    assertEquals(elementValueMap, annotationSootClass.getDefaultValues());
+    assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
   @Test
@@ -219,7 +219,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put("value", nestedAnnotationUsage);
-    assertEquals(elementValueMap, annotationSootClass.getDefaultValues());
+    assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
   @Test

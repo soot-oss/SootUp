@@ -455,7 +455,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
    *     it will return an empty map.
    */
   @NonNull
-  public Map<String, Object> getDefaultValues() {
+  public Map<String, Object> getAnnotationDefaultValues() {
     if (isAnnotation()) {
       return getMethods().stream()
           .<ImmutablePair<String, Object>>mapMulti(
