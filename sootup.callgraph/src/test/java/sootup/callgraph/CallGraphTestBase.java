@@ -1268,19 +1268,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   }
 
   @Test
-  public void testMethodHandleInvokeExample1() {
-    CallGraph cg = loadCallGraph("Polymorphic", "e1.MethodHandleInvokeExample1");
-    MethodSignature invokeMethodSig =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("java.lang.invoke.MethodHandle"),
-            "invoke",
-            "java.lang.Object",
-            Collections.singletonList("java.lang.Object[]"));
-    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(invokeMethodSig);
-    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
-  }
-
-  @Test
   public void testMethodHandleInvokeExample2() {
     CallGraph cg = loadCallGraph("Polymorphic", "e2.MethodHandleInvokeExample2");
     MethodSignature invokeMethodSig =

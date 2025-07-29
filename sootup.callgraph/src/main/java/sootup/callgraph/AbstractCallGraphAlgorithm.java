@@ -89,12 +89,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .forEach(
             javaSootMethod -> {
               Iterable<AnnotationUsage> annotationUsages = javaSootMethod.getAnnotations();
-              if (annotationUsages.equals(Collections.emptyList())) {
-                return;
-              }
               for (AnnotationUsage annotationUsage : annotationUsages) {
                 if (annotationUsage.getAnnotation().equals(polymorphicAnnotationType)) {
+                  System.out.println("Annotation: " + annotationUsage);
                   polymorphicMethodSigs.add(javaSootMethod.getSignature());
+                  break;
                 }
               }
             });
@@ -699,7 +698,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param targetMethodSignature the signature of the searched method
    * @return the found method object, or null if the method was not found.
    */
-  protected Optional<? extends SootMethod> findMatchingPolymorphicMethod(
+  protected Optional<? extends SootMethod> findMatchingVarArgsMethod(
       @NonNull MethodSignature targetMethodSignature) {
     for (MethodSignature polymorphicMethodSigs : preanalysis) {
       if (targetMethodSignature.getDeclClassType().equals(polymorphicMethodSigs.getDeclClassType())

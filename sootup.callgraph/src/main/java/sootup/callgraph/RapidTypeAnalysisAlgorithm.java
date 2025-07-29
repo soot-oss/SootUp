@@ -153,7 +153,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       if (actualTargetMethod == null) {
         // method implementation isn't contained in the view.
         // check if method got the PolymorphicSignature annotation
-        actualTargetMethod = findMatchingPolymorphicMethod(targetMethodSignature).orElse(null);
+        actualTargetMethod = findMatchingVarArgsMethod(targetMethodSignature).orElse(null);
         if (actualTargetMethod == null) {
           // method couldn't be resolved, return the called method as target
           return Stream.of(targetMethodSignature);
