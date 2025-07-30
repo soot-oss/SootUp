@@ -27,6 +27,9 @@ import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +66,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   @NonNull protected final View view;
   @NonNull protected final TypeHierarchy typeHierarchy;
-  @NonNull protected final List<MethodSignature> preanalysis;
+  @NonNull protected final Table<String, String, SootMethod> preanalysis;
 
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
     this.view = view;
@@ -77,26 +80,25 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *
    * @return a list of method signatures annotated with {@code @PolymorphicSignature}
    */
-  protected List<MethodSignature> getMethodsWithPolymorphicAnnotation() {
-    List<MethodSignature> polymorphicMethodSigs = new ArrayList<>();
-    ClassType polymorphicAnnotationType =
-        view.getIdentifierFactory()
-            .getClassType("java.lang.invoke.MethodHandle$PolymorphicSignature");
-    view.getClasses()
-        .filter(sootClass -> sootClass instanceof JavaSootClass)
-        .map(sootClass -> (JavaSootClass) sootClass)
-        .flatMap(javaSootClass -> javaSootClass.getMethods().stream())
-        .forEach(
-            javaSootMethod -> {
+  protected Table<String, String, SootMethod> getMethodsWithPolymorphicAnnotation() {
+      Table<String, String, SootMethod> polymorphicMethods = HashBasedTable.create();
+      ClassType polymorphicAnnotationType =
+              view.getIdentifierFactory()
+                      .getClassType("java.lang.invoke.MethodHandle$PolymorphicSignature");
+      view.getClasses()
+          .filter(sootClass -> sootClass instanceof JavaSootClass) // TODO: currently must be instanceof JavaSootClass
+          .map(sootClass -> (JavaSootClass) sootClass)
+          .flatMap(javaSootClass -> javaSootClass.getMethods().stream())
+          .forEach(javaSootMethod -> {
               Iterable<AnnotationUsage> annotationUsages = javaSootMethod.getAnnotations();
               for (AnnotationUsage annotationUsage : annotationUsages) {
-                if (annotationUsage.getAnnotation().equals(polymorphicAnnotationType)) {
-                  polymorphicMethodSigs.add(javaSootMethod.getSignature());
-                  break;
-                }
+                  if (annotationUsage.getAnnotation().equals(polymorphicAnnotationType)) {
+                      polymorphicMethods.put(javaSootMethod.getName(), javaSootMethod.getDeclClassType().toString(), javaSootMethod);
+                      break;
+                  }
               }
-            });
-    return polymorphicMethodSigs;
+          });
+      return polymorphicMethods;
   }
 
   /**
@@ -699,12 +701,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected Optional<? extends SootMethod> findMatchingVarArgsMethod(
       @NonNull MethodSignature targetMethodSignature) {
-    for (MethodSignature polymorphicMethodSigs : preanalysis) {
-      if (targetMethodSignature.getDeclClassType().equals(polymorphicMethodSigs.getDeclClassType())
-          && targetMethodSignature.getName().equals(polymorphicMethodSigs.getName())) {
-        // return the actualTargetMethodOpt
-        return view.getMethod(polymorphicMethodSigs).map(sootMethod -> (SootMethod) sootMethod);
-      }
+    String targetName = targetMethodSignature.getName();
+    if (preanalysis.containsRow(targetName)) {
+        String targetDeclClass = targetMethodSignature.getDeclClassType().toString();
+        if (preanalysis.containsColumn(targetDeclClass)) { // TODO: no use of the Annotation PolymorphicSignature outside of the package -> no custom subclasses possible
+            return Optional.ofNullable(preanalysis.get(targetName, targetDeclClass));
+        }
     }
     logger.warn(
         "Could not find \""
