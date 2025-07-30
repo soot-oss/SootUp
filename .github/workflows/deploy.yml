@@ -15,14 +15,14 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
-          java-package: 'jdk'
-          java-version: '17'
-          server-id: 'ossrh' # must match the serverId configured for the nexus-staging-maven-plugin
-          server-username: OSSRH_USERNAME # Env var that holds your OSSRH user name
-          server-password: OSSRH_PASSWORD # Env var that holds your OSSRH user pw
+          distribution: adopt
+          java-package: jdk
+          java-version: 17
+          server-id: central                              # must match the serverId configured for the nexus-staging-maven-plugin
+          server-username: MAVEN_USERNAME                 # Env var that holds the central publisher user name
+          server-password: MAVEN_CENTRAL_TOKEN            # Env var that holds the central publisher user token
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} # Substituted with the value stored in the referenced secret
-          gpg-passphrase: SIGN_KEY_PASS # Env var that holds the key's passphrase
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE            # Env var that holds the key's passphrase
       - name: Deploy
         run: |
           # -U force updates just to make sure we are using latest dependencies
@@ -30,9 +30,9 @@ jobs:
           # -D activate a profile via the release property (and disable defined submodules that should not be deployed)
           mvn -U -B clean deploy -Drelease -DskipTests
         env:
-          SIGN_KEY_PASS: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
-          OSSRH_USERNAME: ${{ secrets.SONATYPE_USER }}
-          OSSRH_PASSWORD: ${{ secrets.SONATYPE_PW }}
+          MAVEN_USERNAME: ${{ secrets.SONATYPE_USER }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PW }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
 
   snapshot-version-update:
     runs-on: ubuntu-latest

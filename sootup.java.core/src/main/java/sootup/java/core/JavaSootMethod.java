@@ -251,6 +251,14 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
   }
 
   /**
+   * @return returns default value of annotation. May be null, if there is no default value
+   */
+  @NonNull
+  public Optional<Object> getDefaultValue() {
+    return Optional.ofNullable(this.bodySource.resolveAnnotationsDefaultValue());
+  }
+
+  /**
    * Returns the declaration of this method, as used at the top of textual body representations
    * (before the {}'s containing the code for representation.)
    */

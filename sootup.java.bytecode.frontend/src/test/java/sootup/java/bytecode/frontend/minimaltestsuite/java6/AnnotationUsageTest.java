@@ -2,6 +2,7 @@ package sootup.java.bytecode.frontend.minimaltestsuite.java6;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -18,7 +19,6 @@ import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.AnnotationUsage;
-import sootup.java.core.JavaAnnotationSootClass;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
@@ -30,7 +30,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
   // we can only read: RetentionPolicy.RUNTIME annotations
 
   private boolean hasAnnotationByName(ClassType classType, String annotationName) {
-    JavaSootClass sootClass = getJavaView().getClass(classType).get();
+    JavaSootClass sootClass = getJavaView().getClass(classType).orElse(null);
+    assertNotNull(sootClass);
     Iterable<AnnotationUsage> annotations = sootClass.getAnnotations();
     return StreamSupport.stream(annotations.spliterator(), false)
         .anyMatch(au -> au.getAnnotation().getClassName().equals(annotationName));
@@ -80,10 +81,10 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
   public void testAnnotatedAnnotationInterface() {
     ClassType annotatedAnnotationInterfaceType =
         identifierFactory.getClassType("AnnotatedAnnotationInterface");
-    Optional<JavaAnnotationSootClass> classOptional =
-        getJavaView().getAnnotationClass(annotatedAnnotationInterfaceType);
+    Optional<JavaSootClass> classOptional =
+        getJavaView().getClass(annotatedAnnotationInterfaceType);
     assertTrue(classOptional.isPresent());
-    JavaAnnotationSootClass annotationSootClass = classOptional.get();
+    JavaSootClass annotationSootClass = classOptional.get();
 
     // class has a OnClass annotation
     ClassType onClassType = identifierFactory.getClassType("OnClass");
@@ -102,40 +103,47 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void testDefaultValues() {
     ClassType onFieldType = identifierFactory.getClassType("OnField");
-    Optional<JavaAnnotationSootClass> classOptional = getJavaView().getAnnotationClass(onFieldType);
+    Optional<JavaSootClass> classOptional = getJavaView().getClass(onFieldType);
     assertTrue(classOptional.isPresent());
-    JavaAnnotationSootClass annotationSootClass = classOptional.get();
+    JavaSootClass annotationSootClass = classOptional.get();
 
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put("isRipe", JavaJimple.newStringConstant("false"));
     elementValueMap.put("sthNew", IntConstant.getInstance(789));
 
-    assertEquals(elementValueMap, annotationSootClass.getDefaultValues());
+    assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
+  }
+
+  @Test
+  public void testDefaultValuesOnClass() {
+    ClassType nonAnnotation = identifierFactory.getClassType("AnnotationUsage");
+    JavaSootClass classSootClass = getJavaView().getClass(nonAnnotation).orElse(null);
+    assertNotNull(classSootClass);
+
+    assertEquals(0, classSootClass.getAnnotationDefaultValues().size());
   }
 
   @Test
   public void testArrayDefaultValues() {
     ClassType arrayConstantType = identifierFactory.getClassType("ArrayConstant");
-    Optional<JavaAnnotationSootClass> classOptional =
-        getJavaView().getAnnotationClass(arrayConstantType);
+    Optional<JavaSootClass> classOptional = getJavaView().getClass(arrayConstantType);
     assertTrue(classOptional.isPresent());
-    JavaAnnotationSootClass annotationSootClass = classOptional.get();
+    JavaSootClass annotationSootClass = classOptional.get();
 
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put(
         "value",
         Arrays.asList(
             JavaJimple.newStringConstant("first"), JavaJimple.newStringConstant("second")));
-    assertEquals(elementValueMap, annotationSootClass.getDefaultValues());
+    assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
   @Test
   public void testEnumDefaultValues() {
     ClassType enumAnnotationType = identifierFactory.getClassType("EnumAnnotation");
-    Optional<JavaAnnotationSootClass> classOptional =
-        getJavaView().getAnnotationClass(enumAnnotationType);
+    Optional<JavaSootClass> classOptional = getJavaView().getClass(enumAnnotationType);
     assertTrue(classOptional.isPresent());
-    JavaAnnotationSootClass annotationSootClass = classOptional.get();
+    JavaSootClass annotationSootClass = classOptional.get();
     SootClass enumClass =
         loadClass(
             identifierFactory.getClassType(
@@ -149,16 +157,15 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             JavaJimple.newEnumConstant("ENUM2", enumClass.getType().getFullyQualifiedName())));
     elementValueMap.put(
         "single", JavaJimple.newEnumConstant("ENUM3", enumClass.getType().getFullyQualifiedName()));
-    assertEquals(elementValueMap, annotationSootClass.getDefaultValues());
+    assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
   @Test
   public void testClassDefaultValues() {
     ClassType classAnnotationType = identifierFactory.getClassType("ClassAnnotation");
-    Optional<JavaAnnotationSootClass> classOptional =
-        getJavaView().getAnnotationClass(classAnnotationType);
+    Optional<JavaSootClass> classOptional = getJavaView().getClass(classAnnotationType);
     assertTrue(classOptional.isPresent());
-    JavaAnnotationSootClass annotationSootClass = classOptional.get();
+    JavaSootClass annotationSootClass = classOptional.get();
 
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put(
@@ -167,16 +174,15 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             JavaJimple.newClassConstant("Ljava/lang/Boolean;"),
             JavaJimple.newClassConstant("Ljava/lang/Double;")));
     elementValueMap.put("single", JavaJimple.newClassConstant("Ljava/lang/Integer;"));
-    assertEquals(elementValueMap, annotationSootClass.getDefaultValues());
+    assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
   @Test
   public void testContainerAnnotationDefaultValues() {
     ClassType onMethodRepeatablesType = identifierFactory.getClassType("OnMethodRepeatables");
-    Optional<JavaAnnotationSootClass> classOptional =
-        getJavaView().getAnnotationClass(onMethodRepeatablesType);
+    Optional<JavaSootClass> classOptional = getJavaView().getClass(onMethodRepeatablesType);
     assertTrue(classOptional.isPresent());
-    JavaAnnotationSootClass annotationSootClass = classOptional.get();
+    JavaSootClass annotationSootClass = classOptional.get();
 
     ClassType onMethodRepeatableType = identifierFactory.getClassType("OnMethodRepeatable");
     AnnotationUsage baseAnnotationUsage =
@@ -187,17 +193,16 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put("containerValue", JavaJimple.newStringConstant("defaultValue"));
     elementValueMap.put("value", Collections.singletonList(baseAnnotationUsage));
-    assertEquals(elementValueMap, annotationSootClass.getDefaultValues());
+    assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
   @Test
   public void testAnnotationWithNestedAnnotationDefaultValues() {
     ClassType annotationInterfaceNested2Type =
         identifierFactory.getClassType("AnnotationInterfaceNested2");
-    Optional<JavaAnnotationSootClass> classOptional =
-        getJavaView().getAnnotationClass(annotationInterfaceNested2Type);
+    Optional<JavaSootClass> classOptional = getJavaView().getClass(annotationInterfaceNested2Type);
     assertTrue(classOptional.isPresent());
-    JavaAnnotationSootClass annotationSootClass = classOptional.get();
+    JavaSootClass annotationSootClass = classOptional.get();
 
     ClassType onMethodType = identifierFactory.getClassType("OnMethod");
     Map<String, Object> onMethodElementValueMap = new HashMap<>();
@@ -214,7 +219,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put("value", nestedAnnotationUsage);
-    assertEquals(elementValueMap, annotationSootClass.getDefaultValues());
+    assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
   @Test
@@ -372,7 +377,6 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                   .getSubSignature());
       assertTrue(someMethod.isPresent());
       Body body = someMethod.get().getBody();
-      assert body != null;
       JavaLocal parameterLocal = (JavaLocal) body.getParameterLocal(0);
 
       // parameter local annotation
