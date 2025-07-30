@@ -24,12 +24,11 @@ package sootup.callgraph;
 
 import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,24 +80,31 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return a list of method signatures annotated with {@code @PolymorphicSignature}
    */
   protected Table<String, String, SootMethod> getMethodsWithPolymorphicAnnotation() {
-      Table<String, String, SootMethod> polymorphicMethods = HashBasedTable.create();
-      ClassType polymorphicAnnotationType =
-              view.getIdentifierFactory()
-                      .getClassType("java.lang.invoke.MethodHandle$PolymorphicSignature");
-      view.getClasses()
-          .filter(sootClass -> sootClass instanceof JavaSootClass) // TODO: currently must be instanceof JavaSootClass
-          .map(sootClass -> (JavaSootClass) sootClass)
-          .flatMap(javaSootClass -> javaSootClass.getMethods().stream())
-          .forEach(javaSootMethod -> {
+    Table<String, String, SootMethod> polymorphicMethods = HashBasedTable.create();
+    ClassType polymorphicAnnotationType =
+        view.getIdentifierFactory()
+            .getClassType("java.lang.invoke.MethodHandle$PolymorphicSignature");
+    view.getClasses()
+        .filter(
+            sootClass ->
+                sootClass
+                    instanceof JavaSootClass) // TODO: currently must be instanceof JavaSootClass
+        .map(sootClass -> (JavaSootClass) sootClass)
+        .flatMap(javaSootClass -> javaSootClass.getMethods().stream())
+        .forEach(
+            javaSootMethod -> {
               Iterable<AnnotationUsage> annotationUsages = javaSootMethod.getAnnotations();
               for (AnnotationUsage annotationUsage : annotationUsages) {
-                  if (annotationUsage.getAnnotation().equals(polymorphicAnnotationType)) {
-                      polymorphicMethods.put(javaSootMethod.getName(), javaSootMethod.getDeclClassType().toString(), javaSootMethod);
-                      break;
-                  }
+                if (annotationUsage.getAnnotation().equals(polymorphicAnnotationType)) {
+                  polymorphicMethods.put(
+                      javaSootMethod.getName(),
+                      javaSootMethod.getDeclClassType().toString(),
+                      javaSootMethod);
+                  break;
+                }
               }
-          });
-      return polymorphicMethods;
+            });
+    return polymorphicMethods;
   }
 
   /**
@@ -703,10 +709,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull MethodSignature targetMethodSignature) {
     String targetName = targetMethodSignature.getName();
     if (preanalysis.containsRow(targetName)) {
-        String targetDeclClass = targetMethodSignature.getDeclClassType().toString();
-        if (preanalysis.containsColumn(targetDeclClass)) { // TODO: no use of the Annotation PolymorphicSignature outside of the package -> no custom subclasses possible
-            return Optional.ofNullable(preanalysis.get(targetName, targetDeclClass));
-        }
+      String targetDeclClass = targetMethodSignature.getDeclClassType().toString();
+      if (preanalysis.containsColumn(
+          targetDeclClass)) { // TODO: no use of the Annotation PolymorphicSignature outside of the
+                              // package -> no custom subclasses possible
+        return Optional.ofNullable(preanalysis.get(targetName, targetDeclClass));
+      }
     }
     logger.warn(
         "Could not find \""
