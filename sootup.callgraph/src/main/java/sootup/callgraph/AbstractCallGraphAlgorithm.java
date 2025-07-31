@@ -85,10 +85,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         view.getIdentifierFactory()
             .getClassType("java.lang.invoke.MethodHandle$PolymorphicSignature");
     view.getClasses()
-        .filter(
-            sootClass ->
-                sootClass
-                    instanceof JavaSootClass) // TODO: currently must be instanceof JavaSootClass
+        .filter(sootClass -> sootClass instanceof JavaSootClass)
         .map(sootClass -> (JavaSootClass) sootClass)
         .flatMap(javaSootClass -> javaSootClass.getMethods().stream())
         .forEach(
@@ -98,9 +95,17 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                 if (annotationUsage.getAnnotation().equals(polymorphicAnnotationType)) {
                   polymorphicMethods.put(
                       javaSootMethod.getName(),
-                      javaSootMethod.getDeclClassType().toString(),
+                      javaSootMethod.getDeclaringClassType().getFullyQualifiedName(),
                       javaSootMethod);
-                  break;
+                  typeHierarchy
+                      .subtypesOf(javaSootMethod.getDeclaringClassType())
+                      .forEach(
+                          type -> {
+                            polymorphicMethods.put(
+                                javaSootMethod.getName(),
+                                type.getFullyQualifiedName(),
+                                javaSootMethod);
+                          });
                 }
               }
             });
@@ -707,21 +712,19 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected Optional<? extends SootMethod> findMatchingVarArgsMethod(
       @NonNull MethodSignature targetMethodSignature) {
-    String targetName = targetMethodSignature.getName();
-    if (preanalysis.containsRow(targetName)) {
-      String targetDeclClass = targetMethodSignature.getDeclClassType().toString();
-      if (preanalysis.containsColumn(
-          targetDeclClass)) { // TODO: no use of the Annotation PolymorphicSignature outside of the
-                              // package -> no custom subclasses possible
-        return Optional.ofNullable(preanalysis.get(targetName, targetDeclClass));
-      }
+    Optional<SootMethod> resolvedVarArgsMethod =
+        Optional.ofNullable(
+            preanalysis.get(
+                targetMethodSignature.getName(),
+                targetMethodSignature.getDeclClassType().getFullyQualifiedName()));
+    if (resolvedVarArgsMethod.isEmpty()) {
+      logger.warn(
+          "Could not find \""
+              + targetMethodSignature.getSubSignature()
+              + "\" in "
+              + targetMethodSignature.getDeclClassType().getClassName()
+              + " and in its superclasses and interfaces");
     }
-    logger.warn(
-        "Could not find \""
-            + targetMethodSignature.getSubSignature()
-            + "\" in "
-            + targetMethodSignature.getDeclClassType().getClassName()
-            + " and in its superclasses and interfaces");
-    return Optional.empty();
+    return resolvedVarArgsMethod;
   }
 }

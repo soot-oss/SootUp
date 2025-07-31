@@ -131,7 +131,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
               targets,
               resolveAllDefaultTargets(
                   subclasses,
-                  actualTargetMethod.getDeclClassType(),
+                  actualTargetMethod.getDeclaringClassType(),
                   targetMethodSignature.getSubSignature()));
       // all subtypes that do not have an implementation of the method
       // can have an implementation in the supertype
@@ -171,7 +171,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
                         view.getIdentifierFactory()
                             .getMethodSignature(classType, targetSubSignature))
                     .stream())
-        .filter(sootMethod -> interfaces.contains(sootMethod.getDeclClassType()))
+        .filter(sootMethod -> interfaces.contains(sootMethod.getDeclaringClassType()))
         .map(SootMethod::getSignature);
   }
 

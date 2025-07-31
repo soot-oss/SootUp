@@ -176,11 +176,6 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
     return getSignature().getParameterTypes();
   }
 
-  @NonNull
-  public ClassType getDeclClassType() {
-    return getSignature().getDeclClassType();
-  }
-
   /** Returns the SootClass declaring this one. */
   @NonNull
   @Override
