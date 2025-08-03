@@ -34,7 +34,6 @@ import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -97,26 +96,18 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     if (method == null || method.isAbstract() || method.isNative()) {
       return Collections.emptyList();
     }
+
     Set<ClassType> instantiated =
-        method.getBody().getStmts().stream()
-            .filter(Stmt::isJAssignStmt)
-            .map(stmt -> ((JAssignStmt) stmt).getRightOp())
-            .flatMap(
-                value -> {
-                  // ClassType as returnType
-                  if (value instanceof AbstractInvokeExpr && value.getType() instanceof ClassType) {
-                    return Stream.of((ClassType) value.getType());
-                    // new-expression
-                  } else if (value instanceof JNewExpr) {
-                    return Stream.of(((JNewExpr) value).getType());
-                  }
-                  return Stream.empty();
-                })
-            .collect(Collectors.toSet());
+            method.getBody().getStmts().stream()
+                    .filter(stmt -> stmt instanceof JAssignStmt)
+                    .map(stmt -> ((JAssignStmt) stmt).getRightOp())
+                    .filter(value -> value instanceof JNewExpr)
+                    .map(value -> ((JNewExpr) value).getType())
+                    .collect(Collectors.toSet());
     List<ClassType> newInstantiatedClassTypes =
-        instantiated.stream()
-            .filter(classType -> !instantiatedClasses.contains(classType))
-            .collect(Collectors.toList());
+            instantiated.stream()
+                    .filter(classType -> !instantiatedClasses.contains(classType))
+                    .collect(Collectors.toList());
     instantiatedClasses.addAll(instantiated);
     return newInstantiatedClassTypes;
   }
