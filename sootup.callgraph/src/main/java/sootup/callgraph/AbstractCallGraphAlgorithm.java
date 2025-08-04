@@ -53,7 +53,6 @@ import sootup.core.types.VoidType;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootMethod;
 
 /**
  * The AbstractCallGraphAlgorithm class is the super class of all call graph algorithm. It provides
@@ -85,39 +84,31 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     ClassType polymorphicAnnotationType =
         view.getIdentifierFactory()
             .getClassType("java.lang.invoke.MethodHandle$PolymorphicSignature");
-    Map<ClassType, List<JavaSootMethod>> polymorphicTypeAndMethods = new HashMap<>();
     view.getClasses()
         .filter(sootClass -> sootClass instanceof JavaSootClass)
         .map(sootClass -> (JavaSootClass) sootClass)
         .flatMap(javaSootClass -> javaSootClass.getMethods().stream())
-        .forEach(
+        .filter(
             javaSootMethod -> {
-              Iterable<AnnotationUsage> annotationUsages = javaSootMethod.getAnnotations();
-              for (AnnotationUsage annotationUsage : annotationUsages) {
+              for (AnnotationUsage annotationUsage : javaSootMethod.getAnnotations()) {
                 if (annotationUsage.getAnnotation().equals(polymorphicAnnotationType)) {
-                  ClassType classType = javaSootMethod.getDeclaringClassType();
-                  polymorphicTypeAndMethods
-                      .computeIfAbsent(classType, k -> new ArrayList<>())
-                      .add(javaSootMethod);
-                  polymorphicMethods.put(
-                      javaSootMethod.getName(), classType.getFullyQualifiedName(), javaSootMethod);
+                  return true;
                 }
               }
+              return false;
+            })
+        .forEach(
+            javaSootMethod -> {
+              ClassType classType = javaSootMethod.getDeclaringClassType();
+              String methodName = javaSootMethod.getName();
+              polymorphicMethods.put(methodName, classType.getFullyQualifiedName(), javaSootMethod);
+              typeHierarchy
+                  .subtypesOf(classType)
+                  .forEach(
+                      type ->
+                          polymorphicMethods.put(
+                              methodName, type.getFullyQualifiedName(), javaSootMethod));
             });
-    for (Map.Entry<ClassType, List<JavaSootMethod>> methodAndType :
-        polymorphicTypeAndMethods.entrySet()) {
-      ClassType classType = methodAndType.getKey();
-      List<JavaSootMethod> javaSootMethods = methodAndType.getValue();
-      typeHierarchy
-          .subtypesOf(classType)
-          .forEach(
-              subtype -> {
-                for (JavaSootMethod javaSootMethod : javaSootMethods) {
-                  polymorphicMethods.put(
-                      javaSootMethod.getName(), classType.getFullyQualifiedName(), javaSootMethod);
-                }
-              });
-    }
     return polymorphicMethods;
   }
 
