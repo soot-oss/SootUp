@@ -22,11 +22,9 @@ package sootup.core.types;
  * #L%
  */
 
-import java.util.Collections;
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
-import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.signatures.Signature;
 
@@ -44,9 +42,45 @@ public abstract class ClassType extends ReferenceType implements Signature {
   public abstract PackageName getPackageName();
 
   @Override
-  public <V extends TypeVisitor> V accept(@Nonnull V v) {
+  public <V extends TypeVisitor> V accept(@NonNull V v) {
     v.caseClassType(this);
     return v;
+  }
+
+  protected boolean isJavaClassType() {
+    return false;
+  }
+
+  protected boolean isModuleJavaClassType() {
+    return false;
+  }
+
+  protected boolean isWeakObjectType() {
+    return false;
+  }
+
+  protected Type asJavaClassType() {
+    return null;
+  }
+
+  protected Type asModuleJavaClassType() {
+    return null;
+  }
+
+  protected Type asWeakObjectType() {
+    return null;
+  }
+
+  protected Optional<Type> toJavaClassType() {
+    return Optional.empty();
+  }
+
+  protected Optional<Type> toModuleJavaClassType() {
+    return Optional.empty();
+  }
+
+  protected Optional<Type> toWeakObjectType() {
+    return Optional.empty();
   }
 
   @Override
@@ -58,11 +92,6 @@ public abstract class ClassType extends ReferenceType implements Signature {
       return false;
     }
     return getFullyQualifiedName().equals(((ClassType) o).getFullyQualifiedName());
-  }
-
-  public MethodSignature getStaticInitializer() {
-    return new MethodSignature(
-        this, new MethodSubSignature("<clinit>", Collections.emptyList(), VoidType.getInstance()));
   }
 
   @Override

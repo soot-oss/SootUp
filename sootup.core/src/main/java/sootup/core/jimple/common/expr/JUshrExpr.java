@@ -22,9 +22,10 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Value;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -32,23 +33,23 @@ import sootup.core.types.UnknownType;
 
 /** Similar to {@link JShrExpr}, but shifts zero into the leftmost position. */
 public final class JUshrExpr extends AbstractIntLongBinopExpr {
-  public JUshrExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JUshrExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public final String getSymbol() {
+  public String getSymbol() {
     return " >>> ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseUshrExpr(this);
     return v;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     Value op1 = getOp1();
@@ -67,13 +68,28 @@ public final class JUshrExpr extends AbstractIntLongBinopExpr {
     return UnknownType.getInstance();
   }
 
-  @Nonnull
-  public JUshrExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JUshrExpr withOp1(@NonNull Immediate op1) {
     return new JUshrExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JUshrExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JUshrExpr withOp2(@NonNull Immediate op2) {
     return new JUshrExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJUshrExpr() {
+    return true;
+  }
+
+  @Override
+  public JUshrExpr asJUshrExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JUshrExpr> toJUshrExpr() {
+    return Optional.of(this);
   }
 }

@@ -4,11 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.constant.BooleanConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JLeExpr;
@@ -16,12 +15,12 @@ import sootup.core.jimple.common.expr.JNeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.UnknownType;
+import sootup.core.types.*;
+import sootup.core.util.printer.BriefStmtPrinter;
 
-@Tag("Java8")
 public class MutableBlockStmtGraphTest {
+
+  public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();
 
   BranchingStmt firstGoto = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
   JNopStmt firstNop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
@@ -621,7 +620,8 @@ public class MutableBlockStmtGraphTest {
     graph0.putEdge(stmt2, 0, returnStmt);
 
     {
-      final List<Trap> traps = graph0.buildTraps();
+      briefStmtPrinter.buildTraps(graph0);
+      List<Trap> traps = briefStmtPrinter.getTraps();
       assertEquals(2, traps.size()); // as @caughtexception gets currently in their way.
       assertEquals(stmt2, traps.get(1).getBeginStmt());
       assertEquals(returnStmt, traps.get(1).getEndStmt());
@@ -659,7 +659,8 @@ public class MutableBlockStmtGraphTest {
     graph2.putEdge(stmt2, JGotoStmt.BRANCH_IDX, returnStmt);
     {
       assertEquals(5, graph2.getBlocks().size());
-      final List<Trap> traps = graph2.buildTraps();
+      briefStmtPrinter.buildTraps(graph2);
+      List<Trap> traps = briefStmtPrinter.getTraps();
       assertEquals(2, traps.size());
     }
 
@@ -675,7 +676,8 @@ public class MutableBlockStmtGraphTest {
     graph3.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
     {
-      final List<Trap> traps = graph3.buildTraps();
+      briefStmtPrinter.buildTraps(graph3);
+      List<Trap> traps = briefStmtPrinter.getTraps();
       assertEquals(5, graph2.getBlocks().size());
       assertEquals(2, traps.size());
     }
@@ -698,7 +700,8 @@ public class MutableBlockStmtGraphTest {
     graph4.putEdge(stmt2, JGotoStmt.BRANCH_IDX, stmt3);
     graph4.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
-    assertEquals(3, graph4.buildTraps().size());
+    briefStmtPrinter.buildTraps(graph4);
+    assertEquals(3, briefStmtPrinter.getTraps().size());
 
     // mixed 2
     MutableBlockStmtGraph graph5 = new MutableBlockStmtGraph();
@@ -733,8 +736,8 @@ public class MutableBlockStmtGraphTest {
     graph5.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
     {
-      final List<Trap> traps = graph5.buildTraps();
-      assertEquals(6, traps.size());
+      briefStmtPrinter.buildTraps(graph5);
+      assertEquals(6, briefStmtPrinter.getTraps().size());
       assertEquals(6, graph5.getBlocks().size());
     }
 
@@ -769,7 +772,8 @@ public class MutableBlockStmtGraphTest {
     graph6.putEdge(stmt2, JGotoStmt.BRANCH_IDX, stmt3);
     graph6.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
     {
-      final List<Trap> traps = graph6.buildTraps();
+      briefStmtPrinter.buildTraps(graph6);
+      List<Trap> traps = briefStmtPrinter.getTraps();
       assertEquals(5, traps.size());
       assertEquals(6, graph6.getBlocks().size());
       assertEquals(
@@ -1028,5 +1032,129 @@ public class MutableBlockStmtGraphTest {
     assertEquals(0, graph.predecessors(stmt1).size());
     assertEquals(1, graph.successors(stmt1).size());
     assertTrue(graph.successors(stmt1).contains(stmt2));
+  }
+
+  // It is an invalid graph, just for the test
+  @Test
+  public void testRemoveSingleTrap() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+
+    // Create distinct statements and an exception handler
+    JReturnVoidStmt stmt1 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JGotoStmt stmt2 = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    Stmt handlerStmt =
+        new JIdentityStmt(
+            new Local("ex", throwableSig),
+            new JCaughtExceptionRef(throwableSig),
+            StmtPositionInfo.getNoStmtPositionInfo());
+
+    // Add blocks and starting statement
+    graph.addBlock(Collections.singletonList(stmt1)); // Block 1 with return statement
+    graph.addBlock(Collections.singletonList(stmt2)); // Block 2 with goto statement
+    graph.setStartingStmt(stmt1);
+
+    // Add an exceptional edge, simulating a trap
+    graph.addExceptionalEdge(stmt1, throwableSig, handlerStmt);
+
+    // Verify the trap is present
+    briefStmtPrinter.buildTraps(graph);
+    List<Trap> traps = briefStmtPrinter.getTraps();
+    assertEquals(1, traps.size());
+    assertEquals(stmt1, traps.get(0).getBeginStmt());
+    assertEquals(handlerStmt, traps.get(0).getHandlerStmt());
+
+    // Remove the trap and verify it's removed
+    Trap trapToRemove = traps.get(0);
+    graph.removeExceptionalFlowFromAllBlocks(
+        trapToRemove.getExceptionType(), trapToRemove.getHandlerStmt());
+    briefStmtPrinter.buildTraps(graph);
+    traps = briefStmtPrinter.getTraps();
+    assertEquals(0, traps.size());
+  }
+
+  @Test
+  public void testRemoveMultipleTrapsWithDifferentExceptionTypes() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+
+    JGotoStmt stmt1 = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JReturnVoidStmt stmt2 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JReturnVoidStmt stmt3 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+
+    Stmt handlerStmt1 =
+        new JIdentityStmt(
+            new Local("ex1", throwableSig),
+            new JCaughtExceptionRef(throwableSig),
+            StmtPositionInfo.getNoStmtPositionInfo());
+
+    Stmt handlerStmt2 =
+        new JIdentityStmt(
+            new Local("ex2", ioExceptionSig),
+            new JCaughtExceptionRef(ioExceptionSig),
+            StmtPositionInfo.getNoStmtPositionInfo());
+
+    // Add blocks and starting statement
+    graph.addBlock(Collections.singletonList(stmt1));
+    graph.addBlock(Collections.singletonList(stmt2));
+    graph.addBlock(Collections.singletonList(stmt3));
+    graph.setStartingStmt(stmt1);
+
+    graph.addExceptionalEdge(stmt1, throwableSig, handlerStmt1);
+    graph.addExceptionalEdge(stmt2, ioExceptionSig, handlerStmt2);
+
+    // Verify both traps are present
+    briefStmtPrinter.buildTraps(graph);
+    List<Trap> traps = briefStmtPrinter.getTraps();
+    assertEquals(2, traps.size());
+
+    // Remove one trap and verify the remaining
+    Trap trapToRemove = traps.get(0);
+    Trap trapToKeep = traps.get(1);
+
+    graph.removeExceptionalFlowFromAllBlocks(
+        trapToRemove.getExceptionType(), trapToRemove.getHandlerStmt());
+    briefStmtPrinter.buildTraps(graph);
+    traps = briefStmtPrinter.getTraps();
+    assertEquals(1, traps.size());
+    assertEquals(stmt2, trapToKeep.getBeginStmt());
+    assertEquals(handlerStmt2, trapToKeep.getHandlerStmt());
+  }
+
+  @Test
+  public void testGetEntrypoints() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+
+    JNopStmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JReturnVoidStmt stmt2 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JReturnVoidStmt stmt3 = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+
+    Stmt handlerStmt1 =
+        new JIdentityStmt(
+            new Local("ex1", throwableSig),
+            new JCaughtExceptionRef(throwableSig),
+            StmtPositionInfo.getNoStmtPositionInfo());
+
+    Stmt handlerStmt2 =
+        new JIdentityStmt(
+            new Local("ex2", ioExceptionSig),
+            new JCaughtExceptionRef(ioExceptionSig),
+            StmtPositionInfo.getNoStmtPositionInfo());
+
+    JNopStmt stmt4 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+
+    // Add blocks and starting statement
+    graph.addBlock(Collections.singletonList(stmt1));
+    graph.addBlock(Collections.singletonList(stmt2));
+    graph.addBlock(Collections.singletonList(stmt3));
+    graph.addBlock(Collections.singletonList(stmt4));
+    graph.setStartingStmt(stmt1);
+
+    graph.addExceptionalEdge(stmt2, throwableSig, handlerStmt1);
+    graph.addExceptionalEdge(stmt3, ioExceptionSig, handlerStmt2);
+
+    Collection<Stmt> entrypoints = graph.getEntrypoints();
+    assertEquals(3, entrypoints.size());
+    assertTrue(entrypoints.contains(stmt1));
+    assertTrue(entrypoints.contains(handlerStmt1));
+    assertTrue(entrypoints.contains(handlerStmt2));
   }
 }

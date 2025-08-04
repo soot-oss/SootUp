@@ -26,10 +26,10 @@ import java.io.PrintWriter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.graph.*;
+import sootup.core.jimple.JimpleUtils;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
@@ -214,8 +214,7 @@ public class JimplePrinter {
   }
 
   private void printFields(SootClass cl, LabeledStmtPrinter printer) {
-    Iterator<? extends SootField> fieldIt =
-        getIterator(cl.getFields(), SootClassMember::getSignature);
+    Iterator<? extends SootField> fieldIt = getIterator(cl.getFields(), SootField::getSignature);
 
     if (fieldIt.hasNext()) {
       printer.incIndent();
@@ -228,7 +227,7 @@ public class JimplePrinter {
           printer.literal(" ");
         }
         printer.typeSignature(f.getType());
-        printer.literal(" " + Jimple.escape(f.getName()) + ";");
+        printer.literal(" " + JimpleUtils.escape(f.getName()) + ";");
         printer.newline();
         if (addJimpleLn()) {
           setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f.getSignature()));
@@ -241,7 +240,7 @@ public class JimplePrinter {
 
   private void printMethods(SootClass cl, LabeledStmtPrinter printer) {
     Iterator<? extends SootMethod> methodIt =
-        getIterator(cl.getMethods(), SootClassMember::getSignature);
+        getIterator(cl.getMethods(), SootMethod::getSignature);
 
     if (methodIt.hasNext()) {
       printer.incIndent();
@@ -354,10 +353,10 @@ public class JimplePrinter {
         // a trap)
 
         final boolean currentStmtHasLabel = labels.get(currentStmt) != null;
-        if (previousStmt.branches()
+        if (currentStmtHasLabel
+            || previousStmt.branches()
             || stmtGraph.predecessors(currentStmt).size() != 1
-            || previousStmt.getExpectedSuccessorCount() == 0
-            || currentStmtHasLabel) {
+            || previousStmt.getExpectedSuccessorCount() == 0) {
           printer.newline();
         }
 
@@ -380,7 +379,7 @@ public class JimplePrinter {
 
     // Print out exceptions
     {
-      Iterator<Trap> trapIt = stmtGraph.buildTraps().iterator();
+      Iterator<Trap> trapIt = printer.getTraps().iterator();
 
       if (trapIt.hasNext()) {
         printer.newline();

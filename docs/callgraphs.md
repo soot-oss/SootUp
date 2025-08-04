@@ -13,7 +13,7 @@ Below, we show how to create a type hierarchy:
     String cpString = "src/test/resources/Callgraph/binary";
     List<AnalysisInputLocation> inputLocations = new ArrayList();
     inputLocations.add(new JavaClassPathAnalysisInputLocation(cpStr));
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
 
     JavaView view = new JavaView(inputLocations);
     ```
@@ -182,12 +182,52 @@ Spark requires an initial call graph to begin with. You can use one of the call 
 Qilin builds a call graph on the fly with the pointer analysis.
 You can construct a call graph with Qilin as follows:
 
-==="SootUp"
+=== "SootUp"
 
-```java
-String MAINCLASS = "dacapo.antlr.Main"; // just an example
-PTAPattern ptaPattern = new PTAPattern("insens"); // "2o"=>2OBJ, "1c"=>1CFA, etc.
-PTA pta = PTAFactory.createPTA(ptaPattern, view, MAINCLASS);
-pta.run();
-CallGraph cg = pta.getCallGraph();
-```
+    ```java
+    String MAINCLASS = "dacapo.antlr.Main"; // just an example
+    PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern("insens"); // "2o"=>2OBJ, "1c"=>1CFA, etc.
+    PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern, view, MAINCLASS);
+    pta.run();
+    CallGraph cg = pta.getCallGraph();
+    ```
+
+## Exporting the call graph in a Dot format 
+This guide describes how to export a **call graph** created by one of the call graph algorithms to a `.dot` format for visualization with tools like [Graphviz](https://graphviz.org/).  
+The nodes represent method signatures, and the edges contain labels showing the line numbers of the invoking statements.  
+In this example, the call graph was created using **CHA**.  
+The exported call graph can be sorted by providing a `Comparator` for **Calls**.
+
+
+=== "unsorted"
+
+    ```java
+    CallGraph cg =cha.initialize(Collections.singletonList(entryMethodSignature))
+    cg.exportAsDot().forEach(System.out::println);
+    ```
+
+=== "sorted"
+
+    ```java
+    CallGraph cg =cha.initialize(Collections.singletonList(entryMethodSignature))
+    cg.exportAsDot(
+        Comparator.comparing(
+            (Call call) ->
+                call.sourceMethodSignature().getDeclClassType().getFullyQualifiedName())
+        // src method name
+        .thenComparing(call -> call.sourceMethodSignature().getName())
+        // src parameter list
+        .thenComparing(
+            call -> call.sourceMethodSignature().getParameterTypes().toString())
+        // target class name
+        .thenComparing(
+            call ->
+                call.targetMethodSignature().getDeclClassType().getClassName())
+        // target method name
+        .thenComparing(call -> call.targetMethodSignature().getName())
+        // target parameter list
+        .thenComparing(
+            call ->
+                call.targetMethodSignature().getParameterTypes().toString()))
+        .forEach(System.out::println);;
+    ```

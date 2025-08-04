@@ -22,7 +22,7 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ClassType;
@@ -33,7 +33,7 @@ public class EnumConstant implements Constant {
   private final ClassType type;
   private final FieldSignature signature;
 
-  public EnumConstant(@Nonnull String value, @Nonnull ClassType type) {
+  public EnumConstant(@NonNull String value, @NonNull ClassType type) {
     this.value = value;
     this.type = type;
     this.signature = new FieldSignature(type, value, type);
@@ -57,14 +57,14 @@ public class EnumConstant implements Constant {
     return value;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return type;
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull V v) {
     v.caseEnumConstant(this);
     return v;
   }

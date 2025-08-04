@@ -24,7 +24,7 @@ package sootup.core;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
@@ -101,9 +101,8 @@ public interface IdentifierFactory {
    * @param subSignature the sub signature
    * @return the method signature
    */
-  @Nonnull
-  MethodSignature getMethodSignature(
-      @Nonnull ClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature);
+  @NonNull MethodSignature getMethodSignature(
+      @NonNull ClassType declaringClassSignature, @NonNull MethodSubSignature subSignature);
 
   /**
    * Parses the method signature.
@@ -111,8 +110,7 @@ public interface IdentifierFactory {
    * @param methodSignature the method signature
    * @return the method signature
    */
-  @Nonnull
-  MethodSignature parseMethodSignature(@Nonnull String methodSignature);
+  @NonNull MethodSignature parseMethodSignature(@NonNull String methodSignature);
 
   /**
    * Gets the method sub signature.
@@ -122,11 +120,10 @@ public interface IdentifierFactory {
    * @param returnType the return type
    * @return the method sub signature
    */
-  @Nonnull
-  MethodSubSignature getMethodSubSignature(
-      @Nonnull String name,
-      @Nonnull Type returnType,
-      @Nonnull Iterable<? extends Type> parameterSignatures);
+  @NonNull MethodSubSignature getMethodSubSignature(
+      @NonNull String name,
+      @NonNull Type returnType,
+      @NonNull Iterable<? extends Type> parameterSignatures);
 
   /**
    * Parses the method sub signature.
@@ -134,8 +131,7 @@ public interface IdentifierFactory {
    * @param methodSubSignature the method sub signature
    * @return the method sub signature
    */
-  @Nonnull
-  MethodSubSignature parseMethodSubSignature(@Nonnull String methodSubSignature);
+  @NonNull MethodSubSignature parseMethodSubSignature(@NonNull String methodSubSignature);
 
   /**
    * Parses the field signature.
@@ -143,8 +139,7 @@ public interface IdentifierFactory {
    * @param fieldSignature the field signature
    * @return the field signature
    */
-  @Nonnull
-  FieldSignature parseFieldSignature(@Nonnull String fieldSignature);
+  @NonNull FieldSignature parseFieldSignature(@NonNull String fieldSignature);
 
   /**
    * Gets the field signature.
@@ -175,9 +170,8 @@ public interface IdentifierFactory {
    * @param subSignature the sub signature
    * @return the field signature
    */
-  @Nonnull
-  FieldSignature getFieldSignature(
-      @Nonnull ClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature);
+  @NonNull FieldSignature getFieldSignature(
+      @NonNull ClassType declaringClassSignature, @NonNull FieldSubSignature subSignature);
 
   /**
    * Gets the field sub signature.
@@ -186,8 +180,7 @@ public interface IdentifierFactory {
    * @param type the type
    * @return the field sub signature
    */
-  @Nonnull
-  FieldSubSignature getFieldSubSignature(@Nonnull String name, @Nonnull Type type);
+  @NonNull FieldSubSignature getFieldSubSignature(@NonNull String name, @NonNull Type type);
 
   /**
    * Parses the field sub signature.
@@ -195,8 +188,7 @@ public interface IdentifierFactory {
    * @param subSignature the sub signature
    * @return the field sub signature
    */
-  @Nonnull
-  FieldSubSignature parseFieldSubSignature(@Nonnull String subSignature);
+  @NonNull FieldSubSignature parseFieldSubSignature(@NonNull String subSignature);
 
   /**
    * Gets the class type.
@@ -229,11 +221,9 @@ public interface IdentifierFactory {
    * @param typeName the type name
    * @return the primitive type
    */
-  @Nonnull
-  Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName);
+  @NonNull Optional<PrimitiveType> getPrimitiveType(@NonNull String typeName);
 
-  @Nonnull
-  ClassType getBoxedType(@Nonnull PrimitiveType primitiveType);
+  @NonNull ClassType getBoxedType(@NonNull PrimitiveType primitiveType);
 
   /**
    * Gets the array type.
@@ -244,11 +234,19 @@ public interface IdentifierFactory {
    */
   ArrayType getArrayType(Type baseType, int dim);
 
-  boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature);
+  /**
+   * Gets the static initializer method signature.
+   *
+   * @param declaringClassSignature the declaring class signature
+   * @return the static initializer method signature
+   */
+  MethodSignature getStaticInitializerSignature(ClassType declaringClassSignature);
 
-  boolean isConstructorSignature(@Nonnull MethodSignature methodSignature);
+  boolean isStaticInitializerSubSignature(@NonNull MethodSubSignature methodSubSignature);
 
-  boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature);
+  boolean isConstructorSignature(@NonNull MethodSignature methodSignature);
 
-  boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature);
+  boolean isConstructorSubSignature(@NonNull MethodSubSignature methodSubSignature);
+
+  boolean isMainSubSignature(@NonNull MethodSubSignature methodSubSignature);
 }

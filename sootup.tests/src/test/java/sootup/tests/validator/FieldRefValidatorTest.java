@@ -9,22 +9,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
+import sootup.core.types.*;
 import sootup.core.validation.FieldRefValidator;
 import sootup.core.validation.ValidationException;
-import sootup.jimple.parser.JimpleAnalysisInputLocation;
-import sootup.jimple.parser.JimpleView;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.views.JavaView;
+import sootup.jimple.frontend.JimpleAnalysisInputLocation;
 
-@Tag("Java8")
 public class FieldRefValidatorTest {
 
   FieldRefValidator fieldRefValidator;
-  JimpleView jimpleView;
+  JavaView jimpleView;
   Collection<SootClass> classes;
 
   @BeforeEach
@@ -34,7 +33,6 @@ public class FieldRefValidatorTest {
 
     ClassType classTypeFieldRefValidator =
         new ClassType() {
-
           @Override
           public String getFullyQualifiedName() {
             return "jimple.FieldRefValidator";
@@ -55,8 +53,8 @@ public class FieldRefValidatorTest {
     JimpleAnalysisInputLocation jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
-    jimpleView = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
+    jimpleView = new JavaView(jimpleInputLocation);
+    final Optional<JavaSootClass> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
     assertFalse(classSource1.isPresent());
 
     classes = new HashSet<>(); // Set to track the classes to check

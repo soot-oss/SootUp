@@ -1,4 +1,5 @@
 package sootup.core.typehierarchy;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -22,10 +23,11 @@ package sootup.core.typehierarchy;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.types.*;
@@ -50,16 +52,22 @@ public interface TypeHierarchy {
    * <p>This includes interfaces extending <code>interfaceType</code> as they may contain default
    * implementations of methods.
    */
-  @Nonnull
-  Stream<ClassType> implementersOf(@Nonnull ClassType interfaceType);
+  @NonNull Stream<ClassType> implementersOf(@NonNull ClassType interfaceType);
 
   /**
    * Returns all classes that extend the specified class. This is transitive: If <code>A extends B
    * </code> and <code>B extends classType</code>, then this method will return both A and B as
    * extenders of <code>classType</code>.
    */
-  @Nonnull
-  Stream<ClassType> subclassesOf(@Nonnull ClassType classType);
+  @NonNull Stream<ClassType> subclassesOf(@NonNull ClassType classType);
+
+  /**
+   * Returns all interfaces that extend the specified class. This is transitive: If <code>
+   * A extends B
+   * </code> and <code>B extends classType</code>, then this method will return both A and B as
+   * extenders of <code>classType</code>.
+   */
+  @NonNull Stream<ClassType> subinterfacesOf(@NonNull ClassType classType);
 
   /**
    * Returns the interfaces implemented by <code>type</code> if it is a class or extended by <code>
@@ -68,27 +76,23 @@ public interface TypeHierarchy {
    * interface <code>I1</code> that extends another interface <code>I2
    * </code>. <code>I2</code> will be considered an implemented interface of <code>classType</code>.
    */
-  @Nonnull
-  Stream<ClassType> implementedInterfacesOf(@Nonnull ClassType type);
+  @NonNull Stream<ClassType> implementedInterfacesOf(@NonNull ClassType type);
 
   /**
    * For an interface type, this does the same as {@link #implementersOf(ClassType)}. For a class
    * type, this does the same as {@link #subclassesOf(ClassType)}.
    */
   // TODO: [ms] check! not sure this method makes sense in the interface..
-  @Nonnull
-  Stream<ClassType> subtypesOf(@Nonnull ClassType type);
+  @NonNull Stream<ClassType> subtypesOf(@NonNull ClassType type);
 
   /** Returns the direct implementers of an interface or direct subclasses of a class. */
-  @Nonnull
-  Stream<ClassType> directSubtypesOf(@Nonnull ClassType type);
+  @NonNull Stream<ClassType> directSubtypesOf(@NonNull ClassType type);
 
   /**
    * Returns the direct superclass of <code>classType</code>. If <code>classType == java.lang.Object
    * </code>, this method returns null.
    */
-  @Nonnull
-  Optional<ClassType> superClassOf(@Nonnull ClassType classType);
+  @NonNull Optional<ClassType> superClassOf(@NonNull ClassType classType);
 
   /**
    * Returns true if <code>potentialSubtype</code> is a subtype of <code>supertype</code>. If they
@@ -97,7 +101,7 @@ public interface TypeHierarchy {
    * <p>This method relies on {@link #implementedInterfacesOf(ClassType)} and {@link
    * #superClassOf(ClassType)}.
    */
-  default boolean isSubtype(@Nonnull Type supertype, @Nonnull Type potentialSubtype) {
+  default boolean isSubtype(@NonNull Type supertype, @NonNull Type potentialSubtype) {
     if (!(supertype instanceof ReferenceType) || !(potentialSubtype instanceof ReferenceType)) {
       // Subtyping applies to ReferenceTypes only
       return false;
@@ -116,13 +120,11 @@ public interface TypeHierarchy {
     final String jlObject = "java.lang.Object";
     final String jiSerializable = "java.io.Serializable";
     final String jlCloneable = "java.lang.Cloneable";
-    if (supertype instanceof ArrayType) {
-      if (!(potentialSubtype instanceof ArrayType)) {
+    if (supertype instanceof ArrayType superArrayType) {
+      if (!(potentialSubtype instanceof ArrayType potentialSubArrayType)) {
         return false;
       }
 
-      ArrayType superArrayType = (ArrayType) supertype;
-      ArrayType potentialSubArrayType = (ArrayType) potentialSubtype;
       if (superArrayType.getBaseType() instanceof PrimitiveType) {
         // Arrays of primitives have no subtypes
         return false;
@@ -173,8 +175,8 @@ public interface TypeHierarchy {
    * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
    * will be the last entry in the list, or till one of the superclasses is not contained in view.
    */
-  @Nonnull
-  default Stream<ClassType> superClassesOf(@Nonnull ClassType classType) {
+  @NonNull
+  default Stream<ClassType> superClassesOf(@NonNull ClassType classType) {
     List<ClassType> superClasses = new ArrayList<>();
     Optional<ClassType> currentSuperClass = Optional.empty();
     try {
@@ -194,13 +196,15 @@ public interface TypeHierarchy {
     return superClasses.stream();
   }
 
-  Stream<ClassType> directlyImplementedInterfacesOf(@Nonnull ClassType type);
+  Stream<ClassType> directlyImplementedInterfacesOf(@NonNull ClassType type);
 
-  boolean isInterface(@Nonnull ClassType type);
+  boolean isInterface(@NonNull ClassType type);
 
-  Stream<ClassType> directlyExtendedInterfacesOf(@Nonnull ClassType type);
+  Stream<ClassType> directlyExtendedInterfacesOf(@NonNull ClassType type);
 
   // checks if a Type is contained int the TypeHierarchy - should return the equivalent to
   // View.getClass(...).isPresent()
   boolean contains(ClassType type);
+
+  Collection<ClassType> getLowestCommonAncestors(ClassType a, ClassType b);
 }

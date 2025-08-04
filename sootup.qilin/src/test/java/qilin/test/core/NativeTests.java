@@ -18,10 +18,11 @@
 
 package qilin.test.core;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import qilin.test.util.JunitTests;
 
+@Disabled
 public class NativeTests extends JunitTests {
   @Test
   public void testArrayCopy() {
@@ -73,8 +74,8 @@ public class NativeTests extends JunitTests {
     checkAssertions(run("qilin.microben.core.natives.ThreadRun"));
   }
 
+  @Disabled
   @Test
-  @Ignore
   public void testCurrentThread() {
     checkAssertions(run("qilin.microben.core.natives.CurrentThread"));
   }

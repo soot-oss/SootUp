@@ -38,8 +38,8 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.pta.PTAConfig;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -59,7 +59,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
@@ -70,10 +70,12 @@ public final class PTAUtils {
     return JavaIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
   }
 
+  // TODO: use isStaticInitializer from the IdentifierFactory
   public static boolean isStaticInitializer(SootMethod method) {
     return method.getName().equals("<clinit>");
   }
 
+  // TODO: use isConstructor from the IdentifierFactory
   public static boolean isConstructor(SootMethod method) {
     return method.getName().equals("<init>");
   }
@@ -296,8 +298,7 @@ public final class PTAUtils {
 
   public static String findMainFromMetaInfo(String appPath) {
     String mainClass = null;
-    try {
-      JarFile jar = new JarFile(appPath);
+    try (JarFile jar = new JarFile(appPath)) {
       Enumeration<JarEntry> allEntries = jar.entries();
       while (allEntries.hasMoreElements()) {
         JarEntry entry = allEntries.nextElement();

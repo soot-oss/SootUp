@@ -7,18 +7,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
-/** @author : Hasitha Rajapakse, Jonas Klauke * */
-@Tag("Java8")
+/**
+ * @author : Hasitha Rajapakse, Jonas Klauke *
+ */
 public class ConcreteDispatchTest {
   public ClassType getClassType(String className) {
     return view.getIdentifierFactory().getClassType(className);
@@ -32,7 +32,7 @@ public class ConcreteDispatchTest {
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation(
             "src/test/resources/callgraph/ConcreteDispatch/binary"));
-    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
     view = new JavaView(inputLocations);
   }
 

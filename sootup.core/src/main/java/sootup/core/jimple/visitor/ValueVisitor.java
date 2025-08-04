@@ -22,10 +22,10 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Value;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.Value;
 
 public interface ValueVisitor extends ImmediateVisitor, ExprVisitor, RefVisitor {
 
-  void defaultCaseValue(@Nonnull Value v);
+  void defaultCaseValue(@NonNull Value v);
 }

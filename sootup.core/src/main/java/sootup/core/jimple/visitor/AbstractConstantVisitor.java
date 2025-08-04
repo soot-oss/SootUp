@@ -22,66 +22,66 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.constant.*;
 
 public class AbstractConstantVisitor implements ConstantVisitor, Visitor {
 
   @Override
-  public void caseBooleanConstant(@Nonnull BooleanConstant constant) {
+  public void caseBooleanConstant(@NonNull BooleanConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseDoubleConstant(@Nonnull DoubleConstant constant) {
+  public void caseDoubleConstant(@NonNull DoubleConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseFloatConstant(@Nonnull FloatConstant constant) {
+  public void caseFloatConstant(@NonNull FloatConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseIntConstant(@Nonnull IntConstant constant) {
+  public void caseIntConstant(@NonNull IntConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseLongConstant(@Nonnull LongConstant constant) {
+  public void caseLongConstant(@NonNull LongConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseNullConstant(@Nonnull NullConstant constant) {
+  public void caseNullConstant(@NonNull NullConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseStringConstant(@Nonnull StringConstant constant) {
+  public void caseStringConstant(@NonNull StringConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseEnumConstant(@Nonnull EnumConstant constant) {
+  public void caseEnumConstant(@NonNull EnumConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseClassConstant(@Nonnull ClassConstant constant) {
+  public void caseClassConstant(@NonNull ClassConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseMethodHandle(@Nonnull MethodHandle handle) {
+  public void caseMethodHandle(@NonNull MethodHandle handle) {
     defaultCaseConstant(handle);
   }
 
   @Override
-  public void caseMethodType(@Nonnull MethodType methodType) {
+  public void caseMethodType(@NonNull MethodType methodType) {
     defaultCaseConstant(methodType);
   }
 
   @Override
-  public void defaultCaseConstant(@Nonnull Constant constant) {}
+  public void defaultCaseConstant(@NonNull Constant constant) {}
 }

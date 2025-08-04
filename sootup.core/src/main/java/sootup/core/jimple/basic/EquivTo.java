@@ -47,7 +47,7 @@ package sootup.core.jimple.basic;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * An alternate equivalence relation between objects, not necessarily compliant with the contract
@@ -76,5 +76,5 @@ public interface EquivTo {
   int equivHashCode();
 
   /** Returns true if this object is equivalent to o according to the given comparator. */
-  boolean equivTo(Object o, @Nonnull JimpleComparator comparator);
+  boolean equivTo(Object o, @NonNull JimpleComparator comparator);
 }

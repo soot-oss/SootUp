@@ -23,12 +23,13 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
@@ -46,13 +47,13 @@ public final class JNewMultiArrayExpr implements Expr {
    * @param type the type of the array
    * @param sizes the sizes
    */
-  public JNewMultiArrayExpr(@Nonnull ArrayType type, @Nonnull List<Immediate> sizes) {
+  public JNewMultiArrayExpr(@NonNull ArrayType type, @NonNull List<Immediate> sizes) {
     this.baseType = type;
     this.sizes = sizes;
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseNewMultiArrayExpr(this, o);
   }
 
@@ -81,7 +82,7 @@ public final class JNewMultiArrayExpr implements Expr {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     Type t = baseType.getBaseType();
 
     up.literal(Jimple.NEWMULTIARRAY);
@@ -104,7 +105,7 @@ public final class JNewMultiArrayExpr implements Expr {
     return baseType;
   }
 
-  public Immediate getSize(@Nonnull int index) {
+  public Immediate getSize(int index) {
     return sizes.get(index);
   }
 
@@ -118,34 +119,49 @@ public final class JNewMultiArrayExpr implements Expr {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(sizes.stream(), sizes.stream().flatMap(Value::getUses));
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return baseType;
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseNewMultiArrayExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JNewMultiArrayExpr withBaseType(@Nonnull ArrayType baseType) {
+  @NonNull
+  public JNewMultiArrayExpr withBaseType(@NonNull ArrayType baseType) {
     return new JNewMultiArrayExpr(baseType, getSizes());
   }
 
-  @Nonnull
-  public JNewMultiArrayExpr withSizes(@Nonnull List<Immediate> sizes) {
+  @NonNull
+  public JNewMultiArrayExpr withSizes(@NonNull List<Immediate> sizes) {
     return new JNewMultiArrayExpr(baseType, sizes);
   }
 
   public boolean isArrayOfPrimitives() {
     return baseType.isArrayTypeOfPrimitives();
+  }
+
+  @Override
+  public boolean isJNewMultiArrayExpr() {
+    return true;
+  }
+
+  @Override
+  public JNewMultiArrayExpr asJNewMultiArrayExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JNewMultiArrayExpr> toJNewMultiArrayExpr() {
+    return Optional.of(this);
   }
 }

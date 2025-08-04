@@ -22,7 +22,7 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -32,11 +32,11 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
 
   private final int value;
 
-  protected IntConstant(@Nonnull int value) {
+  protected IntConstant(int value) {
     this.value = value;
   }
 
-  public static IntConstant getInstance(@Nonnull int value) {
+  public static IntConstant getInstance(int value) {
     return new IntConstant(value);
   }
 
@@ -51,111 +51,111 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
   }
 
   // PTC 1999/06/28
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant add(@Nonnull IntConstant c) {
+  public IntConstant add(@NonNull IntConstant c) {
     return IntConstant.getInstance(value + c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant subtract(@Nonnull IntConstant c) {
+  public IntConstant subtract(@NonNull IntConstant c) {
     return IntConstant.getInstance(value - c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant multiply(@Nonnull IntConstant c) {
+  public IntConstant multiply(@NonNull IntConstant c) {
     return IntConstant.getInstance(value * c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant divide(@Nonnull IntConstant c) {
+  public IntConstant divide(@NonNull IntConstant c) {
     return IntConstant.getInstance(value / c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant remainder(@Nonnull IntConstant c) {
+  public IntConstant remainder(@NonNull IntConstant c) {
     return IntConstant.getInstance(value % c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant equalEqual(@Nonnull IntConstant c) {
+  public BooleanConstant equalEqual(@NonNull IntConstant c) {
     return BooleanConstant.getInstance(value == c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant notEqual(@Nonnull IntConstant c) {
+  public BooleanConstant notEqual(@NonNull IntConstant c) {
     return BooleanConstant.getInstance(value != c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant lessThan(@Nonnull IntConstant c) {
+  public BooleanConstant lessThan(@NonNull IntConstant c) {
     return BooleanConstant.getInstance(value < c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant lessThanOrEqual(@Nonnull IntConstant c) {
+  public BooleanConstant lessThanOrEqual(@NonNull IntConstant c) {
     return BooleanConstant.getInstance(value <= c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant greaterThan(@Nonnull IntConstant c) {
+  public BooleanConstant greaterThan(@NonNull IntConstant c) {
     return BooleanConstant.getInstance(value > c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant greaterThanOrEqual(@Nonnull IntConstant c) {
+  public BooleanConstant greaterThanOrEqual(@NonNull IntConstant c) {
     return BooleanConstant.getInstance(value >= c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public IntConstant negate() {
     return IntConstant.getInstance(-(value));
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant and(@Nonnull IntConstant c) {
+  public IntConstant and(@NonNull IntConstant c) {
     return IntConstant.getInstance(value & c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant or(@Nonnull IntConstant c) {
+  public IntConstant or(@NonNull IntConstant c) {
     return IntConstant.getInstance(value | c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant xor(@Nonnull IntConstant c) {
+  public IntConstant xor(@NonNull IntConstant c) {
     return IntConstant.getInstance(value ^ c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant shiftLeft(@Nonnull IntConstant c) {
+  public IntConstant shiftLeft(@NonNull IntConstant c) {
     return IntConstant.getInstance(value << c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant shiftRight(@Nonnull IntConstant c) {
+  public IntConstant shiftRight(@NonNull IntConstant c) {
     return IntConstant.getInstance(value >> c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant unsignedShiftRight(@Nonnull IntConstant c) {
+  public IntConstant unsignedShiftRight(@NonNull IntConstant c) {
     return IntConstant.getInstance(value >>> c.value);
   }
 
@@ -164,14 +164,14 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
     return Integer.toString(value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return PrimitiveType.getInt();
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull V v) {
     v.caseIntConstant(this);
     return v;
   }

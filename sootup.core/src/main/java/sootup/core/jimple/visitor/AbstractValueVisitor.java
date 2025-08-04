@@ -22,278 +22,280 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ */
 public abstract class AbstractValueVisitor implements ValueVisitor, Visitor {
 
   @Override
-  public void caseBooleanConstant(@Nonnull BooleanConstant constant) {
+  public void caseBooleanConstant(@NonNull BooleanConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseDoubleConstant(@Nonnull DoubleConstant constant) {
+  public void caseDoubleConstant(@NonNull DoubleConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseFloatConstant(@Nonnull FloatConstant constant) {
+  public void caseFloatConstant(@NonNull FloatConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseIntConstant(@Nonnull IntConstant constant) {
+  public void caseIntConstant(@NonNull IntConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseLongConstant(@Nonnull LongConstant constant) {
+  public void caseLongConstant(@NonNull LongConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseNullConstant(@Nonnull NullConstant constant) {
+  public void caseNullConstant(@NonNull NullConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseStringConstant(@Nonnull StringConstant constant) {
+  public void caseStringConstant(@NonNull StringConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseEnumConstant(@Nonnull EnumConstant constant) {
+  public void caseEnumConstant(@NonNull EnumConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseClassConstant(@Nonnull ClassConstant constant) {
+  public void caseClassConstant(@NonNull ClassConstant constant) {
     defaultCaseConstant(constant);
   }
 
   @Override
-  public void caseMethodHandle(@Nonnull MethodHandle v) {
+  public void caseMethodHandle(@NonNull MethodHandle v) {
     defaultCaseConstant(v);
   }
 
   @Override
-  public void caseMethodType(@Nonnull MethodType v) {
+  public void caseMethodType(@NonNull MethodType v) {
     defaultCaseConstant(v);
   }
 
   @Override
-  public void defaultCaseConstant(@Nonnull Constant v) {
+  public void defaultCaseConstant(@NonNull Constant v) {
     defaultCaseValue(v);
   }
 
   @Override
-  public void caseAddExpr(@Nonnull JAddExpr expr) {
+  public void caseAddExpr(@NonNull JAddExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseAndExpr(@Nonnull JAndExpr expr) {
+  public void caseAndExpr(@NonNull JAndExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseCmpExpr(@Nonnull JCmpExpr expr) {
+  public void caseCmpExpr(@NonNull JCmpExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseCmpgExpr(@Nonnull JCmpgExpr expr) {
+  public void caseCmpgExpr(@NonNull JCmpgExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseCmplExpr(@Nonnull JCmplExpr expr) {
+  public void caseCmplExpr(@NonNull JCmplExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseDivExpr(@Nonnull JDivExpr expr) {
+  public void caseDivExpr(@NonNull JDivExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseEqExpr(@Nonnull JEqExpr expr) {
+  public void caseEqExpr(@NonNull JEqExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseNeExpr(@Nonnull JNeExpr expr) {
+  public void caseNeExpr(@NonNull JNeExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseGeExpr(@Nonnull JGeExpr expr) {
+  public void caseGeExpr(@NonNull JGeExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseGtExpr(@Nonnull JGtExpr expr) {
+  public void caseGtExpr(@NonNull JGtExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseLeExpr(@Nonnull JLeExpr expr) {
+  public void caseLeExpr(@NonNull JLeExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseLtExpr(@Nonnull JLtExpr expr) {
+  public void caseLtExpr(@NonNull JLtExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseMulExpr(@Nonnull JMulExpr expr) {
+  public void caseMulExpr(@NonNull JMulExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseOrExpr(@Nonnull JOrExpr expr) {
+  public void caseOrExpr(@NonNull JOrExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseRemExpr(@Nonnull JRemExpr expr) {
+  public void caseRemExpr(@NonNull JRemExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseShlExpr(@Nonnull JShlExpr expr) {
+  public void caseShlExpr(@NonNull JShlExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseShrExpr(@Nonnull JShrExpr expr) {
+  public void caseShrExpr(@NonNull JShrExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseUshrExpr(@Nonnull JUshrExpr expr) {
+  public void caseUshrExpr(@NonNull JUshrExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseSubExpr(@Nonnull JSubExpr expr) {
+  public void caseSubExpr(@NonNull JSubExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseXorExpr(@Nonnull JXorExpr expr) {
+  public void caseXorExpr(@NonNull JXorExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseSpecialInvokeExpr(@Nonnull JSpecialInvokeExpr expr) {
+  public void caseSpecialInvokeExpr(@NonNull JSpecialInvokeExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseVirtualInvokeExpr(@Nonnull JVirtualInvokeExpr expr) {
+  public void caseVirtualInvokeExpr(@NonNull JVirtualInvokeExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseInterfaceInvokeExpr(@Nonnull JInterfaceInvokeExpr expr) {
+  public void caseInterfaceInvokeExpr(@NonNull JInterfaceInvokeExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseStaticInvokeExpr(@Nonnull JStaticInvokeExpr expr) {
+  public void caseStaticInvokeExpr(@NonNull JStaticInvokeExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseDynamicInvokeExpr(@Nonnull JDynamicInvokeExpr expr) {
+  public void caseDynamicInvokeExpr(@NonNull JDynamicInvokeExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseCastExpr(@Nonnull JCastExpr expr) {
+  public void caseCastExpr(@NonNull JCastExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseInstanceOfExpr(@Nonnull JInstanceOfExpr expr) {
+  public void caseInstanceOfExpr(@NonNull JInstanceOfExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseNewArrayExpr(@Nonnull JNewArrayExpr expr) {
+  public void caseNewArrayExpr(@NonNull JNewArrayExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseNewMultiArrayExpr(@Nonnull JNewMultiArrayExpr expr) {
+  public void caseNewMultiArrayExpr(@NonNull JNewMultiArrayExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseNewExpr(@Nonnull JNewExpr expr) {
+  public void caseNewExpr(@NonNull JNewExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseLengthExpr(@Nonnull JLengthExpr expr) {
+  public void caseLengthExpr(@NonNull JLengthExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void caseNegExpr(@Nonnull JNegExpr expr) {
+  public void caseNegExpr(@NonNull JNegExpr expr) {
     defaultCaseExpr(expr);
   }
 
   @Override
-  public void defaultCaseExpr(@Nonnull Expr expr) {
+  public void defaultCaseExpr(@NonNull Expr expr) {
     defaultCaseValue(expr);
   }
 
   @Override
-  public void caseStaticFieldRef(@Nonnull JStaticFieldRef ref) {
+  public void caseStaticFieldRef(@NonNull JStaticFieldRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void caseInstanceFieldRef(@Nonnull JInstanceFieldRef ref) {
+  public void caseInstanceFieldRef(@NonNull JInstanceFieldRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void caseArrayRef(@Nonnull JArrayRef ref) {
+  public void caseArrayRef(@NonNull JArrayRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void caseParameterRef(@Nonnull JParameterRef ref) {
+  public void caseParameterRef(@NonNull JParameterRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void caseCaughtExceptionRef(@Nonnull JCaughtExceptionRef ref) {
+  public void caseCaughtExceptionRef(@NonNull JCaughtExceptionRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void caseThisRef(@Nonnull JThisRef ref) {
+  public void caseThisRef(@NonNull JThisRef ref) {
     defaultCaseRef(ref);
   }
 
   @Override
-  public void defaultCaseRef(@Nonnull Ref ref) {
+  public void defaultCaseRef(@NonNull Ref ref) {
     defaultCaseValue(ref);
   }
 
   @Override
-  public void caseLocal(@Nonnull Local local) {
+  public void caseLocal(@NonNull Local local) {
     defaultCaseValue(local);
   }
 
@@ -303,5 +305,5 @@ public abstract class AbstractValueVisitor implements ValueVisitor, Visitor {
   }
 
   @Override
-  public void defaultCaseValue(@Nonnull Value v) {}
+  public void defaultCaseValue(@NonNull Value v) {}
 }

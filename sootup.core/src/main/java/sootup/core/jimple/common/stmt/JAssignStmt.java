@@ -45,8 +45,12 @@ package sootup.core.jimple.common.stmt;
  */
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
@@ -65,8 +69,8 @@ import sootup.core.util.printer.StmtPrinter;
 public final class JAssignStmt extends AbstractDefinitionStmt
     implements FallsThroughStmt, InvokableStmt {
 
-  @Nonnull final LValue leftOp;
-  @Nonnull final Value rightOp;
+  @NonNull final LValue leftOp;
+  @NonNull final Value rightOp;
 
   /**
    * Instantiates a new JAssignStmt.
@@ -75,7 +79,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt
    * @param rValue the value on the right side of the assign statement.
    */
   public JAssignStmt(
-      @Nonnull LValue variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
+      @NonNull LValue variable, @NonNull Value rValue, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
     leftOp = variable;
     rightOp = rValue;
@@ -93,19 +97,9 @@ public final class JAssignStmt extends AbstractDefinitionStmt
    *
    * @param rValue the value on the right side of the assign statement.
    */
-  private boolean validateValue(@Nonnull Value rValue) {
+  private boolean validateValue(@NonNull Value rValue) {
     // constant | local     |  *FieldRef | ArrayRef     | Expr ----> i.e. not IdentityRef
     return rValue instanceof Immediate || rValue instanceof ConcreteRef || rValue instanceof Expr;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see de.upb.sootup.jimple.common.stmt.AbstractStmt#containsInvokeExpr()
-   */
-  @Override
-  public boolean containsInvokeExpr() {
-    return getRightOp() instanceof AbstractInvokeExpr;
   }
 
   @Override
@@ -136,10 +130,10 @@ public final class JAssignStmt extends AbstractDefinitionStmt
    */
   @Override
   public Optional<AbstractInvokeExpr> getInvokeExpr() {
-    if (!containsInvokeExpr()) {
-      return Optional.empty();
+    if (getRightOp() instanceof AbstractInvokeExpr) {
+      return Optional.of((AbstractInvokeExpr) getRightOp());
     }
-    return Optional.of((AbstractInvokeExpr) getRightOp());
+    return Optional.empty();
   }
 
   /*
@@ -197,6 +191,21 @@ public final class JAssignStmt extends AbstractDefinitionStmt
     }
   }
 
+  @Override
+  public boolean isJAssignStmt() {
+    return true;
+  }
+
+  @Override
+  public JAssignStmt asJAssignStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JAssignStmt> toJAssignStmt() {
+    return Optional.of(this);
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -213,7 +222,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt
    * @see de.upb.sootup.jimple.common.stmt.Stmt#toString(de.upb.sootup.StmtPrinter)
    */
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     getLeftOp().toString(up);
     up.literal(" = ");
     getRightOp().toString(up);
@@ -225,13 +234,13 @@ public final class JAssignStmt extends AbstractDefinitionStmt
    * @see de.upb.sootup.jimple.common.stmt.AbstractStmt#accept(de.upb.sootup.jimple.visitor.Visitor)
    */
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseAssignStmt(this);
     return v;
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseAssignStmt(this, o);
   }
 
@@ -240,13 +249,13 @@ public final class JAssignStmt extends AbstractDefinitionStmt
     return getLeftOp().equivHashCode() + 31 * getRightOp().equivHashCode();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public LValue getLeftOp() {
     return leftOp;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Value getRightOp() {
     return rightOp;
@@ -262,9 +271,9 @@ public final class JAssignStmt extends AbstractDefinitionStmt
     return false;
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public JAssignStmt withNewDef(@Nonnull Local newLocal) {
+  public JAssignStmt withNewDef(@NonNull Local newLocal) {
     // "ReplaceDefVisitor"
     final Value leftOp = getLeftOp();
     LValue newVal;
@@ -284,18 +293,18 @@ public final class JAssignStmt extends AbstractDefinitionStmt
     return withVariable(newVal);
   }
 
-  @Nonnull
-  public JAssignStmt withVariable(@Nonnull LValue variable) {
+  @NonNull
+  public JAssignStmt withVariable(@NonNull LValue variable) {
     return new JAssignStmt(variable, getRightOp(), getPositionInfo());
   }
 
-  @Nonnull
-  public JAssignStmt withRValue(@Nonnull Value rValue) {
+  @NonNull
+  public JAssignStmt withRValue(@NonNull Value rValue) {
     return new JAssignStmt(getLeftOp(), rValue, getPositionInfo());
   }
 
-  @Nonnull
-  public JAssignStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JAssignStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }

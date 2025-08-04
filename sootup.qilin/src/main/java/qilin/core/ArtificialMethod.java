@@ -22,8 +22,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import qilin.util.PTAUtils;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -43,6 +48,7 @@ import sootup.java.core.language.JavaJimple;
 
 public abstract class ArtificialMethod {
   protected final View view;
+  protected IdentifierFactory identifierFactory;
   protected SootMethod method;
   protected Body.BodyBuilder bodyBuilder;
   protected Local thisLocal;
@@ -53,6 +59,7 @@ public abstract class ArtificialMethod {
 
   protected ArtificialMethod(View view) {
     this.view = view;
+    this.identifierFactory = view.getIdentifierFactory();
     this.stmtList = new ArrayList<>();
   }
 
@@ -100,7 +107,9 @@ public abstract class ArtificialMethod {
   }
 
   protected Local getNewArray(ClassType type) {
-    Value newExpr = JavaJimple.getInstance().newNewArrayExpr(type, IntConstant.getInstance(1));
+    Value newExpr =
+        JavaJimple.newNewArrayExpr(
+            type, IntConstant.getInstance(1), JavaIdentifierFactory.getInstance());
     Local local = getNextLocal(new ArrayType(type, 1));
     addAssign(local, newExpr);
     return local;
@@ -129,12 +138,12 @@ public abstract class ArtificialMethod {
   }
 
   protected JArrayRef getArrayRef(Value base) {
-    return JavaJimple.getInstance().newArrayRef((Local) base, IntConstant.getInstance(0));
+    return JavaJimple.newArrayRef((Local) base, IntConstant.getInstance(0));
   }
 
   /** add an instance invocation receiver.sig(args) */
   protected void addInvoke(Local receiver, String sig, Immediate... args) {
-    MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
+    MethodSignature methodSig = identifierFactory.parseMethodSignature(sig);
     SootMethod method = (SootMethod) view.getMethod(methodSig).get();
     SootClass clazz = (SootClass) view.getClass(method.getDeclaringClassType()).get();
     List<Immediate> argsL = Arrays.asList(args);
@@ -152,7 +161,7 @@ public abstract class ArtificialMethod {
    * @return rx
    */
   protected Local getInvoke(Local receiver, String sig, Immediate... args) {
-    MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
+    MethodSignature methodSig = identifierFactory.parseMethodSignature(sig);
     SootMethod method = (SootMethod) view.getMethod(methodSig).get();
     SootClass clazz = (SootClass) view.getClass(method.getDeclaringClassType()).get();
     List<Immediate> argsL = Arrays.asList(args);
@@ -167,7 +176,7 @@ public abstract class ArtificialMethod {
 
   /** add a static invocation sig(args) */
   protected void addInvoke(String sig, Immediate... args) {
-    MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
+    MethodSignature methodSig = identifierFactory.parseMethodSignature(sig);
     List<Immediate> argsL = Arrays.asList(args);
     Stmt stmt =
         Jimple.newInvokeStmt(
@@ -181,7 +190,7 @@ public abstract class ArtificialMethod {
    * @return rx
    */
   protected Value getInvoke(String sig, Immediate... args) {
-    MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
+    MethodSignature methodSig = identifierFactory.parseMethodSignature(sig);
     List<Immediate> argsL = Arrays.asList(args);
     LValue rx = getNextLocal(methodSig.getType());
     addAssign(rx, Jimple.newStaticInvokeExpr(methodSig, argsL));

@@ -24,7 +24,7 @@ package sootup.java.core.views;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.ViewChangeListener;
@@ -43,13 +43,13 @@ import sootup.java.core.JavaSootMethod;
  */
 public class MutableJavaView extends JavaView implements MutableView {
   private final List<ViewChangeListener> changeListeners = new LinkedList<>();
-  private static final @Nonnull Logger logger = LoggerFactory.getLogger(MutableJavaView.class);
+  private static final @NonNull Logger logger = LoggerFactory.getLogger(MutableJavaView.class);
 
-  public MutableJavaView(@Nonnull AnalysisInputLocation inputLocation) {
+  public MutableJavaView(@NonNull AnalysisInputLocation inputLocation) {
     this(Collections.singletonList(inputLocation));
   }
 
-  public MutableJavaView(@Nonnull List<AnalysisInputLocation> inputLocations) {
+  public MutableJavaView(@NonNull List<AnalysisInputLocation> inputLocations) {
     super(inputLocations, new MutableFullCacheProvider());
   }
 

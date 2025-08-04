@@ -22,7 +22,8 @@ package sootup.core.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 
 /** Represents Java's primitive types. */
@@ -34,66 +35,198 @@ public abstract class PrimitiveType extends Type {
    *
    * @param name the primitive's name
    */
-  private PrimitiveType(@Nonnull String name) {
+  private PrimitiveType(@NonNull String name) {
     this.name = name;
   }
 
-  @Nonnull private final String name;
+  @NonNull private final String name;
 
   /**
    * Gets the primitive type's name.
    *
    * @return The value to get.
    */
-  @Nonnull
+  @NonNull
   public String getName() {
     return name;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public String toString() {
     return name;
   }
 
-  @Nonnull
+  @NonNull
   public static ByteType getByte() {
     return ByteType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static ShortType getShort() {
     return ShortType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static IntType getInt() {
     return IntType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static LongType getLong() {
     return LongType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static FloatType getFloat() {
     return FloatType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static DoubleType getDouble() {
     return DoubleType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static CharType getChar() {
     return CharType.getInstance();
   }
 
-  @Nonnull
+  @NonNull
   public static BooleanType getBoolean() {
     return BooleanType.getInstance();
+  }
+
+  protected boolean isByteType() {
+    return false;
+  }
+
+  protected boolean isShortType() {
+    return false;
+  }
+
+  protected boolean isIntType() {
+    return false;
+  }
+
+  protected boolean isDoubleType() {
+    return false;
+  }
+
+  protected boolean isLongType() {
+    return false;
+  }
+
+  protected boolean isFloatType() {
+    return false;
+  }
+
+  protected boolean isCharType() {
+    return false;
+  }
+
+  protected boolean isBooleanType() {
+    return false;
+  }
+
+  protected boolean isInteger127Type() {
+    return false;
+  }
+
+  protected boolean isInteger1Type() {
+    return false;
+  }
+
+  protected boolean isInteger3276Type() {
+    return false;
+  }
+
+  protected PrimitiveType.ByteType asByteType() {
+    return null;
+  }
+
+  protected PrimitiveType.ShortType asShortType() {
+    return null;
+  }
+
+  protected PrimitiveType.IntType asIntType() {
+    return null;
+  }
+
+  protected PrimitiveType.DoubleType asDoubleType() {
+    return null;
+  }
+
+  protected PrimitiveType.LongType asLongType() {
+    return null;
+  }
+
+  protected PrimitiveType.FloatType asFloatType() {
+    return null;
+  }
+
+  protected PrimitiveType.CharType asCharType() {
+    return null;
+  }
+
+  protected PrimitiveType.BooleanType asBooleanType() {
+    return null;
+  }
+
+  protected PrimitiveType.IntType asInteger127Type() {
+    return null;
+  }
+
+  protected PrimitiveType.BooleanType asInteger1Type() {
+    return null;
+  }
+
+  protected PrimitiveType.IntType asInteger3276Type() {
+    return null;
+  }
+
+  protected Optional<PrimitiveType.ByteType> toByteType() {
+    return Optional.empty();
+  }
+
+  protected Optional<PrimitiveType.ShortType> toShortType() {
+    return Optional.empty();
+  }
+
+  protected Optional<PrimitiveType.IntType> toIntType() {
+    return Optional.empty();
+  }
+
+  protected Optional<PrimitiveType.DoubleType> toDoubleType() {
+    return Optional.empty();
+  }
+
+  protected Optional<PrimitiveType.LongType> toLongType() {
+    return Optional.empty();
+  }
+
+  protected Optional<PrimitiveType.FloatType> toFloatType() {
+    return Optional.empty();
+  }
+
+  protected Optional<PrimitiveType.CharType> toCharType() {
+    return Optional.empty();
+  }
+
+  protected Optional<PrimitiveType.BooleanType> toBooleanType() {
+    return Optional.empty();
+  }
+
+  protected Optional<PrimitiveType.IntType> toInteger127Type() {
+    return Optional.empty();
+  }
+
+  protected Optional<PrimitiveType.BooleanType> toInteger1Type() {
+    return Optional.empty();
+  }
+
+  protected Optional<PrimitiveType.IntType> toInteger3276Type() {
+    return Optional.empty();
   }
 
   public static class ByteType extends PrimitiveType.IntType {
@@ -108,9 +241,24 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseByteType();
       return v;
+    }
+
+    @Override
+    protected boolean isByteType() {
+      return true;
+    }
+
+    @Override
+    protected ByteType asByteType() {
+      return this;
+    }
+
+    @Override
+    protected Optional<ByteType> toByteType() {
+      return Optional.of(this);
     }
   }
 
@@ -126,9 +274,24 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseShortType();
       return v;
+    }
+
+    @Override
+    protected boolean isShortType() {
+      return true;
+    }
+
+    @Override
+    protected ShortType asShortType() {
+      return this;
+    }
+
+    @Override
+    protected Optional<ShortType> toShortType() {
+      return Optional.of(this);
     }
   }
 
@@ -139,8 +302,23 @@ public abstract class PrimitiveType extends Type {
       super("int");
     }
 
-    protected IntType(@Nonnull String name) {
+    protected IntType(@NonNull String name) {
       super(name);
+    }
+
+    @Override
+    protected boolean isIntType() {
+      return true;
+    }
+
+    @Override
+    protected IntType asIntType() {
+      return this;
+    }
+
+    @Override
+    protected Optional<IntType> toIntType() {
+      return Optional.of(this);
     }
 
     public static IntType getInstance() {
@@ -148,9 +326,24 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseIntType();
       return v;
+    }
+
+    @Override
+    protected boolean isPrimitiveType() {
+      return true;
+    }
+
+    @Override
+    protected PrimitiveType asPrimitiveType() {
+      return this;
+    }
+
+    @Override
+    protected Optional<PrimitiveType> toPrimitiveType() {
+      return Optional.of(this);
     }
   }
 
@@ -166,9 +359,39 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseDoubleType();
       return v;
+    }
+
+    @Override
+    protected boolean isDoubleType() {
+      return true;
+    }
+
+    @Override
+    protected DoubleType asDoubleType() {
+      return this;
+    }
+
+    @Override
+    protected Optional<DoubleType> toDoubleType() {
+      return Optional.of(this);
+    }
+
+    @Override
+    protected boolean isPrimitiveType() {
+      return true;
+    }
+
+    @Override
+    protected PrimitiveType asPrimitiveType() {
+      return this;
+    }
+
+    @Override
+    protected Optional<PrimitiveType> toPrimitiveType() {
+      return Optional.of(this);
     }
   }
 
@@ -184,9 +407,34 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseLongType();
       return v;
+    }
+
+    @Override
+    protected boolean isLongType() {
+      return true;
+    }
+
+    @Override
+    protected LongType asLongType() {
+      return this;
+    }
+
+    @Override
+    protected Optional<LongType> toLongType() {
+      return Optional.of(this);
+    }
+
+    @Override
+    protected boolean isPrimitiveType() {
+      return true;
+    }
+
+    @Override
+    protected PrimitiveType asPrimitiveType() {
+      return this;
     }
   }
 
@@ -202,9 +450,39 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseFloatType();
       return v;
+    }
+
+    @Override
+    protected boolean isFloatType() {
+      return true;
+    }
+
+    @Override
+    protected FloatType asFloatType() {
+      return this;
+    }
+
+    @Override
+    protected Optional<FloatType> toFloatType() {
+      return Optional.of(this);
+    }
+
+    @Override
+    protected boolean isPrimitiveType() {
+      return true;
+    }
+
+    @Override
+    protected PrimitiveType asPrimitiveType() {
+      return this;
+    }
+
+    @Override
+    protected Optional<PrimitiveType> toPrimitiveType() {
+      return Optional.of(this);
     }
   }
 
@@ -220,9 +498,24 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseCharType();
       return v;
+    }
+
+    @Override
+    protected boolean isCharType() {
+      return true;
+    }
+
+    @Override
+    protected CharType asCharType() {
+      return this;
+    }
+
+    @Override
+    protected Optional<CharType> toCharType() {
+      return Optional.of(this);
     }
   }
 
@@ -233,7 +526,7 @@ public abstract class PrimitiveType extends Type {
       super("boolean");
     }
 
-    protected BooleanType(@Nonnull String name) {
+    protected BooleanType(@NonNull String name) {
       super(name);
     }
 
@@ -242,9 +535,24 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public <V extends TypeVisitor> V accept(@Nonnull V v) {
+    public <V extends TypeVisitor> V accept(@NonNull V v) {
       v.caseBooleanType();
       return v;
+    }
+
+    @Override
+    protected boolean isBooleanType() {
+      return true;
+    }
+
+    @Override
+    protected BooleanType asBooleanType() {
+      return this;
+    }
+
+    @Override
+    protected Optional<BooleanType> toBooleanType() {
+      return Optional.of(this);
     }
   }
 }

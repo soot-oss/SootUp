@@ -2,7 +2,7 @@
 <img width="350px" src="https://github.com/soot-oss/SootUp/blob/develop/docs/img/SootUpLogo.svg">
 </p> 
 
-# SootUp library ![Java CI with Maven](https://github.com/soot-oss/SootUp/workflows/Java%20CI%20with%20Maven/badge.svg?branch=develop) [![codecov](https://codecov.io/gh/soot-oss/SootUp/branch/develop/graph/badge.svg?token=ELA7U7IAWD)](https://codecov.io/gh/soot-oss/SootUp) [![javadoc](https://javadoc.io/badge2/org.soot-oss/sootup.core/javadoc.svg)](https://javadoc.io/doc/org.soot-oss/sootup.core) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.soot-oss/sootup.core/badge.svg)](https://central.sonatype.com/artifact/org.soot-oss/sootup)
+# SootUp library ![Java CI with Maven](https://github.com/soot-oss/SootUp/workflows/Java%20Tests%20with%20Maven/badge.svg?branch=develop) [![codecov](https://codecov.io/gh/soot-oss/SootUp/branch/develop/graph/badge.svg?token=ELA7U7IAWD)](https://codecov.io/gh/soot-oss/SootUp) [![javadoc](https://javadoc.io/badge2/org.soot-oss/sootup.core/javadoc.svg)](https://javadoc.io/doc/org.soot-oss/sootup.core) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.soot-oss/sootup.core/badge.svg)](https://central.sonatype.com/artifact/org.soot-oss/sootup)
 
 This is the home of the **SootUp** project.
 A complete overhaul of the good, old static analysis framework [Soot](https://github.com/soot-oss/soot).
@@ -16,7 +16,7 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - Provides parsing and serialization of the Jimple IR.
 
 ## Getting started
-[Documentation](https://soot-oss.github.io/SootUp/) and usage examples are available on Github pages.
+[Documentation](https://soot-oss.github.io/SootUp/) and usage examples are available on [Examples](https://github.com/soot-oss/SootUp-Examples).
 Check the [Javadocs](https://soot-oss.github.io/SootUp/apidocs).
 Do you have questions? Feel free to start a [Discussion](https://github.com/soot-oss/SootUp/discussions).
 
@@ -27,7 +27,6 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 - Fully-Parallelizable Architecture
 - Enables lazy loading of classes (no interleaved loading of used/dependent classes anymore)
 - Fail early strategy - input validation while constructing/building objects
-- Up-to-Date (i.e. Java8!) Sourcecode Frontend (Beware: Cannot handle try-catch inputs, yet!)
 - Full Java 21 Support for Bytecode
 - Multiple Views (no single static Scene anymore)
 - Immutable Jimple IR Objects and Graphs
@@ -40,7 +39,7 @@ For questions and clarification, please use the [discussions](../../discussions)
 
 
 ## Publications
-[the SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) explains further details and the design decision behind SootUp.  
+[The SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) explains further details and the design decision behind SootUp.  
 [Preprint](/docs/assets/SootUp-paper.pdf) is also available.
 
 If you use SootUp in your research work, feel free to cite it as follows:

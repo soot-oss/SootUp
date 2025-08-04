@@ -24,18 +24,20 @@ package sootup.core.jimple.common.expr;
 
 import java.util.*;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.graph.BasicBlock;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public final class JPhiExpr implements Expr {
 
   private final List<Local> args;
@@ -43,7 +45,7 @@ public final class JPhiExpr implements Expr {
   private final Map<Local, BasicBlock<?>> argToBlock;
   @Nullable private final Type type;
 
-  public JPhiExpr(@Nonnull List<Local> args, @Nonnull Map<Local, BasicBlock<?>> argToBlock) {
+  public JPhiExpr(@NonNull List<Local> args, @NonNull Map<Local, BasicBlock<?>> argToBlock) {
     this.args = args;
     this.argToBlock = argToBlock;
 
@@ -62,7 +64,7 @@ public final class JPhiExpr implements Expr {
     }
   }
 
-  @Nonnull
+  @NonNull
   public List<Local> getArgs() {
     return new ArrayList<>(this.args);
   }
@@ -71,15 +73,15 @@ public final class JPhiExpr implements Expr {
     return this.args.size();
   }
 
-  @Nonnull
-  public Local getArg(@Nonnull BasicBlock<?> block) {
+  @NonNull
+  public Local getArg(@NonNull BasicBlock<?> block) {
     if (blockToArg.get(block) == null) {
       throw new RuntimeException("There's no matched arg for the given block " + block);
     }
     return this.blockToArg.get(block);
   }
 
-  @Nonnull
+  @NonNull
   public Local getArg(int index) {
     if (index >= this.getArgsSize()) {
       throw new RuntimeException("The given index is out of the bound!");
@@ -87,8 +89,7 @@ public final class JPhiExpr implements Expr {
     return args.get(index);
   }
 
-  @Nonnull
-  public int getArgIndex(@Nonnull BasicBlock<?> block) {
+  public int getArgIndex(@NonNull BasicBlock<?> block) {
     if (!this.blockToArg.containsKey(block)) {
       throw new RuntimeException("The given block: " + block + " is not contained by PhiExpr!");
     }
@@ -100,15 +101,15 @@ public final class JPhiExpr implements Expr {
    * @return a list of Preds in which each Pred corresponds to arg from args with the same list
    *     index.
    */
-  @Nonnull
+  @NonNull
   public List<BasicBlock<?>> getBlocks() {
     List<BasicBlock<?>> blocks = new ArrayList<>();
     this.args.forEach(arg -> blocks.add(this.argToBlock.get(arg)));
     return blocks;
   }
 
-  @Nonnull
-  public BasicBlock<?> getBlock(@Nonnull Local arg) {
+  @NonNull
+  public BasicBlock<?> getBlock(@NonNull Local arg) {
     if (!getArgs().contains(arg)) {
       throw new RuntimeException(
           "The given arg: " + arg.toString() + " is not contained by PhiExpr!");
@@ -116,7 +117,7 @@ public final class JPhiExpr implements Expr {
     return this.argToBlock.get(arg);
   }
 
-  @Nonnull
+  @NonNull
   public BasicBlock<?> getBlock(int index) {
     if (index >= this.getArgsSize()) {
       throw new RuntimeException("The given index is out of the bound!");
@@ -124,12 +125,12 @@ public final class JPhiExpr implements Expr {
     return this.argToBlock.get(getArg(index));
   }
 
-  @Nonnull
+  @NonNull
   public Map<Local, BasicBlock<?>> getArgToBlockMap() {
     return new HashMap<>(this.argToBlock);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Stream<Value> getUses() {
     if (args == null) {
@@ -144,18 +145,18 @@ public final class JPhiExpr implements Expr {
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseJPhiExpr(this, o);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return this.type;
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.PHI);
     up.literal("(");
     if (args != null && !args.isEmpty()) {
@@ -169,7 +170,7 @@ public final class JPhiExpr implements Expr {
     up.literal(")");
   }
 
-  @Nonnull
+  @NonNull
   public String toString() {
     if (this.args.isEmpty()) {
       return Jimple.PHI + "()";
@@ -184,19 +185,34 @@ public final class JPhiExpr implements Expr {
     return builder.toString();
   }
 
-  @Nonnull
-  public JPhiExpr withArgs(@Nonnull List<Local> args) {
+  @NonNull
+  public JPhiExpr withArgs(@NonNull List<Local> args) {
     return new JPhiExpr(args, this.argToBlock);
   }
 
-  @Nonnull
-  public JPhiExpr withArgToBlockMap(@Nonnull Map<Local, BasicBlock<?>> argToBlock) {
+  @NonNull
+  public JPhiExpr withArgToBlockMap(@NonNull Map<Local, BasicBlock<?>> argToBlock) {
     return new JPhiExpr(getArgs(), argToBlock);
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.casePhiExpr(this);
     return v;
+  }
+
+  @Override
+  public boolean isJPhiExpr() {
+    return true;
+  }
+
+  @Override
+  public JPhiExpr asJPhiExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JPhiExpr> toJPhiExpr() {
+    return Optional.of(this);
   }
 }

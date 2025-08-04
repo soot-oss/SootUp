@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.graph.MutableStmtGraph;
@@ -23,7 +22,6 @@ import sootup.core.validation.ValidationException;
 import sootup.java.core.*;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class ClassModifiersValidatorTest {
   static JavaView view;
   static ClassModifiersValidator classModifiersValidator;
@@ -70,25 +68,27 @@ public class ClassModifiersValidatorTest {
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
+    OverridingJavaClassSource overridingJavaClassSource =
+        new OverridingJavaClassSource(
+            new EagerInputLocation(),
+            null,
+            view.getIdentifierFactory().getClassType("dummyMain"),
+            null,
+            Collections.emptySet(),
+            null,
+            Collections.emptySet(),
+            Collections.singleton(dummyMainMethod),
+            NoPositionInformation.getInstance(),
+            modifierEnumSet,
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList());
     JavaSootClass mainClass =
-        new JavaSootClass(
-            new OverridingJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                view.getIdentifierFactory().getClassType("dummyMain"),
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.emptySet(),
-                Collections.singleton(dummyMainMethod),
-                NoPositionInformation.getInstance(),
-                modifierEnumSet,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
-            SourceType.Application);
-    assertEquals(mainClass.getMethods().size(), 1);
-
+        JavaSootClass.JavaSootClassBuilder.builder()
+            .withClassSource(overridingJavaClassSource)
+            .withSourceType(SourceType.Application)
+            .build();
+    assertEquals(1, mainClass.getMethods().size());
     return mainClass;
   }
 

@@ -23,7 +23,8 @@ package sootup.core.jimple.common.stmt;
  */
 
 import java.util.List;
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -45,7 +46,7 @@ public class JGotoStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter stmtPrinter) {
+  public void toString(@NonNull StmtPrinter stmtPrinter) {
     stmtPrinter.literal(Jimple.GOTO);
     stmtPrinter.literal(" ");
     // [ms] bounds are validated in Body if its a valid StmtGraph
@@ -53,8 +54,23 @@ public class JGotoStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Override
-  @Nonnull
-  public List<Stmt> getTargetStmts(@Nonnull Body body) {
+  public boolean isJGotoStmt() {
+    return true;
+  }
+
+  @Override
+  public JGotoStmt asJGotoStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JGotoStmt> toJGotoStmt() {
+    return Optional.of(this);
+  }
+
+  @Override
+  @NonNull
+  public List<Stmt> getTargetStmts(@NonNull Body body) {
     return body.getBranchTargetsOf(this);
   }
 
@@ -64,7 +80,7 @@ public class JGotoStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseGotoStmt(this);
     return v;
   }
@@ -80,7 +96,7 @@ public class JGotoStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseGotoStmt(this, o);
   }
 
@@ -89,8 +105,8 @@ public class JGotoStmt extends AbstractStmt implements BranchingStmt {
     return 44;
   }
 
-  @Nonnull
-  public JGotoStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JGotoStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JGotoStmt(positionInfo);
   }
 }

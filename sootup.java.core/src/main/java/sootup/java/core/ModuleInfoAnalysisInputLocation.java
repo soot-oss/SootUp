@@ -22,10 +22,10 @@ package sootup.java.core;
  * #L%
  */
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import java.util.stream.Stream;
+import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.views.View;
@@ -38,12 +38,10 @@ import sootup.java.core.signatures.ModuleSignature;
  */
 public interface ModuleInfoAnalysisInputLocation extends AnalysisInputLocation {
 
-  Collection<? extends SootClassSource> getModulesClassSources(
-      @Nonnull ModuleSignature moduleSignature, @Nonnull View view);
+  Stream<? extends SootClassSource> getModulesClassSources(
+      @NonNull ModuleSignature moduleSignature, @NonNull View view);
 
-  @Nonnull
-  Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View view);
+  @NonNull Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View view);
 
-  @Nonnull
-  Set<ModuleSignature> getModules(View view);
+  @NonNull Set<ModuleSignature> getModules(View view);
 }

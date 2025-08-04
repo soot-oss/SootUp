@@ -27,7 +27,7 @@ package sootup.core.model;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * An Enum that provides static methods and constants to represent and work with with Java modifiers
@@ -51,39 +51,39 @@ public enum FieldModifier {
     bytecode = i;
   }
 
-  public static boolean isFinal(@Nonnull Set<FieldModifier> m) {
+  public static boolean isFinal(@NonNull Set<FieldModifier> m) {
     return m.contains(FINAL);
   }
 
-  public static boolean isPrivate(@Nonnull Set<FieldModifier> m) {
+  public static boolean isPrivate(@NonNull Set<FieldModifier> m) {
     return m.contains(PRIVATE);
   }
 
-  public static boolean isProtected(@Nonnull Set<FieldModifier> m) {
+  public static boolean isProtected(@NonNull Set<FieldModifier> m) {
     return m.contains(PROTECTED);
   }
 
-  public static boolean isPublic(@Nonnull Set<FieldModifier> m) {
+  public static boolean isPublic(@NonNull Set<FieldModifier> m) {
     return m.contains(PUBLIC);
   }
 
-  public static boolean isStatic(@Nonnull Set<FieldModifier> m) {
+  public static boolean isStatic(@NonNull Set<FieldModifier> m) {
     return m.contains(STATIC);
   }
 
-  public static boolean isTransient(@Nonnull Set<FieldModifier> m) {
+  public static boolean isTransient(@NonNull Set<FieldModifier> m) {
     return m.contains(TRANSIENT);
   }
 
-  public static boolean isVolatile(@Nonnull Set<FieldModifier> m) {
+  public static boolean isVolatile(@NonNull Set<FieldModifier> m) {
     return m.contains(VOLATILE);
   }
 
-  public static boolean isEnum(@Nonnull Set<FieldModifier> m) {
+  public static boolean isEnum(@NonNull Set<FieldModifier> m) {
     return m.contains(ENUM);
   }
 
-  public static boolean isSynthetic(@Nonnull Set<FieldModifier> m) {
+  public static boolean isSynthetic(@NonNull Set<FieldModifier> m) {
     return m.contains(SYNTHETIC);
   }
 
@@ -93,8 +93,8 @@ public enum FieldModifier {
    * @param m a modifier set
    * @return a textual representation of the modifiers.
    */
-  @Nonnull
-  public static String toString(@Nonnull Set<FieldModifier> m) {
+  @NonNull
+  public static String toString(@NonNull Set<FieldModifier> m) {
     StringBuilder builder = new StringBuilder();
 
     if (isPublic(m)) {
@@ -133,13 +133,15 @@ public enum FieldModifier {
     return builder.toString();
   }
 
-  @Nonnull
+  @NonNull
   // depends on the natural order of the Enums!
-  public static String toString(@Nonnull EnumSet<FieldModifier> m) {
+  public static String toString(@NonNull EnumSet<FieldModifier> m) {
     return m.stream().map((mod) -> mod.name().toLowerCase()).collect(Collectors.joining(" "));
   }
 
-  /** @return the bytecode of this Modifier. */
+  /**
+   * @return the bytecode of this Modifier.
+   */
   public int getBytecode() {
     return bytecode;
   }

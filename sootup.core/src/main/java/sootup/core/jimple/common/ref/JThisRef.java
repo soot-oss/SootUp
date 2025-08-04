@@ -23,9 +23,9 @@ package sootup.core.jimple.common.ref;
  */
 
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.RefVisitor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -35,12 +35,12 @@ public final class JThisRef implements IdentityRef {
 
   private final ClassType thisType;
 
-  public JThisRef(@Nonnull ClassType thisType) {
+  public JThisRef(@NonNull ClassType thisType) {
     this.thisType = thisType;
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseThisRef(this, o);
   }
 
@@ -55,31 +55,31 @@ public final class JThisRef implements IdentityRef {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.identityRef(this);
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.empty();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return thisType;
   }
 
   @Override
-  public <V extends RefVisitor> V accept(@Nonnull V v) {
+  public <V extends RefVisitor> V accept(@NonNull V v) {
 
     v.caseThisRef(this);
     return v;
   }
 
-  @Nonnull
-  public JThisRef withThisType(@Nonnull ClassType thisType) {
+  @NonNull
+  public JThisRef withThisType(@NonNull ClassType thisType) {
     return new JThisRef(thisType);
   }
 }

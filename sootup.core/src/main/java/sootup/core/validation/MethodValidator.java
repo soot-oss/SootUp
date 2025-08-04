@@ -25,15 +25,13 @@ package sootup.core.validation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
 public class MethodValidator implements BodyValidator {
-  public static final String staticInitializerName = "<clinit>";
-
   /**
    * Checks the following invariants on this Jimple body:
    *
@@ -44,7 +42,7 @@ public class MethodValidator implements BodyValidator {
    * @return a list of found validation exceptions
    */
   @Override
-  public List<ValidationException> validate(@Nonnull Body body, @Nonnull View view) {
+  public List<ValidationException> validate(@NonNull Body body, @NonNull View view) {
     List<ValidationException> exceptions = new ArrayList<>();
 
     MethodSignature methodSignature = body.getMethodSignature();
@@ -58,11 +56,13 @@ public class MethodValidator implements BodyValidator {
       throw new IllegalStateException("An abstract Method does not have Body.");
     }
 
-    if (staticInitializerName.equals(method.getName()) && !method.isStatic()) {
+    if (view.getIdentifierFactory()
+            .isStaticInitializerSubSignature(methodSignature.getSubSignature())
+        && !method.isStatic()) {
       exceptions.add(
           new ValidationException(
               method,
-              staticInitializerName
+              methodSignature
                   + " should be static! Static initializer without 'static'('0x8') modifier"
                   + " will cause problem when running on android platform: "
                   + "\"<clinit> is not flagged correctly wrt/ static\"!"));

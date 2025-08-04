@@ -23,7 +23,9 @@ package sootup.core.signatures;
  */
 
 import com.google.common.base.Objects;
-import javax.annotation.Nonnull;
+import com.google.common.base.Suppliers;
+import java.util.function.Supplier;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.SootClassMember;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -38,35 +40,35 @@ public abstract class SootClassMemberSignature<V extends SootClassMemberSubSigna
     implements Signature, Comparable<SootClassMemberSignature<V>> {
 
   /** The signature of the declaring class. */
-  @Nonnull private final ClassType declClassSignature;
+  @NonNull private final ClassType declClassSignature;
 
-  @Nonnull private final V subSignature;
+  @NonNull private final V subSignature;
 
   private final int hashCode;
 
-  public SootClassMemberSignature(@Nonnull ClassType klass, @Nonnull V subSignature) {
+  public SootClassMemberSignature(@NonNull ClassType klass, @NonNull V subSignature) {
     this.declClassSignature = klass;
     this.subSignature = subSignature;
     this.hashCode = Objects.hashCode(declClassSignature, subSignature);
   }
 
-  @Nonnull
+  @NonNull
   public V getSubSignature() {
     return subSignature;
   }
 
   /** The signature of the declaring class. */
-  @Nonnull
+  @NonNull
   public ClassType getDeclClassType() {
     return declClassSignature;
   }
 
-  @Nonnull
+  @NonNull
   public Type getType() {
     return subSignature.getType();
   }
 
-  @Nonnull
+  @NonNull
   public String getName() {
     return subSignature.getName();
   }
@@ -80,7 +82,7 @@ public abstract class SootClassMemberSignature<V extends SootClassMemberSubSigna
       return false;
     }
 
-    SootClassMemberSignature<V> that = (SootClassMemberSignature<V>) o;
+    SootClassMemberSignature<?> that = (SootClassMemberSignature<?>) o;
     return Objects.equal(declClassSignature, that.declClassSignature)
         && Objects.equal(subSignature, that.subSignature);
   }
@@ -90,14 +92,17 @@ public abstract class SootClassMemberSignature<V extends SootClassMemberSubSigna
     return hashCode;
   }
 
+  private final Supplier<String> _cachedToString =
+      Suppliers.memoize(() -> "<" + getDeclClassType() + ": " + getSubSignature() + '>');
+
   @Override
-  @Nonnull
+  @NonNull
   public String toString() {
-    return "<" + declClassSignature + ": " + getSubSignature() + '>';
+    return _cachedToString.get();
   }
 
   @Override
-  public int compareTo(@Nonnull SootClassMemberSignature<V> member) {
+  public int compareTo(@NonNull SootClassMemberSignature<V> member) {
     return toString().compareTo(member.toString());
   }
 }

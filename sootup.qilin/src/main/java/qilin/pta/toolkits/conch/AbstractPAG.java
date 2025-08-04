@@ -68,9 +68,7 @@ public abstract class AbstractPAG {
   }
 
   protected void build() {
-    prePTA
-        .getNakedReachableMethods()
-        .parallelStream()
+    prePTA.getNakedReachableMethods().parallelStream()
         .filter(PTAUtils::hasBody)
         .forEach(this::buildFG);
   }

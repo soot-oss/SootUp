@@ -9,7 +9,6 @@ import java.util.EnumSet;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -17,7 +16,7 @@ import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
@@ -28,7 +27,6 @@ import sootup.java.core.views.MutableJavaView;
  * Comprises test that test the addition and removal of classes and methods to the mutable view. It
  * uses the MiniApp.jar for testing.
  */
-@Tag("Java8")
 public class MutableSootClientTest {
   static Path pathToJar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
   static AnalysisInputLocation location;

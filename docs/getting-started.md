@@ -50,7 +50,7 @@ If you have a [Jimple](../jimple) file, you can create a view for analyzing jimp
     AnalysisInputLocation inputLocation = 
             new JimpleAnalysisInputLocation(pathToJimple);
     
-    JimpleView view = new JimpleView(inputLocation);
+    JavaView view = new JavaView(inputLocation);
     ~~~
 
 <!---
@@ -124,8 +124,8 @@ Like the classes, methods also have an identifier which we call `MethodSignature
             view
                 .getIdentifierFactory()
                 .getMethodSignature(
-                    "main", // method name
                     classType,
+                    "main", // method name
                     "void", // return type
                     Collections.singletonList("java.lang.String[]")); // args
         ```

@@ -23,7 +23,6 @@ package sootup.core.util;
  */
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,9 +34,9 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
 import javax.tools.*;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.EquivTo;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
@@ -45,27 +44,28 @@ import sootup.core.model.SootMethod;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.printer.JimplePrinter;
 
-/** @author Linghui Luo */
+/**
+ * @author Linghui Luo
+ */
 public class Utils {
 
   /** e.g. to print b to understand / compare what every interceptor does. */
   public static List<BodyInterceptor> wrapEachBodyInterceptorWith(
-      @Nonnull List<BodyInterceptor> bodyInterceptors,
-      @Nonnull BiFunction<BodyInterceptor, Body.BodyBuilder, Boolean> bi) {
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull BiFunction<BodyInterceptor, Body.BodyBuilder, Boolean> bi) {
     List<BodyInterceptor> interceptors = new ArrayList<>(bodyInterceptors.size() * 2 + 1);
     bodyInterceptors.stream()
         .map(
-            b -> {
-              return (BodyInterceptor)
-                  (builder, view) -> {
-                    try {
-                      bi.apply(b, builder);
-                    } catch (Exception e) {
-                      throw new RuntimeException(e);
-                    }
-                    b.interceptBody(builder, view);
-                  };
-            })
+            b ->
+                (BodyInterceptor)
+                    (builder, view) -> {
+                      try {
+                        bi.apply(b, builder);
+                      } catch (Exception e) {
+                        throw new RuntimeException(e);
+                      }
+                      b.interceptBody(builder, view);
+                    })
         .forEach(interceptors::add);
     return interceptors;
   }
@@ -83,7 +83,7 @@ public class Utils {
       sourceFile.deleteOnExit();
 
       Path compileUnitPath = sourceFile.toPath();
-      Files.write(compileUnitPath, javaSourceContent.getBytes(StandardCharsets.UTF_8));
+      Files.writeString(compileUnitPath, javaSourceContent);
       return compileJavaOTF(compileUnitPath);
     } catch (IOException e) {
       e.printStackTrace();
@@ -102,29 +102,30 @@ public class Utils {
       List<Path> compiledResults = new ArrayList<>();
       // compile the `.java` file to a `.class` file
       JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-      StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
-      fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singleton(path.toFile()));
-      JavaCompiler.CompilationTask task =
-          compiler.getTask(
-              null, fileManager, null, null, null, fileManager.getJavaFileObjects(javaName));
-      if (!task.call()) {
-        throw new IllegalArgumentException("could not compile source file.");
+      try (StandardJavaFileManager fileManager =
+          compiler.getStandardFileManager(null, null, null)) {
+        fileManager.setLocation(
+            StandardLocation.CLASS_OUTPUT, Collections.singleton(path.toFile()));
+        JavaCompiler.CompilationTask task =
+            compiler.getTask(
+                null, fileManager, null, null, null, fileManager.getJavaFileObjects(javaName));
+        if (!task.call()) {
+          throw new IllegalArgumentException("could not compile source file.");
+        }
+
+        //  collect files
+        for (JavaFileObject jfo :
+            fileManager.list(
+                StandardLocation.CLASS_OUTPUT,
+                "",
+                Collections.singleton(JavaFileObject.Kind.CLASS),
+                true)) {
+          Path pathOfCreatedClass = Paths.get(jfo.getName());
+          // pathOfCreatedClass.toFile().deleteOnExit();
+          compiledResults.add(pathOfCreatedClass);
+        }
+        return compiledResults;
       }
-
-      //  collect files
-      for (JavaFileObject jfo :
-          fileManager.list(
-              StandardLocation.CLASS_OUTPUT,
-              "",
-              Collections.singleton(JavaFileObject.Kind.CLASS),
-              true)) {
-        Path pathOfCreatedClass = Paths.get(jfo.getName());
-        // pathOfCreatedClass.toFile().deleteOnExit();
-        compiledResults.add(pathOfCreatedClass);
-      }
-
-      return compiledResults;
-
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -190,8 +191,8 @@ public class Utils {
     }
   }
 
-  @Nonnull
-  public static ArrayList<String> bodyStmtsAsStrings(@Nonnull Body body) {
+  @NonNull
+  public static ArrayList<String> bodyStmtsAsStrings(@NonNull Body body) {
     StringWriter writer = new StringWriter();
     try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
       JimplePrinter printer = new JimplePrinter();
@@ -202,7 +203,7 @@ public class Utils {
     return filterJimple(writer.toString());
   }
 
-  @Nonnull
+  @NonNull
   public static ArrayList<String> filterJimple(String str) {
     return filterJimple(
         Arrays.stream(str.split("\n")).skip(1) // Remove method declaration
@@ -218,12 +219,12 @@ public class Utils {
   }
 
   /** Helper for writing tests . */
-  public static String generateJimpleForTest(@Nonnull Body b) {
+  public static String generateJimpleForTest(@NonNull Body b) {
     ArrayList<String> arr = filterJimple(Utils.bodyStmtsAsStrings(b).stream());
     return generateJimpleTest(arr);
   }
 
-  public static String generateJimpleTest(@Nonnull List<String> stmts) {
+  public static String generateJimpleTest(@NonNull List<String> stmts) {
     StringBuilder sb = new StringBuilder();
 
     sb.append(
@@ -236,7 +237,7 @@ public class Utils {
                 .append('"')
                 .append(',')
                 .append("\n"));
-    if (stmts.size() > 0) {
+    if (!stmts.isEmpty()) {
       sb.setCharAt(sb.length() - 2, '\n');
     }
 

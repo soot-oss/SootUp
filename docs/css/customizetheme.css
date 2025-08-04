@@ -41,7 +41,7 @@
     font-weight: normal;
 }
 
-.md-typeset .admonition, .md-typeset .admonition.info, .md-typeset .admonition.example, .md-typeset .admonition, .md-typeset .admonition.note{
+.md-typeset .admonition, .md-typeset .admonition.info, .md-typeset .admonition.example, .md-typeset .admonition, .md-typeset .admonition.note, .md-typeset .admonition.abstract, .md-typeset .admonition.tip{
     border-color: rgba(255,140,0, 0.1);
     margin-bottom: 3em;
 }

@@ -23,9 +23,9 @@ package sootup.callgraph;
  */
 
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.core.types.JavaClassType;
+import sootup.core.types.ClassType;
 
 /** The interface of a implemented call graph algorithms */
 public interface CallGraphAlgorithm {
@@ -36,8 +36,7 @@ public interface CallGraphAlgorithm {
    *
    * @return a generated call graph with every main class as starting point.
    */
-  @Nonnull
-  CallGraph initialize();
+  @NonNull CallGraph initialize();
 
   /**
    * This method initializes and starts the call graph algorithm with given entry points. The entry
@@ -47,8 +46,7 @@ public interface CallGraphAlgorithm {
    *     these methods and inspects all reachable methods.
    * @return a generated call graph with every entry point as starting point.
    */
-  @Nonnull
-  CallGraph initialize(@Nonnull List<MethodSignature> entryPoints);
+  @NonNull CallGraph initialize(@NonNull List<MethodSignature> entryPoints);
 
   /**
    * Adds a class to the call graph. All methods will be set as entry points in the call graph
@@ -58,6 +56,5 @@ public interface CallGraphAlgorithm {
    * @param classType the type of the calls.
    * @return the modified call graph containing all methods of the given class
    */
-  @Nonnull
-  CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType);
+  @NonNull CallGraph addClass(@NonNull CallGraph oldCallGraph, @NonNull ClassType classType);
 }

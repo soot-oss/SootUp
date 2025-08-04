@@ -1,4 +1,5 @@
 package sootup.core.jimple;
+
 /*-
  * #%L
  * Soot
@@ -22,7 +23,7 @@ package sootup.core.jimple;
  */
 
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 
 public class IgnoreLocalNameComparator extends JimpleComparator {
 

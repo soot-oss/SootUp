@@ -23,10 +23,10 @@ package sootup.core.jimple.common.constant;
  */
 
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Immediate;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.util.printer.StmtPrinter;
@@ -34,12 +34,12 @@ import sootup.core.util.printer.StmtPrinter;
 public interface Constant extends Immediate, Acceptor<ConstantVisitor> {
 
   @Override
-  default @Nonnull Stream<Value> getUses() {
+  default @NonNull Stream<Value> getUses() {
     return Stream.empty();
   }
 
   @Override
-  default boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  default boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseConstant(this, o);
   }
 
@@ -53,7 +53,7 @@ public interface Constant extends Immediate, Acceptor<ConstantVisitor> {
   }
 
   @Override
-  default void toString(@Nonnull StmtPrinter up) {
+  default void toString(@NonNull StmtPrinter up) {
     up.constant(this);
   }
 }

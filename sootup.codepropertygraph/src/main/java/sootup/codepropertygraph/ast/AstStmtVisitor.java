@@ -23,12 +23,12 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 */
 
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.*;
 import sootup.codepropertygraph.propertygraph.nodes.*;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.Expr;
@@ -56,7 +56,7 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+  public void caseAssignStmt(@NonNull JAssignStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
@@ -88,7 +88,7 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
+  public void caseInvokeStmt(@NonNull JInvokeStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
@@ -103,7 +103,7 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
+  public void caseReturnStmt(@NonNull JReturnStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
@@ -112,7 +112,7 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseIfStmt(@Nonnull JIfStmt stmt) {
+  public void caseIfStmt(@NonNull JIfStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
@@ -123,13 +123,13 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseNopStmt(@Nonnull JNopStmt stmt) {
+  public void caseNopStmt(@NonNull JNopStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
   }
 
   @Override
-  public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
+  public void caseThrowStmt(@NonNull JThrowStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
@@ -138,7 +138,7 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
+  public void caseIdentityStmt(@NonNull JIdentityStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
@@ -150,22 +150,13 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseGotoStmt(@Nonnull JGotoStmt stmt) {
+  public void caseGotoStmt(@NonNull JGotoStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
   }
 
   @Override
-  public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
-    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
-    graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
-
-    ImmediateGraphNode opNode = new ImmediateGraphNode(stmt.getOp());
-    graphBuilder.addEdge(new SingleOpAstEdge(stmtNode, opNode));
-  }
-
-  @Override
-  public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
+  public void caseEnterMonitorStmt(@NonNull JEnterMonitorStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
@@ -174,7 +165,16 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void caseSwitchStmt(@Nonnull JSwitchStmt stmt) {
+  public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
+    StmtGraphNode stmtNode = new StmtGraphNode(stmt);
+    graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
+
+    ImmediateGraphNode opNode = new ImmediateGraphNode(stmt.getOp());
+    graphBuilder.addEdge(new SingleOpAstEdge(stmtNode, opNode));
+  }
+
+  @Override
+  public void caseSwitchStmt(@NonNull JSwitchStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
 
@@ -183,7 +183,7 @@ class AstStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public void defaultCaseStmt(@Nonnull Stmt stmt) {
+  public void defaultCaseStmt(@NonNull Stmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
   }

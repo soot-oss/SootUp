@@ -1,4 +1,5 @@
 package sootup.java.core;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -51,7 +52,7 @@ public class ConstantUtil {
       return LongConstant.getInstance((Long) obj);
     }
     if (obj instanceof String) {
-      return JavaJimple.getInstance().newStringConstant((String) obj);
+      return JavaJimple.newStringConstant((String) obj);
     }
 
     if (obj instanceof String[]) {
@@ -59,11 +60,11 @@ public class ConstantUtil {
       // [0] is the fully qualified name of the enum
       // [1] is the value of the enum
       String[] enumData = (String[]) obj;
-      return JavaJimple.getInstance().newEnumConstant(enumData[1], enumData[0]);
+      return JavaJimple.newEnumConstant(enumData[1], enumData[0]);
     }
 
     if (obj instanceof ClassConstant) {
-      return JavaJimple.getInstance().newClassConstant(((ClassConstant) obj).getValue());
+      return JavaJimple.newClassConstant(((ClassConstant) obj).getValue());
     }
     // TODO: [bh] implement MethodHandle, MethodType?
 

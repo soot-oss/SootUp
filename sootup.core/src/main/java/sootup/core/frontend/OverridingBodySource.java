@@ -1,4 +1,5 @@
 package sootup.core.frontend;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,13 +22,15 @@ package sootup.core.frontend;
  * #L%
  */
 import java.io.IOException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
 
-/** @author Hasitha Rajapakse */
+/**
+ * @author Hasitha Rajapakse
+ */
 
 /**
  * Allows for replacing specific parts of a method or, resolve methods where all information is
@@ -47,28 +50,28 @@ public class OverridingBodySource implements BodySource {
 
   private final MethodSignature methodSignature;
 
-  public OverridingBodySource(@Nonnull BodySource delegate) {
+  public OverridingBodySource(@NonNull BodySource delegate) {
     this.delegate = delegate;
     body = null;
     this.methodSignature = null;
   }
 
-  private OverridingBodySource(@Nonnull BodySource delegate, @Nonnull Body body) {
+  private OverridingBodySource(@NonNull BodySource delegate, @NonNull Body body) {
     this.delegate = delegate;
     this.body = body;
     this.methodSignature = null;
   }
 
   /** Method source where all information already available */
-  public OverridingBodySource(@Nonnull MethodSignature methodSignature, @Nonnull Body body) {
+  public OverridingBodySource(@NonNull MethodSignature methodSignature, @NonNull Body body) {
     this.delegate = null;
     this.body = body;
     this.methodSignature = methodSignature;
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Body resolveBody(@Nonnull Iterable<MethodModifier> modifiers) throws IOException {
+  public Body resolveBody(@NonNull Iterable<MethodModifier> modifiers) throws IOException {
     return body != null ? body : delegate.resolveBody(modifiers);
   }
 
@@ -77,14 +80,14 @@ public class OverridingBodySource implements BodySource {
     return delegate.resolveAnnotationsDefaultValue();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public MethodSignature getSignature() {
     return methodSignature != null ? methodSignature : delegate.getSignature();
   }
 
-  @Nonnull
-  public OverridingBodySource withBody(@Nonnull Body body) {
+  @NonNull
+  public OverridingBodySource withBody(@NonNull Body body) {
     return new OverridingBodySource(delegate, body);
   }
 }

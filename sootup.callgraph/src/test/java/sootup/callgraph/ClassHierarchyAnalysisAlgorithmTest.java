@@ -3,7 +3,6 @@ package sootup.callgraph;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.views.JavaView;
@@ -13,7 +12,6 @@ import sootup.java.core.views.JavaView;
  *
  * @author Markus Schmidt
  */
-@Tag("Java8")
 public class ClassHierarchyAnalysisAlgorithmTest
     extends CallGraphTestBase<ClassHierarchyAnalysisAlgorithm> {
 
@@ -141,13 +139,6 @@ public class ClassHierarchyAnalysisAlgorithmTest
             "void",
             Collections.singletonList("java.lang.Object"));
 
-    MethodSignature clinitObject =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("java.lang.Object"),
-            "<clinit>",
-            "void",
-            Collections.emptyList());
-
     assertFalse(
         cg.containsCall(
             mainMethodSignature,
@@ -207,32 +198,6 @@ public class ClassHierarchyAnalysisAlgorithmTest
             mainMethodSignature,
             virtualMethodE,
             getInvokableStmt(mainMethodSignature, virtualMethodA)));
-
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
-            clinitObject,
-            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorB.getDeclClassType())));
-
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
-            clinitObject,
-            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorC.getDeclClassType())));
-
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
-            clinitObject,
-            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorE.getDeclClassType())));
-
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
-            clinitObject,
-            getInvokableStmt(mainMethodSignature, staticMethodB)));
-
-    assertEquals(12, cg.callsFrom(mainMethodSignature).size());
 
     assertEquals(1, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());

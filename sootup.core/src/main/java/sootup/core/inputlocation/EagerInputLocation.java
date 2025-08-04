@@ -1,4 +1,5 @@
 package sootup.core.inputlocation;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -22,8 +23,9 @@ package sootup.core.inputlocation;
  */
 import com.google.common.collect.ImmutableMap;
 import java.util.*;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.stream.Stream;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
@@ -38,8 +40,8 @@ import sootup.core.views.View;
 public class EagerInputLocation implements AnalysisInputLocation {
 
   protected final SourceType sourceType;
-  @Nonnull private final Map<ClassType, SootClassSource> map;
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+  @NonNull private final Map<ClassType, SootClassSource> map;
+  @NonNull private final List<BodyInterceptor> bodyInterceptors;
 
   /** not useful for retrieval of classes via view. remove inputlocation from sootclass? */
   public EagerInputLocation() {
@@ -47,41 +49,41 @@ public class EagerInputLocation implements AnalysisInputLocation {
   }
 
   public EagerInputLocation(
-      @Nonnull Map<ClassType, SootClassSource> map, @Nullable SourceType sourceType) {
+      @NonNull Map<ClassType, SootClassSource> map, @Nullable SourceType sourceType) {
     this(map, sourceType, Collections.emptyList());
   }
 
   public EagerInputLocation(
-      @Nonnull Map<ClassType, SootClassSource> map,
+      @NonNull Map<ClassType, SootClassSource> map,
       @Nullable SourceType sourceType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     this.sourceType = sourceType;
     this.map = ImmutableMap.copyOf(map);
     this.bodyInterceptors = bodyInterceptors;
   }
 
   @Override
-  public @Nonnull Optional<SootClassSource> getClassSource(
-      @Nonnull ClassType type, @Nullable View view) {
+  public @NonNull Optional<SootClassSource> getClassSource(
+      @NonNull ClassType type, @Nullable View view) {
     // FIXME: add classloadingoptions
     return Optional.ofNullable(map.get(type));
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Collection<SootClassSource> getClassSources(@Nullable View view) {
+  public Stream<SootClassSource> getClassSources(@Nullable View view) {
     // FIXME: add classloadingoptions
-    return map.values();
+    return map.values().stream();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public SourceType getSourceType() {
     return sourceType;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;
   }

@@ -29,8 +29,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import org.apache.commons.lang3.ClassUtils;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.FieldSubSignature;
@@ -43,7 +43,6 @@ import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
-import sootup.java.core.types.AnnotationType;
 import sootup.java.core.types.JavaClassType;
 
 /**
@@ -52,55 +51,31 @@ import sootup.java.core.types.JavaClassType;
  */
 public class JavaIdentifierFactory implements IdentifierFactory {
 
-  @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
+  @NonNull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
 
-  @Nonnull
+  @NonNull
   public static final MethodSubSignature STATIC_INITIALIZER =
       new MethodSubSignature("<clinit>", Collections.emptyList(), VoidType.getInstance());
 
-  @Override
-  public boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
-    return methodSubSignature.equals(STATIC_INITIALIZER);
-  }
+  @NonNull
+  private static final Pattern SOOT_FIELD_SUB_SIGNATURE_PATTERN =
+      Pattern.compile("^(?<type>[^\\s]+)\\s+(?<field>.+)$");
 
-  @Override
-  public boolean isConstructorSignature(@Nonnull MethodSignature methodSignature) {
-    return isConstructorSubSignature(methodSignature.getSubSignature());
-  }
-
-  @Override
-  public boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
-    return methodSubSignature.getName().equals("<init>")
-        && methodSubSignature.getType() == VoidType.getInstance();
-  }
-
-  @Override
-  public boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
-    if (methodSubSignature.getName().equals("main")) {
-      final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
-      if (parameterTypes.size() == 1) {
-        return parameterTypes.get(0).toString().equals("java.lang.String[]");
-      }
-    }
-    return false;
-  }
+  @NonNull
+  private static final Pattern JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN =
+      Pattern.compile("^#(?<field>[^(]+):(?<type>.+)$");
 
   /** Caches the created PackageNames for packages. */
-  @Nonnull
+  @NonNull
   protected final Cache<String, PackageName> packageCache =
       CacheBuilder.newBuilder().weakValues().build();
 
-  /** Caches annotation types */
-  @Nonnull
-  protected final Cache<String, AnnotationType> annotationTypeCache =
-      CacheBuilder.newBuilder().weakValues().build();
-
   /** Caches class types */
-  @Nonnull
+  @NonNull
   protected final Cache<String, JavaClassType> classTypeCache =
       CacheBuilder.newBuilder().weakValues().build();
 
-  @Nonnull
+  @NonNull
   protected final Map<String, PrimitiveType> primitiveTypeMap = Maps.newHashMapWithExpectedSize(8);
 
   public static JavaIdentifierFactory getInstance() {
@@ -223,19 +198,19 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   @Override
-  @Nonnull
-  public Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName) {
+  @NonNull
+  public Optional<PrimitiveType> getPrimitiveType(@NonNull String typeName) {
     return Optional.ofNullable(primitiveTypeMap.get(typeName));
   }
 
-  @Nonnull
+  @NonNull
   public Collection<PrimitiveType> getAllPrimitiveTypes() {
     return Collections.unmodifiableCollection(primitiveTypeMap.values());
   }
 
   @Override
-  @Nonnull
-  public JavaClassType getBoxedType(@Nonnull PrimitiveType primitiveType) {
+  @NonNull
+  public JavaClassType getBoxedType(@NonNull PrimitiveType primitiveType) {
     String name = primitiveType.getName();
     StringBuilder boxedname = new StringBuilder(name);
     boxedname.setCharAt(0, Character.toUpperCase(boxedname.charAt(0)));
@@ -245,17 +220,6 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public ArrayType getArrayType(Type baseType, int dim) {
     return new ArrayType(baseType, dim);
-  }
-
-  public AnnotationType getAnnotationType(final String fullyQualifiedClassName) {
-    String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
-    String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
-
-    return annotationTypeCache
-        .asMap()
-        .computeIfAbsent(
-            className + packageName,
-            (k) -> new AnnotationType(className, getPackageName(packageName)));
   }
 
   /**
@@ -269,7 +233,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    *     the default package.
    */
   @Override
-  public PackageName getPackageName(@Nonnull final String packageName) {
+  public PackageName getPackageName(@NonNull final String packageName) {
     return packageCache.asMap().computeIfAbsent(packageName, PackageName::new);
   }
 
@@ -334,27 +298,27 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public MethodSignature getMethodSignature(
-      @Nonnull ClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature) {
+      @NonNull ClassType declaringClassSignature, @NonNull MethodSubSignature subSignature) {
     return new MethodSignature(declaringClassSignature, subSignature);
   }
 
   private static final class MethodSignatureParserPatternHolder {
-    @Nonnull
+    @NonNull
     private static final Pattern SOOT_METHOD_SIGNATURE_PATTERN =
         Pattern.compile(
             "^<(?<class>[^:]+):\\s*(?<return>[^\\s]+)\\s+(?<method>[^(]+)\\((?<args>[^)]+)?\\)>$");
 
-    @Nonnull
+    @NonNull
     private static final Pattern JAVADOCLIKE_METHOD_SIGNATURE_PATTERN =
         Pattern.compile(
             "^(?<class>[^#]+)#(?<method>[^(]+)\\((?<args>[^)]+)?\\)\\s*:(?<return>.+)$");
 
-    @Nonnull
+    @NonNull
     private static final Pattern ARGS_SPLITTER_PATTERN = Pattern.compile(",", Pattern.LITERAL);
 
-    @Nonnull
+    @NonNull
     private static IllegalArgumentException createInvalidMethodSignatureException() {
       return new IllegalArgumentException(
           "Invalid method signature.\n\n"
@@ -390,8 +354,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    * @author Jan Martin Persch
    */
   @Override
-  @Nonnull
-  public MethodSignature parseMethodSignature(@Nonnull String methodSignature) {
+  @NonNull
+  public MethodSignature parseMethodSignature(@NonNull String methodSignature) {
     Matcher matcher =
         MethodSignatureParserPatternHolder.SOOT_METHOD_SIGNATURE_PATTERN.matcher(methodSignature);
 
@@ -435,27 +399,27 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     return getMethodSignature(className, methodName, returnName, argsList);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public MethodSubSignature getMethodSubSignature(
-      @Nonnull String name,
-      @Nonnull Type returnType,
-      @Nonnull Iterable<? extends Type> parameterSignatures) {
+      @NonNull String name,
+      @NonNull Type returnType,
+      @NonNull Iterable<? extends Type> parameterSignatures) {
     return new MethodSubSignature(name, parameterSignatures, returnType);
   }
 
-  @Nonnull
+  @NonNull
   private static final Pattern SOOT_METHOD_SUB_SIGNATURE_PATTERN =
       Pattern.compile("^(?<return>[^\\s]+)\\s+(?<method>[^(]+)\\((?<args>[^)]+)?\\)$");
 
-  @Nonnull
+  @NonNull
   private static final Pattern JAVADOCLIKE_METHOD_SUB_SIGNATURE_PATTERN =
       Pattern.compile("^#(?<method>[^(]+)\\((?<args>[^)]+)?\\)\\s*:(?<return>.+)$");
 
-  @Nonnull
+  @NonNull
   private static final Pattern ARGS_SPLITTER_PATTERN = Pattern.compile(",", Pattern.LITERAL);
 
-  @Nonnull
+  @NonNull
   private static IllegalArgumentException createInvalidMethodSubSignatureException() {
     return new IllegalArgumentException(
         "Invalid method sub-signature.\n\n"
@@ -490,8 +454,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    * @author Jan Martin Persch
    */
   @Override
-  @Nonnull
-  public MethodSubSignature parseMethodSubSignature(@Nonnull String subSignature) {
+  @NonNull
+  public MethodSubSignature parseMethodSubSignature(@NonNull String subSignature) {
     Matcher matcher = JAVADOCLIKE_METHOD_SUB_SIGNATURE_PATTERN.matcher(subSignature);
 
     if (!matcher.find()) {
@@ -530,15 +494,15 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     return getMethodSubSignature(methodName, getType(returnName), argsList);
   }
 
-  @Nonnull
+  @NonNull
   private static final Pattern SOOT_FIELD_SIGNATURE_PATTERN =
       Pattern.compile("^<(?<class>[^:]+):\\s+(?<type>[^\\s]+)\\s+(?<field>.+)>$");
 
-  @Nonnull
+  @NonNull
   private static final Pattern JAVADOCLIKE_FIELD_SIGNATURE_PATTERN =
       Pattern.compile("^(?<class>[^#]*)#(?<field>[^(]+):(?<type>.+)$");
 
-  @Nonnull
+  @NonNull
   private static IllegalArgumentException createInvalidFieldSignatureException() {
     return new IllegalArgumentException(
         "Invalid field signature.\n\n"
@@ -571,8 +535,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    * @author Jan Martin Persch
    */
   @Override
-  @Nonnull
-  public FieldSignature parseFieldSignature(@Nonnull String fieldSignature) {
+  @NonNull
+  public FieldSignature parseFieldSignature(@NonNull String fieldSignature) {
     Matcher matcher = SOOT_FIELD_SIGNATURE_PATTERN.matcher(fieldSignature);
 
     if (!matcher.find()) {
@@ -608,27 +572,19 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public FieldSignature getFieldSignature(
-      @Nonnull ClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature) {
+      @NonNull ClassType declaringClassSignature, @NonNull FieldSubSignature subSignature) {
     return new FieldSignature(declaringClassSignature, subSignature);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public FieldSubSignature getFieldSubSignature(@Nonnull String name, @Nonnull Type type) {
+  public FieldSubSignature getFieldSubSignature(@NonNull String name, @NonNull Type type) {
     return new FieldSubSignature(name, type);
   }
 
-  @Nonnull
-  private static final Pattern SOOT_FIELD_SUB_SIGNATURE_PATTERN =
-      Pattern.compile("^(?<type>[^\\s]+)\\s+(?<field>.+)$");
-
-  @Nonnull
-  private static final Pattern JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN =
-      Pattern.compile("^#(?<field>[^(]+):(?<type>.+)$");
-
-  @Nonnull
+  @NonNull
   private static IllegalArgumentException createInvalidFieldSubSignatureException() {
     return new IllegalArgumentException(
         "Invalid field sub-signature.\n\n"
@@ -660,8 +616,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    * @return The parsed {@link FieldSubSignature}.
    * @author Jan Martin Persch
    */
-  @Nonnull
-  public FieldSubSignature parseFieldSubSignature(@Nonnull String subSignature) {
+  @NonNull
+  public FieldSubSignature parseFieldSubSignature(@NonNull String subSignature) {
     Matcher matcher = JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN.matcher(subSignature);
 
     if (!matcher.find()) {
@@ -680,5 +636,37 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     }
 
     return getFieldSubSignature(fieldName, getType(typeName));
+  }
+
+  @Override
+  public MethodSignature getStaticInitializerSignature(ClassType declaringClassSignature) {
+    return getMethodSignature(declaringClassSignature, STATIC_INITIALIZER);
+  }
+
+  @Override
+  public boolean isStaticInitializerSubSignature(@NonNull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.equals(STATIC_INITIALIZER);
+  }
+
+  @Override
+  public boolean isConstructorSignature(@NonNull MethodSignature methodSignature) {
+    return isConstructorSubSignature(methodSignature.getSubSignature());
+  }
+
+  @Override
+  public boolean isConstructorSubSignature(@NonNull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.getName().equals("<init>")
+        && methodSubSignature.getType() == VoidType.getInstance();
+  }
+
+  @Override
+  public boolean isMainSubSignature(@NonNull MethodSubSignature methodSubSignature) {
+    if (methodSubSignature.getName().equals("main")) {
+      final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
+      if (parameterTypes.size() == 1) {
+        return parameterTypes.get(0).toString().equals("java.lang.String[]");
+      }
+    }
+    return false;
   }
 }

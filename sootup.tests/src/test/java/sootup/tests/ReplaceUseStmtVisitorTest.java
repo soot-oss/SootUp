@@ -7,11 +7,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.ref.Ref;
@@ -22,11 +21,11 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
-/** @author Zun Wang */
-@Tag("Java8")
+/**
+ * @author Zun Wang
+ */
 public class ReplaceUseStmtVisitorTest {
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  JavaJimple javaJimple = JavaJimple.getInstance();
   JavaClassType intType = factory.getClassType("int");
   JavaClassType testClass = factory.getClassType("TestClass");
   JavaClassType voidType = factory.getClassType("void");
@@ -72,12 +71,12 @@ public class ReplaceUseStmtVisitorTest {
     assertTrue(isExpected);
 
     // rValue is a Ref
-    Ref ref = javaJimple.newArrayRef(op1, op2);
+    Ref ref = JavaJimple.newArrayRef(op1, op2);
     stmt = JavaJimple.newAssignStmt(var, ref, noStmtPositionInfo);
     stmt.accept(visitor);
     newStmt = visitor.getResult();
 
-    expectedUses.set(0, javaJimple.newArrayRef(newOp, op2));
+    expectedUses.set(0, JavaJimple.newArrayRef(newOp, op2));
     expectedUses.set(1, newOp);
 
     isExpected = false;

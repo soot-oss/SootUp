@@ -22,8 +22,8 @@ package sootup.core.jimple.basic;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.model.LinePosition;
 import sootup.core.model.Position;
 
@@ -35,9 +35,9 @@ import sootup.core.model.Position;
  */
 public class SimpleStmtPositionInfo extends StmtPositionInfo {
 
-  @Nonnull protected final Position stmtPosition;
+  @NonNull protected final Position stmtPosition;
 
-  public SimpleStmtPositionInfo(@Nonnull Position stmtPosition) {
+  public SimpleStmtPositionInfo(@NonNull Position stmtPosition) {
     this.stmtPosition = stmtPosition;
   }
 
@@ -50,7 +50,7 @@ public class SimpleStmtPositionInfo extends StmtPositionInfo {
     stmtPosition = new LinePosition(lineNumber);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Position getStmtPosition() {
     return stmtPosition;

@@ -9,13 +9,10 @@ See [Getting Started](getting-started.md).
 ### Is there a github template to quickstart into development with SootUp?
 Not yet.
 
-### Error while using the Sourcecodefrontend
-Please make sure to use Java8 to execute. 
-
 ### Exception: Provider "jrt" not found
 ```shell
 java.lang.ExceptionInInitializerError
-	at sootup.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocationTest.getClassSource(JrtFileSystemAnalysisInputLocationTest.java:28)
+	at inputlocation.sootup.java.bytecode.frontend.JrtFileSystemAnalysisInputLocationTest.getClassSource(JrtFileSystemAnalysisInputLocationTest.java:28)
 	...
 Caused by: java.nio.file.ProviderNotFoundException: Provider "jrt" not found
 ```
@@ -41,9 +38,6 @@ or create a convenient link with the exported stmtgraph as HTTP GET Parameter
 ```java
 DotExporter.createUrlToWebeditor( stmtgraph );
 ```
-
-### The Sourcecodefrontend...
-is in a experimental state! If you wish to use it, please consider to contribute.
 
 ### Is there a way to use code exploration and syntax highlighting features in my IDE for .jimple files?
 Try [JimpeLsp](https://github.com/swissiety/JimpleLsp) or the [vscode plugin](https://marketplace.visualstudio.com/items?itemName=swissiety.jimplelsp)

@@ -22,15 +22,16 @@ package sootup.core.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 
 /** Represents a signature for a <code>null</code>-reference. */
 public class NullType extends ReferenceType {
 
-  @Nonnull private static final NullType INSTANCE = new NullType();
+  @NonNull private static final NullType INSTANCE = new NullType();
 
-  @Nonnull
+  @NonNull
   public static NullType getInstance() {
     return INSTANCE;
   }
@@ -38,14 +39,44 @@ public class NullType extends ReferenceType {
   private NullType() {}
 
   @Override
-  @Nonnull
+  @NonNull
   public String toString() {
     return "null";
   }
 
   @Override
-  public <V extends TypeVisitor> V accept(@Nonnull V v) {
+  public <V extends TypeVisitor> V accept(@NonNull V v) {
     v.caseNullType();
     return v;
+  }
+
+  @Override
+  protected boolean isNullType() {
+    return true;
+  }
+
+  @Override
+  protected NullType asNullType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<NullType> toNullType() {
+    return Optional.of(this);
+  }
+
+  @Override
+  protected boolean isReferenceType() {
+    return true;
+  }
+
+  @Override
+  protected ReferenceType asReferenceType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<ReferenceType> toReferenceType() {
+    return Optional.of(this);
   }
 }

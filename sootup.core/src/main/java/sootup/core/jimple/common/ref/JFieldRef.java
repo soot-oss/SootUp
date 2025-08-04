@@ -22,37 +22,41 @@ package sootup.core.jimple.common.ref;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.LValue;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.LValue;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.Type;
 
 public abstract class JFieldRef implements ConcreteRef, LValue {
 
-  @Nonnull private final FieldSignature fieldSignature;
+  @NonNull private final FieldSignature fieldSignature;
 
-  JFieldRef(@Nonnull FieldSignature fieldSignature) {
+  JFieldRef(@NonNull FieldSignature fieldSignature) {
     this.fieldSignature = fieldSignature;
   }
 
-  @Nonnull
+  @NonNull
   public FieldSignature getFieldSignature() {
     return fieldSignature;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return fieldSignature.getType();
   }
 
-  public boolean equals(JFieldRef ref) {
-    if (this == ref) {
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
       return true;
     }
-    return this.getFieldSignature().equals(ref.getFieldSignature());
+    if ((!(o instanceof JFieldRef))) {
+      return false;
+    }
+    return this.getFieldSignature().equals(((JFieldRef) o).getFieldSignature());
   }
 
-  @Nonnull
-  public abstract JFieldRef withFieldSignature(@Nonnull FieldSignature fieldSignature);
+  @NonNull
+  public abstract JFieldRef withFieldSignature(@NonNull FieldSignature fieldSignature);
 }

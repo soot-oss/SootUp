@@ -22,18 +22,34 @@ package sootup.java.core;
  * #L%
  */
 
+import com.google.common.collect.ImmutableSet;
 import java.util.Collections;
-import java.util.Optional;
-import javax.annotation.Nonnull;
-import sootup.core.model.FieldModifier;
-import sootup.core.model.Position;
-import sootup.core.model.SootField;
+import java.util.EnumSet;
+import java.util.Objects;
+import java.util.Set;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
-import sootup.java.core.views.JavaView;
+import sootup.core.types.ClassType;
+import sootup.core.types.Type;
+import sootup.core.util.ImmutableUtils;
 
-public class JavaSootField extends SootField {
+public class JavaSootField extends SootClassMember<FieldSignature>
+    implements SootField, HasAnnotation {
 
-  @Nonnull private final Iterable<AnnotationUsage> annotations;
+  @NonNull private final ImmutableSet<FieldModifier> modifiers;
+  @NonNull private final Iterable<AnnotationUsage> annotations;
+
+  /** Constructs a Soot field with the given name, type and modifiers. */
+  public JavaSootField(
+      @NonNull FieldSignature signature,
+      @NonNull Iterable<FieldModifier> modifiers,
+      @NonNull Position position) {
+    super(signature, position);
+    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
+    this.annotations = ImmutableUtils.emptyImmutableList();
+  }
 
   /**
    * Constructs a Soot field with the given name, type and modifiers.
@@ -44,60 +60,163 @@ public class JavaSootField extends SootField {
    * @param position position of the field
    */
   public JavaSootField(
-      @Nonnull FieldSignature signature,
-      @Nonnull Iterable<FieldModifier> modifiers,
-      @Nonnull Iterable<AnnotationUsage> annotations,
-      Position position) {
-    super(signature, modifiers, position);
+      @NonNull FieldSignature signature,
+      @NonNull Iterable<FieldModifier> modifiers,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Position position) {
+    super(signature, position);
+    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
     this.annotations = annotations;
   }
 
-  @Nonnull
-  public Iterable<AnnotationUsage> getAnnotations(@Nonnull Optional<JavaView> view) {
-    annotations.forEach(e -> e.getAnnotation().getDefaultValues(view));
-    return annotations;
+  @Override
+  public boolean isProtected() {
+    return FieldModifier.isProtected(this.getModifiers());
   }
 
-  @Nonnull
-  public JavaSootField withAnnotations(@Nonnull Iterable<AnnotationUsage> annotations) {
-    return new JavaSootField(getSignature(), getModifiers(), annotations, getPosition());
+  @Override
+  public boolean isPrivate() {
+    return FieldModifier.isPrivate(this.getModifiers());
   }
 
-  @Nonnull
-  public static AnnotationOrSignatureStep builder() {
-    return new JavaSootFieldBuilder();
+  @Override
+  public boolean isPublic() {
+    return FieldModifier.isPublic(this.getModifiers());
   }
 
-  public interface AnnotationOrSignatureStep extends SignatureStep {
-    BuildStep withAnnotation(Iterable<AnnotationUsage> annotations);
+  @Override
+  public boolean isStatic() {
+    return FieldModifier.isStatic(this.getModifiers());
+  }
+
+  @Override
+  public boolean isFinal() {
+    return FieldModifier.isFinal(this.getModifiers());
   }
 
   /**
-   * Defines a {@link JavaSootFieldBuilder} to provide a fluent API.
+   * Gets the modifiers of this class member in an immutable set.
    *
-   * @author Markus Schmidt
+   * @see FieldModifier
    */
-  public static class JavaSootFieldBuilder extends SootFieldBuilder
-      implements AnnotationOrSignatureStep {
+  @NonNull
+  public Set<FieldModifier> getModifiers() {
+    return modifiers;
+  }
 
-    private Iterable<AnnotationUsage> annotations = null;
+  @Override
+  public int equivHashCode() {
+    return Objects.hash(modifiers, getSignature());
+  }
 
-    @Nonnull
-    public Iterable<AnnotationUsage> getAnnotations() {
-      return annotations != null ? annotations : Collections.emptyList();
+  @NonNull
+  public Type getType() {
+    return this.getSignature().getType();
+  }
+
+  @NonNull
+  public JavaSootField withSignature(@NonNull FieldSignature signature) {
+    return new JavaSootField(signature, getModifiers(), getPosition());
+  }
+
+  @NonNull
+  public JavaSootField withModifiers(@NonNull Iterable<FieldModifier> modifiers) {
+    return new JavaSootField(getSignature(), modifiers, getPosition());
+  }
+
+  /** Returns the SootClass declaring this one. */
+  @NonNull
+  public ClassType getDeclaringClassType() {
+    return super.getDeclaringClassType();
+  }
+
+  @NonNull
+  public Iterable<AnnotationUsage> getAnnotations() {
+    return annotations;
+  }
+
+  @NonNull
+  public JavaSootField withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
+    return new JavaSootField(getSignature(), getModifiers(), annotations, getPosition());
+  }
+
+  /** Defines a {@link SootField} builder to provide a fluent API. */
+  public static class JavaSootFieldBuilder {
+
+    private FieldSignature signature;
+    private Iterable<FieldModifier> modifiers;
+    private Position position = NoPositionInformation.getInstance();
+    private Iterable<AnnotationUsage> annotations = Collections.emptyList();
+
+    private JavaSootFieldBuilder() {}
+
+    public static CompleteStep builder() {
+      return new JavaSootFieldBuilder.Steps();
     }
 
-    @Override
-    @Nonnull
-    public BuildStep withAnnotation(Iterable<AnnotationUsage> annotations) {
-      this.annotations = annotations;
-      return this;
+    public interface SignatureStep {
+      CompleteStep withSignature(@NonNull FieldSignature value);
     }
 
-    @Override
-    @Nonnull
-    public JavaSootField build() {
-      return new JavaSootField(getSignature(), getModifiers(), getAnnotations(), getPosition());
+    public interface ModifierStep {
+      CompleteStep withModifier(@NonNull Iterable<FieldModifier> modifier);
+
+      default CompleteStep withModifiers(
+          @NonNull FieldModifier first, @NonNull FieldModifier... rest) {
+        return withModifier(EnumSet.of(first, rest));
+      }
+    }
+
+    public interface AnnotationsStep {
+      CompleteStep withAnnotation(@NonNull Iterable<AnnotationUsage> annotations);
+    }
+
+    public interface PositionStep {
+      CompleteStep withPosition(@NonNull Position position);
+    }
+
+    public interface BuildStep {
+      JavaSootField build();
+    }
+
+    public interface CompleteStep
+        extends SignatureStep, ModifierStep, AnnotationsStep, PositionStep, BuildStep {}
+
+    private static class Steps implements CompleteStep {
+      private final JavaSootFieldBuilder instance = new JavaSootFieldBuilder();
+
+      @Override
+      public CompleteStep withAnnotation(@NonNull Iterable<AnnotationUsage> annotations) {
+        instance.annotations = annotations;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withModifier(@NonNull Iterable<FieldModifier> modifier) {
+        instance.modifiers = modifier;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withPosition(@NonNull Position position) {
+        instance.position = position;
+        return this;
+      }
+
+      @Override
+      public CompleteStep withSignature(@NonNull FieldSignature value) {
+        instance.signature = value;
+        return this;
+      }
+
+      @Override
+      public JavaSootField build() {
+        return new JavaSootField(
+            instance.signature,
+            instance.modifiers,
+            instance.annotations != null ? instance.annotations : Collections.emptyList(),
+            instance.position);
+      }
     }
   }
 }

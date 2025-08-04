@@ -1202,7 +1202,7 @@ Just subclass the methods to the respective Stmts you need to handle. This is vi
         AbstractStmtVisitor visitor = new AbstractStmtVisitor<Integer>() {
             private int ifStmtsCounter = 0;
             @Override
-            public void caseIfStmt(@Nonnull JIfStmt stmt) {
+            public void caseIfStmt(@NonNull  JIfStmt stmt) {
                 ifStmtsCounter++;
                 setResult(ifStmtCounter);
             }

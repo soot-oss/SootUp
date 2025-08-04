@@ -29,8 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.Jimple;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -43,7 +43,7 @@ import sootup.core.util.printer.StmtPrinter;
 public class MethodSubSignature extends SootClassMemberSubSignature
     implements Comparable<MethodSubSignature> {
 
-  @Nonnull private final List<Type> parameterTypes;
+  @NonNull private final List<Type> parameterTypes;
 
   /**
    * Creates a new instance of the {@link FieldSubSignature} class.
@@ -53,7 +53,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
    * @param type The return type signature.
    */
   public MethodSubSignature(
-      @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes, @Nonnull Type type) {
+      @NonNull String name, @NonNull Iterable<? extends Type> parameterTypes, @NonNull Type type) {
     super(name, type);
 
     this.parameterTypes = ImmutableList.copyOf(parameterTypes);
@@ -64,7 +64,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
    *
    * @return The value to get.
    */
-  @Nonnull
+  @NonNull
   public List<Type> getParameterTypes() {
     return parameterTypes;
   }
@@ -93,7 +93,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
   }
 
   @Override
-  public int compareTo(@Nonnull MethodSubSignature o) {
+  public int compareTo(@NonNull MethodSubSignature o) {
     return super.compareTo(o);
   }
 
@@ -110,7 +110,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
                   + ")");
 
   @Override
-  @Nonnull
+  @NonNull
   public String toString() {
     return _cachedToString.get();
   }
@@ -119,7 +119,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
   public void toString(StmtPrinter printer) {
     printer.typeSignature(getType());
     printer.literal(" ");
-    printer.literal(Jimple.escape(getName()));
+    printer.literal(JimpleUtils.escape(getName()));
     printer.literal("(");
 
     Iterator<Type> it = getParameterTypes().iterator();

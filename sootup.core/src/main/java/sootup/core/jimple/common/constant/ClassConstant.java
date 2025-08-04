@@ -47,8 +47,8 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.jimple.Jimple;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.Type;
 
@@ -56,7 +56,7 @@ public class ClassConstant implements Constant {
   private final String value;
   private final Type type;
 
-  public ClassConstant(@Nonnull String str, @Nonnull Type type) {
+  public ClassConstant(@NonNull String str, @NonNull Type type) {
     if (str.contains(".")) {
       throw new IllegalArgumentException(
           "ClassConstants must use class names separated by '/', not '.'!");
@@ -114,6 +114,7 @@ public class ClassConstant implements Constant {
   public boolean isRefType() {
     return value.startsWith("L") && value.endsWith(";");
   }
+
   // TODO: [ms] code is quite like the one in  Asmutil.java ? so we can/shall refactor it?
   //  /** Returns numDimensions. */
   //  public Type toSootType() {
@@ -171,20 +172,20 @@ public class ClassConstant implements Constant {
     return value;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return type;
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull V v) {
     v.caseClassConstant(this);
     return v;
   }
 
   @Override
   public String toString() {
-    return "class " + Jimple.escape(value);
+    return "class " + JimpleUtils.escape(value);
   }
 }

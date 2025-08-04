@@ -6,12 +6,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.BooleanConstant;
 import sootup.core.jimple.common.constant.DoubleConstant;
 import sootup.core.jimple.common.constant.FloatConstant;
@@ -63,15 +62,14 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.views.View;
-import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class InstantiateClassValueVisitorTest {
   @Test
   public void testVisitor() {
-    View view = new JavaView(new DefaultRTJarAnalysisInputLocation());
+    View view = new JavaView(new DefaultRuntimeAnalysisInputLocation());
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
 
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
@@ -142,9 +140,9 @@ public class InstantiateClassValueVisitorTest {
     listWithAllValues.add(IntConstant.getInstance(3));
     listWithAllValues.add(LongConstant.getInstance(3L));
     listWithAllValues.add(stringConstant);
-    listWithAllValues.add(JavaJimple.getInstance().newEnumConstant("3", "EnumTest"));
-    listWithAllValues.add(JavaJimple.getInstance().newClassConstant("java/lang/String"));
-    listWithAllValues.add(JavaJimple.getInstance().newMethodHandle(toStringMethod, 5));
+    listWithAllValues.add(JavaJimple.newEnumConstant("3", "EnumTest"));
+    listWithAllValues.add(JavaJimple.newClassConstant("java/lang/String"));
+    listWithAllValues.add(JavaJimple.newMethodHandle(toStringMethod, 5));
     listWithAllValues.add(new MethodType(toStringMethod.getSubSignature(), StringClass));
     listWithAllValues.add(new JAddExpr(stringConstant, stringConstant));
     listWithAllValues.add(new JAndExpr(stringConstant, stringConstant));

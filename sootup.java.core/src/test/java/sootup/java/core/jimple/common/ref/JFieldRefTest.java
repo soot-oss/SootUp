@@ -7,12 +7,11 @@ import java.util.EnumSet;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import sootup.core.IdentifierFactory;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.model.ClassModifier;
@@ -20,15 +19,15 @@ import sootup.core.model.FieldModifier;
 import sootup.core.model.SootField;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.FieldSignature;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Linghui Luo */
-@Tag("Java8")
+/**
+ * @author Linghui Luo
+ */
 public class JFieldRefTest {
 
   JavaView view;
@@ -42,7 +41,7 @@ public class JFieldRefTest {
   public void testJStaticFieldRef() {
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
-        JavaIdentifierFactory.getInstance().getClassType("dummyMainClass");
+        view.getIdentifierFactory().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     JavaSootField field =
         new JavaSootField(
@@ -79,7 +78,7 @@ public class JFieldRefTest {
   public void testJInstanceFieldRef() {
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
-        JavaIdentifierFactory.getInstance().getClassType("dummyMainClass");
+        view.getIdentifierFactory().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     JavaSootField field =
         new JavaSootField(

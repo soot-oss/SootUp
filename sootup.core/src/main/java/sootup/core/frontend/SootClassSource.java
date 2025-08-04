@@ -1,4 +1,5 @@
 package sootup.core.frontend;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,77 +22,59 @@ package sootup.core.frontend;
  * #L%
  */
 
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.ClassModifier;
-import sootup.core.model.Position;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
+import sootup.core.model.*;
 import sootup.core.types.ClassType;
 
 /**
- * Basic class for retrieving information that is needed to build a {@link SootClass}.
+ * {@link SootClassSource} represents a Compilation Unit (Interpretation Unit for interpreted
+ * languages). e.g. its connecting a file with source(code) to a {@link
+ * sootup.core.signatures.Signature} that a {@link sootup.core.views.View} can resolve. Basic class
+ * for retrieving information that is needed to build a {@link SootClass}.
  *
  * @author Manuel Benz created on 22.05.18
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public abstract class SootClassSource extends AbstractClassSource {
+public interface SootClassSource {
 
   /**
-   * Creates and a {@link SootClassSource} for a specific source file. The file should be passed as
-   * {@link Path} and can be located in an arbitrary {@link java.nio.file.FileSystem}.
-   * Implementations should use {@link java.nio.file.Files#newInputStream(Path, OpenOption...)} to
-   * access the file.
-   *
-   * @param srcNamespace The {@link AnalysisInputLocation} that holds the given file
-   * @param sourcePath Path to the source file of the to-be-created {@link SootClassSource}. The
-   *     given path has to exist and requires to be handled by this {@link ClassProvider}.
-   *     Implementations might double check this if wanted.
-   * @param classSignature the signature that has been used to resolve this class
+   * @param sourceType instantiates the Subclass of SootClassSource to create a *SootClass
+   * @return a *SootClass
    */
-  public SootClassSource(
-      @Nonnull AnalysisInputLocation srcNamespace,
-      @Nonnull ClassType classSignature,
-      @Nonnull Path sourcePath) {
-    super(srcNamespace, classSignature, sourcePath);
-  }
+  SootClass buildClass(@NonNull SourceType sourceType);
 
-  protected SootClassSource(SootClassSource delegate) {
-    super(delegate.classSource, delegate.getClassType(), delegate.getSourcePath());
-  }
+  ClassType getClassType();
+
+  AnalysisInputLocation getAnalysisInputLocation();
+
+  Path getSourcePath();
 
   /** Reads from the source to retrieve its methods. This may be an expensive operation. */
-  @Nonnull
-  public abstract Collection<? extends SootMethod> resolveMethods() throws ResolveException;
+  @NonNull Collection<? extends SootMethod> resolveMethods() throws ResolveException;
 
   /** Reads from the source to retrieve its fields. This may be an expensive operation. */
-  @Nonnull
-  public abstract Collection<? extends SootField> resolveFields() throws ResolveException;
+  @NonNull Collection<? extends SootField> resolveFields() throws ResolveException;
 
   /** Reads from the source to retrieve its modifiers. This may be an expensive operation. */
-  @Nonnull
-  public abstract Set<ClassModifier> resolveModifiers();
+  @NonNull Set<ClassModifier> resolveModifiers();
 
   /**
    * Reads from the source to retrieve its directly implemented interfaces. This may be an expensive
    * operation.
    */
-  @Nonnull
-  public abstract Set<? extends ClassType> resolveInterfaces();
+  @NonNull Set<? extends ClassType> resolveInterfaces();
 
   /**
    * Reads from the source to retrieve its superclass, if present. This may be an expensive
    * operation.
    */
-  @Nonnull
-  public abstract Optional<? extends ClassType> resolveSuperclass();
+  @NonNull Optional<? extends ClassType> resolveSuperclass();
 
   /**
    * Reads from the source to retrieve its outer class, if this is an inner class. This may be an
@@ -99,13 +82,11 @@ public abstract class SootClassSource extends AbstractClassSource {
    *
    * @return
    */
-  @Nonnull
-  public abstract Optional<? extends ClassType> resolveOuterClass();
+  @NonNull Optional<? extends ClassType> resolveOuterClass();
 
   /**
    * Reads from the source to retrieve its position in the source code. This may be an expensive
    * operation.
    */
-  @Nonnull
-  public abstract Position resolvePosition();
+  @NonNull Position resolvePosition();
 }

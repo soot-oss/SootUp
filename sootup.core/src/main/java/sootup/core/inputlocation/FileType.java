@@ -23,7 +23,7 @@ package sootup.core.inputlocation;
  */
 
 import java.util.EnumSet;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * An enumeration of common file types used for class loading/writing and other purposes.
@@ -37,22 +37,23 @@ public enum FileType {
   JAVA("java"),
   WAR("war"),
   CLASS("class"),
-  JIMPLE("jimple");
+  JIMPLE("jimple"),
+  DEX("dex");
 
-  public static final @Nonnull EnumSet<FileType> ARCHIVE_TYPES = EnumSet.of(JAR, ZIP, APK, WAR);
+  public static final @NonNull EnumSet<FileType> ARCHIVE_TYPES = EnumSet.of(JAR, ZIP, APK, WAR);
 
-  private final @Nonnull String extension;
+  private final @NonNull String extension;
 
-  FileType(@Nonnull String fileExtension) {
+  FileType(@NonNull String fileExtension) {
     this.extension = fileExtension;
   }
 
-  @Nonnull
+  @NonNull
   public String getExtensionWithDot() {
     return "." + extension;
   }
 
-  @Nonnull
+  @NonNull
   public String getExtension() {
     return extension;
   }

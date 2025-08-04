@@ -22,11 +22,12 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.ClassType;
 import sootup.core.util.printer.StmtPrinter;
@@ -34,14 +35,14 @@ import sootup.core.util.printer.StmtPrinter;
 /** An expression that creates a new instance of a class. */
 public final class JNewExpr implements Expr {
 
-  @Nonnull private final ClassType type;
+  @NonNull private final ClassType type;
 
-  public JNewExpr(@Nonnull ClassType type) {
+  public JNewExpr(@NonNull ClassType type) {
     this.type = type;
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseNewExpr(this, o);
   }
 
@@ -57,32 +58,47 @@ public final class JNewExpr implements Expr {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.NEW);
     up.literal(" ");
     up.typeSignature(type);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public ClassType getType() {
     return type;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.empty();
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseNewExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JNewExpr withType(@Nonnull ClassType type) {
+  @NonNull
+  public JNewExpr withType(@NonNull ClassType type) {
     return new JNewExpr(type);
+  }
+
+  @Override
+  public boolean isJNewExpr() {
+    return true;
+  }
+
+  @Override
+  public JNewExpr asJNewExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JNewExpr> toJNewExpr() {
+    return Optional.of(this);
   }
 }

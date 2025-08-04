@@ -22,7 +22,7 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /** Basic interface used for visited objects in the Visitor design pattern. */
 public interface Acceptor<V extends Visitor> {
@@ -31,5 +31,5 @@ public interface Acceptor<V extends Visitor> {
    *
    * @param v
    */
-  <X extends V> V accept(@Nonnull X v);
+  <X extends V> V accept(@NonNull X v);
 }

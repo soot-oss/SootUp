@@ -22,11 +22,13 @@ package sootup.core.transform;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
-/** @see #interceptBody(Body.BodyBuilder, View) */
+/**
+ * @see #interceptBody(Body.BodyBuilder, View)
+ */
 public interface BodyInterceptor {
 
   /**
@@ -36,5 +38,5 @@ public interface BodyInterceptor {
    * @param builder
    * @param view
    */
-  void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view);
+  void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view);
 }

@@ -1,0 +1,43 @@
+class DummyClass extends java.lang.Object {
+
+	public int nopEliminatorBug() {
+		this := @this: io.github.adven27.concordion.extensions.exam.core.logger.LoggingFormatterExtension$LoggingFormatterListener;
+		event := @parameter0: org.concordion.api.listener.ExampleEvent;
+		staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNullParameter(java.lang.Object,java.lang.String)>(event, "event");
+
+		label1:
+		nop;
+		$stack5 = this.<io.github.adven27.concordion.extensions.exam.core.logger.LoggingFormatterExtension$LoggingFormatterListener: io.github.adven27.concordion.extensions.exam.core.logger.LoggingAdaptor loggingAdaptor>;
+		it = interfaceinvoke $stack5.<io.github.adven27.concordion.extensions.exam.core.logger.LoggingAdaptor: java.io.File getLogFile()>();
+		$stack6 = virtualinvoke it.<java.io.File: boolean exists()>();
+
+		if $stack6 == 0 goto label2;
+		specialinvoke this.<io.github.adven27.concordion.extensions.exam.core.logger.LoggingFormatterExtension$LoggingFormatterListener: void appendLogFileLinkToExample(org.concordion.api.listener.ExampleEvent,java.io.File)>(event, it);
+
+		label2:
+		nop;
+		nop;
+
+		label3:
+		$stack7 = this.<io.github.adven27.concordion.extensions.exam.core.logger.LoggingFormatterExtension$LoggingFormatterListener: io.github.adven27.concordion.extensions.exam.core.logger.LoggingAdaptor loggingAdaptor>;
+		interfaceinvoke $stack7.<io.github.adven27.concordion.extensions.exam.core.logger.LoggingAdaptor: void stopLogFile()>();
+
+		goto label6;
+
+		label4:
+		$stack8 := @caughtexception;
+		l2 = $stack8;
+
+		label5:
+		$stack9 = this.<io.github.adven27.concordion.extensions.exam.core.logger.LoggingFormatterExtension$LoggingFormatterListener: io.github.adven27.concordion.extensions.exam.core.logger.LoggingAdaptor loggingAdaptor>;
+		interfaceinvoke $stack9.<io.github.adven27.concordion.extensions.exam.core.logger.LoggingAdaptor: void stopLogFile()>();
+
+		throw l2;
+
+		label6:
+		return;
+
+		 catch java.lang.Throwable from label1 to label3 with label4;
+		 catch java.lang.Throwable from label4 to label5 with label4;
+	}
+}
