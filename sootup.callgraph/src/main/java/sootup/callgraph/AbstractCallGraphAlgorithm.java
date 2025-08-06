@@ -43,17 +43,13 @@ import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootClassMember;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
-import sootup.core.typehierarchy.HierarchyComparator;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.types.JavaClassType;
 
 /**
  * The AbstractCallGraphAlgorithm class is the super class of all call graph algorithm. It provides
@@ -257,7 +253,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .map(Stmt::asInvokableStmt)
         .forEach(
             stmt ->
-                 (boundFunction.test(sourceMethod, stmt) ? resolveCall(sourceMethod, stmt) : Stream.<MethodSignature> empty())
+                (boundFunction.test(sourceMethod, stmt)
+                        ? resolveCall(sourceMethod, stmt)
+                        : Stream.<MethodSignature>empty())
                     .forEach(
                         targetMethod ->
                             addCallToCG(
@@ -676,24 +674,22 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     return typeHierarchy.isInterface(classType);
   }
 
-    /**
-     * @return the bound function, see @setBoundFunction
-     */
-    public BiPredicate<SootMethod, InvokableStmt> getBoundFunction()
-    {
-        return boundFunction;
-    }
+  /**
+   * @return the bound function, see @setBoundFunction
+   */
+  public BiPredicate<SootMethod, InvokableStmt> getBoundFunction() {
+    return boundFunction;
+  }
 
-    /** Set a bound function to prune the call graph. The bound function accepts the source method and
-     * an InvokableStatement, which is in the source method's body, and determines if the call from
-     * the source method to the invocation target shall be added into the call graph.
-     *
-     * This allows building an pruned & potentially incomplete call graph, with lower memory / CPU
-     * cost.
-     *
-     * @param boundFunction */
-    public void setBoundFunction(BiPredicate<SootMethod, InvokableStmt> boundFunction)
-    {
-        this.boundFunction = boundFunction == null ?  (method, statement) -> true : boundFunction;
-    }
+  /**
+   * Set a bound function to prune the call graph. The bound function accepts the source method and
+   * an InvokableStatement, which is in the source method's body, and determines if the call from
+   * the source method to the invocation target shall be added into the call graph. This allows
+   * building an pruned & potentially incomplete call graph, with lower memory / CPU cost.
+   *
+   * @param boundFunction TODO: make description
+   */
+  public void setBoundFunction(BiPredicate<SootMethod, InvokableStmt> boundFunction) {
+    this.boundFunction = boundFunction == null ? (method, statement) -> true : boundFunction;
+  }
 }

@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiPredicate;
-import org.junit.jupiter.api.Tag;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
@@ -50,12 +49,11 @@ public class CallGraphTest {
     return new JavaView(inputLocations);
   }
 
-  CallGraph loadCallGraph(BiPredicate<SootMethod, InvokableStmt> boundFunction) {
-    //    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    //    if (version > 1.8) {
-    //      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    //    }
+  CallGraph loadCallGraph() {
+    return loadCallGraph(null);
+  }
 
+  CallGraph loadCallGraph(BiPredicate<SootMethod, InvokableStmt> boundFunction) {
     String classPath = "src/test/resources/callgraph/" + "Misc/binary";
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
@@ -212,8 +210,7 @@ public class CallGraphTest {
   }
 
   @Test
-  public void testRTAWithNegativeBoundFunction()
-  {
+  public void testRTAWithNegativeBoundFunction() {
     algorithmName = "RTA";
     CallGraph cg = loadCallGraph((fromMethod, statement) -> false);
 
@@ -259,7 +256,6 @@ public class CallGraphTest {
             "defaultMethod",
             "int",
             Collections.emptyList());
-
 
     assertFalse(
         cg.containsCall(
@@ -385,7 +381,7 @@ public class CallGraphTest {
   @Test
   public void testCHAWithPositiveBoundFunction() {
     algorithmName = "CHA";
-    CallGraph cg = loadCallGraph((method, statement)->true);
+    CallGraph cg = loadCallGraph((method, statement) -> true);
 
     MethodSignature methodAbstract =
         identifierFactory.getMethodSignature(
