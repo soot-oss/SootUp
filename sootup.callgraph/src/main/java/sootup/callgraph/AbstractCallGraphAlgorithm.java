@@ -685,9 +685,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * Set a bound function to prune the call graph. The bound function accepts the source method and
    * an InvokableStatement, which is in the source method's body, and determines if the call from
    * the source method to the invocation target shall be added into the call graph. This allows
-   * building an pruned & potentially incomplete call graph, with lower memory / CPU cost.
+   * building a pruned & potentially incomplete call graph, with lower memory / CPU cost.
    *
-   * @param boundFunction TODO: make description
+   * @param boundFunction A two-arity predicate that takes source method and InvokableStmt.
    */
   public void setBoundFunction(BiPredicate<SootMethod, InvokableStmt> boundFunction) {
     this.boundFunction = boundFunction == null ? (method, statement) -> true : boundFunction;
