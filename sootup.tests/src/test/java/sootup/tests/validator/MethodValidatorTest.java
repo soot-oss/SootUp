@@ -7,13 +7,13 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
-import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.core.validation.MethodValidator;
 import sootup.core.validation.ValidationException;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
 
@@ -73,7 +73,7 @@ public class MethodValidatorTest {
   }
 
   Body getBody(String methodSignature) {
-    Optional<? extends SootMethod> optMethod =
+    Optional<JavaSootMethod> optMethod =
         jimpleView.getMethod(
             jimpleView.getIdentifierFactory().parseMethodSignature(methodSignature));
     assertTrue(optMethod.isPresent());
