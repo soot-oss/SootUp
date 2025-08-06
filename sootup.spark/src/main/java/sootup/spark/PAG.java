@@ -38,8 +38,8 @@ public class PAG {
   }
 
   private void addEdge(Node source, Node target, PAGEdge edge) {
-    getDelegate().addVertex(source);
-    getDelegate().addVertex(target);
-    getDelegate().addEdge(source, target, edge);
+    delegate.addVertex(source);
+    delegate.addVertex(target);
+    delegate.addEdge(source, target, edge);
   }
 }
