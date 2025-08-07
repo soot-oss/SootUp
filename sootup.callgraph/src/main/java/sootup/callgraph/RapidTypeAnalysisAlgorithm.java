@@ -65,6 +65,19 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     super(view);
   }
 
+  /**
+   * Constructor of the RTA algorithm with a predefined set of classes that are considered
+   * instantiated before the RTA call graph algorithm starts.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param preInstantiatedClasses predefined set of instantiated classes
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view, @NonNull Set<ClassType> preInstantiatedClasses) {
+    super(view);
+    this.preInstantiatedClasses = preInstantiatedClasses;
+  }
+
   @NonNull
   @Override
   public CallGraph initialize() {
@@ -94,10 +107,6 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     instantiatedClasses = Collections.emptySet();
     ignoredCalls = ArrayListMultimap.create();
     return cg;
-  }
-
-  public void setPreInstantiatedClasses(Set<ClassType> preInstantiatedClasses) {
-    this.preInstantiatedClasses = preInstantiatedClasses;
   }
 
   /**
