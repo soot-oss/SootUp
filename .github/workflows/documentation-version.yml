@@ -1,4 +1,4 @@
-name: Branch Documentation Snapshot
+name: Deploy Documentation Version
 
 permissions:
   pages: write
@@ -15,7 +15,7 @@ on:
       - 'mkdocs.yml'
       - 'sootup.examples/**'
       - 'docs/**'
-      - '.github/workflows/deploy-branch-snapshot.yml'
+      - 'documentation-version.yml'
 
 concurrency: pages
 
