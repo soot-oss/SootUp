@@ -19,7 +19,7 @@ import sootup.spark.node.VariableNode;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class PAG {
 
-  @NonNull Graph<Node, DefaultEdge> delegate = new DefaultDirectedGraph<>(DefaultEdge.class);
+  @NonNull Graph<Node, PAGEdge> delegate = new DefaultDirectedGraph<>(PAGEdge.class);
 
   public void addEdge(Node source, Node target) {
     if (source instanceof VariableNode) {
