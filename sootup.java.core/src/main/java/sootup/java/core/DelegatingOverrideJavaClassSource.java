@@ -1,7 +1,6 @@
 package sootup.java.core;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.frontend.ResolveException;
@@ -16,7 +15,7 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
 
     private final @NonNull JavaSootClassSource delegate;
 
-    // Optional overrides: when non-null, they override the delegate result (including "empty" = override-to-empty)
+    // Optional overrides: when non-null, they override the delegate result
     private final @Nullable Collection<JavaSootMethod> methodsOverride;
     private final @Nullable Collection<JavaSootField>  fieldsOverride;
     private final @Nullable Set<ClassModifier>         modifiersOverride;
@@ -27,9 +26,6 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
     private final @Nullable Iterable<AnnotationUsage>  annotationsOverride;
     private final @Nullable Iterable<AnnotationUsage>  methodAnnotationsOverride;
     private final @Nullable Iterable<AnnotationUsage>  fieldAnnotationsOverride;
-
-    private final @NonNull Set<JavaSootMethod> deletedMethods;
-    private final @NonNull Set<JavaSootField>  deletedFields;
 
     public DelegatingOverrideJavaClassSource(@NonNull JavaSootClassSource delegate) {
         super(delegate);
@@ -45,9 +41,6 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
         this.annotationsOverride = null;
         this.methodAnnotationsOverride = null;
         this.fieldAnnotationsOverride = null;
-
-        this.deletedMethods = new HashSet<>();
-        this.deletedFields = new HashSet<>();
     }
 
     private DelegatingOverrideJavaClassSource(
@@ -61,9 +54,7 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
             @Nullable Position positionOverride,
             @Nullable Iterable<AnnotationUsage> annotationsOverride,
             @Nullable Iterable<AnnotationUsage> methodAnnotationsOverride,
-            @Nullable Iterable<AnnotationUsage> fieldAnnotationsOverride,
-            @NonNull Set<JavaSootMethod> deletedMethods,
-            @NonNull Set<JavaSootField> deletedFields) {
+            @Nullable Iterable<AnnotationUsage> fieldAnnotationsOverride) {
         super(delegate);
         this.delegate = delegate;
         this.methodsOverride = methodsOverride;
@@ -76,32 +67,16 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
         this.annotationsOverride = annotationsOverride;
         this.methodAnnotationsOverride = methodAnnotationsOverride;
         this.fieldAnnotationsOverride = fieldAnnotationsOverride;
-        this.deletedMethods = new HashSet<>(deletedMethods);
-        this.deletedFields = new HashSet<>(deletedFields);
     }
 
     @Override
     public @NonNull Collection<? extends SootMethod> resolveMethods() throws ResolveException {
-        Collection<? extends SootMethod> base =
-                (methodsOverride != null) ? methodsOverride : delegate.resolveMethods();
-        if (deletedMethods.isEmpty()) {
-            return base;
-        }
-        return base.stream()
-                .filter(m -> !(m instanceof JavaSootMethod jm && deletedMethods.contains(jm)))
-                .collect(Collectors.toList());
+        return (methodsOverride != null) ? methodsOverride : delegate.resolveMethods();
     }
 
     @Override
     public @NonNull Collection<? extends SootField> resolveFields() throws ResolveException {
-        Collection<? extends SootField> base =
-                (fieldsOverride != null) ? fieldsOverride : delegate.resolveFields();
-        if (deletedFields.isEmpty()) {
-            return base;
-        }
-        return base.stream()
-                .filter(f -> !(f instanceof JavaSootField jf && deletedFields.contains(jf)))
-                .collect(Collectors.toList());
+        return (fieldsOverride != null) ? fieldsOverride : delegate.resolveFields();
     }
 
     @Override
@@ -147,9 +122,7 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
                 positionOverride,
                 annotationsOverride,
                 methodAnnotationsOverride,
-                fieldAnnotationsOverride,
-                deletedMethods,
-                deletedFields);
+                fieldAnnotationsOverride);
     }
 
     public @NonNull DelegatingOverrideJavaClassSource withFields(
@@ -165,9 +138,7 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
                 positionOverride,
                 annotationsOverride,
                 methodAnnotationsOverride,
-                fieldAnnotationsOverride,
-                deletedMethods,
-                deletedFields);
+                fieldAnnotationsOverride);
     }
 
     public @NonNull DelegatingOverrideJavaClassSource withModifiers(
@@ -183,9 +154,7 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
                 positionOverride,
                 annotationsOverride,
                 methodAnnotationsOverride,
-                fieldAnnotationsOverride,
-                deletedMethods,
-                deletedFields);
+                fieldAnnotationsOverride);
     }
 
     public @NonNull DelegatingOverrideJavaClassSource withInterfaces(
@@ -201,9 +170,7 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
                 positionOverride,
                 annotationsOverride,
                 methodAnnotationsOverride,
-                fieldAnnotationsOverride,
-                deletedMethods,
-                deletedFields);
+                fieldAnnotationsOverride);
     }
 
     public @NonNull DelegatingOverrideJavaClassSource withSuperclass(
@@ -219,9 +186,7 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
                 positionOverride,
                 annotationsOverride,
                 methodAnnotationsOverride,
-                fieldAnnotationsOverride,
-                deletedMethods,
-                deletedFields);
+                fieldAnnotationsOverride);
     }
 
     public @NonNull DelegatingOverrideJavaClassSource withOuterClass(
@@ -237,9 +202,7 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
                 positionOverride,
                 annotationsOverride,
                 methodAnnotationsOverride,
-                fieldAnnotationsOverride,
-                deletedMethods,
-                deletedFields);
+                fieldAnnotationsOverride);
     }
 
     public @NonNull DelegatingOverrideJavaClassSource withPosition(@Nullable Position pos) {
@@ -254,9 +217,7 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
                 pos,
                 annotationsOverride,
                 methodAnnotationsOverride,
-                fieldAnnotationsOverride,
-                deletedMethods,
-                deletedFields);
+                fieldAnnotationsOverride);
     }
 
     public @NonNull DelegatingOverrideJavaClassSource withAnnotations(
@@ -272,9 +233,7 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
                 positionOverride,
                 annotations,
                 methodAnnotationsOverride,
-                fieldAnnotationsOverride,
-                deletedMethods,
-                deletedFields);
+                fieldAnnotationsOverride);
     }
 
     public @NonNull DelegatingOverrideJavaClassSource withReplacedMethod(
@@ -299,81 +258,6 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
         return withFields(base);
     }
 
-    public @NonNull DelegatingOverrideJavaClassSource withDeletedMethod(@NonNull JavaSootMethod m) {
-        Set<JavaSootMethod> nm = new HashSet<>(deletedMethods);
-        nm.add(m);
-        return new DelegatingOverrideJavaClassSource(
-                delegate,
-                methodsOverride,
-                fieldsOverride,
-                modifiersOverride,
-                interfacesOverride,
-                superclassOverride,
-                outerClassOverride,
-                positionOverride,
-                annotationsOverride,
-                methodAnnotationsOverride,
-                fieldAnnotationsOverride,
-                nm,
-                deletedFields);
-    }
-
-    public @NonNull DelegatingOverrideJavaClassSource withDeletedField(@NonNull JavaSootField f) {
-        Set<JavaSootField> nf = new HashSet<>(deletedFields);
-        nf.add(f);
-        return new DelegatingOverrideJavaClassSource(
-                delegate,
-                methodsOverride,
-                fieldsOverride,
-                modifiersOverride,
-                interfacesOverride,
-                superclassOverride,
-                outerClassOverride,
-                positionOverride,
-                annotationsOverride,
-                methodAnnotationsOverride,
-                fieldAnnotationsOverride,
-                deletedMethods,
-                nf);
-    }
-
-    public @NonNull DelegatingOverrideJavaClassSource withDeletedMethods(
-            @NonNull Collection<JavaSootMethod> ms) {
-        Set<JavaSootMethod> nm = new HashSet<>(deletedMethods);
-        nm.addAll(ms);
-        return new DelegatingOverrideJavaClassSource(
-                delegate, methodsOverride, fieldsOverride, modifiersOverride, interfacesOverride,
-                superclassOverride, outerClassOverride, positionOverride,
-                annotationsOverride, methodAnnotationsOverride, fieldAnnotationsOverride, nm, deletedFields);
-    }
-
-    public @NonNull DelegatingOverrideJavaClassSource withDeletedFields(
-            @NonNull Collection<JavaSootField> fs) {
-        Set<JavaSootField> nf = new HashSet<>(deletedFields);
-        nf.addAll(fs);
-        return new DelegatingOverrideJavaClassSource(
-                delegate, methodsOverride, fieldsOverride, modifiersOverride, interfacesOverride,
-                superclassOverride, outerClassOverride, positionOverride,
-                annotationsOverride, methodAnnotationsOverride, fieldAnnotationsOverride, deletedMethods, nf);
-    }
-
-    public @NonNull DelegatingOverrideJavaClassSource withRestoredMethod(@NonNull JavaSootMethod m) {
-        Set<JavaSootMethod> nm = new HashSet<>(deletedMethods);
-        nm.remove(m);
-        return new DelegatingOverrideJavaClassSource(
-                delegate, methodsOverride, fieldsOverride, modifiersOverride, interfacesOverride,
-                superclassOverride, outerClassOverride, positionOverride,
-                annotationsOverride, methodAnnotationsOverride, fieldAnnotationsOverride, nm, deletedFields);
-    }
-
-    public @NonNull DelegatingOverrideJavaClassSource withRestoredField(@NonNull JavaSootField f) {
-        Set<JavaSootField> nf = new HashSet<>(deletedFields);
-        nf.remove(f);
-        return new DelegatingOverrideJavaClassSource(
-                delegate, methodsOverride, fieldsOverride, modifiersOverride, interfacesOverride,
-                superclassOverride, outerClassOverride, positionOverride,
-                annotationsOverride, methodAnnotationsOverride, fieldAnnotationsOverride, deletedMethods, nf);
-    }
 
     private static Collection<JavaSootMethod> collectJavaMethods(
             Collection<? extends SootMethod> in) {
@@ -407,19 +291,10 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
         }
     }
 
-    public @NonNull Set<JavaSootMethod> getDeletedMethods() {
-        return Collections.unmodifiableSet(deletedMethods);
-    }
-
-    public @NonNull Set<JavaSootField> getDeletedFields() {
-        return Collections.unmodifiableSet(deletedFields);
-    }
 
     @Override
     public String toString() {
         return "DelegatingOverrideJavaClassSource{" +
-                "deletedMethods=" + deletedMethods.size() +
-                ", deletedFields=" + deletedFields.size() +
                 ", delegate=" + delegate +
                 '}';
     }
@@ -438,9 +313,7 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
                 Objects.equals(positionOverride, that.positionOverride) &&
                 Objects.equals(annotationsOverride, that.annotationsOverride) &&
                 Objects.equals(methodAnnotationsOverride, that.methodAnnotationsOverride) &&
-                Objects.equals(fieldAnnotationsOverride, that.fieldAnnotationsOverride) &&
-                Objects.equals(deletedMethods, that.deletedMethods) &&
-                Objects.equals(deletedFields, that.deletedFields);
+                Objects.equals(fieldAnnotationsOverride, that.fieldAnnotationsOverride);
     }
 
     @Override
@@ -456,8 +329,6 @@ public final class DelegatingOverrideJavaClassSource extends JavaSootClassSource
                 positionOverride,
                 annotationsOverride,
                 methodAnnotationsOverride,
-                fieldAnnotationsOverride,
-                deletedMethods,
-                deletedFields);
+                fieldAnnotationsOverride);
     }
 }
