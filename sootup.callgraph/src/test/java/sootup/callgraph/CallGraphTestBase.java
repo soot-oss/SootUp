@@ -68,8 +68,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     assertNotNull(cg);
     assertTrue(
-            cg.containsMethod(mainMethodSignature),
-            mainMethodSignature + " is not found in CallGraph");
+        cg.containsMethod(mainMethodSignature), mainMethodSignature + " is not found in CallGraph");
 
     return cg;
   }

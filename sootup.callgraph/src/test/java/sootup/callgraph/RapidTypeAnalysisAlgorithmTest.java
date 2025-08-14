@@ -344,8 +344,7 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     preInstantiatedClasses = Set.of(classBType);
     CallGraph cg = loadCallGraph("RTA", "dic.DefinedInstantiatedClass");
     MethodSignature instantiatedClassMethod =
-        identifierFactory.getMethodSignature(
-                classBType, "sound", "void", Collections.emptyList());
+        identifierFactory.getMethodSignature(classBType, "sound", "void", Collections.emptyList());
     assertFalse(cg.callsTo(instantiatedClassMethod).isEmpty());
   }
 
