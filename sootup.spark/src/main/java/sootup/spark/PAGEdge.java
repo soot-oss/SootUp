@@ -1,10 +1,10 @@
-package sootup.spark.node;
+package sootup.spark;
 
 /*-
  * #%L
  * SootUp
  * %%
- * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya, Palaniappan Muthuraman
+ * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,23 +23,36 @@ package sootup.spark.node;
  */
 
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.SuperBuilder;
+import lombok.RequiredArgsConstructor;
+import org.jgrapht.graph.DefaultEdge;
 
-/** Models PAG node for local variables */
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
-@SuperBuilder
-@EqualsAndHashCode(callSuper = true)
-public class VariableNode extends Node {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public class PAGEdge extends DefaultEdge {
 
-  @NonNull String name;
+  public enum EdgeType {
+    ALLOCATION,
+    ASSIGNMENT,
+    STORE,
+    LOAD
+  }
 
-  @Override
-  public String toString() {
-    return String.format("\"%s %s\"", getType(), getName());
+  private final EdgeType edgeType;
+
+  public static PAGEdge allocation() {
+    return new PAGEdge(EdgeType.ALLOCATION);
+  }
+
+  public static PAGEdge assignment() {
+    return new PAGEdge(EdgeType.ASSIGNMENT);
+  }
+
+  public static PAGEdge store() {
+    return new PAGEdge(EdgeType.STORE);
+  }
+
+  public static PAGEdge load() {
+    return new PAGEdge(EdgeType.LOAD);
   }
 }
