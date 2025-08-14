@@ -14,14 +14,11 @@ import sootup.java.core.views.JavaView;
  */
 public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm> {
 
-  @Override
-  protected RapidTypeAnalysisAlgorithm createAlgorithm(JavaView view, Set<ClassType> preInstantiatedClasses) {
-    return new RapidTypeAnalysisAlgorithm(view, preInstantiatedClasses);
-  }
+  private Set<ClassType> preInstantiatedClasses = Collections.emptySet();
 
   @Override
-  protected Set<ClassType> getPreInstantiatedClasses() {
-    return Set.of(view.getIdentifierFactory().getClassType("dic.ClassB"));
+  protected RapidTypeAnalysisAlgorithm createAlgorithm(JavaView view) {
+    return new RapidTypeAnalysisAlgorithm(view, preInstantiatedClasses);
   }
 
   /**
@@ -343,11 +340,12 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     String classPath = "src/test/resources/callgraph/RTA/binary";
     view = createViewForClassPath(classPath);
     identifierFactory = view.getIdentifierFactory();
+    ClassType classBType = identifierFactory.getClassType("dic.ClassB");
+    preInstantiatedClasses = Set.of(classBType);
     CallGraph cg = loadCallGraph("RTA", "dic.DefinedInstantiatedClass");
-
     MethodSignature instantiatedClassMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("dic.ClassB"), "sound", "void", Collections.emptyList());
+                classBType, "sound", "void", Collections.emptyList());
     assertFalse(cg.callsTo(instantiatedClassMethod).isEmpty());
   }
 

@@ -35,13 +35,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   protected MethodSignature mainMethodSignature;
   protected JavaView view;
 
-  protected T createAlgorithm(JavaView view) {
-    return createAlgorithm(view, Collections.emptySet());
-  }
-
-  protected abstract T createAlgorithm(JavaView view, Set<ClassType> preInstantiatedClasses);
-
-  protected abstract Set<ClassType> getPreInstantiatedClasses();
+  protected abstract T createAlgorithm(JavaView view);
 
   // private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
@@ -69,8 +63,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
     assertNotNull(m, mainMethodSignature + " not found in classloader");
 
-    Set<ClassType> preInstantiatedClasses = getPreInstantiatedClasses();
-    algorithm = createAlgorithm(view, preInstantiatedClasses);
+    algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
     assertNotNull(cg);

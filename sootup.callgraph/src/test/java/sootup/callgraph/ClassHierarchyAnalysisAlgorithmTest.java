@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.types.ClassType;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -19,13 +18,8 @@ public class ClassHierarchyAnalysisAlgorithmTest
   // TODO: StaticInitializers, Lambdas ?
 
   @Override
-  protected ClassHierarchyAnalysisAlgorithm createAlgorithm(JavaView view, Set<ClassType> preInstantiatedClasses) {
+  protected ClassHierarchyAnalysisAlgorithm createAlgorithm(JavaView view) {
     return new ClassHierarchyAnalysisAlgorithm(view);
-  }
-
-  @Override
-  protected Set<ClassType> getPreInstantiatedClasses() {
-    return Collections.emptySet();
   }
 
   /**
