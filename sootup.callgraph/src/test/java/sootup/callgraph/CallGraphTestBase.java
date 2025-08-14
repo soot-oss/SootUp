@@ -29,13 +29,19 @@ import sootup.java.core.views.JavaView;
 
 public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
-  private T algorithm;
+  protected T algorithm;
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   protected JavaClassType mainClassSignature;
   protected MethodSignature mainMethodSignature;
   protected JavaView view;
 
-  protected abstract T createAlgorithm(JavaView view);
+  protected T createAlgorithm(JavaView view) {
+    return createAlgorithm(view, Collections.emptySet());
+  }
+
+  protected abstract T createAlgorithm(JavaView view, Set<ClassType> preInstantiatedClasses);
+
+  protected abstract Set<ClassType> getPreInstantiatedClasses();
 
   // private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
@@ -63,12 +69,15 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
     assertNotNull(m, mainMethodSignature + " not found in classloader");
 
-    algorithm = createAlgorithm(view);
+    Set<ClassType> preInstantiatedClasses = getPreInstantiatedClasses();
+    algorithm = createAlgorithm(view, preInstantiatedClasses);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
     assertNotNull(cg);
     assertTrue(
-        cg.containsMethod(mainMethodSignature), mainMethodSignature + " is not found in CallGraph");
+            cg.containsMethod(mainMethodSignature),
+            mainMethodSignature + " is not found in CallGraph");
+
     return cg;
   }
 

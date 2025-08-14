@@ -4,10 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.Set;
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.core.views.JavaView;
@@ -18,35 +15,13 @@ import sootup.java.core.views.JavaView;
 public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm> {
 
   @Override
-  protected RapidTypeAnalysisAlgorithm createAlgorithm(JavaView view) {
-    return new RapidTypeAnalysisAlgorithm(view);
-  }
-
-  protected RapidTypeAnalysisAlgorithm createAlgorithmPreInstantiatedClasses(
-      JavaView view, @NonNull Set<ClassType> preInstantiatedClasses) {
+  protected RapidTypeAnalysisAlgorithm createAlgorithm(JavaView view, Set<ClassType> preInstantiatedClasses) {
     return new RapidTypeAnalysisAlgorithm(view, preInstantiatedClasses);
   }
 
-  CallGraph loadCallGraphWithPreInstantiatedClasses(
-      String className, Set<ClassType> preInstantiatedClasses) {
-    mainClassSignature = identifierFactory.getClassType(className);
-    mainMethodSignature =
-        identifierFactory.getMethodSignature(
-            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
-
-    SootClass sc = view.getClass(mainClassSignature).orElse(null);
-    assertNotNull(sc);
-    SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
-    assertNotNull(m, mainMethodSignature + " not found in classloader");
-
-    CallGraph cg =
-        createAlgorithmPreInstantiatedClasses(view, preInstantiatedClasses)
-            .initialize(Collections.singletonList(mainMethodSignature));
-
-    assertNotNull(cg);
-    assertTrue(
-        cg.containsMethod(mainMethodSignature), mainMethodSignature + " is not found in CallGraph");
-    return cg;
+  @Override
+  protected Set<ClassType> getPreInstantiatedClasses() {
+    return Set.of(view.getIdentifierFactory().getClassType("dic.ClassB"));
   }
 
   /**
@@ -368,9 +343,8 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     String classPath = "src/test/resources/callgraph/RTA/binary";
     view = createViewForClassPath(classPath);
     identifierFactory = view.getIdentifierFactory();
-    CallGraph cg =
-        loadCallGraphWithPreInstantiatedClasses(
-            "dic.DefinedInstantiatedClass", Set.of(identifierFactory.getClassType("dic.ClassB")));
+    CallGraph cg = loadCallGraph("RTA", "dic.DefinedInstantiatedClass");
+
     MethodSignature instantiatedClassMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("dic.ClassB"), "sound", "void", Collections.emptyList());
