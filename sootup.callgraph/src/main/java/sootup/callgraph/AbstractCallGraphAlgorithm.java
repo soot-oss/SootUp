@@ -25,7 +25,6 @@ package sootup.callgraph;
 import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 
 import java.util.*;
-import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
@@ -60,23 +59,24 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractCallGraphAlgorithm.class);
 
-  private final BiPredicate<SootMethod, InvokableStmt> boundFunction;
-
   @NonNull protected final View view;
   @NonNull protected final TypeHierarchy typeHierarchy;
 
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
-    this(view, (method, stmt) -> true);
-  }
-
-  protected AbstractCallGraphAlgorithm(@NonNull View view, BiPredicate<SootMethod, InvokableStmt> boundFunction) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
-    this.boundFunction = boundFunction == null ? (method, statement) -> true : boundFunction;
   }
 
-  protected boolean includeCall(SootMethod method, InvokableStmt statement) {
-    return boundFunction.test(method, statement);
+  /**
+   * Decide whether a call from <code>method</code> represented by <code>statement</code> shall be
+   * added to the call graph. Default: accept everything. Subclasses can override this method to
+   * implement pruning.
+   *
+   * @param method the source (caller) method
+   * @param statement the invokable statement causing the call
+   */
+  protected boolean includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+    return true;
   }
 
   /**
@@ -680,12 +680,5 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   protected boolean isInterface(ClassType classType) {
     return typeHierarchy.isInterface(classType);
-  }
-
-  /**
-   * @return the bound function, see @setBoundFunction
-   */
-  public BiPredicate<SootMethod, InvokableStmt> getBoundFunction() {
-    return boundFunction;
   }
 }
