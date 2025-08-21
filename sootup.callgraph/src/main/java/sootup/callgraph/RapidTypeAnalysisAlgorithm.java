@@ -74,7 +74,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   public RapidTypeAnalysisAlgorithm(
       @NonNull View view, @NonNull Set<ClassType> preInstantiatedClasses) {
     super(view);
-    this.instantiatedClasses = preInstantiatedClasses;
+    this.instantiatedClasses = new HashSet<>(preInstantiatedClasses);
   }
 
   @NonNull
