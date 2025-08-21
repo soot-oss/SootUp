@@ -60,15 +60,23 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractCallGraphAlgorithm.class);
 
-  private BiPredicate<SootMethod, InvokableStmt> boundFunction;
+  private final BiPredicate<SootMethod, InvokableStmt> boundFunction;
 
   @NonNull protected final View view;
   @NonNull protected final TypeHierarchy typeHierarchy;
 
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
+    this(view, (method, stmt) -> true);
+  }
+
+  protected AbstractCallGraphAlgorithm(@NonNull View view, BiPredicate<SootMethod, InvokableStmt> boundFunction) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
-    this.boundFunction = (method, statement) -> true;
+    this.boundFunction = boundFunction == null ? (method, statement) -> true : boundFunction;
+  }
+
+  protected boolean includeCall(SootMethod method, InvokableStmt statement) {
+    return boundFunction.test(method, statement);
   }
 
   /**
@@ -253,7 +261,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .map(Stmt::asInvokableStmt)
         .forEach(
             stmt ->
-                (boundFunction.test(sourceMethod, stmt)
+                (includeCall(sourceMethod, stmt)
                         ? resolveCall(sourceMethod, stmt)
                         : Stream.<MethodSignature>empty())
                     .forEach(
@@ -679,17 +687,5 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   public BiPredicate<SootMethod, InvokableStmt> getBoundFunction() {
     return boundFunction;
-  }
-
-  /**
-   * Set a bound function to prune the call graph. The bound function accepts the source method and
-   * an InvokableStatement, which is in the source method's body, and determines if the call from
-   * the source method to the invocation target shall be added into the call graph. This allows
-   * building a pruned and potentially incomplete call graph, with lower memory and CPU cost.
-   *
-   * @param boundFunction A two-arity predicate that takes source method and InvokableStmt.
-   */
-  public void setBoundFunction(BiPredicate<SootMethod, InvokableStmt> boundFunction) {
-    this.boundFunction = boundFunction == null ? (method, statement) -> true : boundFunction;
   }
 }
