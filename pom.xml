@@ -85,7 +85,7 @@
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
-        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
+        <maven-javadoc-plugin.version>3.11.3</maven-javadoc-plugin.version>
         <maven-central-publishing-plugin.version>0.8.0</maven-central-publishing-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
@@ -447,7 +447,7 @@
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>6.8.2</version>
+            <version>6.8.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -489,13 +489,13 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.18.0</version>
+            <version>5.19.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.18.0</version>
+            <version>5.19.0</version>
             <scope>test</scope>
         </dependency>
         <!-- adds `@Nullable` and `@NonNull ` annotations -->

@@ -21,7 +21,7 @@ concurrency: pages
 
 jobs:
   deploy-snapshot:
-    uses: secure-software-engineering/actions/pages/branch-snapshot-action.yml@develop
+    uses: secure-software-engineering/actions/documentation/pin-version/action.yml@develop
     with:
       latest_branch: develop
       version: "maven"
