@@ -111,11 +111,9 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   @Override
   public void caseArrayRef(@NonNull JArrayRef ref) {
     val type = ref.getBase().getType();
-    if (type instanceof ArrayType) {
-      val arrayType = (ArrayType) type;
+    if (type instanceof ArrayType arrayType) {
       val baseType = arrayType.getBaseType();
-      if (baseType instanceof ClassType) {
-        val declaringClassType = (ClassType) baseType;
+      if (baseType instanceof ClassType declaringClassType) {
         val field =
             new FieldSignature(declaringClassType, String.valueOf(ref.getIndex()), ref.getType());
         val base =

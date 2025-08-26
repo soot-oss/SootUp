@@ -32,7 +32,6 @@ import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -94,7 +93,6 @@ public class JavaView extends AbstractView {
                 })
             .map(sootClassSource -> (JavaSootClassSource) sootClassSource)
             .map(this::buildClassFrom);
-
     isFullyResolved = true;
     return resolvedClasses;
   }
@@ -110,11 +108,6 @@ public class JavaView extends AbstractView {
 
     Optional<JavaSootClassSource> abstractClass = getClassSource(type);
     return abstractClass.map(this::buildClassFrom);
-  }
-
-  @NonNull
-  public Optional<JavaAnnotationSootClass> getAnnotationClass(@NonNull ClassType type) {
-    return getClass(type).filter(SootClass::isAnnotation).map(sc -> (JavaAnnotationSootClass) sc);
   }
 
   @Override
@@ -163,9 +156,7 @@ public class JavaView extends AbstractView {
     if (cache.hasClass(classType)) {
       theClass = (JavaSootClass) cache.getClass(classType);
     } else {
-      theClass =
-          (JavaSootClass)
-              classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
+      theClass = classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
       cache.putClass(classType, theClass);
     }
     return theClass;
