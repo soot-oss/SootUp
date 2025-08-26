@@ -35,10 +35,7 @@ import java.util.stream.Collectors;
 
 public class TaintAnalysisTest {
 
-
-    /**
-     * Basic taint propagation test case
-     */
+    // BasicTaint {
     public static class BasicTaint {
         static String c;
 
@@ -50,10 +47,9 @@ public class TaintAnalysisTest {
             sc.sink(c);
         }
     }
+    // } BasicTaint
 
-    /**
-     * Sanitized taint test case
-     */
+    // BasicTaintSanitized {
     public static class BasicTaintSanitized {
         public void entryPoint() {
             String a = "SECRET";
@@ -63,10 +59,9 @@ public class TaintAnalysisTest {
             sc.sink(b);
         }
     }
+    // } BasicTaintSanitized
 
-    /**
-     * Interprocedural taint propagation test case
-     */
+    // FunctionPropagatesTaint {
     public static class FunctionPropagatesTaint {
         private String id(String s) {
             return s;
@@ -79,10 +74,9 @@ public class TaintAnalysisTest {
             sc.sink(b);
         }
     }
+    // } FunctionPropagatesTaint
 
-    /**
-     * Function returns taint test case
-     */
+    // FunctionReturnsTaint {
     public static class FunctionReturnsTaint {
         private String source() {
             return "SECRET";
@@ -98,19 +92,17 @@ public class TaintAnalysisTest {
             sink(b);
         }
     }
+    // } FunctionReturnsTaint
 
-    /**
-     * Sink class for testing
-     */
+    // SinkClass {
     public static class SinkClass {
         public void sink(String s) {
             // sink method - tainted data reaching here is a leak
         }
     }
+     // } SinkClass
 
-    /**
-     * Taint Analysis Problem
-     */
+    // TaintAnalysisProblem {
     static class TaintAnalysisProblem extends DefaultJimpleIFDSTabulationProblem<Object, InterproceduralCFG<Stmt, SootMethod>> {
 
         private final SootMethod entryMethod;
@@ -165,7 +157,7 @@ public class TaintAnalysisTest {
                 }
             };
         }
-
+        // getNormalFlow {
         FlowFunction<Object> getNormalFlow(Stmt currentStmt, Stmt successorStmt) {
             if (currentStmt instanceof JAssignStmt) {
                 final JAssignStmt assign = (JAssignStmt) currentStmt;
@@ -182,7 +174,9 @@ public class TaintAnalysisTest {
             }
             return Identity.v();
         }
+        // } getNormalFlow
 
+        // getCallFlow {
         FlowFunction<Object> getCallFlow(Stmt callStmt, final SootMethod destinationMethod) {
             if (!(callStmt instanceof JInvokeStmt)) {
                 return KillAll.v();
@@ -206,7 +200,9 @@ public class TaintAnalysisTest {
 
             return KillAll.v();
         }
+        // } getCallFlow
 
+        // getReturnFlow {
         FlowFunction<Object> getReturnFlow(
                 final Stmt callSite, final SootMethod calleeMethod, Stmt exitStmt, Stmt returnSite) {
             if (exitStmt instanceof JReturnStmt) {
@@ -228,12 +224,17 @@ public class TaintAnalysisTest {
             }
             return KillAll.v();
         }
+        // } getReturnFlow
 
+        // getCallToReturnFlow {
         FlowFunction<Object> getCallToReturnFlow(final Stmt callSite, Stmt returnSite) {
             return Identity.v();
         }
+        // } getCallToReturnFlow
     }
+    // } TaintAnalysisProblem
 
+    // AnalysisRunner {
     static class AnalysisRunner {
         protected JavaView view;
         protected MethodSignature entryMethodSignature;
@@ -242,6 +243,7 @@ public class TaintAnalysisTest {
 
         private JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> solved = null;
 
+        // executeStaticAnalysis {
         protected JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> executeStaticAnalysis(
                 String pathToJar, String targetTestClassName) {
             setupSoot(pathToJar, targetTestClassName);
@@ -251,6 +253,7 @@ public class TaintAnalysisTest {
             }
             return solved;
         }
+        // } executeStaticAnalysis
 
         private void runAnalysis() {
             JimpleBasedInterproceduralCFG icfg =
@@ -304,6 +307,7 @@ public class TaintAnalysisTest {
             return new HashSet<>();
         }
 
+        // checkLeak {
         public void checkLeak(JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis) {
             Set<Object> taintedVars = taintedVariablesAtSink(analysis);
             AbstractInvokeExpr sinkMethod = null;
@@ -338,6 +342,7 @@ public class TaintAnalysisTest {
                 }
             }
         }
+        // } checkLeak
 
         Object getLastAssignment(Object stackVar) {
             List<Stmt> stmts = new ArrayList<>(entryMethod.getBody().getStmts());
@@ -353,20 +358,24 @@ public class TaintAnalysisTest {
             throw new RuntimeException("Var not found: " + stackVar);
         }
     }
+    // } AnalysisRunner
 
+    // testTaintAnalysis {
     @Test
     public void testTaintAnalysis() {
-        // Test all scenarios like the original TaintAnalysisExample.java
         analyze(BasicTaint.class.getName());
         analyze(BasicTaintSanitized.class.getName());
         analyze(FunctionPropagatesTaint.class.getName());
         analyze(FunctionReturnsTaint.class.getName());
     }
+    // } testTaintAnalysis
 
+    // main {
     public static void main(String[] args) {
         TaintAnalysisTest test = new TaintAnalysisTest();
         test.testTaintAnalysis();
     }
+    // } main
 
     public static void analyze(String className) {
         String pathToTarget = "target/test-classes";
