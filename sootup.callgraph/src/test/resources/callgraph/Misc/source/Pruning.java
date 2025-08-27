@@ -1,3 +1,5 @@
+package prune;
+
 class Pruning{
     public void methodA() {
         this.methodB();
