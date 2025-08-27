@@ -59,6 +59,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
+    System.out.println("Main Class Sig: " + mainClassSignature);
+    // view.getClasses().forEach(System.out::println);
     assertNotNull(sc);
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
     assertNotNull(m, mainMethodSignature + " not found in classloader");
@@ -1264,5 +1266,28 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("t6.NoThread"), "run", "void", Collections.emptyList());
     assertFalse(cg.containsMethod(runMethodSig));
+  }
+
+  @Test
+  public void testPruning() {
+    // RTA with includeCall always true --> all functions included
+    CallGraph cg = loadCallGraph("Misc", "prune.Pruning");
+    for (CallGraph.Call call : cg.getCalls()) {
+      System.out.println(call);
+    }
+    MethodSignature pruned = identifierFactory.getMethodSignature(identifierFactory.getClassType("prune.Pruning"), "methodB", "void", Collections.emptyList());
+    assertTrue(cg.containsMethod(pruned));
+  }
+
+  // same test just in Implicit dic
+  @Test
+  public void testPruning2() {
+    // RTA with includeCall always true --> all functions included
+    CallGraph cg = loadCallGraph("Implicit", "prune.Pruning");
+    for (CallGraph.Call call : cg.getCalls()) {
+      System.out.println(call);
+    }
+    MethodSignature pruned = identifierFactory.getMethodSignature(identifierFactory.getClassType("prune.Pruning"), "methodB", "void", Collections.emptyList());
+    assertTrue(cg.containsMethod(pruned));
   }
 }
