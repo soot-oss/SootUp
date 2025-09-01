@@ -52,7 +52,7 @@ import sootup.core.views.View;
  */
 public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
-  @NonNull protected Set<ClassType> instantiatedClasses = Collections.emptySet();
+  @NonNull protected Set<ClassType> instantiatedClasses;
   @NonNull protected ArrayListMultimap<ClassType, Call> ignoredCalls = ArrayListMultimap.create();
 
   /**
@@ -61,7 +61,20 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * @param view it contains the data of the classes and methods
    */
   public RapidTypeAnalysisAlgorithm(@NonNull View view) {
+    this(view, Collections.emptySet());
+  }
+
+  /**
+   * Constructor of the RTA algorithm with a predefined set of classes that are considered
+   * instantiated before the RTA call graph algorithm starts.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param preInstantiatedClasses predefined set of instantiated classes
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view, @NonNull Set<ClassType> preInstantiatedClasses) {
     super(view);
+    this.instantiatedClasses = new HashSet<>(preInstantiatedClasses);
   }
 
   @NonNull
@@ -75,7 +88,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Override
   public CallGraph initialize(@NonNull List<MethodSignature> entryPoints) {
     // init helper data structures
-    instantiatedClasses = new HashSet<>();
+    instantiatedClasses = new HashSet<>(instantiatedClasses);
     ignoredCalls = ArrayListMultimap.create();
 
     CallGraph cg = constructCompleteCallGraph(entryPoints);
@@ -96,7 +109,6 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     if (method == null || method.isAbstract() || method.isNative()) {
       return Collections.emptyList();
     }
-
     Set<ClassType> instantiated =
         method.getBody().getStmts().stream()
             .filter(stmt -> stmt instanceof JAssignStmt)
