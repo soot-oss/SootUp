@@ -29,7 +29,7 @@ import sootup.java.core.views.JavaView;
 
 public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
-  private T algorithm;
+  protected T algorithm;
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   protected JavaClassType mainClassSignature;
   protected MethodSignature mainMethodSignature;
@@ -39,7 +39,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   // private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
-  JavaView createViewForClassPath(String classPath) {
+  protected JavaView createViewForClassPath(String classPath) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation(classPath));
