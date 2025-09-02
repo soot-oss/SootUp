@@ -81,8 +81,6 @@ public interface SootMethod extends Method {
 
   @NonNull MethodSubSignature getSubSignature();
 
-  @NonNull ClassType getDeclClassType();
-
   @NonNull String getName();
 
   @NonNull List<ClassType> getExceptionSignatures();

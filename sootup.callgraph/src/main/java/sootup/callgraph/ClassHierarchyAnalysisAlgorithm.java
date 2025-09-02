@@ -93,9 +93,14 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     if (actualTargetMethod == null) {
       // method not implemented, search for implementation in super classes or ínterfaces
       actualTargetMethod = findConcreteMethod(view, targetMethodSignature).orElse(null);
-      // method implementation isn't contained in the view. return the called method as target
       if (actualTargetMethod == null) {
-        return Stream.of(targetMethodSignature);
+        // method implementation isn't contained in the view.
+        // check if method got the PolymorphicSignature annotation
+        actualTargetMethod = findMatchingVarArgsMethod(targetMethodSignature).orElse(null);
+        if (actualTargetMethod == null) {
+          // method couldn't be resolved, return the called method as target
+          return Stream.of(targetMethodSignature);
+        }
       }
     }
 
@@ -126,7 +131,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
               targets,
               resolveAllDefaultTargets(
                   subclasses,
-                  actualTargetMethod.getDeclClassType(),
+                  actualTargetMethod.getDeclaringClassType(),
                   targetMethodSignature.getSubSignature()));
       // all subtypes that do not have an implementation of the method
       // can have an implementation in the supertype
@@ -166,7 +171,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
                         view.getIdentifierFactory()
                             .getMethodSignature(classType, targetSubSignature))
                     .stream())
-        .filter(sootMethod -> interfaces.contains(sootMethod.getDeclClassType()))
+        .filter(sootMethod -> interfaces.contains(sootMethod.getDeclaringClassType()))
         .map(SootMethod::getSignature);
   }
 

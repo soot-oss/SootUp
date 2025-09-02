@@ -24,6 +24,8 @@ package sootup.callgraph;
 
 import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,6 +51,8 @@ import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.core.views.View;
+import sootup.java.core.AnnotationUsage;
+import sootup.java.core.JavaSootClass;
 
 /**
  * The AbstractCallGraphAlgorithm class is the super class of all call graph algorithm. It provides
@@ -61,10 +65,51 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   @NonNull protected final View view;
   @NonNull protected final TypeHierarchy typeHierarchy;
+  @NonNull protected final Table<String, String, SootMethod> preanalysis;
 
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
+    this.preanalysis = getMethodsWithPolymorphicAnnotation();
+  }
+
+  /**
+   * Collects all method signatures from the current view that are annotated with {@code
+   * java.lang.invoke.MethodHandle$PolymorphicSignature}.
+   *
+   * @return a list of method signatures annotated with {@code @PolymorphicSignature}
+   */
+  protected Table<String, String, SootMethod> getMethodsWithPolymorphicAnnotation() {
+    Table<String, String, SootMethod> polymorphicMethods = HashBasedTable.create();
+    ClassType polymorphicAnnotationType =
+        view.getIdentifierFactory()
+            .getClassType("java.lang.invoke.MethodHandle$PolymorphicSignature");
+    view.getClasses()
+        .filter(sootClass -> sootClass instanceof JavaSootClass)
+        .map(sootClass -> (JavaSootClass) sootClass)
+        .flatMap(javaSootClass -> javaSootClass.getMethods().stream())
+        .filter(
+            javaSootMethod -> {
+              for (AnnotationUsage annotationUsage : javaSootMethod.getAnnotations()) {
+                if (annotationUsage.getAnnotation().equals(polymorphicAnnotationType)) {
+                  return true;
+                }
+              }
+              return false;
+            })
+        .forEach(
+            javaSootMethod -> {
+              ClassType classType = javaSootMethod.getDeclaringClassType();
+              String methodName = javaSootMethod.getName();
+              polymorphicMethods.put(methodName, classType.getFullyQualifiedName(), javaSootMethod);
+              typeHierarchy
+                  .subtypesOf(classType)
+                  .forEach(
+                      type ->
+                          polymorphicMethods.put(
+                              methodName, type.getFullyQualifiedName(), javaSootMethod));
+            });
+    return polymorphicMethods;
   }
 
   /**
@@ -592,18 +637,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
 
     // search method in interfaces
-    Optional<? extends SootMethod> defaultMethod = findDefaultMethod(view, startClass, methodSig);
-    if (defaultMethod.isPresent()) {
-      return defaultMethod;
-    }
-
-    logger.warn(
-        "Could not find \""
-            + sig.getSubSignature()
-            + "\" in "
-            + sig.getDeclClassType().getClassName()
-            + " and in its superclasses and interfaces");
-    return Optional.empty();
+    return findDefaultMethod(view, startClass, methodSig);
   }
 
   protected static Optional<SootMethod> findMethodInHierarchy(
@@ -666,5 +700,31 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   protected boolean isInterface(ClassType classType) {
     return typeHierarchy.isInterface(classType);
+  }
+
+  /**
+   * Attempts to resolve a previously unresolved method signature by comparing it with all known
+   * method signatures annotated with {@code @PolymorphicSignature}. If a match is found (ignoring
+   * the parameters), the corresponding SootMethod is returned.
+   *
+   * @param targetMethodSignature the signature of the searched method
+   * @return the found method object, or null if the method was not found.
+   */
+  protected Optional<? extends SootMethod> findMatchingVarArgsMethod(
+      @NonNull MethodSignature targetMethodSignature) {
+    Optional<SootMethod> resolvedVarArgsMethod =
+        Optional.ofNullable(
+            preanalysis.get(
+                targetMethodSignature.getName(),
+                targetMethodSignature.getDeclClassType().getFullyQualifiedName()));
+    if (resolvedVarArgsMethod.isEmpty()) {
+      logger.warn(
+          "Could not find \""
+              + targetMethodSignature.getSubSignature()
+              + "\" in "
+              + targetMethodSignature.getDeclClassType().getClassName()
+              + " and in its superclasses and interfaces");
+    }
+    return resolvedVarArgsMethod;
   }
 }

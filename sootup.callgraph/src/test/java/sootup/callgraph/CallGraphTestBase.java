@@ -2,9 +2,10 @@ package sootup.callgraph;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.Value;
@@ -1265,5 +1266,57 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("t6.NoThread"), "run", "void", Collections.emptyList());
     assertFalse(cg.containsMethod(runMethodSig));
+  }
+
+  @Test
+  public void testMethodHandleDiffParamExample1() {
+    CallGraph cg = loadCallGraph("Polymorphic", "e1.MethodHandleDiffParamExample1");
+    MethodSignature invokeMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("java.lang.invoke.MethodHandle"),
+            "invoke",
+            "java.lang.Object",
+            Collections.singletonList("java.lang.Object[]"));
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(invokeMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testMethodHandleInvokeExample2() {
+    CallGraph cg = loadCallGraph("Polymorphic", "e2.MethodHandleInvokeExample2");
+    MethodSignature invokeMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("java.lang.invoke.MethodHandle"),
+            "invoke",
+            "java.lang.Object",
+            Collections.singletonList("java.lang.Object[]"));
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(invokeMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testVarHandleGetExample3() {
+    CallGraph cg = loadCallGraph("Polymorphic", "e3.VarHandleGetExample3");
+    MethodSignature getMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("java.lang.invoke.VarHandle"),
+            "get",
+            "java.lang.Object",
+            Collections.singletonList("java.lang.Object[]"));
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(getMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testMethodHandleSuperClassExample4() {
+    CallGraph cg = loadCallGraph("Polymorphic", "e4.MethodHandleSuperClassExample4");
+    MethodSignature invokeMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("java.lang.invoke.MethodHandle"),
+            "invoke",
+            "java.lang.Object",
+            Collections.singletonList("java.lang.Object[]"));
+    Set<MethodSignature> callSourcesMethodSigs = cg.callSourcesTo(invokeMethodSig);
+    assertTrue(callSourcesMethodSigs.contains(mainMethodSignature));
   }
 }

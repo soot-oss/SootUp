@@ -56,6 +56,10 @@
 			<artifactId>sootup.jimple.frontend</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.java.core</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

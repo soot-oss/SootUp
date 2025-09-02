@@ -153,9 +153,14 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     if (actualTargetMethod == null) {
       // method not implemented, search for implementation in super classes or ínterfaces
       actualTargetMethod = findConcreteMethod(view, targetMethodSignature).orElse(null);
-      // method implementation isn't contained in the view. return the called method as target
       if (actualTargetMethod == null) {
-        return Stream.of(targetMethodSignature);
+        // method implementation isn't contained in the view.
+        // check if method got the PolymorphicSignature annotation
+        actualTargetMethod = findMatchingVarArgsMethod(targetMethodSignature).orElse(null);
+        if (actualTargetMethod == null) {
+          // method couldn't be resolved, return the called method as target
+          return Stream.of(targetMethodSignature);
+        }
       }
     }
     // special invokes and static invokes can only have one specific target
@@ -171,7 +176,6 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             .subtypesOf(targetMethodSignature.getDeclClassType())
             .flatMap(classType -> view.getClass(classType).stream())
             .toList();
-
     // get all targets of these subtypes
     Stream<MethodSignature> targets =
         resolveAllCallTargets(
@@ -329,7 +333,6 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     if (method == null) {
       return;
     }
-
     List<ClassType> newInstantiatedClasses = collectInstantiatedClassesInMethod(method);
     newInstantiatedClasses.forEach(
         classType -> includeIgnoredCallsToClass(classType, cg, workList));
