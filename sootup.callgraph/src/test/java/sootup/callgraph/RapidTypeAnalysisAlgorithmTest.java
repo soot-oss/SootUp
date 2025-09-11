@@ -12,7 +12,7 @@ import sootup.java.core.views.JavaView;
 /**
  * @author Kadiray Karakaya, Jonas Klauke
  */
-public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm> {
+public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase {
 
   private Set<ClassType> preInstantiatedClasses = Collections.emptySet();
 
