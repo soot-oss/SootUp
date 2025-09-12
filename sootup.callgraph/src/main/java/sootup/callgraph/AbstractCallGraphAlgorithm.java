@@ -68,6 +68,18 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
+   * Decide whether a call from <code>method</code> represented by <code>statement</code> shall be
+   * added to the call graph. Default: accept everything. Subclasses can override this method to
+   * implement pruning.
+   *
+   * @param method the source (caller) method
+   * @param statement the invokable statement causing the call
+   */
+  protected boolean includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+    return true;
+  }
+
+  /**
    * This method starts the construction of the call graph algorithm. It initializes the needed
    * objects for the call graph generation and calls processWorkList method.
    *
@@ -249,7 +261,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .map(Stmt::asInvokableStmt)
         .forEach(
             stmt ->
-                resolveCall(sourceMethod, stmt)
+                (includeCall(sourceMethod, stmt)
+                        ? resolveCall(sourceMethod, stmt)
+                        : Stream.<MethodSignature>empty())
                     .forEach(
                         targetMethod ->
                             addCallToCG(
