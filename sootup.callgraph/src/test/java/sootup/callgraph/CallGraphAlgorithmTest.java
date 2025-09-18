@@ -439,6 +439,28 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   }
 
   @Test
+  public void testSuperCall() {
+    CallGraph cg = loadCallGraph("NonVirtualCall", "supercall.Demo");
+    MethodSignature sourceMethod =
+        identifierFactory.getMethodSignature(
+            mainClassSignature, "source", "void", Collections.emptyList());
+    assertTrue(cg.containsMethod(sourceMethod));
+    //this method does not exist, but it is the dispatch signature of the super call
+    MethodSignature superMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("supercall.SuperClass"), "method", "void", Collections.emptyList());
+    assertFalse(cg.containsMethod(superMethod));
+    //check if the correct call is contained
+    //the wrong call is already checked by the missing method node in the previous check.
+    MethodSignature superSuperMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("supercall.SuperSuperClass"), "method", "void", Collections.emptyList());
+    assertTrue(
+        cg.containsCall(sourceMethod, superSuperMethod, getInvokableStmt(sourceMethod, superMethod)));
+    //supermethod is used in getInvokableStmt since it is the dispatch signature
+  }
+
+  @Test
   public void testVirtualCall1() {
     CallGraph cg = loadCallGraph("VirtualCall", "vc1.Class");
 
