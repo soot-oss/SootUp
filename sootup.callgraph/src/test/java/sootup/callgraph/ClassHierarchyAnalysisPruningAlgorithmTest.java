@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
+import sootup.callgraph.mock.ClassHierarchyAnalysisPruningAlgorithm;
 import sootup.core.IdentifierFactory;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
