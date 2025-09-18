@@ -18,7 +18,7 @@ import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLoc
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-public abstract class CallGraphTestBase extends CallGraphTestMethods {
+public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
   @Test
   public void testSingleMethod() {

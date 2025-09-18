@@ -12,7 +12,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-public class ClassHierarchyAnalysisPruningAlgorithmTest extends CallGraphTestMethods {
+public class ClassHierarchyAnalysisPruningAlgorithmTest extends CallGraphTest {
 
   protected ClassHierarchyAnalysisPruningAlgorithm createAlgorithm(JavaView view) {
     return new ClassHierarchyAnalysisPruningAlgorithm(view);
