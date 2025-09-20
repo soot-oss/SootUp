@@ -1145,4 +1145,13 @@ public abstract class CallGraphTestBase extends CallGraphTestMethods {
             Collections.emptyList());
     assertTrue(cg.containsMethod(pruned));
   }
+
+  @Test
+  public void testIssue1373() {
+    CallGraph cg = loadCallGraph("Bugfixes", "issue1373.B");
+    for (CallGraph.Call call : cg.getCalls()) {
+      System.out.println(call);
+    }
+    assertTrue(cg.callCount() > 0);
+  }
 }
