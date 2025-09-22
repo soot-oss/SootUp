@@ -41,10 +41,10 @@ import sootup.apk.frontend.dexpler.DexMethodSource;
 import sootup.apk.frontend.instruction.*;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.MethodSignature;
@@ -331,11 +331,12 @@ public class DexBody {
     // It is only for the case where there is a JNop Statement after the return statement. Crazy
     // android code :(
     MethodSignature methodSignature =
-        new MethodSignature(
-            classType,
-            method.getName(),
-            parameterTypes,
-            DexUtil.toSootType(method.getReturnType(), 0));
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                classType,
+                method.getName(),
+                DexUtil.toSootType(method.getReturnType(), 0),
+                parameterTypes);
     while (stmtList.get(stmtList.size() - 1) instanceof JNopStmt) {
       stmtList.remove(stmtList.size() - 1);
     }
@@ -601,7 +602,7 @@ public class DexBody {
             Stmt caughtStmt =
                 Jimple.newIdentityStmt(
                     local,
-                    JavaJimple.getInstance().newCaughtExceptionRef(),
+                    JavaJimple.newCaughtExceptionRef(),
                     StmtPositionInfo.getNoStmtPositionInfo());
             insertBefore(caughtStmt, instruction.getStmt());
             handlerStmt = caughtStmt;

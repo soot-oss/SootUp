@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.BlockGraphIterator;
 import sootup.core.graph.MutableBasicBlockImpl;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
@@ -44,10 +44,10 @@ import sootup.core.types.ClassType;
  */
 class BlockGraphIteratorAndTrapAggregator extends BlockGraphIterator {
 
-  @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
+  @NonNull private final List<Trap> collectedTraps = new ArrayList<>();
 
-  @Nonnull protected final Map<ClassType, Stmt> activeTraps = new HashMap<>();
-  @Nonnull protected BasicBlock<?> lastIteratedBlock;
+  @NonNull protected final Map<ClassType, Stmt> activeTraps = new HashMap<>();
+  @NonNull protected BasicBlock<?> lastIteratedBlock;
   @Nullable protected JNopStmt lastStmt = null;
 
   /*
@@ -63,7 +63,7 @@ class BlockGraphIteratorAndTrapAggregator extends BlockGraphIterator {
     return lastStmt;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public BasicBlock<?> next() {
     final BasicBlock<?> block = super.next();

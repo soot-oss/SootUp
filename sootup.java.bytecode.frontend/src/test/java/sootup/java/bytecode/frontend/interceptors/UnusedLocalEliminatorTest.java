@@ -4,14 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.util.Collections;
 import java.util.Set;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JGotoStmt;
@@ -24,8 +22,9 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Marcus Nachtigall */
-@Tag(TestCategories.JAVA_8_CATEGORY)
+/**
+ * @author Marcus Nachtigall
+ */
 public class UnusedLocalEliminatorTest {
 
   @Test
@@ -60,7 +59,6 @@ public class UnusedLocalEliminatorTest {
 
   private static Body.BodyBuilder createBody(boolean unusedLocals) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-    JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
@@ -77,7 +75,7 @@ public class UnusedLocalEliminatorTest {
     }
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str"), noPositionInfo);
     FallsThroughStmt bToA =
         JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);

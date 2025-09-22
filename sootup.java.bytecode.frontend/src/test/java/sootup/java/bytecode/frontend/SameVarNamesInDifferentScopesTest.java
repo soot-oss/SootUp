@@ -1,9 +1,7 @@
 package sootup.java.bytecode.frontend;
 
-import categories.TestCategories;
 import java.util.Collections;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.StmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -13,7 +11,6 @@ import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
 
 /** InvokeDynamics and the Operand stack.. */
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class SameVarNamesInDifferentScopesTest {
   final String directory = "../shared-test-resources/bugfixes/";
 

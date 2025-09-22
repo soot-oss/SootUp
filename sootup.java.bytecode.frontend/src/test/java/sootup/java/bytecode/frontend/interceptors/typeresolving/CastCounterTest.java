@@ -3,7 +3,6 @@ package sootup.java.bytecode.frontend.interceptors.typeresolving;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,9 +11,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
@@ -26,7 +24,6 @@ import sootup.interceptors.typeresolving.CastCounter;
 import sootup.interceptors.typeresolving.Typing;
 import sootup.interceptors.typeresolving.types.AugmentIntegerTypes;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class CastCounterTest extends TypeAssignerTestSuite {
 
   AugEvalFunction function;

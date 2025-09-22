@@ -24,16 +24,14 @@ package sootup.core.jimple.javabytecode.stmt;
 
 import java.util.*;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.stmt.AbstractStmt;
-import sootup.core.jimple.common.stmt.BranchingStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.model.Body;
 import sootup.core.util.printer.StmtPrinter;
@@ -48,13 +46,13 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
   private List<IntConstant> values;
 
   private JSwitchStmt(
-      boolean isTableSwitch, @Nonnull StmtPositionInfo positionInfo, @Nonnull Immediate key) {
+      boolean isTableSwitch, @NonNull StmtPositionInfo positionInfo, @NonNull Immediate key) {
     super(positionInfo);
     this.key = key;
   }
 
   public JSwitchStmt(
-      @Nonnull Immediate key, int lowIndex, int highIndex, @Nonnull StmtPositionInfo positionInfo) {
+      @NonNull Immediate key, int lowIndex, int highIndex, @NonNull StmtPositionInfo positionInfo) {
     this(true, positionInfo, key);
 
     if (lowIndex > highIndex) {
@@ -71,9 +69,9 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
 
   /** Constructs a new JSwitchStmt. lookupValues should be a list of IntConst s. */
   public JSwitchStmt(
-      @Nonnull Immediate key,
-      @Nonnull List<IntConstant> lookupValues,
-      @Nonnull StmtPositionInfo positionInfo) {
+      @NonNull Immediate key,
+      @NonNull List<IntConstant> lookupValues,
+      @NonNull StmtPositionInfo positionInfo) {
     this(false, positionInfo, key);
     values = Collections.unmodifiableList(new ArrayList<>(lookupValues));
   }
@@ -82,8 +80,8 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
     return values instanceof JSwitchStmt.ImmutableAscendingSequenceList;
   }
 
-  @Nonnull
-  public Optional<Stmt> getDefaultTarget(@Nonnull Body body) {
+  @NonNull
+  public Optional<Stmt> getDefaultTarget(@NonNull Body body) {
     return Optional.ofNullable(body.getBranchTargetsOf(this).get(values.size()));
   }
 
@@ -92,7 +90,7 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(getKey().getUses(), Stream.of(getKey()));
   }
@@ -108,7 +106,7 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseSwitchStmt(this);
     return v;
   }
@@ -122,13 +120,13 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
     return values.get(index).getValue();
   }
 
-  @Nonnull
+  @NonNull
   public List<IntConstant> getValues() {
     return Collections.unmodifiableList(values);
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public List<Stmt> getTargetStmts(Body body) {
     return body.getBranchTargetsOf(this);
   }
@@ -139,7 +137,7 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseSwitchStmt(this, o);
   }
 
@@ -171,7 +169,7 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter stmtPrinter) {
+  public void toString(@NonNull StmtPrinter stmtPrinter) {
     stmtPrinter.literal(Jimple.SWITCH);
     stmtPrinter.literal("(");
     getKey().toString(stmtPrinter);
@@ -212,18 +210,33 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
     stmtPrinter.literal("}");
   }
 
-  @Nonnull
-  public JSwitchStmt withKey(@Nonnull Immediate key) {
+  @Override
+  public boolean isJSwitchStmt() {
+    return true;
+  }
+
+  @Override
+  public JSwitchStmt asJSwitchStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JSwitchStmt> toJSwitchStmt() {
+    return Optional.of(this);
+  }
+
+  @NonNull
+  public JSwitchStmt withKey(@NonNull Immediate key) {
     return new JSwitchStmt(key, getValues(), getPositionInfo());
   }
 
-  @Nonnull
-  public JSwitchStmt withValues(@Nonnull List<IntConstant> values) {
+  @NonNull
+  public JSwitchStmt withValues(@NonNull List<IntConstant> values) {
     return new JSwitchStmt(getKey(), values, getPositionInfo());
   }
 
-  @Nonnull
-  public JSwitchStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JSwitchStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JSwitchStmt(getKey(), getValues(), positionInfo);
   }
 
@@ -256,13 +269,13 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
       return false;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Iterator<IntConstant> iterator() {
       return listIterator();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Object[] toArray() {
       Object[] intConstants = new IntConstant[to - from + 1];
@@ -272,14 +285,14 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
       return intConstants;
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public <T> T[] toArray(@Nonnull T[] ts) {
-      T[] intConstants = (T[]) new Object[to - from + 1];
+    public <T> T[] toArray(@NonNull T[] ts) {
+      List<IntConstant> intConstants = new ArrayList<>(to - from + 1);
       for (int i = 0; i < size(); i++) {
-        intConstants[i] = (T) IntConstant.getInstance(from + i);
+        intConstants.add(IntConstant.getInstance(from + i));
       }
-      return intConstants;
+      return intConstants.toArray(ts);
     }
 
     @Override
@@ -303,22 +316,22 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
     }
 
     @Override
-    public boolean addAll(@Nonnull Collection<? extends IntConstant> collection) {
+    public boolean addAll(@NonNull Collection<? extends IntConstant> collection) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean addAll(int i, @Nonnull Collection<? extends IntConstant> collection) {
+    public boolean addAll(int i, @NonNull Collection<? extends IntConstant> collection) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean removeAll(@Nonnull Collection<?> collection) {
+    public boolean removeAll(@NonNull Collection<?> collection) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean retainAll(@Nonnull Collection<?> collection) {
+    public boolean retainAll(@NonNull Collection<?> collection) {
       throw new UnsupportedOperationException();
     }
 
@@ -365,13 +378,13 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
       return indexOf(o);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ListIterator<IntConstant> listIterator() {
       return listIterator(0);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ListIterator<IntConstant> listIterator(int i) {
       return new ListIterator<IntConstant>() {
@@ -430,7 +443,7 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
       };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<IntConstant> subList(int startIdx, int endIdx) {
       return new ImmutableAscendingSequenceList(from + startIdx, from + endIdx);

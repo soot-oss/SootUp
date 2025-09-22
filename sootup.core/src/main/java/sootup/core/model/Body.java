@@ -28,13 +28,16 @@ import java.io.StringWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.*;
@@ -52,13 +55,13 @@ public class Body implements HasPosition {
   /** The locals for this Body. */
   private final Set<Local> locals;
 
-  @Nonnull private final StmtGraph<?> graph;
+  @NonNull private final StmtGraph<?> graph;
 
   /** The Position Information in the Source for this Body. */
-  @Nonnull private final Position position;
+  @NonNull private final Position position;
 
   /** The MethodSignature associated with this Body. */
-  @Nonnull private final MethodSignature methodSignature;
+  @NonNull private final MethodSignature methodSignature;
 
   /**
    * Creates an body which is not associated to any method.
@@ -66,10 +69,10 @@ public class Body implements HasPosition {
    * @param locals please use {@link LocalGenerator} to generate local for a body.
    */
   private Body(
-      @Nonnull MethodSignature methodSignature,
-      @Nonnull Set<Local> locals,
-      @Nonnull StmtGraph<?> stmtGraph,
-      @Nonnull Position position) {
+      @NonNull MethodSignature methodSignature,
+      @NonNull Set<Local> locals,
+      @NonNull StmtGraph<?> stmtGraph,
+      @NonNull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
     this.graph = MutableBlockStmtGraph.createUnmodifiableStmtGraph(stmtGraph);
@@ -96,7 +99,7 @@ public class Body implements HasPosition {
    *
    * @return the method that owns this body.
    */
-  @Nonnull
+  @NonNull
   public MethodSignature getMethodSignature() {
     return methodSignature;
   }
@@ -140,7 +143,7 @@ public class Body implements HasPosition {
   }
 
   /** Return LHS of the first identity stmt assigning from \@parameter i. */
-  @Nonnull
+  @NonNull
   public Local getParameterLocal(int i) {
     for (Stmt stmt : graph) {
       // TODO: possible optimisation see getParameterLocals()
@@ -164,7 +167,7 @@ public class Body implements HasPosition {
    *     ordered as per the parameter index.
    * @throws RuntimeException if a JParameterRef is missing
    */
-  @Nonnull
+  @NonNull
   public Collection<Local> getParameterLocals() {
     final List<Local> retVal = new ArrayList<>();
     // TODO: [ms] performance: don't iterate over all stmt -> lazy vs freedom/error tolerance -> use
@@ -194,7 +197,7 @@ public class Body implements HasPosition {
    *
    * @return the statements in this Body
    */
-  @Nonnull
+  @NonNull
   public List<Stmt> getStmts() {
     final ArrayList<Stmt> stmts = new ArrayList<>(graph.getNodes().size());
     for (Stmt stmt : graph) {
@@ -203,7 +206,7 @@ public class Body implements HasPosition {
     return stmts;
   }
 
-  @Nonnull
+  @NonNull
   // TODO: [ms] should be an ImmutableStmtGraph!
   public StmtGraph<?> getStmtGraph() {
     return graph;
@@ -219,24 +222,24 @@ public class Body implements HasPosition {
     return writer.toString();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Position getPosition() {
     return position;
   }
 
   /** returns a List of Branch targets of Branching Stmts */
-  @Nonnull
-  public List<Stmt> getBranchTargetsOf(@Nonnull BranchingStmt fromStmt) {
+  @NonNull
+  public List<Stmt> getBranchTargetsOf(@NonNull BranchingStmt fromStmt) {
     return getStmtGraph().getBranchTargetsOf(fromStmt);
   }
 
-  public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
+  public boolean isStmtBranchTarget(@NonNull Stmt targetStmt) {
     return getStmtGraph().isStmtBranchTarget(targetStmt);
   }
 
   /** Returns the first non-identity stmt in this body. */
-  @Nonnull
+  @NonNull
   public Stmt getFirstNonIdentityStmt() {
     Iterator<Stmt> it = getStmts().iterator();
     Stmt o = null;
@@ -280,8 +283,8 @@ public class Body implements HasPosition {
     return defList;
   }
 
-  @Nonnull
-  public Body withLocals(@Nonnull Set<Local> locals) {
+  @NonNull
+  public Body withLocals(@NonNull Set<Local> locals) {
     return new Body(getMethodSignature(), locals, getStmtGraph(), getPosition());
   }
 
@@ -289,32 +292,32 @@ public class Body implements HasPosition {
     return new BodyBuilder();
   }
 
-  public static BodyBuilder builder(@Nonnull MutableStmtGraph graph) {
+  public static BodyBuilder builder(@NonNull MutableStmtGraph graph) {
     return new BodyBuilder(graph);
   }
 
-  public static BodyBuilder builder(@Nonnull Body body, Set<MethodModifier> modifiers) {
+  public static BodyBuilder builder(@NonNull Body body, Set<MethodModifier> modifiers) {
     return new BodyBuilder(body, modifiers);
   }
 
   /** The BodyBuilder helps to create a new Body in a fluent way (see Builder Pattern) */
   public static class BodyBuilder implements HasPosition {
-    @Nonnull private Set<Local> locals = new LinkedHashSet<>();
-    @Nonnull private Set<MethodModifier> modifiers = Collections.emptySet();
+    @NonNull private Set<Local> locals = new LinkedHashSet<>();
+    @NonNull private Set<MethodModifier> modifiers = Collections.emptySet();
 
     @Nullable private Position position = null;
-    @Nonnull private final MutableStmtGraph graph;
+    @NonNull private final MutableStmtGraph graph;
     @Nullable private MethodSignature methodSig = null;
 
     BodyBuilder() {
       graph = new MutableBlockStmtGraph();
     }
 
-    BodyBuilder(@Nonnull MutableStmtGraph graph) {
+    BodyBuilder(@NonNull MutableStmtGraph graph) {
       this.graph = graph;
     }
 
-    BodyBuilder(@Nonnull Body body, @Nonnull Set<MethodModifier> modifiers) {
+    BodyBuilder(@NonNull Body body, @NonNull Set<MethodModifier> modifiers) {
       setModifiers(modifiers);
       setMethodSignature(body.getMethodSignature());
       setLocals(new LinkedHashSet<>(body.getLocals()));
@@ -322,35 +325,35 @@ public class Body implements HasPosition {
       graph = new MutableBlockStmtGraph(body.getStmtGraph());
     }
 
-    @Nonnull
+    @NonNull
     public MutableStmtGraph getStmtGraph() {
       return graph;
     }
 
     /* Gets an ordered copy of the Stmts in the StmtGraph */
-    @Nonnull
+    @NonNull
     public List<Stmt> getStmts() {
       return graph.getStmts();
     }
 
-    @Nonnull
+    @NonNull
     public Set<Local> getLocals() {
       return locals;
     }
 
-    @Nonnull
-    public BodyBuilder setLocals(@Nonnull Set<Local> locals) {
+    @NonNull
+    public BodyBuilder setLocals(@NonNull Set<Local> locals) {
       this.locals = locals;
       return this;
     }
 
-    @Nonnull
-    public BodyBuilder addLocal(@Nonnull Local local) {
+    @NonNull
+    public BodyBuilder addLocal(@NonNull Local local) {
       locals.add(local);
       return this;
     }
 
-    public void replaceLocal(@Nonnull Local existingLocal, @Nonnull Local newLocal) {
+    public void replaceLocal(@NonNull Local existingLocal, @NonNull Local newLocal) {
       if (!locals.contains(existingLocal)) {
         throw new IllegalArgumentException(
             "The given existing Local '" + existingLocal + "' is not in the body!");
@@ -378,7 +381,7 @@ public class Body implements HasPosition {
       locals.add(newLocal);
     }
 
-    public BodyBuilder setModifiers(@Nonnull Set<MethodModifier> modifiers) {
+    public BodyBuilder setModifiers(@NonNull Set<MethodModifier> modifiers) {
       this.modifiers = modifiers;
       return this;
     }
@@ -389,8 +392,8 @@ public class Body implements HasPosition {
       return position;
     }
 
-    @Nonnull
-    public BodyBuilder setPosition(@Nonnull Position position) {
+    @NonNull
+    public BodyBuilder setPosition(@NonNull Position position) {
       this.position = position;
       return this;
     }
@@ -399,12 +402,12 @@ public class Body implements HasPosition {
       return methodSig;
     }
 
-    public BodyBuilder setMethodSignature(@Nonnull MethodSignature methodSig) {
+    public BodyBuilder setMethodSignature(@NonNull MethodSignature methodSig) {
       this.methodSig = methodSig;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Body build() {
 
       if (methodSig == null) {
@@ -436,7 +439,7 @@ public class Body implements HasPosition {
       return new Body(methodSig, locals, graph, position);
     }
 
-    @Nonnull
+    @NonNull
     public Set<MethodModifier> getModifiers() {
       return modifiers;
     }
@@ -450,7 +453,7 @@ public class Body implements HasPosition {
       }
     }
 
-    public void removeDefLocalsOf(@Nonnull Stmt stmt) {
+    public void removeDefLocalsOf(@NonNull Stmt stmt) {
       stmt.getDef()
           .ifPresent(
               def -> {

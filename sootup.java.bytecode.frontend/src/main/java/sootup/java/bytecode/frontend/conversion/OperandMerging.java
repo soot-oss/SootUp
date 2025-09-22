@@ -1,4 +1,5 @@
 package sootup.java.bytecode.frontend.conversion;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,10 +22,10 @@ package sootup.java.bytecode.frontend.conversion;
  * #L%
  */
 import java.util.ArrayList;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 
@@ -38,7 +39,7 @@ import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
  * @author Aaloan Miftah
  */
 final class OperandMerging {
-  @Nonnull private final AbstractInsnNode insn;
+  @NonNull private final AbstractInsnNode insn;
 
   /**
    * Keep track of the result of the instruction. The output might get a stack local assigned when
@@ -50,15 +51,15 @@ final class OperandMerging {
    */
   @Nullable private Operand output;
 
-  @Nonnull final ArrayList<Operand[]> inputOperands = new ArrayList<>(1);
-  @Nonnull private final AsmMethodSource src;
+  @NonNull final ArrayList<Operand[]> inputOperands = new ArrayList<>(1);
+  @NonNull private final AsmMethodSource src;
 
   /**
    * Constructs a new operand merging information holder.
    *
    * @param src source the merging belongs to.
    */
-  OperandMerging(@Nonnull AbstractInsnNode insn, @Nonnull AsmMethodSource src) {
+  OperandMerging(@NonNull AbstractInsnNode insn, @NonNull AsmMethodSource src) {
     this.insn = insn;
     this.src = src;
   }
@@ -71,7 +72,7 @@ final class OperandMerging {
    *
    * @param outputOperand the newly produced operand that will get pushed onto the operand stack
    */
-  void mergeOutput(@Nonnull Operand outputOperand) {
+  void mergeOutput(@NonNull Operand outputOperand) {
     if (output == null) {
       output = outputOperand;
     } else if (output.stackLocal != null) {
@@ -115,7 +116,7 @@ final class OperandMerging {
    * @throws IllegalArgumentException if the number of new operands is not equal to the number of
    *     old operands.
    */
-  void mergeInputs(@Nonnull Operand... oprs) {
+  void mergeInputs(@NonNull Operand... oprs) {
     if (inputOperands.isEmpty()) {
       inputOperands.add(oprs);
       // There are no other operands to merge with

@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.core.PointsToAnalysis;
@@ -31,10 +31,10 @@ import qilin.core.pag.*;
 import qilin.core.pag.Field;
 import qilin.util.PTAUtils;
 import qilin.util.queue.UniqueQueue;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -67,9 +67,12 @@ import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootField;
 import sootup.java.core.language.JavaJimple;
 
-/** @author Ondrej Lhotak */
+/**
+ * @author Ondrej Lhotak
+ */
 public class MethodNodeFactory {
   protected PAG pag;
   protected MethodPAG mpag;
@@ -132,7 +135,7 @@ public class MethodNodeFactory {
 
   /** Adds the edges required for this statement to the graph. */
   public final void handleStmt(Stmt s) {
-    if (s.isInvokableStmt() && s.asInvokableStmt().containsInvokeExpr()) {
+    if (s.isInvokableStmt() && s.asInvokableStmt().getInvokeExpr().isPresent()) {
       mpag.addCallStmt(s.asInvokableStmt());
       handleInvokeStmt(s.asInvokableStmt());
     } else {
@@ -192,7 +195,7 @@ public class MethodNodeFactory {
           }
 
           @Override
-          public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+          public void caseAssignStmt(@NonNull JAssignStmt stmt) {
             Value l = stmt.getLeftOp();
             Value r = stmt.getRightOp();
             if (l instanceof JStaticFieldRef) {
@@ -216,7 +219,7 @@ public class MethodNodeFactory {
           }
 
           @Override
-          public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
+          public void caseIdentityStmt(@NonNull JIdentityStmt stmt) {
             if (!(stmt.getLeftOp().getType() instanceof ReferenceType)) {
               return;
             }
@@ -226,19 +229,19 @@ public class MethodNodeFactory {
           }
 
           @Override
-          public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
+          public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
             defaultCaseStmt(stmt);
           }
 
           @Override
-          public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
+          public void caseReturnStmt(@NonNull JReturnStmt stmt) {
             if (!(stmt.getOp().getType() instanceof ReferenceType)) return;
             Node retNode = getNode(stmt.getOp());
             mpag.addInternalEdge(retNode, caseRet());
           }
 
           @Override
-          public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
+          public void caseThrowStmt(@NonNull JThrowStmt stmt) {
             if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
               mpag.addInternalEdge(getNode(stmt.getOp()), getNode(scene.getFieldGlobalThrow()));
             }
@@ -266,7 +269,7 @@ public class MethodNodeFactory {
     SootField sf;
     if (!osf.isPresent()) {
       sf =
-          new SootField(
+          new JavaSootField(
               fieldSig,
               Collections.singleton(FieldModifier.PUBLIC),
               NoPositionInformation.getInstance());
@@ -283,7 +286,10 @@ public class MethodNodeFactory {
     int pos = 0;
     AllocNode prevAn =
         pag.makeAllocNode(
-            JavaJimple.getInstance().newNewArrayExpr(type, nmae.getSize(pos)), type, method);
+            JavaJimple.newNewArrayExpr(
+                type, nmae.getSize(pos), JavaIdentifierFactory.getInstance()),
+            type,
+            method);
     VarNode prevVn = pag.makeLocalVarNode(prevAn.getNewExpr(), prevAn.getType(), method);
     mpag.addInternalEdge(prevAn, prevVn); // new
     VarNode ret = prevVn;
@@ -301,7 +307,10 @@ public class MethodNodeFactory {
         sizeVal = IntConstant.getInstance(1);
       }
       AllocNode an =
-          pag.makeAllocNode(JavaJimple.getInstance().newNewArrayExpr(type, sizeVal), type, method);
+          pag.makeAllocNode(
+              JavaJimple.newNewArrayExpr(type, sizeVal, JavaIdentifierFactory.getInstance()),
+              type,
+              method);
       VarNode vn = pag.makeLocalVarNode(an.getNewExpr(), an.getType(), method);
       mpag.addInternalEdge(an, vn); // new
       mpag.addInternalEdge(vn, pag.makeFieldRefNode(prevVn, ArrayElement.v())); // store
@@ -430,7 +439,7 @@ public class MethodNodeFactory {
     }
     for (SootClass sc : visit) {
       MethodSubSignature subclinit =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <clinit>()");
+          scene.getView().getIdentifierFactory().parseMethodSubSignature("void <clinit>()");
       final Optional<? extends SootMethod> initStart = sc.getMethod(subclinit);
       initStart.ifPresent(ret::add);
     }

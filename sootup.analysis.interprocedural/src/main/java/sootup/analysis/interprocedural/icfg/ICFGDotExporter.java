@@ -72,15 +72,14 @@ public class ICFGDotExporter {
       for (BasicBlock<?> block : blocks) {
         List<Stmt> stmts = block.getStmts();
         for (Stmt stmt : stmts) {
-          if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
+          if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
             MethodSignature target =
                 stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature();
             int hashCode = stmt.hashCode();
             calls.put(hashCode, target);
             // compute all the classes that are made to the subclasses as well
             connectEdgesToSubClasses(source, target, view, calls, callgraph);
-          } else if (stmt instanceof JAssignStmt) {
-            JAssignStmt jAssignStmt = (JAssignStmt) stmt;
+          } else if (stmt instanceof JAssignStmt jAssignStmt) {
             Integer currentHashCode = stmt.hashCode();
             if (jAssignStmt.getRightOp() instanceof JNewExpr) {
               // if the statement is a new expression, then there will be calls to its static

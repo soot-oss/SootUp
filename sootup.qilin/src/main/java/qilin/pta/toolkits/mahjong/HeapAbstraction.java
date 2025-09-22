@@ -48,9 +48,7 @@ public class HeapAbstraction {
     // group the objects by their types
     Map<Type, Set<AllocNode>> groupedObjs =
         allObjs.stream().collect(Collectors.groupingBy(Node::getType, Collectors.toSet()));
-    groupedObjs
-        .entrySet()
-        .parallelStream()
+    groupedObjs.entrySet().parallelStream()
         .forEach(
             entry -> {
               DFAMap dfaMap = new DFAMap();

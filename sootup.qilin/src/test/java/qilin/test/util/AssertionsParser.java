@@ -50,7 +50,7 @@ public class AssertionsParser {
       // System.out.println("=================================================================");
       //            }
       for (final Stmt stmt : PTAUtils.getMethodBody(sm).getStmts()) {
-        if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
+        if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
           AbstractInvokeExpr ie = stmt.asInvokableStmt().getInvokeExpr().get();
           if (ie instanceof JStaticInvokeExpr) {
             final MethodSignature calleeSig = ie.getMethodSignature();

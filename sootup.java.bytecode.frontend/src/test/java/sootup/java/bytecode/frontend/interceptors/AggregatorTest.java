@@ -3,17 +3,15 @@ package sootup.java.bytecode.frontend.interceptors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
@@ -32,7 +30,6 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AggregatorTest {
 
   /**
@@ -87,7 +84,8 @@ public class AggregatorTest {
 
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
-    JavaClassType fileType = JavaIdentifierFactory.getInstance().getClassType("File");
+    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+    JavaClassType fileType = identifierFactory.getClassType("File");
 
     Local a = JavaJimple.newLocal("a", fileType);
     Local b = JavaJimple.newLocal("b", fileType);
@@ -98,8 +96,7 @@ public class AggregatorTest {
     FallsThroughStmt useA =
         JavaJimple.newInvokeStmt(
             Jimple.newSpecialInvokeExpr(
-                a,
-                JavaIdentifierFactory.getInstance().parseMethodSignature("<File: void <init>()>")),
+                a, identifierFactory.parseMethodSignature("<File: void <init>()>")),
             noPositionInfo);
     FallsThroughStmt assignB = JavaJimple.newAssignStmt(b, a, noPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noPositionInfo);
@@ -111,8 +108,7 @@ public class AggregatorTest {
     stmtGraph.putEdge(assignB, ret);
 
     builder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+        identifierFactory.getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     new Aggregator().interceptBody(builder, new JavaView(Collections.emptyList()));
 

@@ -23,41 +23,41 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Immediate;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.util.printer.StmtPrinter;
 
 public abstract class AbstractBinopExpr implements Expr {
 
-  @Nonnull private final Immediate op1;
-  @Nonnull private final Immediate op2;
+  @NonNull private final Immediate op1;
+  @NonNull private final Immediate op2;
 
-  AbstractBinopExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  AbstractBinopExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     this.op1 = op1;
     this.op2 = op2;
   }
 
-  @Nonnull
+  @NonNull
   public Immediate getOp1() {
     return op1;
   }
 
-  @Nonnull
+  @NonNull
   public Immediate getOp2() {
     return op2;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public final Stream<Value> getUses() {
     return Stream.concat(
         Stream.concat(Stream.concat(op1.getUses(), Stream.of(op1)), op2.getUses()), Stream.of(op2));
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseAbstractBinopExpr(this, o);
   }
 
@@ -68,7 +68,7 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   /** Returns the unique symbol for an operator. */
-  @Nonnull
+  @NonNull
   public abstract String getSymbol();
 
   @Override
@@ -79,15 +79,15 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     op1.toString(up);
     up.literal(getSymbol());
     op2.toString(up);
   }
 
-  @Nonnull
-  public abstract AbstractBinopExpr withOp1(@Nonnull Immediate value);
+  @NonNull
+  public abstract AbstractBinopExpr withOp1(@NonNull Immediate value);
 
-  @Nonnull
-  public abstract AbstractBinopExpr withOp2(@Nonnull Immediate value);
+  @NonNull
+  public abstract AbstractBinopExpr withOp2(@NonNull Immediate value);
 }

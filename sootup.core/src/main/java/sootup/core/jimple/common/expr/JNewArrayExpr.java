@@ -22,13 +22,14 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
@@ -38,14 +39,14 @@ import sootup.core.util.printer.StmtPrinter;
 /** An expression that creates a new array of a certain type and a certain size. */
 public final class JNewArrayExpr implements Expr {
 
-  @Nonnull private final Type baseType;
-  @Nonnull private final Immediate size;
-  @Nonnull private final IdentifierFactory identifierFactory;
+  @NonNull private final Type baseType;
+  @NonNull private final Immediate size;
+  @NonNull private final IdentifierFactory identifierFactory;
 
   public JNewArrayExpr(
-      @Nonnull Type baseType,
-      @Nonnull Immediate size,
-      @Nonnull IdentifierFactory identifierFactory) {
+      @NonNull Type baseType,
+      @NonNull Immediate size,
+      @NonNull IdentifierFactory identifierFactory) {
     this.baseType = baseType;
     this.size = size;
     this.identifierFactory = identifierFactory;
@@ -62,7 +63,7 @@ public final class JNewArrayExpr implements Expr {
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseNewArrayExpr(this, o);
   }
 
@@ -79,7 +80,7 @@ public final class JNewArrayExpr implements Expr {
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.NEWARRAY);
     up.literal(" ");
     up.literal("(");
@@ -90,12 +91,12 @@ public final class JNewArrayExpr implements Expr {
     up.literal("]");
   }
 
-  @Nonnull
+  @NonNull
   public Type getBaseType() {
     return baseType;
   }
 
-  @Nonnull
+  @NonNull
   public Immediate getSize() {
     return size;
   }
@@ -106,31 +107,31 @@ public final class JNewArrayExpr implements Expr {
    * @return
    */
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(size.getUses(), Stream.of(size));
   }
 
   /** Returns an instance of ArrayType(). */
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return simplify(baseType, identifierFactory);
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseNewArrayExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JNewArrayExpr withBaseType(@Nonnull Type baseType) {
+  @NonNull
+  public JNewArrayExpr withBaseType(@NonNull Type baseType) {
     return new JNewArrayExpr(baseType, getSize(), identifierFactory);
   }
 
-  @Nonnull
-  public JNewArrayExpr withSize(@Nonnull Immediate size) {
+  @NonNull
+  public JNewArrayExpr withSize(@NonNull Immediate size) {
     return new JNewArrayExpr(baseType, size, identifierFactory);
   }
 
@@ -142,5 +143,20 @@ public final class JNewArrayExpr implements Expr {
       return ((ArrayType) baseType).isArrayTypeOfPrimitives();
     }
     return false;
+  }
+
+  @Override
+  public boolean isJNewArrayExpr() {
+    return true;
+  }
+
+  @Override
+  public JNewArrayExpr asJNewArrayExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JNewArrayExpr> toJNewArrayExpr() {
+    return Optional.of(this);
   }
 }

@@ -18,6 +18,7 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.VoidType;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 
 public abstract class GraphTestSuiteBase {
@@ -51,7 +52,7 @@ public abstract class GraphTestSuiteBase {
             Collections.emptyList(),
             VoidType.getInstance());
 
-    return new SootMethod(
+    return new JavaSootMethod(
         new OverridingBodySource(
             methodSignature, Body.builder(stmtGraph).setMethodSignature(methodSignature).build()),
         methodSignature,

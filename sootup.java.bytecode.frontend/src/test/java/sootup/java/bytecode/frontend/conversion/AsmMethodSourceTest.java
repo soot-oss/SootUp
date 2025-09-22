@@ -1,13 +1,11 @@
 package sootup.java.bytecode.frontend.conversion;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
-import categories.TestCategories;
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -20,20 +18,14 @@ import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AsmMethodSourceTest {
 
   @Test
   public void testFix_StackUnderrun_convertPutFieldInsn_init() {
 
-    double version = Double.parseDouble(System.getProperty("java.specification.version"));
-    if (version > 1.8) {
-      fail("The rt.jar is not available after Java 8. You are using version " + version);
-    }
-
     JavaView view = new JavaView(new DefaultRuntimeAnalysisInputLocation());
 
-    final JavaIdentifierFactory idf = JavaIdentifierFactory.getInstance();
+    final JavaIdentifierFactory idf = view.getIdentifierFactory();
     JavaClassType mainClassSignature =
         idf.getClassType("javax.management.NotificationBroadcasterSupport");
     MethodSignature mainMethodSignature =
@@ -47,9 +39,12 @@ public class AsmMethodSourceTest {
     assertTrue(idf.isConstructorSignature(mainMethodSignature));
     assertTrue(idf.isConstructorSubSignature(mainMethodSignature.getSubSignature()));
 
-    final SootClass abstractClass = view.getClass(mainClassSignature).get();
+    final SootClass abstractClass = view.getClass(mainClassSignature).orElse(null);
+    assertNotNull(abstractClass);
 
-    final SootMethod method = abstractClass.getMethod(mainMethodSignature.getSubSignature()).get();
+    final SootMethod method =
+        abstractClass.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
+    assertNotNull(method);
     method.getBody().getStmts();
   }
 
@@ -62,9 +57,10 @@ public class AsmMethodSourceTest {
 
     JavaSootMethod method =
         view.getMethod(
-                JavaIdentifierFactory.getInstance()
+                view.getIdentifierFactory()
                     .parseMethodSignature("<NestedMethodCall: void nestedMethodCall()>"))
-            .get();
+            .orElse(null);
+    assertNotNull(method);
     assertEquals(
         "this := @this: NestedMethodCall;\n"
             + "i = 0;\n"
@@ -89,11 +85,12 @@ public class AsmMethodSourceTest {
 
     JavaSootMethod method =
         view.getMethod(
-                JavaIdentifierFactory.getInstance()
+                view.getIdentifierFactory()
                     .parseMethodSignature("<ConditionalStringConcat: void method(boolean)>"))
-            .get();
+            .orElse(null);
+    assertNotNull(method);
 
-    assert !method.getBody().getStmts().stream()
-        .anyMatch(s -> s.toString().contains(" append(java.lang.String)>(\"ghi\")"));
+    assert method.getBody().getStmts().stream()
+        .noneMatch(s -> s.toString().contains(" append(java.lang.String)>(\"ghi\")"));
   }
 }

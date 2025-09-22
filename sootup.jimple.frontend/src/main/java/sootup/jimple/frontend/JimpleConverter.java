@@ -2,7 +2,7 @@ package sootup.jimple.frontend;
 
 /*-
  * #%L
- * SootUp
+ * SootUp\
  * %%
  * Copyright (C) 1997 - 2024 Raja Vallée-Rai and others
  * %%
@@ -25,17 +25,18 @@ package sootup.jimple.frontend;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.*;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.IdentityRef;
@@ -51,18 +52,22 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootField;
+import sootup.java.core.JavaSootMethod;
+import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.language.JavaJimple;
+import sootup.java.core.types.JavaClassType;
 import sootup.jimple.JimpleBaseVisitor;
 import sootup.jimple.JimpleParser;
 
 public class JimpleConverter {
 
-  public OverridingClassSource run(
-      @Nonnull CharStream charStream,
-      @Nonnull AnalysisInputLocation inputlocation,
-      @Nonnull Path sourcePath,
-      @Nonnull List<BodyInterceptor> bodyInterceptors,
-      @Nonnull View view) {
+  public OverridingJavaClassSource run(
+      @NonNull CharStream charStream,
+      @NonNull AnalysisInputLocation inputlocation,
+      @NonNull Path sourcePath,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull View view) {
 
     final JimpleParser jimpleParser =
         JimpleConverterUtil.createJimpleParser(charStream, sourcePath);
@@ -71,12 +76,12 @@ public class JimpleConverter {
     return run(jimpleParser, inputlocation, sourcePath, bodyInterceptors, view);
   }
 
-  public OverridingClassSource run(
-      @Nonnull JimpleParser parser,
-      @Nonnull AnalysisInputLocation inputlocation,
-      @Nonnull Path sourcePath,
-      @Nonnull List<BodyInterceptor> bodyInterceptors,
-      @Nonnull View view) {
+  public OverridingJavaClassSource run(
+      @NonNull JimpleParser parser,
+      @NonNull AnalysisInputLocation inputlocation,
+      @NonNull Path sourcePath,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull View view) {
 
     ClassVisitor classVisitor;
     try {
@@ -86,7 +91,7 @@ public class JimpleConverter {
       throw new ResolveException("Syntax Error", sourcePath, ex);
     }
 
-    return new OverridingClassSource(
+    return new OverridingJavaClassSource(
         classVisitor.methods,
         classVisitor.fields,
         classVisitor.modifiers,
@@ -101,34 +106,35 @@ public class JimpleConverter {
 
   private static class ClassVisitor extends JimpleBaseVisitor<Boolean> {
 
-    @Nonnull
-    private final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+    @NonNull private final IdentifierFactory identifierFactory;
 
-    @Nonnull private final JimpleConverterUtil util;
-    @Nonnull private final Path path;
-    @Nonnull private final List<BodyInterceptor> bodyInterceptors;
-    @Nonnull private final View view;
+    @NonNull private final JimpleConverterUtil util;
+    @NonNull private final Path path;
+    @NonNull private final List<BodyInterceptor> bodyInterceptors;
+    @NonNull private final View view;
 
     public ClassVisitor(
-        @Nonnull Path path, @Nonnull List<BodyInterceptor> bodyInterceptors, @Nonnull View view) {
+        @NonNull Path path, @NonNull List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
       this.path = path;
       util = new JimpleConverterUtil(path);
       this.bodyInterceptors = bodyInterceptors;
       this.view = view;
+      this.identifierFactory = view.getIdentifierFactory();
     }
 
     private ClassType clazz = null;
-    Set<SootField> fields = new HashSet<>();
-    Set<SootMethod> methods = new HashSet<>();
-    ClassType superclass = null;
-    Set<ClassType> interfaces = null;
-    ClassType outerclass = null; // currently not determined in Java etc -> heuristic will be used
+    Set<JavaSootField> fields = new HashSet<>();
+    Set<JavaSootMethod> methods = new HashSet<>();
+    JavaClassType superclass = null;
+    Set<JavaClassType> interfaces = null;
+    JavaClassType outerclass =
+        null; // currently not determined in Java etc -> heuristic will be used
     Position position = NoPositionInformation.getInstance();
     EnumSet<ClassModifier> modifiers = null;
 
     @Override
-    @Nonnull
-    public Boolean visitFile(@Nonnull JimpleParser.FileContext ctx) {
+    @NonNull
+    public Boolean visitFile(JimpleParser.@NonNull FileContext ctx) {
 
       position = JimpleConverterUtil.buildPositionFromCtx(ctx);
 
@@ -142,7 +148,7 @@ public class JimpleConverter {
         final String classname = ctx.classname.getText();
         final int dollarPostition = classname.indexOf('$');
         if (dollarPostition > -1) {
-          outerclass = util.getClassType(classname.substring(0, dollarPostition));
+          outerclass = (JavaClassType) util.getClassType(classname.substring(0, dollarPostition));
         }
         clazz = util.getClassType(classname);
 
@@ -164,7 +170,7 @@ public class JimpleConverter {
 
       // extends_clause
       if (ctx.extends_clause() != null) {
-        superclass = util.getClassType(ctx.extends_clause().classname.getText());
+        superclass = (JavaClassType) util.getClassType(ctx.extends_clause().classname.getText());
       } else {
         superclass = null;
       }
@@ -179,7 +185,7 @@ public class JimpleConverter {
       // member
       for (int i = 0; i < ctx.member().size(); i++) {
         if (ctx.member(i).method() != null) {
-          final SootMethod m = new MethodVisitor().visitMember(ctx.member(i));
+          final JavaSootMethod m = (JavaSootMethod) new MethodVisitor().visitMember(ctx.member(i));
           if (methods.stream()
               .anyMatch(
                   meth -> {
@@ -203,8 +209,8 @@ public class JimpleConverter {
               }
             }
             Body modifiedBody = bodyBuilder.build();
-            SootMethod sm =
-                new SootMethod(
+            JavaSootMethod sm =
+                new JavaSootMethod(
                     new OverridingBodySource(m.getBodySource()).withBody(modifiedBody),
                     m.getSignature(),
                     m.getModifiers(),
@@ -218,9 +224,9 @@ public class JimpleConverter {
           final JimpleParser.FieldContext fieldCtx = ctx.member(i).field();
           EnumSet<FieldModifier> modifier = getFieldModifiers(fieldCtx.field_modifier());
           final Position pos = JimpleConverterUtil.buildPositionFromCtx(fieldCtx);
-          final String fieldName = Jimple.unescape(fieldCtx.identifier().getText());
-          final SootField f =
-              new SootField(
+          final String fieldName = JimpleUtils.unescape(fieldCtx.identifier().getText());
+          final JavaSootField f =
+              new JavaSootField(
                   identifierFactory.getFieldSignature(fieldName, clazz, fieldCtx.type().getText()),
                   modifier,
                   pos);
@@ -270,14 +276,14 @@ public class JimpleConverter {
       private final HashMap<String, Stmt> labeledStmts = new HashMap<>();
       private HashMap<String, Local> locals = new HashMap<>();
 
-      public Local getLocal(@Nonnull String name) {
+      public Local getLocal(@NonNull String name) {
         return locals.computeIfAbsent(
             name, (ignored) -> new Local(name, UnknownType.getInstance()));
       }
 
       @Override
-      @Nonnull
-      public SootMethod visitMethod(@Nonnull JimpleParser.MethodContext ctx) {
+      @NonNull
+      public SootMethod visitMethod(JimpleParser.@NonNull MethodContext ctx) {
 
         EnumSet<MethodModifier> modifier =
             ctx.method_modifier() == null
@@ -306,7 +312,8 @@ public class JimpleConverter {
         List<Type> params = util.getTypeList(method_subsignatureContext.type_list());
 
         MethodSignature methodSignature =
-            identifierFactory.getMethodSignature(clazz, Jimple.unescape(methodname), type, params);
+            identifierFactory.getMethodSignature(
+                clazz, JimpleUtils.unescape(methodname), type, params);
 
         List<ClassType> exceptions =
             ctx.throws_clause() == null
@@ -455,7 +462,7 @@ public class JimpleConverter {
         }
 
         OverridingBodySource oms = new OverridingBodySource(methodSignature, build);
-        return new SootMethod(oms, methodSignature, modifier, exceptions, methodPosition);
+        return new JavaSootMethod(oms, methodSignature, modifier, exceptions, methodPosition);
       }
 
       private class StmtVisitor extends JimpleBaseVisitor<Stmt> {
@@ -474,7 +481,7 @@ public class JimpleConverter {
         }
 
         @Override
-        @Nonnull
+        @NonNull
         public Stmt visitStmt(JimpleParser.StmtContext ctx) {
           StmtPositionInfo pos = new SimpleStmtPositionInfo(ctx.start.getLine());
 
@@ -536,7 +543,7 @@ public class JimpleConverter {
                   final JimpleParser.Identity_refContext identityRefCtx =
                       assignments.identity_ref();
                   if (identityRefCtx.caught != null) {
-                    ref = JavaJimple.getInstance().newCaughtExceptionRef();
+                    ref = JavaJimple.newCaughtExceptionRef();
                   } else {
                     final String type = assignments.identity_ref().type().getText();
                     if (identityRefCtx.parameter_idx != null) {
@@ -624,7 +631,7 @@ public class JimpleConverter {
             }
 
             Immediate dim = visitImmediate(ctx.array_descriptor().immediate());
-            return JavaJimple.getInstance().newNewArrayExpr(type, dim);
+            return JavaJimple.newNewArrayExpr(type, dim, JavaIdentifierFactory.getInstance());
           } else if (ctx.NEWMULTIARRAY() != null && ctx.immediate() != null) {
             final Type type = util.getType(ctx.multiarray_type.getText());
             if (!(type instanceof ReferenceType || type instanceof PrimitiveType)) {
@@ -671,7 +678,7 @@ public class JimpleConverter {
             // array
             Immediate idx = visitImmediate(ctx.array_descriptor().immediate());
             Local type = getLocal(ctx.identifier().getText());
-            return JavaJimple.getInstance().newArrayRef(type, idx);
+            return JavaJimple.newArrayRef(type, idx);
           } else if (ctx.DOT() != null) {
             // instance field
             String base = ctx.identifier().getText();
@@ -765,11 +772,11 @@ public class JimpleConverter {
 
             return DoubleConstant.getInstance(Double.parseDouble(floatStr));
           } else if (ctx.CLASS() != null) {
-            final String text = Jimple.unescape(ctx.STRING_CONSTANT().getText());
-            return JavaJimple.getInstance().newClassConstant(text);
+            final String text = JimpleUtils.unescape(ctx.STRING_CONSTANT().getText());
+            return JavaJimple.newClassConstant(text);
           } else if (ctx.STRING_CONSTANT() != null) {
-            final String text = Jimple.unescape(ctx.STRING_CONSTANT().getText());
-            return JavaJimple.getInstance().newStringConstant(text);
+            final String text = JimpleUtils.unescape(ctx.STRING_CONSTANT().getText());
+            return JavaJimple.newStringConstant(text);
           } else if (ctx.BOOL_CONSTANT() != null) {
             final char firstChar = ctx.BOOL_CONSTANT().getText().charAt(0);
             return BooleanConstant.getInstance(firstChar == 't' || firstChar == 'T');
@@ -784,17 +791,14 @@ public class JimpleConverter {
                         ? util.getMethodSignature(
                             methodhandleContext.method_signature(), methodhandleContext)
                         : util.getFieldSignature(methodhandleContext.field_signature());
-            return JavaJimple.getInstance()
-                .newMethodHandle(
-                    referenceSignature,
-                    MethodHandle.Kind.getKind(kindName.substring(1, kindName.length() - 1)));
+            return JavaJimple.newMethodHandle(
+                referenceSignature,
+                MethodHandle.Kind.getKind(kindName.substring(1, kindName.length() - 1)));
           } else if (ctx.methodtype != null && ctx.method_subsignature() != null) {
             final JimpleParser.Type_listContext typelist = ctx.method_subsignature().type_list();
             final List<Type> typeList = util.getTypeList(typelist);
-            return JavaJimple.getInstance()
-                .newMethodType(
-                    typeList,
-                    identifierFactory.getType(ctx.method_subsignature().type().getText()));
+            return JavaJimple.newMethodType(
+                typeList, identifierFactory.getType(ctx.method_subsignature().type().getText()));
           }
           throw new ResolveException(
               "Unknown Constant.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
@@ -865,7 +869,7 @@ public class JimpleConverter {
           }
         }
 
-        @Nonnull
+        @NonNull
         private List<Immediate> getArgList(JimpleParser.Arg_listContext ctx) {
           if (ctx == null || ctx.immediate() == null) {
             return Collections.emptyList();

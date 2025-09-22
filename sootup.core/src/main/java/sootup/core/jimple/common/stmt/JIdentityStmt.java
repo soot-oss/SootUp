@@ -22,23 +22,24 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 public final class JIdentityStmt extends AbstractDefinitionStmt implements FallsThroughStmt {
 
-  @Nonnull final Local leftOp;
-  @Nonnull final IdentityRef rightOp;
+  @NonNull final Local leftOp;
+  @NonNull final IdentityRef rightOp;
 
   public JIdentityStmt(
-      @Nonnull Local local,
-      @Nonnull IdentityRef identityValue,
-      @Nonnull StmtPositionInfo positionInfo) {
+      @NonNull Local local,
+      @NonNull IdentityRef identityValue,
+      @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
     leftOp = local;
     rightOp = identityValue;
@@ -49,12 +50,12 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Falls
     return getLeftOp() + " := " + getRightOp();
   }
 
-  @Nonnull
+  @NonNull
   public Local getLeftOp() {
     return leftOp;
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public IdentityRef getRightOp() {
     return rightOp;
@@ -71,20 +72,35 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Falls
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     getLeftOp().toString(up);
     up.literal(" := ");
     getRightOp().toString(up);
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public boolean isJIdentityStmt() {
+    return true;
+  }
+
+  @Override
+  public JIdentityStmt asJIdentityStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JIdentityStmt> toJIdentityStmt() {
+    return Optional.of(this);
+  }
+
+  @Override
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseIdentityStmt(this);
     return v;
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseIdentityStmt(this, o);
   }
 
@@ -93,24 +109,24 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Falls
     return getLeftOp().equivHashCode() + 31 * getRightOp().equivHashCode();
   }
 
-  @Nonnull
-  public JIdentityStmt withLocal(@Nonnull Local local) {
+  @NonNull
+  public JIdentityStmt withLocal(@NonNull Local local) {
     return new JIdentityStmt(local, getRightOp(), getPositionInfo());
   }
 
-  @Nonnull
-  public JIdentityStmt withIdentityValue(@Nonnull IdentityRef identityValue) {
+  @NonNull
+  public JIdentityStmt withIdentityValue(@NonNull IdentityRef identityValue) {
     return new JIdentityStmt(getLeftOp(), identityValue, getPositionInfo());
   }
 
-  @Nonnull
-  public JIdentityStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JIdentityStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JIdentityStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public FallsThroughStmt withNewDef(@Nonnull Local newLocal) {
+  public FallsThroughStmt withNewDef(@NonNull Local newLocal) {
     return withLocal(newLocal);
   }
 }

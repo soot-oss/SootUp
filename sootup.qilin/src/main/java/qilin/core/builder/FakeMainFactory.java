@@ -32,15 +32,14 @@ import qilin.core.ArtificialMethod;
 import qilin.util.PTAUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.frontend.OverridingClassSource;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
@@ -51,7 +50,8 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.*;
+import sootup.java.core.types.JavaClassType;
 
 public class FakeMainFactory extends ArtificialMethod {
   public static FakeMainFactory instance;
@@ -68,19 +68,20 @@ public class FakeMainFactory extends ArtificialMethod {
     this.localStart = 0;
     String className = "qilin.pta.FakeMain";
     IdentifierFactory fact = view.getIdentifierFactory();
-    ClassType declaringClassSignature = JavaIdentifierFactory.getInstance().getClassType(className);
+    ClassType declaringClassSignature = fact.getClassType(className);
     FieldSignature ctSig =
         fact.getFieldSignature("currentThread", declaringClassSignature, "java.lang.Thread");
-    SootField currentThread =
-        new SootField(ctSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
+    JavaSootField currentThread =
+        new JavaSootField(
+            ctSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
     FieldSignature gtSig =
         fact.getFieldSignature("globalThrow", declaringClassSignature, "java.lang.Exception");
-    SootField globalThrow =
-        new SootField(gtSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
+    JavaSootField globalThrow =
+        new JavaSootField(
+            gtSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
 
     MethodSignature methodSignatureOne =
-        view.getIdentifierFactory()
-            .getMethodSignature(className, "main", "void", Collections.emptyList());
+        fact.getMethodSignature(className, "main", "void", Collections.emptyList());
 
     StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
     final JReturnVoidStmt returnVoidStmt = new JReturnVoidStmt(noPosInfo);
@@ -98,8 +99,8 @@ public class FakeMainFactory extends ArtificialMethod {
         .setPosition(NoPositionInformation.getInstance());
 
     Body bodyOne = bodyBuilder.build();
-    SootMethod dummyMainMethod =
-        new SootMethod(
+    JavaSootMethod dummyMainMethod =
+        new JavaSootMethod(
             new OverridingBodySource(methodSignatureOne, bodyOne),
             methodSignatureOne,
             EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
@@ -107,17 +108,17 @@ public class FakeMainFactory extends ArtificialMethod {
             NoPositionInformation.getInstance());
     this.method = dummyMainMethod;
     this.fakeClass =
-        new SootClass(
-            new OverridingClassSource(
+        new JavaSootClass(
+            new OverridingJavaClassSource(
                 Collections.singleton(dummyMainMethod),
                 new LinkedHashSet<>(Arrays.asList(currentThread, globalThrow)),
                 EnumSet.of(ClassModifier.PUBLIC),
                 null,
-                JavaIdentifierFactory.getInstance().getClassType("java.lang.Object"),
+                (JavaClassType) fact.getClassType("java.lang.Object"),
                 null,
                 NoPositionInformation.getInstance(),
                 null,
-                view.getIdentifierFactory().getClassType(className),
+                fact.getClassType(className),
                 new EagerInputLocation()),
             SourceType.Application);
   }
@@ -264,20 +265,17 @@ public class FakeMainFactory extends ArtificialMethod {
     final MethodSubSignature sigForName;
 
     private EntryPoints() {
-      sigMain = JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_MAIN);
-      sigFinalize =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_FINALIZE);
+      JavaIdentifierFactory identifierFactory = (JavaIdentifierFactory) view.getIdentifierFactory();
+      sigMain = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_MAIN);
+      sigFinalize = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_FINALIZE);
 
-      sigExit = JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_EXIT);
-      sigClinit =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_CLINIT);
-      sigInit = JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_INIT);
-      sigStart = JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_START);
-      sigRun = JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_RUN);
-      sigObjRun =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_OBJ_RUN);
-      sigForName =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_FOR_NAME);
+      sigExit = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_EXIT);
+      sigClinit = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_CLINIT);
+      sigInit = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_INIT);
+      sigStart = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_START);
+      sigRun = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_RUN);
+      sigObjRun = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_OBJ_RUN);
+      sigForName = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_FOR_NAME);
     }
 
     protected void addMethod(List<SootMethod> set, SootClass cls, MethodSubSignature methodSubSig) {
@@ -286,7 +284,7 @@ public class FakeMainFactory extends ArtificialMethod {
     }
 
     protected void addMethod(List<SootMethod> set, String methodSig) {
-      MethodSignature ms = JavaIdentifierFactory.getInstance().parseMethodSignature(methodSig);
+      MethodSignature ms = view.getIdentifierFactory().parseMethodSignature(methodSig);
       Optional<? extends SootMethod> osm = view.getMethod(ms);
       osm.ifPresent(set::add);
     }

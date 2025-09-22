@@ -4,15 +4,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableBasicBlockImpl;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.expr.JPhiExpr;
@@ -27,8 +26,9 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
-/** @author Zun Wang */
-@Tag("Java8")
+/**
+ * @author Zun Wang
+ */
 public class ReplaceUseExprVisitorTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();

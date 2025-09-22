@@ -30,8 +30,8 @@ import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
 import qilin.util.Triple;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
@@ -81,7 +81,7 @@ public class SimplifiedEvaluator implements IEvaluator {
       // All the statements in the method
       for (Stmt st : PTAUtils.getMethodBody(sm).getStmts()) {
         // virtual calls
-        if (st.isInvokableStmt() && st.asInvokableStmt().containsInvokeExpr()) {
+        if (st.isInvokableStmt() && st.asInvokableStmt().getInvokeExpr().isPresent()) {
           AbstractInvokeExpr ie = st.asInvokableStmt().getInvokeExpr().get();
           if (!(ie instanceof JStaticInvokeExpr)) {
             // Virtual, Special or Instance
@@ -94,8 +94,7 @@ public class SimplifiedEvaluator implements IEvaluator {
               totalPolyCalls++;
             }
           }
-        } else if (st instanceof JAssignStmt) {
-          JAssignStmt assignStmt = (JAssignStmt) st;
+        } else if (st instanceof JAssignStmt assignStmt) {
           Value rhs = assignStmt.getRightOp();
           Value lhs = assignStmt.getLeftOp();
           if (rhs instanceof JCastExpr && lhs.getType() instanceof ReferenceType) {
@@ -170,7 +169,7 @@ public class SimplifiedEvaluator implements IEvaluator {
         continue;
       }
       final Set<Object> callocSites = getPointsToNewExpr(pta.reachingObjects(lvn));
-      if (callocSites.size() > 0) {
+      if (!callocSites.isEmpty()) {
         if (!handledNatives.contains(sm.toString())) {
           ptsCntNoNative += callocSites.size();
           varCntNoNative++;

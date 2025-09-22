@@ -23,7 +23,7 @@ package sootup.core.graph;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class DominanceFinder {
   private List<BasicBlock<?>> blocks;
   private Map<BasicBlock<?>, Integer> blockToIdx = new HashMap<>();
   private int[] doms;
-  private ArrayList<Integer>[] domFrontiers;
+  private List<List<Integer>> domFrontiers;
   private BlockAnalysisDirection direction;
 
   public DominanceFinder(StmtGraph<?> blockGraph) {
@@ -47,7 +47,7 @@ public class DominanceFinder {
     this(blockGraph, BlockAnalysisDirection.REVERSEPOSTORDERFORWARD);
   }
 
-  protected DominanceFinder(@Nonnull StmtGraph<?> blockGraph, BlockAnalysisDirection direction) {
+  protected DominanceFinder(@NonNull StmtGraph<?> blockGraph, BlockAnalysisDirection direction) {
 
     // define the blocks' order
     this.direction = direction;
@@ -108,9 +108,9 @@ public class DominanceFinder {
     }
 
     // initialize domFrontiers
-    domFrontiers = new ArrayList[blocks.size()];
-    for (int i = 0; i < domFrontiers.length; i++) {
-      domFrontiers[i] = new ArrayList<>();
+    domFrontiers = new ArrayList<>(blocks.size());
+    for (int i = 0; i < blocks.size(); i++) {
+      domFrontiers.add(new ArrayList<>());
     }
 
     doms[0] = -1;
@@ -122,7 +122,7 @@ public class DominanceFinder {
         for (BasicBlock<?> pred : preds) {
           int predId = blockToIdx.get(pred);
           while (predId != -1 && predId != doms[blockId]) {
-            domFrontiers[predId].add(blockId);
+            domFrontiers.get(predId).add(blockId);
             predId = doms[predId];
           }
         }
@@ -130,15 +130,15 @@ public class DominanceFinder {
     }
 
     if (direction == BlockAnalysisDirection.POSTORDERBACKWARD) {
-      for (int i = 0; i < domFrontiers.length; i++) {
-        if (domFrontiers[i].contains(i)) {
-          domFrontiers[i].remove(new Integer(i));
+      for (int i = 0; i < domFrontiers.size(); i++) {
+        if (domFrontiers.get(i).contains(i)) {
+          domFrontiers.get(i).remove(Integer.valueOf(i));
         }
       }
     }
   }
 
-  public void replaceBlock(@Nonnull BasicBlock<?> newBlock, BasicBlock<?> oldBlock) {
+  public void replaceBlock(@NonNull BasicBlock<?> newBlock, BasicBlock<?> oldBlock) {
     if (!blockToIdx.containsKey(oldBlock)) {
       throw new RuntimeException("The given block: " + oldBlock + " is not in BlockGraph!");
     }
@@ -148,7 +148,7 @@ public class DominanceFinder {
     blocks.set(idx, newBlock);
   }
 
-  public BasicBlock<?> getImmediateDominator(@Nonnull BasicBlock<?> block) {
+  public BasicBlock<?> getImmediateDominator(@NonNull BasicBlock<?> block) {
     if (!blockToIdx.containsKey(block)) {
       throw new RuntimeException("The given block: " + block + " is not in BlockGraph!");
     }
@@ -161,31 +161,31 @@ public class DominanceFinder {
     return blocks.get(idomIdx);
   }
 
-  @Nonnull
-  public Set<BasicBlock<?>> getDominanceFrontiers(@Nonnull BasicBlock<?> block) {
+  @NonNull
+  public Set<BasicBlock<?>> getDominanceFrontiers(@NonNull BasicBlock<?> block) {
     if (!blockToIdx.containsKey(block)) {
       throw new RuntimeException("The given block: " + block + " is not in BlockGraph!");
     }
     int idx = blockToIdx.get(block);
     Set<BasicBlock<?>> dFs = new HashSet<>();
-    ArrayList<Integer> dFs_idx = this.domFrontiers[idx];
+    List<Integer> dFs_idx = this.domFrontiers.get(idx);
     for (Integer i : dFs_idx) {
       dFs.add(blocks.get(i));
     }
     return dFs;
   }
 
-  @Nonnull
+  @NonNull
   public List<BasicBlock<?>> getIdxToBlock() {
     return blocks;
   }
 
-  @Nonnull
+  @NonNull
   public Map<BasicBlock<?>, Integer> getBlockToIdx() {
     return blockToIdx;
   }
 
-  @Nonnull
+  @NonNull
   public int[] getImmediateDominators() {
     return this.doms;
   }

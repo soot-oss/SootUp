@@ -22,36 +22,52 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Immediate;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that subtracts operand 2 from operand 1. */
 public final class JSubExpr extends AbstractFloatBinopExpr {
 
-  public JSubExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JSubExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public final String getSymbol() {
+  public String getSymbol() {
     return " - ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseSubExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JSubExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JSubExpr withOp1(@NonNull Immediate op1) {
     return new JSubExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JSubExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JSubExpr withOp2(@NonNull Immediate op2) {
     return new JSubExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJSubExpr() {
+    return true;
+  }
+
+  @Override
+  public JSubExpr asJSubExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JSubExpr> toJSubExpr() {
+    return Optional.of(this);
   }
 }

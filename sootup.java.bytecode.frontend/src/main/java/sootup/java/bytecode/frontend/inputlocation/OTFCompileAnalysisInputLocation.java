@@ -32,10 +32,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
 import javax.tools.*;
+import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -61,8 +60,8 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
   public OTFCompileAnalysisInputLocation(
       String fileName,
       String compilationUnitsContent,
-      @Nonnull SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     Path compile = compile(fileName, compilationUnitsContent);
     inputLocation = PathBasedAnalysisInputLocation.create(compile, srcType, bodyInterceptors);
   }
@@ -80,33 +79,33 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
   }
 
   public OTFCompileAnalysisInputLocation(
-      @Nonnull List<Path> dotJavaFiles,
-      @Nonnull SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull List<Path> dotJavaFiles,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     Path compile = compile(dotJavaFiles);
     inputLocation = PathBasedAnalysisInputLocation.create(compile, srcType, bodyInterceptors);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Optional<? extends SootClassSource> getClassSource(
-      @Nonnull ClassType type, @Nonnull View view) {
+      @NonNull ClassType type, @NonNull View view) {
     return inputLocation.getClassSource(type, view);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Stream<? extends SootClassSource> getClassSources(@Nonnull View view) {
+  public Stream<? extends SootClassSource> getClassSources(@NonNull View view) {
     return inputLocation.getClassSources(view);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public SourceType getSourceType() {
     return inputLocation.getSourceType();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public List<BodyInterceptor> getBodyInterceptors() {
     return inputLocation.getBodyInterceptors();
@@ -151,7 +150,7 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
     }
   }
 
-  @Nonnull
+  @NonNull
   static Path compile(List<Path> srcFiles) {
 
     // create key for temp dir / caching
@@ -185,7 +184,7 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
         fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singleton(binDir));
 
         File[] files = new File[srcFiles.size()];
-        srcFiles.stream().map(Path::toFile).collect(Collectors.toList()).toArray(files);
+        srcFiles.stream().map(Path::toFile).toList().toArray(files);
         Iterable<? extends JavaFileObject> javaFileObjects = fileManager.getJavaFileObjects(files);
 
         try (Writer writer = new StringWriter()) {

@@ -22,36 +22,52 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Immediate;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that checks whether operand 1 &lt;= operand 2. */
 public final class JLeExpr extends AbstractConditionExpr {
 
-  public JLeExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JLeExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public final String getSymbol() {
+  public String getSymbol() {
     return " <= ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseLeExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JLeExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JLeExpr withOp1(@NonNull Immediate op1) {
     return new JLeExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JLeExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JLeExpr withOp2(@NonNull Immediate op2) {
     return new JLeExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJLeExpr() {
+    return true;
+  }
+
+  @Override
+  public JLeExpr asJLeExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JLeExpr> toJLeExpr() {
+    return Optional.of(this);
   }
 }

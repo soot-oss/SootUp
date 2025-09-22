@@ -1,4 +1,5 @@
 package sootup.interceptors.typeresolving.types;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,9 +22,10 @@ package sootup.interceptors.typeresolving.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
-import sootup.core.types.Type;
+import sootup.core.types.*;
 
 /**
  * This type is an imaginary/intermediate type which is used to calculate Type Inference
@@ -32,9 +34,9 @@ import sootup.core.types.Type;
  */
 public class BottomType extends Type {
 
-  @Nonnull private static final BottomType INSTANCE = new BottomType();
+  @NonNull private static final BottomType INSTANCE = new BottomType();
 
-  @Nonnull
+  @NonNull
   public static BottomType getInstance() {
     return INSTANCE;
   }
@@ -42,12 +44,27 @@ public class BottomType extends Type {
   private BottomType() {}
 
   @Override
-  public <V extends TypeVisitor> V accept(@Nonnull V v) {
+  public <V extends TypeVisitor> V accept(@NonNull V v) {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public String toString() {
     return "BottomType";
+  }
+
+  @Override
+  protected boolean isBottomType() {
+    return true;
+  }
+
+  @Override
+  protected Type asBottomType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<Type> toBottomType() {
+    return Optional.of(this);
   }
 }

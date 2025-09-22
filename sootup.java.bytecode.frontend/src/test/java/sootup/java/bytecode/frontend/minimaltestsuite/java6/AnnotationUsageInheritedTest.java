@@ -3,7 +3,6 @@ package sootup.java.bytecode.frontend.minimaltestsuite.java6;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.util.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +10,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
@@ -20,7 +18,6 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
-@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AnnotationUsageInheritedTest extends MinimalBytecodeTestSuiteBase {
 
   private <T> Stream<T> toStream(Iterable<T> iterable) {
@@ -55,7 +52,7 @@ public class AnnotationUsageInheritedTest extends MinimalBytecodeTestSuiteBase {
     JavaClassType onClassType = identifierFactory.getClassType("OnClass");
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put("sthBlue", IntConstant.getInstance(42));
-    elementValueMap.put("author", JavaJimple.getInstance().newStringConstant("GeorgeLucas"));
+    elementValueMap.put("author", JavaJimple.newStringConstant("GeorgeLucas"));
     assertEquals(
         Collections.singletonList(new AnnotationUsage(onClassType, elementValueMap)),
         actualInheritedAnnotationUsages);

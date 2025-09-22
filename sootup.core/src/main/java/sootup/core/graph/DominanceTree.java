@@ -23,8 +23,8 @@ package sootup.core.graph;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This class is used to build a dominance tree for a BlockStmtGraph, which helps identify the
@@ -36,41 +36,41 @@ public class DominanceTree {
 
   private List<BasicBlock<?>> blocks;
   private Map<BasicBlock<?>, Integer> blockToIdx;
-  private List<Integer>[] children;
+  private List<List<Integer>> children;
   private int[] parents;
 
-  public DominanceTree(@Nonnull DominanceFinder dominanceFinder) {
+  public DominanceTree(@NonNull DominanceFinder dominanceFinder) {
     this.blocks = dominanceFinder.getIdxToBlock();
     this.blockToIdx = dominanceFinder.getBlockToIdx();
     int[] iDoms = dominanceFinder.getImmediateDominators();
     int treeSize = iDoms.length;
-    children = new ArrayList[treeSize];
+    children = new ArrayList<>(treeSize);
     parents = new int[treeSize];
     for (int i = 0; i < treeSize; i++) {
-      children[i] = new ArrayList<>();
+      children.add(new ArrayList<>());
       parents[i] = -1;
     }
 
     for (int i = 0; i < treeSize; i++) {
       if (iDoms[i] != -1 && iDoms[i] != i) {
         parents[i] = iDoms[i];
-        children[iDoms[i]].add(i);
+        children.get(iDoms[i]).add(i);
       }
     }
   }
 
-  @Nonnull
-  public List<BasicBlock<?>> getChildren(@Nonnull BasicBlock<?> block) {
+  @NonNull
+  public List<BasicBlock<?>> getChildren(@NonNull BasicBlock<?> block) {
     List<BasicBlock<?>> childList = new ArrayList<>();
     int idx = blockToIdx.get(block);
-    for (int i : children[idx]) {
+    for (int i : children.get(idx)) {
       childList.add(blocks.get(i));
     }
     return childList;
   }
 
   @Nullable
-  public BasicBlock<?> getParent(@Nonnull BasicBlock<?> block) {
+  public BasicBlock<?> getParent(@NonNull BasicBlock<?> block) {
     int idx = blockToIdx.get(block);
     if (parents[idx] == -1) {
       return null;
@@ -78,12 +78,12 @@ public class DominanceTree {
     return blocks.get(parents[idx]);
   }
 
-  @Nonnull
+  @NonNull
   public BasicBlock<?> getRoot() {
     return this.blocks.get(0);
   }
 
-  public void replaceNode(@Nonnull BasicBlock<?> oldBlock, @Nonnull BasicBlock<?> newBlock) {
+  public void replaceNode(@NonNull BasicBlock<?> oldBlock, @NonNull BasicBlock<?> newBlock) {
     if (!this.blockToIdx.containsKey(oldBlock)) {
       throw new RuntimeException(
           "The given replaced block " + oldBlock + "is not in the DominanceTree");
@@ -94,7 +94,7 @@ public class DominanceTree {
     this.blockToIdx.put(newBlock, idx);
   }
 
-  @Nonnull
+  @NonNull
   public List<BasicBlock<?>> getAllNodesDFS() {
     List<BasicBlock<?>> blocks = new ArrayList<>();
     Deque<BasicBlock<?>> queue = new ArrayDeque<>();

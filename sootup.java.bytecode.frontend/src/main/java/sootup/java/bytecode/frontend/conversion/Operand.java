@@ -24,15 +24,15 @@ package sootup.java.bytecode.frontend.conversion;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.TryCatchBlockNode;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -50,14 +50,14 @@ class Operand {
   @SuppressWarnings("ConstantConditions")
   static final Operand DWORD_DUMMY = new Operand(null, null, null);
 
-  @Nonnull protected AbstractInsnNode insn;
-  @Nonnull protected final Value value;
+  @NonNull protected AbstractInsnNode insn;
+  @NonNull protected final Value value;
   // TODO probably need to store the `insn` for the STORE instruction when a *real*
   //  local is used here and use that when merging,
   //  or more specifically when changing to a different stack local in `changeStackLocal`
   @Nullable protected Local stackLocal;
-  @Nonnull private final AsmMethodSource methodSource;
-  @Nonnull private final StmtPositionInfo positionInfo;
+  @NonNull private final AsmMethodSource methodSource;
+  @NonNull private final StmtPositionInfo positionInfo;
 
   /**
    * All trap handlers (catch blocks) that were active at the instruction where the operand was
@@ -73,7 +73,7 @@ class Operand {
    * @param value the generated value.
    */
   Operand(
-      @Nonnull AbstractInsnNode insn, @Nonnull Value value, @Nonnull AsmMethodSource methodSource) {
+      @NonNull AbstractInsnNode insn, @NonNull Value value, @NonNull AsmMethodSource methodSource) {
     this.insn = insn;
     this.value = value;
     this.methodSource = methodSource;
@@ -178,7 +178,7 @@ class Operand {
    * @param other the other operand.
    * @return {@code true} if this operand is equal to another operand, {@code false} otherwise.
    */
-  boolean equivTo(@Nonnull Operand other) {
+  boolean equivTo(@NonNull Operand other) {
     Value stackOrValue = stackLocal == null ? value : stackLocal;
     Value stackOrValueOther = other.stackLocal == null ? other.value : other.stackLocal;
 
@@ -194,7 +194,7 @@ class Operand {
     return "Operand{" + "insn=" + insn + ", value=" + value + ", stack=" + stackLocal + '}';
   }
 
-  @Nonnull
+  @NonNull
   public AbstractInsnNode getInsn() {
     return insn;
   }

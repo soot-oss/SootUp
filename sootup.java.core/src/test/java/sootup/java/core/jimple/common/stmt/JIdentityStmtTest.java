@@ -24,10 +24,9 @@ package sootup.java.core.jimple.common.stmt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
@@ -36,8 +35,9 @@ import sootup.core.types.PrimitiveType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
-/** @author Markus Schmidt, Linghui Luo */
-@Tag("Java8")
+/**
+ * @author Markus Schmidt, Linghui Luo
+ */
 public class JIdentityStmtTest {
 
   @Test
@@ -55,8 +55,7 @@ public class JIdentityStmtTest {
         new JIdentityStmt(param, new JParameterRef(PrimitiveType.getInt(), 123), nop);
 
     Local exception = new Local("r1", typeFactory.getType("java.lang.Exception"));
-    Stmt exceptionIdStmt =
-        new JIdentityStmt(exception, JavaJimple.getInstance().newCaughtExceptionRef(), nop);
+    Stmt exceptionIdStmt = new JIdentityStmt(exception, JavaJimple.newCaughtExceptionRef(), nop);
 
     // toString
     assertEquals("r0 := @this: somepackage.dummy.MyClass", thisIdStmt.toString());
@@ -100,7 +99,7 @@ public class JIdentityStmtTest {
         thisIdStmt.equivTo(
             new JIdentityStmt(
                 new Local("r1", typeFactory.getType("somepckg.NotMyException")),
-                JavaJimple.getInstance().newCaughtExceptionRef(),
+                JavaJimple.newCaughtExceptionRef(),
                 nop)));
     assertFalse(paramIdStmt.equivTo(thisIdStmt));
     assertFalse(paramIdStmt.equivTo(exceptionIdStmt));

@@ -41,13 +41,6 @@ public interface InvokableStmt extends Stmt {
   boolean invokesStaticInitializer();
 
   /**
-   * Checks if the invokable statement contains a invoke expression that defines the invoke.
-   *
-   * @return true if the statement contains an invoke expression, false if not
-   */
-  boolean containsInvokeExpr();
-
-  /**
    * Returns the possible invoke expression in the invokable statement
    *
    * @return The optional contains the invoke expression of the invokable statement or is empty if

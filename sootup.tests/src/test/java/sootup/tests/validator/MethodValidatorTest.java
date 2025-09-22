@@ -5,23 +5,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
+import sootup.core.types.*;
 import sootup.core.validation.MethodValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
-import sootup.jimple.frontend.JimpleView;
 
-@Tag("Java8")
 public class MethodValidatorTest {
   MethodValidator methodValidator = new MethodValidator();
-  static JimpleView jimpleView;
+  static JavaView jimpleView;
 
   @BeforeAll
   public static void Setup() {
@@ -49,8 +47,8 @@ public class MethodValidatorTest {
     JimpleAnalysisInputLocation jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
-    jimpleView = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeCheckInitValidator);
+    jimpleView = new JavaView(jimpleInputLocation);
+    final Optional<JavaSootClass> classSource1 = jimpleView.getClass(classTypeCheckInitValidator);
     assertFalse(classSource1.isPresent());
   }
 
@@ -75,7 +73,7 @@ public class MethodValidatorTest {
   }
 
   Body getBody(String methodSignature) {
-    Optional<? extends SootMethod> optMethod =
+    Optional<JavaSootMethod> optMethod =
         jimpleView.getMethod(
             jimpleView.getIdentifierFactory().parseMethodSignature(methodSignature));
     assertTrue(optMethod.isPresent());

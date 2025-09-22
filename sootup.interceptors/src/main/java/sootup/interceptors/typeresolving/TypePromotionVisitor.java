@@ -23,9 +23,9 @@ package sootup.interceptors.typeresolving;
  */
 
 import java.util.Collection;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
@@ -35,9 +35,9 @@ import sootup.interceptors.typeresolving.types.TopType;
 
 public class TypePromotionVisitor extends TypeChecker {
   public TypePromotionVisitor(
-      @Nonnull Body.BodyBuilder builder,
-      @Nonnull AugEvalFunction evalFunction,
-      @Nonnull BytecodeHierarchy hierarchy) {
+      Body.@NonNull BodyBuilder builder,
+      @NonNull AugEvalFunction evalFunction,
+      @NonNull BytecodeHierarchy hierarchy) {
     super(builder, evalFunction, hierarchy);
   }
 
@@ -55,7 +55,7 @@ public class TypePromotionVisitor extends TypeChecker {
         || type.equals(AugmentIntegerTypes.getInteger32767());
   }
 
-  public void visit(@Nonnull Value value, @Nonnull Type stdType, @Nonnull Stmt stmt) {
+  public void visit(@NonNull Value value, @NonNull Type stdType, @NonNull Stmt stmt) {
 
     /* Note: When visiting function parameters, we may encounter constant values such as strings ("abc") or integers (2).
       These constants are not instances of the Local class and should be handled accordingly.
@@ -73,7 +73,6 @@ public class TypePromotionVisitor extends TypeChecker {
     }
     if (!hierarchy.isAncestor(stdType, evaType)) {
       if (!hierarchy.isAncestor(evaType, stdType)) {
-        assert value instanceof Local;
         // The type of the local and the type that is required in the statement are incompatible,
         // so the type of the local needs to be upgraded to a common ancestor.
         Collection<Type> lca = hierarchy.getLeastCommonAncestors(evaType, stdType);

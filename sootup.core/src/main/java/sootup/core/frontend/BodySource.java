@@ -1,4 +1,5 @@
 package sootup.core.frontend;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -22,7 +23,7 @@ package sootup.core.frontend;
  */
 
 import java.io.IOException;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
@@ -39,13 +40,13 @@ public interface BodySource {
    * @param modifiers The collection of modifiers which are needed by BodyInterceptors to modify the
    *     body accordingly.
    */
-  @Nonnull
-  Body resolveBody(@Nonnull Iterable<MethodModifier> modifiers)
+  @NonNull Body resolveBody(@NonNull Iterable<MethodModifier> modifiers)
       throws ResolveException, IOException;
 
-  /** @return returns the default value of the Annotation for this method */
+  /**
+   * @return returns the default value of the Annotation for this method
+   */
   Object resolveAnnotationsDefaultValue();
 
-  @Nonnull
-  MethodSignature getSignature();
+  @NonNull MethodSignature getSignature();
 }

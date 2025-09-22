@@ -22,7 +22,8 @@ package sootup.core.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.TypeVisitor;
 
 /**
@@ -32,9 +33,9 @@ import sootup.core.jimple.visitor.TypeVisitor;
  */
 public class UnknownType extends Type {
 
-  @Nonnull private static final UnknownType INSTANCE = new UnknownType();
+  @NonNull private static final UnknownType INSTANCE = new UnknownType();
 
-  @Nonnull
+  @NonNull
   public static UnknownType getInstance() {
     return INSTANCE;
   }
@@ -42,14 +43,29 @@ public class UnknownType extends Type {
   private UnknownType() {}
 
   @Override
-  @Nonnull
+  @NonNull
   public String toString() {
     return "unknown";
   }
 
   @Override
-  public <V extends TypeVisitor> V accept(@Nonnull V v) {
+  public <V extends TypeVisitor> V accept(@NonNull V v) {
     v.caseUnknownType();
     return v;
+  }
+
+  @Override
+  protected boolean isUnknownType() {
+    return true;
+  }
+
+  @Override
+  protected UnknownType asUnknownType() {
+    return this;
+  }
+
+  @Override
+  protected Optional<UnknownType> toUnknownType() {
+    return Optional.of(this);
   }
 }

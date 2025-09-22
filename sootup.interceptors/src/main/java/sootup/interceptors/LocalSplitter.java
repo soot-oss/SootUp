@@ -24,11 +24,10 @@ package sootup.interceptors;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -75,16 +74,16 @@ public class LocalSplitter implements BodyInterceptor {
    */
   static class DisjointSetForest<T> {
     /** Every node points to its parent in its tree. Roots of trees point to themselves. */
-    @Nonnull private final Map<T, T> parent = new HashMap<>();
+    @NonNull private final Map<T, T> parent = new HashMap<>();
 
     /** Stores the size of a tree under the key. Only updated for roots of trees. */
-    @Nonnull private final Map<T, Integer> sizes = new HashMap<>();
+    @NonNull private final Map<T, Integer> sizes = new HashMap<>();
 
     /**
      * Creates a new set that only contains the {@code node}. Does nothing when the forest already
      * contains the {@code node}.
      */
-    void add(@Nonnull T node) {
+    void add(@NonNull T node) {
       if (parent.containsKey(node)) {
         return;
       }
@@ -94,8 +93,7 @@ public class LocalSplitter implements BodyInterceptor {
     }
 
     /** Finds the representative of the set that contains the {@code node}. */
-    @Nonnull
-    T find(T node) {
+    @NonNull T find(T node) {
       T parentNode = parent.get(node);
       if (parentNode == null) {
         throw new IllegalArgumentException("The DisjointSetForest does not contain the node.");
@@ -117,7 +115,7 @@ public class LocalSplitter implements BodyInterceptor {
      * Combines the sets of {@code first} and {@code second}. Returns the representative of the
      * combined set.
      */
-    void union(@Nonnull T first, @Nonnull T second) {
+    void union(@NonNull T first, @NonNull T second) {
       first = find(first);
       second = find(second);
 
@@ -151,7 +149,7 @@ public class LocalSplitter implements BodyInterceptor {
   }
 
   static class PartialStmt {
-    @Nonnull final Stmt backingStmt;
+    @NonNull final Stmt backingStmt;
 
     /**
      * Whether the partial statement refers to only the definitions of the inner statement or only
@@ -159,7 +157,7 @@ public class LocalSplitter implements BodyInterceptor {
      */
     final boolean isDef;
 
-    PartialStmt(@Nonnull Stmt backingStmt, boolean isDef) {
+    PartialStmt(@NonNull Stmt backingStmt, boolean isDef) {
       this.backingStmt = backingStmt;
       this.isDef = isDef;
     }
@@ -190,7 +188,7 @@ public class LocalSplitter implements BodyInterceptor {
   }
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     MutableStmtGraph graph = builder.getStmtGraph();
 
     // Cache the stmts to not have to retrieve them for every local
@@ -213,7 +211,7 @@ public class LocalSplitter implements BodyInterceptor {
       List<AbstractDefinitionStmt> assignments =
           assignmentsByLocal.getOrDefault(local, Collections.emptyList()).stream()
               .map(i -> (AbstractDefinitionStmt) stmts.get(i))
-              .collect(Collectors.toList());
+              .toList();
 
       if (assignments.size() <= 1) {
         // There is only a single assignment to the local, so no splitting is necessary
@@ -245,7 +243,7 @@ public class LocalSplitter implements BodyInterceptor {
           // a new assignment to the local -> end walk here
           // otherwise continue by adding all successors to the stack
           Optional<LValue> defOpt = stmt.getDef();
-          if (!defOpt.isPresent() || defOpt.get() != local) {
+          if (defOpt.isEmpty() || defOpt.get() != local) {
             stack.addAll(graph.getAllSuccessors(stmt));
           }
         }
@@ -310,17 +308,15 @@ public class LocalSplitter implements BodyInterceptor {
     builder.setLocals(newLocals);
   }
 
-  @Nonnull
-  Map<Local, List<Integer>> groupAssignmentsByLocal(List<Stmt> statements) {
+  @NonNull Map<Local, List<Integer>> groupAssignmentsByLocal(List<Stmt> statements) {
     Map<Local, List<Integer>> groupings = new HashMap<>();
 
     for (int i = 0; i < statements.size(); i++) {
       Stmt stmt = statements.get(i);
-      if (!(stmt instanceof AbstractDefinitionStmt)) {
+      if (!(stmt instanceof AbstractDefinitionStmt defStmt)) {
         continue;
       }
 
-      AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
       LValue leftOp = defStmt.getLeftOp();
       if (!(leftOp instanceof Local)) {
         continue;

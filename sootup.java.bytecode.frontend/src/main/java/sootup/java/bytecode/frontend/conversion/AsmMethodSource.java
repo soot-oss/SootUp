@@ -1,4 +1,5 @@
 package sootup.java.bytecode.frontend.conversion;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -33,8 +34,8 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
@@ -43,6 +44,10 @@ import sootup.core.frontend.BodySource;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Trap;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
@@ -85,7 +90,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private LinkedListMultimap<BranchingStmt, LabelNode> stmtsThatBranchToLabel;
   private Map<AbstractInsnNode, Stmt> insnToStmt;
 
-  @Nonnull private final Map<Stmt, Stmt> replacedStmt = new HashMap<>();
+  @NonNull private final Map<Stmt, Stmt> replacedStmt = new HashMap<>();
 
   private OperandStack operandStack;
   private Map<LabelNode, Stmt> trapHandler;
@@ -107,23 +112,23 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private final View view;
   private final List<BodyInterceptor> bodyInterceptors;
 
-  @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
+  @NonNull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
 
-  @Nonnull private final Map<LabelNode, JIdentityStmt> inlineExceptionHandlers = new HashMap<>();
+  @NonNull private final Map<LabelNode, JIdentityStmt> inlineExceptionHandlers = new HashMap<>();
 
-  @Nonnull private final Map<LabelNode, Stmt> labelsToStmt = new HashMap<>();
+  @NonNull private final Map<LabelNode, Stmt> labelsToStmt = new HashMap<>();
 
   private final JavaIdentifierFactory identifierFactory;
   private final Supplier<MethodSignature> lazyMethodSignature;
 
   AsmMethodSource(
       int access,
-      @Nonnull String name,
-      @Nonnull String desc,
-      @Nonnull String signature,
-      @Nonnull String[] exceptions,
+      @NonNull String name,
+      @NonNull String desc,
+      @NonNull String signature,
+      @NonNull String[] exceptions,
       View view,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
     this.bodyInterceptors = bodyInterceptors;
     this.view = view;
@@ -140,12 +145,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public MethodSignature getSignature() {
     return lazyMethodSignature.get();
   }
 
-  void setDeclaringClass(@Nonnull ClassType declaringClass) {
+  void setDeclaringClass(@NonNull ClassType declaringClass) {
     this.declaringClass = (JavaClassType) declaringClass;
   }
 
@@ -156,8 +161,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @Override
-  @Nonnull
-  public Body resolveBody(@Nonnull Iterable<MethodModifier> modifierIt) {
+  @NonNull
+  public Body resolveBody(@NonNull Iterable<MethodModifier> modifierIt) {
 
     /* initialize */
     nextLocal = maxLocals;
@@ -257,13 +262,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     if (a instanceof ArrayList) {
       List<Object> list = new ArrayList<>();
-      ((ArrayList) a).forEach(e -> list.add(resolveAnnotationsInDefaultValue(e)));
+      ((ArrayList<?>) a).forEach(e -> list.add(resolveAnnotationsInDefaultValue(e)));
       return list;
     }
     return AsmUtil.convertAnnotationValue(a);
   }
 
-  @Nonnull
+  @NonNull
   private JavaLocal getOrCreateLocal(int idx) {
     if (idx >= maxLocals) {
       throw new IllegalArgumentException("Invalid local index: " + idx);
@@ -277,7 +282,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return local;
   }
 
-  @Nonnull
+  @NonNull
   private String determineLocalName(int idx) {
     if (localVariables != null) {
       for (LocalVariableNode lvn : localVariables) {
@@ -291,7 +296,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return "l" + idx;
   }
 
-  private JavaLocal createUniqueLocal(@Nonnull String nameCandidate, @Nonnull Type type) {
+  private JavaLocal createUniqueLocal(@NonNull String nameCandidate, @NonNull Type type) {
     // check for collisions with the same local names in other scopes
     // this can happen when different scopes use the same name for a
     // different variable (and having a different local idx, were we are able distinguish)
@@ -307,12 +312,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         .anyMatch(l -> l.getName().equals(nameCandidate));
   }
 
-  void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
+  void setStmt(@NonNull AbstractInsnNode insn, @NonNull Stmt stmt) {
     insnToStmt.put(insn, stmt);
   }
 
-  @Nonnull
-  Local newStackLocal() {
+  @NonNull Local newStackLocal() {
     int idx = nextLocal++;
     JavaLocal l = createUniqueLocal("$stack" + idx, UnknownType.getInstance());
     locals.set(idx, l);
@@ -320,7 +324,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @SuppressWarnings("unchecked")
-  <A extends Stmt> A getStmt(@Nonnull AbstractInsnNode insn) {
+  <A extends Stmt> A getStmt(@NonNull AbstractInsnNode insn) {
     return (A) insnToStmt.get(insn);
   }
 
@@ -335,7 +339,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         });
   }
 
-  private void addReadOperandAssignments(@Nonnull Local local) {
+  private void addReadOperandAssignments(@NonNull Local local) {
     addReadOperandAssignments_internal(
         (opValue, operand) -> {
           if (!opValue.equivTo(local)) {
@@ -368,7 +372,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertGetFieldInsn(@Nonnull FieldInsnNode insn) {
+  private void convertGetFieldInsn(@NonNull FieldInsnNode insn) {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     Type type = AsmUtil.toJimpleType(insn.desc);
     JavaClassType declClass = identifierFactory.getClassType(AsmUtil.toQualifiedName(insn.owner));
@@ -389,7 +393,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     operandStack.push(type, opr);
   }
 
-  private void convertPutFieldInsn(@Nonnull FieldInsnNode insn) {
+  private void convertPutFieldInsn(@NonNull FieldInsnNode insn) {
     boolean notInstance = insn.getOpcode() != PUTFIELD;
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     JavaClassType declClass = identifierFactory.getClassType(AsmUtil.toQualifiedName(insn.owner));
@@ -417,7 +421,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     addReadOperandAssignments();
   }
 
-  private void convertFieldInsn(@Nonnull FieldInsnNode insn) {
+  private void convertFieldInsn(@NonNull FieldInsnNode insn) {
     int op = insn.getOpcode();
     if (op == GETSTATIC || op == GETFIELD) {
       convertGetFieldInsn(insn);
@@ -426,7 +430,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertIincInsn(@Nonnull IincInsnNode insn) {
+  private void convertIincInsn(@NonNull IincInsnNode insn) {
     Local local = getOrCreateLocal(insn.var);
     addReadOperandAssignments(local);
     if (!insnToStmt.containsKey(insn)) {
@@ -435,7 +439,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertConstInsn(@Nonnull InsnNode insn) {
+  private void convertConstInsn(@NonNull InsnNode insn) {
     int op = insn.getOpcode();
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     Value v;
@@ -461,12 +465,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertArrayLoadInsn(@Nonnull InsnNode insn) {
+  private void convertArrayLoadInsn(@NonNull InsnNode insn) {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     Operand indx = operandStack.pop();
     Operand base = operandStack.pop();
     merging.mergeInputs(indx, base);
-    JArrayRef ar = JavaJimple.getInstance().newArrayRef(base.toLocal(), indx.toImmediate());
+    JArrayRef ar = JavaJimple.newArrayRef(base.toLocal(), indx.toImmediate());
     Operand opr = new Operand(insn, ar, this);
     merging.mergeOutput(opr);
     int op = insn.getOpcode();
@@ -477,7 +481,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertArrayStoreInsn(@Nonnull InsnNode insn) {
+  private void convertArrayStoreInsn(@NonNull InsnNode insn) {
     int op = insn.getOpcode();
     boolean dword = op == LASTORE || op == DASTORE;
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
@@ -485,12 +489,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Operand indexOp = operandStack.pop();
     Operand baseOp = operandStack.pop();
     merging.mergeInputs(valueOp, indexOp, baseOp);
-    JArrayRef ar = JavaJimple.getInstance().newArrayRef(baseOp.toLocal(), indexOp.toImmediate());
+    JArrayRef ar = JavaJimple.newArrayRef(baseOp.toLocal(), indexOp.toImmediate());
     JAssignStmt as = Jimple.newAssignStmt(ar, valueOp.toImmediate(), getStmtPositionInfo());
     setStmt(insn, as);
   }
 
-  private void convertDupInsn(@Nonnull InsnNode insn) {
+  private void convertDupInsn(@NonNull InsnNode insn) {
     int op = insn.getOpcode();
 
     // Get the top stack value which we need in either case
@@ -557,7 +561,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertBinopInsn(@Nonnull InsnNode insn) {
+  private void convertBinopInsn(@NonNull InsnNode insn) {
     int op = insn.getOpcode();
     boolean dword =
         op == DADD
@@ -631,7 +635,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertUnopInsn(@Nonnull InsnNode insn) {
+  private void convertUnopInsn(@NonNull InsnNode insn) {
     int op = insn.getOpcode();
     boolean dword = op == LNEG || op == DNEG;
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
@@ -654,7 +658,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertPrimCastInsn(@Nonnull InsnNode insn) {
+  private void convertPrimCastInsn(@NonNull InsnNode insn) {
     int op = insn.getOpcode();
     boolean tod = op == I2L || op == I2D || op == F2L || op == F2D || op == D2L || op == L2D;
     boolean fromd = op == D2L || op == L2D || op == D2I || op == L2I || op == D2F || op == L2F;
@@ -705,7 +709,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertReturnInsn(@Nonnull InsnNode insn) {
+  private void convertReturnInsn(@NonNull InsnNode insn) {
     int op = insn.getOpcode();
     boolean dword = op == LRETURN || op == DRETURN;
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
@@ -715,7 +719,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     setStmt(insn, ret);
   }
 
-  private void convertInsn(@Nonnull InsnNode insn) {
+  private void convertInsn(@NonNull InsnNode insn) {
     int op = insn.getOpcode();
     if (op == NOP) {
       /*
@@ -779,7 +783,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertIntInsn(@Nonnull IntInsnNode insn) {
+  private void convertIntInsn(@NonNull IntInsnNode insn) {
     int op = insn.getOpcode();
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     Value v;
@@ -818,14 +822,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
       Operand size = operandStack.pop();
       merging.mergeInputs(size);
-      v = JavaJimple.getInstance().newNewArrayExpr(type, size.toImmediate());
+      v = JavaJimple.newNewArrayExpr(type, size.toImmediate(), JavaIdentifierFactory.getInstance());
     }
     Operand opr = new Operand(insn, v, this);
     merging.mergeOutput(opr);
     operandStack.push(opr);
   }
 
-  private void convertJumpInsn(@Nonnull JumpInsnNode insn) {
+  private void convertJumpInsn(@NonNull JumpInsnNode insn) {
     int op = insn.getOpcode();
     if (op == GOTO) {
       if (!insnToStmt.containsKey(insn)) {
@@ -913,7 +917,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertLdcInsn(@Nonnull LdcInsnNode insn) {
+  private void convertLdcInsn(@NonNull LdcInsnNode insn) {
     Object val = insn.cst;
     boolean dword = val instanceof Long || val instanceof Double;
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
@@ -927,7 +931,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private Immediate toSootValue(@Nonnull Object val) throws UnsupportedOperationException {
+  private Immediate toSootValue(@NonNull Object val) throws UnsupportedOperationException {
     Immediate v;
     if (val instanceof Integer) {
       v = IntConstant.getInstance((Integer) val);
@@ -938,43 +942,34 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else if (val instanceof Double) {
       v = DoubleConstant.getInstance((Double) val);
     } else if (val instanceof String) {
-      v = JavaJimple.getInstance().newStringConstant(val.toString());
+      v = JavaJimple.newStringConstant(val.toString());
     } else if (val instanceof org.objectweb.asm.Type) {
       org.objectweb.asm.Type t = (org.objectweb.asm.Type) val;
       if (t.getSort() == org.objectweb.asm.Type.METHOD) {
         List<Type> paramTypes =
             AsmUtil.toJimpleSignatureDesc(((org.objectweb.asm.Type) val).getDescriptor());
         Type returnType = paramTypes.remove(paramTypes.size() - 1);
-        v = JavaJimple.getInstance().newMethodType(paramTypes, returnType);
+        v = JavaJimple.newMethodType(paramTypes, returnType);
       } else {
-        v =
-            JavaJimple.getInstance()
-                .newClassConstant(((org.objectweb.asm.Type) val).getDescriptor());
+        v = JavaJimple.newClassConstant(((org.objectweb.asm.Type) val).getDescriptor());
       }
     } else if (val instanceof Handle) {
       Handle h = (Handle) val;
       if (MethodHandle.isMethodRef(h.getTag())) {
-        v =
-            JavaJimple.getInstance()
-                .newMethodHandle(toMethodSignature((Handle) val), ((Handle) val).getTag());
+        v = JavaJimple.newMethodHandle(toMethodSignature((Handle) val), ((Handle) val).getTag());
       } else {
-        v =
-            JavaJimple.getInstance()
-                .newMethodHandle(toSootFieldSignature((Handle) val), ((Handle) val).getTag());
+        v = JavaJimple.newMethodHandle(toSootFieldSignature((Handle) val), ((Handle) val).getTag());
       }
     } else if (val instanceof ConstantDynamic) {
       ConstantDynamic cd = (ConstantDynamic) val;
       if (MethodHandle.isMethodRef(cd.getBootstrapMethod().getTag())) {
         v =
-            JavaJimple.getInstance()
-                .newMethodHandle(
-                    toMethodSignature(cd.getBootstrapMethod()), cd.getBootstrapMethod().getTag());
+            JavaJimple.newMethodHandle(
+                toMethodSignature(cd.getBootstrapMethod()), cd.getBootstrapMethod().getTag());
       } else {
         v =
-            JavaJimple.getInstance()
-                .newMethodHandle(
-                    toSootFieldSignature(cd.getBootstrapMethod()),
-                    cd.getBootstrapMethod().getTag());
+            JavaJimple.newMethodHandle(
+                toSootFieldSignature(cd.getBootstrapMethod()), cd.getBootstrapMethod().getTag());
       }
     } else {
       throw new UnsupportedOperationException("Unknown constant type: " + val.getClass());
@@ -1010,11 +1005,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     JavaClassType bsmCls = identifierFactory.getClassType(bsmClsName);
     List<Type> bsmSigTypes = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc());
     Type returnType = bsmSigTypes.remove(bsmSigTypes.size() - 1);
-    return JavaIdentifierFactory.getInstance()
-        .getMethodSignature(bsmCls, methodHandle.getName(), returnType, bsmSigTypes);
+    return identifierFactory.getMethodSignature(
+        bsmCls, methodHandle.getName(), returnType, bsmSigTypes);
   }
 
-  private void convertLookupSwitchInsn(@Nonnull LookupSwitchInsnNode insn) {
+  private void convertLookupSwitchInsn(@NonNull LookupSwitchInsnNode insn) {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     if (insnToStmt.containsKey(insn)) {
       merging.mergeInputs(operandStack.pop());
@@ -1037,7 +1032,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     setStmt(insn, lookupSwitchStmt);
   }
 
-  private void convertMethodInsn(@Nonnull MethodInsnNode insn) {
+  private void convertMethodInsn(@NonNull MethodInsnNode insn) {
     int op = insn.getOpcode();
     boolean isInstance = op != INVOKESTATIC;
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
@@ -1112,7 +1107,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     addReadOperandAssignments();
   }
 
-  private void convertInvokeDynamicInsn(@Nonnull InvokeDynamicInsnNode insn) {
+  private void convertInvokeDynamicInsn(@NonNull InvokeDynamicInsnNode insn) {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     // convert info on bootstrap method
     MethodSignature bsmMethodRef = toMethodSignature(insn.bsm);
@@ -1172,7 +1167,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     addReadOperandAssignments();
   }
 
-  private void convertMultiANewArrayInsn(@Nonnull MultiANewArrayInsnNode insn) {
+  private void convertMultiANewArrayInsn(@NonNull MultiANewArrayInsnNode insn) {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     ArrayType t = (ArrayType) AsmUtil.toJimpleType(insn.desc);
     int dims = insn.dims;
@@ -1192,7 +1187,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     operandStack.push(opr);
   }
 
-  private void convertTableSwitchInsn(@Nonnull TableSwitchInsnNode insn) {
+  private void convertTableSwitchInsn(@NonNull TableSwitchInsnNode insn) {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     if (insnToStmt.containsKey(insn)) {
       merging.mergeInputs(operandStack.pop());
@@ -1210,7 +1205,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     setStmt(insn, tableSwitchStmt);
   }
 
-  private void convertTypeInsn(@Nonnull TypeInsnNode insn) {
+  private void convertTypeInsn(@NonNull TypeInsnNode insn) {
     int op = insn.getOpcode();
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     Expr val;
@@ -1223,8 +1218,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         case ANEWARRAY:
           {
             val =
-                JavaJimple.getInstance()
-                    .newNewArrayExpr(AsmUtil.arrayTypetoJimpleType(insn.desc), op1.toImmediate());
+                JavaJimple.newNewArrayExpr(
+                    AsmUtil.arrayTypetoJimpleType(insn.desc),
+                    op1.toImmediate(),
+                    JavaIdentifierFactory.getInstance());
             break;
           }
         case CHECKCAST:
@@ -1246,7 +1243,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     operandStack.push(opr);
   }
 
-  private void convertVarLoadInsn(@Nonnull VarInsnNode insn) {
+  private void convertVarLoadInsn(@NonNull VarInsnNode insn) {
     int op = insn.getOpcode();
     boolean dword = op == LLOAD || op == DLOAD;
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
@@ -1259,7 +1256,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertVarStoreInsn(@Nonnull VarInsnNode insn) {
+  private void convertVarStoreInsn(@NonNull VarInsnNode insn) {
     int op = insn.getOpcode();
     boolean dword = op == LSTORE || op == DSTORE;
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
@@ -1286,7 +1283,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     addReadOperandAssignments(local);
   }
 
-  private void convertVarInsn(@Nonnull VarInsnNode insn) {
+  private void convertVarInsn(@NonNull VarInsnNode insn) {
     int op = insn.getOpcode();
     if (op >= ILOAD && op <= ALOAD) {
       convertVarLoadInsn(insn);
@@ -1302,7 +1299,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  private void convertLabel(@Nonnull LabelNode ln) {
+  private void convertLabel(@NonNull LabelNode ln) {
     if (startTrapHandler.containsKey(ln)) {
       activeTrapHandlers.add(startTrapHandler.get(ln));
     }
@@ -1328,7 +1325,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     OperandMerging merging = operandStack.getOrCreateMerging(ln);
-    JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
+    JCaughtExceptionRef ref = JavaJimple.newCaughtExceptionRef();
     Operand opr = new Operand(ln, ref, this);
     merging.mergeOutput(opr);
     if (opr.stackLocal == null) {
@@ -1339,7 +1336,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     operandStack.push(opr);
   }
 
-  private void convertLine(@Nonnull LineNumberNode ln) {
+  private void convertLine(@NonNull LineNumberNode ln) {
     currentLineNumber = ln.line;
     if (currentLineNumber > maxLineNumber) {
       maxLineNumber = currentLineNumber;
@@ -1348,13 +1345,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   /* Conversion */
   private void addEdges(
-      @Nonnull Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges,
-      @Nonnull ArrayDeque<BranchedInsnInfo> conversionWorklist,
-      @Nonnull AbstractInsnNode branchingInsn, /*  branching instruction node */
-      @Nonnull
-          AbstractInsnNode
-              tgt, /* "default" targets i.e. LabelNode or fallsthrough "target" of if  */
-      @Nonnull List<LabelNode> tgts /* other branch target(s) */) {
+      @NonNull Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges,
+      @NonNull ArrayDeque<BranchedInsnInfo> conversionWorklist,
+      @NonNull AbstractInsnNode branchingInsn, /*  branching instruction node */
+      @NonNull AbstractInsnNode
+          tgt, /* "default" targets i.e. LabelNode or fallsthrough "target" of if  */
+      @NonNull List<LabelNode> tgts /* other branch target(s) */) {
     Operand[] stackss = operandStack.getStack().toArray(new Operand[0]);
     /* iterate over possible following/successing instructions which is: combined(tgt, tgts) */
     int i = 0;
@@ -1407,7 +1403,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     for (LabelNode handlerNode : trapHandler.keySet()) {
       if (inlineExceptionLabels.contains(handlerNode)) {
         // Catch the exception
-        JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
+        JCaughtExceptionRef ref = JavaJimple.newCaughtExceptionRef();
         Local local = newStackLocal();
         JIdentityStmt as = Jimple.newIdentityStmt(local, ref, getStmtPositionInfo());
 
@@ -1562,7 +1558,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   public static LineNumberNode findLineInfo(
-      @Nonnull InsnList insnList, @Nonnull AbstractInsnNode insnNode) {
+      @NonNull InsnList insnList, @NonNull AbstractInsnNode insnNode) {
     int idx = insnList.indexOf(insnNode);
     if (idx < 0) {
       return null;
@@ -1580,7 +1576,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return null;
   }
 
-  @Nonnull
+  @NonNull
   private StmtPositionInfo getFirstLineOfMethod() {
     for (AbstractInsnNode node : instructions) {
       if (node instanceof LineNumberNode) {
@@ -1590,7 +1586,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return StmtPositionInfo.getNoStmtPositionInfo();
   }
 
-  @Nonnull
+  @NonNull
   private List<Stmt> buildPreambleLocals(Body.BodyBuilder bodyBuilder) {
 
     List<Stmt> preambleBlock = new ArrayList<>();
@@ -1801,8 +1797,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    * @return the most recent version of a Stmt or itself if there is no newer version. Otherwise
    *     returns null.
    */
-  @Nonnull
-  Stmt getLatestVersionOfStmt(@Nonnull Stmt oldStmt) {
+  @NonNull Stmt getLatestVersionOfStmt(@NonNull Stmt oldStmt) {
     while (true) {
       final Stmt replacedVersion = replacedStmt.get(oldStmt);
       if (replacedVersion != null) {
@@ -1813,7 +1808,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  void replaceStmt(@Nonnull Stmt oldStmt, Stmt newStmt) {
+  void replaceStmt(@NonNull Stmt oldStmt, Stmt newStmt) {
     if (oldStmt == newStmt) {
       return;
     }
@@ -1854,7 +1849,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    *
    * @param value which is used to filter associated Stmts
    */
-  public Stream<Stmt> getStmtsThatUse(@Nonnull Value value) {
+  public Stream<Stmt> getStmtsThatUse(@NonNull Value value) {
     Stream<Stmt> currentUses =
         insnToStmt.values().stream().filter(stmt -> stmt.getUses().anyMatch(v -> v == value));
 

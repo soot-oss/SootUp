@@ -1,4 +1,5 @@
 package sootup.interceptors;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -22,12 +23,12 @@ package sootup.interceptors;
  */
 import com.google.common.collect.Lists;
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -36,11 +37,13 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 
-/** @author Zun Wang * */
+/**
+ * @author Zun Wang *
+ */
 public class LocalPacker implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);

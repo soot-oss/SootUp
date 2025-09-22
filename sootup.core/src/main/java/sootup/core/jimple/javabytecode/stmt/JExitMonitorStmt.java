@@ -22,24 +22,24 @@ package sootup.core.jimple.javabytecode.stmt;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.stmt.AbstractStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A statement that exits a JVM monitor, thereby ending synchronization. */
 public final class JExitMonitorStmt extends AbstractStmt implements FallsThroughStmt {
 
-  protected final Immediate op;
+  private final Immediate op;
 
-  public JExitMonitorStmt(@Nonnull Immediate op, @Nonnull StmtPositionInfo positionInfo) {
+  public JExitMonitorStmt(@NonNull Immediate op, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.op = op;
   }
@@ -50,14 +50,29 @@ public final class JExitMonitorStmt extends AbstractStmt implements FallsThrough
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.EXITMONITOR);
     up.literal(" ");
     op.toString(up);
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public boolean isJExitMonitorStmt() {
+    return true;
+  }
+
+  @Override
+  public JExitMonitorStmt asJExitMonitorStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JExitMonitorStmt> toJExitMonitorStmt() {
+    return Optional.of(this);
+  }
+
+  @Override
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseExitMonitorStmt(this);
     return v;
   }
@@ -73,27 +88,27 @@ public final class JExitMonitorStmt extends AbstractStmt implements FallsThrough
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseExitMonitorStmt(this, o);
   }
 
-  @Nonnull
-  public JExitMonitorStmt withOp(@Nonnull Immediate op) {
+  @NonNull
+  public JExitMonitorStmt withOp(@NonNull Immediate op) {
     return new JExitMonitorStmt(op, getPositionInfo());
   }
 
-  @Nonnull
-  public JExitMonitorStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JExitMonitorStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JExitMonitorStmt(getOp(), positionInfo);
   }
 
-  @Nonnull
+  @NonNull
   public Immediate getOp() {
     return op;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(op.getUses(), Stream.of(op));
   }

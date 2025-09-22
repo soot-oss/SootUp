@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -67,8 +67,7 @@ public class FillArrayDataInstruction extends DexLibAbstractInstruction {
 
     Stmt firstAssign = null;
     for (int i = 0; i < numElements; i++) {
-      JArrayRef arrayRef =
-          JavaJimple.getInstance().newArrayRef(arrayReference, IntConstant.getInstance(i));
+      JArrayRef arrayRef = JavaJimple.newArrayRef(arrayReference, IntConstant.getInstance(i));
       NumericConstant element = getArrayElement(elements.get(i), body, destRegister);
       if (element == null) {
         break;

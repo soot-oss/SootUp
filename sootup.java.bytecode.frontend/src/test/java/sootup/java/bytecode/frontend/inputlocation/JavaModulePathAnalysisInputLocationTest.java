@@ -4,16 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -24,7 +21,6 @@ import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaModuleView;
 
-@Tag(TestCategories.JAVA_9_CATEGORY)
 public class JavaModulePathAnalysisInputLocationTest {
 
   private final String testPath = "../shared-test-resources/jigsaw-examples/";
@@ -109,7 +105,7 @@ public class JavaModulePathAnalysisInputLocationTest {
 
     final Optional<? extends SootClassSource> clazzOpt = inputLocation.getClassSource(sig, view);
     assertTrue(clazzOpt.isPresent());
-    AbstractClassSource scs = clazzOpt.get();
+    SootClassSource scs = clazzOpt.get();
     assertEquals(sig, scs.getClassType());
     assertEquals("modules/java.base/java/lang/String.class", scs.getSourcePath().toString());
     JavaSootClass javaSootClass = (JavaSootClass) scs.buildClass(SourceType.Application);

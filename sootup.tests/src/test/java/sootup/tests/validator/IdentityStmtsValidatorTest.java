@@ -7,24 +7,22 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
+import sootup.core.types.*;
 import sootup.core.validation.IdentityStmtsValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
-import sootup.jimple.frontend.JimpleView;
 
-@Tag("Java8")
 public class IdentityStmtsValidatorTest {
 
   IdentityStmtsValidator identityStmtsValidator;
-  JimpleView jimpleView;
+  JavaView jimpleView;
 
   @BeforeEach
   public void Setup() {
@@ -33,7 +31,6 @@ public class IdentityStmtsValidatorTest {
 
     ClassType classTypeFieldRefValidator =
         new ClassType() {
-
           @Override
           public String getFullyQualifiedName() {
             return "IdentityStmtsValidator";
@@ -54,8 +51,8 @@ public class IdentityStmtsValidatorTest {
     JimpleAnalysisInputLocation jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
-    jimpleView = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass> scOpt = jimpleView.getClass(classTypeFieldRefValidator);
+    jimpleView = new JavaView(jimpleInputLocation);
+    final Optional<JavaSootClass> scOpt = jimpleView.getClass(classTypeFieldRefValidator);
     assertTrue(scOpt.isPresent());
   }
 
@@ -122,7 +119,7 @@ public class IdentityStmtsValidatorTest {
   */
 
   Body getBody(String methodSignature) {
-    Optional<? extends SootMethod> optionalSootMethod =
+    Optional<JavaSootMethod> optionalSootMethod =
         jimpleView.getMethod(
             jimpleView.getIdentifierFactory().parseMethodSignature(methodSignature));
     assertTrue(optionalSootMethod.isPresent());

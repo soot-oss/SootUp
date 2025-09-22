@@ -23,11 +23,11 @@ package sootup.interceptors;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
@@ -51,7 +51,7 @@ import sootup.core.views.View;
 public class TrapTightener implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     // FIXME: [ms] ThrowAnalysis is missing and in result mightThrow (...) makes no sense. Issue
     // #486
@@ -107,7 +107,7 @@ public class TrapTightener implements BodyInterceptor {
    * @param graph a given exceptionalStmtGraph
    * @return a list of monitored stmts
    */
-  private Set<Stmt> monitoredStmts(@Nonnull StmtGraph<?> graph) {
+  private Set<Stmt> monitoredStmts(@NonNull StmtGraph<?> graph) {
     Set<Stmt> monitoredStmts = new HashSet<>();
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
@@ -153,7 +153,7 @@ public class TrapTightener implements BodyInterceptor {
 
   // FIXME: [ms] makes no sense in that Implementation! StmtGraph is not the legacy
   // ExceptionalUnitGraph
-  private boolean mightThrow(@Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull Trap trap) {
+  private boolean mightThrow(@NonNull StmtGraph<?> graph, @NonNull Stmt stmt, @NonNull Trap trap) {
     final BasicBlock<?> block = graph.getBlockOf(stmt);
 
     for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> dest :

@@ -22,12 +22,12 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Local;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.Local;
 
 /*
  * @author Markus Schmidt
  */
 public interface ImmediateVisitor extends ConstantVisitor {
-  void caseLocal(@Nonnull Local local);
+  void caseLocal(@NonNull Local local);
 }

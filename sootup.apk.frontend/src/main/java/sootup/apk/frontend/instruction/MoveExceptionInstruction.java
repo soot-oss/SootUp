@@ -26,8 +26,8 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.types.Type;
@@ -42,7 +42,7 @@ public class MoveExceptionInstruction extends DexLibAbstractInstruction {
   public void jimplify(DexBody body) {
     int dest = ((OneRegisterInstruction) instruction).getRegisterA();
     Local l = body.getRegisterLocal(dest);
-    JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
+    JCaughtExceptionRef ref = JavaJimple.newCaughtExceptionRef();
     stmtToRetype = Jimple.newIdentityStmt(l, ref, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(stmtToRetype);
     body.add(stmtToRetype);

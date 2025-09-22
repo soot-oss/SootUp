@@ -22,7 +22,7 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 * #L%
 */
 
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.Expr;
 
 public class ExprGraphNode extends PropertyGraphNode implements ValueGraphNode {

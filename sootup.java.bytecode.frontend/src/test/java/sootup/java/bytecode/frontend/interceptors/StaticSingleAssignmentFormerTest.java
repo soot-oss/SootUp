@@ -2,17 +2,15 @@ package sootup.java.bytecode.frontend.interceptors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.TestCategories;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.*;
@@ -30,14 +28,14 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Zun Wang */
-@Tag(TestCategories.JAVA_8_CATEGORY)
+/**
+ * @author Zun Wang
+ */
 public class StaticSingleAssignmentFormerTest {
 
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
-  JavaJimple javaJimple = JavaJimple.getInstance();
   final String location =
       Paths.get(System.getProperty("user.dir")).getParent()
           + File.separator
@@ -50,7 +48,7 @@ public class StaticSingleAssignmentFormerTest {
       new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
   ClassType exceptionType = factory.getClassType("Exception");
-  IdentityRef caughtExceptionRef = javaJimple.newCaughtExceptionRef();
+  IdentityRef caughtExceptionRef = JavaJimple.newCaughtExceptionRef();
 
   // build locals
   Local l0 = JavaJimple.newLocal("l0", classType);

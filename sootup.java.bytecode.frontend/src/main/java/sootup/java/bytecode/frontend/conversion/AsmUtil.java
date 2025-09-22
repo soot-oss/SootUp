@@ -1,9 +1,10 @@
 package sootup.java.bytecode.frontend.conversion;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2018-2023 Andreas Dann, Markus Schmidt, Jan Martin Persch and others
+ * Copyright (C) 2018-2023 Andreas Dann, Markus Schmidt, Jan Martin Persch, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -29,8 +30,8 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
@@ -40,20 +41,24 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.util.Printer;
 import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.core.frontend.ResolveException;
+import sootup.core.frontend.SootClassSource;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.FieldModifier;
+import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
-import sootup.java.core.AnnotationUsage;
-import sootup.java.core.ConstantUtil;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.ModuleModifier;
+import sootup.java.core.*;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
 public final class AsmUtil {
+
+  private static final @NonNull Logger logger = LoggerFactory.getLogger(AsmUtil.class);
 
   private AsmUtil() {}
 
@@ -66,13 +71,47 @@ public final class AsmUtil {
    * @param classNode The node to initialize
    * @return the actual class signature found in the compilation unit
    */
-  protected static String initAsmClassSource(
-      @Nonnull Path classSource, @Nonnull ClassVisitor classNode) throws IOException {
+  protected static Optional<String> readClassName(
+      @NonNull final Path classSource, @NonNull final ClassVisitor classNode) {
     try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
-      ClassReader clsr = new ClassReader(sourceFileInputStream);
-      clsr.accept(classNode, ClassReader.SKIP_FRAMES);
-      return clsr.getClassName();
+      ClassReader classReader = new ClassReader(sourceFileInputStream);
+      classReader.accept(classNode, ClassReader.SKIP_FRAMES);
+      return Optional.of(classReader.getClassName().replace('/', '.'));
+    } catch (IOException exception) {
+      logger.warn("Cannot create class source for {}", classSource, exception);
+    } catch (IllegalArgumentException exception) {
+      logger.warn("Cannot create class source for {}", classSource, exception);
     }
+    return Optional.empty();
+  }
+
+  public static SootClassSource createClassSource(
+      @NonNull final AnalysisInputLocation analysisInputLocation,
+      @NonNull final Path sourcePath,
+      @NonNull final ClassType classType,
+      @NonNull final ClassNode classNode) {
+    if ((classNode.access & Opcodes.ACC_ANNOTATION) == Opcodes.ACC_ANNOTATION) {
+      return new AsmAnnotationClassSource(analysisInputLocation, sourcePath, classType, classNode);
+    }
+
+    AsmClassSource asmClassSource =
+        new AsmClassSource(analysisInputLocation, sourcePath, classType, classNode);
+    // copy and load the complete class at once into memory so the newly created asmClassSource can
+    // release the memory and structures from the asm library
+    return new OverridingJavaClassSource(
+        asmClassSource.getAnalysisInputLocation(),
+        asmClassSource.getSourcePath(),
+        asmClassSource.getClassType(),
+        asmClassSource.resolveSuperclass().orElse(null),
+        asmClassSource.resolveInterfaces(),
+        asmClassSource.resolveOuterClass().orElse(null),
+        asmClassSource.resolveFields(),
+        asmClassSource.resolveMethods(),
+        asmClassSource.resolvePosition(),
+        asmClassSource.resolveModifiers(),
+        asmClassSource.resolveAnnotations(),
+        Collections.emptyList(), // TODO! implement
+        Collections.emptyList());
   }
 
   /**
@@ -81,7 +120,7 @@ public final class AsmUtil {
    * @param type the type to check.
    * @return {@code true} if its a dword type.
    */
-  public static boolean isDWord(@Nonnull Type type) {
+  public static boolean isDWord(@NonNull Type type) {
     return type == PrimitiveType.getLong() || type == PrimitiveType.getDouble();
   }
 
@@ -91,7 +130,7 @@ public final class AsmUtil {
    * @param str str name.
    * @return fully qualified name.
    */
-  public static String toQualifiedName(@Nonnull String str) {
+  public static String toQualifiedName(@NonNull String str) {
     final int endpos = str.length() - 1;
     if (endpos > 2 && str.charAt(endpos) == ';' && str.charAt(0) == 'L') {
       str = str.substring(1, endpos);
@@ -123,7 +162,7 @@ public final class AsmUtil {
     return modifierEnumSet;
   }
 
-  @Nonnull
+  @NonNull
   public static Collection<JavaClassType> asmIdToSignature(
       @Nullable Iterable<String> asmClassNames) {
     if (asmClassNames == null) {
@@ -135,13 +174,13 @@ public final class AsmUtil {
         .collect(Collectors.toList());
   }
 
-  @Nonnull
-  public static JavaClassType toJimpleClassType(@Nonnull String asmClassName) {
+  @NonNull
+  public static JavaClassType toJimpleClassType(@NonNull String asmClassName) {
     return JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
   }
 
-  @Nonnull
-  public static Type toJimpleType(@Nonnull String desc) {
+  @NonNull
+  public static Type toJimpleType(@NonNull String desc) {
     int nrDims = countArrayDim(desc);
     if (nrDims > 0) {
       desc = desc.substring(nrDims);
@@ -166,8 +205,8 @@ public final class AsmUtil {
         : baseType;
   }
 
-  @Nonnull
-  public static Type arrayTypetoJimpleType(@Nonnull String desc) {
+  @NonNull
+  public static Type arrayTypetoJimpleType(@NonNull String desc) {
     if (desc.charAt(0) == '[') {
       return toJimpleType(desc);
     }
@@ -175,7 +214,7 @@ public final class AsmUtil {
   }
 
   /** returns the amount of dimensions of a description. */
-  private static int countArrayDim(@Nonnull String desc) {
+  private static int countArrayDim(@NonNull String desc) {
     int nrDims = desc.lastIndexOf('[') + 1;
     for (int index = 0; index < nrDims; index++) {
       if (desc.charAt(index) != '[') {
@@ -189,7 +228,7 @@ public final class AsmUtil {
    * Converts a description to a primitive type or the void type. If the description does not match
    * it will return an empty Optional
    */
-  private static Optional<Type> toPrimitiveOrVoidType(@Nonnull String desc) {
+  private static Optional<Type> toPrimitiveOrVoidType(@NonNull String desc) {
     if (desc.length() > 1) {
       return Optional.empty();
     }
@@ -218,8 +257,8 @@ public final class AsmUtil {
   }
 
   /** Converts n types contained in desc to a list of Jimple Types */
-  @Nonnull
-  public static List<Type> toJimpleSignatureDesc(@Nonnull String desc) {
+  @NonNull
+  public static List<Type> toJimpleSignatureDesc(@NonNull String desc) {
     // [ms] more types are possibly needed for method type which is ( arg-type* ) ret-type
     List<Type> types = new ArrayList<>(1);
     int len = desc.length();
@@ -322,8 +361,8 @@ public final class AsmUtil {
           if (annotationValue instanceof ArrayList
               && !((ArrayList<?>) annotationValue).isEmpty()
               && ((ArrayList<?>) annotationValue).get(0) instanceof AnnotationNode) {
-            final ArrayList<AnnotationNode> annotationValueList =
-                (ArrayList<AnnotationNode>) annotationValue;
+            final List<AnnotationNode> annotationValueList =
+                ((ArrayList<?>) annotationValue).stream().map(av -> (AnnotationNode) av).toList();
 
             paramMap.put(annotationName, createAnnotationUsage(annotationValueList));
           } else if (annotationValue instanceof AnnotationNode) {
@@ -363,15 +402,14 @@ public final class AsmUtil {
         // is a class constant
         // transform asm Type to ClassConstant
         ClassConstant classConstant =
-            JavaJimple.getInstance()
-                .newClassConstant(((org.objectweb.asm.Type) annotationValue).toString());
+            JavaJimple.newClassConstant(((org.objectweb.asm.Type) annotationValue).toString());
         return ConstantUtil.fromObject(classConstant);
       }
     }
     return ConstantUtil.fromObject(annotationValue);
   }
 
-  @Nonnull
+  @NonNull
   public static ClassNode getModuleDescriptor(Path moduleInfoFile) {
     ClassNode moduleDescriptor;
     try (InputStream sourceFileInputStream = Files.newInputStream(moduleInfoFile)) {

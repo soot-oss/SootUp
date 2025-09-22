@@ -22,36 +22,52 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Immediate;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 
 /** An expression that computes a binary OR of two operands. */
 public final class JOrExpr extends AbstractIntLongBinopExpr {
 
-  public JOrExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
+  public JOrExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
     super(op1, op2);
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public String getSymbol() {
     return " | ";
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseOrExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JOrExpr withOp1(@Nonnull Immediate op1) {
+  @NonNull
+  public JOrExpr withOp1(@NonNull Immediate op1) {
     return new JOrExpr(op1, getOp2());
   }
 
-  @Nonnull
-  public JOrExpr withOp2(@Nonnull Immediate op2) {
+  @NonNull
+  public JOrExpr withOp2(@NonNull Immediate op2) {
     return new JOrExpr(getOp1(), op2);
+  }
+
+  @Override
+  public boolean isJOrExpr() {
+    return true;
+  }
+
+  @Override
+  public JOrExpr asJOrExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JOrExpr> toJOrExpr() {
+    return Optional.of(this);
   }
 }

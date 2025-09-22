@@ -4,11 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.constant.BooleanConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JLeExpr;
@@ -16,12 +15,9 @@ import sootup.core.jimple.common.expr.JNeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.UnknownType;
+import sootup.core.types.*;
 import sootup.core.util.printer.BriefStmtPrinter;
 
-@Tag("Java8")
 public class MutableBlockStmtGraphTest {
 
   public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();

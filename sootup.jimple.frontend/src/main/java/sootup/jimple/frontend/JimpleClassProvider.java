@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import org.antlr.v4.runtime.CharStreams;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.frontend.ClassProvider;
@@ -39,15 +39,17 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
-/** @author Markus Schmidt */
+/**
+ * @author Markus Schmidt
+ */
 public class JimpleClassProvider implements ClassProvider {
 
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
-  @Nonnull private final View view;
+  @NonNull private final List<BodyInterceptor> bodyInterceptors;
+  @NonNull private final View view;
 
-  private static final @Nonnull Logger logger = LoggerFactory.getLogger(JimpleClassProvider.class);
+  private static final @NonNull Logger logger = LoggerFactory.getLogger(JimpleClassProvider.class);
 
-  public JimpleClassProvider(List<BodyInterceptor> bodyInterceptors, @Nonnull View view) {
+  public JimpleClassProvider(List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
     this.bodyInterceptors = bodyInterceptors;
     this.view = view;
   }

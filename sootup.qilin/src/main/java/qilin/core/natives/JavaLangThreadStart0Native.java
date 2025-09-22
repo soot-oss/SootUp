@@ -18,9 +18,9 @@
 
 package qilin.core.natives;
 
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;

@@ -22,42 +22,29 @@ package sootup.callgraph;
  * #L%
  */
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import java.util.stream.Stream;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.signatures.MethodSignature;
 
 /** The interface of all implemented call graph data structures */
 public interface CallGraph {
 
-  class Call {
-    @Nonnull private final MethodSignature sourceMethodSignature;
-    @Nonnull private final MethodSignature targetMethodSignature;
-    @Nonnull private final InvokableStmt invokableStmt;
+  record Call(
+      @NonNull MethodSignature sourceMethodSignature,
+      @NonNull MethodSignature targetMethodSignature,
+      @NonNull InvokableStmt invokableStmt) {
 
-    public Call(
-        @Nonnull MethodSignature sourceMethodSignature,
-        @Nonnull MethodSignature targetMethodSignature,
-        @Nonnull InvokableStmt invokableStmt) {
-      this.sourceMethodSignature = sourceMethodSignature;
-      this.invokableStmt = invokableStmt;
-      this.targetMethodSignature = targetMethodSignature;
-    }
-
-    @Nonnull
-    public MethodSignature getSourceMethodSignature() {
-      return sourceMethodSignature;
-    }
-
-    @Nonnull
-    public MethodSignature getTargetMethodSignature() {
-      return targetMethodSignature;
-    }
-
-    @Nonnull
-    public InvokableStmt getInvokableStmt() {
-      return invokableStmt;
+    /**
+     * The line number of the stmt causing the call
+     *
+     * @return the line number of the stmt. If the position is unknown, it will return -1
+     */
+    public int getLineNumber() {
+      return invokableStmt.getPositionInfo().getStmtPosition().getFirstLine();
     }
 
     @Override
@@ -76,14 +63,7 @@ public interface CallGraph {
     }
 
     @Override
-    public int hashCode() {
-      int result = sourceMethodSignature.hashCode();
-      result = 31 * result + targetMethodSignature.hashCode();
-      result = 31 * result + invokableStmt.hashCode();
-      return result;
-    }
-
-    @Override
+    @NonNull
     public String toString() {
       return "Call:"
           + sourceMethodSignature
@@ -101,8 +81,15 @@ public interface CallGraph {
    *
    * @return a set containing all method signatures in the call graph.
    */
-  @Nonnull
-  Set<MethodSignature> getMethodSignatures();
+  @NonNull Set<MethodSignature> getMethodSignatures();
+
+  /**
+   * This method returns all calls in the call graph. Calls are a edges in the call graph. They
+   * contain the source, target and calling stmt.
+   *
+   * @return a set containing all calls in the call graph.
+   */
+  @NonNull Set<Call> getCalls();
 
   /**
    * This method returns all method signatures that are called by a given method signature. It
@@ -111,8 +98,7 @@ public interface CallGraph {
    * @param sourceMethod the method signature of the requested node in the call graph
    * @return a set of method signatures that are reached by a direct outgoing edge in the call graph
    */
-  @Nonnull
-  Set<MethodSignature> callTargetsFrom(@Nonnull MethodSignature sourceMethod);
+  @NonNull Set<MethodSignature> callTargetsFrom(@NonNull MethodSignature sourceMethod);
 
   /**
    * This method returns all method signatures that call a given method signature. It returns the
@@ -122,8 +108,7 @@ public interface CallGraph {
    * @return a set of method signatures that reach the targetMethod by a direct edge in the call
    *     graph
    */
-  @Nonnull
-  Set<MethodSignature> callSourcesTo(@Nonnull MethodSignature targetMethod);
+  @NonNull Set<MethodSignature> callSourcesTo(@NonNull MethodSignature targetMethod);
 
   /**
    * This method returns all method signatures that are called by a given method signature. It
@@ -132,8 +117,7 @@ public interface CallGraph {
    * @param sourceMethod the method signature of the requested node in the call graph
    * @return a set of method signatures that are reached by a direct outgoing edge in the call graph
    */
-  @Nonnull
-  Set<Call> callsFrom(@Nonnull MethodSignature sourceMethod);
+  @NonNull Set<Call> callsFrom(@NonNull MethodSignature sourceMethod);
 
   /**
    * This method returns all method signatures that call a given method signature. It returns the
@@ -143,8 +127,7 @@ public interface CallGraph {
    * @return a set of method signatures that reach the targetMethod by a direct edge in the call
    *     graph
    */
-  @Nonnull
-  Set<Call> callsTo(@Nonnull MethodSignature targetMethod);
+  @NonNull Set<Call> callsTo(@NonNull MethodSignature targetMethod);
 
   /**
    * This method checks if a given method signature is a node in the call graph.
@@ -153,7 +136,7 @@ public interface CallGraph {
    * @return it returns true if the node described by the method signature is included in the call
    *     graph, otherwise it will return false.
    */
-  boolean containsMethod(@Nonnull MethodSignature method);
+  boolean containsMethod(@NonNull MethodSignature method);
 
   /**
    * This method checks if an edge is contained in the call graph. The edge is defined by a source
@@ -165,8 +148,8 @@ public interface CallGraph {
    * @return true if the edge is contained in the call graph, otherwise it will be false.
    */
   boolean containsCall(
-      @Nonnull MethodSignature sourceMethod,
-      @Nonnull MethodSignature targetMethod,
+      @NonNull MethodSignature sourceMethod,
+      @NonNull MethodSignature targetMethod,
       InvokableStmt invokableStmt);
 
   /**
@@ -176,7 +159,7 @@ public interface CallGraph {
    * @param call it defines the requested call in the call graph
    * @return true if the edge is contained in the call graph, otherwise it will be false.
    */
-  boolean containsCall(@Nonnull Call call);
+  boolean containsCall(@NonNull Call call);
 
   /**
    * This method counts every edge in the call graph.
@@ -185,16 +168,59 @@ public interface CallGraph {
    */
   int callCount();
 
-  /** This method converts the call graph object into dot format and write it to a string file. */
-  String exportAsDot();
+  /**
+   * exports a call of the call graph to an edge in a dot file
+   *
+   * @param call the data of the call
+   * @return an edge defining the call in the dot file
+   */
+  default StringBuilder toDotEdge(Call call) {
+    return new StringBuilder("\"")
+        .append(call.sourceMethodSignature())
+        .append("\"->\"")
+        .append(call.targetMethodSignature())
+        .append("\"[label=\"")
+        .append(call.getLineNumber())
+        .append("\"]");
+  }
+
+  /**
+   * This method converts the call graph object into dot format and write it to a string file. The
+   * first entry contains the graph info and the last entry closes the graph.
+   *
+   * @return a stream containing all edges as Strings in the dot format
+   */
+  default Stream<String> exportAsDot() {
+    return Stream.concat(
+        Stream.concat(
+            Stream.of("strict digraph ObjectGraph {"),
+            getCalls().stream().map(call -> toDotEdge(call).toString())),
+        Stream.of("}"));
+  }
+
+  /**
+   * This method converts the call graph object into dot format and writes it to a string file. The
+   * calls are sorted by the given Comparator for Call Objects. The first entry opens the graph and
+   * the last entry closes the graph.
+   *
+   * @param callComparator the comparator responsible for sorting the calls
+   * @return a stream containing all edges as Strings in the dot format sorted by the given
+   *     Comparator
+   */
+  default Stream<String> exportAsDot(Comparator<Call> callComparator) {
+    return Stream.concat(
+        Stream.concat(
+            Stream.of("strict digraph ObjectGraph {"),
+            getCalls().stream().sorted(callComparator).map(call -> toDotEdge(call).toString())),
+        Stream.of("}"));
+  }
 
   /**
    * This method copies a call graph.
    *
    * @return it returns a copied call graph.
    */
-  @Nonnull
-  MutableCallGraph copy();
+  @NonNull MutableCallGraph copy();
 
   /**
    * This method returns all entry methods of the call graph
@@ -207,6 +233,5 @@ public interface CallGraph {
    * This method compares the difference between the current call graph and call graph passed into
    * the argument.
    */
-  @Nonnull
-  CallGraphDifference diff(@Nonnull CallGraph callGraph);
+  @NonNull CallGraphDifference diff(@NonNull CallGraph callGraph);
 }

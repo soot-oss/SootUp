@@ -22,22 +22,23 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A statement that ends the method, returning a value. */
 public final class JReturnStmt extends AbstractStmt {
 
-  protected final Immediate op;
+  private final Immediate op;
 
-  public JReturnStmt(@Nonnull Immediate returnValue, @Nonnull StmtPositionInfo positionInfo) {
+  public JReturnStmt(@NonNull Immediate returnValue, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.op = returnValue;
   }
@@ -48,14 +49,29 @@ public final class JReturnStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.RETURN);
     up.literal(" ");
     op.toString(up);
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public boolean isJReturnStmt() {
+    return true;
+  }
+
+  @Override
+  public JReturnStmt asJReturnStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JReturnStmt> toJReturnStmt() {
+    return Optional.of(this);
+  }
+
+  @Override
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseReturnStmt(this);
     return v;
   }
@@ -75,13 +91,13 @@ public final class JReturnStmt extends AbstractStmt {
     return 0;
   }
 
-  @Nonnull
+  @NonNull
   public Immediate getOp() {
     return op;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(op.getUses(), Stream.of(op));
   }
@@ -92,17 +108,17 @@ public final class JReturnStmt extends AbstractStmt {
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseReturnStmt(this, o);
   }
 
-  @Nonnull
-  public JReturnStmt withReturnValue(@Nonnull Immediate returnValue) {
+  @NonNull
+  public JReturnStmt withReturnValue(@NonNull Immediate returnValue) {
     return new JReturnStmt(returnValue, getPositionInfo());
   }
 
-  @Nonnull
-  public JReturnStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JReturnStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JReturnStmt(getOp(), positionInfo);
   }
 }

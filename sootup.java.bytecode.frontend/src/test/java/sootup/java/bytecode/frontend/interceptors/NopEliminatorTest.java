@@ -2,15 +2,13 @@ package sootup.java.bytecode.frontend.interceptors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.TestCategories;
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;
 import sootup.core.util.ImmutableUtils;
@@ -20,8 +18,9 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Marcus Nachtigall */
-@Tag(TestCategories.JAVA_8_CATEGORY)
+/**
+ * @author Marcus Nachtigall
+ */
 public class NopEliminatorTest {
 
   /**
@@ -74,7 +73,6 @@ public class NopEliminatorTest {
    */
   private static Body.BodyBuilder createBody(boolean withNop) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-    JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
@@ -84,7 +82,7 @@ public class NopEliminatorTest {
     Local b = JavaJimple.newLocal("b", stringType);
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str"), noPositionInfo);
     FallsThroughStmt bToA =
         JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);

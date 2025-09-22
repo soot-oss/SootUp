@@ -22,12 +22,14 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -39,7 +41,7 @@ public final class JInstanceOfExpr implements Expr {
   private final Immediate op;
   private final Type checkType;
 
-  public JInstanceOfExpr(@Nonnull Immediate op, @Nonnull Type checkType) {
+  public JInstanceOfExpr(@NonNull Immediate op, @NonNull Type checkType) {
 
     this.op = op;
     this.checkType = checkType;
@@ -47,20 +49,20 @@ public final class JInstanceOfExpr implements Expr {
 
   @Override
   public String toString() {
-    return op.toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
+    return op + " " + Jimple.INSTANCEOF + " " + checkType;
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     op.toString(up);
     up.literal(" ");
     up.literal(Jimple.INSTANCEOF);
     up.literal(" ");
-    up.literal(Jimple.escape(checkType.toString()));
+    up.literal(JimpleUtils.escape(checkType.toString()));
   }
 
   @Override
-  public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseInstanceOfExpr(this, o);
   }
 
@@ -75,12 +77,12 @@ public final class JInstanceOfExpr implements Expr {
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(op.getUses(), Stream.of(op));
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return PrimitiveType.getBoolean();
@@ -91,18 +93,33 @@ public final class JInstanceOfExpr implements Expr {
   }
 
   @Override
-  public <V extends ExprVisitor> V accept(@Nonnull V v) {
+  public <V extends ExprVisitor> V accept(@NonNull V v) {
     v.caseInstanceOfExpr(this);
     return v;
   }
 
-  @Nonnull
-  public JInstanceOfExpr withOp(@Nonnull Immediate op) {
+  @NonNull
+  public JInstanceOfExpr withOp(@NonNull Immediate op) {
     return new JInstanceOfExpr(op, getCheckType());
   }
 
-  @Nonnull
-  public JInstanceOfExpr withCheckType(@Nonnull Type checkType) {
+  @NonNull
+  public JInstanceOfExpr withCheckType(@NonNull Type checkType) {
     return new JInstanceOfExpr(getOp(), checkType);
+  }
+
+  @Override
+  public boolean isJInstanceOfExpr() {
+    return true;
+  }
+
+  @Override
+  public JInstanceOfExpr asJInstanceOfExpr() {
+    return this;
+  }
+
+  @Override
+  public Optional<JInstanceOfExpr> toJInstanceOfExpr() {
+    return Optional.of(this);
   }
 }

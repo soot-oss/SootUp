@@ -1,14 +1,12 @@
 package sootup.java.bytecode.frontend.interceptors;
 
-import categories.TestCategories;
 import java.util.Collections;
 import java.util.Set;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
@@ -24,8 +22,9 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
-/** @author Zun Wang */
-@Tag(TestCategories.JAVA_8_CATEGORY)
+/**
+ * @author Zun Wang
+ */
 public class LocalLivenessAnalyserTest {
 
   // Preparation

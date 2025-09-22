@@ -24,16 +24,14 @@ package sootup.java.core.jimple.common;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.IgnoreLocalNameComparator;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.javabytecode.stmt.JBreakpointStmt;
 import sootup.core.types.PrimitiveType;
 
-@Tag("Java8")
 public class LocalTest {
 
   @Test

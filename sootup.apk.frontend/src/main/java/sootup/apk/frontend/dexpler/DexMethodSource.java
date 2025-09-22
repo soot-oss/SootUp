@@ -29,14 +29,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
 import org.jf.dexlib2.iface.Method;
+import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
@@ -53,7 +53,7 @@ public class DexMethodSource implements BodySource {
 
   private final List<BodyInterceptor> bodyInterceptors;
 
-  @Nonnull private final View view;
+  @NonNull private final View view;
   private final MethodSignature methodSignature;
 
   public DexMethodSource(
@@ -62,7 +62,7 @@ public class DexMethodSource implements BodySource {
       MutableStmtGraph mutableStmtGraph,
       Method method,
       List<BodyInterceptor> bodyInterceptors,
-      @Nonnull View view) {
+      @NonNull View view) {
     this.methodSignature = methodSignature;
     this.view = view;
     this.locals = locals;
@@ -71,9 +71,9 @@ public class DexMethodSource implements BodySource {
     this.method = method;
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public Body resolveBody(@Nonnull Iterable<MethodModifier> modifiers)
+  public Body resolveBody(@NonNull Iterable<MethodModifier> modifiers)
       throws ResolveException, IOException {
     Set<MethodModifier> modifiersSet =
         StreamSupport.stream(modifiers.spliterator(), false).collect(Collectors.toSet());
@@ -112,7 +112,7 @@ public class DexMethodSource implements BodySource {
     throw new UnsupportedOperationException("TODO");
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public MethodSignature getSignature() {
     return methodSignature;

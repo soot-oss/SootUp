@@ -22,19 +22,16 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A Constant that supports {@link #and(LogicalConstant)}, {@link #or(LogicalConstant)} and {@link
  * #xor(LogicalConstant)}
  */
 public interface LogicalConstant<L extends LogicalConstant<L>> extends Constant {
-  @Nonnull
-  L and(@Nonnull L c);
+  @NonNull L and(@NonNull L c);
 
-  @Nonnull
-  L or(@Nonnull L c);
+  @NonNull L or(@NonNull L c);
 
-  @Nonnull
-  L xor(@Nonnull L c);
+  @NonNull L xor(@NonNull L c);
 }

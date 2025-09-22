@@ -23,9 +23,9 @@ package sootup.apk.frontend.interceptors;
  */
 
 import java.util.*;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
+import org.jspecify.annotations.NonNull;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.DoubleConstant;
 import sootup.core.jimple.common.constant.FloatConstant;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -54,7 +54,7 @@ public class DexNumberTranformer extends DexTransformer {
   private boolean doBreak = false;
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
 
@@ -72,7 +72,7 @@ public class DexNumberTranformer extends DexTransformer {
         stmt.accept(
             new AbstractStmtVisitor() {
               @Override
-              public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+              public void caseAssignStmt(@NonNull JAssignStmt stmt) {
                 {
                   Value rightOp = stmt.getRightOp();
                   if (rightOp instanceof JFieldRef) {
@@ -107,7 +107,7 @@ public class DexNumberTranformer extends DexTransformer {
               }
 
               @Override
-              public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
+              public void caseIdentityStmt(@NonNull JIdentityStmt stmt) {
                 if (stmt.getLeftOp() == l) {
                   usedAsFloatingPoint = isFloatingPointLike(stmt.getRightOp().getType());
                   doBreak = true;
@@ -124,13 +124,13 @@ public class DexNumberTranformer extends DexTransformer {
           use.accept(
               new AbstractStmtVisitor() {
                 @Override
-                public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
+                public void caseInvokeStmt(@NonNull JInvokeStmt stmt) {
                   AbstractInvokeExpr e = stmt.getInvokeExpr().get();
                   usedAsFloatingPoint = examineInvokeExpr(e, l);
                 }
 
                 @Override
-                public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
+                public void caseReturnStmt(@NonNull JReturnStmt stmt) {
                   usedAsFloatingPoint =
                       stmt.getOp() == l
                           && isFloatingPointLike(
@@ -139,7 +139,7 @@ public class DexNumberTranformer extends DexTransformer {
                 }
 
                 @Override
-                public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+                public void caseAssignStmt(@NonNull JAssignStmt stmt) {
                   {
                     // only case where 'l' could be on the left side is
                     // arrayRef with 'l' as the index

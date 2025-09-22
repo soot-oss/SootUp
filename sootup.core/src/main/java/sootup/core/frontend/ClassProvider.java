@@ -1,4 +1,5 @@
 package sootup.core.frontend;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -28,7 +29,7 @@ import sootup.core.inputlocation.FileType;
 import sootup.core.types.ClassType;
 
 /**
- * Responsible for creating {@link AbstractClassSource}es based on the handled file type (.class,
+ * Responsible for creating {@link SootClassSource}es based on the handled file type (.class,
  * .jimple, .java, .dex, etc).
  *
  * @author Manuel Benz

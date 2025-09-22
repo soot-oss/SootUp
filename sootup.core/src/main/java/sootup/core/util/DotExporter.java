@@ -26,8 +26,8 @@ import com.google.common.collect.Sets;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
-import javax.annotation.Nonnull;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.*;
@@ -43,7 +43,7 @@ import sootup.core.types.ClassType;
 public class DotExporter {
 
   public static String buildGraph(
-      @Nonnull StmtGraph<?> graph,
+      @NonNull StmtGraph<?> graph,
       boolean isICFG,
       Map<Integer, MethodSignature> calls,
       MethodSignature methodSignature) {
@@ -217,7 +217,7 @@ public class DotExporter {
     return sb;
   }
 
-  public static String createUrlToWebeditor(@Nonnull StmtGraph<?> graph) {
+  public static String createUrlToWebeditor(@NonNull StmtGraph<?> graph) {
     try {
       return "http://magjac.com/graphviz-visual-editor/?dot="
           + URLEncoder.encode(buildGraph(graph, false, null, null), "UTF-8");

@@ -22,7 +22,7 @@ package sootup.core.model;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public abstract class Position implements Comparable<Position> {
   public abstract int getFirstLine();
@@ -67,7 +67,7 @@ public abstract class Position implements Comparable<Position> {
    * Compares "Positions" by their starting line/column Note: this class has a natural ordering that
    * is inconsistent with equals
    */
-  public int compareTo(@Nonnull Position position) {
+  public int compareTo(@NonNull Position position) {
     if (getFirstLine() < position.getFirstLine()) {
       return -1;
     } else if (getFirstLine() == position.getFirstLine()) {

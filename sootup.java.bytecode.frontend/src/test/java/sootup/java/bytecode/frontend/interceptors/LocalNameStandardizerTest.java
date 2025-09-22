@@ -1,13 +1,11 @@
 package sootup.java.bytecode.frontend.interceptors;
 
-import categories.TestCategories;
 import java.util.*;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.BooleanConstant;
 import sootup.core.jimple.common.constant.DoubleConstant;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -27,8 +25,9 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Zun Wang */
-@Tag(TestCategories.JAVA_8_CATEGORY)
+/**
+ * @author Zun Wang
+ */
 public class LocalNameStandardizerTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();

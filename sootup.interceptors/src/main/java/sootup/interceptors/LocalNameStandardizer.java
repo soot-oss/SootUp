@@ -1,4 +1,5 @@
 package sootup.interceptors;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,22 +22,24 @@ package sootup.interceptors;
  * #L%
  */
 import java.util.*;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.LocalGenerator;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 
-/** @author Zun Wang */
+/**
+ * @author Zun Wang
+ */
 public class LocalNameStandardizer implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     MutableStmtGraph graph = builder.getStmtGraph();
     // Get the order of all Locals' occurrences and store them into a map

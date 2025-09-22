@@ -22,7 +22,8 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -32,7 +33,7 @@ import sootup.core.util.printer.StmtPrinter;
 /** A no-operation statement. */
 public final class JNopStmt extends AbstractStmt implements FallsThroughStmt {
 
-  public JNopStmt(@Nonnull StmtPositionInfo positionInfo) {
+  public JNopStmt(@NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
   }
 
@@ -42,12 +43,27 @@ public final class JNopStmt extends AbstractStmt implements FallsThroughStmt {
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.NOP);
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public boolean isJNopStmt() {
+    return true;
+  }
+
+  @Override
+  public JNopStmt asJNopStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JNopStmt> toJNopStmt() {
+    return Optional.of(this);
+  }
+
+  @Override
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseNopStmt(this);
     return v;
   }
@@ -63,7 +79,7 @@ public final class JNopStmt extends AbstractStmt implements FallsThroughStmt {
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseNopStmt(this, o);
   }
 
@@ -72,8 +88,8 @@ public final class JNopStmt extends AbstractStmt implements FallsThroughStmt {
     return 42;
   }
 
-  @Nonnull
-  public JNopStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JNopStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JNopStmt(positionInfo);
   }
 }

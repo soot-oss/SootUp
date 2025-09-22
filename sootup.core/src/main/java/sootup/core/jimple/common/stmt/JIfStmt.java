@@ -23,12 +23,13 @@ package sootup.core.jimple.common.stmt;
  */
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.model.Body;
@@ -44,9 +45,9 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
   public static final int FALSE_BRANCH_IDX = 0;
   public static final int TRUE_BRANCH_IDX = 1;
 
-  @Nonnull private final AbstractConditionExpr condition;
+  @NonNull private final AbstractConditionExpr condition;
 
-  public JIfStmt(@Nonnull AbstractConditionExpr condition, @Nonnull StmtPositionInfo positionInfo) {
+  public JIfStmt(@NonNull AbstractConditionExpr condition, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.condition = condition;
   }
@@ -57,7 +58,7 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter stmtPrinter) {
+  public void toString(@NonNull StmtPrinter stmtPrinter) {
     stmtPrinter.literal(Jimple.IF);
     stmtPrinter.literal(" ");
     condition.toString(stmtPrinter);
@@ -69,14 +70,29 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
     stmtPrinter.stmtRef(stmtPrinter.getGraph().getBranchTargetsOf(this).get(0), true);
   }
 
-  @Nonnull
+  @Override
+  public boolean isJIfStmt() {
+    return true;
+  }
+
+  @Override
+  public JIfStmt asJIfStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JIfStmt> toJIfStmt() {
+    return Optional.of(this);
+  }
+
+  @NonNull
   public AbstractConditionExpr getCondition() {
     return condition;
   }
 
   @Override
-  @Nonnull
-  public List<Stmt> getTargetStmts(@Nonnull Body body) {
+  @NonNull
+  public List<Stmt> getTargetStmts(@NonNull Body body) {
     return body.getBranchTargetsOf(this);
   }
 
@@ -86,13 +102,13 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(getCondition().getUses(), Stream.of(getCondition()));
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseIfStmt(this);
     return v;
   }
@@ -108,7 +124,7 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseIfStmt(this, o);
   }
 
@@ -117,13 +133,13 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
     return getCondition().equivHashCode();
   }
 
-  @Nonnull
-  public JIfStmt withCondition(@Nonnull AbstractConditionExpr condition) {
+  @NonNull
+  public JIfStmt withCondition(@NonNull AbstractConditionExpr condition) {
     return new JIfStmt(condition, getPositionInfo());
   }
 
-  @Nonnull
-  public JIfStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JIfStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JIfStmt(getCondition(), positionInfo);
   }
 }

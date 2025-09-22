@@ -29,9 +29,9 @@ import heros.SynchronizedBy;
 import heros.solver.IDESolver;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -49,10 +49,10 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @SynchronizedBy("by use of synchronized LoadingCache class")
   protected LoadingCache<Body, StmtGraph<?>> bodyToStmtGraph =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<Body, StmtGraph<?>>() {
-            @Nonnull
+          new CacheLoader<>() {
+            @NonNull
             @Override
-            public StmtGraph<?> load(@Nonnull Body body) {
+            public StmtGraph<?> load(@NonNull Body body) {
               return makeGraph(body);
             }
           });
@@ -60,10 +60,10 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @SynchronizedBy("by use of synchronized LoadingCache class")
   protected LoadingCache<SootMethod, List<Value>> methodToParameterRefs =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<SootMethod, List<Value>>() {
-            @Nonnull
+          new CacheLoader<>() {
+            @NonNull
             @Override
-            public List<Value> load(@Nonnull SootMethod m) {
+            public List<Value> load(@NonNull SootMethod m) {
               return new ArrayList<>(m.getBody().getParameterLocals());
             }
           });
@@ -71,10 +71,10 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @SynchronizedBy("by use of synchronized LoadingCache class")
   protected LoadingCache<SootMethod, Set<Stmt>> methodToCallsFromWithin =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<SootMethod, Set<Stmt>>() {
-            @Nonnull
+          new CacheLoader<>() {
+            @NonNull
             @Override
-            public Set<Stmt> load(@Nonnull SootMethod m) {
+            public Set<Stmt> load(@NonNull SootMethod m) {
               return getCallsFromWithinMethod(m);
             }
           });
@@ -186,7 +186,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public boolean isCallStmt(Stmt stmt) {
-    return stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr();
+    return stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent();
   }
 
   @Override

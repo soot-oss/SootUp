@@ -22,14 +22,14 @@ package sootup.core.jimple.javabytecode.stmt;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.stmt.AbstractStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -39,38 +39,53 @@ import sootup.core.util.printer.StmtPrinter;
  */
 public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
 
-  @Nonnull private final Value stmtAddress;
+  @NonNull private final Value stmtAddress;
 
-  public JRetStmt(@Nonnull Value stmtAddress, @Nonnull StmtPositionInfo positionInfo) {
+  public JRetStmt(@NonNull Value stmtAddress, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.stmtAddress = stmtAddress;
   }
 
   @Override
   public String toString() {
-    return Jimple.RET + " " + stmtAddress.toString();
+    return Jimple.RET + " " + stmtAddress;
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.RET);
     up.literal(" ");
     stmtAddress.toString(up);
   }
 
-  @Nonnull
+  @Override
+  public boolean isJRetStmt() {
+    return true;
+  }
+
+  @Override
+  public JRetStmt asJRetStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JRetStmt> toJRetStmt() {
+    return Optional.of(this);
+  }
+
+  @NonNull
   public Value getStmtAddress() {
     return stmtAddress;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(stmtAddress.getUses(), Stream.of(stmtAddress));
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseRetStmt(this);
     return v;
   }
@@ -86,7 +101,7 @@ public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseRetStmt(this, o);
   }
 
@@ -95,13 +110,13 @@ public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
     return stmtAddress.equivHashCode();
   }
 
-  @Nonnull
-  public JRetStmt withStmtAddress(@Nonnull Value stmtAddress) {
+  @NonNull
+  public JRetStmt withStmtAddress(@NonNull Value stmtAddress) {
     return new JRetStmt(stmtAddress, getPositionInfo());
   }
 
-  @Nonnull
-  public JRetStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JRetStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JRetStmt(getStmtAddress(), positionInfo);
   }
 }

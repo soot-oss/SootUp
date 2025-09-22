@@ -2,16 +2,14 @@ package sootup.java.bytecode.frontend.interceptors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.TestCategories;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.JEqExpr;
 import sootup.core.jimple.common.stmt.BranchingStmt;
@@ -29,8 +27,9 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-/** @author Marcus Nachtigall */
-@Tag(TestCategories.JAVA_8_CATEGORY)
+/**
+ * @author Marcus Nachtigall
+ */
 public class ConditionalBranchFolderTest {
 
   /**
@@ -87,14 +86,13 @@ public class ConditionalBranchFolderTest {
    */
   private static Body.BodyBuilder createBodyBuilder(int constantCondition) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-    JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType stringType = factory.getClassType("java.lang.String");
     Local a = JavaJimple.newLocal("a", stringType);
     Local b = JavaJimple.newLocal("b", stringType);
 
-    StringConstant stringConstant = javaJimple.newStringConstant("str");
+    StringConstant stringConstant = JavaJimple.newStringConstant("str");
     FallsThroughStmt strToA = JavaJimple.newAssignStmt(a, stringConstant, noPositionInfo);
 
     FallsThroughStmt strToB;
@@ -102,13 +100,13 @@ public class ConditionalBranchFolderTest {
     JEqExpr jEqExpr;
     switch (constantCondition) {
       case 0:
-        anotherStringConstant = javaJimple.newStringConstant("str");
+        anotherStringConstant = JavaJimple.newStringConstant("str");
         strToB = JavaJimple.newAssignStmt(b, anotherStringConstant, noPositionInfo);
         jEqExpr = new JEqExpr(stringConstant, anotherStringConstant);
 
         break;
       case 1:
-        anotherStringConstant = javaJimple.newStringConstant("different string");
+        anotherStringConstant = JavaJimple.newStringConstant("different string");
         strToB = JavaJimple.newAssignStmt(b, anotherStringConstant, noPositionInfo);
         jEqExpr = new JEqExpr(stringConstant, anotherStringConstant);
 

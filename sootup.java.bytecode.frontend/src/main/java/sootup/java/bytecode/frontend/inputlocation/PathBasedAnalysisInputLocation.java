@@ -5,8 +5,8 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
@@ -49,27 +49,27 @@ import sootup.java.core.types.JavaClassType;
  * @author Kaustubh Kelkar updated on 30.07.2020
  */
 public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLocation {
-  @Nonnull protected Path path;
-  @Nonnull protected Collection<Path> ignoredPaths;
-  @Nonnull protected final SourceType sourceType;
-  @Nonnull protected final List<BodyInterceptor> bodyInterceptors;
+  @NonNull protected Path path;
+  @NonNull protected Collection<Path> ignoredPaths;
+  @NonNull protected final SourceType sourceType;
+  @NonNull protected final List<BodyInterceptor> bodyInterceptors;
 
-  protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
+  protected PathBasedAnalysisInputLocation(@NonNull Path path, @NonNull SourceType srcType) {
     this(path, srcType, Collections.emptyList());
   }
 
   protected PathBasedAnalysisInputLocation(
-      @Nonnull Path path,
-      @Nonnull SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull Path path,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     this(path, srcType, bodyInterceptors, Collections.emptyList());
   }
 
   protected PathBasedAnalysisInputLocation(
-      @Nonnull Path path,
-      @Nonnull SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors,
-      @Nonnull Collection<Path> ignoredPaths) {
+      @NonNull Path path,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull Collection<Path> ignoredPaths) {
     this.path = path;
     this.ignoredPaths =
         ignoredPaths.stream()
@@ -84,37 +84,37 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public SourceType getSourceType() {
     return sourceType;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;
   }
 
-  @Nonnull
+  @NonNull
   public static PathBasedAnalysisInputLocation create(
-      @Nonnull Path path, @Nonnull SourceType sourceType) {
+      @NonNull Path path, @NonNull SourceType sourceType) {
     return create(path, sourceType, Collections.emptyList());
   }
 
-  @Nonnull
+  @NonNull
   public static PathBasedAnalysisInputLocation create(
-      @Nonnull Path path,
-      @Nonnull SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull Path path,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
     return create(path, srcType, bodyInterceptors, Collections.emptyList());
   }
 
-  @Nonnull
+  @NonNull
   public static PathBasedAnalysisInputLocation create(
-      @Nonnull Path path,
-      @Nonnull SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors,
-      @Nonnull Collection<Path> ignoredPaths) {
+      @NonNull Path path,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull Collection<Path> ignoredPaths) {
 
     if (ignoredPaths.stream()
         .anyMatch(ignoPath -> path.toString().startsWith(ignoPath.toString()))) {
@@ -126,7 +126,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       return new DirectoryBasedAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.JAR)) {
-        return new ArchiveBasedAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
+        return new ArchiveBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
       } else if (PathUtils.hasExtension(path, FileType.WAR)) {
         try {
           return new WarArchiveAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
@@ -142,11 +142,11 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
   }
 
   /** returns a Autocloseable resource that must be closed! */
-  @Nonnull
+  @NonNull
   protected Stream<JavaSootClassSource> walkDirectory(
-      @Nonnull Path dirPath,
-      @Nonnull IdentifierFactory factory,
-      @Nonnull ClassProvider classProvider) {
+      @NonNull Path dirPath,
+      @NonNull IdentifierFactory factory,
+      @NonNull ClassProvider classProvider) {
 
     final FileType handledFileType = classProvider.getHandledFileType();
     final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
@@ -172,8 +172,8 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     }
   }
 
-  @Nonnull
-  protected String fromPath(@Nonnull Path baseDirPath, Path packageNamePathAndClass) {
+  @NonNull
+  protected String fromPath(@NonNull Path baseDirPath, Path packageNamePathAndClass) {
     return FilenameUtils.removeExtension(
         packageNamePathAndClass
             .subpath(baseDirPath.getNameCount(), packageNamePathAndClass.getNameCount())
@@ -181,9 +181,9 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
             .replace(packageNamePathAndClass.getFileSystem().getSeparator(), "."));
   }
 
-  @Nonnull
+  @NonNull
   protected Optional<JavaSootClassSource> getClassSourceInternal(
-      @Nonnull JavaClassType signature, @Nonnull Path path, @Nonnull ClassProvider classProvider) {
+      @NonNull JavaClassType signature, @NonNull Path path, @NonNull ClassProvider classProvider) {
 
     Path pathToClass =
         path.resolve(
@@ -203,7 +203,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
   }
 
   protected Optional<JavaSootClassSource> getSingleClass(
-      @Nonnull JavaClassType signature, @Nonnull Path path, @Nonnull ClassProvider classProvider) {
+      @NonNull JavaClassType signature, @NonNull Path path, @NonNull ClassProvider classProvider) {
 
     Path pathToClass = Paths.get(path.toString());
 

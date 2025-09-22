@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.graph.MutableStmtGraph;
@@ -30,7 +29,6 @@ import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class FieldModifiersValidatorTest {
   JavaView view;
   FieldModifiersValidator fieldModifiersValidator;
@@ -69,15 +67,18 @@ public class FieldModifiersValidatorTest {
         bodyBuilder.setMethodSignature(methodSignature).setLocals(generator.getLocals()).build();
     assertEquals(1, body.getLocalCount());
 
+    FieldSignature fieldSignature =
+        new FieldSignature(
+            new JavaClassType("FieldModifiersValidator", PackageName.DEFAULT_PACKAGE),
+            "i",
+            PrimitiveType.IntType.getInstance());
     JavaSootField dummyField =
-        new JavaSootField(
-            new FieldSignature(
-                new JavaClassType("FieldModifiersValidator", PackageName.DEFAULT_PACKAGE),
-                "i",
-                PrimitiveType.IntType.getInstance()),
-            fieldModifierEnumSet,
-            Collections.emptyList(),
-            NoPositionInformation.getInstance());
+        JavaSootField.JavaSootFieldBuilder.builder()
+            .withSignature(fieldSignature)
+            .withModifier(fieldModifierEnumSet)
+            .withAnnotation(Collections.emptyList())
+            .withPosition(NoPositionInformation.getInstance())
+            .build();
 
     JavaSootMethod dummyMainMethod =
         new JavaSootMethod(

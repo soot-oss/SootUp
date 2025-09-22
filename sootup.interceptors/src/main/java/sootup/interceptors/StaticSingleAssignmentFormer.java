@@ -24,15 +24,15 @@ package sootup.interceptors;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.DominanceFinder;
 import sootup.core.graph.DominanceTree;
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.LValue;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.JPhiExpr;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
@@ -53,7 +53,7 @@ import sootup.core.views.View;
 public class StaticSingleAssignmentFormer implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
     int nextFreeIdx = 0;

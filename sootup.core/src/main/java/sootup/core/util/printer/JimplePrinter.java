@@ -27,9 +27,9 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import sootup.core.graph.*;
-import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.JimpleUtils;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
@@ -214,8 +214,7 @@ public class JimplePrinter {
   }
 
   private void printFields(SootClass cl, LabeledStmtPrinter printer) {
-    Iterator<? extends SootField> fieldIt =
-        getIterator(cl.getFields(), SootClassMember::getSignature);
+    Iterator<? extends SootField> fieldIt = getIterator(cl.getFields(), SootField::getSignature);
 
     if (fieldIt.hasNext()) {
       printer.incIndent();
@@ -228,7 +227,7 @@ public class JimplePrinter {
           printer.literal(" ");
         }
         printer.typeSignature(f.getType());
-        printer.literal(" " + Jimple.escape(f.getName()) + ";");
+        printer.literal(" " + JimpleUtils.escape(f.getName()) + ";");
         printer.newline();
         if (addJimpleLn()) {
           setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f.getSignature()));
@@ -241,7 +240,7 @@ public class JimplePrinter {
 
   private void printMethods(SootClass cl, LabeledStmtPrinter printer) {
     Iterator<? extends SootMethod> methodIt =
-        getIterator(cl.getMethods(), SootClassMember::getSignature);
+        getIterator(cl.getMethods(), SootMethod::getSignature);
 
     if (methodIt.hasNext()) {
       printer.incIndent();

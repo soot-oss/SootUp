@@ -7,28 +7,30 @@ import static sootup.core.util.ImmutableUtils.immutableSet;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import java.io.File;
-import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 
-/** @author Kaustubh Kelkar update on 22.04.2020 */
-@Tag("Java8")
+/**
+ * @author Kaustubh Kelkar update on 22.04.2020
+ */
 public class ViewTypeHierarchyTest {
 
   private JavaView view;
@@ -40,18 +42,11 @@ public class ViewTypeHierarchyTest {
 
     String jarFile = "../shared-test-resources/java-miniapps/MiniApp.jar";
     assertTrue(new File(jarFile).exists(), "File " + jarFile + " not found.");
-    String currentClassPath =
-        System.getProperty("java.class.path")
-            + File.pathSeparator
-            + ManagementFactory.getRuntimeMXBean().getBootClassPath();
-    String rtJarClassPath =
-        Arrays.stream(currentClassPath.split(File.pathSeparator))
-            .filter(pathEntry -> pathEntry.endsWith(File.separator + "rt.jar"))
-            .distinct()
-            .collect(Collectors.joining(File.pathSeparator));
-    analysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
-    view = new JavaView(analysisInputLocation);
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
+    analysisInputLocation = new JavaClassPathAnalysisInputLocation(jarFile);
+    inputLocations.add(analysisInputLocation);
+    view = new JavaView(inputLocations);
     typeHierarchy = new ViewTypeHierarchy(view);
   }
 
@@ -190,7 +185,7 @@ public class ViewTypeHierarchyTest {
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList());
-    SootClass sootClass = new SootClass(classSource, SourceType.Application);
+    SootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
 
     typeHierarchy.addType(sootClass);
 

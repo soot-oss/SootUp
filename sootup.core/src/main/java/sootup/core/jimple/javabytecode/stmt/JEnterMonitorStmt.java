@@ -22,24 +22,24 @@ package sootup.core.jimple.javabytecode.stmt;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.stmt.AbstractStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A statement that enters a JVM monitor, thereby synchronizing its following statements. */
 public final class JEnterMonitorStmt extends AbstractStmt implements FallsThroughStmt {
 
-  protected final Immediate op;
+  private final Immediate op;
 
-  public JEnterMonitorStmt(@Nonnull Immediate op, @Nonnull StmtPositionInfo positionInfo) {
+  public JEnterMonitorStmt(@NonNull Immediate op, @NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.op = op;
   }
@@ -50,14 +50,29 @@ public final class JEnterMonitorStmt extends AbstractStmt implements FallsThroug
   }
 
   @Override
-  public void toString(@Nonnull StmtPrinter up) {
+  public void toString(@NonNull StmtPrinter up) {
     up.literal(Jimple.ENTERMONITOR);
     up.literal(" ");
     op.toString(up);
   }
 
   @Override
-  public <V extends StmtVisitor> V accept(@Nonnull V v) {
+  public boolean isJEnterMonitorStmt() {
+    return true;
+  }
+
+  @Override
+  public JEnterMonitorStmt asJEnterMonitorStmt() {
+    return this;
+  }
+
+  @Override
+  public Optional<JEnterMonitorStmt> toJEnterMonitorStmt() {
+    return Optional.of(this);
+  }
+
+  @Override
+  public <V extends StmtVisitor> V accept(@NonNull V v) {
     v.caseEnterMonitorStmt(this);
     return v;
   }
@@ -72,13 +87,13 @@ public final class JEnterMonitorStmt extends AbstractStmt implements FallsThroug
     return false;
   }
 
-  @Nonnull
+  @NonNull
   public Immediate getOp() {
     return op;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public Stream<Value> getUses() {
     return Stream.concat(op.getUses(), Stream.of(op));
   }
@@ -89,17 +104,17 @@ public final class JEnterMonitorStmt extends AbstractStmt implements FallsThroug
   }
 
   @Override
-  public boolean equivTo(@Nonnull Object o, @Nonnull JimpleComparator comparator) {
+  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
     return comparator.caseEnterMonitorStmt(this, o);
   }
 
-  @Nonnull
-  public JEnterMonitorStmt withOp(@Nonnull Immediate op) {
+  @NonNull
+  public JEnterMonitorStmt withOp(@NonNull Immediate op) {
     return new JEnterMonitorStmt(op, getPositionInfo());
   }
 
-  @Nonnull
-  public JEnterMonitorStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+  @NonNull
+  public JEnterMonitorStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
     return new JEnterMonitorStmt(getOp(), positionInfo);
   }
 }

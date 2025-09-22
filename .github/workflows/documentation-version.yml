@@ -1,0 +1,27 @@
+name: Deploy Documentation Version
+
+permissions:
+  pages: write
+  deployments: write
+  contents: write
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+    paths:
+      - 'mkdocs.yml'
+      - 'sootup.examples/**'
+      - 'docs/**'
+      - 'documentation-version.yml'
+
+concurrency: pages
+
+jobs:
+  deploy-snapshot:
+    uses: secure-software-engineering/actions/documentation/pin-version/action.yml@develop
+    with:
+      latest_branch: develop
+      version: "maven"

@@ -1,4 +1,5 @@
 package sootup.core.graph;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -23,8 +24,8 @@ package sootup.core.graph;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /** A block iterator that iterates through the blocks of a StmtGraph in post-order. */
 public class PostOrderBlockIterator implements BlockIterator {
@@ -32,12 +33,15 @@ public class PostOrderBlockIterator implements BlockIterator {
   private final Stack<Frame> stack = new Stack<>();
   private final Set<BasicBlock<?>> visited = new HashSet<>();
 
-  public PostOrderBlockIterator(@Nonnull BasicBlock<?> startNode) {
+  public PostOrderBlockIterator(@NonNull BasicBlock<?> startNode) {
     visitNode(startNode);
-    stack.push(new Frame(startNode, ((List<BasicBlock<?>>) startNode.getSuccessors()).iterator()));
+    stack.push(
+        new Frame(
+            startNode,
+            Collections.<BasicBlock<?>>unmodifiableList(startNode.getSuccessors()).iterator()));
   }
 
-  private boolean visitNode(@Nonnull BasicBlock<?> node) {
+  private boolean visitNode(@NonNull BasicBlock<?> node) {
     return visited.add(node);
   }
 
@@ -56,7 +60,7 @@ public class PostOrderBlockIterator implements BlockIterator {
         if (visitNode(succ)) {
           List<BasicBlock<?>> esuccs =
               succ.getExceptionalSuccessors().values().stream().collect(Collectors.toList());
-          List<BasicBlock<?>> succs = (List<BasicBlock<?>>) succ.getSuccessors();
+          List<BasicBlock<?>> succs = new ArrayList<>(succ.getSuccessors());
           succs.addAll(esuccs);
           stack.push(new Frame(succ, succs.iterator()));
         }

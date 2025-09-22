@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.codepropertygraph.GraphTestSuiteBase;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
@@ -13,9 +12,9 @@ import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JEqExpr;
 import sootup.core.jimple.common.stmt.*;
@@ -23,7 +22,6 @@ import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.PrimitiveType;
 
-@Tag("Java8")
 public class CdgCreatorTest extends GraphTestSuiteBase {
 
   @Test

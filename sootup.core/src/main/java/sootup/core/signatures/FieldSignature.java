@@ -22,7 +22,7 @@ package sootup.core.signatures;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 
@@ -35,12 +35,12 @@ import sootup.core.types.Type;
 public class FieldSignature extends SootClassMemberSignature<FieldSubSignature> {
 
   public FieldSignature(
-      @Nonnull ClassType declaringClass, @Nonnull String name, @Nonnull Type type) {
+      @NonNull ClassType declaringClass, @NonNull String name, @NonNull Type type) {
     this(declaringClass, new FieldSubSignature(name, type));
   }
 
   public FieldSignature(
-      @Nonnull ClassType declaringClass, @Nonnull FieldSubSignature subSignature) {
+      @NonNull ClassType declaringClass, @NonNull FieldSubSignature subSignature) {
     super(declaringClass, subSignature);
   }
 }

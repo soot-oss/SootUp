@@ -6,28 +6,36 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import sootup.apk.frontend.Util.DexUtil;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
+import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class ApkToDexTest {
 
-  @Test
-  public void testDexClassSource() {
+  public static JavaView view;
+
+  @BeforeAll
+  public static void createView() {
     String apk_path = "resources/FlowSensitivity1.apk";
     ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation(
             Paths.get(apk_path), "", DexBodyInterceptors.Default.bodyInterceptors());
-    JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
+    view = new JavaView(sootClassApkAnalysisInputLocation);
+  }
+
+  @Test
+  public void testDexClassSource() {
     String className = "android.support.v7.widget.PopupMenu";
     String classNameToTestAnnotations = "android/support/v4/app/FragmentState$1";
     ClassType classType = view.getIdentifierFactory().getClassType(className);
@@ -57,16 +65,12 @@ public class ApkToDexTest {
 
   @Test
   public void loadAnApk() {
-    String apk_path = "resources/FlowSensitivity1.apk";
-    ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
-        new ApkAnalysisInputLocation(
-            Paths.get(apk_path), "", DexBodyInterceptors.Default.bodyInterceptors());
-    JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     List<JavaSootClass> classes;
-    classes = view.getClasses().collect(Collectors.toList());
+    classes = view.getClasses().toList();
     int methodsSize = 0;
     for (JavaSootClass javaSootClass : classes) {
       Set<JavaSootMethod> methods = javaSootClass.getMethods();
+      methods.stream().filter(JavaSootMethod::hasBody).map(JavaSootMethod::getBody);
       methodsSize += methods.size();
     }
     // There are a total of 740 classes and 10559 methods present in the given APK
@@ -76,11 +80,6 @@ public class ApkToDexTest {
 
   @Test
   public void loadOneClass() {
-    String apk_path = "resources/FlowSensitivity1.apk";
-    ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
-        new ApkAnalysisInputLocation(
-            Paths.get(apk_path), "", DexBodyInterceptors.Default.bodyInterceptors());
-    JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     String className = "android.support.v4.app.FragmentState$1";
     String methodName = "<init>";
     ClassType classType = view.getIdentifierFactory().getClassType(className);
@@ -89,9 +88,29 @@ public class ApkToDexTest {
     SootClass sootClass = view.getClass(classType).get();
     // write MethodSignature
     MethodSignature methodSignature =
-        new MethodSignature(classType, methodName, Collections.emptyList(), VoidType.getInstance());
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                classType, methodName, VoidType.getInstance(), Collections.emptyList());
     // Retrieve method
     assertTrue(sootClass.getMethod(methodSignature.getSubSignature()).isPresent());
     SootMethod sootMethod = sootClass.getMethod(methodSignature.getSubSignature()).get();
+  }
+
+  @Test
+  public void getParametersOfAbstractMethods() {
+    JavaClassType classType =
+        view.getIdentifierFactory()
+            .getClassType("android.support.v4.app.ShareCompat$ShareCompatImpl");
+    JavaSootClass javaSootClass = view.getClass(classType).get();
+    String interestedMethodName = "escapeHtml";
+    List<JavaSootMethod> abstractMethods =
+        javaSootClass.getMethods().stream()
+            .filter(JavaSootMethod::isAbstract)
+            .filter(javaSootMethod -> javaSootMethod.getName().equals(interestedMethodName))
+            .toList();
+    assert abstractMethods.size() == 1;
+    Type sootType = DexUtil.toSootType("Ljava/lang/CharSequence;", 0);
+    Type paramType = abstractMethods.get(0).getParameterTypes().get(0);
+    assert paramType.equals(sootType);
   }
 }

@@ -22,7 +22,7 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -32,11 +32,11 @@ public class FloatConstant implements RealConstant<FloatConstant> {
 
   private final float value;
 
-  private FloatConstant(@Nonnull float value) {
+  private FloatConstant(float value) {
     this.value = value;
   }
 
-  public static FloatConstant getInstance(@Nonnull float value) {
+  public static FloatConstant getInstance(float value) {
     return new FloatConstant(value);
   }
 
@@ -52,75 +52,75 @@ public class FloatConstant implements RealConstant<FloatConstant> {
   }
 
   // PTC 1999/06/28
-  @Nonnull
+  @NonNull
   @Override
-  public FloatConstant add(@Nonnull FloatConstant c) {
+  public FloatConstant add(@NonNull FloatConstant c) {
     return FloatConstant.getInstance(value + c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public FloatConstant subtract(@Nonnull FloatConstant c) {
+  public FloatConstant subtract(@NonNull FloatConstant c) {
     return FloatConstant.getInstance(value - c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public FloatConstant multiply(@Nonnull FloatConstant c) {
+  public FloatConstant multiply(@NonNull FloatConstant c) {
     return FloatConstant.getInstance(value * c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public FloatConstant divide(@Nonnull FloatConstant c) {
+  public FloatConstant divide(@NonNull FloatConstant c) {
     return FloatConstant.getInstance(value / c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public FloatConstant remainder(@Nonnull FloatConstant c) {
+  public FloatConstant remainder(@NonNull FloatConstant c) {
     return FloatConstant.getInstance(value % c.value);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant equalEqual(@Nonnull FloatConstant c) {
+  public BooleanConstant equalEqual(@NonNull FloatConstant c) {
     return BooleanConstant.getInstance(Float.compare(value, c.value) == 0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant notEqual(@Nonnull FloatConstant c) {
+  public BooleanConstant notEqual(@NonNull FloatConstant c) {
     return BooleanConstant.getInstance(Float.compare(value, c.value) != 0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant lessThan(@Nonnull FloatConstant c) {
+  public BooleanConstant lessThan(@NonNull FloatConstant c) {
     return BooleanConstant.getInstance(Float.compare(value, c.value) < 0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant lessThanOrEqual(@Nonnull FloatConstant c) {
+  public BooleanConstant lessThanOrEqual(@NonNull FloatConstant c) {
     return BooleanConstant.getInstance(Float.compare(value, c.value) <= 0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant greaterThan(@Nonnull FloatConstant c) {
+  public BooleanConstant greaterThan(@NonNull FloatConstant c) {
     return BooleanConstant.getInstance(Float.compare(value, c.value) > 0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public BooleanConstant greaterThanOrEqual(@Nonnull FloatConstant c) {
+  public BooleanConstant greaterThanOrEqual(@NonNull FloatConstant c) {
     return BooleanConstant.getInstance(Float.compare(value, c.value) >= 0);
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant cmpg(@Nonnull FloatConstant constant) {
+  public IntConstant cmpg(@NonNull FloatConstant constant) {
     final float cValue = constant.value;
     if (value < cValue) {
       return IntConstant.getInstance(-1);
@@ -131,9 +131,9 @@ public class FloatConstant implements RealConstant<FloatConstant> {
     }
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public IntConstant cmpl(@Nonnull FloatConstant constant) {
+  public IntConstant cmpl(@NonNull FloatConstant constant) {
     final float cValue = constant.value;
     if (value > cValue) {
       return IntConstant.getInstance(1);
@@ -144,7 +144,7 @@ public class FloatConstant implements RealConstant<FloatConstant> {
     }
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public FloatConstant negate() {
     return FloatConstant.getInstance(-value);
@@ -163,14 +163,14 @@ public class FloatConstant implements RealConstant<FloatConstant> {
     }
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public Type getType() {
     return PrimitiveType.getFloat();
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@Nonnull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull V v) {
     v.caseFloatConstant(this);
     return v;
   }
