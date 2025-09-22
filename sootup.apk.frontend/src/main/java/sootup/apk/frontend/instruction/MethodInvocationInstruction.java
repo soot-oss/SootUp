@@ -95,7 +95,8 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
                 DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
                 item.getName(),
                 convertParameterTypes(item.getParameterTypes()),
-                DexUtil.toSootType(item.getReturnType(), 0)));
+                DexUtil.toSootType(item.getReturnType(), 0)),
+            buildArgs(parameters));
     body.setDanglingInstruction(this);
   }
 
