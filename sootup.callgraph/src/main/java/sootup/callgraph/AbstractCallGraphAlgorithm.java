@@ -354,6 +354,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
+    MethodSignature sourceMethodSignature = sourceMethod.getSignature();
+
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
     sourceMethod.getBody().getStmts().stream()
         .filter(Stmt::isInvokableStmt)
@@ -365,8 +367,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               if (invokableStmt.containsFieldRef()
                   && invokableStmt.getFieldRef() instanceof JStaticFieldRef) {
                 targetClass = invokableStmt.getFieldRef().getFieldSignature().getDeclClassType();
-                addStaticInitializerCalls(
-                    sourceMethod.getSignature(), targetClass, invokableStmt, cg, workList);
+                if (!(targetClass.getFullyQualifiedName().equals(sourceMethodSignature.getDeclClassType().getFullyQualifiedName()) && sourceMethodSignature.getName().equals("<clinit>"))) {
+                  addStaticInitializerCalls(
+                          sourceMethodSignature, targetClass, invokableStmt, cg, workList);
+                }
               }
               // static method
               if (invokableStmt.getInvokeExpr().isPresent()) {
@@ -376,8 +380,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   ClassType newTargetClass = expr.getMethodSignature().getDeclClassType();
                   // checks if the field points to the same clinit
                   if (!newTargetClass.equals(targetClass)) {
-                    addStaticInitializerCalls(
-                        sourceMethod.getSignature(), newTargetClass, invokableStmt, cg, workList);
+                    if (!(newTargetClass.getFullyQualifiedName().equals(sourceMethodSignature.getDeclClassType().getFullyQualifiedName()) && sourceMethodSignature.getName().equals("<clinit>"))) {
+                      addStaticInitializerCalls(
+                              sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
+                    }
                   }
                 }
               } else {
@@ -389,8 +395,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   ClassType newTargetClass = instantiateVisitor.getResult();
                   // check if class type is the same as in the field which could be on the left op
                   if (newTargetClass != null && !newTargetClass.equals(targetClass)) {
-                    addStaticInitializerCalls(
-                        sourceMethod.getSignature(), newTargetClass, invokableStmt, cg, workList);
+                    if (!(newTargetClass.getFullyQualifiedName().equals(sourceMethodSignature.getDeclClassType().getFullyQualifiedName()) && sourceMethodSignature.getName().equals("<clinit>"))) {
+                      addStaticInitializerCalls(
+                              sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
+                    }
                   }
                 }
               }

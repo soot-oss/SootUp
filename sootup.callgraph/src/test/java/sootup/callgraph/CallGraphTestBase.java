@@ -1150,8 +1150,7 @@ public abstract class CallGraphTestBase extends CallGraphTestMethods {
   public void testIssue1373() {
     CallGraph cg = loadCallGraph("Bugfixes", "issue1373.B");
     for (CallGraph.Call call : cg.getCalls()) {
-      System.out.println(call);
+      assertNotEquals(call.sourceMethodSignature(), call.targetMethodSignature());
     }
-    assertTrue(cg.callCount() > 0);
   }
 }
