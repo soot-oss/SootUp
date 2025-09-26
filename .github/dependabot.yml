@@ -8,6 +8,10 @@ updates:
 - package-ecosystem: maven
   directory: "/"
   schedule:
-    interval: weekly
-    time: "04:00"
+    interval: cron
+    time: "0 6 * * 1-5"
+  cooldown:
+    - semver-major: 30
+    - semver-minor: 14
+    - semver-patch: 10
   open-pull-requests-limit: 10
