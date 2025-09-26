@@ -61,10 +61,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   @NonNull protected final View view;
   @NonNull protected final TypeHierarchy typeHierarchy;
+  @NonNull protected final ClassType threadType;
 
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
+    this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
   }
 
   /**
@@ -278,8 +280,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param workList new run methods will be added to the work list
    */
   protected void implicitStartRunCall(
-      SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
-    ClassType threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
+      @NonNull SootMethod sourceMethod,
+      @NonNull MutableCallGraph cg,
+      @NonNull Deque<MethodSignature> workList) {
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
       if (!stmt.isInvokableStmt()) {
         continue;
