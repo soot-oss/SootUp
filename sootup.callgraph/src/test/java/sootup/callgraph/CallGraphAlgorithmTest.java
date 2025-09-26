@@ -1174,4 +1174,12 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             Collections.emptyList());
     assertTrue(cg.containsMethod(pruned));
   }
+
+  @Test
+  public void testIssue1373() {
+    CallGraph cg = loadCallGraph("Bugfixes", "issue1373.B");
+    for (CallGraph.Call call : cg.getCalls()) {
+      assertNotEquals(call.sourceMethodSignature(), call.targetMethodSignature());
+    }
+  }
 }
