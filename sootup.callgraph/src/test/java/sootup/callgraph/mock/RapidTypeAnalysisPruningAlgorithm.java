@@ -1,6 +1,7 @@
-package sootup.callgraph;
+package sootup.callgraph.mock;
 
 import org.jspecify.annotations.NonNull;
+import sootup.callgraph.RapidTypeAnalysisAlgorithm;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
