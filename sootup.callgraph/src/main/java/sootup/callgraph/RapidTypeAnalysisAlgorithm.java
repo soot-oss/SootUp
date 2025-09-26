@@ -24,7 +24,6 @@ package sootup.callgraph;
 
 import com.google.common.collect.ArrayListMultimap;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph.Call;
@@ -105,23 +104,16 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    *
    * @param method this object contains the method body which is inspected.
    */
-  protected List<ClassType> collectInstantiatedClassesInMethod(SootMethod method) {
-    if (method == null || method.isAbstract() || method.isNative()) {
-      return Collections.emptyList();
+  protected Stream<ClassType> collectInstantiatedClassesInMethod(@NonNull SootMethod method) {
+    if (method.isAbstract() || method.isNative()) {
+      return Stream.empty();
     }
-    Set<ClassType> instantiated =
-        method.getBody().getStmts().stream()
-            .filter(stmt -> stmt instanceof JAssignStmt)
-            .map(stmt -> ((JAssignStmt) stmt).getRightOp())
-            .filter(value -> value instanceof JNewExpr)
-            .map(value -> ((JNewExpr) value).getType())
-            .collect(Collectors.toSet());
-    List<ClassType> newInstantiatedClassTypes =
-        instantiated.stream()
-            .filter(classType -> !instantiatedClasses.contains(classType))
-            .collect(Collectors.toList());
-    instantiatedClasses.addAll(instantiated);
-    return newInstantiatedClassTypes;
+    return method.getBody().getStmts().stream()
+        .filter(stmt -> stmt instanceof JAssignStmt)
+        .map(stmt -> ((JAssignStmt) stmt).getRightOp())
+        .filter(value -> value instanceof JNewExpr)
+        .map(value -> ((JNewExpr) value).getType())
+        .filter(classType -> !instantiatedClasses.contains(classType));
   }
 
   /**
@@ -319,20 +311,19 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    */
   @Override
   protected void preProcessingMethod(
-      MethodSignature sourceMethod,
+      @NonNull MethodSignature sourceMethod,
       @NonNull Deque<MethodSignature> workList,
       @NonNull MutableCallGraph cg) {
-    SootMethod method =
-        view.getClass(sourceMethod.getDeclClassType())
-            .flatMap(c -> c.getMethod(sourceMethod.getSubSignature()))
-            .orElse(null);
-    if (method == null) {
-      return;
-    }
-
-    List<ClassType> newInstantiatedClasses = collectInstantiatedClassesInMethod(method);
-    newInstantiatedClasses.forEach(
-        classType -> includeIgnoredCallsToClass(classType, cg, workList));
+    view.getClass(sourceMethod.getDeclClassType())
+        .flatMap(c -> c.getMethod(sourceMethod.getSubSignature()))
+        .ifPresent(
+            sootMethod ->
+                collectInstantiatedClassesInMethod(sootMethod)
+                    .forEach(
+                        classType -> {
+                          instantiatedClasses.add(classType);
+                          includeIgnoredCallsToClass(classType, cg, workList);
+                        }));
   }
 
   /**
@@ -344,9 +335,11 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * @param workList the work list that will be extended by the new targets of ignored calls.
    */
   protected void includeIgnoredCallsToClass(
-      ClassType classType, MutableCallGraph cg, Deque<MethodSignature> workList) {
-    List<Call> newEdges = ignoredCalls.get(classType);
-    newEdges.stream()
+      @NonNull ClassType classType,
+      @NonNull MutableCallGraph cg,
+      @NonNull Deque<MethodSignature> workList) {
+    ignoredCalls.get(classType).stream()
+        .filter(Objects::nonNull)
         .flatMap(
             call ->
                 findConcreteMethod(view, call.targetMethodSignature()).stream()
@@ -370,7 +363,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    */
   @Override
   protected void postProcessingMethod(
-      MethodSignature sourceMethod,
+      @NonNull MethodSignature sourceMethod,
       @NonNull Deque<MethodSignature> workList,
       @NonNull MutableCallGraph cg) {
     //    not needed
