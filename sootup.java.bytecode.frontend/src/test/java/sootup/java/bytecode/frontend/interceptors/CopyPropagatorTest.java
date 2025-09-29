@@ -133,7 +133,7 @@ public class CopyPropagatorTest {
       JavaJimple.newAssignStmt(r5, NullConstant.getInstance(), noStmtPositionInfo);
 
   public View setUp() {
-    String baseDir = "../shared-test-resources/interceptors/";
+    String baseDir = "src/test/resources/interceptors/";
     JavaClassPathAnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
             baseDir, SourceType.Library, Collections.emptyList());
@@ -405,7 +405,7 @@ public class CopyPropagatorTest {
   void testBigInput() {
     AnalysisInputLocation inputLocation =
         new ClassFileBasedAnalysisInputLocation(
-            Paths.get("../shared-test-resources/bugfixes/SlowCopyPropagator.class"),
+            Paths.get("src/test/resources/bugfixes/SlowCopyPropagator.class"),
             "",
             SourceType.Application,
             Collections.singletonList(new CopyPropagator()));

@@ -28,7 +28,7 @@ import sootup.java.core.views.MutableJavaView;
  * uses the MiniApp.jar for testing.
  */
 public class MutableSootClientTest {
-  static Path pathToJar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+  static Path pathToJar = Paths.get("src/test/resources/java-miniapps/MiniApp.jar");
   static AnalysisInputLocation location;
   MutableJavaView mv;
 

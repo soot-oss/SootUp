@@ -31,7 +31,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
   @BeforeEach
   public void setup() {
-    String baseDir = "../shared-test-resources/TypeResolverTestSuite/AugEvalFunctionTest/";
+    String baseDir = "src/test/resources/TypeResolverTestSuite/AugEvalFunctionTest/";
     String className = "AugEvalFunctionDemos";
     buildView(baseDir, className);
     evalFunction = new AugEvalFunction(view);
