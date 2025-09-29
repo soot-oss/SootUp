@@ -6,6 +6,7 @@
 !sootup.callgraph/src/test/resources/callgraph/**/*.class
 !sootup.codepropertygraph/src/test/resources/**/*.class
 !sootup.tests/src/test/resources/**/*.class
+!sootup.java.bytecode.frontend/src/test/resources/**/*.class
 
 # Log file
 *.log
