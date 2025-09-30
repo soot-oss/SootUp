@@ -12,8 +12,7 @@ import sootup.java.core.views.JavaView;
  *
  * @author Markus Schmidt
  */
-public class ClassHierarchyAnalysisAlgorithmTest
-    extends CallGraphTestBase<ClassHierarchyAnalysisAlgorithm> {
+public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest {
 
   // TODO: StaticInitializers, Lambdas ?
 
