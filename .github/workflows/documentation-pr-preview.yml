@@ -1,22 +1,32 @@
-name: Deploy Documentation Preview
-
-permissions:
-  pages: write                                              # to publish pages
-  deployments: write                                        # to deploy gh-pages
-  contents: write
-  pull-requests: write                                      # for the comment to the deployed gh-pages
+name: Documentation Preview
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, closed]
+    types:
+      - opened
+      - closed
+      - synchronize
+      - reopened
     paths:
-      - 'mkdocs.yml'                                        # static site generator config
-      - '.github/workflows/documentation-pr-preview.yml'    # refers to this workflow file
-      - 'docs/**'                                           # actual documentation
-      - 'sootup.examples/**'                                # where example code that is included in the documentation is stored
+      - mkdocs.yml                                        # static site generator config
+      - .github/workflows/documentation-pr-preview.yml    # refers to this workflow file
+      - docs/**                                           # actual documentation
+      - sootup.examples/**                                # where example code that is included in the documentation is stored
 
-concurrency: pages
+concurrency:
+  group: gh-pages
 
 jobs:
   deploy-preview:
-    uses: secure-software-engineering/actions/documentation/pr-preview@develop
+    name: Preview documentation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write                               # for posting a comment
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create Documentation Preview
+        uses: secure-software-engineering/actions/documentation/pr-preview@develop
