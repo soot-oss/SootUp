@@ -26,7 +26,7 @@ import sootup.java.core.views.JavaView;
 
 public class NestedTryCatchFlowTest {
 
-  String location = "src/test/resources/bugfixes/";
+  String location = "src/test/resources/bugs/bugfixes/";
   final Path path = Paths.get(location + "NestedTryCatchFlow.class");
   PathBasedAnalysisInputLocation inputLocation =
       new ClassFileBasedAnalysisInputLocation(

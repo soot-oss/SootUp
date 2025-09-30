@@ -25,7 +25,7 @@ import sootup.java.core.views.JavaView;
 
 public class InsertBeforeAfterTest {
 
-  String location = "src/test/resources/bugfixes/";
+  String location = "src/test/resources/bugs/bugfixes/";
   final Path path = Paths.get(location + "TrapBlockCheck.class");
   PathBasedAnalysisInputLocation inputLocation =
       new ClassFileBasedAnalysisInputLocation(
