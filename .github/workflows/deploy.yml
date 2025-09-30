@@ -34,11 +34,11 @@ jobs:
       - name: SNAPSHOT version integrity check on latest branch   # enforce earlier? e.g. in the PR
         if: ${{ github.ref_name == env.LATEST_BRANCH_NAME }}
         run: |
-          mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -q -- '-SNAPSHOT$'
+          mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version | grep -q -- '-SNAPSHOT$'
 
       - name: Ensure the proposed new version is higher than the latest   # enforce earlier? e.g. in the PR
         run: |
-          echo "PROPOSED_NEW_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version)" >> $GITHUB_ENV
+          echo "PROPOSED_NEW_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version)" >> $GITHUB_ENV
           TMP_POM=$(mktemp)
           curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                 -H "Accept: application/vnd.github.v3.raw" \

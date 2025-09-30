@@ -1,25 +1,22 @@
 name: Deploy Documentation Preview
 
 permissions:
-  pages: write
-  deployments: write
+  pages: write                                              # to publish pages
+  deployments: write                                        # to deploy gh-pages
   contents: write
-  pull-requests: write
+  pull-requests: write                                      # for the comment to the deployed gh-pages
 
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
     paths:
-      - 'mkdocs.yml'
-      - 'sootup.examples/**'
-      - 'docs/**'
-      - 'documentation-pr-preview.yml'
+      - 'mkdocs.yml'                                        # static site generator config
+      - '.github/workflows/documentation-pr-preview.yml'    # refers to this workflow file
+      - 'docs/**'                                           # actual documentation
+      - 'sootup.examples/**'                                # where example code that is included in the documentation is stored
 
 concurrency: pages
 
 jobs:
   deploy-preview:
-    uses: secure-software-engineering/actions/documentation/handle-pr-preview/action.yml@develop
-    with:
-      enable_comment: true
-      title_prefix: "SootUp PR Preview: "
+    uses: secure-software-engineering/actions/documentation/pr-preview@develop

@@ -15,13 +15,13 @@ on:
       - 'mkdocs.yml'
       - 'sootup.examples/**'
       - 'docs/**'
-      - 'documentation-version.yml'
+      - '.github/workflows/documentation-version.yml'
 
 concurrency: pages
 
 jobs:
   deploy-snapshot:
-    uses: secure-software-engineering/actions/documentation/pin-version/action.yml@develop
+    uses: secure-software-engineering/actions/documentation/deployment@develop
     with:
       latest_branch: develop
       version: "maven"
