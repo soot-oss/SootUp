@@ -17,3 +17,8 @@ updates:
       semver-patch-days: 10
       default-days: 10
     open-pull-requests-limit: 10
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
