@@ -59,8 +59,6 @@ extra_css:
 plugins:
   - tooltips
   - search
-  - include:
-      src_path: 'sootup.examples/src/test/java/sootup/examples'
 
 markdown_extensions:
   - pymdownx.highlight:
