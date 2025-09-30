@@ -47,7 +47,7 @@ import sootup.core.types.Type;
  *
  * @author Markus Schmidt
  * */
-public class MutableBlockStmtGraph extends MutableStmtGraph {
+public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   @Nullable private Stmt startingStmt = null;
 
   @NonNull
@@ -55,9 +55,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @NonNull private final Set<MutableBasicBlock> blocks = new LinkedHashSet<>();
 
-  public MutableBlockStmtGraph() {}
+  public MutableBlockControlFlowGraph() {}
 
-  public MutableBlockStmtGraph(boolean isStatic, MethodSignature sig, LocalGenerator localgen) {
+  public MutableBlockControlFlowGraph(boolean isStatic, MethodSignature sig, LocalGenerator localgen) {
     final List<Stmt> stmts = new ArrayList<>(sig.getParameterTypes().size() + (isStatic ? 0 : 1));
     if (!isStatic) {
       ClassType thisType = sig.getDeclClassType();
@@ -82,8 +82,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
-  /** copies a StmtGraph into this Mutable instance */
-  public MutableBlockStmtGraph(@NonNull StmtGraph<? extends BasicBlock<?>> graph) {
+  /** copies a ControlFlowGraph into this Mutable instance */
+  public MutableBlockControlFlowGraph(@NonNull ControlFlowGraph<? extends BasicBlock<?>> graph) {
     final Stmt startStmt = graph.getStartingStmt();
     if (startStmt != null) {
       setStartingStmt(startStmt);
@@ -116,11 +116,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             });
   }
 
-  public static StmtGraph<?> createUnmodifiableStmtGraph(StmtGraph<?> stmtGraph) {
-    if (stmtGraph instanceof MutableStmtGraph) {
-      return ((MutableStmtGraph) stmtGraph).unmodifiableStmtGraph();
+  public static ControlFlowGraph<?> createUnmodifiableControlFlowGraph(ControlFlowGraph<?> controlFlowGraph) {
+    if (controlFlowGraph instanceof MutableControlFlowGraph) {
+      return ((MutableControlFlowGraph) controlFlowGraph).unmodifiableControlFlowGraph();
     }
-    return stmtGraph;
+    return controlFlowGraph;
   }
 
   /**
@@ -444,7 +444,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(stmt);
     if (blockPair == null) {
-      throw new IllegalArgumentException("Stmt is not in the StmtGraph!");
+      throw new IllegalArgumentException("Stmt is not in the ControlFlowGraph!");
     }
     MutableBasicBlock block = blockPair.getRight();
 
@@ -523,10 +523,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     MutableBasicBlock block = getOrCreateBlock(node);
     if (block.getHead() != node || block.getSuccessors().stream().anyMatch(Objects::nonNull)) {
       throw new IllegalArgumentException(
-          "The first Stmt in the List is already in the StmtGraph and is not the head of a Block where currently no successor are set, yet.");
+          "The first Stmt in the List is already in the ControlFlowGraph and is not the head of a Block where currently no successor are set, yet.");
     } else if (block.getStmtCount() > 1) {
       throw new IllegalArgumentException(
-          "The first Stmt in the List is already in the StmtGraph and has at least one (fallsthrough) successor in its Block.");
+          "The first Stmt in the List is already in the ControlFlowGraph and has at least one (fallsthrough) successor in its Block.");
     }
 
     while (iterator.hasNext()) {
@@ -537,7 +537,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           throw new IllegalArgumentException(
               "the Stmt '"
                   + stmt
-                  + "' you want to add as a Stmt of a whole Block is already in this StmtGraph.");
+                  + "' you want to add as a Stmt of a whole Block is already in this ControlFlowGraph.");
         } else {
           // existing is last element of stmtlist
           // TODO: hint: we can allow other n-th elements as well e.g. if a sequence of stmts exists
@@ -559,7 +559,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             throw new IllegalArgumentException(
                 "the Stmt '"
                     + stmt
-                    + "' you want to add as a Stmt of a whole Block is already in this StmtGraph.");
+                    + "' you want to add as a Stmt of a whole Block is already in this ControlFlowGraph.");
           }
         }
       }
@@ -576,7 +576,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     Pair<Integer, MutableBasicBlock> blockOfPair = stmtToBlock.get(block.getHead());
     if (blockOfPair.getRight() != block) {
       throw new IllegalArgumentException(
-          "The given block is not contained in this MutableBlockStmtGraph.");
+          "The given block is not contained in this MutableBlockControlFlowGraph.");
     }
     MutableBasicBlock blockOf = blockOfPair.getRight();
 
@@ -880,7 +880,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   /**
-   * Removes a Stmt from the StmtGraph.
+   * Removes a Stmt from the ControlFlowGraph.
    *
    * <p>It can optionally keep the flow (edges) of the statement by connecting the predecessors of
    * the statement with successors of the statement. Keeping the flow does not work when the
@@ -893,7 +893,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   public void removeNode(@NonNull Stmt stmt, boolean keepFlow) {
     Pair<Integer, MutableBasicBlock> blockOfRemovedStmtPair = stmtToBlock.get(stmt);
     if (blockOfRemovedStmtPair == null) {
-      throw new IllegalArgumentException("stmt '" + stmt + "' is not contained in this StmtGraph!");
+      throw new IllegalArgumentException("stmt '" + stmt + "' is not contained in this ControlFlowGraph!");
     }
     MutableBasicBlock blockOfRemovedStmt = blockOfRemovedStmtPair.getRight();
 
@@ -904,7 +904,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       if (keepFlow) {
         if (stmt instanceof BranchingStmt) {
           // check for successorCount == 1 is not enough as it could be that we want to replace a
-          // Branching Stmt via a FallsThroughStmt and the linearized StmtGraph would have no
+          // Branching Stmt via a FallsThroughStmt and the linearized ControlFlowGraph would have no
           // necessary goto anymore.
           throw new IllegalArgumentException("Cannot keep the flow if we remove a BranchingStmt!");
         }
@@ -1004,7 +1004,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   public void clearBlockFromAllExceptionalBlocks(MutableBasicBlock blockOfRemovedStmt) {
-    // Remove blockOfRemovedStmt from all exceptionalBlocks in MutableBlockStmtGraph
+    // Remove blockOfRemovedStmt from all exceptionalBlocks in MutableBlockControlFlowGraph
     for (Iterator<MutableBasicBlock> iterator = blocks.iterator(); iterator.hasNext(); ) {
       MutableBasicBlock block = iterator.next();
       Collection<MutableBasicBlock> blockExceptionalSuccessors =
@@ -1032,7 +1032,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     final Pair<Integer, MutableBasicBlock> blockOfOldStmtPair = stmtToBlock.get(oldStmt);
     if (blockOfOldStmtPair == null) {
-      throw new IllegalArgumentException("oldStmt does not exist in the StmtGraph!");
+      throw new IllegalArgumentException("oldStmt does not exist in the ControlFlowGraph!");
     }
     final MutableBasicBlock blockOfOldStmt = blockOfOldStmtPair.getRight();
 
@@ -1113,7 +1113,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   /*
-   * Insert a list of FallsThroughStmts before an existing Stmt in this StmtGraph.
+   * Insert a list of FallsThroughStmts before an existing Stmt in this ControlFlowGraph.
    * After insertion, all predecessors of the existing Stmt are the predecessors of the first inserted Stmt.
    * If link one predecessor(partial) of the existing Stmt, please use insertAfter(predecessorStmt, stmts)
    *
@@ -1138,7 +1138,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     final Pair<Integer, MutableBasicBlock> oldBlockPair = stmtToBlock.get(existingStmt);
     if (oldBlockPair == null) {
       throw new IllegalArgumentException(
-          "beforeStmt '" + existingStmt + "' does not exists in this StmtGraph.");
+          "beforeStmt '" + existingStmt + "' does not exists in this ControlFlowGraph.");
     }
     final MutableBasicBlock oldBlock = oldBlockPair.getRight();
     // create a new block for inserted stmts and connect the exceptional link
@@ -1169,7 +1169,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   /*
-   * Insert a list of FallsThroughStmts after an existing Stmt in this StmtGraph.
+   * Insert a list of FallsThroughStmts after an existing Stmt in this ControlFlowGraph.
    *
    * @param existingStmt: the Stmt which precedes the inserted Stmts, it should be a FallsThroughStmt except for IfStmt
    * @param stmts: a list of FallsThroughStmts except for IfStmt
@@ -1199,7 +1199,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     final Pair<Integer, MutableBasicBlock> oldBlockPair = stmtToBlock.get(existingStmt);
     if (oldBlockPair == null) {
       throw new IllegalArgumentException(
-          "beforeStmt '" + existingStmt + "' does not exists in this StmtGraph.");
+          "beforeStmt '" + existingStmt + "' does not exists in this ControlFlowGraph.");
     }
     final MutableBasicBlock oldBlock = oldBlockPair.getRight();
     // create a new block for inserted stmts and connect the exceptional link
@@ -1291,13 +1291,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   public boolean replaceSucessorEdge(@NonNull Stmt from, @NonNull Stmt oldTo, @NonNull Stmt newTo) {
     final Pair<Integer, MutableBasicBlock> mutableBasicBlockPair = stmtToBlock.get(from);
     if (mutableBasicBlockPair == null) {
-      throw new IllegalArgumentException("stmt '" + from + "' does not exist in this StmtGraph!");
+      throw new IllegalArgumentException("stmt '" + from + "' does not exist in this ControlFlowGraph!");
     }
     final MutableBasicBlock mutableBasicBlock = mutableBasicBlockPair.getRight();
 
     final Pair<Integer, MutableBasicBlock> oldTargetBlockPair = stmtToBlock.get(oldTo);
     if (oldTargetBlockPair == null) {
-      throw new IllegalArgumentException("stmt '" + oldTo + "' does not exist in this StmtGraph!");
+      throw new IllegalArgumentException("stmt '" + oldTo + "' does not exist in this ControlFlowGraph!");
     }
     final MutableBasicBlock oldTargetBlock = stmtToBlock.get(oldTo).getRight();
 
@@ -1550,15 +1550,15 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   public BasicBlock<?> getBlockOf(@NonNull Stmt stmt) {
     final Pair<Integer, MutableBasicBlock> mutableBasicBlock = stmtToBlock.get(stmt);
     if (mutableBasicBlock == null) {
-      throw new IllegalArgumentException("stmt '" + stmt + "' does not exist in this StmtGraph!");
+      throw new IllegalArgumentException("stmt '" + stmt + "' does not exist in this ControlFlowGraph!");
     }
     return mutableBasicBlock.getRight();
   }
 
   @NonNull
   @Override
-  public StmtGraph<?> unmodifiableStmtGraph() {
-    return new ForwardingStmtGraph<>(this);
+  public ControlFlowGraph<?> unmodifiableControlFlowGraph() {
+    return new ForwardingControlFlowGraph<>(this);
   }
 
   public void setStartingStmt(@NonNull Stmt startingStmt) {
