@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0         # mike needs full history to push to gh-pages
 
       # grab latest release url of the JimpleLSP jar and download it - for use in Pygments+LspLexer4Pygments
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
