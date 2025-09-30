@@ -146,18 +146,17 @@ public class CopyPropagatorTest {
     View view = setUp();
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
-            .getMethodSignature(
-                "CopyPropagatorTest", "tc1", "void", Collections.singletonList("int"));
+            .getMethodSignature("CopyPropagator", "tc1", "void", Collections.singletonList("int"));
     Body bodyBefore = view.getMethod(methodSignature).get().getBody();
     final Body.BodyBuilder builder = Body.builder(bodyBefore, Collections.emptySet());
     new CopyPropagator().interceptBody(builder, view);
     Body bodyAfter = builder.build();
     assertEquals(
         Stream.of(
-                "CopyPropagatorTest this",
+                "CopyPropagator this",
                 "int l1",
                 "unknown l2, l3, l4",
-                "this := @this: CopyPropagatorTest",
+                "this := @this: CopyPropagator",
                 "l1 := @parameter0: int",
                 "l3 = 0",
                 "l2 = l1",

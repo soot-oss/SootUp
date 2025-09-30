@@ -1,4 +1,4 @@
-class SwitchExprWithYieldTest {
+class SwitchExprWithYield {
   void switchSomething() {
     int k = 5;
     String s = "";

@@ -1,4 +1,4 @@
-public class CopyPropagatorTest {
+public class CopyPropagator {
 
     void tc1(int w) {
         int y, z = 0;
