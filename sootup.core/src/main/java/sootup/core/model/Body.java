@@ -31,7 +31,9 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.*;
@@ -208,7 +210,7 @@ public class Body implements HasPosition {
 
   @NonNull
   // TODO: [ms] should be an ImmutableStmtGraph!
-  public StmtGraph<?> getStmtGraph() {
+  public ControlFlowGraph<?> getStmtGraph() {
     return graph;
   }
 
@@ -292,7 +294,7 @@ public class Body implements HasPosition {
     return new BodyBuilder();
   }
 
-  public static BodyBuilder builder(@NonNull MutableStmtGraph graph) {
+  public static BodyBuilder builder(@NonNull MutableControlFlowGraph graph) {
     return new BodyBuilder(graph);
   }
 
@@ -326,7 +328,7 @@ public class Body implements HasPosition {
     }
 
     @NonNull
-    public MutableStmtGraph getStmtGraph() {
+    public MutableControlFlowGraph getStmtGraph() {
       return graph;
     }
 

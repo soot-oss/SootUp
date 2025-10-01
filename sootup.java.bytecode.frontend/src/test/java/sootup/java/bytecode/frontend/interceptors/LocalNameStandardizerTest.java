@@ -106,7 +106,7 @@ public class LocalNameStandardizerTest {
     Body expectedBody = createExpectedBody();
 
     AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    AssertUtils.assertControlFlowGraphEquiv(expectedBody, builder.build());
   }
 
   private Body createBody() {

@@ -185,7 +185,7 @@ public class CopyPropagatorTest {
     propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedChainBody();
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    AssertUtils.assertControlFlowGraphEquiv(expectedBody, builder.build());
   }
 
   /** Test the copy propagation for loop */
@@ -198,7 +198,7 @@ public class CopyPropagatorTest {
     propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedLoopBody();
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    AssertUtils.assertControlFlowGraphEquiv(expectedBody, builder.build());
   }
 
   /** Test the copy propagation for castExpr */
@@ -211,7 +211,7 @@ public class CopyPropagatorTest {
     propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedCastExprBody();
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    AssertUtils.assertControlFlowGraphEquiv(expectedBody, builder.build());
   }
 
   /** r0 := @this Test; r1 = new ref; r2 = r1; r3 = r2; r4 = r3; return */
