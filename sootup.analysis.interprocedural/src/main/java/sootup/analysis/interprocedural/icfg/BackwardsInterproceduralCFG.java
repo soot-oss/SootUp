@@ -134,8 +134,8 @@ public class BackwardsInterproceduralCFG implements BiDiInterproceduralCFG<Stmt,
 
   // same
   @Override
-  public ControlFlowGraph<?> getOrCreateStmtGraph(SootMethod m) {
-    return delegate.getOrCreateStmtGraph(m);
+  public ControlFlowGraph<?> getOrCreateControlFlowGraph(SootMethod m) {
+    return delegate.getOrCreateControlFlowGraph(m);
   }
 
   // same

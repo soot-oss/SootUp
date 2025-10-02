@@ -63,7 +63,7 @@ public interface BiDiInterproceduralCFG<N, M> extends InterproceduralCFG<N, M> {
   Set<N> allNonCallEndNodes();
 
   // also exposed to some clients who need it
-  ControlFlowGraph getOrCreateStmtGraph(M body);
+  ControlFlowGraph getOrCreateControlFlowGraph(M body);
 
   List<Value> getParameterRefs(M m);
 
