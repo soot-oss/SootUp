@@ -32,10 +32,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.graph.ControlFlowGraph;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.graph.MutableControlFlowGraph;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
@@ -57,7 +55,7 @@ public class Body implements HasPosition {
   /** The locals for this Body. */
   private final Set<Local> locals;
 
-  @NonNull private final StmtGraph<?> graph;
+  @NonNull private final ControlFlowGraph<?> graph;
 
   /** The Position Information in the Source for this Body. */
   @NonNull private final Position position;
@@ -73,11 +71,11 @@ public class Body implements HasPosition {
   private Body(
       @NonNull MethodSignature methodSignature,
       @NonNull Set<Local> locals,
-      @NonNull StmtGraph<?> stmtGraph,
+      @NonNull ControlFlowGraph<?> controlFlowGraph,
       @NonNull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
-    this.graph = MutableBlockStmtGraph.createUnmodifiableStmtGraph(stmtGraph);
+    this.graph = MutableBlockControlFlowGraph.createUnmodifiableControlFlowGraph(controlFlowGraph);
     this.position = position;
   }
 
@@ -86,8 +84,8 @@ public class Body implements HasPosition {
    *
    * @return The this local
    */
-  public static Local getThisLocal(StmtGraph<?> stmtGraph) {
-    for (Stmt stmt : stmtGraph.getNodes()) {
+  public static Local getThisLocal(ControlFlowGraph<?> controlFlowGraph) {
+    for (Stmt stmt : controlFlowGraph.getNodes()) {
       if (stmt instanceof JIdentityStmt
           && ((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
         return ((JIdentityStmt) stmt).getLeftOp();
@@ -209,7 +207,7 @@ public class Body implements HasPosition {
   }
 
   @NonNull
-  // TODO: [ms] should be an ImmutableStmtGraph!
+  // TODO: [ms] should be an ImmutableControlFlowGraph!
   public ControlFlowGraph<?> getStmtGraph() {
     return graph;
   }
@@ -276,7 +274,7 @@ public class Body implements HasPosition {
     return getDefs(graph);
   }
 
-  public static Collection<LValue> getDefs(StmtGraph<?> graph) {
+  public static Collection<LValue> getDefs(ControlFlowGraph<?> graph) {
     ArrayList<LValue> defList = new ArrayList<>();
 
     for (Stmt stmt : graph.getNodes()) {
@@ -308,14 +306,14 @@ public class Body implements HasPosition {
     @NonNull private Set<MethodModifier> modifiers = Collections.emptySet();
 
     @Nullable private Position position = null;
-    @NonNull private final MutableStmtGraph graph;
+    @NonNull private final MutableControlFlowGraph graph;
     @Nullable private MethodSignature methodSig = null;
 
     BodyBuilder() {
-      graph = new MutableBlockStmtGraph();
+      graph = new MutableBlockControlFlowGraph();
     }
 
-    BodyBuilder(@NonNull MutableStmtGraph graph) {
+    BodyBuilder(@NonNull MutableControlFlowGraph graph) {
       this.graph = graph;
     }
 
@@ -324,7 +322,7 @@ public class Body implements HasPosition {
       setMethodSignature(body.getMethodSignature());
       setLocals(new LinkedHashSet<>(body.getLocals()));
       setPosition(body.getPosition());
-      graph = new MutableBlockStmtGraph(body.getStmtGraph());
+      graph = new MutableBlockControlFlowGraph(body.getStmtGraph());
     }
 
     @NonNull
@@ -332,7 +330,7 @@ public class Body implements HasPosition {
       return graph;
     }
 
-    /* Gets an ordered copy of the Stmts in the StmtGraph */
+    /* Gets an ordered copy of the Stmts in the ControlFlowGraph */
     @NonNull
     public List<Stmt> getStmts() {
       return graph.getStmts();
@@ -423,19 +421,19 @@ public class Body implements HasPosition {
       final Stmt startingStmt = graph.getStartingStmt();
       final Collection<Stmt> nodes = graph.getNodes();
       if (nodes.size() > 0 && !nodes.contains(startingStmt)) {
-        // TODO: already handled in MutableBlockStmtGraph.. check the others as well
+        // TODO: already handled in MutableBlockControlFlowGraph.. check the others as well
         throw new IllegalStateException(
             methodSig
                 + ": The given startingStmt '"
                 + startingStmt
-                + "' does not exist in the StmtGraph.");
+                + "' does not exist in the ControlFlowGraph.");
       }
       // validate statements
       try {
         graph.validateStmtConnectionsInGraph();
       } catch (Exception e) {
-        throw new RuntimeException("StmtGraph of " + methodSig + " is invalid.", e);
-        //        System.out.println("StmtGraph of " + methodSig + " is invalid." + e.getCause());
+        throw new RuntimeException("ControlFlowGraph of " + methodSig + " is invalid.", e);
+        //        System.out.println("ControlFlowGraph of " + methodSig + " is invalid." + e.getCause());
       }
 
       return new Body(methodSig, locals, graph, position);

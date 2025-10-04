@@ -30,7 +30,7 @@ import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.StmtMethodPropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.DdgEdge;
 import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -54,8 +54,8 @@ public class DdgCreator {
       return graphBuilder.build();
     }
 
-    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
-    Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(stmtGraph)).getReachingDefs();
+    ControlFlowGraph<?> controlFlowGraph = method.getBody().getStmtGraph();
+    Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(controlFlowGraph)).getReachingDefs();
 
     // Custom comparator for Stmt objects
     Comparator<Stmt> stmtComparator = Comparator.comparing(Stmt::toString);

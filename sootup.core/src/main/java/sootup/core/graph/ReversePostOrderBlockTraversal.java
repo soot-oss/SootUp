@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.jspecify.annotations.NonNull;
 
-/** A strategy to traverse a StmtGraph in reverse post-order. */
+/** A strategy to traverse a ControlFlowGraph in reverse post-order. */
 public class ReversePostOrderBlockTraversal implements BlockTraversalStrategy {
 
-  private final StmtGraph<?> cfg;
+  private final ControlFlowGraph<?> cfg;
 
-  public ReversePostOrderBlockTraversal(StmtGraph<?> cfg) {
+  public ReversePostOrderBlockTraversal(ControlFlowGraph<?> cfg) {
     this.cfg = cfg;
   }
 

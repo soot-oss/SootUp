@@ -466,7 +466,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(node);
     if (blockPair == null) {
       throw new IllegalArgumentException(
-          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
+          "Stmt '" + node + "' is not contained in the BlockControlFlowGraph");
     }
     MutableBasicBlock block = blockPair.getRight();
     block.removeExceptionalSuccessorBlock(exceptionType);
@@ -478,7 +478,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(node);
     if (blockPair == null) {
       throw new IllegalArgumentException(
-          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
+          "Stmt '" + node + "' is not contained in the BlockControlFlowGraph");
     }
     MutableBasicBlock block = blockPair.getRight();
     block.clearExceptionalSuccessorBlocks();
@@ -1589,7 +1589,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(node);
     if (blockPair == null) {
       throw new IllegalArgumentException(
-          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
+          "Stmt '" + node + "' is not contained in the BlockControlFlowGraph");
     }
     MutableBasicBlock block = blockPair.getRight();
 
@@ -1613,7 +1613,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(node);
     if (blockPair == null) {
       throw new IllegalArgumentException(
-          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
+          "Stmt '" + node + "' is not contained in the BlockControlFlowGraph");
     }
     MutableBasicBlock block = blockPair.getRight();
 
@@ -1668,7 +1668,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(node);
     if (blockPair == null) {
       throw new IllegalArgumentException(
-          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
+          "Stmt '" + node + "' is not contained in the BlockControlFlowGraph");
     }
     MutableBasicBlock block = blockPair.getRight();
 
@@ -1689,7 +1689,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(node);
     if (blockPair == null) {
       throw new IllegalArgumentException(
-          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
+          "Stmt '" + node + "' is not contained in the BlockControlFlowGraph");
     }
     MutableBasicBlock block = blockPair.getRight();
     Map<ClassType, Stmt> map = new HashMap<>();
@@ -1704,7 +1704,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(node);
     if (blockPair == null) {
       throw new IllegalArgumentException(
-          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
+          "Stmt '" + node + "' is not contained in the BlockControlFlowGraph");
     }
     MutableBasicBlock block = blockPair.getRight();
 
@@ -1720,7 +1720,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     Pair<Integer, MutableBasicBlock> blockPair = stmtToBlock.get(node);
     if (blockPair == null) {
       throw new IllegalArgumentException(
-          "Stmt '" + node + "' is not contained in the BlockStmtGraph");
+          "Stmt '" + node + "' is not contained in the BlockControlFlowGraph");
     }
     MutableBasicBlock block = blockPair.getRight();
 
@@ -1736,7 +1736,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     Pair<Integer, MutableBasicBlock> blockAPair = stmtToBlock.get(source);
     if (blockAPair == null) {
       throw new IllegalArgumentException(
-          "Stmt '" + source + "' is not contained in the BlockStmtGraph");
+          "Stmt '" + source + "' is not contained in the BlockControlFlowGraph");
     }
     MutableBasicBlock blockA = blockAPair.getRight();
 
@@ -1744,7 +1744,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       Pair<Integer, MutableBasicBlock> blockBPair = stmtToBlock.get(target);
       if (blockBPair == null) {
         throw new IllegalArgumentException(
-            "Stmt '" + target + "' is not contained in the BlockStmtGraph");
+            "Stmt '" + target + "' is not contained in the BlockControlFlowGraph");
       }
 
       return blockA.getSuccessors().stream()
