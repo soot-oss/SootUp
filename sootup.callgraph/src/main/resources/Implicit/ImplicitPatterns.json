@@ -1,0 +1,28 @@
+{
+  "implicitPatterns": [
+    {
+      "id": "FinalizerRun",
+      "category": 1,
+      "caller":
+      {
+        "callerSig": "<java.lang.Runtime: void runFinalization>"
+      },
+      "callee":
+      {
+        "calleeSig": "<java.lang.ref.Finalizer: void runFinalization>"
+      }
+    },
+    {
+      "id": "FinalizerRun2",
+      "category": 2,
+      "caller":
+      {
+        "callerSig": "<java.lang.Runtime: void runFinalization>"
+      },
+      "callee":
+      {
+        "calleeSig": "<java.lang.ref.Finalizer: void runFinalization>"
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ImplicitPatterns",
+  "description": "Schema for implicit call edge patterns",
+  "type": "object",
+  "properties": {
+    "implicitPatterns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "The unique identifier for the implicit call edge",
+            "type": "string"
+          },
+          "category": {
+            "description": "The category identifier for the call edge",
+            "type": "integer"
+          },
+          "caller": {
+            "type": "object",
+            "properties": {
+              "callerSig": {
+                "description": "The signature of the caller",
+                "type": "string"
+              }
+            },
+            "required": ["callerSig"]
+          },
+          "callee": {
+            "type": "object",
+            "properties": {
+              "calleeSig": {
+                "description": "The signature of the callee",
+                "type": "string"
+              }
+            },
+            "required": ["calleeSig"]
+          }
+        },
+        "required": ["id", "category", "caller", "callee"]
+      }
+    }
+  },
+  "required": ["implicitPatterns"]
+}
