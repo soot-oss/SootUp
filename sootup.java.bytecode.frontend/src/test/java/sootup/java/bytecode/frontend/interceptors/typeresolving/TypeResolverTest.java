@@ -30,7 +30,7 @@ import sootup.java.core.views.JavaView;
 
 public class TypeResolverTest extends TypeAssignerTestSuite {
 
-  String baseDir = "../shared-test-resources/TypeResolverTestSuite/";
+  String baseDir = "src/test/resources/TypeResolverTestSuite/";
   Type objectType = new JavaClassType("Object", new JavaPackageName("java.lang"));
   Type stringType = new JavaClassType("String", new JavaPackageName("java.lang"));
   Type charSequenceType = new JavaClassType("CharSequence", new JavaPackageName("java.lang"));

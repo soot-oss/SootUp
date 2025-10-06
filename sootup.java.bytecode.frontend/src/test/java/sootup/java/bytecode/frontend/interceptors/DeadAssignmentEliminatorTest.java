@@ -34,8 +34,7 @@ import sootup.java.core.views.JavaView;
 
 public class DeadAssignmentEliminatorTest {
 
-  Path classFilePath =
-      Paths.get("../shared-test-resources/bugfixes/DeadAssignmentEliminatorTest.class");
+  Path classFilePath = Paths.get("src/test/resources/bugfixes/DeadAssignmentEliminator.class");
 
   /**
    *
