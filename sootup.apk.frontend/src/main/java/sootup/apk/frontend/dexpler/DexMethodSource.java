@@ -34,7 +34,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
@@ -48,7 +48,7 @@ import sootup.java.core.JavaSootMethod;
 public class DexMethodSource implements BodySource {
 
   private final Set<Local> locals;
-  private final MutableStmtGraph mutableStmtGraph;
+  private final MutableControlFlowGraph mutableControlFlowGraph;
   private final Method method;
 
   private final List<BodyInterceptor> bodyInterceptors;
@@ -59,7 +59,7 @@ public class DexMethodSource implements BodySource {
   public DexMethodSource(
       Set<Local> locals,
       MethodSignature methodSignature,
-      MutableStmtGraph mutableStmtGraph,
+      MutableControlFlowGraph mutableControlFlowGraph,
       Method method,
       List<BodyInterceptor> bodyInterceptors,
       @NonNull View view) {
@@ -67,7 +67,7 @@ public class DexMethodSource implements BodySource {
     this.view = view;
     this.locals = locals;
     this.bodyInterceptors = bodyInterceptors;
-    this.mutableStmtGraph = mutableStmtGraph;
+    this.mutableControlFlowGraph = mutableControlFlowGraph;
     this.method = method;
   }
 
@@ -78,7 +78,7 @@ public class DexMethodSource implements BodySource {
     Set<MethodModifier> modifiersSet =
         StreamSupport.stream(modifiers.spliterator(), false).collect(Collectors.toSet());
     Body.BodyBuilder bodyBuilder =
-        Body.builder(mutableStmtGraph)
+        Body.builder(mutableControlFlowGraph)
             .setModifiers(modifiersSet)
             .setMethodSignature(getSignature())
             .setPosition(NoPositionInformation.getInstance())

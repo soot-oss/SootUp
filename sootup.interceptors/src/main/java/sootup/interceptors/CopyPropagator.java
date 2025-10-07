@@ -141,7 +141,10 @@ public class CopyPropagator implements BodyInterceptor {
   }
 
   private Stmt replaceUse(
-      @NonNull MutableControlFlowGraph graph, @NonNull Stmt stmt, @NonNull Value use, @NonNull Value rhs) {
+      @NonNull MutableControlFlowGraph graph,
+      @NonNull Stmt stmt,
+      @NonNull Value use,
+      @NonNull Value rhs) {
     if (rhs != use) {
       Stmt newStmt = stmt.withNewUse(use, rhs);
       if (newStmt != stmt) {

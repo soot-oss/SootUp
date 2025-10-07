@@ -40,12 +40,15 @@ import sootup.core.views.View;
 public class ICFGDotExporter {
 
   public static String buildICFGGraph(
-      Map<MethodSignature, ControlFlowGraph<?>> signatureToControlFlowGraph, View view, CallGraph callGraph) {
+      Map<MethodSignature, ControlFlowGraph<?>> signatureToControlFlowGraph,
+      View view,
+      CallGraph callGraph) {
     final StringBuilder sb = new StringBuilder();
     DotExporter.buildDiGraphObject(sb);
     Map<Integer, MethodSignature> calls;
     calls = computeCalls(signatureToControlFlowGraph, view, callGraph);
-    for (Map.Entry<MethodSignature, ControlFlowGraph<?>> entry : signatureToControlFlowGraph.entrySet()) {
+    for (Map.Entry<MethodSignature, ControlFlowGraph<?>> entry :
+        signatureToControlFlowGraph.entrySet()) {
       String graph = DotExporter.buildGraph(entry.getValue(), true, calls, entry.getKey());
       sb.append(graph).append("\n");
     }
@@ -54,11 +57,13 @@ public class ICFGDotExporter {
   }
 
   /**
-   * This method finds out all the calls made in the given signatureToControlFlowGraphs, so it can be edged to other
-   * methods.
+   * This method finds out all the calls made in the given signatureToControlFlowGraphs, so it can
+   * be edged to other methods.
    */
   public static Map<Integer, MethodSignature> computeCalls(
-          Map<MethodSignature, ControlFlowGraph<?>> controlFlowGraphSet, View view, CallGraph callgraph) {
+      Map<MethodSignature, ControlFlowGraph<?>> controlFlowGraphSet,
+      View view,
+      CallGraph callgraph) {
     Map<Integer, MethodSignature> calls = new HashMap<>();
     for (Map.Entry<MethodSignature, ControlFlowGraph<?>> entry : controlFlowGraphSet.entrySet()) {
       ControlFlowGraph<?> controlFlowGraph = entry.getValue();
@@ -96,7 +101,10 @@ public class ICFGDotExporter {
                   } else {
                     MethodSignature secondInitMethodSignature = calls.get(currentHashCode);
                     currentHashCode =
-                        controlFlowGraphSet.get(secondInitMethodSignature).getStartingStmt().hashCode();
+                        controlFlowGraphSet
+                            .get(secondInitMethodSignature)
+                            .getStartingStmt()
+                            .hashCode();
                     calls.put(currentHashCode, methodSignature);
                   }
                 }

@@ -25,8 +25,8 @@ package sootup.interceptors;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
@@ -153,7 +153,8 @@ public class TrapTightener implements BodyInterceptor {
 
   // FIXME: [ms] makes no sense in that Implementation! ControlFlowGraph is not the legacy
   // ExceptionalUnitGraph
-  private boolean mightThrow(@NonNull ControlFlowGraph<?> graph, @NonNull Stmt stmt, @NonNull Trap trap) {
+  private boolean mightThrow(
+      @NonNull ControlFlowGraph<?> graph, @NonNull Stmt stmt, @NonNull Trap trap) {
     final BasicBlock<?> block = graph.getBlockOf(stmt);
 
     for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> dest :

@@ -28,8 +28,8 @@ import sootup.codepropertygraph.propertygraph.StmtMethodPropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.CdgEdge;
 import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.PostDominanceFinder;
 import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.PostDominanceFinder;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 

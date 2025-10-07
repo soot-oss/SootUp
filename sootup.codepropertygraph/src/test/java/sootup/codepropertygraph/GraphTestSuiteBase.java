@@ -10,7 +10,7 @@ import sootup.codepropertygraph.cfg.CfgCreator;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.PropertyGraphEdge;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
@@ -44,7 +44,8 @@ public abstract class GraphTestSuiteBase {
     }
   }
 
-  protected SootMethod createSootMethod(MutableStmtGraph stmtGraph, String methodName) {
+  protected SootMethod createSootMethod(
+      MutableControlFlowGraph controlFlowGraph, String methodName) {
     MethodSignature methodSignature =
         new MethodSignature(
             new JavaClassType("TestClass", new PackageName("pkg")),
@@ -54,7 +55,8 @@ public abstract class GraphTestSuiteBase {
 
     return new JavaSootMethod(
         new OverridingBodySource(
-            methodSignature, Body.builder(stmtGraph).setMethodSignature(methodSignature).build()),
+            methodSignature,
+            Body.builder(controlFlowGraph).setMethodSignature(methodSignature).build()),
         methodSignature,
         Collections.singletonList(MethodModifier.PUBLIC),
         Collections.emptyList(),

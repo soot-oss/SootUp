@@ -26,7 +26,7 @@ import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.StmtMethodPropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.*;
 import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.SootMethod;
@@ -51,13 +51,13 @@ public class CfgCreator {
       return graphBuilder.build();
     }
 
-    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
-    stmtGraph.forEach(
+    ControlFlowGraph<?> controlFlowGraph = method.getBody().getStmtGraph();
+    controlFlowGraph.forEach(
         currStmt -> {
           int expectedCount = currStmt.getExpectedSuccessorCount();
           int successorIndex = 0;
 
-          for (Stmt successor : stmtGraph.getAllSuccessors(currStmt)) {
+          for (Stmt successor : controlFlowGraph.getAllSuccessors(currStmt)) {
             StmtGraphNode sourceNode = new StmtGraphNode(currStmt);
             StmtGraphNode destinationNode = new StmtGraphNode(successor);
             AbstCfgEdge edge = createEdge(currStmt, successorIndex, sourceNode, destinationNode);

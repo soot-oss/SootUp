@@ -176,7 +176,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
               nextMethodSignature ->
                   computeAllCalls(
                       Collections.singletonList(nextMethodSignature),
-                          signatureToControlFlowGraph,
+                      signatureToControlFlowGraph,
                       callGraph,
                       visitedMethods));
     }
