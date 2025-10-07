@@ -2,7 +2,6 @@ package sootup.java.bytecode.frontend.interceptors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -36,10 +35,7 @@ public class StaticSingleAssignmentFormerTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
-  final String location =
-      Paths.get(System.getProperty("user.dir")).getParent()
-          + File.separator
-          + "shared-test-resources/bugfixes/";
+  final String location = "src/test/resources/bugfixes/";
 
   JavaClassType intType = factory.getClassType("int");
   JavaClassType classType = factory.getClassType("Test");

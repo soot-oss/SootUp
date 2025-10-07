@@ -22,7 +22,7 @@ import sootup.java.core.views.JavaModuleView;
 
 public class JavaModuleViewTest {
 
-  private final String testPath = "../shared-test-resources/jigsaw-examples/";
+  private final String testPath = "src/test/resources/jigsaw-examples/";
 
   @Test
   public void testGeneralClassReceivalFromModule() {
@@ -68,7 +68,7 @@ public class JavaModuleViewTest {
     List<AnalysisInputLocation> inputLocations =
         Collections.singletonList(
             new JavaClassPathAnalysisInputLocation(
-                "../shared-test-resources/miniTestSuite/java6/binary/"));
+                "src/test/resources/miniTestSuite/java6/binary/"));
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.emptyList();
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
