@@ -21,7 +21,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
-          fetch-depth: 0         # mike needs full history to push to gh-pages
+          fetch-depth: 0              # mike needs full history to push to gh-pages
+
+      - name: Generate Javadoc
+        shell: bash
+        run: mvn javadoc:javadoc      # generates javadoc in "target/site/apidocs"
+
+      - name: move Javadoc into docs
+        shell: bash
+        run: mv target/site/apidocs/ docs/api/
 
       # grab latest release url of the JimpleLSP jar and download it - for use in Pygments+LspLexer4Pygments
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
