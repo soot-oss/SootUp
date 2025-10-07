@@ -7,14 +7,12 @@
   {
     "version": "develop",
     "title": "develop",
-    "aliases": []
+    "aliases": ["latest"]
   },
   {
     "version": "v2.0.0",
     "title": "v2.0.0",
-    "aliases": [
-      "latest"
-    ]
+    "aliases": []
   },
   {
     "version": "v1.3.0",
