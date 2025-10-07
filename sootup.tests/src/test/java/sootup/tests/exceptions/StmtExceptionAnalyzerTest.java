@@ -1,6 +1,5 @@
 package sootup.tests.exceptions;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -35,10 +34,7 @@ public class StmtExceptionAnalyzerTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   ClassType clazzType = factory.getClassType("StmtExceptions");
-  String location =
-      Paths.get(System.getProperty("user.dir")).getParent()
-          + File.separator
-          + "shared-test-resources/exceptions/";
+  String location = "src/test/resources/exceptions/";
   final Path path = Paths.get(location + "StmtExceptions.class");
   List<BodyInterceptor> interceptors =
       Arrays.asList(

@@ -30,7 +30,7 @@ import sootup.java.core.views.JavaView;
  */
 public abstract class MinimalBytecodeTestSuiteBase {
 
-  static final String baseDir = "../shared-test-resources/miniTestSuite";
+  static final String baseDir = "src/test/resources/miniTestSuite";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
   private static String testDir = "";

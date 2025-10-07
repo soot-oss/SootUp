@@ -16,7 +16,7 @@ import sootup.java.core.views.JavaView;
 
 public class InfiniteLoopsTest {
 
-  Path classFilePath = Paths.get("../shared-test-resources/bugfixes/InfiniteLoops.class");
+  Path classFilePath = Paths.get("src/test/resources/bugfixes/InfiniteLoops.class");
 
   @Test
   public void test() {

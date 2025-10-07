@@ -1,6 +1,5 @@
 package sootup.tests;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -27,10 +26,7 @@ import sootup.java.core.views.JavaView;
 
 public class NestedTryCatchFlowTest {
 
-  String location =
-      Paths.get(System.getProperty("user.dir")).getParent()
-          + File.separator
-          + "shared-test-resources/bugfixes/";
+  String location = "src/test/resources/bugs/bugfixes/";
   final Path path = Paths.get(location + "NestedTryCatchFlow.class");
   PathBasedAnalysisInputLocation inputLocation =
       new ClassFileBasedAnalysisInputLocation(

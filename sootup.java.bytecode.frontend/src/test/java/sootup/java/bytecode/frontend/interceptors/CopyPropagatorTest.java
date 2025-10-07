@@ -133,7 +133,7 @@ public class CopyPropagatorTest {
       JavaJimple.newAssignStmt(r5, NullConstant.getInstance(), noStmtPositionInfo);
 
   public View setUp() {
-    String baseDir = "../shared-test-resources/interceptors/";
+    String baseDir = "src/test/resources/interceptors/";
     JavaClassPathAnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
             baseDir, SourceType.Library, Collections.emptyList());
@@ -146,18 +146,17 @@ public class CopyPropagatorTest {
     View view = setUp();
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
-            .getMethodSignature(
-                "CopyPropagatorTest", "tc1", "void", Collections.singletonList("int"));
+            .getMethodSignature("CopyPropagator", "tc1", "void", Collections.singletonList("int"));
     Body bodyBefore = view.getMethod(methodSignature).get().getBody();
     final Body.BodyBuilder builder = Body.builder(bodyBefore, Collections.emptySet());
     new CopyPropagator().interceptBody(builder, view);
     Body bodyAfter = builder.build();
     assertEquals(
         Stream.of(
-                "CopyPropagatorTest this",
+                "CopyPropagator this",
                 "int l1",
                 "unknown l2, l3, l4",
-                "this := @this: CopyPropagatorTest",
+                "this := @this: CopyPropagator",
                 "l1 := @parameter0: int",
                 "l3 = 0",
                 "l2 = l1",
@@ -405,7 +404,7 @@ public class CopyPropagatorTest {
   void testBigInput() {
     AnalysisInputLocation inputLocation =
         new ClassFileBasedAnalysisInputLocation(
-            Paths.get("../shared-test-resources/bugfixes/SlowCopyPropagator.class"),
+            Paths.get("src/test/resources/bugfixes/SlowCopyPropagator.class"),
             "",
             SourceType.Application,
             Collections.singletonList(new CopyPropagator()));
