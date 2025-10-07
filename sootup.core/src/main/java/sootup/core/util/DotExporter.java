@@ -36,7 +36,8 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 
 /**
- * Exports a ControlFlowGraph into a Dot representation (see https://graphviz.org) to visualize the Graph
+ * Exports a ControlFlowGraph into a Dot representation (see https://graphviz.org) to visualize the
+ * Graph
  *
  * @author Markus Schmidt
  */

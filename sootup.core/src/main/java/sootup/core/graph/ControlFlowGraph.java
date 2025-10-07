@@ -41,16 +41,16 @@ import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.core.util.printer.JimplePrinter;
 
 /**
- * Interface for control flow graphs on Jimple Stmts. A ControlFlowGraph is directed and connected (except
- * for traphandlers - those are not connected to the unexceptional flow via ControlFlowGraph). Its directed
- * edges represent flows between Stmts. If the edge starts in a branching Stmt there is an edge for
- * each flow to the target Stmt. This can include duplicate flows to the same target e.g. for
- * JSwitchStmt, so that every label has its own flow to a target.
+ * Interface for control flow graphs on Jimple Stmts. A ControlFlowGraph is directed and connected
+ * (except for traphandlers - those are not connected to the unexceptional flow via
+ * ControlFlowGraph). Its directed edges represent flows between Stmts. If the edge starts in a
+ * branching Stmt there is an edge for each flow to the target Stmt. This can include duplicate
+ * flows to the same target e.g. for JSwitchStmt, so that every label has its own flow to a target.
  *
- * <p>The ControlFlowGraph structure keeps the edge insertion order of each node to store information about
- * successor stmts in its edges for Branching. Ordered edges are necessary because we want to
- * associate the i-th item with the i-th branch case of a {@link BranchingStmt}. In a valid
- * ControlFlowGraph it is not allowed to have unconnected Nodes.
+ * <p>The ControlFlowGraph structure keeps the edge insertion order of each node to store
+ * information about successor stmts in its edges for Branching. Ordered edges are necessary because
+ * we want to associate the i-th item with the i-th branch case of a {@link BranchingStmt}. In a
+ * valid ControlFlowGraph it is not allowed to have unconnected Nodes.
  *
  * <pre>
  *  Stmt stmt1, stmt2;

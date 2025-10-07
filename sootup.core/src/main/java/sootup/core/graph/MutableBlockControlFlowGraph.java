@@ -57,7 +57,8 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
   public MutableBlockControlFlowGraph() {}
 
-  public MutableBlockControlFlowGraph(boolean isStatic, MethodSignature sig, LocalGenerator localgen) {
+  public MutableBlockControlFlowGraph(
+      boolean isStatic, MethodSignature sig, LocalGenerator localgen) {
     final List<Stmt> stmts = new ArrayList<>(sig.getParameterTypes().size() + (isStatic ? 0 : 1));
     if (!isStatic) {
       ClassType thisType = sig.getDeclClassType();
@@ -116,7 +117,8 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
             });
   }
 
-  public static ControlFlowGraph<?> createUnmodifiableControlFlowGraph(ControlFlowGraph<?> controlFlowGraph) {
+  public static ControlFlowGraph<?> createUnmodifiableControlFlowGraph(
+      ControlFlowGraph<?> controlFlowGraph) {
     if (controlFlowGraph instanceof MutableControlFlowGraph) {
       return ((MutableControlFlowGraph) controlFlowGraph).unmodifiableControlFlowGraph();
     }
@@ -893,7 +895,8 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   public void removeNode(@NonNull Stmt stmt, boolean keepFlow) {
     Pair<Integer, MutableBasicBlock> blockOfRemovedStmtPair = stmtToBlock.get(stmt);
     if (blockOfRemovedStmtPair == null) {
-      throw new IllegalArgumentException("stmt '" + stmt + "' is not contained in this ControlFlowGraph!");
+      throw new IllegalArgumentException(
+          "stmt '" + stmt + "' is not contained in this ControlFlowGraph!");
     }
     MutableBasicBlock blockOfRemovedStmt = blockOfRemovedStmtPair.getRight();
 
@@ -1291,13 +1294,15 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   public boolean replaceSucessorEdge(@NonNull Stmt from, @NonNull Stmt oldTo, @NonNull Stmt newTo) {
     final Pair<Integer, MutableBasicBlock> mutableBasicBlockPair = stmtToBlock.get(from);
     if (mutableBasicBlockPair == null) {
-      throw new IllegalArgumentException("stmt '" + from + "' does not exist in this ControlFlowGraph!");
+      throw new IllegalArgumentException(
+          "stmt '" + from + "' does not exist in this ControlFlowGraph!");
     }
     final MutableBasicBlock mutableBasicBlock = mutableBasicBlockPair.getRight();
 
     final Pair<Integer, MutableBasicBlock> oldTargetBlockPair = stmtToBlock.get(oldTo);
     if (oldTargetBlockPair == null) {
-      throw new IllegalArgumentException("stmt '" + oldTo + "' does not exist in this ControlFlowGraph!");
+      throw new IllegalArgumentException(
+          "stmt '" + oldTo + "' does not exist in this ControlFlowGraph!");
     }
     final MutableBasicBlock oldTargetBlock = stmtToBlock.get(oldTo).getRight();
 
@@ -1550,7 +1555,8 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   public BasicBlock<?> getBlockOf(@NonNull Stmt stmt) {
     final Pair<Integer, MutableBasicBlock> mutableBasicBlock = stmtToBlock.get(stmt);
     if (mutableBasicBlock == null) {
-      throw new IllegalArgumentException("stmt '" + stmt + "' does not exist in this ControlFlowGraph!");
+      throw new IllegalArgumentException(
+          "stmt '" + stmt + "' does not exist in this ControlFlowGraph!");
     }
     return mutableBasicBlock.getRight();
   }

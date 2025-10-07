@@ -211,7 +211,8 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public JNopStmt buildTraps(ControlFlowGraph controlFlowGraph) {
     // [ms] try to incorporate it into the serialisation of jimple printing so the other half of
     // iteration information is not wasted..
-    BlockGraphIteratorAndTrapAggregator it = new BlockGraphIteratorAndTrapAggregator(controlFlowGraph);
+    BlockGraphIteratorAndTrapAggregator it =
+        new BlockGraphIteratorAndTrapAggregator(controlFlowGraph);
     // it.getTraps() is valid/completely build when the iterator is done.
     Map<Stmt, Integer> stmtsBlockIdx = new IdentityHashMap<>();
     int i = 0;
@@ -261,11 +262,15 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       if (stmt instanceof BranchingStmt) {
         if (stmt instanceof JIfStmt) {
           stmtList.add(
-              (Stmt) controlFlowGraph.getBranchTargetsOf((JIfStmt) stmt).get(JIfStmt.FALSE_BRANCH_IDX));
+              (Stmt)
+                  controlFlowGraph
+                      .getBranchTargetsOf((JIfStmt) stmt)
+                      .get(JIfStmt.FALSE_BRANCH_IDX));
         } else if (stmt instanceof JGotoStmt) {
           // [ms] bounds are validated in Body if its a valid ControlFlowGraph
           stmtList.add(
-              (Stmt) controlFlowGraph.getBranchTargetsOf((JGotoStmt) stmt).get(JGotoStmt.BRANCH_IDX));
+              (Stmt)
+                  controlFlowGraph.getBranchTargetsOf((JGotoStmt) stmt).get(JGotoStmt.BRANCH_IDX));
         } else if (stmt instanceof JSwitchStmt) {
           stmtList.addAll(controlFlowGraph.getBranchTargetsOf((BranchingStmt) stmt));
         }

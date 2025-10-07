@@ -29,7 +29,7 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.IdentifierFactory;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -169,7 +169,7 @@ public class TypeResolver {
   }
 
   private Collection<Typing> applyAssignmentConstraint(
-      @NonNull StmtGraph<?> graph,
+      @NonNull ControlFlowGraph<?> graph,
       @NonNull Typing typing,
       @NonNull AugEvalFunction evalFunction,
       @NonNull BytecodeHierarchy hierarchy) {

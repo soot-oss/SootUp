@@ -14,7 +14,7 @@ public class TestGraphGenerator {
 
   StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
-  public MutableBlockControlFlowGraph createStmtGraph() {
+  public MutableBlockControlFlowGraph createControlFlowGraph() {
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
 
     Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
@@ -70,7 +70,7 @@ public class TestGraphGenerator {
 
   // a control flow graph without returnStmt, because simulate the situation in the paper
   // if it doesn't pass the validation, please add a return stmt after ifl2l50
-  public MutableBlockControlFlowGraph createStmtGraph2() {
+  public MutableBlockControlFlowGraph createControlFlowGraph2() {
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
 
     Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
@@ -128,7 +128,7 @@ public class TestGraphGenerator {
   }
 
   // a graph with two end blocks
-  public MutableBlockControlFlowGraph createStmtGraph3() {
+  public MutableBlockControlFlowGraph createControlFlowGraph3() {
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
 
     Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());

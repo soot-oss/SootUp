@@ -433,7 +433,8 @@ public class Body implements HasPosition {
         graph.validateStmtConnectionsInGraph();
       } catch (Exception e) {
         throw new RuntimeException("ControlFlowGraph of " + methodSig + " is invalid.", e);
-        //        System.out.println("ControlFlowGraph of " + methodSig + " is invalid." + e.getCause());
+        //        System.out.println("ControlFlowGraph of " + methodSig + " is invalid." +
+        // e.getCause());
       }
 
       return new Body(methodSig, locals, graph, position);

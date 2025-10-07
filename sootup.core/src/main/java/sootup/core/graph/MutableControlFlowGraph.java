@@ -100,8 +100,9 @@ public abstract class MutableControlFlowGraph extends ControlFlowGraph<MutableBa
    * Modifications of unexceptional flows
    *
    * <p>Adds a flow "from" to "to". if at least one of the parameter Stmts is not already in the
-   * ControlFlowGraph it will be added. if "to" needs to be added to the ControlFlowGraph i.e. "to" is not already
-   * in the ControlFlowGraph the method assumes "to" has the same exceptional flows as "from".
+   * ControlFlowGraph it will be added. if "to" needs to be added to the ControlFlowGraph i.e. "to"
+   * is not already in the ControlFlowGraph the method assumes "to" has the same exceptional flows
+   * as "from".
    */
   public abstract void putEdge(@NonNull FallsThroughStmt from, @NonNull Stmt to);
 

@@ -29,7 +29,7 @@ import sootup.codepropertygraph.propertygraph.edges.CdgEdge;
 import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.PostDominanceFinder;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -53,10 +53,10 @@ public class CdgCreator {
       return graphBuilder.build();
     }
 
-    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
-    PostDominanceFinder postDominanceFinder = new PostDominanceFinder(stmtGraph);
+    ControlFlowGraph<?> controlFlowGraph = method.getBody().getStmtGraph();
+    PostDominanceFinder postDominanceFinder = new PostDominanceFinder(controlFlowGraph);
 
-    List<? extends BasicBlock<?>> blocks = stmtGraph.getBlocksSorted();
+    List<? extends BasicBlock<?>> blocks = controlFlowGraph.getBlocksSorted();
     for (BasicBlock<?> currBlock : blocks) {
       for (BasicBlock<?> frontierBlock : postDominanceFinder.getDominanceFrontiers(currBlock)) {
         StmtGraphNode sourceNode = new StmtGraphNode(frontierBlock.getTail());

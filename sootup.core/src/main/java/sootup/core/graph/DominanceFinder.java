@@ -47,7 +47,8 @@ public class DominanceFinder {
     this(blockGraph, BlockAnalysisDirection.REVERSEPOSTORDERFORWARD);
   }
 
-  protected DominanceFinder(@NonNull ControlFlowGraph<?> blockGraph, BlockAnalysisDirection direction) {
+  protected DominanceFinder(
+      @NonNull ControlFlowGraph<?> blockGraph, BlockAnalysisDirection direction) {
 
     // define the blocks' order
     this.direction = direction;
