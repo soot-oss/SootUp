@@ -5,23 +5,19 @@
       "category": 1,
       "caller":
       {
-        "callerSig": "<java.lang.Runtime: void runFinalization>"
+        "callerClassName": "Runtime",
+        "callerPackage": "java.lang",
+        "callerName": "runFinalization",
+        "callerParam": "",
+        "callerReturnType": "void"
       },
       "callee":
       {
-        "calleeSig": "<java.lang.ref.Finalizer: void runFinalization>"
-      }
-    },
-    {
-      "id": "FinalizerRun2",
-      "category": 2,
-      "caller":
-      {
-        "callerSig": "<java.lang.Runtime: void runFinalization>"
-      },
-      "callee":
-      {
-        "calleeSig": "<java.lang.ref.Finalizer: void runFinalization>"
+        "callerClassName": "Finalizer",
+        "callerPackage": "java.lang.ref",
+        "callerName": "runFinalization",
+        "callerParam": "",
+        "callerReturnType": "void"
       }
     }
   ]

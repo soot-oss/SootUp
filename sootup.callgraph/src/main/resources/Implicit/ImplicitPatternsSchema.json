@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "ImplicitPatterns",
-  "description": "Schema for implicit call edge patterns",
+  "description": "Schema for implicit call edges",
   "type": "object",
   "properties": {
     "implicitPatterns": {
@@ -21,7 +21,7 @@
             "type": "object",
             "properties": {
               "callerSig": {
-                "description": "The signature of the caller",
+                "description": "The method signature of the caller",
                 "type": "string"
               }
             },
@@ -31,7 +31,7 @@
             "type": "object",
             "properties": {
               "calleeSig": {
-                "description": "The signature of the callee",
+                "description": "The method signature of the callee",
                 "type": "string"
               }
             },

@@ -22,15 +22,19 @@ package sootup.callgraph;
  * #L%
  */
 
+import static sootup.callgraph.GsonImplicitPatternsLoader.loadImplicitPatternsFromStream;
 import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 
+import java.io.InputStream;
 import java.util.*;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.ImplicitCallEdge.*;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
@@ -45,10 +49,13 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.signatures.PackageName;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
+import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 import sootup.core.views.View;
+import sootup.java.core.types.JavaClassType;
 
 /**
  * The AbstractCallGraphAlgorithm class is the super class of all call graph algorithm. It provides
@@ -62,11 +69,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   @NonNull protected final View view;
   @NonNull protected final TypeHierarchy typeHierarchy;
   @NonNull protected final ClassType threadType;
+  @NonNull protected final HashMap<MethodSignature, ImplicitCallEdge> implicitCallEdges;
 
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
     this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
+    this.implicitCallEdges = getImplicitCallEdges();
   }
 
   /**
@@ -115,6 +124,39 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     ArrayList<MethodSignature> rootSignatures = new ArrayList<>(entryPoints);
     rootSignatures.addAll(clinits);
     return new GraphBasedCallGraph(rootSignatures);
+  }
+
+  /** TODO // method to initilaze implicitCallEdges HashMap */
+  protected HashMap<MethodSignature, ImplicitCallEdge> getImplicitCallEdges() {
+    HashMap<MethodSignature, ImplicitCallEdge> patternsHashMap = new HashMap<>();
+    InputStream in =
+        GsonImplicitPatternsLoader.class.getResourceAsStream("/Implicit/ImplicitPatterns.json");
+    if (in == null) {
+      throw new RuntimeException(
+          "Resource not found: ImplicitPatterns.json"); // FileNotFoundException("Resource not
+      // found: ImplicitPatterns.json");
+    }
+
+    List<ImplicitCallEdge> patterns = loadImplicitPatternsFromStream(in);
+
+    for (ImplicitCallEdge edge : patterns) {
+      if (edge.getCategory() == 1) {
+        Caller caller = edge.getCaller();
+        PackageName callerPackage = new PackageName(caller.getCallerPackage());
+        ClassType callerType = new JavaClassType(caller.getCallerClassName(), callerPackage);
+        Iterable<Type> callerParam = null;
+        if (Objects.equals(caller.getCallerParam(), "")) {
+          callerParam = Collections.emptySet();
+        }
+        // TODO do not always map to void
+        Type callerReturnType = VoidType.getInstance();
+        assert callerParam != null; // TODO smarter way to get the callerParam(s)
+        MethodSignature callerMethodSig =
+            new MethodSignature(callerType, caller.getCallerName(), callerParam, callerReturnType);
+        patternsHashMap.put(callerMethodSig, edge);
+      }
+    }
+    return patternsHashMap;
   }
 
   /**
@@ -257,6 +299,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param cg the call graph that will receive the found calls
    * @param workList the work list that will be updated of found target methods
    */
+  // TODO: Hier muss der check ob targetMethod == callerMethod und falls ja, dann edge from
+  // sourceMethod zum callee
   protected void resolveAllCallsFromSourceMethod(
       @NonNull SootMethod sourceMethod,
       @NonNull MutableCallGraph cg,
@@ -270,9 +314,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         ? resolveCall(sourceMethod, stmt)
                         : Stream.<MethodSignature>empty())
                     .forEach(
-                        targetMethod ->
-                            addCallToCG(
-                                sourceMethod.getSignature(), targetMethod, stmt, cg, workList)));
+                        targetMethod -> {
+                          System.out.println("Implicit Call Edges:");
+                          System.out.println(implicitCallEdges);
+                          addCallToCG(
+                              sourceMethod.getSignature(), targetMethod, stmt, cg, workList);
+                        }));
   }
 
   /**
@@ -344,6 +391,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull Deque<MethodSignature> workList) {
     implicitStartRunCall(sourceMethod, cg, workList);
     // collect all static initializer calls
+
+    // method to initilaze implicitCallEdges HashMap; method that uses the HashMap to resolve
+    // FixImplicitCalls
     resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
   }
 

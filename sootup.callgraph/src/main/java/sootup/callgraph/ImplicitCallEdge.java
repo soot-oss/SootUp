@@ -1,14 +1,14 @@
 package sootup.callgraph;
 
-/** The abstract class for all possible categories of implicit call edges. */
-public abstract class ImplicitCallEdge {
+/** The class for all possible categories of implicit call edges. */
+public class ImplicitCallEdge {
 
   protected final String id;
   protected final int category;
-  protected final FixCaller caller;
-  protected final FixCallee callee;
+  protected final Caller caller;
+  protected final Callee callee;
 
-  protected ImplicitCallEdge(String id, int category, FixCaller caller, FixCallee callee) {
+  protected ImplicitCallEdge(String id, int category, Caller caller, Callee callee) {
     this.id = id;
     this.category = category;
     this.caller = caller;
@@ -23,11 +23,11 @@ public abstract class ImplicitCallEdge {
     return category;
   }
 
-  public FixCaller getCaller() {
+  public Caller getCaller() {
     return caller;
   }
 
-  public FixCallee getCallee() {
+  public Callee getCallee() {
     return callee;
   }
 
@@ -46,19 +46,85 @@ public abstract class ImplicitCallEdge {
         + '}';
   }
 
-  public static class FixCaller {
-    String callerSig;
+  public static class Caller {
+    String callerClassName;
+    String callerPackage;
+    String callerName;
+    String callerParam;
+    String callerReturnType;
 
-    FixCaller(String callerSig) {
-      this.callerSig = callerSig;
+    Caller(
+        String callerClassName,
+        String callerPackage,
+        String callerName,
+        String callerParam,
+        String callerReturnType) {
+      this.callerClassName = callerClassName;
+      this.callerPackage = callerPackage;
+      this.callerName = callerName;
+      this.callerParam = callerParam;
+      this.callerReturnType = callerReturnType;
+    }
+
+    public String getCallerClassName() {
+      return callerClassName;
+    }
+
+    public String getCallerPackage() {
+      return callerPackage;
+    }
+
+    public String getCallerName() {
+      return callerName;
+    }
+
+    public String getCallerParam() {
+      return callerParam;
+    }
+
+    public String getCallerReturnType() {
+      return callerReturnType;
     }
   }
 
-  public static class FixCallee {
-    String calleeSig;
+  public static class Callee {
+    String calleeClassName;
+    String calleePackage;
+    String calleeName;
+    String calleeParam;
+    String calleeReturnType;
 
-    FixCallee(String calleeSig) {
-      this.calleeSig = calleeSig;
+    Callee(
+        String calleeClassName,
+        String calleePackage,
+        String calleeName,
+        String calleeParam,
+        String calleeReturnType) {
+      this.calleeClassName = calleeClassName;
+      this.calleePackage = calleePackage;
+      this.calleeName = calleeName;
+      this.calleeParam = calleeParam;
+      this.calleeReturnType = calleeReturnType;
+    }
+
+    public String getCalleeClassName() {
+      return calleeClassName;
+    }
+
+    public String getCalleePackage() {
+      return calleePackage;
+    }
+
+    public String getCalleeName() {
+      return calleeName;
+    }
+
+    public String getCalleeParam() {
+      return calleeParam;
+    }
+
+    public String getCalleeReturnType() {
+      return calleeReturnType;
     }
   }
 }
