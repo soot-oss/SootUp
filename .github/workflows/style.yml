@@ -82,7 +82,7 @@ jobs:
           # did the version not change? if not: master fails, other branches: ok      
           if [ "$LATEST_VERSION" == "${{ env.PROPOSED_VERSION }}" ]; then
             if [ "${{ github.base_ref }}" != "${{ env.FINAL_BRANCH_NAME }}" ]; then
-              echo "No version change necessary on ${{ github.base_ref }}";
+              echo "No version change necessary on ${{ github.base_ref }}.";
               exit 0
             else
               echo "Version change necessary to merge into ${{ github.base_ref }}!";

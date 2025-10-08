@@ -1,4 +1,4 @@
-name: Download Random JARs from Maven
+name: Download Random JARs from Maven Central to feed into SootUp Jimple Conversion
 
 on:
   schedule:
