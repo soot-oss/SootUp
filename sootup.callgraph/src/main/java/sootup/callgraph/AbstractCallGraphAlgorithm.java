@@ -305,6 +305,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull SootMethod sourceMethod,
       @NonNull MutableCallGraph cg,
       @NonNull Deque<MethodSignature> workList) {
+    MethodSignature sourceMethodSig = sourceMethod.getSignature();
     sourceMethod.getBody().getStmts().stream()
         .filter(Stmt::isInvokableStmt)
         .map(Stmt::asInvokableStmt)
@@ -315,11 +316,37 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         : Stream.<MethodSignature>empty())
                     .forEach(
                         targetMethod -> {
+                          // check if targetMethod.equals(callerMethodSig)
+                          if (implicitCallEdges.containsKey(targetMethod)) {
+                            ImplicitCallEdge edge = implicitCallEdges.get(targetMethod);
+                            int category = edge.getCategory();
+                            if (category == 1){
+                              resolveFixImplicitCallEdge(sourceMethodSig, edge.getCallee(), cg, workList);
+                            }
+                          }
                           System.out.println("Implicit Call Edges:");
                           System.out.println(implicitCallEdges);
                           addCallToCG(
-                              sourceMethod.getSignature(), targetMethod, stmt, cg, workList);
+                              sourceMethodSig, targetMethod, stmt, cg, workList);
                         }));
+  }
+
+  /**
+   * TODO
+   */
+  protected void resolveFixImplicitCallEdge(MethodSignature sourceMethodSig, Callee callee, CallGraph cg, Deque<MethodSignature> workList) {
+    PackageName calleePackage = new PackageName(callee.getCalleePackage());
+    ClassType calleeType = new JavaClassType(callee.getCalleeClassName(), calleePackage);
+    Iterable<Type> calleeParam = null;
+    if (Objects.equals(callee.getCalleeParam(), "")) {
+      calleeParam = Collections.emptySet();
+    }
+    // TODO do not always map to void
+    Type calleeReturnType = VoidType.getInstance();
+    assert calleeParam != null; // TODO smarter way to get the callerParam(s)
+    MethodSignature calleeMethodSig =
+            new MethodSignature(calleeType, callee.getCalleeName(), calleeParam, calleeReturnType);
+    System.out.println("Callee MethodSig: " + calleeMethodSig);
   }
 
   /**
@@ -391,9 +418,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull Deque<MethodSignature> workList) {
     implicitStartRunCall(sourceMethod, cg, workList);
     // collect all static initializer calls
-
-    // method to initilaze implicitCallEdges HashMap; method that uses the HashMap to resolve
-    // FixImplicitCalls
     resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
   }
 
