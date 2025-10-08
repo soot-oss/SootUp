@@ -1,0 +1,122 @@
+name: Sync Examples to SootUp-Examples
+
+on:
+  push:
+    branches: [main, master]
+    paths: ['sootup.examples/**']
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has_new: ${{ steps.detect.outputs.has_new }}
+      examples_list: ${{ steps.detect.outputs.examples_list }}
+    steps:
+      - name: Checkout SootUp
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect new example folders
+        id: detect
+        run: |
+          echo "=== Detecting new example folders ==="
+          
+          # Get current example folders
+          if [ -d "sootup.examples" ]; then
+            find sootup.examples -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort > current_examples.txt
+            echo "Current examples:"
+            cat current_examples.txt
+          else
+            echo "No sootup.examples directory found"
+            touch current_examples.txt
+          fi
+          
+          # Get previous example folders (from previous commit)
+          git show HEAD~1:sootup.examples --name-only 2>/dev/null | grep "/" | cut -d'/' -f1 | sort -u > previous_examples.txt || touch previous_examples.txt
+          echo "Previous examples:"
+          cat previous_examples.txt || echo "No previous examples found"
+          
+          # Find new folders
+          comm -23 current_examples.txt previous_examples.txt > new_examples.txt
+          
+          if [ -s new_examples.txt ]; then
+            echo "has_new=true" >> $GITHUB_OUTPUT
+            examples_json=$(cat new_examples.txt | jq -R -s -c 'split("\n")[:-1]')
+            echo "examples_list=$examples_json" >> $GITHUB_OUTPUT
+            echo "New examples found:"
+            cat new_examples.txt
+          else
+            echo "has_new=false" >> $GITHUB_OUTPUT
+            echo "No new examples found"
+          fi
+
+  sync-examples:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_new == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SootUp
+        uses: actions/checkout@v4
+
+      - name: Check if target repository exists
+        id: check-repo
+        run: |
+          if curl -s -f -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+             "https://api.github.com/repos/${{ github.repository_owner }}/SootUp-Examples" > /dev/null; then
+            echo "repo_exists=true" >> $GITHUB_OUTPUT
+            echo "Target repository exists"
+          else
+            echo "repo_exists=false" >> $GITHUB_OUTPUT
+            echo "Target repository does not exist or is not accessible"
+          fi
+
+      - name: Checkout SootUp-Examples Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/SootUp-Examples
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: examples-repo
+          ref: main
+
+      - name: Sync new examples
+        run: |
+          echo "=== Syncing new examples ==="
+          examples='${{ needs.detect-changes.outputs.examples_list }}'
+          echo "Examples to sync: $examples"
+          
+          # Parse JSON array and sync each example
+          echo "$examples" | jq -r '.[]' | while read example; do
+            if [ -d "sootup.examples/$example" ]; then
+              echo "Copying example: $example"
+              cp -r "sootup.examples/$example" "examples-repo/$example"
+              echo "Successfully copied $example"
+            else
+              echo "Warning: Example folder $example not found"
+            fi
+          done
+
+      - name: Commit and push changes
+        run: |
+          cd examples-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Check if there are changes to commit
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+          
+            # Create commit message
+            echo "Auto-sync new examples from SootUp" > commit_msg.txt
+            echo "" >> commit_msg.txt
+            echo "New examples added:" >> commit_msg.txt
+            echo '${{ needs.detect-changes.outputs.examples_list }}' | jq -r '.[]' | sed 's/^/- /' >> commit_msg.txt
+            echo "" >> commit_msg.txt
+            echo "Synced on: $(date)" >> commit_msg.txt
+          
+            git commit -F commit_msg.txt
+            git push origin main
+            echo "Changes committed and pushed successfully"
+          else
+            echo "No changes to commit"
+          fi

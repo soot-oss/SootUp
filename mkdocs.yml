@@ -23,6 +23,7 @@ nav:
       - Callgraphs: callgraphs.md
       - BuiltIn Analyses: builtin-analyses.md
       - Code Property Graphs: codepropertygraphs.md
+      - Taint Analysis: taint-analysis-example.md
 
   - How to..:
       - Write a Dataflow analysis: write_analyses.md
@@ -59,13 +60,18 @@ extra_css:
 plugins:
   - tooltips
   - search
-  - include:
-      src_path: 'sootup.examples/src/test/java/sootup/examples'
+  - codeinclude:
+      title_mode: pymdownx.tabbed
+#  - include:
+#      src_path: 'sootup.examples/src/test/java/sootup/examples'
 
 markdown_extensions:
   - pymdownx.highlight:
       linenums: true
       use_pygments: true
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
       extend_pygments_lang:
         - name: jimple
           lang: lspserver
