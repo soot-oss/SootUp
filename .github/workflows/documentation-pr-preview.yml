@@ -42,7 +42,7 @@ jobs:
 
       - name: Move generated Javadoc into docs directory
         shell: bash
-        run: rm -rf docs/api; mkdir -p docs/api; mv target/reports/apidocs docs/api
+        run: rm -rf docs/api; mkdir -p docs/api; mv target/reports/apidocs/* docs/api
 
       - name: Create Documentation Preview
         uses: secure-software-engineering/actions/documentation/pr-preview@develop
