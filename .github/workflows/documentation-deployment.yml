@@ -27,12 +27,13 @@ jobs:
         shell: bash
         run: mvn javadoc:javadoc      # generates javadoc in "target/site/apidocs"
 
-      - name: move Javadoc into docs
+      - name: Move generated Javadoc into docs directory
         shell: bash
-        run: mv target/site/apidocs/ docs/api/
+        run: rm -rf docs/api; mkdir -p docs/api/; mv target/site/apidocs docs/api/
 
-      # grab latest release url of the JimpleLSP jar and download it - for use in Pygments+LspLexer4Pygments
-      - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
+      - name: Download latest release of JimpleLSP jar - for use in Pygments+LspLexer4Pygments
+        shell: bash
+        run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
 
       - name: Deploy Documentation
         uses: secure-software-engineering/actions/documentation/deployment@develop
