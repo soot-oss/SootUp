@@ -320,33 +320,36 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                           if (implicitCallEdges.containsKey(targetMethod)) {
                             ImplicitCallEdge edge = implicitCallEdges.get(targetMethod);
                             int category = edge.getCategory();
-                            if (category == 1){
-                              resolveFixImplicitCallEdge(sourceMethodSig, edge.getCallee(), cg, workList);
+                            if (category == 1) {
+                              // TODO How did we got a stmt for the start-run edge?
+                              resolveFixImplicitCallEdge(
+                                  sourceMethodSig, edge.getCallee(), cg, workList);
                             }
                           }
                           System.out.println("Implicit Call Edges:");
                           System.out.println(implicitCallEdges);
-                          addCallToCG(
-                              sourceMethodSig, targetMethod, stmt, cg, workList);
+                          addCallToCG(sourceMethodSig, targetMethod, stmt, cg, workList);
                         }));
   }
 
-  /**
-   * TODO
-   */
-  protected void resolveFixImplicitCallEdge(MethodSignature sourceMethodSig, Callee callee, CallGraph cg, Deque<MethodSignature> workList) {
+  /** TODO */
+  protected void resolveFixImplicitCallEdge(
+      MethodSignature sourceMethodSig,
+      Callee callee,
+      CallGraph cg,
+      Deque<MethodSignature> workList) {
     PackageName calleePackage = new PackageName(callee.getCalleePackage());
-    ClassType calleeType = new JavaClassType(callee.getCalleeClassName(), calleePackage);
+    //ClassType calleeType = new JavaClassType(callee.getCalleeClassName(), calleePackage);
     Iterable<Type> calleeParam = null;
     if (Objects.equals(callee.getCalleeParam(), "")) {
       calleeParam = Collections.emptySet();
     }
     // TODO do not always map to void
     Type calleeReturnType = VoidType.getInstance();
-    assert calleeParam != null; // TODO smarter way to get the callerParam(s)
-    MethodSignature calleeMethodSig =
-            new MethodSignature(calleeType, callee.getCalleeName(), calleeParam, calleeReturnType);
-    System.out.println("Callee MethodSig: " + calleeMethodSig);
+    // assert calleeParam != null; // TODO smarter way to get the callerParam(s)
+    // MethodSignature calleeMethodSig =
+        // new MethodSignature(calleeType, callee.getCalleeName(), calleeParam, calleeReturnType);
+    System.out.println("Callee MethodSig: " + callee.getCalleeClassName() + " " + calleeParam + " " + calleeReturnType); //calleeMethodSig);
   }
 
   /**

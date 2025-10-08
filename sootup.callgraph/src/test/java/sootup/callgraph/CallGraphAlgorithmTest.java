@@ -21,6 +21,15 @@ import sootup.java.core.views.JavaView;
 public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
   @Test
+  public void testRunFinalizer() {
+    CallGraph cg = loadCallGraph("Implicit", "RunFinalizer");
+    for (CallGraph.Call call : cg.getCalls()) {
+      System.out.println(call);
+    }
+    assertTrue(cg.callCount() > 0);
+  }
+
+  @Test
   public void testSingleMethod() {
     CallGraph cg = loadCallGraph("Misc", "example.SingleMethod");
     assertEquals(0, cg.callCount());
