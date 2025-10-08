@@ -21,15 +21,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
-          fetch-depth: 0              # mike needs full history to push to gh-pages
+          fetch-depth: 0                                                     # mike needs full history to push to gh-pages
 
       - name: Generate Javadoc
         shell: bash
-        run: mvn javadoc:javadoc      # generates javadoc in "target/site/apidocs"
+        run: mvn javadoc:javadoc                                             # generates javadoc in "target/site/apidocs"
 
       - name: Move generated Javadoc into docs directory
         shell: bash
-        run: rm -rf docs/api; mkdir -p docs/api/; mv target/site/apidocs docs/api/
+        run: mvn clean install -DskipTests -B && mvn javadoc:javadoc         # generates javadoc in "target/site/apidocs"
 
       - name: Download latest release of JimpleLSP jar - for use in Pygments+LspLexer4Pygments
         shell: bash
