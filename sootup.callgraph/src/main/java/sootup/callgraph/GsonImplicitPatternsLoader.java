@@ -45,15 +45,7 @@ public class GsonImplicitPatternsLoader {
 
       System.out.println("Loaded implicit patterns: " + patterns.size());
       for (ImplicitCallEdge e : patterns) {
-        System.out.println("----");
-        System.out.println("id: " + e.getId());
-        System.out.println("category: " + e.getCategory());
-        System.out.println("caller: " + e.getCaller());
-        PackageName callerPackage = new PackageName(e.getCaller().getCallerPackage());
-        ClassType callerType = new JavaClassType(e.getCaller().getCallerClassName(), callerPackage);
-        System.out.println(callerType);
-        System.out.println("callee: " + e.getCallee());
-      }
-    }
+        System.out.println("implicit call edge: " + e);
+    }}
   }
 }

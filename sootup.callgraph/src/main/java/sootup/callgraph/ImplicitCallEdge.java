@@ -47,31 +47,24 @@ public class ImplicitCallEdge {
   }
 
   public static class Caller {
-    String callerClassName;
-    String callerPackage;
+    String callerFullyQualifiedClassName;
     String callerName;
     String callerParam;
     String callerReturnType;
 
     Caller(
-        String callerClassName,
-        String callerPackage,
+        String callerFullyQualifiedClassName,
         String callerName,
         String callerParam,
         String callerReturnType) {
-      this.callerClassName = callerClassName;
-      this.callerPackage = callerPackage;
+      this.callerFullyQualifiedClassName = callerFullyQualifiedClassName;
       this.callerName = callerName;
       this.callerParam = callerParam;
       this.callerReturnType = callerReturnType;
     }
 
-    public String getCallerClassName() {
-      return callerClassName;
-    }
-
-    public String getCallerPackage() {
-      return callerPackage;
+    public String getCallerFullyQualifiedClassName() {
+      return callerFullyQualifiedClassName;
     }
 
     public String getCallerName() {
@@ -88,31 +81,24 @@ public class ImplicitCallEdge {
   }
 
   public static class Callee {
-    String calleeClassName;
-    String calleePackage;
+    String calleeFullyQualifiedClassName;
     String calleeName;
     String calleeParam;
     String calleeReturnType;
 
     Callee(
-        String calleeClassName,
-        String calleePackage,
+        String calleeFullyQualifiedClassName,
         String calleeName,
         String calleeParam,
         String calleeReturnType) {
-      this.calleeClassName = calleeClassName;
-      this.calleePackage = calleePackage;
+      this.calleeFullyQualifiedClassName = calleeFullyQualifiedClassName;
       this.calleeName = calleeName;
       this.calleeParam = calleeParam;
       this.calleeReturnType = calleeReturnType;
     }
 
-    public String getCalleeClassName() {
-      return calleeClassName;
-    }
-
-    public String getCalleePackage() {
-      return calleePackage;
+    public String getCalleeFullyQualifiedClassName() {
+      return calleeFullyQualifiedClassName;
     }
 
     public String getCalleeName() {

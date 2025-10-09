@@ -142,17 +142,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     for (ImplicitCallEdge edge : patterns) {
       if (edge.getCategory() == 1) {
         Caller caller = edge.getCaller();
-        PackageName callerPackage = new PackageName(caller.getCallerPackage());
-        ClassType callerType = new JavaClassType(caller.getCallerClassName(), callerPackage);
-        Iterable<Type> callerParam = null;
+        String fullyQualifiedClassName = caller.getCallerFullyQualifiedClassName();
+        List<String> callerParam = null;
         if (Objects.equals(caller.getCallerParam(), "")) {
-          callerParam = Collections.emptySet();
+          callerParam = Collections.emptyList();
         }
         // TODO do not always map to void
-        Type callerReturnType = VoidType.getInstance();
+        String callerReturnType = "void";
         assert callerParam != null; // TODO smarter way to get the callerParam(s)
-        MethodSignature callerMethodSig =
-            new MethodSignature(callerType, caller.getCallerName(), callerParam, callerReturnType);
+        MethodSignature callerMethodSig = view.getIdentifierFactory().getMethodSignature(fullyQualifiedClassName, caller.getCallerName(), callerReturnType, callerParam);
         patternsHashMap.put(callerMethodSig, edge);
       }
     }
@@ -321,13 +319,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                             ImplicitCallEdge edge = implicitCallEdges.get(targetMethod);
                             int category = edge.getCategory();
                             if (category == 1) {
-                              // TODO How did we got a stmt for the start-run edge?
                               resolveFixImplicitCallEdge(
-                                  sourceMethodSig, edge.getCallee(), cg, workList);
+                                  sourceMethodSig, edge.getCallee(), stmt, cg, workList);
                             }
                           }
-                          System.out.println("Implicit Call Edges:");
-                          System.out.println(implicitCallEdges);
                           addCallToCG(sourceMethodSig, targetMethod, stmt, cg, workList);
                         }));
   }
@@ -336,20 +331,20 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   protected void resolveFixImplicitCallEdge(
       MethodSignature sourceMethodSig,
       Callee callee,
+      InvokableStmt fixStmt,
       CallGraph cg,
       Deque<MethodSignature> workList) {
-    PackageName calleePackage = new PackageName(callee.getCalleePackage());
-    //ClassType calleeType = new JavaClassType(callee.getCalleeClassName(), calleePackage);
-    Iterable<Type> calleeParam = null;
-    if (Objects.equals(callee.getCalleeParam(), "")) {
-      calleeParam = Collections.emptySet();
-    }
+    String fullyQualifiedClassName = callee.getCalleeFullyQualifiedClassName();
+    // List<String> calleeParam = null;
+    // if (Objects.equals(callee.getCalleeParam(), "")) {
+      // calleeParam = Collections.emptyList();
+    //}
     // TODO do not always map to void
-    Type calleeReturnType = VoidType.getInstance();
+    String calleeReturnType = "void";
+    List<String> calleeParam = Collections.emptyList();
     // assert calleeParam != null; // TODO smarter way to get the callerParam(s)
-    // MethodSignature calleeMethodSig =
-        // new MethodSignature(calleeType, callee.getCalleeName(), calleeParam, calleeReturnType);
-    System.out.println("Callee MethodSig: " + callee.getCalleeClassName() + " " + calleeParam + " " + calleeReturnType); //calleeMethodSig);
+    MethodSignature calleeMethodSig = view.getIdentifierFactory().getMethodSignature(fullyQualifiedClassName, callee.getCalleeName(), calleeReturnType, calleeParam);
+    addCallToCG(sourceMethodSig, calleeMethodSig, fixStmt, (MutableCallGraph) cg, workList);
   }
 
   /**

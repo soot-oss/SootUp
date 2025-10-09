@@ -53,10 +53,7 @@ public class JavaClassType extends ClassType {
    * @param packageName the corresponding package
    */
   public JavaClassType(@NonNull final String className, @NonNull final PackageName packageName) {
-    System.out.println("PackageName: " + packageName);
-    System.out.println("className: " + className);
     String realClassName = className;
-    System.out.println("realClassName: " + realClassName);
     // TODO: [ms] we shouldnt do that inner class conversion here? -> IdentifierFactory
     if (realClassName.contains(".")) {
       realClassName = realClassName.replace('.', '$');
