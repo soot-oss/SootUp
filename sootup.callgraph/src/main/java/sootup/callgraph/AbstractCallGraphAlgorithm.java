@@ -49,13 +49,10 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
-import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 import sootup.core.views.View;
-import sootup.java.core.types.JavaClassType;
 
 /**
  * The AbstractCallGraphAlgorithm class is the super class of all call graph algorithm. It provides
@@ -133,25 +130,17 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         GsonImplicitPatternsLoader.class.getResourceAsStream("/Implicit/ImplicitPatterns.json");
     if (in == null) {
       throw new RuntimeException(
-          "Resource not found: ImplicitPatterns.json"); // FileNotFoundException("Resource not
-      // found: ImplicitPatterns.json");
+          "Resource not found: ImplicitPatterns.json");
     }
 
     List<ImplicitCallEdge> patterns = loadImplicitPatternsFromStream(in);
 
     for (ImplicitCallEdge edge : patterns) {
       if (edge.getCategory() == 1) {
-        Caller caller = edge.getCaller();
-        String fullyQualifiedClassName = caller.getCallerFullyQualifiedClassName();
-        List<String> callerParam = null;
-        if (Objects.equals(caller.getCallerParam(), "")) {
-          callerParam = Collections.emptyList();
-        }
-        // TODO do not always map to void
-        String callerReturnType = "void";
-        assert callerParam != null; // TODO smarter way to get the callerParam(s)
-        MethodSignature callerMethodSig = view.getIdentifierFactory().getMethodSignature(fullyQualifiedClassName, caller.getCallerName(), callerReturnType, callerParam);
+        MethodSignature callerMethodSig = resolveMethodSpec(edge.getCaller());
         patternsHashMap.put(callerMethodSig, edge);
+      } else if (edge.getCategory() == 2) {
+        System.out.println("Category 2 triggered!");
       }
     }
     return patternsHashMap;
@@ -321,29 +310,38 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                             if (category == 1) {
                               resolveFixImplicitCallEdge(
                                   sourceMethodSig, edge.getCallee(), stmt, cg, workList);
+                            } else if (category == 2) {
+                              // TODO: implement method resolveIntraImplicitCallEdge
                             }
                           }
                           addCallToCG(sourceMethodSig, targetMethod, stmt, cg, workList);
                         }));
   }
 
+  /**
+   * TODO
+   */
+  protected MethodSignature resolveMethodSpec(MethodSpec methodSpec) {
+    List<String> param = null;
+    if (Objects.equals(methodSpec.getParam(), "")) {
+      param = Collections.emptyList();
+    }
+    assert param != null; // TODO: smarter/different way to resolve paramList
+    MethodSignature methodSig =
+            view.getIdentifierFactory()
+                    .getMethodSignature(
+                            methodSpec.getFullyQualifiedClassName(), methodSpec.getName(), methodSpec.getReturnType(), param);
+    return methodSig;
+  }
+
   /** TODO */
   protected void resolveFixImplicitCallEdge(
       MethodSignature sourceMethodSig,
-      Callee callee,
+      MethodSpec callee,
       InvokableStmt fixStmt,
       CallGraph cg,
       Deque<MethodSignature> workList) {
-    String fullyQualifiedClassName = callee.getCalleeFullyQualifiedClassName();
-    // List<String> calleeParam = null;
-    // if (Objects.equals(callee.getCalleeParam(), "")) {
-      // calleeParam = Collections.emptyList();
-    //}
-    // TODO do not always map to void
-    String calleeReturnType = "void";
-    List<String> calleeParam = Collections.emptyList();
-    // assert calleeParam != null; // TODO smarter way to get the callerParam(s)
-    MethodSignature calleeMethodSig = view.getIdentifierFactory().getMethodSignature(fullyQualifiedClassName, callee.getCalleeName(), calleeReturnType, calleeParam);
+    MethodSignature calleeMethodSig = resolveMethodSpec(callee);
     addCallToCG(sourceMethodSig, calleeMethodSig, fixStmt, (MutableCallGraph) cg, workList);
   }
 

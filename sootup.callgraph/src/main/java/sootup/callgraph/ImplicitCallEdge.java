@@ -1,14 +1,16 @@
 package sootup.callgraph;
 
-/** The class for all possible categories of implicit call edges. */
-public class ImplicitCallEdge {
+import com.google.gson.annotations.SerializedName;
 
-  protected final String id;
-  protected final int category;
-  protected final Caller caller;
-  protected final Callee callee;
+/** The abstract class for all possible categories of implicit call edges. */
+public abstract class ImplicitCallEdge {
 
-  protected ImplicitCallEdge(String id, int category, Caller caller, Callee callee) {
+  protected String id;
+  protected int category;
+  protected MethodSpec caller;
+  protected MethodSpec callee;
+
+  protected ImplicitCallEdge(String id, int category, MethodSpec caller, MethodSpec callee) {
     this.id = id;
     this.category = category;
     this.caller = caller;
@@ -23,11 +25,11 @@ public class ImplicitCallEdge {
     return category;
   }
 
-  public Caller getCaller() {
+  public MethodSpec getCaller() {
     return caller;
   }
 
-  public Callee getCallee() {
+  public MethodSpec getCallee() {
     return callee;
   }
 
@@ -46,71 +48,39 @@ public class ImplicitCallEdge {
         + '}';
   }
 
-  public static class Caller {
-    String callerFullyQualifiedClassName;
-    String callerName;
-    String callerParam;
-    String callerReturnType;
+  /**
+   * Class to resolve the caller and callee information form the ImplicitPatterns.json file.
+   */
+  public static class MethodSpec {
+    @SerializedName(value = "fullyQualifiedClassName", alternate = {"callerFullyQualifiedClassName", "calleeFullyQualifiedClassName"})
+    protected String fullyQualifiedClassName;
+    @SerializedName(value = "name", alternate = {"callerName", "calleeName"})
+    protected String name;
+    @SerializedName(value = "param", alternate = {"callerParam", "calleeParam"})
+    private String param;
+    @SerializedName(value = "returnType", alternate = {"callerReturnType", "calleeReturnType"})
+    private String returnType;
 
-    Caller(
-        String callerFullyQualifiedClassName,
-        String callerName,
-        String callerParam,
-        String callerReturnType) {
-      this.callerFullyQualifiedClassName = callerFullyQualifiedClassName;
-      this.callerName = callerName;
-      this.callerParam = callerParam;
-      this.callerReturnType = callerReturnType;
+    public MethodSpec(String fullyQualifiedClassName, String name, String param, String returnType) {
+      this.fullyQualifiedClassName = fullyQualifiedClassName;
+      this.name = name;
+      this.param = param;
+      this.returnType = returnType;
     }
 
-    public String getCallerFullyQualifiedClassName() {
-      return callerFullyQualifiedClassName;
-    }
+    public String getFullyQualifiedClassName() { return fullyQualifiedClassName; }
+    public String getName() { return name; }
+    public String getParam() { return param; }
+    public String getReturnType() { return returnType; }
 
-    public String getCallerName() {
-      return callerName;
-    }
-
-    public String getCallerParam() {
-      return callerParam;
-    }
-
-    public String getCallerReturnType() {
-      return callerReturnType;
-    }
-  }
-
-  public static class Callee {
-    String calleeFullyQualifiedClassName;
-    String calleeName;
-    String calleeParam;
-    String calleeReturnType;
-
-    Callee(
-        String calleeFullyQualifiedClassName,
-        String calleeName,
-        String calleeParam,
-        String calleeReturnType) {
-      this.calleeFullyQualifiedClassName = calleeFullyQualifiedClassName;
-      this.calleeName = calleeName;
-      this.calleeParam = calleeParam;
-      this.calleeReturnType = calleeReturnType;
-    }
-
-    public String getCalleeFullyQualifiedClassName() {
-      return calleeFullyQualifiedClassName;
-    }
-
-    public String getCalleeName() {
-      return calleeName;
-    }
-
-    public String getCalleeParam() {
-      return calleeParam;
-    }
-
-    public String getCalleeReturnType() {
-      return calleeReturnType;
+    @Override
+    public String toString() {
+      return "MethodSpec{" +
+              "fullyQualifiedClassName='" + fullyQualifiedClassName + '\'' +
+              ", name='" + name + '\'' +
+              ", param='" + param + '\'' +
+              ", returnType='" + returnType + '\'' +
+              '}';
     }
   }
 }

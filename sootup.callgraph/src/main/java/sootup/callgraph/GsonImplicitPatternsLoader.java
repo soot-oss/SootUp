@@ -4,14 +4,14 @@ import com.google.gson.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
-import sootup.java.core.types.JavaClassType;
 
 /** Loads ImplicitPatterns.json using Gson. */
 public class GsonImplicitPatternsLoader {
 
-  private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+  private static final Gson GSON =
+      new GsonBuilder()
+          .registerTypeAdapter(ImplicitCallEdge.class, new ImplicitCallEdgeDeserializer())
+          .create();
 
   /**
    * Load list of ImplicitCallEdge from a JSON file with structure: { "ImplicitPatterns": [ { ... },
@@ -28,7 +28,7 @@ public class GsonImplicitPatternsLoader {
     return list;
   }
 
-  // tiny demo main
+  // tiny demo main TODO: delete in the END
   public static void main(String[] args) throws Exception {
     try (InputStream in =
         GsonImplicitPatternsLoader.class.getResourceAsStream("/Implicit/ImplicitPatterns.json")) {
@@ -38,14 +38,8 @@ public class GsonImplicitPatternsLoader {
       List<ImplicitCallEdge> patterns = loadImplicitPatternsFromStream(in);
       for (ImplicitCallEdge e : patterns) {
         System.out.println("Implicit call edge " + e);
-        if (e.getCategory() == 1) {
-          System.out.println("True");
-        }
+        System.out.println("Category: " + e.getCategory());
       }
-
-      System.out.println("Loaded implicit patterns: " + patterns.size());
-      for (ImplicitCallEdge e : patterns) {
-        System.out.println("implicit call edge: " + e);
-    }}
+    }
   }
 }

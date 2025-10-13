@@ -17,6 +17,25 @@
         "calleeParam": "",
         "calleeReturnType": "void"
       }
+    },
+    {
+      "id": "ExternalizableWrite",
+      "category": 2,
+      "caller":
+      {
+        "callerFullyQualifiedClassName": "java.io.ObjectOutputStream",
+        "callerName": "writeObject",
+        "callerParam": "Object",
+        "callerReturnType": "void"
+      },
+      "callee":
+      {
+        "calleeFullyQualifiedClassName": "java.io",
+        "calleeName": "writeExternal",
+        "calleeParam": "ObjectOutput",
+        "calleeReturnType": "void"
+      },
+      "resolveCalleeClassName": true
     }
   ]
 }
