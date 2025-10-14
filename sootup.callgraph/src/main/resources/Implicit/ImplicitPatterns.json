@@ -25,7 +25,7 @@
       {
         "callerFullyQualifiedClassName": "java.io.ObjectOutputStream",
         "callerName": "writeObject",
-        "callerParam": "Object",
+        "callerParam": "java.lang.Object",
         "callerReturnType": "void"
       },
       "callee":

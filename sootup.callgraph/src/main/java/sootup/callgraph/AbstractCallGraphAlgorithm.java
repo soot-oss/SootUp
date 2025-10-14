@@ -25,7 +25,9 @@ package sootup.callgraph;
 import static sootup.callgraph.GsonImplicitPatternsLoader.loadImplicitPatternsFromStream;
 import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 
+import java.io.Externalizable;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.*;
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -51,6 +53,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
+import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 import sootup.core.views.View;
 
@@ -129,8 +132,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     InputStream in =
         GsonImplicitPatternsLoader.class.getResourceAsStream("/Implicit/ImplicitPatterns.json");
     if (in == null) {
-      throw new RuntimeException(
-          "Resource not found: ImplicitPatterns.json");
+      throw new RuntimeException("Resource not found: ImplicitPatterns.json");
     }
 
     List<ImplicitCallEdge> patterns = loadImplicitPatternsFromStream(in);
@@ -140,8 +142,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         MethodSignature callerMethodSig = resolveMethodSpec(edge.getCaller());
         patternsHashMap.put(callerMethodSig, edge);
       } else if (edge.getCategory() == 2) {
-        System.out.println("Category 2 triggered!");
+        MethodSignature callerMethodSig = resolveMethodSpec(edge.getCaller());
+        patternsHashMap.put(callerMethodSig, edge);
       }
+    }
+    for (var entry : patternsHashMap.entrySet()) {
+      System.out.println("HashMap Patterns: " + entry.getKey() + ": " + entry.getValue());
     }
     return patternsHashMap;
   }
@@ -305,31 +311,42 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         targetMethod -> {
                           // check if targetMethod.equals(callerMethodSig)
                           if (implicitCallEdges.containsKey(targetMethod)) {
+                            System.out.println("Target methodSig: " + targetMethod);
                             ImplicitCallEdge edge = implicitCallEdges.get(targetMethod);
                             int category = edge.getCategory();
                             if (category == 1) {
                               resolveFixImplicitCallEdge(
                                   sourceMethodSig, edge.getCallee(), stmt, cg, workList);
                             } else if (category == 2) {
-                              resolveIntraImplicitCallEdge(sourceMethod, edge.getCaller(), edge.getCallee(), stmt, cg, workList);
+                              resolveIntraImplicitCallEdge(
+                                  sourceMethod,
+                                  targetMethod,
+                                  edge.getCaller(),
+                                  edge.getCallee(),
+                                  stmt,
+                                  cg,
+                                  workList);
                             }
                           }
                           addCallToCG(sourceMethodSig, targetMethod, stmt, cg, workList);
                         }));
   }
 
-  /**
-   * TODO
-   */
+  /** TODO */
   protected MethodSignature resolveMethodSpec(MethodSpec methodSpec) {
+    // TODO resolve params in general
     List<String> param = null;
     if (Objects.equals(methodSpec.getParam(), "")) {
       param = Collections.emptyList();
+    } else {
+      param = Collections.singletonList(methodSpec.getParam());
     }
-    assert param != null; // TODO: smarter/different way to resolve paramList
     return view.getIdentifierFactory()
-                    .getMethodSignature(
-                            methodSpec.getFullyQualifiedClassName(), methodSpec.getName(), methodSpec.getReturnType(), param);
+        .getMethodSignature(
+            methodSpec.getFullyQualifiedClassName(),
+            methodSpec.getName(),
+            methodSpec.getReturnType(),
+            param);
   }
 
   /** TODO */
@@ -344,28 +361,71 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * TODO
+   * @param sourceMethod serves as caller for the implicit edge
+   * @param targetMethodSig identical to corresponding <code>caller</code> method from <code>
+   *     ImplicitPatterns.json</code>, important to analysis params
+   * @param callee unfinished callee method (resolution depends on pattern)
+   * @param fixStmt invoke stmt for implicit call edge from <code>sourceMethodSig</code> to <code>
+   *     callee</code>
+   * @param cg implicit call will be added to the call graph
+   * @param workList new implicit methods, which needs intra-procedural resolution, will be added to
+   *     the work list
    */
   protected void resolveIntraImplicitCallEdge(
-          SootMethod sourceMethod,
-          MethodSpec caller,
-          MethodSpec callee,
-          InvokableStmt fixStmt,
-          CallGraph cg,
-          Deque<MethodSignature> workList) {
+      SootMethod sourceMethod,
+      MethodSignature targetMethodSig,
+      MethodSpec caller,
+      MethodSpec callee,
+      InvokableStmt fixStmt,
+      CallGraph cg,
+      Deque<MethodSignature> workList) {
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
-      if (!stmt.isInvokableStmt()){
+      if (!stmt.isInvokableStmt()) {
         continue;
       }
       AbstractInvokeExpr sourceMethodInvokeExpr =
-              stmt.asInvokableStmt().getInvokeExpr().orElse(null);
+          stmt.asInvokableStmt().getInvokeExpr().orElse(null);
       if (sourceMethodInvokeExpr == null || !sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
         continue;
       }
-      MethodSignature sourceMethodSig = sourceMethod.getSignature();
+      MethodSignature methodSig = sourceMethodInvokeExpr.getMethodSignature(); // methodSig = <java.io.ObjectOutputStream: void writeObject(java.lang.Object)>
+      // Maybe delete: MethodSignature sourceMethodSig = sourceMethod.getSignature();
       // check if param of caller is subClass of Externalizable
-      // TODO nicht so leicht! hier muss geschaut werden, welches Object in writeObject übergegeben wird, ist dies vom subType Externalizable, dann bilde eine implicit call edge von sourceMethodSig zu <java.io.SubClassExternalizable: void writeExternal(ObjectOutput out)>
-      caller.getParam();
+      // TODO nicht so leicht! hier muss geschaut werden, welches Object in writeObject übergegeben
+      // wird, ist dies vom subType Externalizable, dann bilde eine implicit call edge von
+      // sourceMethodSig zu <java.io.SubClassExternalizable: void writeExternal(ObjectOutput out)>
+      ClassType methodSigClassType =
+          view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName()); // classType = java.io.ObjectOutputStream
+      String methodSigName = methodSig.getName();
+      List<Type> methodSigParam = methodSig.getParameterTypes();
+      Type methodSigType = methodSig.getType();
+      // check if the target/caller method matches the caller of id: "ExternalizableWrite"
+      // TODO: debug why does the last check fail?
+      if (methodSigType.equals(VoidType.getInstance())
+          && !methodSigParam.isEmpty()
+          && methodSigName.equals("writeObject")
+          ) {
+        // && typeHierarchy
+        //              .superClassesOf(methodSig.getDeclClassType())
+        //              .anyMatch(classType -> classType.equals(methodSigClassType))
+        System.out.println("TESTTRIGGER!!");
+        for (Type paramType : methodSigParam) {
+          System.out.println("paramType: " + paramType);
+        }
+        System.out.println("First param: " + methodSigParam.get(0)); // TODO: methodSigParam currently does not get the passed type of the argument
+        if (methodSigParam.get(0) instanceof Externalizable) {
+          callee.setFullyQualifiedClassName(methodSigParam.get(0).getClass().getPackageName());
+          MethodSignature calleeMethodSig = resolveMethodSpec(callee);
+          addCallToCG(
+              sourceMethod.getSignature(),
+              calleeMethodSig,
+              fixStmt,
+              (MutableCallGraph) cg,
+              workList);
+        } else if (methodSigParam.get(0) instanceof Serializable) {
+          // TODO
+        }
+      }
     }
   }
 

@@ -7,9 +7,18 @@ import org.junit.jupiter.api.Test;
 
 public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
+  //  @Test
+  //  public void testRunFinalizer() {
+  //    CallGraph cg = loadCallGraph("Implicit", "RunFinalizer");
+  //    for (CallGraph.Call call : cg.getCalls()) {
+  //      System.out.println(call);
+  //    }
+  //    assertTrue(cg.callCount() > 0);
+  //  }
+
   @Test
-  public void testRunFinalizer() {
-    CallGraph cg = loadCallGraph("Implicit", "RunFinalizer");
+  public void testSubClassExternalizable() {
+    CallGraph cg = loadCallGraph("Implicit", "SubClassExternalizable");
     for (CallGraph.Call call : cg.getCalls()) {
       System.out.println(call);
     }

@@ -48,39 +48,84 @@ public abstract class ImplicitCallEdge {
         + '}';
   }
 
-  /**
-   * Class to resolve the caller and callee information form the ImplicitPatterns.json file.
-   */
+  /** Class to resolve the caller and callee information form the ImplicitPatterns.json file. */
   public static class MethodSpec {
-    @SerializedName(value = "fullyQualifiedClassName", alternate = {"callerFullyQualifiedClassName", "calleeFullyQualifiedClassName"})
+    @SerializedName(
+        value = "fullyQualifiedClassName",
+        alternate = {"callerFullyQualifiedClassName", "calleeFullyQualifiedClassName"})
     protected String fullyQualifiedClassName;
-    @SerializedName(value = "name", alternate = {"callerName", "calleeName"})
+
+    @SerializedName(
+        value = "name",
+        alternate = {"callerName", "calleeName"})
     protected String name;
-    @SerializedName(value = "param", alternate = {"callerParam", "calleeParam"})
+
+    @SerializedName(
+        value = "param",
+        alternate = {"callerParam", "calleeParam"})
     private String param;
-    @SerializedName(value = "returnType", alternate = {"callerReturnType", "calleeReturnType"})
+
+    @SerializedName(
+        value = "returnType",
+        alternate = {"callerReturnType", "calleeReturnType"})
     private String returnType;
 
-    public MethodSpec(String fullyQualifiedClassName, String name, String param, String returnType) {
+    public MethodSpec(
+        String fullyQualifiedClassName, String name, String param, String returnType) {
       this.fullyQualifiedClassName = fullyQualifiedClassName;
       this.name = name;
       this.param = param;
       this.returnType = returnType;
     }
 
-    public String getFullyQualifiedClassName() { return fullyQualifiedClassName; }
-    public String getName() { return name; }
-    public String getParam() { return param; }
-    public String getReturnType() { return returnType; }
+    public String getFullyQualifiedClassName() {
+      return fullyQualifiedClassName;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getParam() {
+      return param;
+    }
+
+    public String getReturnType() {
+      return returnType;
+    }
+
+    public void setFullyQualifiedClassName(String fullyQualifiedClassName) {
+      this.fullyQualifiedClassName = fullyQualifiedClassName;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public void setParam(String param) {
+      this.param = param;
+    }
+
+    public void setReturnType(String returnType) {
+      this.returnType = returnType;
+    }
 
     @Override
     public String toString() {
-      return "MethodSpec{" +
-              "fullyQualifiedClassName='" + fullyQualifiedClassName + '\'' +
-              ", name='" + name + '\'' +
-              ", param='" + param + '\'' +
-              ", returnType='" + returnType + '\'' +
-              '}';
+      return "MethodSpec{"
+          + "fullyQualifiedClassName='"
+          + fullyQualifiedClassName
+          + '\''
+          + ", name='"
+          + name
+          + '\''
+          + ", param='"
+          + param
+          + '\''
+          + ", returnType='"
+          + returnType
+          + '\''
+          + '}';
     }
   }
 }

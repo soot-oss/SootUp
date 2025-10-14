@@ -5,7 +5,12 @@ public class IntraImplicitCallEdge extends ImplicitCallEdge {
   String superClass;
 
   protected IntraImplicitCallEdge(
-      String id, int category, MethodSpec caller, MethodSpec callee, Boolean resolveCalleeClassName, String superClass) {
+      String id,
+      int category,
+      MethodSpec caller,
+      MethodSpec callee,
+      Boolean resolveCalleeClassName,
+      String superClass) {
     super(id, category, caller, callee);
     this.resolveCalleeClassName = resolveCalleeClassName;
     this.superClass = superClass;
