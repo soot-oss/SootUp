@@ -35,7 +35,8 @@
         "calleeParam": "ObjectOutput",
         "calleeReturnType": "void"
       },
-      "resolveCalleeClassName": true
+      "resolveCalleeClassName": true,
+      "superClass": "Externalizable"
     }
   ]
 }

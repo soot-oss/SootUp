@@ -311,7 +311,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                               resolveFixImplicitCallEdge(
                                   sourceMethodSig, edge.getCallee(), stmt, cg, workList);
                             } else if (category == 2) {
-                              // TODO: implement method resolveIntraImplicitCallEdge
+                              resolveIntraImplicitCallEdge(sourceMethod, edge.getCaller(), edge.getCallee(), stmt, cg, workList);
                             }
                           }
                           addCallToCG(sourceMethodSig, targetMethod, stmt, cg, workList);
@@ -327,11 +327,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       param = Collections.emptyList();
     }
     assert param != null; // TODO: smarter/different way to resolve paramList
-    MethodSignature methodSig =
-            view.getIdentifierFactory()
+    return view.getIdentifierFactory()
                     .getMethodSignature(
                             methodSpec.getFullyQualifiedClassName(), methodSpec.getName(), methodSpec.getReturnType(), param);
-    return methodSig;
   }
 
   /** TODO */
@@ -343,6 +341,32 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       Deque<MethodSignature> workList) {
     MethodSignature calleeMethodSig = resolveMethodSpec(callee);
     addCallToCG(sourceMethodSig, calleeMethodSig, fixStmt, (MutableCallGraph) cg, workList);
+  }
+
+  /**
+   * TODO
+   */
+  protected void resolveIntraImplicitCallEdge(
+          SootMethod sourceMethod,
+          MethodSpec caller,
+          MethodSpec callee,
+          InvokableStmt fixStmt,
+          CallGraph cg,
+          Deque<MethodSignature> workList) {
+    for (Stmt stmt : sourceMethod.getBody().getStmts()) {
+      if (!stmt.isInvokableStmt()){
+        continue;
+      }
+      AbstractInvokeExpr sourceMethodInvokeExpr =
+              stmt.asInvokableStmt().getInvokeExpr().orElse(null);
+      if (sourceMethodInvokeExpr == null || !sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
+        continue;
+      }
+      MethodSignature sourceMethodSig = sourceMethod.getSignature();
+      // check if param of caller is subClass of Externalizable
+      // TODO nicht so leicht! hier muss geschaut werden, welches Object in writeObject übergegeben wird, ist dies vom subType Externalizable, dann bilde eine implicit call edge von sourceMethodSig zu <java.io.SubClassExternalizable: void writeExternal(ObjectOutput out)>
+      caller.getParam();
+    }
   }
 
   /**
