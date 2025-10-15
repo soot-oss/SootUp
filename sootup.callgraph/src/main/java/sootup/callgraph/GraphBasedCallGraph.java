@@ -141,9 +141,9 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     }
     final List<Call> sorted = new ArrayList<>(edges);
     sorted.sort(
-            Comparator.comparingInt((Call c) -> getLineFrom(c))
-                    .thenComparingInt(c -> getColStartFrom(c))
-                    .thenComparingInt(c -> getColEndFrom(c)));
+        Comparator.comparingInt((Call c) -> getLineFrom(c))
+            .thenComparingInt(c -> getColStartFrom(c))
+            .thenComparingInt(c -> getColEndFrom(c)));
 
     return new LinkedHashSet<>(sorted);
   }
