@@ -22,16 +22,12 @@ package sootup.callgraph;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.jgrapht.graph.DirectedPseudograph;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.model.LinePosition;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.SootClassMemberSignature;
 
@@ -139,7 +135,40 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @NonNull
   @Override
   public Set<Call> callsFrom(@NonNull MethodSignature sourceMethod) {
-    return graph.outgoingEdgesOf(vertexOf(sourceMethod));
+    Set<Call> edges = graph.outgoingEdgesOf(vertexOf(sourceMethod));
+    if (edges.isEmpty()) {
+      return edges;
+    }
+    final List<Call> sorted = new ArrayList<>(edges);
+    sorted.sort(
+            Comparator.comparingInt((Call c) -> getLineFrom(c))
+                    .thenComparingInt(c -> getColStartFrom(c))
+                    .thenComparingInt(c -> getColEndFrom(c)));
+
+    return new LinkedHashSet<>(sorted);
+  }
+
+  private static int getLineFrom(Call c) {
+    var pos = stmtPositionOf(c);
+    if (pos instanceof LinePosition lp) return lp.getFirstLine();
+    return Integer.MAX_VALUE;
+  }
+
+  private static int getColStartFrom(Call c) {
+    var pos = stmtPositionOf(c);
+    if (pos instanceof LinePosition lp) return lp.getFirstCol();
+    return Integer.MAX_VALUE;
+  }
+
+  private static int getColEndFrom(Call c) {
+    var pos = stmtPositionOf(c);
+    if (pos instanceof LinePosition lp) return lp.getLastCol();
+    return Integer.MAX_VALUE;
+  }
+
+  private static Object stmtPositionOf(Call c) {
+    InvokableStmt site = c.invokableStmt();
+    return site.getPositionInfo().getStmtPosition();
   }
 
   @NonNull

@@ -212,5 +212,23 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest 
     assertEquals(0, cg.callsFrom(virtualMethodB).size());
     assertEquals(0, cg.callsFrom(virtualMethodD).size());
     assertEquals(0, cg.callsFrom(virtualMethodE).size());
+
+    List<String> expectedOrder = List.of(
+            "<example1.B: void <init>()>",
+            "<example1.C: void <init>()>",
+            "<example1.B: void staticDispatch(java.lang.Object)>",
+            "<example1.E: void <init>()>",
+            "<example1.A: void virtualDispatch()>",
+            "<example1.B: void virtualDispatch()>",
+            "<example1.D: void virtualDispatch()>",
+            "<example1.E: void virtualDispatch()>"
+    );
+
+    List<String> actualOrder = cg.callsFrom(mainMethodSignature).stream()
+            .map(call -> call.targetMethodSignature().toString())
+            .toList();
+
+    assertEquals(expectedOrder, actualOrder);
+
   }
 }
