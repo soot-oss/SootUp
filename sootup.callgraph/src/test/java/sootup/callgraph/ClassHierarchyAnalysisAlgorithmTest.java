@@ -1,9 +1,13 @@
 package sootup.callgraph;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.views.JavaView;
 
@@ -230,5 +234,38 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest 
             .toList();
 
     assertEquals(expectedOrder, actualOrder);
+
+    GraphBasedCallGraph g = new GraphBasedCallGraph(List.of(mainMethodSignature));
+    g.addMethod(mainMethodSignature);
+
+    MethodSignature tNoPos =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.A"),
+            "<init>",
+            "void",
+            Collections.emptyList());
+    MethodSignature tNoPos2 =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.D"),
+            "staticDispatch",
+            "void",
+            Collections.singletonList("java.lang.Object"));
+
+    g.addMethod(tNoPos);
+
+    InvokableStmt siteNoPos = mock(InvokableStmt.class);
+    StmtPositionInfo infoNoPos = mock(StmtPositionInfo.class);
+    when(infoNoPos.getStmtPosition()).thenReturn(null);
+    when(siteNoPos.getPositionInfo()).thenReturn(infoNoPos);
+
+    g.addCall(mainMethodSignature, tNoPos, siteNoPos);
+    g.addCall(mainMethodSignature, tNoPos2, siteNoPos);
+
+    assertEquals(
+        g.callsFrom(mainMethodSignature).stream()
+            .map(CallGraph.Call::targetMethodSignature)
+            .toList()
+            .size(),
+        2);
   }
 }
