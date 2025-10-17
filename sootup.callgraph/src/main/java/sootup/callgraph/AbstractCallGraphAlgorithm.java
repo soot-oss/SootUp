@@ -26,6 +26,7 @@ import static sootup.callgraph.GsonImplicitPatternsLoader.loadImplicitPatternsFr
 import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -328,12 +329,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /** TODO */
   protected MethodSignature resolveMethodSpec(MethodSpec methodSpec) {
-    // TODO resolve params in general
-    List<String> param = null;
-    if (Objects.equals(methodSpec.getParam(), "")) {
+    String params = methodSpec.getParam();
+    List<String> param;
+    if (Objects.equals(params, "")) {
       param = Collections.emptyList();
     } else {
-      param = Collections.singletonList(methodSpec.getParam());
+      param = Arrays.asList(params.split(", "));
     }
     return view.getIdentifierFactory()
         .getMethodSignature(
@@ -383,11 +384,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       String methodSigName = methodSig.getName();
       List<Type> methodSigParam = methodSig.getParameterTypes();
       Type methodSigType = methodSig.getType();
-      // resolution for ExternalizableWrite and SerializableWrite
+      // resolution of ExternalizableWrite and SerializableWrite AND ExternalizableRead and SerializableRead TODO: Why does that work even woth methodSigName.equals(writeObject)
       if (methodSigType.equals(VoidType.getInstance())
           && !methodSigParam.isEmpty()
           && methodSigName.equals("writeObject")) {
-        // check writeObject comes from java.io.ObjectOutputStream or a subclass
+        // check read/writeObject comes from java.io.ObjectOut/InputStream or a subclass
         MethodSpec caller = edge.getCaller();
         ClassType objectOutputStreamType =
             view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
@@ -402,7 +403,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             // TODO: test if it works for A implements I <- B does B shows this interface? <- C same
             // here; write method which gets the interfaces of all parent classes
             Set<? extends ClassType> paramClassInterfaces = paramClass.getInterfaces();
-            // writeObject(obj), where param obj is instance of Externalizable or Serializable
+            // read/writeObject(obj), where param obj is instance of Externalizable or Serializable
             if (paramClassInterfaces.contains(
                     view.getIdentifierFactory().getClassType(edge.getInterfaceType()))
                 && edge.getResolveCalleeClassName()) {
@@ -419,7 +420,55 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           }
         }
       }
-      // resolution of ExternalizableRead and SerializableRead
+      // resolution of Reflection
+      if (methodSigType.toString().equals("java.lang.Object")
+              && !methodSigParam.isEmpty()
+              && methodSigName.equals("invoke")) {
+        // check method invoke comes from java.lang.reflect.Method or a subclass
+        MethodSpec caller = edge.getCaller();
+        ClassType objectOutputStreamType =
+                view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
+        if (typeHierarchy
+                .superClassesOf(methodSig.getDeclClassType())
+                .noneMatch(classType -> classType.equals(objectOutputStreamType))) {
+          if (!sourceMethodInvokeExpr.getArgs().isEmpty() && edge.getResolveCalleeClassName()) {
+            Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
+            SootClass paramClass =
+                    view.getClassOrThrow(
+                            view.getIdentifierFactory().getClassType(paramType.toString())); // paramClass: "bachelor.ReflectiveInvokeExample$Target"
+            System.out.println("SootClass: " + paramClass);
+            System.out.println("SourceMethod Body:" + sourceMethod.getBody().getStmts());
+            Set<Stmt> targetMethodStmtSet = sourceMethod.getBody().getStmts().stream().filter(targetMethodStmt -> targetMethodStmt.toString().matches(".*get\\w*Method.*")).collect(Collectors.toSet());
+            System.out.println("TargetMethodStmt:" + targetMethodStmtSet);
+            // only one declared target method - TODO: only works for trivial reflection and not local
+            if (targetMethodStmtSet.size() == 1) {
+              System.out.println("TESTTRIGGER1");
+              for (Stmt targetStmt : targetMethodStmtSet) {
+                AbstractInvokeExpr targetInvokeExpr = targetStmt.asInvokableStmt().getInvokeExpr().orElse(null);
+                assert targetInvokeExpr != null;
+                String targetMethodName = targetInvokeExpr.getArg(0).toString();
+                System.out.println("TargetMethodName:" + targetMethodName);
+                // TODO: does not catch methods that are for example not overwritten + does not work with targetMethodName as parameter
+                Set<? extends SootMethod> calleeMethodSet = paramClass.getMethodsByName("targetMethod");
+                System.out.println("CalleeMethodSet:" + calleeMethodSet);
+                if (calleeMethodSet.size() == 1) {
+                  System.out.println("TESTTRIGGER2");
+                  for (SootMethod calleeMethod : calleeMethodSet) {
+                    MethodSignature calleeMethodSig = calleeMethod.getSignature();
+                    System.out.println("CalleeMethodSignature: " + calleeMethodSig);
+                    addCallToCG(
+                            sourceMethod.getSignature(),
+                            calleeMethodSig,
+                            fixStmt,
+                            (MutableCallGraph) cg,
+                            workList);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 

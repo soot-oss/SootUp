@@ -19,6 +19,42 @@
       }
     },
     {
+      "id": "FinalizerRun2",
+      "category": 1,
+      "caller":
+      {
+        "callerFullyQualifiedClassName": "java.lang.System",
+        "callerName": "runFinalization",
+        "callerParam": "",
+        "callerReturnType": "void"
+      },
+      "callee":
+      {
+        "calleeFullyQualifiedClassName": "java.lang.ref.Finalizer",
+        "calleeName": "runFinalization",
+        "calleeParam": "",
+        "calleeReturnType": "void"
+      }
+    },
+    {
+      "id": "ThreadRegisterNatives",
+      "category": 1,
+      "caller":
+      {
+        "callerFullyQualifiedClassName": "java.lang.Thread",
+        "callerName": "<clinit>",
+        "callerParam": "",
+        "callerReturnType": "void"
+      },
+      "callee":
+      {
+        "calleeFullyQualifiedClassName": "java.lang.Thread",
+        "calleeName": "registerNatives",
+        "calleeParam": "",
+        "calleeReturnType": "void"
+      }
+    },
+    {
       "id": "ExternalizableWrite",
       "category": 2,
       "caller":
@@ -97,6 +133,26 @@
       },
       "resolveCalleeClassName": true,
       "interfaceType": "java.io.Serializable"
+    },
+    {
+      "id": "Reflection",
+      "category": 2,
+      "caller":
+      {
+        "callerFullyQualifiedClassName": "java.lang.reflect.Method",
+        "callerName": "invoke",
+        "callerParam": "java.lang.Object, java.lang.Object[]",
+        "callerReturnType": "java.lang.Object"
+      },
+      "callee":
+      {
+        "calleeFullyQualifiedClassName": "",
+        "calleeName": "",
+        "calleeParam": "",
+        "calleeReturnType": ""
+      },
+      "resolveCalleeClassName": true,
+      "interfaceType": "java.lang.reflect.Method"
     }
   ]
 }

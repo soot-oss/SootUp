@@ -7,9 +7,36 @@ import org.junit.jupiter.api.Test;
 
 public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
+//    @Test
+//    public void testRunFinalizer() {
+//      CallGraph cg = loadCallGraph("Implicit", "RunFinalizer");
+//      for (CallGraph.Call call : cg.getCalls()) {
+//        System.out.println(call);
+//      }
+//      assertTrue(cg.callCount() > 0);
+//    }
+//
+//  @Test
+//  public void testTriggerSystemRunFinalization() {
+//    CallGraph cg = loadCallGraph("Implicit", "bachelor.TriggerSystemRunFinalization");
+//    for (CallGraph.Call call : cg.getCalls()) {
+//      System.out.println(call);
+//    }
+//    assertTrue(cg.callCount() > 0);
+//  }
+
   //  @Test
-  //  public void testRunFinalizer() {
-  //    CallGraph cg = loadCallGraph("Implicit", "RunFinalizer");
+  //  public void testSubClassExternalizable() {
+  //    CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassExternalizable");
+  //    for (CallGraph.Call call : cg.getCalls()) {
+  //      System.out.println(call);
+  //    }
+  //    assertTrue(cg.callCount() > 0);
+  //  }
+  //
+  //  @Test
+  //  public void testSubClassSerializable() {
+  //    CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassSerializable");
   //    for (CallGraph.Call call : cg.getCalls()) {
   //      System.out.println(call);
   //    }
@@ -17,22 +44,23 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   //  }
 
   @Test
-  public void testSubClassExternalizable() {
-    CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassExternalizable");
+  public void testReflectiveInvokeExample() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.ReflectiveInvokeExample");
     for (CallGraph.Call call : cg.getCalls()) {
       System.out.println(call);
     }
     assertTrue(cg.callCount() > 0);
   }
 
-  @Test
-  public void testSubClassSerializable() {
-    CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassSerializable");
-    for (CallGraph.Call call : cg.getCalls()) {
-      System.out.println(call);
-    }
-    assertTrue(cg.callCount() > 0);
-  }
+  // TODO
+//  @Test
+//  public void testTriggerThreadClinit() {
+//    CallGraph cg = loadCallGraph("Implicit", "TriggerThreadClinit");
+//    for (CallGraph.Call call : cg.getCalls()) {
+//      System.out.println(call);
+//    }
+//    assertTrue(cg.callCount() > 0);
+//  }
   //
   //  @Test
   //  public void testSingleMethod() {
