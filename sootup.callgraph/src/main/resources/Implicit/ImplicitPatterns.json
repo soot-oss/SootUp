@@ -32,11 +32,31 @@
       {
         "calleeFullyQualifiedClassName": "java.io",
         "calleeName": "writeExternal",
-        "calleeParam": "ObjectOutput",
+        "calleeParam": "java.io.ObjectOutput",
         "calleeReturnType": "void"
       },
       "resolveCalleeClassName": true,
-      "superClass": "Externalizable"
+      "interfaceType": "java.io.Externalizable"
+    },
+    {
+      "id": "SerializableWrite",
+      "category": 2,
+      "caller":
+      {
+        "callerFullyQualifiedClassName": "java.io.ObjectOutputStream",
+        "callerName": "writeObject",
+        "callerParam": "java.lang.Object",
+        "callerReturnType": "void"
+      },
+      "callee":
+      {
+        "calleeFullyQualifiedClassName": "java.io",
+        "calleeName": "writeObject",
+        "calleeParam": "java.io.ObjectOutputStream",
+        "calleeReturnType": "void"
+      },
+      "resolveCalleeClassName": true,
+      "interfaceType": "java.io.Serializable"
     }
   ]
 }

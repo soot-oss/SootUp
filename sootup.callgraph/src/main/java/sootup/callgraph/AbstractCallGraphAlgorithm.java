@@ -25,9 +25,7 @@ package sootup.callgraph;
 import static sootup.callgraph.GsonImplicitPatternsLoader.loadImplicitPatternsFromStream;
 import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 
-import java.io.Externalizable;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.*;
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -69,7 +67,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   @NonNull protected final View view;
   @NonNull protected final TypeHierarchy typeHierarchy;
   @NonNull protected final ClassType threadType;
-  @NonNull protected final HashMap<MethodSignature, ImplicitCallEdge> implicitCallEdges;
+  @NonNull protected final Map<MethodSignature, List<ImplicitCallEdge>> implicitCallEdges;
 
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
     this.view = view;
@@ -127,8 +125,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /** TODO // method to initilaze implicitCallEdges HashMap */
-  protected HashMap<MethodSignature, ImplicitCallEdge> getImplicitCallEdges() {
-    HashMap<MethodSignature, ImplicitCallEdge> patternsHashMap = new HashMap<>();
+  protected Map<MethodSignature, List<ImplicitCallEdge>> getImplicitCallEdges() {
+    Map<MethodSignature, List<ImplicitCallEdge>> patternsMultiMap = new HashMap<>();
     InputStream in =
         GsonImplicitPatternsLoader.class.getResourceAsStream("/Implicit/ImplicitPatterns.json");
     if (in == null) {
@@ -140,16 +138,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     for (ImplicitCallEdge edge : patterns) {
       if (edge.getCategory() == 1) {
         MethodSignature callerMethodSig = resolveMethodSpec(edge.getCaller());
-        patternsHashMap.put(callerMethodSig, edge);
+        patternsMultiMap.computeIfAbsent(callerMethodSig, k -> new ArrayList<>()).add(edge);
       } else if (edge.getCategory() == 2) {
         MethodSignature callerMethodSig = resolveMethodSpec(edge.getCaller());
-        patternsHashMap.put(callerMethodSig, edge);
+        patternsMultiMap.computeIfAbsent(callerMethodSig, k -> new ArrayList<>()).add(edge);
       }
     }
-    for (var entry : patternsHashMap.entrySet()) {
-      System.out.println("HashMap Patterns: " + entry.getKey() + ": " + entry.getValue());
-    }
-    return patternsHashMap;
+    return patternsMultiMap;
   }
 
   /**
@@ -311,21 +306,22 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         targetMethod -> {
                           // check if targetMethod.equals(callerMethodSig)
                           if (implicitCallEdges.containsKey(targetMethod)) {
-                            System.out.println("Target methodSig: " + targetMethod);
-                            ImplicitCallEdge edge = implicitCallEdges.get(targetMethod);
-                            int category = edge.getCategory();
-                            if (category == 1) {
-                              resolveFixImplicitCallEdge(
-                                  sourceMethodSig, edge.getCallee(), stmt, cg, workList);
-                            } else if (category == 2) {
-                              resolveIntraImplicitCallEdge(
-                                  sourceMethod,
-                                  targetMethod,
-                                  edge.getCaller(),
-                                  edge.getCallee(),
-                                  stmt,
-                                  cg,
-                                  workList);
+                            // methods can trigger multiple implicit call edges, e.g. <java.io.ObjectOutputStream: void writeObject(java.lang.Object)>
+                            List<ImplicitCallEdge> implicitCallEdgesList = implicitCallEdges.get(targetMethod);
+                            for (ImplicitCallEdge edge : implicitCallEdgesList) {
+                              int category = edge.getCategory();
+                              if (category == 1) {
+                                resolveFixImplicitCallEdge(
+                                        sourceMethodSig, edge.getCallee(), stmt, cg, workList);
+                              } else if (category == 2) {
+                                IntraImplicitCallEdge intraEdge = (IntraImplicitCallEdge) edge;
+                                resolveIntraImplicitCallEdge(
+                                        sourceMethod,
+                                        intraEdge,
+                                        stmt,
+                                        cg,
+                                        workList);
+                              }
                             }
                           }
                           addCallToCG(sourceMethodSig, targetMethod, stmt, cg, workList);
@@ -362,9 +358,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /**
    * @param sourceMethod serves as caller for the implicit edge
-   * @param targetMethodSig identical to corresponding <code>caller</code> method from <code>
-   *     ImplicitPatterns.json</code>, important to analysis params
-   * @param callee unfinished callee method (resolution depends on pattern)
    * @param fixStmt invoke stmt for implicit call edge from <code>sourceMethodSig</code> to <code>
    *     callee</code>
    * @param cg implicit call will be added to the call graph
@@ -373,12 +366,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected void resolveIntraImplicitCallEdge(
       SootMethod sourceMethod,
-      MethodSignature targetMethodSig,
-      MethodSpec caller,
-      MethodSpec callee,
+      IntraImplicitCallEdge edge,
       InvokableStmt fixStmt,
       CallGraph cg,
       Deque<MethodSignature> workList) {
+    // ---- identical to start-run
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
       if (!stmt.isInvokableStmt()) {
         continue;
@@ -388,42 +380,40 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       if (sourceMethodInvokeExpr == null || !sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
         continue;
       }
-      MethodSignature methodSig = sourceMethodInvokeExpr.getMethodSignature(); // methodSig = <java.io.ObjectOutputStream: void writeObject(java.lang.Object)>
-      // Maybe delete: MethodSignature sourceMethodSig = sourceMethod.getSignature();
-      // check if param of caller is subClass of Externalizable
-      // TODO nicht so leicht! hier muss geschaut werden, welches Object in writeObject übergegeben
-      // wird, ist dies vom subType Externalizable, dann bilde eine implicit call edge von
-      // sourceMethodSig zu <java.io.SubClassExternalizable: void writeExternal(ObjectOutput out)>
-      ClassType methodSigClassType =
-          view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName()); // classType = java.io.ObjectOutputStream
+      MethodSignature methodSig = sourceMethodInvokeExpr.getMethodSignature();
+      // ----
       String methodSigName = methodSig.getName();
       List<Type> methodSigParam = methodSig.getParameterTypes();
       Type methodSigType = methodSig.getType();
-      // check if the target/caller method matches the caller of id: "ExternalizableWrite"
-      // TODO: debug why does the last check fail?
+      // resolution for ExternalizableWrite and SerializableWrite
       if (methodSigType.equals(VoidType.getInstance())
           && !methodSigParam.isEmpty()
           && methodSigName.equals("writeObject")
           ) {
-        // && typeHierarchy
-        //              .superClassesOf(methodSig.getDeclClassType())
-        //              .anyMatch(classType -> classType.equals(methodSigClassType))
-        System.out.println("TESTTRIGGER!!");
-        for (Type paramType : methodSigParam) {
-          System.out.println("paramType: " + paramType);
-        }
-        System.out.println("First param: " + methodSigParam.get(0)); // TODO: methodSigParam currently does not get the passed type of the argument
-        if (methodSigParam.get(0) instanceof Externalizable) {
-          callee.setFullyQualifiedClassName(methodSigParam.get(0).getClass().getPackageName());
-          MethodSignature calleeMethodSig = resolveMethodSpec(callee);
-          addCallToCG(
-              sourceMethod.getSignature(),
-              calleeMethodSig,
-              fixStmt,
-              (MutableCallGraph) cg,
-              workList);
-        } else if (methodSigParam.get(0) instanceof Serializable) {
-          // TODO
+        // check writeObject comes from java.io.ObjectOutputStream or a subclass
+        MethodSpec caller = edge.getCaller();
+        ClassType objectOutputStreamType = view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
+        if (typeHierarchy
+                .superClassesOf(methodSig.getDeclClassType())
+                .noneMatch(classType -> classType.equals(objectOutputStreamType))) {
+          if (sourceMethodInvokeExpr.getArgs().size() == 1) {
+            Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
+            SootClass paramClass = view.getClassOrThrow(view.getIdentifierFactory().getClassType(paramType.toString()));
+            // TODO: test if it works for A implements I <- B does B shows this interface? <- C same here; write method which gets the interfaces of all parent classes
+            Set<? extends ClassType> paramClassInterfaces = paramClass.getInterfaces();
+            // writeObject(obj), where param obj is instance of Externalizable or Serializable
+            if (paramClassInterfaces.contains(view.getIdentifierFactory().getClassType(edge.getInterfaceType())) && edge.getResolveCalleeClassName()) {
+              MethodSpec callee = edge.getCallee();
+              callee.setFullyQualifiedClassName(paramType.toString());
+              MethodSignature calleeMethodSig = resolveMethodSpec(callee);
+              addCallToCG(
+                      sourceMethod.getSignature(),
+                      calleeMethodSig,
+                      fixStmt,
+                      (MutableCallGraph) cg,
+                      workList);
+            }
+          }
         }
       }
     }

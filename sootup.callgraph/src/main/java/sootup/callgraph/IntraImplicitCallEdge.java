@@ -2,7 +2,7 @@ package sootup.callgraph;
 
 public class IntraImplicitCallEdge extends ImplicitCallEdge {
   Boolean resolveCalleeClassName;
-  String superClass;
+  String interfaceType;
 
   protected IntraImplicitCallEdge(
       String id,
@@ -10,18 +10,18 @@ public class IntraImplicitCallEdge extends ImplicitCallEdge {
       MethodSpec caller,
       MethodSpec callee,
       Boolean resolveCalleeClassName,
-      String superClass) {
+      String interfaceType) {
     super(id, category, caller, callee);
     this.resolveCalleeClassName = resolveCalleeClassName;
-    this.superClass = superClass;
+    this.interfaceType = interfaceType;
   }
 
   public Boolean getResolveCalleeClassName() {
     return resolveCalleeClassName;
   }
 
-  public String getSuperClass() {
-    return superClass;
+  public String getInterfaceType() {
+    return interfaceType;
   }
 
   @Override
@@ -38,8 +38,8 @@ public class IntraImplicitCallEdge extends ImplicitCallEdge {
         + callee
         + ", resolveCalleeClassName="
         + resolveCalleeClassName
-        + ", superClass='"
-        + superClass
+        + ", interfaceType='"
+        + interfaceType
         + '\''
         + '}';
   }
