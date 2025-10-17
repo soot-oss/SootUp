@@ -57,6 +57,46 @@
       },
       "resolveCalleeClassName": true,
       "interfaceType": "java.io.Serializable"
+    },
+    {
+      "id": "ExternalizableRead",
+      "category": 2,
+      "caller":
+      {
+        "callerFullyQualifiedClassName": "java.io.ObjectInputStream",
+        "callerName": "readObject",
+        "callerParam": "",
+        "callerReturnType": "java.lang.Object"
+      },
+      "callee":
+      {
+        "calleeFullyQualifiedClassName": "java.io",
+        "calleeName": "readExternal",
+        "calleeParam": "java.io.ObjectInput",
+        "calleeReturnType": "void"
+      },
+      "resolveCalleeClassName": true,
+      "interfaceType": "java.io.Externalizable"
+    },
+    {
+      "id": "SerializableRead",
+      "category": 2,
+      "caller":
+      {
+        "callerFullyQualifiedClassName": "java.io.ObjectInputStream",
+        "callerName": "readObject",
+        "callerParam": "",
+        "callerReturnType": "java.lang.Object"
+      },
+      "callee":
+      {
+        "calleeFullyQualifiedClassName": "java.io",
+        "calleeName": "readObject",
+        "calleeParam": "java.io.ObjectInputStream",
+        "calleeReturnType": "void"
+      },
+      "resolveCalleeClassName": true,
+      "interfaceType": "java.io.Serializable"
     }
   ]
 }

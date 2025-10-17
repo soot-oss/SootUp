@@ -306,21 +306,19 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         targetMethod -> {
                           // check if targetMethod.equals(callerMethodSig)
                           if (implicitCallEdges.containsKey(targetMethod)) {
-                            // methods can trigger multiple implicit call edges, e.g. <java.io.ObjectOutputStream: void writeObject(java.lang.Object)>
-                            List<ImplicitCallEdge> implicitCallEdgesList = implicitCallEdges.get(targetMethod);
+                            // methods can trigger multiple implicit call edges, e.g.
+                            // <java.io.ObjectOutputStream: void writeObject(java.lang.Object)>
+                            List<ImplicitCallEdge> implicitCallEdgesList =
+                                implicitCallEdges.get(targetMethod);
                             for (ImplicitCallEdge edge : implicitCallEdgesList) {
                               int category = edge.getCategory();
                               if (category == 1) {
                                 resolveFixImplicitCallEdge(
-                                        sourceMethodSig, edge.getCallee(), stmt, cg, workList);
+                                    sourceMethodSig, edge.getCallee(), stmt, cg, workList);
                               } else if (category == 2) {
                                 IntraImplicitCallEdge intraEdge = (IntraImplicitCallEdge) edge;
                                 resolveIntraImplicitCallEdge(
-                                        sourceMethod,
-                                        intraEdge,
-                                        stmt,
-                                        cg,
-                                        workList);
+                                    sourceMethod, intraEdge, stmt, cg, workList);
                               }
                             }
                           }
@@ -388,34 +386,40 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       // resolution for ExternalizableWrite and SerializableWrite
       if (methodSigType.equals(VoidType.getInstance())
           && !methodSigParam.isEmpty()
-          && methodSigName.equals("writeObject")
-          ) {
+          && methodSigName.equals("writeObject")) {
         // check writeObject comes from java.io.ObjectOutputStream or a subclass
         MethodSpec caller = edge.getCaller();
-        ClassType objectOutputStreamType = view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
+        ClassType objectOutputStreamType =
+            view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
         if (typeHierarchy
-                .superClassesOf(methodSig.getDeclClassType())
-                .noneMatch(classType -> classType.equals(objectOutputStreamType))) {
+            .superClassesOf(methodSig.getDeclClassType())
+            .noneMatch(classType -> classType.equals(objectOutputStreamType))) {
           if (sourceMethodInvokeExpr.getArgs().size() == 1) {
             Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
-            SootClass paramClass = view.getClassOrThrow(view.getIdentifierFactory().getClassType(paramType.toString()));
-            // TODO: test if it works for A implements I <- B does B shows this interface? <- C same here; write method which gets the interfaces of all parent classes
+            SootClass paramClass =
+                view.getClassOrThrow(
+                    view.getIdentifierFactory().getClassType(paramType.toString()));
+            // TODO: test if it works for A implements I <- B does B shows this interface? <- C same
+            // here; write method which gets the interfaces of all parent classes
             Set<? extends ClassType> paramClassInterfaces = paramClass.getInterfaces();
             // writeObject(obj), where param obj is instance of Externalizable or Serializable
-            if (paramClassInterfaces.contains(view.getIdentifierFactory().getClassType(edge.getInterfaceType())) && edge.getResolveCalleeClassName()) {
+            if (paramClassInterfaces.contains(
+                    view.getIdentifierFactory().getClassType(edge.getInterfaceType()))
+                && edge.getResolveCalleeClassName()) {
               MethodSpec callee = edge.getCallee();
               callee.setFullyQualifiedClassName(paramType.toString());
               MethodSignature calleeMethodSig = resolveMethodSpec(callee);
               addCallToCG(
-                      sourceMethod.getSignature(),
-                      calleeMethodSig,
-                      fixStmt,
-                      (MutableCallGraph) cg,
-                      workList);
+                  sourceMethod.getSignature(),
+                  calleeMethodSig,
+                  fixStmt,
+                  (MutableCallGraph) cg,
+                  workList);
             }
           }
         }
       }
+      // resolution of ExternalizableRead and SerializableRead
     }
   }
 

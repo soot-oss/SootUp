@@ -18,7 +18,7 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
   @Test
   public void testSubClassExternalizable() {
-    CallGraph cg = loadCallGraph("Implicit", "SubClassExternalizable");
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassExternalizable");
     for (CallGraph.Call call : cg.getCalls()) {
       System.out.println(call);
     }
@@ -27,7 +27,7 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
   @Test
   public void testSubClassSerializable() {
-    CallGraph cg = loadCallGraph("Implicit", "SubClassSerializable");
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassSerializable");
     for (CallGraph.Call call : cg.getCalls()) {
       System.out.println(call);
     }
