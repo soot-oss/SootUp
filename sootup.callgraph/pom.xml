@@ -12,6 +12,16 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
+	<properties>
+		<surefireArgLine>--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED
+			--add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED
+			--add-opens=java.base/java.math=ALL-UNNAMED --add-opens=java.base/java.time=ALL-UNNAMED
+			--add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED
+			--add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+			--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED --add-opens=java.sql/java.sql=ALL-UNNAMED
+		</surefireArgLine>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
@@ -40,6 +50,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.9.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -62,30 +73,18 @@
 			<version>3.0.3</version>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.2.5</version>
-				<configuration>
-					<argLine>
-						--add-opens=java.base/java.lang=ALL-UNNAMED
-						--add-opens=java.base/java.util=ALL-UNNAMED
-						--add-opens=java.base/java.util.concurrent=ALL-UNNAMED
-						--add-opens=java.base/java.io=ALL-UNNAMED
-						--add-opens=java.base/java.math=ALL-UNNAMED
-						--add-opens=java.base/java.time=ALL-UNNAMED
-						--add-opens=java.base/java.nio=ALL-UNNAMED
-						--add-opens=java.base/java.net=ALL-UNNAMED
-						--add-opens=java.base/java.text=ALL-UNNAMED
-						--add-opens=java.base/java.lang.reflect=ALL-UNNAMED
-						--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED
-						--add-opens=java.sql/java.sql=ALL-UNNAMED
-					</argLine>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+<!--	<build>-->
+<!--		<plugins>-->
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-surefire-plugin</artifactId>-->
+<!--				<version>${maven-surefire-plugin.version}</version>-->
+<!--				<configuration>-->
+<!--					<argLine>${argLine}-->
+<!--					</argLine>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
+<!--		</plugins>-->
+<!--	</build>-->
 
 </project>
