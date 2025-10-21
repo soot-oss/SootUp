@@ -236,7 +236,7 @@ public class CallGraphFSTSerializer {
       String[] methods, int[] src, int[] tgt, String[] invStmt, int[] stmtLine) {
     // Convert the builder to the serializable DTO used by the FST writer
     CgSnapshot toDto() {
-      return new CgSnapshot(1, methods, src, tgt, invStmt, stmtLine);
+      return new CgSnapshot(methods, src, tgt, invStmt, stmtLine);
     }
   }
 
@@ -245,16 +245,13 @@ public class CallGraphFSTSerializer {
    * serialize them directly.
    */
   static class CgSnapshot implements Serializable {
-    final int version;
     final String[] methods;
     final int[] src, tgt;
 
     final String[] invStmt;
     final int[] stmtLine;
 
-    CgSnapshot(
-        int version, String[] methods, int[] src, int[] tgt, String[] invStmt, int[] stmtLine) {
-      this.version = version;
+    CgSnapshot(String[] methods, int[] src, int[] tgt, String[] invStmt, int[] stmtLine) {
       this.methods = methods;
       this.src = src;
       this.tgt = tgt;
