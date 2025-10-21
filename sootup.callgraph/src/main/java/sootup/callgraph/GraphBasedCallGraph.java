@@ -150,20 +150,17 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   private static int getLineFrom(Call c) {
     var pos = stmtPositionOf(c);
-    if (pos instanceof LinePosition lp) return lp.getFirstLine();
-    return Integer.MAX_VALUE;
+    return pos instanceof LinePosition lp ? lp.getFirstLine() : Integer.MAX_VALUE;
   }
 
   private static int getColStartFrom(Call c) {
     var pos = stmtPositionOf(c);
-    if (pos instanceof LinePosition lp) return lp.getFirstCol();
-    return Integer.MAX_VALUE;
+    return pos instanceof LinePosition lp ? lp.getFirstCol() : Integer.MAX_VALUE;
   }
 
   private static int getColEndFrom(Call c) {
     var pos = stmtPositionOf(c);
-    if (pos instanceof LinePosition lp) return lp.getLastCol();
-    return Integer.MAX_VALUE;
+    return pos instanceof LinePosition lp ? lp.getLastCol() : Integer.MAX_VALUE;
   }
 
   private static Object stmtPositionOf(Call c) {
