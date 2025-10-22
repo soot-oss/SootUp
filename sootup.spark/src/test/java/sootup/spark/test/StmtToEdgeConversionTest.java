@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import lombok.val;
+import org.graph4j.Digraph;
+import org.graph4j.Edge;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.LValue;
@@ -19,6 +21,7 @@ import sootup.spark.NodeFactory;
 import sootup.spark.PAG;
 import sootup.spark.PAGEdge;
 import sootup.spark.PAGStmtVisitor;
+import sootup.spark.node.Node;
 
 public class StmtToEdgeConversionTest {
 
@@ -34,8 +37,8 @@ public class StmtToEdgeConversionTest {
     val methodPAG = new PAG();
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.ALLOCATION);
 
-    val source = methodPAG.getDelegate().getEdgeSource(edge);
-    val target = methodPAG.getDelegate().getEdgeTarget(edge);
+    val source = methodPAG.getDelegate().getVertexLabel(edge.source());
+    val target = methodPAG.getDelegate().getVertexLabel(edge.target());
     val expectedTarget = NodeFactory.createNode(left).get();
     val expectedSource = NodeFactory.createNode(right).get();
     assertEquals(expectedTarget, target);
@@ -49,8 +52,8 @@ public class StmtToEdgeConversionTest {
     val methodPAG = new PAG();
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.ASSIGNMENT);
 
-    val source = methodPAG.getDelegate().getEdgeSource(edge);
-    val target = methodPAG.getDelegate().getEdgeTarget(edge);
+    val source = methodPAG.getDelegate().getVertexLabel(edge.source());
+    val target = methodPAG.getDelegate().getVertexLabel(edge.target());
     val expectedTarget = NodeFactory.createNode(left).get();
     val expectedSource = NodeFactory.createNode(right).get();
     assertEquals(expectedTarget, target);
@@ -64,12 +67,12 @@ public class StmtToEdgeConversionTest {
     val right = new JInstanceFieldRef(base, fieldSig);
     LValue left = new Local("b", aType);
     val methodPAG = new PAG();
-    val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.LOAD);
+    Edge edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.LOAD);
 
-    val source = methodPAG.getDelegate().getEdgeSource(edge);
-    val target = methodPAG.getDelegate().getEdgeTarget(edge);
-    val expectedTarget = NodeFactory.createNode(left).get();
-    val expectedSource = NodeFactory.createNode(right).get();
+    val source = methodPAG.getDelegate().getVertexLabel(edge.source());
+    val target = methodPAG.getDelegate().getVertexLabel(edge.target());
+    Node expectedTarget = NodeFactory.createNode(left).get();
+    Node expectedSource = NodeFactory.createNode(right).get();
     assertEquals(expectedTarget, target);
     assertEquals(expectedSource, source);
   }
@@ -83,24 +86,28 @@ public class StmtToEdgeConversionTest {
     val methodPAG = new PAG();
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.STORE);
 
-    val source = methodPAG.getDelegate().getEdgeSource(edge);
-    val target = methodPAG.getDelegate().getEdgeTarget(edge);
-    val expectedTarget = NodeFactory.createNode(left).get();
-    val expectedSource = NodeFactory.createNode(right).get();
+    val source = methodPAG.getDelegate().getVertexLabel(edge.source());
+    val target = methodPAG.getDelegate().getVertexLabel(edge.target());
+    Node expectedTarget = NodeFactory.createNode(left).get();
+    Node expectedSource = NodeFactory.createNode(right).get();
     assertEquals(expectedTarget, target);
     assertEquals(expectedSource, source);
   }
 
-  private PAGEdge doAssignment(Value right, LValue left, PAG methodPAG, PAGEdge.EdgeType edgeType) {
+  private Edge doAssignment(Value right, LValue left, PAG methodPAG, PAGEdge.EdgeType edgeType) {
     JAssignStmt assignStmt = new JAssignStmt(left, right, StmtPositionInfo.getNoStmtPositionInfo());
     assignStmt.accept(PAGStmtVisitor.builder().PAG(methodPAG).build());
-    val edgeOpt =
-        methodPAG.getDelegate().edgeSet().stream()
-            .filter(PAGEdge.class::isInstance)
-            .map(PAGEdge.class::cast)
-            .filter(e -> edgeType.equals(e.getEdgeType()))
-            .findFirst();
-    assertTrue(edgeOpt.isPresent());
-    return edgeOpt.get();
+
+    Edge foundEdge = null;
+    Digraph<Node, PAGEdge> graph = methodPAG.getDelegate();
+    for (Edge edge : graph.edges()) {
+      PAGEdge e = graph.getEdgeLabel(edge.source(), edge.target());
+      if (edgeType.equals(e.getEdgeType())) {
+        foundEdge = edge;
+        break; // stop at the first match
+      }
+    }
+    assertTrue(foundEdge != null);
+    return foundEdge;
   }
 }
