@@ -249,8 +249,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
             }
           }
 
-        } else if (stmt instanceof JReturnStmt
-            || stmt instanceof JReturnVoidStmt
+        } else if (stmt instanceof ReturnStmt
             || stmt instanceof JThrowStmt) {
           if (successorCount != 0) {
             throw new IllegalStateException(
