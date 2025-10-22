@@ -225,7 +225,7 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest 
             "<example1.E: void virtualDispatch()>");
 
     List<String> actualOrder =
-        cg.callsFrom(mainMethodSignature).stream()
+        cg.sortedCallsFrom(mainMethodSignature).stream()
             .map(call -> call.targetMethodSignature().toString())
             .toList();
 
@@ -240,7 +240,7 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest 
         mainMethodSignature, staticMethodB, getInvokableStmt(mainMethodSignature, staticMethodB));
 
     assertEquals(
-        g.callsFrom(mainMethodSignature).stream()
+        g.sortedCallsFrom(mainMethodSignature).stream()
             .map(CallGraph.Call::targetMethodSignature)
             .toList()
             .size(),
