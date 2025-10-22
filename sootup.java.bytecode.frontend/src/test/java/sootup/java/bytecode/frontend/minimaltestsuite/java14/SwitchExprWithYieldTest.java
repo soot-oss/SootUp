@@ -18,7 +18,7 @@ public class SwitchExprWithYieldTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
   public JavaClassType getDeclaredClassSignature() {
-    return identifierFactory.getClassType("SwitchExprWithYieldTest");
+    return identifierFactory.getClassType("SwitchExprWithYield");
   }
 
   @Override
@@ -76,7 +76,7 @@ public class SwitchExprWithYieldTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "this := @this: SwitchExprWithYieldTest",
+            "this := @this: SwitchExprWithYield",
             "l1 = 5",
             "l2 = \"\"",
             "switch(l1)",

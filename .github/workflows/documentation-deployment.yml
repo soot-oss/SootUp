@@ -1,0 +1,46 @@
+name: Documentation Deployment
+
+on:
+  push:
+    branches:
+      - develop
+    tags:
+      - '*'
+
+concurrency:
+  group: gh-pages
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-doc:
+    name: Deploy Stable Documentation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0                                                     # mike needs full history to push to gh-pages
+
+      - name: Grab latest release url of the JimpleLSP jar and download it - for use in Pygments+LspLexer4Pygments
+        shell: bash
+        run: |
+          URL=$(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | jq -r '[.assets[] | select(.name | endswith(".jar"))][0].browser_download_url')
+          curl -s -L -o ./jimplelsp.jar $URL
+
+      - name: Generate Javadoc
+        shell: bash
+        run: mvn clean install -DskipTests -B && mvn javadoc:aggregate         # generates javadoc in "target/reports/apidocs"
+
+      - name: Move generated Javadoc into docs directory
+        shell: bash
+        run: rm -rf docs/api; mkdir -p docs/api; mv target/reports/apidocs/* docs/api
+
+      - name: Deploy Documentation
+        uses: secure-software-engineering/actions/documentation/deployment@1586956654997710ed19fbc7953cd4336af63a87 # develop
+        with:
+          version: ${{ github.ref_name }}

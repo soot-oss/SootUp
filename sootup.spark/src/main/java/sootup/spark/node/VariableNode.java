@@ -23,6 +23,7 @@ package sootup.spark.node;
  */
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
@@ -32,6 +33,7 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class VariableNode extends Node {
 
   @NonNull String name;

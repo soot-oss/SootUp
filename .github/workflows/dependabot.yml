@@ -1,0 +1,25 @@
+name: Handle Dependabot PRs
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  ApproveAndMerge:
+    name: Auto approve Dependabot PRs
+    runs-on: ubuntu-latest
+    # Only run for PRs created by Dependabot - extended verification is done in the reusable workflow
+    if: github.actor == 'dependabot[bot]'
+    # These permissions are needed to approve pull requests
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Auto approve Dependabot PR
+        uses: secure-software-engineering/actions/dependabot@1586956654997710ed19fbc7953cd4336af63a87 # develop
+        with:
+          token: ${{ secrets.AUTO_MERGE_PAT }}

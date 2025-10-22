@@ -180,7 +180,7 @@ public class AggregatorTest {
 
     AnalysisInputLocation inputLocation =
         new ClassFileBasedAnalysisInputLocation(
-            Paths.get("../shared-test-resources/bugfixes/Issue739_Aggregator.class"),
+            Paths.get("src/test/resources/bugfixes/Issue739_Aggregator.class"),
             "",
             SourceType.Application,
             Collections.singletonList(new Aggregator()));
@@ -200,7 +200,7 @@ public class AggregatorTest {
 
     AnalysisInputLocation inputLocationB =
         new ClassFileBasedAnalysisInputLocation(
-            Paths.get("../shared-test-resources/bugfixes/Issue911_Aggregator.class"),
+            Paths.get("src/test/resources/bugfixes/Issue911_Aggregator.class"),
             "",
             SourceType.Application,
             Collections.singletonList(new Aggregator()));

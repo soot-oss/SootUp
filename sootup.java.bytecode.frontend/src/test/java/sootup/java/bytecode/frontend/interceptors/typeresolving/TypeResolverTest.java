@@ -24,18 +24,18 @@ import sootup.interceptors.typeresolving.TypeResolver;
 import sootup.interceptors.typeresolving.types.TopType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaPackageName;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public class TypeResolverTest extends TypeAssignerTestSuite {
 
-  String baseDir = "../shared-test-resources/TypeResolverTestSuite/";
+  String baseDir = "src/test/resources/TypeResolverTestSuite/";
   Type objectType = new JavaClassType("Object", new JavaPackageName("java.lang"));
   Type stringType = new JavaClassType("String", new JavaPackageName("java.lang"));
   Type charSequenceType = new JavaClassType("CharSequence", new JavaPackageName("java.lang"));
   Type numberType = new JavaClassType("Number", new JavaPackageName("java.lang"));
   Type dateType = new JavaClassType("Date", new JavaPackageName("java.util"));
-  ;
   Type miscType = new JavaClassType("Misc", new JavaPackageName(""));
   Type sysoutType = new JavaClassType("PrintStream", new JavaPackageName("java.io"));
   Type throwableType = new JavaClassType("Throwable", new JavaPackageName("java.lang"));
@@ -109,8 +109,9 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature("NewArrayInstance", "entry", "void", Collections.emptyList());
-    final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
-    final SootMethod sootMethod = methodOpt.get();
+    final Optional<JavaSootMethod> methodOpt = view.getMethod(methodSignature);
+    final SootMethod sootMethod = methodOpt.orElse(null);
+    assertNotNull(sootMethod);
     final Body.BodyBuilder builder =
         Body.builder(sootMethod.getBody(), EnumSet.noneOf(MethodModifier.class));
 
@@ -304,8 +305,8 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   public void testTaAndLnsWithoutLS() {
     AnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
-            baseDir + "Misc/", SourceType.Application, Arrays.asList(new TypeAssigner()));
-    final JavaView view = new JavaView(Arrays.asList(inputLocation));
+            baseDir + "Misc/", SourceType.Application, List.of(new TypeAssigner()));
+    final JavaView view = new JavaView(List.of(inputLocation));
 
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
@@ -357,7 +358,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
             baseDir + "Misc/",
             SourceType.Application,
             Arrays.asList(new LocalSplitter(), new TypeAssigner()));
-    final JavaView view = new JavaView(Arrays.asList(inputLocation));
+    final JavaView view = new JavaView(List.of(inputLocation));
 
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
@@ -383,7 +384,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     JavaClassPathAnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
             baseDir + "Misc/", SourceType.Library, Collections.singletonList(new TypeAssigner()));
-    final JavaView view = new JavaView(Arrays.asList(inputLocation));
+    final JavaView view = new JavaView(List.of(inputLocation));
 
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
