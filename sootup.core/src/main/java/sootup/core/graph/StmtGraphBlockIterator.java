@@ -26,7 +26,10 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.common.Trap;
-import sootup.core.jimple.common.stmt.*;
+import sootup.core.jimple.common.stmt.JGotoStmt;
+import sootup.core.jimple.common.stmt.JReturnStmt;
+import sootup.core.jimple.common.stmt.JReturnVoidStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 
 /**
  * Iterates over a given StmtGraph (which is connected, so all Stmt nodes are reached - except
@@ -138,7 +141,8 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
               if (itReturnStmt.fallsThrough()) {
                 itReturnStmt = graph.successors(itReturnStmt).get(0);
               } else {
-                if (itReturnStmt instanceof ReturnStmt) {
+                if (itReturnStmt instanceof JReturnVoidStmt
+                    || itReturnStmt instanceof JReturnStmt) {
                   isReturnBlock = true;
                 }
                 break;
