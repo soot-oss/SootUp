@@ -23,10 +23,8 @@ package sootup.core.jimple.common.stmt;
  */
 
 /**
- * An interface representing a return statement.
- * Implementations of this interface represent statements that cause a
- * method to return. This may be a void return or a return with a value
+ * An interface representing a return statement. Implementations of this interface represent
+ * statements that cause a method to return. This may be a void return or a return with a value
  * depending on the implementation.
  */
-public interface ReturnStmt extends Stmt{
-}
+public interface ReturnStmt extends Stmt {}
