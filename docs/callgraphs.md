@@ -177,21 +177,6 @@ Spark requires an initial call graph to begin with. You can use one of the call 
     ```
 
 -->
-## Qilin Pointer Analysis
-
-Qilin builds a call graph on the fly with the pointer analysis.
-You can construct a call graph with Qilin as follows:
-
-=== "SootUp"
-
-    ```java
-    String MAINCLASS = "dacapo.antlr.Main"; // just an example
-    PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern("insens"); // "2o"=>2OBJ, "1c"=>1CFA, etc.
-    PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern, view, MAINCLASS);
-    pta.run();
-    CallGraph cg = pta.getCallGraph();
-    ```
-
 ## Exporting the call graph in a Dot format 
 This guide describes how to export a **call graph** created by one of the call graph algorithms to a `.dot` format for visualization with tools like [Graphviz](https://graphviz.org/).  
 The nodes represent method signatures, and the edges contain labels showing the line numbers of the invoking statements.  
