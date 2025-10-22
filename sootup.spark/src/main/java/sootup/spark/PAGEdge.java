@@ -25,11 +25,10 @@ package sootup.spark;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.jgrapht.graph.DefaultEdge;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class PAGEdge extends DefaultEdge {
+public class PAGEdge {
 
   public enum EdgeType {
     ALLOCATION,
