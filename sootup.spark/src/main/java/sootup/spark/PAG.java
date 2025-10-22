@@ -5,8 +5,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultDirectedGraph;
+import org.graph4j.Digraph;
+import org.graph4j.Graph;
+import org.graph4j.GraphBuilder;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
 import sootup.spark.node.Node;
@@ -18,7 +19,8 @@ import sootup.spark.node.VariableNode;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class PAG {
 
-  @NonNull Graph<Node, PAGEdge> delegate = new DefaultDirectedGraph<>(PAGEdge.class);
+  @NonNull
+  Digraph<Node, PAGEdge> delegate = GraphBuilder.empty().buildDigraph();
 
   public void addEdge(Node source, Node target) {
     if (source instanceof VariableNode) {
@@ -37,8 +39,8 @@ public class PAG {
   }
 
   private void addEdge(Node source, Node target, PAGEdge edge) {
-    delegate.addVertex(source);
-    delegate.addVertex(target);
-    delegate.addEdge(source, target, edge);
+      int sIdx = delegate.addLabeledVertex(source);
+      int tIdx = delegate.addLabeledVertex(target);
+      delegate.addLabeledEdge(sIdx, tIdx, edge);
   }
 }
