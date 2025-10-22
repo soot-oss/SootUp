@@ -4,8 +4,8 @@ import lombok.experimental.UtilityClass;
 import org.graph4j.Edge;
 import org.graph4j.Graph;
 import sootup.core.signatures.PackageName;
-import sootup.core.typehierarchy.PAGVisualizer;
 import sootup.core.types.ClassType;
+import sootup.spark.PAGVisualizer;
 import sootup.spark.node.Node;
 
 @UtilityClass

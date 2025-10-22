@@ -1,4 +1,4 @@
-package sootup.core.typehierarchy;
+package sootup.spark;
 
 /*-
  * #%L
