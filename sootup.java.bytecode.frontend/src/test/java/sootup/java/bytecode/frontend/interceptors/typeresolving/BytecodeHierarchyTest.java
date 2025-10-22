@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
@@ -59,9 +58,8 @@ public class BytecodeHierarchyTest {
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile);
     JavaView view =
-            new JavaView(
-                    Arrays.asList(new DefaultRuntimeAnalysisInputLocation(), analysisInputLocation));
-
+        new JavaView(
+            Arrays.asList(new DefaultRuntimeAnalysisInputLocation(), analysisInputLocation));
 
     // create types
     IdentifierFactory factory = view.getIdentifierFactory();
@@ -128,7 +126,6 @@ public class BytecodeHierarchyTest {
     assertTrue(hierarchy.isAncestor(objArr, class2AArr));
     assertFalse(hierarchy.isAncestor(seriArr, class3Arr));
   }
-
 
   @Test
   public void testLCA() {
