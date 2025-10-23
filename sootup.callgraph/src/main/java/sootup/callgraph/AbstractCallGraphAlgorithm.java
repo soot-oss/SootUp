@@ -382,48 +382,88 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       // ----
       String methodSigName = methodSig.getName();
       List<Type> methodSigParam = methodSig.getParameterTypes();
-      Type methodSigType = methodSig.getType();
-      // resolution of ExternalizableWrite and SerializableWrite AND ExternalizableRead and SerializableRead TODO: Why does that work even woth methodSigName.equals(writeObject)
-      if (methodSigType.equals(VoidType.getInstance())
+      Type methodSigReturnType = methodSig.getType();
+      ClassType methodSigClassType = methodSig.getDeclClassType();
+      // resolution of ExternalizableWrite and SerializableWrite
+      if (methodSigReturnType.equals(VoidType.getInstance())
           && !methodSigParam.isEmpty()
           && methodSigName.equals("writeObject")) {
-        // check read/writeObject comes from java.io.ObjectOut/InputStream or a subclass
         MethodSpec caller = edge.getCaller();
         ClassType objectOutputStreamType =
             view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
-        System.out.println("ClassType: " + objectOutputStreamType);
-        System.out.println("DeclaringClassType: " + methodSig.getDeclClassType());
-        // TODO: wrong check
+        // check class implementing writeObject is java.io.ObjectOutputStream or a subclass of java.io.ObjectOutputStream
         if (typeHierarchy
-            .superClassesOf(methodSig.getDeclClassType())
-            .noneMatch(classType -> classType.equals(objectOutputStreamType))) {
-          if (sourceMethodInvokeExpr.getArgs().size() == 1) {
-            Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
-            SootClass paramClass =
-                view.getClassOrThrow(
-                    view.getIdentifierFactory().getClassType(paramType.toString()));
-            // TODO: test if it works for A implements I <- B does B shows this interface? <- C same
-            // here; write method which gets the interfaces of all parent classes
-            Set<? extends ClassType> paramClassInterfaces = paramClass.getInterfaces();
-            // read/writeObject(obj), where param obj is instance of Externalizable or Serializable
-            if (paramClassInterfaces.contains(
-                    view.getIdentifierFactory().getClassType(edge.getInterfaceType()))
-                && edge.getResolveCalleeClassName()) {
-              MethodSpec callee = edge.getCallee();
-              callee.setFullyQualifiedClassName(paramType.toString());
-              MethodSignature calleeMethodSig = resolveMethodSpec(callee);
-              addCallToCG(
-                  sourceMethod.getSignature(),
-                  calleeMethodSig,
-                  fixStmt,
-                  (MutableCallGraph) cg,
-                  workList);
-            }
+            .superClassesOf(methodSigClassType)
+            .noneMatch(classType -> classType.equals(objectOutputStreamType)) && !methodSigClassType.equals(objectOutputStreamType)) {
+          continue;
+        }
+        if (sourceMethodInvokeExpr.getArgs().size() == 1) {
+          System.out.println("SourceMethodInvokeExpr Args: " + sourceMethodInvokeExpr.getArgs());
+          Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
+          SootClass paramClass =
+              view.getClassOrThrow(
+                  view.getIdentifierFactory().getClassType(paramType.toString()));
+          String classImplementingCallee = getClassImplementingCallee(paramClass, edge);
+          // writeObject(obj), where param obj is instance of Externalizable or Serializable
+          if (!classImplementingCallee.isEmpty()) {
+            MethodSpec callee = edge.getCallee();
+            callee.setFullyQualifiedClassName(classImplementingCallee);
+            MethodSignature calleeMethodSig = resolveMethodSpec(callee);
+            addCallToCG(
+                    sourceMethod.getSignature(),
+                    calleeMethodSig,
+                    fixStmt,
+                    (MutableCallGraph) cg,
+                    workList);
           }
         }
       }
+      // TODO: go back to combining ExternalizableWrite/Read and SerializableWrite/Read
+      // resolution of ExternalizableRead and SerializableRead
+      if (methodSigReturnType.toString().equals("java.lang.Object")
+              && methodSigParam.isEmpty()
+              && methodSigName.equals("readObject")) {
+        MethodSpec caller = edge.getCaller();
+        ClassType objectOutputStreamType =
+                view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
+        System.out.println("ObjectOutputStream: " + objectOutputStreamType);
+        // check class implementing writeObject is java.io.ObjectOutputStream or a subclass of java.io.ObjectOutputStream
+        if (typeHierarchy
+                .superClassesOf(methodSigClassType)
+                .noneMatch(classType -> classType.equals(objectOutputStreamType)) && !methodSigClassType.equals(objectOutputStreamType)) {
+          continue;
+        }
+        System.out.println("TestTrigger2");
+        System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr);
+        sourceMethod.getBody().getStmts().forEach(System.out::println);
+        if (sourceMethodInvokeExpr.getArgs().size() == 1) {
+          System.out.println("TESTTRIGGER");
+          System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr);
+          Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
+          System.out.println("ParamType: " + paramType);
+          SootClass paramClass =
+                  view.getClassOrThrow(
+                          view.getIdentifierFactory().getClassType(paramType.toString()));
+          String classImplementingCallee = getClassImplementingCallee(paramClass, edge);
+          System.out.println("ClassImplementingCallee: " + classImplementingCallee);
+          // writeObject(obj), where param obj is instance of Externalizable or Serializable
+          if (!classImplementingCallee.isEmpty()) {
+            MethodSpec callee = edge.getCallee();
+            callee.setFullyQualifiedClassName(classImplementingCallee);
+            MethodSignature calleeMethodSig = resolveMethodSpec(callee);
+            addCallToCG(
+                    sourceMethod.getSignature(),
+                    calleeMethodSig,
+                    fixStmt,
+                    (MutableCallGraph) cg,
+                    workList);
+          }
+        }
+      }
+
+
       // resolution of Reflection
-      if (methodSigType.toString().equals("java.lang.Object")
+      if (methodSigReturnType.toString().equals("java.lang.Object")
               && !methodSigParam.isEmpty()
               && methodSigName.equals("invoke")) {
         // check method invoke comes from java.lang.reflect.Method or a subclass
@@ -470,6 +510,30 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         }
       }
     }
+  }
+
+  // helper method to get all interfaces of all superclasses and the class itself + returns the class with the implementation
+  protected String getClassImplementingCallee(SootClass sootClass, IntraImplicitCallEdge edge) {
+    Optional<? extends SootClass> currentClassOpt = Optional.of(sootClass);
+    while (currentClassOpt.isPresent()) {
+      SootClass currentClass = currentClassOpt.get();
+      if (currentClass.getInterfaces().contains(view.getIdentifierFactory().getClassType(edge.getInterfaceType()))){
+        return currentClass.getType().toString();
+      } else {
+        if (currentClass.hasSuperclass() && !currentClass.getName().equals("java.lang.Object")) {
+          Optional<? extends  ClassType> superClassOptType = currentClass.getSuperclass();
+          if (superClassOptType.isPresent()) {
+            currentClass = view.getClassOrThrow(superClassOptType.get());
+            currentClassOpt = Optional.of(currentClass);
+          } else {
+            currentClassOpt = Optional.empty();
+          }
+        } else {
+          break;
+        }
+      }
+    }
+    return "";
   }
 
   // helper method to prohibit duplicate code snippets TODO: add description

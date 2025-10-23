@@ -33,15 +33,15 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
       }
       assertTrue(cg.callCount() > 0);
     }
-  //
-  //  @Test
-  //  public void testSubClassSerializable() {
-  //    CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassSerializable");
-  //    for (CallGraph.Call call : cg.getCalls()) {
-  //      System.out.println(call);
-  //    }
-  //    assertTrue(cg.callCount() > 0);
-  //  }
+
+    @Test
+    public void testSubClassSerializable() {
+      CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassSerializable");
+      for (CallGraph.Call call : cg.getCalls()) {
+        System.out.println(call);
+      }
+      assertTrue(cg.callCount() > 0);
+    }
 
   // trivial reflection with method only in superClass
 //  @Test
