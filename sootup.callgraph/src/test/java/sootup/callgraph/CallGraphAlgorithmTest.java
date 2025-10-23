@@ -25,14 +25,14 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 //    assertTrue(cg.callCount() > 0);
 //  }
 
-  //  @Test
-  //  public void testSubClassExternalizable() {
-  //    CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassExternalizable");
-  //    for (CallGraph.Call call : cg.getCalls()) {
-  //      System.out.println(call);
-  //    }
-  //    assertTrue(cg.callCount() > 0);
-  //  }
+    @Test
+    public void testSubClassExternalizable() {
+      CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassExternalizable");
+      for (CallGraph.Call call : cg.getCalls()) {
+        System.out.println(call);
+      }
+      assertTrue(cg.callCount() > 0);
+    }
   //
   //  @Test
   //  public void testSubClassSerializable() {
@@ -43,14 +43,61 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   //    assertTrue(cg.callCount() > 0);
   //  }
 
-  @Test
-  public void testReflectiveInvokeExample() {
-    CallGraph cg = loadCallGraph("Implicit", "bachelor.ReflectiveInvokeExample");
-    for (CallGraph.Call call : cg.getCalls()) {
-      System.out.println(call);
-    }
-    assertTrue(cg.callCount() > 0);
-  }
+  // trivial reflection with method only in superClass
+//  @Test
+//  public void testReflectiveInvokeExample() {
+//    CallGraph cg = loadCallGraph("Implicit", "bachelor.ReflectiveInvokeExample");
+//    for (CallGraph.Call call : cg.getCalls()) {
+//      System.out.println(call);
+//    }
+//    assertTrue(cg.callCount() > 0);
+//  }
+
+//  @Test
+//  public void testReflectiveInvokeExample3() {
+//    CallGraph cg = loadCallGraph("Implicit", "bachelor.ReflectiveInvokeExample3");
+//    for (CallGraph.Call call : cg.getCalls()) {
+//      System.out.println(call);
+//    }
+//    assertTrue(cg.callCount() > 0);
+//  }
+
+  // already covert under trivial reflection implementation
+//  @Test
+//  public void testReflectiveInvokeExample4() {
+//    CallGraph cg = loadCallGraph("Implicit", "bachelor.ReflectiveInvokeExample4");
+//    for (CallGraph.Call call : cg.getCalls()) {
+//      System.out.println(call);
+//    }
+//    assertTrue(cg.callCount() > 0);
+//  }
+
+//  @Test
+//  public void testReflectiveInvokeExample6() {
+//    CallGraph cg = loadCallGraph("Implicit", "bachelor.ReflectiveInvokeExample6");
+//    for (CallGraph.Call call : cg.getCalls()) {
+//      System.out.println(call);
+//    }
+//    assertTrue(cg.callCount() > 0);
+//  }
+//
+//  @Test
+//  public void testReflectiveInvokeExample8() {
+//    CallGraph cg = loadCallGraph("Implicit", "bachelor.ReflectiveInvokeExample8");
+//    for (CallGraph.Call call : cg.getCalls()) {
+//      System.out.println(call);
+//    }
+//    assertTrue(cg.callCount() > 0);
+//  }
+//
+//  @Test
+//  public void testTrivialReflection() {
+//    CallGraph cg = loadCallGraph("Implicit", "TrivialReflection");
+//    for (CallGraph.Call call : cg.getCalls()) {
+//      System.out.println(call);
+//    }
+//    assertTrue(cg.callCount() > 0);
+//  }
 
   // TODO
 //  @Test

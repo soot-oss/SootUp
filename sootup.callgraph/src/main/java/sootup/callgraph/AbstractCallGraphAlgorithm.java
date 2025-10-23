@@ -26,7 +26,6 @@ import static sootup.callgraph.GsonImplicitPatternsLoader.loadImplicitPatternsFr
 import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 
 import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -392,6 +391,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         MethodSpec caller = edge.getCaller();
         ClassType objectOutputStreamType =
             view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
+        System.out.println("ClassType: " + objectOutputStreamType);
+        System.out.println("DeclaringClassType: " + methodSig.getDeclClassType());
+        // TODO: wrong check
         if (typeHierarchy
             .superClassesOf(methodSig.getDeclClassType())
             .noneMatch(classType -> classType.equals(objectOutputStreamType))) {
@@ -428,6 +430,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         MethodSpec caller = edge.getCaller();
         ClassType objectOutputStreamType =
                 view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
+        System.out.println("ClassType: " + objectOutputStreamType);
+        System.out.println("DeclaringClassType: " + methodSig.getDeclClassType());
+        // TODO: wrong check!
         if (typeHierarchy
                 .superClassesOf(methodSig.getDeclClassType())
                 .noneMatch(classType -> classType.equals(objectOutputStreamType))) {
@@ -435,33 +440,28 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
             SootClass paramClass =
                     view.getClassOrThrow(
-                            view.getIdentifierFactory().getClassType(paramType.toString())); // paramClass: "bachelor.ReflectiveInvokeExample$Target"
-            System.out.println("SootClass: " + paramClass);
-            System.out.println("SourceMethod Body:" + sourceMethod.getBody().getStmts());
+                            view.getIdentifierFactory().getClassType(paramType.toString()));
             Set<Stmt> targetMethodStmtSet = sourceMethod.getBody().getStmts().stream().filter(targetMethodStmt -> targetMethodStmt.toString().matches(".*get\\w*Method.*")).collect(Collectors.toSet());
-            System.out.println("TargetMethodStmt:" + targetMethodStmtSet);
-            // only one declared target method - TODO: only works for trivial reflection and not local
+            // only one declared target method
             if (targetMethodStmtSet.size() == 1) {
-              System.out.println("TESTTRIGGER1");
-              for (Stmt targetStmt : targetMethodStmtSet) {
-                AbstractInvokeExpr targetInvokeExpr = targetStmt.asInvokableStmt().getInvokeExpr().orElse(null);
-                assert targetInvokeExpr != null;
-                String targetMethodName = targetInvokeExpr.getArg(0).toString();
-                System.out.println("TargetMethodName:" + targetMethodName);
-                // TODO: does not catch methods that are for example not overwritten + does not work with targetMethodName as parameter
-                Set<? extends SootMethod> calleeMethodSet = paramClass.getMethodsByName("targetMethod");
-                System.out.println("CalleeMethodSet:" + calleeMethodSet);
-                if (calleeMethodSet.size() == 1) {
-                  System.out.println("TESTTRIGGER2");
-                  for (SootMethod calleeMethod : calleeMethodSet) {
-                    MethodSignature calleeMethodSig = calleeMethod.getSignature();
-                    System.out.println("CalleeMethodSignature: " + calleeMethodSig);
-                    addCallToCG(
-                            sourceMethod.getSignature(),
-                            calleeMethodSig,
-                            fixStmt,
-                            (MutableCallGraph) cg,
-                            workList);
+              Stmt targetStmt = targetMethodStmtSet.iterator().next();
+              AbstractInvokeExpr targetInvokeExpr = targetStmt.asInvokableStmt().getInvokeExpr().orElse(null);
+              System.out.println("TargetInvokeExpr: " + targetInvokeExpr);
+              if (targetInvokeExpr == null) {
+                System.err.println("No invoke expression for the Stmt: " + targetStmt);
+                continue;
+              }
+              String targetMethodNameRaw = targetInvokeExpr.getArg(0).toString();
+              System.out.println("Target method name (raw): " + targetMethodNameRaw);
+              // " in raw targetMethodName == trivial reflection
+              if (targetMethodNameRaw.startsWith("\"") && targetMethodNameRaw.endsWith("\"")) {
+                addTrivialReflectionCall(targetMethodNameRaw, paramClass, sourceMethod, fixStmt, cg, workList);
+              // intra-procedural reflection
+              } else {
+                List<String> possibleTargets = findRawTargetMethodNames(sourceMethod.getBody().getStmts().stream().map(Object::toString).toList(), targetMethodNameRaw);
+                if (!possibleTargets.isEmpty()) {
+                  for (String possibleTarget : possibleTargets) {
+                    addTrivialReflectionCall(possibleTarget, paramClass, sourceMethod, fixStmt, cg, workList);
                   }
                 }
               }
@@ -470,6 +470,58 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         }
       }
     }
+  }
+
+  // helper method to prohibit duplicate code snippets TODO: add description
+  protected void addTrivialReflectionCall(String targetMethodNameRaw, SootClass paramClass, SootMethod sourceMethod,
+                                          InvokableStmt fixStmt,
+                                          CallGraph cg,
+                                          Deque<MethodSignature> workList) {
+    // removing " form the start and end of the string
+    String targetMethodNameClean = targetMethodNameRaw.replace("\"", "");
+    System.out.println("Target method name: " + targetMethodNameClean);
+    // TODO: does not catch methods that are not overwritten - check!
+    Set<? extends SootMethod> calleeMethodSet = paramClass.getMethodsByName(targetMethodNameClean);
+    System.out.println("CalleeMethodSet: " + calleeMethodSet);
+    for (SootMethod calleeMethod : calleeMethodSet) {
+      System.out.println("CalleeMethod: " + calleeMethod);
+    }
+    System.out.println("CalleeMethodSet size: " + calleeMethodSet.size());
+    // TODO: if there are multiple methods with the same name => edge to all possible methodsSignatures
+    if (calleeMethodSet.size() == 1) {
+      SootMethod calleeMethod = calleeMethodSet.iterator().next();
+      MethodSignature calleeMethodSig = calleeMethod.getSignature();
+      addCallToCG(
+              sourceMethod.getSignature(),
+              calleeMethodSig,
+              fixStmt,
+              (MutableCallGraph) cg,
+              workList);
+    } else {
+      System.err.println("Expected exactly one method named: " + targetMethodNameClean + " in class: " + paramClass);
+    }
+  }
+
+  // helper method to find possible raw target method names (intra-procedural) TODO: description
+  protected List<String> findRawTargetMethodNames(List<String> stmts, String targetMethodNameRaw) {
+    // left hand side of stmt matches targetMethodNameRaw
+    List<String> targetAssignments = stmts.stream()
+            .filter(stmt -> stmt.trim().startsWith(targetMethodNameRaw + " ="))
+            .toList();
+    System.out.println("Target method names: " + targetAssignments);
+    List<String> results = new ArrayList<>();
+    for (String assignment : targetAssignments) {
+      String rightSide = assignment.substring(assignment.indexOf('=') + 1).trim();
+      if (rightSide.startsWith("\"") && rightSide.endsWith("\"")) {
+        results.add(rightSide);
+      }
+      else if (rightSide.matches("\\$\\w+(\\[\\d+])?")) {
+        // recursively search
+        results.addAll(findRawTargetMethodNames(stmts, rightSide));
+      }
+    }
+    System.out.println("Results: " + results);
+    return results;
   }
 
   /**
