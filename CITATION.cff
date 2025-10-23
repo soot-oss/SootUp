@@ -24,7 +24,7 @@ preferred-citation:
     given-names: "Linghui"
   - family-names: "He"
     given-names: "Dongjie"
-  doi: "110.1007/978-3-031-57246-3_13"
+  doi: "10.1007/978-3-031-57246-3_13"
   booktitle: "Tools and Algorithms for the Construction and Analysis of Systems"
   start: 229 # First page number
   end: 247 # Last page number
