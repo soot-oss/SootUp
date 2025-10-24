@@ -287,8 +287,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param cg the call graph that will receive the found calls
    * @param workList the work list that will be updated of found target methods
    */
-  // TODO: Hier muss der check ob targetMethod == callerMethod und falls ja, dann edge from
-  // sourceMethod zum callee
   protected void resolveAllCallsFromSourceMethod(
       @NonNull SootMethod sourceMethod,
       @NonNull MutableCallGraph cg,
@@ -326,7 +324,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         }));
   }
 
-  /** TODO */
+  /**
+   * The method returns a method signature, which the properties of a <code>Caller</code> or <code>
+   * Callee</code> object from the <code>ImplicitPatterns.json</code> file.
+   *
+   * @param methodSpec class to match <code>Caller</code> or <code>Callee</code> object into Java
+   *     objects
+   * @return constructed method signature, corresponding to caller/callee properties
+   */
   protected MethodSignature resolveMethodSpec(MethodSpec methodSpec) {
     String params = methodSpec.getParam();
     List<String> param;
@@ -343,7 +348,18 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             param);
   }
 
-  /** TODO */
+  /**
+   * Method to resolve implicit call edges, which do not need further resolution. Fix implicit
+   * patterns can directly create an edge between the source method and the corresponding <code>
+   * Callee</code> method, if the <code>Caller</code> is invoked.
+   *
+   * @param sourceMethodSig Caller of the resulting implicit call edge
+   * @param callee resolve to obtain the method signature, which serves as callee of the implicit
+   *     call edge
+   * @param fixStmt invoke stmt for implicit call edge
+   * @param cg add the implicit edge here
+   * @param workList <code>sourceMethodSig</code> and <code>callee</code> are added
+   */
   protected void resolveFixImplicitCallEdge(
       MethodSignature sourceMethodSig,
       MethodSpec callee,
@@ -354,7 +370,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     addCallToCG(sourceMethodSig, calleeMethodSig, fixStmt, (MutableCallGraph) cg, workList);
   }
 
-  /**TODO: description
+  /**
+   * TODO: description
+   *
    * @param sourceMethod serves as caller for the implicit edge
    * @param fixStmt invoke stmt for implicit call edge from <code>sourceMethodSig</code> to <code>
    *     callee</code>
@@ -386,58 +404,67 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       ClassType methodSigClassType = methodSig.getDeclClassType();
       // resolution of ExternalizableWrite and SerializableWrite
       if (methodSigReturnType.equals(VoidType.getInstance())
-              && !methodSigParam.isEmpty()
-              && methodSigName.equals("writeObject")) {
+          && !methodSigParam.isEmpty()
+          && methodSigName.equals("writeObject")) {
         MethodSpec caller = edge.getCaller();
         ClassType objectOutputStreamType =
-                view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
+            view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
         if (typeHierarchy
                 .superClassesOf(methodSigClassType)
-                .noneMatch(classType -> classType.equals(objectOutputStreamType)) && !methodSigClassType.equals(objectOutputStreamType)) {
+                .noneMatch(classType -> classType.equals(objectOutputStreamType))
+            && !methodSigClassType.equals(objectOutputStreamType)) {
           continue;
         }
         if (!sourceMethodInvokeExpr.getArgs().isEmpty() && edge.getResolveCalleeClassName()) {
           Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
           SootClass paramClass =
-                  view.getClassOrThrow(
-                          view.getIdentifierFactory().getClassType(paramType.toString()));
+              view.getClassOrThrow(view.getIdentifierFactory().getClassType(paramType.toString()));
           Set<? extends ClassType> paramClassInterfaces = getAllInterfaces(paramClass);
           // writeObject(obj), where param obj is instance of Externalizable or Serializable
           if (paramClassInterfaces.contains(
-                  view.getIdentifierFactory().getClassType(edge.getInterfaceType()))) {
+              view.getIdentifierFactory().getClassType(edge.getInterfaceType()))) {
             MethodSpec callee = edge.getCallee();
-            Set<? extends SootMethod> targetMethods = resolveTargetMethods(paramClass, callee.getName());
+            Set<? extends SootMethod> targetMethods =
+                resolveTargetMethods(paramClass, callee.getName());
             for (SootMethod targetMethod : targetMethods) {
-              callee.setFullyQualifiedClassName(targetMethod.getDeclClassType().getFullyQualifiedName());
+              callee.setFullyQualifiedClassName(
+                  targetMethod.getDeclClassType().getFullyQualifiedName());
               MethodSignature calleeMethodSig = resolveMethodSpec(callee);
               addCallToCG(
-                      sourceMethod.getSignature(),
-                      calleeMethodSig,
-                      fixStmt,
-                      (MutableCallGraph) cg,
-                      workList);
+                  sourceMethod.getSignature(),
+                  calleeMethodSig,
+                  fixStmt,
+                  (MutableCallGraph) cg,
+                  workList);
             }
           }
         }
       }
       // resolution of Reflection
       if (methodSigReturnType.toString().equals("java.lang.Object")
-              && !methodSigParam.isEmpty()
-              && methodSigName.equals("invoke")) {
+          && !methodSigParam.isEmpty()
+          && methodSigName.equals("invoke")) {
         MethodSpec caller = edge.getCaller();
         ClassType objectOutputStreamType =
-                view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
-        // check class implementing invoke is java.lang.reflect.Method or a subclass of java.lang.reflect.Method
+            view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
+        // check class implementing invoke is java.lang.reflect.Method or a subclass of
+        // java.lang.reflect.Method
         if (typeHierarchy
                 .superClassesOf(methodSigClassType)
-                .noneMatch(classType -> classType.equals(objectOutputStreamType)) && !methodSigClassType.equals(objectOutputStreamType)) {
+                .noneMatch(classType -> classType.equals(objectOutputStreamType))
+            && !methodSigClassType.equals(objectOutputStreamType)) {
           continue;
         }
         if (!sourceMethodInvokeExpr.getArgs().isEmpty() && edge.getResolveCalleeClassName()) {
-          Set<Stmt> targetMethodStmtSet = sourceMethod.getBody().getStmts().stream().filter(targetMethodStmt -> targetMethodStmt.toString().matches(".*get\\w*Method.*")).collect(Collectors.toSet());
+          Set<Stmt> targetMethodStmtSet =
+              sourceMethod.getBody().getStmts().stream()
+                  .filter(
+                      targetMethodStmt -> targetMethodStmt.toString().matches(".*get\\w*Method.*"))
+                  .collect(Collectors.toSet());
           // for all declared target methods
           for (Stmt targetStmt : targetMethodStmtSet) {
-            AbstractInvokeExpr targetInvokeExpr = targetStmt.asInvokableStmt().getInvokeExpr().orElse(null);
+            AbstractInvokeExpr targetInvokeExpr =
+                targetStmt.asInvokableStmt().getInvokeExpr().orElse(null);
             if (targetInvokeExpr == null) {
               System.err.println("No invoke expression for the Stmt: " + targetStmt);
               continue;
@@ -445,17 +472,22 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             String targetMethodNameRaw = targetInvokeExpr.getArg(0).toString();
             Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
             SootClass paramClass =
-                    view.getClassOrThrow(
-                            view.getIdentifierFactory().getClassType(paramType.toString()));
+                view.getClassOrThrow(
+                    view.getIdentifierFactory().getClassType(paramType.toString()));
             // " in raw targetMethodName == trivial reflection
             if (targetMethodNameRaw.startsWith("\"") && targetMethodNameRaw.endsWith("\"")) {
-              addTrivialReflectionCall(targetMethodNameRaw, paramClass, sourceMethod, fixStmt, cg, workList);
+              addTrivialReflectionCall(
+                  targetMethodNameRaw, paramClass, sourceMethod, fixStmt, cg, workList);
               // intra-procedural reflection
             } else {
-              List<String> possibleTargets = findRawTargetMethodNames(sourceMethod.getBody().getStmts().stream().map(Object::toString).toList(), targetMethodNameRaw);
+              List<String> possibleTargets =
+                  findRawTargetMethodNames(
+                      sourceMethod.getBody().getStmts().stream().map(Object::toString).toList(),
+                      targetMethodNameRaw);
               if (!possibleTargets.isEmpty()) {
                 for (String possibleTarget : possibleTargets) {
-                  addTrivialReflectionCall(possibleTarget, paramClass, sourceMethod, fixStmt, cg, workList);
+                  addTrivialReflectionCall(
+                      possibleTarget, paramClass, sourceMethod, fixStmt, cg, workList);
                 }
               }
             }
@@ -465,8 +497,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
   }
 
-  // helper method to search the given class and all its superclasses for method(s) matching the given targetMethodName TODO: description
-  protected Set<? extends SootMethod> resolveTargetMethods(SootClass sootClass, String targetMethodName) {
+  /**
+   * This method searches for all methods with a given method name in a soot class. As long as no
+   * matches are found and the current soot class has a super class, the search continues with the
+   * super classes.
+   *
+   * @param sootClass start with this <code>SootClass</code>
+   * @param targetMethodName looking for methods matching this string
+   */
+  protected Set<? extends SootMethod> resolveTargetMethods(
+      SootClass sootClass, String targetMethodName) {
     Set<? extends SootMethod> targetMethods = sootClass.getMethodsByName(targetMethodName);
     Optional<? extends SootClass> currentSootClassOpt = Optional.of(sootClass);
     while (targetMethods.isEmpty()) {
@@ -474,7 +514,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       if (currentSootClass.getName().equals("java.lang.Object")) {
         break;
       } else if (currentSootClass.hasSuperclass()) {
-        Optional<? extends  ClassType> superClassOptType = currentSootClass.getSuperclass();
+        Optional<? extends ClassType> superClassOptType = currentSootClass.getSuperclass();
         if (superClassOptType.isPresent()) {
           currentSootClass = view.getClassOrThrow(superClassOptType.get());
           currentSootClassOpt = Optional.of(currentSootClass);
@@ -485,15 +525,21 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     return targetMethods;
   }
 
-  // helper method to get all interfaces of all superclasses and the class itself TODO: description
+  /**
+   * Gets the ClassType's of all implemented interfaces form the given <code>SootClass</code> and
+   * all its super classes.
+   *
+   * @param sootClass starts with this given class
+   */
   protected Set<? extends ClassType> getAllInterfaces(SootClass sootClass) {
     Set<ClassType> interfaces = new HashSet<>();
     Optional<? extends SootClass> currentSootClassOpt = Optional.of(sootClass);
     while (currentSootClassOpt.isPresent()) {
       SootClass currentSootClass = currentSootClassOpt.get();
       interfaces.addAll(currentSootClass.getInterfaces());
-      if (currentSootClass.hasSuperclass() && !currentSootClass.getName().equals("java.lang.Object")) {
-        Optional<? extends  ClassType> superClassOptType = currentSootClass.getSuperclass();
+      if (currentSootClass.hasSuperclass()
+          && !currentSootClass.getName().equals("java.lang.Object")) {
+        Optional<? extends ClassType> superClassOptType = currentSootClass.getSuperclass();
         if (superClassOptType.isPresent()) {
           currentSootClass = view.getClassOrThrow(superClassOptType.get());
           currentSootClassOpt = Optional.of(currentSootClass);
@@ -508,37 +554,35 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   // helper method to prohibit duplicate code snippets TODO: add description
-  protected void addTrivialReflectionCall(String targetMethodNameRaw, SootClass paramClass, SootMethod sourceMethod,
-                                          InvokableStmt fixStmt,
-                                          CallGraph cg,
-                                          Deque<MethodSignature> workList) {
+  protected void addTrivialReflectionCall(
+      String targetMethodNameRaw,
+      SootClass paramClass,
+      SootMethod sourceMethod,
+      InvokableStmt fixStmt,
+      CallGraph cg,
+      Deque<MethodSignature> workList) {
     // removing " form the start and end of the string
     String targetMethodNameClean = targetMethodNameRaw.replace("\"", "");
-    Set<? extends SootMethod> calleeMethodSet = resolveTargetMethods(paramClass, targetMethodNameClean);
+    Set<? extends SootMethod> calleeMethodSet =
+        resolveTargetMethods(paramClass, targetMethodNameClean);
     for (SootMethod calleeMethod : calleeMethodSet) {
       MethodSignature calleeMethodSig = calleeMethod.getSignature();
       addCallToCG(
-              sourceMethod.getSignature(),
-              calleeMethodSig,
-              fixStmt,
-              (MutableCallGraph) cg,
-              workList);
+          sourceMethod.getSignature(), calleeMethodSig, fixStmt, (MutableCallGraph) cg, workList);
     }
   }
 
   // helper method to find possible raw target method names (intra-procedural) TODO: description
   protected List<String> findRawTargetMethodNames(List<String> stmts, String targetMethodNameRaw) {
     // left hand side of stmt matches targetMethodNameRaw
-    List<String> targetAssignments = stmts.stream()
-            .filter(stmt -> stmt.trim().startsWith(targetMethodNameRaw + " ="))
-            .toList();
+    List<String> targetAssignments =
+        stmts.stream().filter(stmt -> stmt.trim().startsWith(targetMethodNameRaw + " =")).toList();
     List<String> results = new ArrayList<>();
     for (String assignment : targetAssignments) {
       String rightSide = assignment.substring(assignment.indexOf('=') + 1).trim();
       if (rightSide.startsWith("\"") && rightSide.endsWith("\"")) {
         results.add(rightSide);
-      }
-      else if (rightSide.matches("\\$\\w+(\\[\\d+])?")) {
+      } else if (rightSide.matches("\\$\\w+(\\[\\d+])?")) {
         // recursively search
         results.addAll(findRawTargetMethodNames(stmts, rightSide));
       }
