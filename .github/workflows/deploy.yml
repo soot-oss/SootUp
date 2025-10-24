@@ -69,7 +69,7 @@ jobs:
           # -U force updates just to make sure we are using latest dependencies
           # -B Batch mode (do not ask for user input), just in case
           # -D activate a profile via the release property (and disable defined submodules that should not be deployed)
-          mvn -U -B clean deploy -Drelease -DskipTests
+          mvn -U -B -ntp clean deploy -Drelease -DskipTests
         env:
           MAVEN_USERNAME: ${{ secrets.SONATYPE_USER }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PW }}

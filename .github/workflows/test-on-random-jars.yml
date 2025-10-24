@@ -56,7 +56,7 @@ jobs:
 
       - name: Run Maven
         run: |
-          mvn clean install -DskipTests
+          mvn clean install -B -ntp -DskipTests
 
       - name: Run tests on downloaded JARs
         run: |

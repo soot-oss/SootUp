@@ -34,7 +34,7 @@ jobs:
 
       - name: Generate Javadoc
         shell: bash
-        run: mvn clean install -DskipTests -B && mvn javadoc:aggregate         # generates javadoc in "target/reports/apidocs"
+        run: mvn clean install -DskipTests -B -ntp && mvn javadoc:aggregate         # generates javadoc in "target/reports/apidocs"
 
       - name: Move generated Javadoc into docs directory
         shell: bash
