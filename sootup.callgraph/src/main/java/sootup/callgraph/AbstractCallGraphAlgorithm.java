@@ -354,7 +354,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     addCallToCG(sourceMethodSig, calleeMethodSig, fixStmt, (MutableCallGraph) cg, workList);
   }
 
-  /**
+  /**TODO: description
    * @param sourceMethod serves as caller for the implicit edge
    * @param fixStmt invoke stmt for implicit call edge from <code>sourceMethodSig</code> to <code>
    *     callee</code>
@@ -386,77 +386,37 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       ClassType methodSigClassType = methodSig.getDeclClassType();
       // resolution of ExternalizableWrite and SerializableWrite
       if (methodSigReturnType.equals(VoidType.getInstance())
-          && !methodSigParam.isEmpty()
-          && methodSigName.equals("writeObject")) {
-        MethodSpec caller = edge.getCaller();
-        ClassType objectOutputStreamType =
-            view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
-        // check class implementing writeObject is java.io.ObjectOutputStream or a subclass of java.io.ObjectOutputStream
-        if (typeHierarchy
-            .superClassesOf(methodSigClassType)
-            .noneMatch(classType -> classType.equals(objectOutputStreamType)) && !methodSigClassType.equals(objectOutputStreamType)) {
-          continue;
-        }
-        if (sourceMethodInvokeExpr.getArgs().size() == 1) {
-          System.out.println("SourceMethodInvokeExpr Args: " + sourceMethodInvokeExpr.getArgs());
-          Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
-          SootClass paramClass =
-              view.getClassOrThrow(
-                  view.getIdentifierFactory().getClassType(paramType.toString()));
-          String classImplementingCallee = getClassImplementingCallee(paramClass, edge);
-          // writeObject(obj), where param obj is instance of Externalizable or Serializable
-          if (!classImplementingCallee.isEmpty()) {
-            MethodSpec callee = edge.getCallee();
-            callee.setFullyQualifiedClassName(classImplementingCallee);
-            MethodSignature calleeMethodSig = resolveMethodSpec(callee);
-            addCallToCG(
-                    sourceMethod.getSignature(),
-                    calleeMethodSig,
-                    fixStmt,
-                    (MutableCallGraph) cg,
-                    workList);
-          }
-        }
-      }
-      // TODO: go back to combining ExternalizableWrite/Read and SerializableWrite/Read
-      // resolution of ExternalizableRead and SerializableRead
-      if (methodSigReturnType.toString().equals("java.lang.Object")
-              && methodSigParam.isEmpty()
-              && methodSigName.equals("readObject")) {
+              && !methodSigParam.isEmpty()
+              && methodSigName.equals("writeObject")) {
         MethodSpec caller = edge.getCaller();
         ClassType objectOutputStreamType =
                 view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
-        System.out.println("ObjectOutputStream: " + objectOutputStreamType);
-        // check class implementing writeObject is java.io.ObjectOutputStream or a subclass of java.io.ObjectOutputStream
         if (typeHierarchy
                 .superClassesOf(methodSigClassType)
                 .noneMatch(classType -> classType.equals(objectOutputStreamType)) && !methodSigClassType.equals(objectOutputStreamType)) {
           continue;
         }
-        System.out.println("TestTrigger2");
-        System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr);
-        sourceMethod.getBody().getStmts().forEach(System.out::println);
-        if (sourceMethodInvokeExpr.getArgs().size() == 1) {
-          System.out.println("TESTTRIGGER");
-          System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr);
+        if (!sourceMethodInvokeExpr.getArgs().isEmpty() && edge.getResolveCalleeClassName()) {
           Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
-          System.out.println("ParamType: " + paramType);
           SootClass paramClass =
                   view.getClassOrThrow(
                           view.getIdentifierFactory().getClassType(paramType.toString()));
-          String classImplementingCallee = getClassImplementingCallee(paramClass, edge);
-          System.out.println("ClassImplementingCallee: " + classImplementingCallee);
+          Set<? extends ClassType> paramClassInterfaces = getAllInterfaces(paramClass);
           // writeObject(obj), where param obj is instance of Externalizable or Serializable
-          if (!classImplementingCallee.isEmpty()) {
+          if (paramClassInterfaces.contains(
+                  view.getIdentifierFactory().getClassType(edge.getInterfaceType()))) {
             MethodSpec callee = edge.getCallee();
-            callee.setFullyQualifiedClassName(classImplementingCallee);
-            MethodSignature calleeMethodSig = resolveMethodSpec(callee);
-            addCallToCG(
-                    sourceMethod.getSignature(),
-                    calleeMethodSig,
-                    fixStmt,
-                    (MutableCallGraph) cg,
-                    workList);
+            Set<? extends SootMethod> targetMethods = resolveTargetMethods(paramClass, callee.getName());
+            for (SootMethod targetMethod : targetMethods) {
+              callee.setFullyQualifiedClassName(targetMethod.getDeclClassType().getFullyQualifiedName());
+              MethodSignature calleeMethodSig = resolveMethodSpec(callee);
+              addCallToCG(
+                      sourceMethod.getSignature(),
+                      calleeMethodSig,
+                      fixStmt,
+                      (MutableCallGraph) cg,
+                      workList);
+            }
           }
         }
       }
@@ -475,7 +435,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         }
         if (!sourceMethodInvokeExpr.getArgs().isEmpty() && edge.getResolveCalleeClassName()) {
           Set<Stmt> targetMethodStmtSet = sourceMethod.getBody().getStmts().stream().filter(targetMethodStmt -> targetMethodStmt.toString().matches(".*get\\w*Method.*")).collect(Collectors.toSet());
-          // only one declared target method
+          // for all declared target methods
           for (Stmt targetStmt : targetMethodStmtSet) {
             AbstractInvokeExpr targetInvokeExpr = targetStmt.asInvokableStmt().getInvokeExpr().orElse(null);
             if (targetInvokeExpr == null) {
@@ -505,7 +465,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
   }
 
-  // helper method to search the given class and all its superclasses for method(s) matching the given targetMethodName
+  // helper method to search the given class and all its superclasses for method(s) matching the given targetMethodName TODO: description
   protected Set<? extends SootMethod> resolveTargetMethods(SootClass sootClass, String targetMethodName) {
     Set<? extends SootMethod> targetMethods = sootClass.getMethodsByName(targetMethodName);
     Optional<? extends SootClass> currentSootClassOpt = Optional.of(sootClass);
@@ -525,28 +485,26 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     return targetMethods;
   }
 
-  // helper method to get all interfaces of all superclasses and the class itself + returns the class with the implementation
-  protected String getClassImplementingCallee(SootClass sootClass, IntraImplicitCallEdge edge) {
-    Optional<? extends SootClass> currentClassOpt = Optional.of(sootClass);
-    while (currentClassOpt.isPresent()) {
-      SootClass currentClass = currentClassOpt.get();
-      if (currentClass.getInterfaces().contains(view.getIdentifierFactory().getClassType(edge.getInterfaceType()))){
-        return currentClass.getType().toString();
-      } else {
-        if (currentClass.hasSuperclass() && !currentClass.getName().equals("java.lang.Object")) {
-          Optional<? extends  ClassType> superClassOptType = currentClass.getSuperclass();
-          if (superClassOptType.isPresent()) {
-            currentClass = view.getClassOrThrow(superClassOptType.get());
-            currentClassOpt = Optional.of(currentClass);
-          } else {
-            currentClassOpt = Optional.empty();
-          }
+  // helper method to get all interfaces of all superclasses and the class itself TODO: description
+  protected Set<? extends ClassType> getAllInterfaces(SootClass sootClass) {
+    Set<ClassType> interfaces = new HashSet<>();
+    Optional<? extends SootClass> currentSootClassOpt = Optional.of(sootClass);
+    while (currentSootClassOpt.isPresent()) {
+      SootClass currentSootClass = currentSootClassOpt.get();
+      interfaces.addAll(currentSootClass.getInterfaces());
+      if (currentSootClass.hasSuperclass() && !currentSootClass.getName().equals("java.lang.Object")) {
+        Optional<? extends  ClassType> superClassOptType = currentSootClass.getSuperclass();
+        if (superClassOptType.isPresent()) {
+          currentSootClass = view.getClassOrThrow(superClassOptType.get());
+          currentSootClassOpt = Optional.of(currentSootClass);
         } else {
-          break;
+          currentSootClassOpt = Optional.empty();
         }
+      } else {
+        break;
       }
     }
-    return "";
+    return interfaces;
   }
 
   // helper method to prohibit duplicate code snippets TODO: add description
