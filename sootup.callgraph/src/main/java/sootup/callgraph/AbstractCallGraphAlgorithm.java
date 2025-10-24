@@ -460,49 +460,42 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           }
         }
       }
-
-
       // resolution of Reflection
       if (methodSigReturnType.toString().equals("java.lang.Object")
               && !methodSigParam.isEmpty()
               && methodSigName.equals("invoke")) {
-        // check method invoke comes from java.lang.reflect.Method or a subclass
         MethodSpec caller = edge.getCaller();
         ClassType objectOutputStreamType =
                 view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
-        System.out.println("ClassType: " + objectOutputStreamType);
-        System.out.println("DeclaringClassType: " + methodSig.getDeclClassType());
-        // TODO: wrong check!
+        // check class implementing invoke is java.lang.reflect.Method or a subclass of java.lang.reflect.Method
         if (typeHierarchy
-                .superClassesOf(methodSig.getDeclClassType())
-                .noneMatch(classType -> classType.equals(objectOutputStreamType))) {
-          if (!sourceMethodInvokeExpr.getArgs().isEmpty() && edge.getResolveCalleeClassName()) {
+                .superClassesOf(methodSigClassType)
+                .noneMatch(classType -> classType.equals(objectOutputStreamType)) && !methodSigClassType.equals(objectOutputStreamType)) {
+          continue;
+        }
+        if (!sourceMethodInvokeExpr.getArgs().isEmpty() && edge.getResolveCalleeClassName()) {
+          Set<Stmt> targetMethodStmtSet = sourceMethod.getBody().getStmts().stream().filter(targetMethodStmt -> targetMethodStmt.toString().matches(".*get\\w*Method.*")).collect(Collectors.toSet());
+          // only one declared target method
+          for (Stmt targetStmt : targetMethodStmtSet) {
+            AbstractInvokeExpr targetInvokeExpr = targetStmt.asInvokableStmt().getInvokeExpr().orElse(null);
+            if (targetInvokeExpr == null) {
+              System.err.println("No invoke expression for the Stmt: " + targetStmt);
+              continue;
+            }
+            String targetMethodNameRaw = targetInvokeExpr.getArg(0).toString();
             Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
             SootClass paramClass =
                     view.getClassOrThrow(
                             view.getIdentifierFactory().getClassType(paramType.toString()));
-            Set<Stmt> targetMethodStmtSet = sourceMethod.getBody().getStmts().stream().filter(targetMethodStmt -> targetMethodStmt.toString().matches(".*get\\w*Method.*")).collect(Collectors.toSet());
-            // only one declared target method
-            if (targetMethodStmtSet.size() == 1) {
-              Stmt targetStmt = targetMethodStmtSet.iterator().next();
-              AbstractInvokeExpr targetInvokeExpr = targetStmt.asInvokableStmt().getInvokeExpr().orElse(null);
-              System.out.println("TargetInvokeExpr: " + targetInvokeExpr);
-              if (targetInvokeExpr == null) {
-                System.err.println("No invoke expression for the Stmt: " + targetStmt);
-                continue;
-              }
-              String targetMethodNameRaw = targetInvokeExpr.getArg(0).toString();
-              System.out.println("Target method name (raw): " + targetMethodNameRaw);
-              // " in raw targetMethodName == trivial reflection
-              if (targetMethodNameRaw.startsWith("\"") && targetMethodNameRaw.endsWith("\"")) {
-                addTrivialReflectionCall(targetMethodNameRaw, paramClass, sourceMethod, fixStmt, cg, workList);
+            // " in raw targetMethodName == trivial reflection
+            if (targetMethodNameRaw.startsWith("\"") && targetMethodNameRaw.endsWith("\"")) {
+              addTrivialReflectionCall(targetMethodNameRaw, paramClass, sourceMethod, fixStmt, cg, workList);
               // intra-procedural reflection
-              } else {
-                List<String> possibleTargets = findRawTargetMethodNames(sourceMethod.getBody().getStmts().stream().map(Object::toString).toList(), targetMethodNameRaw);
-                if (!possibleTargets.isEmpty()) {
-                  for (String possibleTarget : possibleTargets) {
-                    addTrivialReflectionCall(possibleTarget, paramClass, sourceMethod, fixStmt, cg, workList);
-                  }
+            } else {
+              List<String> possibleTargets = findRawTargetMethodNames(sourceMethod.getBody().getStmts().stream().map(Object::toString).toList(), targetMethodNameRaw);
+              if (!possibleTargets.isEmpty()) {
+                for (String possibleTarget : possibleTargets) {
+                  addTrivialReflectionCall(possibleTarget, paramClass, sourceMethod, fixStmt, cg, workList);
                 }
               }
             }
@@ -510,6 +503,26 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         }
       }
     }
+  }
+
+  // helper method to search the given class and all its superclasses for method(s) matching the given targetMethodName
+  protected Set<? extends SootMethod> resolveTargetMethods(SootClass sootClass, String targetMethodName) {
+    Set<? extends SootMethod> targetMethods = sootClass.getMethodsByName(targetMethodName);
+    Optional<? extends SootClass> currentSootClassOpt = Optional.of(sootClass);
+    while (targetMethods.isEmpty()) {
+      SootClass currentSootClass = currentSootClassOpt.get();
+      if (currentSootClass.getName().equals("java.lang.Object")) {
+        break;
+      } else if (currentSootClass.hasSuperclass()) {
+        Optional<? extends  ClassType> superClassOptType = currentSootClass.getSuperclass();
+        if (superClassOptType.isPresent()) {
+          currentSootClass = view.getClassOrThrow(superClassOptType.get());
+          currentSootClassOpt = Optional.of(currentSootClass);
+        }
+      }
+      targetMethods = currentSootClass.getMethodsByName(targetMethodName);
+    }
+    return targetMethods;
   }
 
   // helper method to get all interfaces of all superclasses and the class itself + returns the class with the implementation
@@ -543,17 +556,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                                           Deque<MethodSignature> workList) {
     // removing " form the start and end of the string
     String targetMethodNameClean = targetMethodNameRaw.replace("\"", "");
-    System.out.println("Target method name: " + targetMethodNameClean);
-    // TODO: does not catch methods that are not overwritten - check!
-    Set<? extends SootMethod> calleeMethodSet = paramClass.getMethodsByName(targetMethodNameClean);
-    System.out.println("CalleeMethodSet: " + calleeMethodSet);
+    Set<? extends SootMethod> calleeMethodSet = resolveTargetMethods(paramClass, targetMethodNameClean);
     for (SootMethod calleeMethod : calleeMethodSet) {
-      System.out.println("CalleeMethod: " + calleeMethod);
-    }
-    System.out.println("CalleeMethodSet size: " + calleeMethodSet.size());
-    // TODO: if there are multiple methods with the same name => edge to all possible methodsSignatures
-    if (calleeMethodSet.size() == 1) {
-      SootMethod calleeMethod = calleeMethodSet.iterator().next();
       MethodSignature calleeMethodSig = calleeMethod.getSignature();
       addCallToCG(
               sourceMethod.getSignature(),
@@ -561,8 +565,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               fixStmt,
               (MutableCallGraph) cg,
               workList);
-    } else {
-      System.err.println("Expected exactly one method named: " + targetMethodNameClean + " in class: " + paramClass);
     }
   }
 
@@ -572,7 +574,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     List<String> targetAssignments = stmts.stream()
             .filter(stmt -> stmt.trim().startsWith(targetMethodNameRaw + " ="))
             .toList();
-    System.out.println("Target method names: " + targetAssignments);
     List<String> results = new ArrayList<>();
     for (String assignment : targetAssignments) {
       String rightSide = assignment.substring(assignment.indexOf('=') + 1).trim();
@@ -584,7 +585,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         results.addAll(findRawTargetMethodNames(stmts, rightSide));
       }
     }
-    System.out.println("Results: " + results);
     return results;
   }
 

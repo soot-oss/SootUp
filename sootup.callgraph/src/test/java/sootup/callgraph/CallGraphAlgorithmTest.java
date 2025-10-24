@@ -4,100 +4,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
+import sootup.core.signatures.MethodSignature;
 
 public abstract class CallGraphAlgorithmTest extends CallGraphTest {
-
-//    @Test
-//    public void testRunFinalizer() {
-//      CallGraph cg = loadCallGraph("Implicit", "RunFinalizer");
-//      for (CallGraph.Call call : cg.getCalls()) {
-//        System.out.println(call);
-//      }
-//      assertTrue(cg.callCount() > 0);
-//    }
-//
-//  @Test
-//  public void testTriggerSystemRunFinalization() {
-//    CallGraph cg = loadCallGraph("Implicit", "bachelor.TriggerSystemRunFinalization");
-//    for (CallGraph.Call call : cg.getCalls()) {
-//      System.out.println(call);
-//    }
-//    assertTrue(cg.callCount() > 0);
-//  }
-
+// Fix calls tests
     @Test
-    public void testSubClassExternalizable() {
-      CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassExternalizable");
-      for (CallGraph.Call call : cg.getCalls()) {
-        System.out.println(call);
-      }
-      assertTrue(cg.callCount() > 0);
+    public void testRunFinalizer() {
+      CallGraph cg = loadCallGraph("Implicit", "bachelor.fix.RunFinalizer");
+      MethodSignature calleeMethodSig = identifierFactory.getMethodSignature(identifierFactory.getClassType("java.lang.ref.Finalizer"), "runFinalization", "void", Collections.emptyList());
+      Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+      assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
     }
 
-    @Test
-    public void testSubClassSerializable() {
-      CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassSerializable");
-      for (CallGraph.Call call : cg.getCalls()) {
-        System.out.println(call);
-      }
-      assertTrue(cg.callCount() > 0);
-    }
-
-  // trivial reflection with method only in superClass
-//  @Test
-//  public void testReflectiveInvokeExample() {
-//    CallGraph cg = loadCallGraph("Implicit", "bachelor.ReflectiveInvokeExample");
-//    for (CallGraph.Call call : cg.getCalls()) {
-//      System.out.println(call);
-//    }
-//    assertTrue(cg.callCount() > 0);
-//  }
-
-//  @Test
-//  public void testReflectiveInvokeExample3() {
-//    CallGraph cg = loadCallGraph("Implicit", "bachelor.ReflectiveInvokeExample3");
-//    for (CallGraph.Call call : cg.getCalls()) {
-//      System.out.println(call);
-//    }
-//    assertTrue(cg.callCount() > 0);
-//  }
-
-  // already covert under trivial reflection implementation
-//  @Test
-//  public void testReflectiveInvokeExample4() {
-//    CallGraph cg = loadCallGraph("Implicit", "bachelor.ReflectiveInvokeExample4");
-//    for (CallGraph.Call call : cg.getCalls()) {
-//      System.out.println(call);
-//    }
-//    assertTrue(cg.callCount() > 0);
-//  }
-
-//  @Test
-//  public void testReflectiveInvokeExample6() {
-//    CallGraph cg = loadCallGraph("Implicit", "bachelor.ReflectiveInvokeExample6");
-//    for (CallGraph.Call call : cg.getCalls()) {
-//      System.out.println(call);
-//    }
-//    assertTrue(cg.callCount() > 0);
-//  }
-//
-//  @Test
-//  public void testReflectiveInvokeExample8() {
-//    CallGraph cg = loadCallGraph("Implicit", "bachelor.ReflectiveInvokeExample8");
-//    for (CallGraph.Call call : cg.getCalls()) {
-//      System.out.println(call);
-//    }
-//    assertTrue(cg.callCount() > 0);
-//  }
-//
-//  @Test
-//  public void testTrivialReflection() {
-//    CallGraph cg = loadCallGraph("Implicit", "TrivialReflection");
-//    for (CallGraph.Call call : cg.getCalls()) {
-//      System.out.println(call);
-//    }
-//    assertTrue(cg.callCount() > 0);
-//  }
+  @Test
+  public void testTriggerSystemRunFinalization() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.fix.TriggerSystemRunFinalization");
+    MethodSignature calleeMethodSig = identifierFactory.getMethodSignature(identifierFactory.getClassType("java.lang.ref.Finalizer"), "runFinalization", "void", Collections.emptyList());
+    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
+  }
 
   // TODO
 //  @Test
@@ -108,6 +33,84 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 //    }
 //    assertTrue(cg.callCount() > 0);
 //  }
+
+// Intra Calls tests
+
+  @Test
+  public void testReflectiveInvokeExample() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.reflection.ReflectiveInvokeExample");
+    MethodSignature calleeMethodSig = identifierFactory.getMethodSignature(identifierFactory.getClassType("bachelor.intra.reflection.ReflectiveInvokeExample$Target"), "targetMethod", "void", Collections.emptyList());
+    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testReflectiveInvokeExample3() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.reflection.ReflectiveInvokeExample3");
+    MethodSignature calleeMethodSigA = identifierFactory.getMethodSignature(identifierFactory.getClassType("bachelor.intra.reflection.ReflectiveInvokeExample3$T"), "a", "void", Collections.emptyList());
+    MethodSignature calleeMethodSigB = identifierFactory.getMethodSignature(identifierFactory.getClassType("bachelor.intra.reflection.ReflectiveInvokeExample3$T"), "b", "void", Collections.emptyList());
+    Set<MethodSignature> calleeSourcesMethodSigA = cg.callSourcesTo(calleeMethodSigA);
+    Set<MethodSignature> calleeSourcesMethodSigB = cg.callSourcesTo(calleeMethodSigB);
+    assertTrue(calleeSourcesMethodSigA.contains(mainMethodSignature));
+    assertTrue(calleeSourcesMethodSigB.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testReflectiveInvokeExample4() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.reflection.ReflectiveInvokeExample4");
+    MethodSignature calleeMethodSig = identifierFactory.getMethodSignature(identifierFactory.getClassType("bachelor.intra.reflection.ReflectiveInvokeExample4$T"), "helloWorld", "void", Collections.emptyList());
+    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testReflectiveInvokeExample6() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.reflection.ReflectiveInvokeExample6");
+    MethodSignature calleeMethodSig = identifierFactory.getMethodSignature(identifierFactory.getClassType("bachelor.intra.reflection.ReflectiveInvokeExample6$T"), "x", "void", Collections.emptyList());
+    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testReflectiveInvokeExample8() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.reflection.ReflectiveInvokeExample8");
+    MethodSignature calleeMethodSigTarget = identifierFactory.getMethodSignature(identifierFactory.getClassType("bachelor.intra.reflection.ReflectiveInvokeExample8$Target"), "target", "void", Collections.emptyList());
+    MethodSignature calleeMethodSigOther = identifierFactory.getMethodSignature(identifierFactory.getClassType("bachelor.intra.reflection.ReflectiveInvokeExample8$Target"), "other", "void", Collections.emptyList());
+    Set<MethodSignature> calleeSourcesMethodSigTarget = cg.callSourcesTo(calleeMethodSigTarget);
+    Set<MethodSignature> calleeSourcesMethodSigOther = cg.callSourcesTo(calleeMethodSigOther);
+    assertTrue(calleeSourcesMethodSigTarget.contains(mainMethodSignature));
+    assertTrue(calleeSourcesMethodSigOther.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testReflectiveInvokeExample9() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.reflection.ReflectiveInvokeExample9");
+    MethodSignature calleeMethodSig1 = identifierFactory.getMethodSignature(identifierFactory.getClassType("bachelor.intra.reflection.ReflectiveInvokeExample9$Base"), "targetMethod", "void", Collections.emptyList());
+    MethodSignature calleeMethodSig2 = identifierFactory.getMethodSignature(identifierFactory.getClassType("bachelor.intra.reflection.ReflectiveInvokeExample9$Base"), "targetMethod", "void", Collections.singletonList("java.lang.String"));
+    Set<MethodSignature> calleeSourcesMethodSig1 = cg.callSourcesTo(calleeMethodSig1);
+    Set<MethodSignature> calleeSourcesMethodSig2 = cg.callSourcesTo(calleeMethodSig2);
+    assertTrue(calleeSourcesMethodSig1.contains(mainMethodSignature));
+    assertTrue(calleeSourcesMethodSig2.contains(mainMethodSignature));
+  }
+
+//    @Test
+//    public void testSubClassExternalizable() {
+//      CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassExternalizable");
+//      for (CallGraph.Call call : cg.getCalls()) {
+//        System.out.println(call);
+//      }
+//      assertTrue(cg.callCount() > 0);
+//    }
+//
+//    @Test
+//    public void testSubClassSerializable() {
+//      CallGraph cg = loadCallGraph("Implicit", "bachelor.SubClassSerializable");
+//      for (CallGraph.Call call : cg.getCalls()) {
+//        System.out.println(call);
+//      }
+//      assertTrue(cg.callCount() > 0);
+//    }
+
   //
   //  @Test
   //  public void testSingleMethod() {
