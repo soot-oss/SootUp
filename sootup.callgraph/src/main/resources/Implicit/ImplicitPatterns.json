@@ -153,6 +153,26 @@
       },
       "resolveCalleeClassName": true,
       "interfaceType": "java.lang.reflect.Method"
+    },
+    {
+      "id": "ConstructorInstance",
+      "category": 2,
+      "caller":
+      {
+        "callerFullyQualifiedClassName": "java.lang.reflect.Constructor",
+        "callerName": "newInstance",
+        "callerParam": "java.lang.Object[]",
+        "callerReturnType": "java.lang.Object"
+      },
+      "callee":
+      {
+        "calleeFullyQualifiedClassName": "",
+        "calleeName": "<init>",
+        "calleeParam": "",
+        "calleeReturnType": "void"
+      },
+      "resolveCalleeClassName": true,
+      "interfaceType": "java.lang.reflect.Constructor"
     }
   ]
 }
