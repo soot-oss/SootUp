@@ -496,16 +496,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       }
       // resolution of ConstructorInstance
       if (methodSigReturnType.toString().equals("java.lang.Object")
-              && methodSigParam.toString().equals("[java.lang.Object[]]")
-              && methodSigName.equals("newInstance")) {
+          && methodSigParam.toString().equals("[java.lang.Object[]]")
+          && methodSigName.equals("newInstance")) {
         MethodSpec caller = edge.getCaller();
         ClassType callerClassType =
-                view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
+            view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
         System.out.println("CallerClassType: " + callerClassType);
         if (typeHierarchy
                 .superClassesOf(methodSigClassType)
                 .noneMatch(classType -> classType.equals(callerClassType))
-                && !methodSigClassType.equals(callerClassType)) {
+            && !methodSigClassType.equals(callerClassType)) {
           continue;
         }
         System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr);
@@ -516,7 +516,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
           System.out.println("ParamType: " + paramType);
           SootClass paramClass =
-                  view.getClassOrThrow(view.getIdentifierFactory().getClassType(paramType.toString()));
+              view.getClassOrThrow(view.getIdentifierFactory().getClassType(paramType.toString()));
           System.out.println("ParamClass: " + paramClass);
         }
       }
