@@ -46,8 +46,17 @@ public abstract class CallGraphTest {
     return new JavaView(inputLocations);
   }
 
+  CallGraph loadCallGraph(String className) {
+    return loadCallGraph(null, className);
+  }
+
   CallGraph loadCallGraph(String testDirectory, String className) {
-    String classPath = "src/test/resources/callgraph/" + testDirectory + "/binary";
+    String classPath;
+    if (testDirectory == null) {
+      classPath = "opal-classes/";
+    } else {
+      classPath = "src/test/resources/callgraph/" + testDirectory + "/binary";
+    }
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
     view = createViewForClassPath(classPath);
