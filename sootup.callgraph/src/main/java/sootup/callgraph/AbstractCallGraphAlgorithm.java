@@ -393,7 +393,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       }
       AbstractInvokeExpr sourceMethodInvokeExpr =
           stmt.asInvokableStmt().getInvokeExpr().orElse(null);
-      if (sourceMethodInvokeExpr == null || !sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
+      if (sourceMethodInvokeExpr == null || !sourceMethodInvokeExpr.isJVirtualInvokeExpr() && !sourceMethodInvokeExpr.isJStaticInvokeExpr()) {
         continue;
       }
       MethodSignature methodSig = sourceMethodInvokeExpr.getMethodSignature();
@@ -508,7 +508,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             && !methodSigClassType.equals(callerClassType)) {
           continue;
         }
-        System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr);
+        System.out.println("MethodSig: " + methodSig);
+        System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr.getUses().toList());
         System.out.println("SourceMethodBody:");
         sourceMethod.getBody().getStmts().forEach(System.out::println);
         if (!sourceMethodInvokeExpr.getArgs().isEmpty() && edge.getResolveCalleeClassName()) {
@@ -518,6 +519,38 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           SootClass paramClass =
               view.getClassOrThrow(view.getIdentifierFactory().getClassType(paramType.toString()));
           System.out.println("ParamClass: " + paramClass);
+        }
+      }
+      // resolution of ClassForName
+      if (methodSigReturnType.toString().equals("java.lang.Class")
+              && methodSigName.equals("forName")) {
+        // forName(String) or forName(String, true, ClassLoader) create this implicit edge
+        if (methodSigParam.size() == 1 || (methodSigParam.size() == 3 && sourceMethodInvokeExpr.getArg(1).toString().equals("1"))) {
+          if (methodSigParam.size() == 3) {
+            System.out.println("MethodSig: " + methodSig);
+            System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr);
+            System.out.println("SourceMethodInvokeExpr Args: " + sourceMethodInvokeExpr.getArgs());
+          }
+          MethodSpec caller = edge.getCaller();
+          ClassType callerClassType =
+                  view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
+          if (typeHierarchy
+                  .superClassesOf(methodSigClassType)
+                  .noneMatch(classType -> classType.equals(callerClassType))
+                  && !methodSigClassType.equals(callerClassType)) {
+            continue;
+          }
+          String targetClassTypeRaw = sourceMethodInvokeExpr.getArg(0).toString();
+          String targetClassTypeClean = targetClassTypeRaw.replace("\"", "");
+          MethodSpec callee = edge.getCallee();
+          callee.setFullyQualifiedClassName(targetClassTypeClean);
+          MethodSignature calleeMethodSig = resolveMethodSpec(callee);
+          addCallToCG(
+                  sourceMethod.getSignature(),
+                  calleeMethodSig,
+                  fixStmt,
+                  (MutableCallGraph) cg,
+                  workList);
         }
       }
     }

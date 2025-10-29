@@ -173,6 +173,46 @@
       },
       "resolveCalleeClassName": true,
       "interfaceType": "java.lang.reflect.Constructor"
+    },
+    {
+      "id": "ClassForName",
+      "category": 2,
+      "caller":
+      {
+        "callerFullyQualifiedClassName": "java.lang.Class",
+        "callerName": "forName",
+        "callerParam": "java.lang.String",
+        "callerReturnType": "java.lang.Class"
+      },
+      "callee":
+      {
+        "calleeFullyQualifiedClassName": "",
+        "calleeName": "<clinit>",
+        "calleeParam": "",
+        "calleeReturnType": "void"
+      },
+      "resolveCalleeClassName": true,
+      "interfaceType": "java.lang.Class"
+    },
+    {
+      "id": "ClassForName2",
+      "category": 2,
+      "caller":
+      {
+        "callerFullyQualifiedClassName": "java.lang.Class",
+        "callerName": "forName",
+        "callerParam": "java.lang.String, boolean, java.lang.ClassLoader",
+        "callerReturnType": "java.lang.Class"
+      },
+      "callee":
+      {
+        "calleeFullyQualifiedClassName": "",
+        "calleeName": "<clinit>",
+        "calleeParam": "",
+        "calleeReturnType": "void"
+      },
+      "resolveCalleeClassName": true,
+      "interfaceType": "java.lang.Class"
     }
   ]
 }
