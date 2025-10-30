@@ -393,7 +393,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       }
       AbstractInvokeExpr sourceMethodInvokeExpr =
           stmt.asInvokableStmt().getInvokeExpr().orElse(null);
-      if (sourceMethodInvokeExpr == null || !sourceMethodInvokeExpr.isJVirtualInvokeExpr() && !sourceMethodInvokeExpr.isJStaticInvokeExpr()) {
+      if (sourceMethodInvokeExpr == null
+          || !sourceMethodInvokeExpr.isJVirtualInvokeExpr()
+              && !sourceMethodInvokeExpr.isJStaticInvokeExpr()) {
         continue;
       }
       MethodSignature methodSig = sourceMethodInvokeExpr.getMethodSignature();
@@ -508,8 +510,24 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             && !methodSigClassType.equals(callerClassType)) {
           continue;
         }
+        System.out.println("Stmt: " + stmt);
+        System.out.println("SourceMethod Body:");
+        sourceMethod.getBody().getStmts().stream().forEach(System.out::println);
         System.out.println("MethodSig: " + methodSig);
         System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr.getUses().toList());
+        for (Value use : sourceMethodInvokeExpr.getUses().toList()) {
+          System.out.println("Use: " + use);
+          System.out.println("UseType: " + use.getType());
+          System.out.println("Use uses: " + use.getUses());
+          System.out.println("Use str: " + use.toString());
+        }
+        System.out.println(
+            "SourceMethodInvokeExpr: " + sourceMethodInvokeExpr.getArg(0).toString());
+        System.out.println(
+            "SourceMethodInvokeExpr: " + sourceMethodInvokeExpr.getArg(0).getUses().toList());
+        System.out.println(
+            "SourceMethodInvokeExpr: " + sourceMethodInvokeExpr.getArg(0).getClass());
+        System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr.getArgs());
         System.out.println("SourceMethodBody:");
         sourceMethod.getBody().getStmts().forEach(System.out::println);
         if (!sourceMethodInvokeExpr.getArgs().isEmpty() && edge.getResolveCalleeClassName()) {
@@ -523,9 +541,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       }
       // resolution of ClassForName
       if (methodSigReturnType.toString().equals("java.lang.Class")
-              && methodSigName.equals("forName")) {
+          && methodSigName.equals("forName")) {
         // forName(String) or forName(String, true, ClassLoader) create this implicit edge
-        if (methodSigParam.size() == 1 || (methodSigParam.size() == 3 && sourceMethodInvokeExpr.getArg(1).toString().equals("1"))) {
+        if (methodSigParam.size() == 1
+            || (methodSigParam.size() == 3
+                && sourceMethodInvokeExpr.getArg(1).toString().equals("1"))) {
           if (methodSigParam.size() == 3) {
             System.out.println("MethodSig: " + methodSig);
             System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr);
@@ -533,11 +553,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           }
           MethodSpec caller = edge.getCaller();
           ClassType callerClassType =
-                  view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
+              view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
           if (typeHierarchy
                   .superClassesOf(methodSigClassType)
                   .noneMatch(classType -> classType.equals(callerClassType))
-                  && !methodSigClassType.equals(callerClassType)) {
+              && !methodSigClassType.equals(callerClassType)) {
             continue;
           }
           String targetClassTypeRaw = sourceMethodInvokeExpr.getArg(0).toString();
@@ -546,11 +566,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           callee.setFullyQualifiedClassName(targetClassTypeClean);
           MethodSignature calleeMethodSig = resolveMethodSpec(callee);
           addCallToCG(
-                  sourceMethod.getSignature(),
-                  calleeMethodSig,
-                  fixStmt,
-                  (MutableCallGraph) cg,
-                  workList);
+              sourceMethod.getSignature(),
+              calleeMethodSig,
+              fixStmt,
+              (MutableCallGraph) cg,
+              workList);
         }
       }
     }
