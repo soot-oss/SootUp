@@ -56,6 +56,11 @@
 			<artifactId>sootup.jimple.frontend</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>de.ruedigermoeller</groupId>
+			<artifactId>fst</artifactId>
+			<version>3.0.3</version>
+		</dependency>
 	</dependencies>
 
 </project>
