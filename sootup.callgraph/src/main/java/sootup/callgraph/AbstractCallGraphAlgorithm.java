@@ -28,6 +28,8 @@ import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 import java.io.InputStream;
 import java.util.*;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
@@ -503,33 +505,37 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         MethodSpec caller = edge.getCaller();
         ClassType callerClassType =
             view.getIdentifierFactory().getClassType(caller.getFullyQualifiedClassName());
-        System.out.println("CallerClassType: " + callerClassType);
         if (typeHierarchy
                 .superClassesOf(methodSigClassType)
                 .noneMatch(classType -> classType.equals(callerClassType))
             && !methodSigClassType.equals(callerClassType)) {
           continue;
         }
-        System.out.println("Stmt: " + stmt);
-        System.out.println("SourceMethod Body:");
-        sourceMethod.getBody().getStmts().stream().forEach(System.out::println);
-        System.out.println("MethodSig: " + methodSig);
-        System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr.getUses().toList());
         for (Value use : sourceMethodInvokeExpr.getUses().toList()) {
-          System.out.println("Use: " + use);
-          System.out.println("UseType: " + use.getType());
-          System.out.println("Use uses: " + use.getUses());
-          System.out.println("Use str: " + use.toString());
+          if (use.getType().toString().equals(caller.getFullyQualifiedClassName())) {
+            // e.g: use = l1; UseType = java.lang.reflect.Constructor
+            // method provides fq class name of target-constructor class -> class.newInstance()
+            String targetClassName = getFullyQualifiedTargetClassName(use.toString(), sourceMethod);
+            System.out.println("targetClassName: " + targetClassName);
+            System.out.println("Stmt: " + stmt);
+            System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr);
+            System.out.println("SourceMethodInvokeExpr Args: " + sourceMethodInvokeExpr.getArgs());
+            System.out.println("SourceMethodBody:");
+            sourceMethod.getBody().getStmts().stream().forEach(System.out::println);
+            MethodSpec callee = edge.getCallee();
+            if (targetClassName != null) {
+              callee.setFullyQualifiedClassName(targetClassName);
+              // TODO resolve params
+              MethodSignature calleeMethodSig = resolveMethodSpec(callee);
+              addCallToCG(
+                  sourceMethod.getSignature(),
+                  calleeMethodSig,
+                  fixStmt,
+                  (MutableCallGraph) cg,
+                  workList);
+            }
+          }
         }
-        System.out.println(
-            "SourceMethodInvokeExpr: " + sourceMethodInvokeExpr.getArg(0).toString());
-        System.out.println(
-            "SourceMethodInvokeExpr: " + sourceMethodInvokeExpr.getArg(0).getUses().toList());
-        System.out.println(
-            "SourceMethodInvokeExpr: " + sourceMethodInvokeExpr.getArg(0).getClass());
-        System.out.println("SourceMethodInvokeExpr: " + sourceMethodInvokeExpr.getArgs());
-        System.out.println("SourceMethodBody:");
-        sourceMethod.getBody().getStmts().forEach(System.out::println);
         if (!sourceMethodInvokeExpr.getArgs().isEmpty() && edge.getResolveCalleeClassName()) {
           System.out.println("TESTTRIGGER");
           Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
@@ -574,6 +580,46 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         }
       }
     }
+  }
+
+  // TODO
+  protected String getFullyQualifiedTargetClassName(String startStmt, SootMethod sourceMethod) {
+    String targetClassName = null;
+    String currentStmt = startStmt;
+    Pattern classLiteralPattern = Pattern.compile("class\\s+\"L([^\";]+);\"");
+    List<Stmt> stmts = sourceMethod.getBody().getStmts().stream().toList();
+    boolean changed = true;
+
+    while (changed && currentStmt != null) {
+      changed = false;
+      for (Stmt stmt : stmts) {
+        String stmtStr = stmt.toString().trim();
+
+        // look for "class" on RHS
+        if (stmtStr.startsWith(currentStmt + " =") && stmtStr.contains("class \"L")) {
+          Matcher m = classLiteralPattern.matcher(stmtStr);
+          if (m.find()) {
+            String internalName = m.group(1);
+            targetClassName = internalName.replace('/', '.');
+            return targetClassName;
+          }
+        }
+
+        // follow variable
+        if (stmtStr.startsWith(currentStmt + " =")) {
+          Matcher stmtMatcher =
+              Pattern.compile(
+                      "=\\s*(?:virtualinvoke|staticinvoke|interfaceinvoke)?\\s*([\\$a-zA-Z0-9_]+)")
+                  .matcher(stmtStr);
+          if (stmtMatcher.find()) {
+            currentStmt = stmtMatcher.group(1);
+            changed = true;
+            break;
+          }
+        }
+      }
+    }
+    return targetClassName;
   }
 
   /**
