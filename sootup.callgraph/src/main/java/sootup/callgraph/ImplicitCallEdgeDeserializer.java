@@ -3,7 +3,7 @@ package sootup.callgraph;
 import com.google.gson.*;
 import java.lang.reflect.Type;
 
-/** Custom Deserializer to deserialize implicit patterns of different categories.*/
+/** Custom Deserializer to deserialize implicit patterns of different categories. */
 public class ImplicitCallEdgeDeserializer implements JsonDeserializer<ImplicitCallEdge> {
   @Override
   public ImplicitCallEdge deserialize(
