@@ -48,7 +48,7 @@ public abstract class ImplicitCallEdge {
         + '}';
   }
 
-  /** Class to resolve the caller and callee information form the ImplicitPatterns.json file. */
+  /** Class to resolve the caller and callee information from <code>ImplicitPatterns.json</code>. */
   public static class MethodSpec {
     @SerializedName(
         value = "fullyQualifiedClassName",
