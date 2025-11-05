@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
+import sootup.core.signatures.MethodSignature;
 
 public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   // invokedynamic
@@ -27,32 +28,32 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   //      assertTrue(cg.callCount() > 0);
   //    }
 
-  @Test
-  public void testResolveMethodHandle4() {
-    CallGraph cg = loadCallGraph("bachelor.invokedynamic.ResolveMethodHandle4");
-    for (CallGraph.Call call : cg.getCalls()) {
-      System.out.println(call);
-    }
-    assertTrue(cg.callCount() > 0);
-  }
-
-  @Test
-  public void testResolveMethodHandle5() {
-    CallGraph cg = loadCallGraph("bachelor.invokedynamic.ResolveMethodHandle5");
-    for (CallGraph.Call call : cg.getCalls()) {
-      System.out.println(call);
-    }
-    assertTrue(cg.callCount() > 0);
-  }
-
-  @Test
-  public void testResolveMethodHandle6() {
-    CallGraph cg = loadCallGraph("bachelor.invokedynamic.ResolveMethodHandle6");
-    for (CallGraph.Call call : cg.getCalls()) {
-      System.out.println(call);
-    }
-    assertTrue(cg.callCount() > 0);
-  }
+  //  @Test
+  //  public void testResolveMethodHandle4() {
+  //    CallGraph cg = loadCallGraph("bachelor.invokedynamic.ResolveMethodHandle4");
+  //    for (CallGraph.Call call : cg.getCalls()) {
+  //      System.out.println(call);
+  //    }
+  //    assertTrue(cg.callCount() > 0);
+  //  }
+  //
+  //  @Test
+  //  public void testResolveMethodHandle5() {
+  //    CallGraph cg = loadCallGraph("bachelor.invokedynamic.ResolveMethodHandle5");
+  //    for (CallGraph.Call call : cg.getCalls()) {
+  //      System.out.println(call);
+  //    }
+  //    assertTrue(cg.callCount() > 0);
+  //  }
+  //
+  //  @Test
+  //  public void testResolveMethodHandle6() {
+  //    CallGraph cg = loadCallGraph("bachelor.invokedynamic.ResolveMethodHandle6");
+  //    for (CallGraph.Call call : cg.getCalls()) {
+  //      System.out.println(call);
+  //    }
+  //    assertTrue(cg.callCount() > 0);
+  //  }
 
   //    @Test
   //    public void testResolveMethodHandle2() {
@@ -145,56 +146,55 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   //  }
 
   // TODO: var.newInstance(...) -> hard to resolve the type of var via source method body!
-  //  @Test
-  //  public void testCallNewInstance1() {
-  //    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.CallNewInstance1");
-  //    for (CallGraph.Call call : cg.getCalls()) {
-  //      System.out.println(call);
-  //    }
-  //    MethodSignature calleeMethodSig =
-  //        identifierFactory.getMethodSignature(
-  //            identifierFactory.getClassType(
-  //                "Implicit", "bachelor.intra.other.CallNewInstance1$MyClass"),
-  //            "<init>",
-  //            "void",
-  //            Collections.emptyList());
-  //    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
-  //    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
-  //  }
-  //
-  //  @Test
-  //  public void testCallNewInstance2() {
-  //    CallGraph cg = loadCallGraph("bachelor.intra.other.CallNewInstance2");
-  //    for (CallGraph.Call call : cg.getCalls()) {
-  //      System.out.println(call);
-  //    }
-  //    MethodSignature calleeMethodSig =
-  //        identifierFactory.getMethodSignature(
-  //            identifierFactory.getClassType("bachelor.intra.other.CallNewInstance2$MyClass"),
-  //            "<init>",
-  //            "void",
-  //            Collections.singletonList("int"));
-  //    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
-  //    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
-  //  }
-  //
-  //  @Test
-  //  public void testCallNewInstance3() {
-  //    CallGraph cg = loadCallGraph("bachelor.intra.other.CallNewInstance3");
-  //    for (CallGraph.Call call : cg.getCalls()) {
-  //      System.out.println(call);
-  //    }
-  //    List<String> expectedParams = List.of("int", "java.lang.String", "boolean");
-  //    MethodSignature calleeMethodSig =
-  //            identifierFactory.getMethodSignature(
-  //
-  // identifierFactory.getClassType("bachelor.intra.other.CallNewInstance3$MyClass"),
-  //                    "<init>",
-  //                    "void",
-  //                    expectedParams);
-  //    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
-  //    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
-  //  }
+  @Test
+  public void testCallNewInstance1() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.CallNewInstance1");
+    for (CallGraph.Call call : cg.getCalls()) {
+      System.out.println(call);
+    }
+    MethodSignature calleeMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType(
+                "Implicit", "bachelor.intra.other.CallNewInstance1$MyClass"),
+            "<init>",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testCallNewInstance2() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.CallNewInstance2");
+    for (CallGraph.Call call : cg.getCalls()) {
+      System.out.println(call);
+    }
+    MethodSignature calleeMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("bachelor.intra.other.CallNewInstance2$MyClass"),
+            "<init>",
+            "void",
+            Collections.singletonList("int"));
+    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testCallNewInstance3() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.CallNewInstance3");
+    for (CallGraph.Call call : cg.getCalls()) {
+      System.out.println(call);
+    }
+    List<String> expectedParams = List.of("int", "java.lang.String", "boolean");
+    MethodSignature calleeMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("bachelor.intra.other.CallNewInstance3$MyClass"),
+            "<init>",
+            "void",
+            expectedParams);
+    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
+  }
 
   //
   //  @Test

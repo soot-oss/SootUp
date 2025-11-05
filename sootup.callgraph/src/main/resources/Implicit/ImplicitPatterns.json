@@ -37,24 +37,6 @@
       }
     },
     {
-      "id": "ThreadRegisterNatives",
-      "category": 1,
-      "caller":
-      {
-        "callerFullyQualifiedClassName": "java.lang.Thread",
-        "callerName": "<clinit>",
-        "callerParam": "",
-        "callerReturnType": "void"
-      },
-      "callee":
-      {
-        "calleeFullyQualifiedClassName": "java.lang.Thread",
-        "calleeName": "registerNatives",
-        "calleeParam": "",
-        "calleeReturnType": "void"
-      }
-    },
-    {
       "id": "ExternalizableWrite",
       "category": 2,
       "caller":
@@ -113,26 +95,6 @@
       },
       "resolveCalleeClassName": true,
       "interfaceType": "java.lang.reflect.Method"
-    },
-    {
-      "id": "ConstructorInstance",
-      "category": 2,
-      "caller":
-      {
-        "callerFullyQualifiedClassName": "java.lang.reflect.Constructor",
-        "callerName": "newInstance",
-        "callerParam": "java.lang.Object[]",
-        "callerReturnType": "java.lang.Object"
-      },
-      "callee":
-      {
-        "calleeFullyQualifiedClassName": "",
-        "calleeName": "<init>",
-        "calleeParam": "",
-        "calleeReturnType": "void"
-      },
-      "resolveCalleeClassName": true,
-      "interfaceType": "java.lang.reflect.Constructor"
     },
     {
       "id": "ClassForName",
