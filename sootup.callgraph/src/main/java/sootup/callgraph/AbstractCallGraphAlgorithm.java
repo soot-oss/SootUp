@@ -28,6 +28,8 @@ import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 import java.io.InputStream;
 import java.util.*;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
@@ -483,6 +485,37 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           }
         }
       }
+      // resolution of ConstructorInstance
+      if (methodSigReturnType.toString().equals("java.lang.Object")
+          && methodSigParam.toString().equals("[java.lang.Object[]]")
+          && methodSigName.equals("newInstance")) {
+        if (!matchingCallerType(methodSigClassType, edge)) {
+          continue;
+        }
+        for (Value use : sourceMethodInvokeExpr.getUses().toList()) {
+          if (use.getType().toString().equals(edge.getCaller().getFullyQualifiedClassName())) {
+            // e.g: use = l1; UseType = java.lang.reflect.Constructor
+            // method provides fq class name of target-constructor class -> class.newInstance()
+            String targetClassName = getFullyQualifiedTargetClassName(use.toString(), sourceMethod);
+            if (targetClassName != null) {
+              SootClass targetClass =
+                  view.getClassOrThrow(view.getIdentifierFactory().getClassType(targetClassName));
+              Set<? extends SootMethod> targetConstructors = targetClass.getMethodsByName("<init>");
+              for (SootMethod targetConstructor : targetConstructors) {
+                System.out.println("targetConstructor: " + targetConstructor);
+                MethodSignature calleeMethodSig = targetConstructor.getSignature();
+                System.out.println("calleeMethodSig: " + calleeMethodSig);
+                addCallToCG(
+                    sourceMethod.getSignature(),
+                    calleeMethodSig,
+                    fixStmt,
+                    (MutableCallGraph) cg,
+                    workList);
+              }
+            }
+          }
+        }
+      }
       // resolution of ClassForName
       if (methodSigReturnType.toString().equals("java.lang.Class")
           && methodSigName.equals("forName")) {
@@ -507,6 +540,49 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         }
       }
     }
+  }
+
+  /**
+   * Helper method to return the fully qualified class name of the targetClass. The targetClass must
+   * have the following type <code>java.lang.reflect.Constructor</code>. targetClass.newInstance()
+   */
+  protected String getFullyQualifiedTargetClassName(String startStmt, SootMethod sourceMethod) {
+    String targetClassName = null;
+    String currentStmt = startStmt;
+    Pattern classLiteralPattern = Pattern.compile("class\\s+\"L([^\";]+);\"");
+    List<Stmt> stmts = sourceMethod.getBody().getStmts().stream().toList();
+    boolean changed = true;
+
+    while (changed && currentStmt != null) {
+      changed = false;
+      for (Stmt stmt : stmts) {
+        String stmtStr = stmt.toString().trim();
+
+        // look for "class" on RHS
+        if (stmtStr.startsWith(currentStmt + " =") && stmtStr.contains("class \"L")) {
+          Matcher m = classLiteralPattern.matcher(stmtStr);
+          if (m.find()) {
+            String internalName = m.group(1);
+            targetClassName = internalName.replace('/', '.');
+            return targetClassName;
+          }
+        }
+
+        // follow variable
+        if (stmtStr.startsWith(currentStmt + " =")) {
+          Matcher stmtMatcher =
+              Pattern.compile(
+                      "=\\s*(?:virtualinvoke|staticinvoke|interfaceinvoke)?\\s*([\\$a-zA-Z0-9_]+)")
+                  .matcher(stmtStr);
+          if (stmtMatcher.find()) {
+            currentStmt = stmtMatcher.group(1);
+            changed = true;
+            break;
+          }
+        }
+      }
+    }
+    return targetClassName;
   }
 
   /**
