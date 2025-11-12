@@ -335,4 +335,44 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest 
     assertTrue(calleeSourcesMethodSig1.contains(mainMethodSignature));
     assertTrue(calleeSourcesMethodSig2.contains(mainMethodSignature));
   }
+
+  @Test
+  public void testCallNewInstance1() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.CallNewInstance1");
+    MethodSignature calleeMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("bachelor.intra.other.CallNewInstance1$MyClass"),
+            "<init>",
+            "void",
+            Collections.emptyList());
+    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testCallNewInstance2() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.CallNewInstance2");
+    MethodSignature calleeMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("bachelor.intra.other.CallNewInstance2$MyClass"),
+            "<init>",
+            "void",
+            Collections.singletonList("int"));
+    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testCallNewInstance3() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.CallNewInstance3");
+    List<String> expectedParams = List.of("int", "java.lang.String", "boolean");
+    MethodSignature calleeMethodSig =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("bachelor.intra.other.CallNewInstance3$MyClass"),
+            "<init>",
+            "void",
+            expectedParams);
+    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
+  }
 }

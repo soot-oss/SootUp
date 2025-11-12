@@ -502,9 +502,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   view.getClassOrThrow(view.getIdentifierFactory().getClassType(targetClassName));
               Set<? extends SootMethod> targetConstructors = targetClass.getMethodsByName("<init>");
               for (SootMethod targetConstructor : targetConstructors) {
-                System.out.println("targetConstructor: " + targetConstructor);
                 MethodSignature calleeMethodSig = targetConstructor.getSignature();
-                System.out.println("calleeMethodSig: " + calleeMethodSig);
                 addCallToCG(
                     sourceMethod.getSignature(),
                     calleeMethodSig,
