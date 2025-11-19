@@ -409,62 +409,71 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       ClassType methodSigClassType = methodSig.getDeclClassType();
       // resolution of ExternalizableWrite and SerializableWrite
       if (methodSigReturnType.equals(VoidType.getInstance())
-          && !methodSigParam.isEmpty()
-          && methodSigName.equals("writeObject")) {
+              && !methodSigParam.isEmpty()
+              && methodSigName.equals("writeObject")) {
         if (!matchingCallerType(methodSigClassType, edge)) {
           continue;
         }
         if (!sourceMethodInvokeExpr.getArgs().isEmpty() && edge.getResolveCalleeClassName()) {
           Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
-          SootClass paramClass =
-              view.getClassOrThrow(view.getIdentifierFactory().getClassType(paramType.toString()));
+          Optional<? extends SootClass> paramClassOpt =
+                  view.getClass(view.getIdentifierFactory().getClassType(paramType.toString()));
+          if (paramClassOpt.isEmpty()) {
+            System.out.println("Could not resolve Class with Class Type: " + paramType);
+            continue;
+          }
+          SootClass paramClass = paramClassOpt.get();
           Set<? extends ClassType> paramClassInterfaces = getAllInterfaces(paramClass);
           // writeObject(obj), where param obj is instance of Externalizable or Serializable
           if (paramClassInterfaces.contains(
-              view.getIdentifierFactory().getClassType(edge.getInterfaceType()))) {
+                  view.getIdentifierFactory().getClassType(edge.getInterfaceType()))) {
             MethodSpec callee = edge.getCallee();
             Set<? extends SootMethod> targetMethods =
-                resolveTargetMethods(paramClass, callee.getName());
+                    resolveTargetMethods(paramClass, callee.getName());
             for (SootMethod targetMethod : targetMethods) {
               callee.setFullyQualifiedClassName(
-                  targetMethod.getDeclClassType().getFullyQualifiedName());
+                      targetMethod.getDeclClassType().getFullyQualifiedName());
               MethodSignature calleeMethodSig = resolveMethodSpec(callee);
               addCallToCG(
-                  sourceMethod.getSignature(),
-                  calleeMethodSig,
-                  fixStmt,
-                  (MutableCallGraph) cg,
-                  workList);
+                      sourceMethod.getSignature(),
+                      calleeMethodSig,
+                      fixStmt,
+                      (MutableCallGraph) cg,
+                      workList);
             }
           }
         }
       }
       // resolution of Reflection
       if (methodSigReturnType.toString().equals("java.lang.Object")
-          && !methodSigParam.isEmpty()
-          && methodSigName.equals("invoke")) {
+              && !methodSigParam.isEmpty()
+              && methodSigName.equals("invoke")) {
         if (!matchingCallerType(methodSigClassType, edge)) {
           continue;
         }
         if (!sourceMethodInvokeExpr.getArgs().isEmpty() && edge.getResolveCalleeClassName()) {
           Set<Stmt> targetMethodStmtSet =
-              sourceMethod.getBody().getStmts().stream()
-                  .filter(
-                      targetMethodStmt -> targetMethodStmt.toString().matches(".*get\\w*Method.*"))
-                  .collect(Collectors.toSet());
+                  sourceMethod.getBody().getStmts().stream()
+                          .filter(
+                                  targetMethodStmt -> targetMethodStmt.toString().matches(".*get\\w*Method.*"))
+                          .collect(Collectors.toSet());
           // for all declared target methods
           for (Stmt targetStmt : targetMethodStmtSet) {
             AbstractInvokeExpr targetInvokeExpr =
-                targetStmt.asInvokableStmt().getInvokeExpr().orElse(null);
-            if (targetInvokeExpr == null) {
+                    targetStmt.asInvokableStmt().getInvokeExpr().orElse(null);
+            if (targetInvokeExpr == null || targetInvokeExpr.getArgs().isEmpty()) {
               System.err.println("No invoke expression for the Stmt: " + targetStmt);
               continue;
             }
-            String targetMethodNameRaw = targetInvokeExpr.getArg(0).toString();
             Type paramType = sourceMethodInvokeExpr.getArg(0).getType();
-            SootClass paramClass =
-                view.getClassOrThrow(
-                    view.getIdentifierFactory().getClassType(paramType.toString()));
+            Optional<? extends SootClass> paramClassOpt =
+                    view.getClass(view.getIdentifierFactory().getClassType(paramType.toString()));
+            if (paramClassOpt.isEmpty()) {
+              System.out.println("Could not resolve Class with Class Type: " + paramType);
+              continue;
+            }
+            SootClass paramClass = paramClassOpt.get();
+            String targetMethodNameRaw = targetInvokeExpr.getArg(0).toString();
             // " in raw targetMethodName == trivial reflection
             if (targetMethodNameRaw.startsWith("\"") && targetMethodNameRaw.endsWith("\"")) {
               addTrivialReflectionCall(

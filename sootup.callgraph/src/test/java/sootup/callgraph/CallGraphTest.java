@@ -53,7 +53,7 @@ public abstract class CallGraphTest {
   CallGraph loadCallGraph(String testDirectory, String className) {
     String classPath;
     if (testDirectory == null) {
-      classPath = "opal-classes/";
+      classPath = "C:/Users/morit/Desktop/BachelorThesis/Real-World_Applications/ApacheAnt/ant/";
     } else {
       classPath = "src/test/resources/callgraph/" + testDirectory + "/binary";
     }
