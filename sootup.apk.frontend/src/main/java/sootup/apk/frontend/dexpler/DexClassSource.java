@@ -144,6 +144,10 @@ public class DexClassSource extends JavaSootClassSource {
     return NoPositionInformation.getInstance();
   }
 
+  public Optional<String> getSourceFile() {
+      return Optional.ofNullable(classInformation.classDefinition.getSourceFile());
+  }
+
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
     if (classInformation != null) {
