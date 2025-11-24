@@ -20,16 +20,14 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
     try (BufferedWriter writer =
                  Files.newBufferedWriter(
                          output, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-      Stream<String> cgASDot = cg.exportAsDot();
-      cgASDot.forEach(
-              line -> {
-                try {
-                  writer.write(line);
-                  writer.newLine();
-                } catch (IOException e) {
-                  throw new RuntimeException(e);
-                }
-              });
+        for (CallGraph.Call call : cg.getCalls()) {
+            try {
+                writer.write(call.toString() + " " + call.getLineNumber());
+                writer.newLine();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
