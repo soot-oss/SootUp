@@ -148,7 +148,7 @@ public class DexClassSource extends JavaSootClassSource {
    * @return The source file for this class as specified in the dex file.
    */
   public Optional<String> getSourceFile() {
-      return Optional.ofNullable(classInformation.classDefinition.getSourceFile());
+    return Optional.ofNullable(classInformation.classDefinition.getSourceFile());
   }
 
   @Override
