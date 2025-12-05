@@ -50,7 +50,7 @@ public class NewValidator implements BodyValidator {
 
     List<ValidationException> exceptions = new ArrayList<>();
 
-    ControlFlowGraph<?> g = body.getStmtGraph();
+    ControlFlowGraph<?> g = body.getControlFlowGraph();
     for (Stmt u : body.getStmts()) {
       if (u instanceof JAssignStmt assign) {
 

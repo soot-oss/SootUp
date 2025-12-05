@@ -52,7 +52,7 @@ public class SootMethodTest {
     final JReturnVoidStmt returnVoidStmt =
         new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
-    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(firstStmt);
     controlFlowGraph.putEdge(firstStmt, returnVoidStmt);
 

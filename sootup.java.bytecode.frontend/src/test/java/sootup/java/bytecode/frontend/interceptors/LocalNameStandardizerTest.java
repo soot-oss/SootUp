@@ -120,9 +120,9 @@ public class LocalNameStandardizerTest {
 
     builder.setLocals(locals);
 
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     // build stm
-    // builder.getStmtGraph()tGraph for the builder
+    // builder.getControlFlowGraph()tGraph for the builder
     controlFlowGraph.putEdge(startingStmt, stmt1);
     controlFlowGraph.putEdge(stmt1, stmt2);
     controlFlowGraph.putEdge(stmt2, stmt3);
@@ -153,7 +153,7 @@ public class LocalNameStandardizerTest {
     builder.setLocals(locals);
 
     // build controlFlowGraph for the builder
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.putEdge(estartingStmt, estmt1);
     controlFlowGraph.putEdge(estmt1, estmt2);
     controlFlowGraph.putEdge(estmt2, estmt3);

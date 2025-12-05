@@ -59,7 +59,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
     // Perform a constant/local propagation pass
     // go through each use in each statement
-    MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     for (Stmt stmt : Lists.newArrayList(controlFlowGraph)) {
       // propagation pass
       if (stmt instanceof JAssignStmt) {

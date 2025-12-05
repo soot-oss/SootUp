@@ -166,7 +166,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
       if (methodOpt.isPresent()) {
         SootMethod sootMethod = methodOpt.get();
         if (sootMethod.hasBody()) {
-          ControlFlowGraph<?> controlFlowGraph = sootMethod.getBody().getStmtGraph();
+          ControlFlowGraph<?> controlFlowGraph = sootMethod.getBody().getControlFlowGraph();
           signatureToControlFlowGraph.put(methodSignature, controlFlowGraph);
         }
       }

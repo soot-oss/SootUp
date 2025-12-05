@@ -126,7 +126,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   }
 
   protected ControlFlowGraph<?> makeGraph(Body body) {
-    return body.getStmtGraph();
+    return body.getControlFlowGraph();
   }
 
   protected Set<Stmt> getCallsFromWithinMethod(SootMethod method) {
@@ -156,7 +156,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       return false;
     }
     Body body = getBodyOf(stmt);
-    return body.getStmtGraph().successors(stmt).get(0) == successorCandidate;
+    return body.getControlFlowGraph().successors(stmt).get(0) == successorCandidate;
   }
 
   @Override
@@ -218,7 +218,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       return;
     }
     Body b = m.getBody();
-    b.getStmtGraph().getNodes().forEach(node -> stmtToOwner.put(node, b));
+    b.getControlFlowGraph().getNodes().forEach(node -> stmtToOwner.put(node, b));
   }
 
   @Override

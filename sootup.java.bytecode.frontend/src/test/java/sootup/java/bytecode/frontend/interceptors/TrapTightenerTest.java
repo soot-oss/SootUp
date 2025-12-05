@@ -122,7 +122,7 @@ public class TrapTightenerTest {
     Body body = createSimpleBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
-    MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     // modify exceptionalControlFlowGraph
     controlFlowGraph.clearExceptionalEdges(stmt1);
     controlFlowGraph.clearExceptionalEdges(stmt10);
@@ -164,7 +164,7 @@ public class TrapTightenerTest {
 
     Body.BodyBuilder builder = Body.builder(creatBodyWithMonitor(), Collections.emptySet());
 
-    MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     // modify exceptionalControlFlowGraph
     controlFlowGraph.clearExceptionalEdges(stmt2);
     controlFlowGraph.clearExceptionalEdges(stmt4);

@@ -44,7 +44,7 @@ public abstract class NativeMethod extends ArtificialMethod {
 
   public void simulate() {
     simulateImpl();
-    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
     controlFlowGraph.addBlock(stmtList);
     Stmt curr = stmtList.get(0);
     controlFlowGraph.setStartingStmt(curr);

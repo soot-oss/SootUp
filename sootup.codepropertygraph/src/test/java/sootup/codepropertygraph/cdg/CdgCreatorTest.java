@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import sootup.codepropertygraph.GraphTestSuiteBase;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.CdgEdge;
-import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
+import sootup.codepropertygraph.propertygraph.nodes.ControlFlowGraphNode;
 import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.Jimple;
@@ -73,7 +73,7 @@ public class CdgCreatorTest extends GraphTestSuiteBase {
     for (String expectedNodeType : expectedNodeTypes) {
       assertTrue(
           cdgGraph.getNodes().stream()
-              .map(node -> (StmtGraphNode) node)
+              .map(node -> (ControlFlowGraphNode) node)
               .anyMatch(
                   node -> node.getStmt().getClass().getSimpleName().equals(expectedNodeType)));
     }
@@ -83,8 +83,8 @@ public class CdgCreatorTest extends GraphTestSuiteBase {
           cdgGraph.getEdges().stream()
               .anyMatch(
                   edge -> {
-                    StmtGraphNode src = (StmtGraphNode) edge.getSource();
-                    StmtGraphNode dst = (StmtGraphNode) edge.getDestination();
+                    ControlFlowGraphNode src = (ControlFlowGraphNode) edge.getSource();
+                    ControlFlowGraphNode dst = (ControlFlowGraphNode) edge.getDestination();
                     return src.getStmt().getClass().getSimpleName().equals(expectedEdge[0])
                         && dst.getStmt().getClass().getSimpleName().equals(expectedEdge[1]);
                   }));

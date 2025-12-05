@@ -240,7 +240,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       try {
         bodyInterceptor.interceptBody(bodyBuilder, view);
         bodyBuilder
-            .getStmtGraph()
+            .getControlFlowGraph()
             .validateStmtConnectionsInGraph(); // TODO: remove in the future ;-)
       } catch (Exception e) {
         throw new IllegalStateException(

@@ -28,7 +28,7 @@ public class RemoveExceptionalEdgeTest {
               .parseMethodSignature("<org.atmosphere.util.Version: void <clinit>()>");
       if (!builder.getMethodSignature().equals(methodSignature)) return;
 
-      MutableStmtGraph stmtGraph = builder.getStmtGraph();
+      MutableStmtGraph stmtGraph = builder.getControlFlowGraph();
       List<? extends BasicBlock<?>> blocks = stmtGraph.getBlocks().stream().toList();
       BasicBlock<?> basicBlock = blocks.get(11);
       Stmt head = basicBlock.getHead();

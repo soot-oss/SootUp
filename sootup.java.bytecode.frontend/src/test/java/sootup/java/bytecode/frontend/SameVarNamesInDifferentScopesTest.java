@@ -27,7 +27,7 @@ public class SameVarNamesInDifferentScopesTest {
             .getMethod("foo", Collections.emptyList())
             .get();
 
-    ControlFlowGraph<?> controlFlowGraph = method.getBody().getStmtGraph();
+    ControlFlowGraph<?> controlFlowGraph = method.getBody().getControlFlowGraph();
     Assertions.assertTrue(
         controlFlowGraph.getNodes().stream()
             .anyMatch(stmt -> stmt.toString().equals("candidate_1 = \"banana\"")));

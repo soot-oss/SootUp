@@ -64,7 +64,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
-    MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(controlFlowGraph)).getReachingDefs();
     // refactor.. why already here - getNodes as well
     List<Stmt> stmts = builder.getStmts();

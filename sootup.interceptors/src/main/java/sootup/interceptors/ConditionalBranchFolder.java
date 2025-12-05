@@ -49,7 +49,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     for (Stmt stmt : Lists.newArrayList(controlFlowGraph.getNodes())) {
       if (!(stmt instanceof JIfStmt)) {
@@ -130,7 +130,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
   private void pruneExclusivelyReachableStmts(
       Body.@NonNull BodyBuilder builder, @NonNull Stmt fallsThroughStmt) {
 
-    MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     Set<Stmt> reachedBranchingStmts = new HashSet<>();
     Deque<Stmt> q = new ArrayDeque<>();
 

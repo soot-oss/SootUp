@@ -108,7 +108,7 @@ public abstract class ReflectionModel {
       }
     }
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     for (Stmt unit : newUnits.keySet()) {
       for (Stmt succ : newUnits.get(unit)) {
         if (succ instanceof JAssignStmt assign) {

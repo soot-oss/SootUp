@@ -82,7 +82,7 @@ public class DeadAssignmentEliminatorTest {
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     builder.setLocals(locals);
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     controlFlowGraph.setStartingStmt(conditional);
     controlFlowGraph.putEdge(conditional, JIfStmt.FALSE_BRANCH_IDX, intToA);
@@ -95,8 +95,8 @@ public class DeadAssignmentEliminatorTest {
     Body afterBody = builder.build();
 
     assertEquals(
-        beforeBody.getStmtGraph().getNodes().size() - 1,
-        afterBody.getStmtGraph().getNodes().size());
+        beforeBody.getControlFlowGraph().getNodes().size() - 1,
+        afterBody.getControlFlowGraph().getNodes().size());
   }
 
   @Test
@@ -108,8 +108,8 @@ public class DeadAssignmentEliminatorTest {
     new DeadAssignmentEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
-    ControlFlowGraph<?> expectedGraph = testBody.getStmtGraph();
-    ControlFlowGraph<?> actualGraph = processedBody.getStmtGraph();
+    ControlFlowGraph<?> expectedGraph = testBody.getControlFlowGraph();
+    ControlFlowGraph<?> actualGraph = processedBody.getControlFlowGraph();
 
     assertEquals(expectedGraph.getNodes().size() - 1, actualGraph.getNodes().size());
   }
@@ -121,8 +121,8 @@ public class DeadAssignmentEliminatorTest {
     new DeadAssignmentEliminator()
         .interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
-    ControlFlowGraph<?> expectedGraph = testBody.getStmtGraph();
-    ControlFlowGraph<?> actualGraph = processedBody.getStmtGraph();
+    ControlFlowGraph<?> expectedGraph = testBody.getControlFlowGraph();
+    ControlFlowGraph<?> actualGraph = processedBody.getControlFlowGraph();
 
     assertEquals(expectedGraph.getNodes().size(), actualGraph.getNodes().size());
   }
@@ -143,7 +143,7 @@ public class DeadAssignmentEliminatorTest {
     Set<Local> locals = new LinkedHashSet<>(Arrays.asList(a, b, c));
 
     Body.BodyBuilder builder = Body.builder();
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(strToA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()

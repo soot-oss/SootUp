@@ -136,7 +136,7 @@ public class ConditionalBranchFolderTest {
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
     Body.BodyBuilder bodyBuilder = Body.builder();
-    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
     bodyBuilder.setLocals(locals);
     controlFlowGraph.putEdge(strToA, strToB);
     controlFlowGraph.putEdge(strToB, ifStmt);

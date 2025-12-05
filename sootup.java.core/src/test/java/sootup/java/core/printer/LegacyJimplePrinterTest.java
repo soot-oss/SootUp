@@ -83,7 +83,7 @@ public class LegacyJimplePrinterTest {
 
     {
       Body.BodyBuilder builder = Body.builder();
-      final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+      final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
       controlFlowGraph.setStartingStmt(tableSwitch);
 
       controlFlowGraph.putEdge(tableSwitch, 0, jNop);
@@ -120,7 +120,7 @@ public class LegacyJimplePrinterTest {
           new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
 
       Body.BodyBuilder builder = Body.builder();
-      final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+      final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
       controlFlowGraph.setStartingStmt(lookupSwitch);
 
       controlFlowGraph.putEdge(lookupSwitch, 0, jNop);

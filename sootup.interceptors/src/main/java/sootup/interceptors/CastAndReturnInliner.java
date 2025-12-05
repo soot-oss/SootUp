@@ -68,7 +68,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
-    MutableControlFlowGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
     Set<Local> locals = builder.getLocals();
 
     for (Stmt stmt : Lists.newArrayList(graph.getNodes())) {

@@ -44,7 +44,7 @@ public class LocalPacker implements BodyInterceptor {
 
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
-    MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);
     // map each original local to a new local
@@ -223,7 +223,7 @@ public class LocalPacker implements BodyInterceptor {
   private Map<Local, Set<Local>> buildLocalInterferenceMap(Body.BodyBuilder builder) {
     // Maps local to its interfering locals
     Map<Local, Set<Local>> localToLocals = new HashMap<>();
-    ControlFlowGraph<?> graph = builder.getStmtGraph();
+    ControlFlowGraph<?> graph = builder.getControlFlowGraph();
     LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(graph);
 
     // TODO: check if sorted Stmts are necessary

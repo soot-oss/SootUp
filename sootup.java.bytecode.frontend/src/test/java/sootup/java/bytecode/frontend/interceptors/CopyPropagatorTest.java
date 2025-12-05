@@ -224,7 +224,7 @@ public class CopyPropagatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4);
 
     builder.setLocals(locals);
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // build stmtsGraph for the builder
     controlFlowGraph.putEdge(startingStmt, stmt1);
@@ -253,7 +253,7 @@ public class CopyPropagatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4);
 
     builder.setLocals(locals);
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // build stmtsGraph for the builder
     controlFlowGraph.putEdge(startingStmt, stmt1);
@@ -285,7 +285,7 @@ public class CopyPropagatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(r0, i1, i2, i3);
 
     builder.setLocals(locals);
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // build stmtsGraph for the builder
     controlFlowGraph.putEdge(startingStmt, stmt5);
@@ -316,7 +316,7 @@ public class CopyPropagatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(r0, i1, i2, i3);
 
     builder.setLocals(locals);
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     // build stmtsGraph for the builder
     controlFlowGraph.putEdge(startingStmt, stmt5);
     controlFlowGraph.putEdge(stmt5, stmt6);
@@ -349,7 +349,7 @@ public class CopyPropagatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4, r5);
 
     builder.setLocals(locals);
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // build stmtsGraph for the builder
     controlFlowGraph.putEdge(startingStmt, stmt10);
@@ -380,7 +380,7 @@ public class CopyPropagatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4, r5);
 
     builder.setLocals(locals);
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // build stmtsGraph for the builder
     controlFlowGraph.putEdge(startingStmt, stmt10);

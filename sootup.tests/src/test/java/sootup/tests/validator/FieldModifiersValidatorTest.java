@@ -59,7 +59,7 @@ public class FieldModifiersValidatorTest {
     final JReturnVoidStmt returnVoidStmt =
         new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
-    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    MutableStmtGraph stmtGraph = bodyBuilder.getControlFlowGraph();
     stmtGraph.setStartingStmt(firstStmt);
     stmtGraph.putEdge(firstStmt, returnVoidStmt);
 

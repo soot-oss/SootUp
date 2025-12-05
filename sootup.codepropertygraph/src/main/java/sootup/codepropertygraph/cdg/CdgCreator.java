@@ -26,7 +26,7 @@ import java.util.*;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.StmtMethodPropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.CdgEdge;
-import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
+import sootup.codepropertygraph.propertygraph.nodes.ControlFlowGraphNode;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.graph.PostDominanceFinder;
@@ -53,15 +53,15 @@ public class CdgCreator {
       return graphBuilder.build();
     }
 
-    ControlFlowGraph<?> controlFlowGraph = method.getBody().getStmtGraph();
+    ControlFlowGraph<?> controlFlowGraph = method.getBody().getControlFlowGraph();
     PostDominanceFinder postDominanceFinder = new PostDominanceFinder(controlFlowGraph);
 
     List<? extends BasicBlock<?>> blocks = controlFlowGraph.getBlocksSorted();
     for (BasicBlock<?> currBlock : blocks) {
       for (BasicBlock<?> frontierBlock : postDominanceFinder.getDominanceFrontiers(currBlock)) {
-        StmtGraphNode sourceNode = new StmtGraphNode(frontierBlock.getTail());
+        ControlFlowGraphNode sourceNode = new ControlFlowGraphNode(frontierBlock.getTail());
         for (Stmt srcStmt : currBlock.getStmts()) {
-          StmtGraphNode destinationNode = new StmtGraphNode(srcStmt);
+          ControlFlowGraphNode destinationNode = new ControlFlowGraphNode(srcStmt);
           graphBuilder.addEdge(new CdgEdge(sourceNode, destinationNode));
         }
       }

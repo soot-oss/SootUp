@@ -66,7 +66,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor {
       @NonNull AugEvalFunction evalFunction,
       @NonNull BytecodeHierarchy hierarchy) {
     this.builder = builder;
-    this.graph = builder.getStmtGraph();
+    this.graph = builder.getControlFlowGraph();
     this.evalFunction = evalFunction;
     this.hierarchy = hierarchy;
   }

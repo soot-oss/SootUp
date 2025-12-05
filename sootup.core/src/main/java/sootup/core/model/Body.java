@@ -193,7 +193,7 @@ public class Body implements HasPosition {
   /**
    * returns the control flow graph that represents this body into a linear List of statements. for
    * more detailed information of the underlying CFG - or just parts of it - have a look at
-   * getStmtGraph()
+   * getControlFlowGraph()
    *
    * @return the statements in this Body
    */
@@ -208,7 +208,7 @@ public class Body implements HasPosition {
 
   @NonNull
   // TODO: [ms] should be an ImmutableControlFlowGraph!
-  public ControlFlowGraph<?> getStmtGraph() {
+  public ControlFlowGraph<?> getControlFlowGraph() {
     return graph;
   }
 
@@ -231,11 +231,11 @@ public class Body implements HasPosition {
   /** returns a List of Branch targets of Branching Stmts */
   @NonNull
   public List<Stmt> getBranchTargetsOf(@NonNull BranchingStmt fromStmt) {
-    return getStmtGraph().getBranchTargetsOf(fromStmt);
+    return getControlFlowGraph().getBranchTargetsOf(fromStmt);
   }
 
   public boolean isStmtBranchTarget(@NonNull Stmt targetStmt) {
-    return getStmtGraph().isStmtBranchTarget(targetStmt);
+    return getControlFlowGraph().isStmtBranchTarget(targetStmt);
   }
 
   /** Returns the first non-identity stmt in this body. */
@@ -285,7 +285,7 @@ public class Body implements HasPosition {
 
   @NonNull
   public Body withLocals(@NonNull Set<Local> locals) {
-    return new Body(getMethodSignature(), locals, getStmtGraph(), getPosition());
+    return new Body(getMethodSignature(), locals, getControlFlowGraph(), getPosition());
   }
 
   public static BodyBuilder builder() {
@@ -322,11 +322,11 @@ public class Body implements HasPosition {
       setMethodSignature(body.getMethodSignature());
       setLocals(new LinkedHashSet<>(body.getLocals()));
       setPosition(body.getPosition());
-      graph = new MutableBlockControlFlowGraph(body.getStmtGraph());
+      graph = new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     }
 
     @NonNull
-    public MutableControlFlowGraph getStmtGraph() {
+    public MutableControlFlowGraph getControlFlowGraph() {
       return graph;
     }
 
@@ -359,7 +359,7 @@ public class Body implements HasPosition {
             "The given existing Local '" + existingLocal + "' is not in the body!");
       }
 
-      for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
+      for (Stmt currStmt : Lists.newArrayList(getControlFlowGraph().getNodes())) {
         final Stmt stmt = currStmt;
         if (currStmt.getUses().anyMatch(v -> v == existingLocal)) {
           currStmt = currStmt.withNewUse(existingLocal, newLocal);
@@ -374,7 +374,7 @@ public class Body implements HasPosition {
           }
         }
         if (stmt != currStmt) {
-          getStmtGraph().replaceNode(stmt, currStmt);
+          getControlFlowGraph().replaceNode(stmt, currStmt);
         }
       }
       locals.remove(existingLocal);

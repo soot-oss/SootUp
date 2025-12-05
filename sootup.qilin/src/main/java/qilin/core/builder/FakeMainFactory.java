@@ -88,7 +88,7 @@ public class FakeMainFactory extends ArtificialMethod {
     final JNopStmt jNop = new JNopStmt(noPosInfo);
     this.bodyBuilder = Body.builder();
     makeFakeMain(currentThread);
-    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
     controlFlowGraph.addBlock(stmtList);
     controlFlowGraph.setStartingStmt(jNop);
     controlFlowGraph.putEdge(jNop, stmtList.get(0));

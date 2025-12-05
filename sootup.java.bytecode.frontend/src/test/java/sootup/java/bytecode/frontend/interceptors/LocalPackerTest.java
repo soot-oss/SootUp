@@ -219,7 +219,7 @@ public class LocalPackerTest {
   public void testLocalPackerWithTrap() {
     Body.BodyBuilder builder = createTrapBody();
 
-    System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
+    System.out.println(DotExporter.createUrlToWebeditor(builder.getControlFlowGraph()));
 
     LocalPacker localPacker = new LocalPacker();
     localPacker.interceptBody(builder, new JavaView(Collections.emptyList()));

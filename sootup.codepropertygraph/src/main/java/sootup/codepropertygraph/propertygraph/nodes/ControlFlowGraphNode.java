@@ -25,10 +25,10 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 import java.util.Objects;
 import sootup.core.jimple.common.stmt.Stmt;
 
-public class StmtGraphNode extends PropertyGraphNode {
+public class ControlFlowGraphNode extends PropertyGraphNode {
   private final Stmt stmt;
 
-  public StmtGraphNode(Stmt stmt) {
+  public ControlFlowGraphNode(Stmt stmt) {
     this.stmt = stmt;
   }
 
@@ -40,7 +40,7 @@ public class StmtGraphNode extends PropertyGraphNode {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    StmtGraphNode that = (StmtGraphNode) o;
+    ControlFlowGraphNode that = (ControlFlowGraphNode) o;
     return stmt.equivTo(that.getStmt())
         && Objects.equals(this.stmt.getPositionInfo(), that.getStmt().getPositionInfo());
   }

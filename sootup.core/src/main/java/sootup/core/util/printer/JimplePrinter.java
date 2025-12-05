@@ -330,7 +330,7 @@ public class JimplePrinter {
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
   private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
-    final ControlFlowGraph<?> controlFlowGraph = body.getStmtGraph();
+    final ControlFlowGraph<?> controlFlowGraph = body.getControlFlowGraph();
     printStmts(controlFlowGraph, printer);
   }
 

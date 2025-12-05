@@ -67,7 +67,7 @@ public class CastAndReturnInlinerTest {
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
 
-    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(strToA);
     controlFlowGraph.putEdge(strToA, jump);
     controlFlowGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
@@ -129,7 +129,7 @@ public class CastAndReturnInlinerTest {
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
-    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(strToA);
     controlFlowGraph.putEdge(strToA, strToC);
     controlFlowGraph.putEdge(strToC, jump);

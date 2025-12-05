@@ -95,7 +95,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.putEdge(startingStmt, stmt1);
 
     controlFlowGraph.putEdge(stmt1, ret1);
@@ -112,7 +112,7 @@ public class UnreachableCodeEliminatorTest {
     eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
-    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
+    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getControlFlowGraph().getNodes());
   }
 
   /**
@@ -144,11 +144,11 @@ public class UnreachableCodeEliminatorTest {
 
     new UnreachableCodeEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
-    briefStmtPrinter.buildTraps(builder.getStmtGraph());
+    briefStmtPrinter.buildTraps(builder.getControlFlowGraph());
     assertEquals(0, briefStmtPrinter.getTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
-    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
+    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getControlFlowGraph().getNodes());
   }
 
   /**
@@ -181,12 +181,12 @@ public class UnreachableCodeEliminatorTest {
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
     eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
-    briefStmtPrinter.buildTraps(builder.getStmtGraph());
+    briefStmtPrinter.buildTraps(builder.getControlFlowGraph());
     assertEquals(0, briefStmtPrinter.getTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
-    assertEquals(expectedStmtsSet, builder.getStmtGraph().getNodes());
-    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
+    assertEquals(expectedStmtsSet, builder.getControlFlowGraph().getNodes());
+    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getControlFlowGraph().getNodes());
   }
 
   @Test
@@ -212,10 +212,10 @@ public class UnreachableCodeEliminatorTest {
     // set startingStmt
     graph.setStartingStmt(startingStmt);
 
-    MutableControlFlowGraph inputGraph = new MutableBlockControlFlowGraph(builder.getStmtGraph());
+    MutableControlFlowGraph inputGraph = new MutableBlockControlFlowGraph(builder.getControlFlowGraph());
     new UnreachableCodeEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
-    assertEquals(inputGraph, builder.getStmtGraph());
+    assertEquals(inputGraph, builder.getControlFlowGraph());
   }
 
   @Test
@@ -229,7 +229,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.putEdge(startingStmt, stmt1);
     controlFlowGraph.putEdge(stmt1, stmt2);
     controlFlowGraph.putEdge(stmt2, jIfStmt);
@@ -249,7 +249,7 @@ public class UnreachableCodeEliminatorTest {
     // stmtinsideif got eliminated
     Set<Stmt> expectedStmtsSet =
         ImmutableUtils.immutableSet(startingStmt, stmt1, stmt2, jIfStmt, stmt3, ret1);
-    assertEquals(expectedStmtsSet.size(), builder.getStmtGraph().getNodes().size());
+    assertEquals(expectedStmtsSet.size(), builder.getControlFlowGraph().getNodes().size());
   }
 
   @Test
@@ -263,7 +263,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.putEdge(startingStmt, stmt1);
     controlFlowGraph.putEdge(stmt1, stmt2);
     controlFlowGraph.putEdge(stmt2, jGotoStmt);
@@ -282,6 +282,6 @@ public class UnreachableCodeEliminatorTest {
     // stmtinsideif, stmt3 got eliminated
     Set<Stmt> expectedStmtsSet =
         ImmutableUtils.immutableSet(startingStmt, stmt1, stmt2, jGotoStmt, ret1);
-    assertEquals(expectedStmtsSet.size(), builder.getStmtGraph().getNodes().size());
+    assertEquals(expectedStmtsSet.size(), builder.getControlFlowGraph().getNodes().size());
   }
 }

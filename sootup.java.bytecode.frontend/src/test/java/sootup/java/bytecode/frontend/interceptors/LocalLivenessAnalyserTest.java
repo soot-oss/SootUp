@@ -72,7 +72,7 @@ public class LocalLivenessAnalyserTest {
   public void testLivenessAnalyser() {
     Body body = createBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
-    LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(builder.getStmtGraph());
+    LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(builder.getControlFlowGraph());
     Set<Local> cSet = ImmutableUtils.immutableSet(c);
     Set<Local> ac = ImmutableUtils.immutableSet(a, c);
     Set<Local> bc = ImmutableUtils.immutableSet(b, c);
@@ -93,7 +93,7 @@ public class LocalLivenessAnalyserTest {
   private Body createBody() {
 
     Body.BodyBuilder builder = Body.builder();
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     builder.setMethodSignature(methodSignature);
 
     // build set locals

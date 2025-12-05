@@ -74,7 +74,7 @@ public class TypeResolver {
     final Collection<Local> locals = Lists.newArrayList(builder.getLocals());
     Typing iniTyping = new Typing(locals);
     Collection<Typing> typings =
-        applyAssignmentConstraint(builder.getStmtGraph(), iniTyping, evalFunction, hierarchy);
+        applyAssignmentConstraint(builder.getControlFlowGraph(), iniTyping, evalFunction, hierarchy);
     if (typings.isEmpty()) {
       return false;
     }
@@ -121,7 +121,7 @@ public class TypeResolver {
 
   /** find all definition assignments, add all locals at right-hand-side into the map depends */
   private void init(Body.BodyBuilder builder) {
-    for (Stmt stmt : builder.getStmtGraph()) {
+    for (Stmt stmt : builder.getControlFlowGraph()) {
       if (!(stmt instanceof AbstractDefinitionStmt)) {
         continue;
       }

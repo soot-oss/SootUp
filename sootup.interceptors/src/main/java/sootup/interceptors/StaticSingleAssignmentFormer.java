@@ -58,7 +58,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
     int nextFreeIdx = 0;
 
-    MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // Keys: all blocks in BlockGraph. Values: a set of locals which defined in the corresponding
     // block

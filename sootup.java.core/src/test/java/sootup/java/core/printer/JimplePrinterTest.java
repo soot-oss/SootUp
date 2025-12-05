@@ -99,7 +99,7 @@ public class JimplePrinterTest {
     final JNopStmt jNop = new JNopStmt(noPosInfo);
     Body.BodyBuilder bodyBuilder = Body.builder();
 
-    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(jNop);
     controlFlowGraph.putEdge(jNop, returnVoidStmt);
 

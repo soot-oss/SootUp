@@ -42,8 +42,8 @@ public class NopEliminatorTest {
     new NopEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
-    ControlFlowGraph<?> inputControlFlowGraph = testBody.getStmtGraph();
-    ControlFlowGraph<?> actualGraph = processedBody.getStmtGraph();
+    ControlFlowGraph<?> inputControlFlowGraph = testBody.getControlFlowGraph();
+    ControlFlowGraph<?> actualGraph = processedBody.getControlFlowGraph();
 
     assertEquals(inputControlFlowGraph.getNodes().size() - 1, actualGraph.getNodes().size());
   }
@@ -62,7 +62,7 @@ public class NopEliminatorTest {
     new NopEliminator().interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
 
-    assertEquals(testBody.getStmtGraph().getNodes(), processedBody.getStmtGraph().getNodes());
+    assertEquals(testBody.getControlFlowGraph().getNodes(), processedBody.getControlFlowGraph().getNodes());
   }
 
   /**
@@ -95,7 +95,7 @@ public class NopEliminatorTest {
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(strToA);
     controlFlowGraph.putEdge(strToA, jump);
     controlFlowGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);

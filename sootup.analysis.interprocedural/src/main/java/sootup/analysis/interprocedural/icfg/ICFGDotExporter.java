@@ -150,7 +150,7 @@ public class ICFGDotExporter {
               && !subclassmethodSignature.toString().equals(initMethod.toString())) {
             if (method.get().hasBody()) {
               calls.put(
-                  method.get().getBody().getStmtGraph().getStartingStmt().hashCode(),
+                  method.get().getBody().getControlFlowGraph().getStartingStmt().hashCode(),
                   subclassmethodSignature);
             }
           }

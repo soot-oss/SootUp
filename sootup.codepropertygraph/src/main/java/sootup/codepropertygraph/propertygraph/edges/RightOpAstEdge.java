@@ -23,10 +23,10 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 */
 
 import sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode;
-import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
+import sootup.codepropertygraph.propertygraph.nodes.ControlFlowGraphNode;
 
 public class RightOpAstEdge extends AbstAstEdge {
-  public RightOpAstEdge(StmtGraphNode source, PropertyGraphNode destination) {
+  public RightOpAstEdge(ControlFlowGraphNode source, PropertyGraphNode destination) {
     super(source, destination);
   }
 

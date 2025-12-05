@@ -618,7 +618,7 @@ public class PAG {
       }
     }
 
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     for (Stmt unit : newUnits.keySet()) {
       for (JAssignStmt succ : newUnits.get(unit)) {
         controlFlowGraph.insertBefore(unit, succ);

@@ -33,8 +33,8 @@ public class AssertUtils {
 
   // assert whether two bodies have the same ControlFlowGraphs
   public static void assertControlFlowGraphEquiv(Body expected, Body actual) {
-    ControlFlowGraph<?> expected_SG = expected.getStmtGraph();
-    ControlFlowGraph<?> actual_SG = actual.getStmtGraph();
+    ControlFlowGraph<?> expected_SG = expected.getControlFlowGraph();
+    ControlFlowGraph<?> actual_SG = actual.getControlFlowGraph();
     assertNotNull(expected_SG);
     assertNotNull(actual_SG);
     final String expectedStr = expected.toString();

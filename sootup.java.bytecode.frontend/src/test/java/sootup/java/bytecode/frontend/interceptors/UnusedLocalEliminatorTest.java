@@ -83,7 +83,7 @@ public class UnusedLocalEliminatorTest {
 
     final Body.BodyBuilder builder = Body.builder();
     locals.forEach(builder::addLocal);
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(strToA);
     controlFlowGraph.putEdge(strToA, jump);
     controlFlowGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);

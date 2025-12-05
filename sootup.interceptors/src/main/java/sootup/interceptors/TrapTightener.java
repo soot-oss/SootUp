@@ -59,7 +59,7 @@ public class TrapTightener implements BodyInterceptor {
       throw new UnsupportedOperationException("TrapTightener is not yet implemented.");
     }
 
-    MutableControlFlowGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
     List<Stmt> stmtsInPrintOrder = builder.getStmts();
 
     // collect stmts

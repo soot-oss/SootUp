@@ -46,7 +46,7 @@ public class NopEliminator implements BodyInterceptor {
    */
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
-    MutableControlFlowGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
 
     Queue<Stmt> q = new ArrayDeque<>();
     for (Stmt stmt : graph.getNodes()) {

@@ -109,7 +109,7 @@ public class ConstantPropagatorAndFolderTest {
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(assignA);
     controlFlowGraph.putEdge(assignA, assignB);
     controlFlowGraph.putEdge(assignB, assignC);

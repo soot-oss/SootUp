@@ -44,7 +44,7 @@ public class EmptySwitchEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     // Iterate all stmts in the body
-    MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     for (Stmt stmt : new ArrayList<>(controlFlowGraph.getNodes())) {
       // If the observed stmt an instance of JSwitchStmt
       if (stmt instanceof JSwitchStmt) {

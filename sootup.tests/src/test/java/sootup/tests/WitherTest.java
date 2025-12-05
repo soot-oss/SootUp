@@ -77,7 +77,7 @@ public class WitherTest {
             DoubleConstant.getInstance(12.34), StmtPositionInfo.getNoStmtPositionInfo());
     // bodyBuilder.addFlow(firstStmt, jReturnStmt);
 
-    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    MutableStmtGraph stmtGraph = bodyBuilder.getControlFlowGraph();
     stmtGraph.setStartingStmt(firstStmt);
     stmtGraph.putEdge(firstStmt, jReturnStmt);
     Body body =

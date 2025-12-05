@@ -79,7 +79,7 @@ public class EmptySwitchEliminatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
 
     builder.setLocals(locals);
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     // build stmtsGraph for the builder
     controlFlowGraph.putEdge(startingStmt, stmt1);
     controlFlowGraph.putEdge(stmt1, sw);
@@ -109,7 +109,7 @@ public class EmptySwitchEliminatorTest {
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.putEdge(startingStmt, stmt1);
     controlFlowGraph.putEdge(stmt1, gotoStmt);
     controlFlowGraph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, defaultStmt);

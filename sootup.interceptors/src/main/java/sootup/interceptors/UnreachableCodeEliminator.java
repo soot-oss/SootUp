@@ -40,7 +40,7 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
-    MutableControlFlowGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
 
     // Because there is a case in android, where the statement graph will be empty
     if (graph.getStmts().isEmpty() && graph.getNodes().isEmpty()) {

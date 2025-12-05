@@ -61,7 +61,7 @@ public class CopyPropagator implements BodyInterceptor {
 
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
-    MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     for (Stmt stmt : Lists.newArrayList(controlFlowGraph)) {
       Stmt newStmt = stmt;
       Set<Value> valueList = newStmt.getUses().collect(Collectors.toSet());

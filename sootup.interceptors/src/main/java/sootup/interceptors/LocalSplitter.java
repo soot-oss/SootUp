@@ -189,7 +189,7 @@ public class LocalSplitter implements BodyInterceptor {
 
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
-    MutableControlFlowGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
 
     // Cache the stmts to not have to retrieve them for every local
     List<Stmt> stmts = graph.getStmts();

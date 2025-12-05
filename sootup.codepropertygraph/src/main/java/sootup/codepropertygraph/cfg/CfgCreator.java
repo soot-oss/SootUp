@@ -25,7 +25,7 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.StmtMethodPropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.*;
-import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
+import sootup.codepropertygraph.propertygraph.nodes.ControlFlowGraphNode;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
@@ -51,15 +51,15 @@ public class CfgCreator {
       return graphBuilder.build();
     }
 
-    ControlFlowGraph<?> controlFlowGraph = method.getBody().getStmtGraph();
+    ControlFlowGraph<?> controlFlowGraph = method.getBody().getControlFlowGraph();
     controlFlowGraph.forEach(
         currStmt -> {
           int expectedCount = currStmt.getExpectedSuccessorCount();
           int successorIndex = 0;
 
           for (Stmt successor : controlFlowGraph.getAllSuccessors(currStmt)) {
-            StmtGraphNode sourceNode = new StmtGraphNode(currStmt);
-            StmtGraphNode destinationNode = new StmtGraphNode(successor);
+            ControlFlowGraphNode sourceNode = new ControlFlowGraphNode(currStmt);
+            ControlFlowGraphNode destinationNode = new ControlFlowGraphNode(successor);
             AbstCfgEdge edge = createEdge(currStmt, successorIndex, sourceNode, destinationNode);
 
             if (successorIndex >= expectedCount) {
@@ -84,7 +84,7 @@ public class CfgCreator {
    * @return the created edge
    */
   private AbstCfgEdge createEdge(
-      Stmt currStmt, int successorIndex, StmtGraphNode sourceNode, StmtGraphNode destinationNode) {
+          Stmt currStmt, int successorIndex, ControlFlowGraphNode sourceNode, ControlFlowGraphNode destinationNode) {
     if (currStmt instanceof JIfStmt) {
       return successorIndex == JIfStmt.TRUE_BRANCH_IDX
           ? new IfTrueCfgEdge(sourceNode, destinationNode)

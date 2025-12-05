@@ -100,7 +100,7 @@ public class AggregatorTest {
             noPositionInfo);
     FallsThroughStmt assignB = JavaJimple.newAssignStmt(b, a, noPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noPositionInfo);
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     controlFlowGraph.setStartingStmt(assignA);
     controlFlowGraph.putEdge(assignA, useA);
@@ -139,7 +139,7 @@ public class AggregatorTest {
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
-    final MutableControlFlowGraph controlFlowGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(intToA);
     controlFlowGraph.putEdge(intToA, intToB);
     controlFlowGraph.putEdge(intToB, ret);
