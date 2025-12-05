@@ -145,7 +145,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public boolean containsCall(@NonNull Call call) {
     for (Edge edge : graph.edges()) {
-      Call label = graph.getEdgeLabel(edge.source(), edge.target());
+      Call label = (Call)edge.label();
       if (label.equals(call)) {
         return true;
       }
