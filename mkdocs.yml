@@ -27,7 +27,7 @@ nav:
   - How to..:
       - Write a Dataflow analysis: write_analyses.md
       - Incorporate Pointer Analysis: qilin.md
-  #  - Modify a StmtGraph: mutable_stmtgraph.md
+  #  - Modify a ControlFlowGraph: mutable_controlflowgraph.md
   #  - Modify a View: mutable_view.md
   #  - Implement a BodyInterceptor: body_interceptor.md
   #  - Implement an AnalysisTool: write_analysis_tool.md

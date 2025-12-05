@@ -27,7 +27,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /**
- * This class is used to build a dominance tree for a BlockStmtGraph, which helps identify the
+ * This class is used to build a dominance tree for a BlockControlFlowGraph, which helps identify the
  * dominator-relationships among blocks
  *
  * @see <a>https://en.wikipedia.org/wiki/Dominator_(graph_theory)</a>
