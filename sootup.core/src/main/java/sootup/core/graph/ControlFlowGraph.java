@@ -249,9 +249,7 @@ public abstract class ControlFlowGraph<V extends BasicBlock<V>> implements Itera
             }
           }
 
-        } else if (stmt instanceof JReturnStmt
-            || stmt instanceof JReturnVoidStmt
-            || stmt instanceof JThrowStmt) {
+        } else if (stmt instanceof ReturnStmt || stmt instanceof JThrowStmt) {
           if (successorCount != 0) {
             throw new IllegalStateException(
                 stmt + ": must have '0' outgoing flow but has '" + successorCount + "'.");

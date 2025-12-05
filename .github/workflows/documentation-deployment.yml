@@ -1,17 +1,11 @@
-name: Documentation Preview
+name: Documentation Deployment
 
 on:
-  pull_request:
-    types:
-      - opened
-      - closed
-      - synchronize
-      - reopened
-    paths:
-      - mkdocs.yml                                        # static site generator config
-      - .github/workflows/documentation-pr-preview.yml    # refers to this workflow file
-      - docs/**                                           # actual documentation
-      - sootup.examples/**                                # where example code that is included in the documentation is stored
+  push:
+    branches:
+      - develop
+    tags:
+      - '*'
 
 concurrency:
   group: gh-pages
@@ -20,18 +14,17 @@ permissions:
   contents: read
 
 jobs:
-  deploy-preview:
-    name: Preview documentation
+  deploy-doc:
+    name: Deploy Stable Documentation
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write                                # for posting a comment
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
-          fetch-depth: 0                                  # mike needs full history to push to gh-pages
+          ref: ${{ github.ref }}
+          fetch-depth: 0                                                     # mike needs full history to push to gh-pages
 
       - name: Grab latest release url of the JimpleLSP jar and download it - for use in Pygments+LspLexer4Pygments
         shell: bash
@@ -47,5 +40,7 @@ jobs:
         shell: bash
         run: rm -rf docs/api; mkdir -p docs/api; mv target/reports/apidocs/* docs/api
 
-      - name: Create Documentation Preview
-        uses: secure-software-engineering/actions/documentation/pr-preview@1586956654997710ed19fbc7953cd4336af63a87 # develop
+      - name: Deploy Documentation
+        uses: secure-software-engineering/actions/documentation/deployment@1586956654997710ed19fbc7953cd4336af63a87 # develop
+        with:
+          version: ${{ github.ref_name }}

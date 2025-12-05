@@ -14,10 +14,10 @@ jobs:
     name: Check style
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Set up Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5.1.0
         with:
           distribution: adopt
           java-package: jdk
@@ -82,7 +82,7 @@ jobs:
           # did the version not change? if not: master fails, other branches: ok      
           if [ "$LATEST_VERSION" == "${{ env.PROPOSED_VERSION }}" ]; then
             if [ "${{ github.base_ref }}" != "${{ env.FINAL_BRANCH_NAME }}" ]; then
-              echo "No version change necessary on ${{ github.base_ref }}";
+              echo "No version change necessary on ${{ github.base_ref }}.";
               exit 0
             else
               echo "Version change necessary to merge into ${{ github.base_ref }}!";
