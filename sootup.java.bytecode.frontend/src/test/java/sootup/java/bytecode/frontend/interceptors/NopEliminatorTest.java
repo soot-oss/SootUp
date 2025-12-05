@@ -62,7 +62,8 @@ public class NopEliminatorTest {
     new NopEliminator().interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
 
-    assertEquals(testBody.getControlFlowGraph().getNodes(), processedBody.getControlFlowGraph().getNodes());
+    assertEquals(
+        testBody.getControlFlowGraph().getNodes(), processedBody.getControlFlowGraph().getNodes());
   }
 
   /**

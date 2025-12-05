@@ -84,7 +84,10 @@ public class CfgCreator {
    * @return the created edge
    */
   private AbstCfgEdge createEdge(
-          Stmt currStmt, int successorIndex, ControlFlowGraphNode sourceNode, ControlFlowGraphNode destinationNode) {
+      Stmt currStmt,
+      int successorIndex,
+      ControlFlowGraphNode sourceNode,
+      ControlFlowGraphNode destinationNode) {
     if (currStmt instanceof JIfStmt) {
       return successorIndex == JIfStmt.TRUE_BRANCH_IDX
           ? new IfTrueCfgEdge(sourceNode, destinationNode)

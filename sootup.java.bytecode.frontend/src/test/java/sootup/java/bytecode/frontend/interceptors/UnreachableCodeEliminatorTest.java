@@ -212,7 +212,8 @@ public class UnreachableCodeEliminatorTest {
     // set startingStmt
     graph.setStartingStmt(startingStmt);
 
-    MutableControlFlowGraph inputGraph = new MutableBlockControlFlowGraph(builder.getControlFlowGraph());
+    MutableControlFlowGraph inputGraph =
+        new MutableBlockControlFlowGraph(builder.getControlFlowGraph());
     new UnreachableCodeEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
     assertEquals(inputGraph, builder.getControlFlowGraph());

@@ -74,7 +74,8 @@ public class TypeResolver {
     final Collection<Local> locals = Lists.newArrayList(builder.getLocals());
     Typing iniTyping = new Typing(locals);
     Collection<Typing> typings =
-        applyAssignmentConstraint(builder.getControlFlowGraph(), iniTyping, evalFunction, hierarchy);
+        applyAssignmentConstraint(
+            builder.getControlFlowGraph(), iniTyping, evalFunction, hierarchy);
     if (typings.isEmpty()) {
       return false;
     }

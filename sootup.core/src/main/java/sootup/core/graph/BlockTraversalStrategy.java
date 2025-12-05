@@ -28,7 +28,8 @@ import java.util.List;
 public interface BlockTraversalStrategy {
 
   /**
-   * This method provides an iterator to traverse a ControlFlowGraph according to the defined strategy.
+   * This method provides an iterator to traverse a ControlFlowGraph according to the defined
+   * strategy.
    *
    * @return an iterator for traversing ControlFlowGraph
    */

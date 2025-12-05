@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import sootup.codepropertygraph.propertygraph.edges.PropertyGraphEdge;
+import sootup.codepropertygraph.propertygraph.nodes.ControlFlowGraphNode;
 import sootup.codepropertygraph.propertygraph.nodes.MethodGraphNode;
 import sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode;
-import sootup.codepropertygraph.propertygraph.nodes.ControlFlowGraphNode;
 import sootup.codepropertygraph.propertygraph.util.PropertyGraphToDotConverter;
 
 public final class StmtMethodPropertyGraph implements PropertyGraph {

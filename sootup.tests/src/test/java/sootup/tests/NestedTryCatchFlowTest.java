@@ -41,7 +41,8 @@ public class NestedTryCatchFlowTest {
 
   @Test
   public void testNestedTryCatchFlow1() {
-    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph(body.getControlFlowGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     Map<Integer, BasicBlock<?>> returnValToBlockMap = new HashMap<>();
     for (BasicBlock<?> block : graph.getBlocks()) {
       for (Stmt stmt : block.getStmts()) {

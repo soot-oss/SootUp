@@ -51,7 +51,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertBeforeBlockHead1() {
 
-    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph(body.getControlFlowGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // head of a block
     String s = "l2 = 0";
@@ -125,7 +126,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertBeforeBlockHead2() {
 
-    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph(body.getControlFlowGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // head of a block
     String s = "l2 = 0";
@@ -199,7 +201,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertBeforeBlockMiddle1() {
 
-    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph(body.getControlFlowGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // middle stmt of a block
     String s = "if l1 != l2";
@@ -274,7 +277,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertBeforeBlockMiddle2() {
 
-    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph(body.getControlFlowGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // middle stmt of a block
     String s = "if l1 != l2";
@@ -353,7 +357,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertAfterBlockTail1() {
 
-    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph(body.getControlFlowGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // head of a block
     String s = "l2 = l2 + 1";
@@ -430,7 +435,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertAfterBlockTail2() {
 
-    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph(body.getControlFlowGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // head of a block
     String s = "l2 = l2 + 1";
@@ -505,7 +511,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertAfterBlockMiddle1() {
 
-    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph(body.getControlFlowGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // middle stmt of a block
     String s = "l2 = 0";
@@ -580,7 +587,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertAfterBlockMiddle2() {
 
-    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph(body.getControlFlowGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // middle stmt of a block
     String s = "l2 = 0";
