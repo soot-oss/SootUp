@@ -980,7 +980,6 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             "void",
             Collections.emptyList());
 
-
     assertTrue(
         cg.containsCall(
             mainMethodSignature,

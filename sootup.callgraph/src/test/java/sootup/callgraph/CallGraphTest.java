@@ -41,8 +41,11 @@ public abstract class CallGraphTest {
 
   protected JavaView createViewForClassPath(String classPath) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new DefaultRuntimeAnalysisInputLocation(SourceType.Library,Collections.emptyList()));
-    inputLocations.add(new JavaClassPathAnalysisInputLocation(classPath, SourceType.Application,Collections.emptyList()));
+    inputLocations.add(
+        new DefaultRuntimeAnalysisInputLocation(SourceType.Library, Collections.emptyList()));
+    inputLocations.add(
+        new JavaClassPathAnalysisInputLocation(
+            classPath, SourceType.Application, Collections.emptyList()));
 
     return new JavaView(inputLocations);
   }
