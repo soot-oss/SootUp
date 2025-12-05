@@ -18,6 +18,7 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
@@ -40,8 +41,8 @@ public abstract class CallGraphTest {
 
   protected JavaView createViewForClassPath(String classPath) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
-    inputLocations.add(new JavaClassPathAnalysisInputLocation(classPath));
+    inputLocations.add(new DefaultRuntimeAnalysisInputLocation(SourceType.Library,Collections.emptyList()));
+    inputLocations.add(new JavaClassPathAnalysisInputLocation(classPath, SourceType.Application,Collections.emptyList()));
 
     return new JavaView(inputLocations);
   }
