@@ -13,7 +13,7 @@ import sootup.java.core.views.JavaView;
 
 public class TryWithResourcesFinallyTests {
 
-  Path classFilePath = Paths.get("../shared-test-resources/bugfixes/TryWithResourcesFinally.class");
+  Path classFilePath = Paths.get("src/test/resources/bugfixes/TryWithResourcesFinally.class");
 
   @Test
   public void test() {

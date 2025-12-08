@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
+import sootup.callgraph.mock.ClassHierarchyAnalysisPruningAlgorithm;
 import sootup.core.IdentifierFactory;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -11,7 +12,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-public class ClassHierarchyAnalysisPruningAlgorithmTest extends CallGraphTestMethods {
+public class ClassHierarchyAnalysisPruningAlgorithmTest extends CallGraphTest {
 
   protected ClassHierarchyAnalysisPruningAlgorithm createAlgorithm(JavaView view) {
     return new ClassHierarchyAnalysisPruningAlgorithm(view);

@@ -103,7 +103,7 @@ public class RuntimeJarConversionTests {
   @Test
   public void runTimeOfBodyInterceptorOnJar() {
     // Note: mrjar.jar used just for test purpose, you can put any jar file.
-    String baseDir = "../shared-test-resources/multi-release-jar/mrjar.jar";
+    String baseDir = "src/test/resources/multi-release-jar/mrjar.jar";
     // List<BodyInterceptor> bodyInterceptorsList =
     // BytecodeBodyInterceptors.Default.getBodyInterceptors();
     List<BodyInterceptor> bodyInterceptorsList =
