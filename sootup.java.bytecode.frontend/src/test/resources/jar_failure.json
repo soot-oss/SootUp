@@ -1,0 +1,8 @@
+[
+{
+  "jar_name": "ets-gpkg12-1.3.jar",
+  "exception": "Failed to convert <org.opengis.cite.gpkg12.core.SQLiteContainerTests: void sqlCheck()>",
+  "download_url": "https://repo1.maven.org/maven2/org/opengis/cite/ets-gpkg12/1.3/ets-gpkg12-1.3.jar",
+  "failedMethodSignature": "<org.opengis.cite.gpkg12.core.SQLiteContainerTests: void sqlCheck()>"
+}
+]
