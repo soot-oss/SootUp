@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -41,7 +41,8 @@ public class NestedTryCatchFlowTest {
 
   @Test
   public void testNestedTryCatchFlow1() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     Map<Integer, BasicBlock<?>> returnValToBlockMap = new HashMap<>();
     for (BasicBlock<?> block : graph.getBlocks()) {
       for (Stmt stmt : block.getStmts()) {

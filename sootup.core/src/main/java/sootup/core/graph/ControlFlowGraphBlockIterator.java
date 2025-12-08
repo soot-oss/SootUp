@@ -32,15 +32,15 @@ import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
 /**
- * Iterates over a given StmtGraph (which is connected, so all Stmt nodes are reached - except
- * traphandler) so the returned Jimple Stmts are returned as valid, linearized code blocks that are
- * intuitive to navigate.
+ * Iterates over a given ControlFlowGraph (which is connected, so all Stmt nodes are reached -
+ * except traphandler) so the returned Jimple Stmts are returned as valid, linearized code blocks
+ * that are intuitive to navigate.
  *
  * @author Markus Schmidt
  */
-public class StmtGraphBlockIterator implements Iterator<Stmt> {
+public class ControlFlowGraphBlockIterator implements Iterator<Stmt> {
 
-  @NonNull private final StmtGraph<?> graph;
+  @NonNull private final ControlFlowGraph<?> graph;
   @NonNull private final List<Trap> traps;
   private int trapIdx = 0;
 
@@ -55,7 +55,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   // returnednodes with int;
   @NonNull private final Set<Stmt> returnedNodes;
 
-  public StmtGraphBlockIterator(@NonNull StmtGraph graph, @NonNull List<Trap> traps) {
+  public ControlFlowGraphBlockIterator(@NonNull ControlFlowGraph graph, @NonNull List<Trap> traps) {
     this.graph = graph;
     returnedNodes = new HashSet<>(graph.getNodes().size(), 1);
     Stmt startingStmt = graph.getStartingStmt();
@@ -189,7 +189,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       throw new RuntimeException(
           "There are "
               + (actualSize - returnedSize)
-              + " stmts that are not iterated! StmtGraph is not connected from startingStmt!"
+              + " stmts that are not iterated! ControlFlowGraph is not connected from startingStmt!"
               + info);
     }
     return hasIteratorMoreElements;

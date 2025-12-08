@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.analysis.intraprocedural.ForwardFlowAnalysis;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -35,7 +35,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 public class ReachingDefs {
   private final Map<Stmt, List<Stmt>> reachingDefs;
 
-  public ReachingDefs(StmtGraph<? extends BasicBlock<?>> graph) {
+  public ReachingDefs(ControlFlowGraph<? extends BasicBlock<?>> graph) {
     this.reachingDefs = new HashMap<>();
 
     ReachingDefsAnalysis analysis = new ReachingDefsAnalysis(graph);
@@ -67,8 +67,8 @@ public class ReachingDefs {
 
   static class ReachingDefsAnalysis extends ForwardFlowAnalysis<Set<VariableDefinition>> {
 
-    /** Construct the analysis from StmtGraph. */
-    <B extends BasicBlock<B>> ReachingDefsAnalysis(StmtGraph<B> graph) {
+    /** Construct the analysis from ControlFlowGraph. */
+    <B extends BasicBlock<B>> ReachingDefsAnalysis(ControlFlowGraph<B> graph) {
       super(graph);
       execute();
     }

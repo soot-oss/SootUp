@@ -25,7 +25,7 @@ package sootup.analysis.intraprocedural;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
@@ -91,7 +91,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
      * @return
      */
     static <F> List<Entry<F>> newUniverse(
-        @NonNull StmtGraph<? extends BasicBlock<?>> g,
+        @NonNull ControlFlowGraph<? extends BasicBlock<?>> g,
         @NonNull AnalysisDirection direction,
         @NonNull F entryFlow) {
       final int size = g.getNodes().size();
@@ -287,32 +287,32 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
   enum AnalysisDirection {
     BACKWARD {
       @Override
-      @NonNull List<Stmt> getEntries(StmtGraph<? extends BasicBlock<?>> g) {
+      @NonNull List<Stmt> getEntries(ControlFlowGraph<? extends BasicBlock<?>> g) {
         return g.getTails();
       }
 
       @Override
-      @NonNull List<Stmt> getOut(StmtGraph<? extends BasicBlock<?>> g, Stmt s) {
+      @NonNull List<Stmt> getOut(ControlFlowGraph<? extends BasicBlock<?>> g, Stmt s) {
         return g.predecessors(s);
       }
     },
     FORWARD {
       @Override
-      @NonNull List<Stmt> getEntries(StmtGraph<? extends BasicBlock<?>> g) {
+      @NonNull List<Stmt> getEntries(ControlFlowGraph<? extends BasicBlock<?>> g) {
         return (List<Stmt>) g.getEntrypoints();
       }
 
       @Override
-      @NonNull List<Stmt> getOut(StmtGraph<? extends BasicBlock<?>> g, Stmt s) {
+      @NonNull List<Stmt> getOut(ControlFlowGraph<? extends BasicBlock<?>> g, Stmt s) {
         return g.successors(s);
       }
     };
 
     @NonNull
-    abstract List<Stmt> getEntries(StmtGraph<? extends BasicBlock<?>> g);
+    abstract List<Stmt> getEntries(ControlFlowGraph<? extends BasicBlock<?>> g);
 
     @NonNull
-    abstract List<Stmt> getOut(StmtGraph<? extends BasicBlock<?>> g, Stmt s);
+    abstract List<Stmt> getOut(ControlFlowGraph<? extends BasicBlock<?>> g, Stmt s);
   }
 
   /** Maps graph nodes to OUT sets. */
@@ -322,7 +322,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
   @NonNull protected Map<Stmt, A> filterStmtToAfterFlow;
 
   /** Constructs a flow analysis on the given <code>DirectedGraph</code>. */
-  public FlowAnalysis(@NonNull StmtGraph<? extends BasicBlock<?>> graph) {
+  public FlowAnalysis(@NonNull ControlFlowGraph<? extends BasicBlock<?>> graph) {
     super(graph);
     this.stmtToAfterFlow = new IdentityHashMap<>(graph.getNodes().size() * 2 + 1);
     this.filterStmtToAfterFlow = Collections.emptyMap();

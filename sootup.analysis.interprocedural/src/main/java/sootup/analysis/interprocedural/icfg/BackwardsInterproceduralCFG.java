@@ -25,7 +25,7 @@ package sootup.analysis.interprocedural.icfg;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
@@ -134,8 +134,8 @@ public class BackwardsInterproceduralCFG implements BiDiInterproceduralCFG<Stmt,
 
   // same
   @Override
-  public StmtGraph<?> getOrCreateStmtGraph(SootMethod m) {
-    return delegate.getOrCreateStmtGraph(m);
+  public ControlFlowGraph<?> getOrCreateControlFlowGraph(SootMethod m) {
+    return delegate.getOrCreateControlFlowGraph(m);
   }
 
   // same

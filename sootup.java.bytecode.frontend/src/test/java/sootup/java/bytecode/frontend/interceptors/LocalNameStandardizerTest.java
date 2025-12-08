@@ -2,7 +2,7 @@ package sootup.java.bytecode.frontend.interceptors;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
@@ -106,7 +106,7 @@ public class LocalNameStandardizerTest {
     Body expectedBody = createExpectedBody();
 
     AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    AssertUtils.assertControlFlowGraphEquiv(expectedBody, builder.build());
   }
 
   private Body createBody() {
@@ -120,20 +120,20 @@ public class LocalNameStandardizerTest {
 
     builder.setLocals(locals);
 
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     // build stm
-    // builder.getStmtGraph()tGraph for the builder
-    stmtGraph.putEdge(startingStmt, stmt1);
-    stmtGraph.putEdge(stmt1, stmt2);
-    stmtGraph.putEdge(stmt2, stmt3);
-    stmtGraph.putEdge(stmt3, stmt4);
-    stmtGraph.putEdge(stmt4, stmt5);
-    stmtGraph.putEdge(stmt5, stmt6);
-    stmtGraph.putEdge(stmt6, stmt7);
-    stmtGraph.putEdge(stmt7, ret);
+    // builder.getControlFlowGraph()tGraph for the builder
+    controlFlowGraph.putEdge(startingStmt, stmt1);
+    controlFlowGraph.putEdge(stmt1, stmt2);
+    controlFlowGraph.putEdge(stmt2, stmt3);
+    controlFlowGraph.putEdge(stmt3, stmt4);
+    controlFlowGraph.putEdge(stmt4, stmt5);
+    controlFlowGraph.putEdge(stmt5, stmt6);
+    controlFlowGraph.putEdge(stmt6, stmt7);
+    controlFlowGraph.putEdge(stmt7, ret);
 
     // set startingStmt
-    stmtGraph.setStartingStmt(startingStmt);
+    controlFlowGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -152,19 +152,19 @@ public class LocalNameStandardizerTest {
 
     builder.setLocals(locals);
 
-    // build stmtGraph for the builder
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    stmtGraph.putEdge(estartingStmt, estmt1);
-    stmtGraph.putEdge(estmt1, estmt2);
-    stmtGraph.putEdge(estmt2, estmt3);
-    stmtGraph.putEdge(estmt3, estmt4);
-    stmtGraph.putEdge(estmt4, estmt5);
-    stmtGraph.putEdge(estmt5, estmt6);
-    stmtGraph.putEdge(estmt6, estmt7);
-    stmtGraph.putEdge(estmt7, ret);
+    // build controlFlowGraph for the builder
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    controlFlowGraph.putEdge(estartingStmt, estmt1);
+    controlFlowGraph.putEdge(estmt1, estmt2);
+    controlFlowGraph.putEdge(estmt2, estmt3);
+    controlFlowGraph.putEdge(estmt3, estmt4);
+    controlFlowGraph.putEdge(estmt4, estmt5);
+    controlFlowGraph.putEdge(estmt5, estmt6);
+    controlFlowGraph.putEdge(estmt6, estmt7);
+    controlFlowGraph.putEdge(estmt7, ret);
 
     // set startingStmt
-    stmtGraph.setStartingStmt(estartingStmt);
+    controlFlowGraph.setStartingStmt(estartingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());

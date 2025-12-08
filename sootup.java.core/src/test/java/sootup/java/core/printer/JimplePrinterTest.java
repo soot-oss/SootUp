@@ -8,7 +8,7 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -99,9 +99,9 @@ public class JimplePrinterTest {
     final JNopStmt jNop = new JNopStmt(noPosInfo);
     Body.BodyBuilder bodyBuilder = Body.builder();
 
-    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.setStartingStmt(jNop);
-    stmtGraph.putEdge(jNop, returnVoidStmt);
+    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(jNop);
+    controlFlowGraph.putEdge(jNop, returnVoidStmt);
 
     bodyBuilder
         .setMethodSignature(methodSignatureOne)

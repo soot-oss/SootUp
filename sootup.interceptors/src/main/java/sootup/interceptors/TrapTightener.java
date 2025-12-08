@@ -25,8 +25,8 @@ package sootup.interceptors;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
@@ -59,7 +59,7 @@ public class TrapTightener implements BodyInterceptor {
       throw new UnsupportedOperationException("TrapTightener is not yet implemented.");
     }
 
-    MutableStmtGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
     List<Stmt> stmtsInPrintOrder = builder.getStmts();
 
     // collect stmts
@@ -104,10 +104,10 @@ public class TrapTightener implements BodyInterceptor {
   /**
    * Find out all monitored stmts from a given exceptional graph, collect them into a list
    *
-   * @param graph a given exceptionalStmtGraph
+   * @param graph a given exceptionalControlFlowGraph
    * @return a list of monitored stmts
    */
-  private Set<Stmt> monitoredStmts(@NonNull StmtGraph<?> graph) {
+  private Set<Stmt> monitoredStmts(@NonNull ControlFlowGraph<?> graph) {
     Set<Stmt> monitoredStmts = new HashSet<>();
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
@@ -144,16 +144,17 @@ public class TrapTightener implements BodyInterceptor {
   /**
    * Check whether trap-destinations of the given stmt contain the given trap.
    *
-   * @param graph is a exceptional StmtGraph
+   * @param graph is a exceptional ControlFlowGraph
    * @param stmt is a stmt in the given graph
    * @param trap is a given trap
    * @return If trap-destinations of the given stmt contain the given trap, return true, otherwise
    *     return false
    */
 
-  // FIXME: [ms] makes no sense in that Implementation! StmtGraph is not the legacy
+  // FIXME: [ms] makes no sense in that Implementation! ControlFlowGraph is not the legacy
   // ExceptionalUnitGraph
-  private boolean mightThrow(@NonNull StmtGraph<?> graph, @NonNull Stmt stmt, @NonNull Trap trap) {
+  private boolean mightThrow(
+      @NonNull ControlFlowGraph<?> graph, @NonNull Stmt stmt, @NonNull Trap trap) {
     final BasicBlock<?> block = graph.getBlockOf(stmt);
 
     for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> dest :

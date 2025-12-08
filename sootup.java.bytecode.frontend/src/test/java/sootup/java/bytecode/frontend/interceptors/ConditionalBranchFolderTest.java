@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
@@ -136,13 +136,13 @@ public class ConditionalBranchFolderTest {
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
     Body.BodyBuilder bodyBuilder = Body.builder();
-    final MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
     bodyBuilder.setLocals(locals);
-    stmtGraph.putEdge(strToA, strToB);
-    stmtGraph.putEdge(strToB, ifStmt);
-    stmtGraph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, reta);
-    stmtGraph.putEdge(ifStmt, JIfStmt.TRUE_BRANCH_IDX, retb);
-    stmtGraph.setStartingStmt(strToA);
+    controlFlowGraph.putEdge(strToA, strToB);
+    controlFlowGraph.putEdge(strToB, ifStmt);
+    controlFlowGraph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, reta);
+    controlFlowGraph.putEdge(ifStmt, JIfStmt.TRUE_BRANCH_IDX, retb);
+    controlFlowGraph.setStartingStmt(strToA);
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));

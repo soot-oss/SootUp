@@ -23,5 +23,5 @@ package sootup.core.graph;
  */
 import java.util.Iterator;
 
-/** Interface of Block Iterator used to iterate each Block in a StmtGraph. */
+/** Interface of Block Iterator used to iterate each Block in a ControlFlowGraph. */
 public interface BlockIterator extends Iterator<BasicBlock<?>> {}
