@@ -24,13 +24,14 @@ package sootup.core.graph;
 
 import java.util.List;
 
-/** An interface for defining a strategy to traverse a StmtGraph. */
+/** An interface for defining a strategy to traverse a ControlFlowGraph. */
 public interface BlockTraversalStrategy {
 
   /**
-   * This method provides an iterator to traverse a StmtGraph according to the defined strategy.
+   * This method provides an iterator to traverse a ControlFlowGraph according to the defined
+   * strategy.
    *
-   * @return an iterator for traversing StmtGraph
+   * @return an iterator for traversing ControlFlowGraph
    */
   public BlockIterator iterator();
 

@@ -28,7 +28,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.DominanceFinder;
 import sootup.core.graph.DominanceTree;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
@@ -58,7 +58,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
     int nextFreeIdx = 0;
 
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // Keys: all blocks in BlockGraph. Values: a set of locals which defined in the corresponding
     // block
@@ -69,7 +69,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     Map<Local, Set<BasicBlock<?>>> localToBlocks = new HashMap<>();
 
     // determine blockToDefs and localToBlocks by iterating all blocks.
-    for (BasicBlock<?> block : stmtGraph.getBlocks()) {
+    for (BasicBlock<?> block : controlFlowGraph.getBlocks()) {
       Set<Local> defs = new HashSet<>();
       for (Stmt stmt : block.getStmts()) {
         Optional<LValue> defOpt = stmt.getDef();
@@ -88,7 +88,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
       blockToDefs.put(block, defs);
     }
 
-    DominanceFinder dominanceFinder = new DominanceFinder(stmtGraph);
+    DominanceFinder dominanceFinder = new DominanceFinder(controlFlowGraph);
 
     // decide which block should be added a phi assignStmt, and store such info in a map
     // key: Block which contains phiStmts. Values : a set of phiStmts which contained by
@@ -96,11 +96,11 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     Map<BasicBlock<?>, Set<FallsThroughStmt>> blockToPhiStmts =
         decideBlockToPhiStmts(builder, dominanceFinder, blockToDefs, localToBlocks);
 
-    // delete meaningless phiStmts and add other phiStmts into stmtGraph
-    addPhiStmts(blockToPhiStmts, stmtGraph, blockToDefs);
+    // delete meaningless phiStmts and add other phiStmts into controlFlowGraph
+    addPhiStmts(blockToPhiStmts, controlFlowGraph, blockToDefs);
 
     // some blocks are modified, so DominanceFinder must be updated for building dominance tree
-    DominanceTree tree = new DominanceTree(new DominanceFinder(stmtGraph));
+    DominanceTree tree = new DominanceTree(new DominanceFinder(controlFlowGraph));
 
     Map<Local, Stack<Local>> localToNameStack = new HashMap<>();
     for (Local local : builder.getLocals()) {
@@ -123,7 +123,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
             if (use instanceof Local) {
               Local newUse = localToNameStack.get(use).peek();
               Stmt newStmt = stmt.withNewUse(use, newUse);
-              stmtGraph.replaceNode(stmt, newStmt);
+              controlFlowGraph.replaceNode(stmt, newStmt);
               stmt = newStmt;
             }
           }
@@ -138,7 +138,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
             nextFreeIdx++;
             localToNameStack.get(def).push(newDef);
             FallsThroughStmt newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDef);
-            stmtGraph.replaceNode(stmt, newStmt);
+            controlFlowGraph.replaceNode(stmt, newStmt);
             if (containsPhiExpr(newStmt)) {
               newPhiStmts.add(newStmt);
             }
@@ -165,7 +165,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
               FallsThroughStmt newPhiStmt = addNewArgToPhi(phiStmt, arg, block);
               newPhiStmts.remove(phiStmt);
               newPhiStmts.add(newPhiStmt);
-              stmtGraph.replaceNode(phiStmt, newPhiStmt);
+              controlFlowGraph.replaceNode(phiStmt, newPhiStmt);
             }
           }
           blockToPhiStmts.put(succ, newPhiStmts);
@@ -200,7 +200,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
 
   /**
    * This method is used to decide which block should add phiStmts. Note: some phiStmts maybe
-   * contain just one argument, it should be not added into StmtGraph
+   * contain just one argument, it should be not added into ControlFlowGraph
    *
    * @param dominanceFinder an object of DominanceFinder, it should be created by the given
    *     blockGraph
@@ -271,7 +271,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
    */
   private void addPhiStmts(
       Map<BasicBlock<?>, Set<FallsThroughStmt>> blockToPhiStmts,
-      MutableStmtGraph blockGraph,
+      MutableControlFlowGraph blockGraph,
       Map<BasicBlock<?>, Set<Local>> blockToDefs) {
 
     // key: phiStmt  value: size of phiStmt's arguments

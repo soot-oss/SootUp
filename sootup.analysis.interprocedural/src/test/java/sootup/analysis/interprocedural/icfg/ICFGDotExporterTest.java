@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import sootup.analysis.interprocedural.ifds.IFDSTaintTestSetUp;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
@@ -176,11 +176,11 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   /** Compute the Edges of the given methodSignature from the provided callGraph */
   public String edgesFromCallGraph(
       MethodSignature methodSignature, JimpleBasedInterproceduralCFG icfg, CallGraph callGraph) {
-    Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph = new LinkedHashMap<>();
+    Map<MethodSignature, ControlFlowGraph<?>> signatureToControlFlowGraph = new LinkedHashMap<>();
     icfg.computeAllCalls(
-        Collections.singletonList(methodSignature), signatureToStmtGraph, callGraph);
+        Collections.singletonList(methodSignature), signatureToControlFlowGraph, callGraph);
     Map<Integer, MethodSignature> calls;
-    calls = ICFGDotExporter.computeCalls(signatureToStmtGraph, view, callGraph);
+    calls = ICFGDotExporter.computeCalls(signatureToControlFlowGraph, view, callGraph);
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
     if (methodOpt.isPresent()) {
       SootMethod sootMethod = methodOpt.get();

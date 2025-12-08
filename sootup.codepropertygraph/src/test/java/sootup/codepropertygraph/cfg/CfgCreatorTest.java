@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import sootup.codepropertygraph.GraphTestSuiteBase;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.*;
-import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
-import sootup.core.graph.MutableBlockStmtGraph;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.codepropertygraph.propertygraph.nodes.ControlFlowGraphNode;
+import sootup.core.graph.MutableBlockControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -85,7 +85,7 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
     for (String expectedNodeType : expectedNodeTypes) {
       assertTrue(
           cfgGraph.getNodes().stream()
-              .map(node -> (StmtGraphNode) node)
+              .map(node -> (ControlFlowGraphNode) node)
               .anyMatch(
                   node -> node.getStmt().getClass().getSimpleName().equals(expectedNodeType)));
     }
@@ -95,8 +95,8 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
           cfgGraph.getEdges().stream()
               .anyMatch(
                   edge -> {
-                    StmtGraphNode src = (StmtGraphNode) edge.getSource();
-                    StmtGraphNode dst = (StmtGraphNode) edge.getDestination();
+                    ControlFlowGraphNode src = (ControlFlowGraphNode) edge.getSource();
+                    ControlFlowGraphNode dst = (ControlFlowGraphNode) edge.getDestination();
                     return src.getStmt().getClass().getSimpleName().equals(expectedEdge[0])
                         && dst.getStmt().getClass().getSimpleName().equals(expectedEdge[1]);
                   }));
@@ -104,20 +104,20 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
   }
 
   private SootMethod createGotoStmtMethod() {
-    MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = new MutableBlockControlFlowGraph();
     JReturnVoidStmt targetStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     JGotoStmt gotoStmt = new JGotoStmt(targetStmt.getPositionInfo());
 
-    stmtGraph.addBlock(Collections.singletonList(gotoStmt));
-    stmtGraph.addBlock(Collections.singletonList(targetStmt));
-    stmtGraph.setStartingStmt(gotoStmt);
-    stmtGraph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, targetStmt);
+    controlFlowGraph.addBlock(Collections.singletonList(gotoStmt));
+    controlFlowGraph.addBlock(Collections.singletonList(targetStmt));
+    controlFlowGraph.setStartingStmt(gotoStmt);
+    controlFlowGraph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, targetStmt);
 
-    return createSootMethod(stmtGraph, "gotoStmtMethod");
+    return createSootMethod(controlFlowGraph, "gotoStmtMethod");
   }
 
   private SootMethod createSwitchStmtMethod() {
-    MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = new MutableBlockControlFlowGraph();
     JSwitchStmt switchStmt =
         Jimple.newTableSwitchStmt(IntConstant.getInstance(23), 1, 2, new SimpleStmtPositionInfo(1));
 
@@ -126,25 +126,25 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
     JReturnVoidStmt defaultTarget =
         Jimple.newReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
-    stmtGraph.addBlock(Collections.singletonList(switchStmt));
-    stmtGraph.addBlock(Collections.singletonList(target1));
-    stmtGraph.addBlock(Collections.singletonList(target2));
-    stmtGraph.addBlock(Collections.singletonList(defaultTarget));
-    stmtGraph.setStartingStmt(switchStmt);
+    controlFlowGraph.addBlock(Collections.singletonList(switchStmt));
+    controlFlowGraph.addBlock(Collections.singletonList(target1));
+    controlFlowGraph.addBlock(Collections.singletonList(target2));
+    controlFlowGraph.addBlock(Collections.singletonList(defaultTarget));
+    controlFlowGraph.setStartingStmt(switchStmt);
 
     int ctr = 0;
     for (Stmt target : Arrays.asList(target1, target2)) {
-      stmtGraph.addBlock(Collections.singletonList(target));
-      stmtGraph.putEdge(switchStmt, ctr, target);
+      controlFlowGraph.addBlock(Collections.singletonList(target));
+      controlFlowGraph.putEdge(switchStmt, ctr, target);
       ctr++;
     }
-    stmtGraph.putEdge(switchStmt, ctr, defaultTarget);
+    controlFlowGraph.putEdge(switchStmt, ctr, defaultTarget);
 
-    return createSootMethod(stmtGraph, "switchStmtMethod");
+    return createSootMethod(controlFlowGraph, "switchStmtMethod");
   }
 
   private SootMethod createNormalStmtMethod() {
-    MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = new MutableBlockControlFlowGraph();
     JAssignStmt assignStmt =
         Jimple.newAssignStmt(
             Jimple.newLocal("a", PrimitiveType.IntType.getInstance()),
@@ -152,28 +152,28 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
             StmtPositionInfo.getNoStmtPositionInfo());
     JReturnVoidStmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
-    stmtGraph.addBlock(Arrays.asList(assignStmt, returnStmt));
-    stmtGraph.setStartingStmt(assignStmt);
+    controlFlowGraph.addBlock(Arrays.asList(assignStmt, returnStmt));
+    controlFlowGraph.setStartingStmt(assignStmt);
 
-    return createSootMethod(stmtGraph, "normalStmtMethod");
+    return createSootMethod(controlFlowGraph, "normalStmtMethod");
   }
 
   private SootMethod createExceptionalEdgesMethod() {
-    MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = new MutableBlockControlFlowGraph();
     JThrowStmt throwStmt =
         new JThrowStmt(
             Jimple.newLocal("exception", PrimitiveType.IntType.getInstance()),
             StmtPositionInfo.getNoStmtPositionInfo());
     JReturnVoidStmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
-    stmtGraph.addBlock(Collections.singletonList(throwStmt));
-    stmtGraph.addBlock(Collections.singletonList(returnStmt));
-    stmtGraph.setStartingStmt(throwStmt);
-    stmtGraph.addExceptionalEdge(
+    controlFlowGraph.addBlock(Collections.singletonList(throwStmt));
+    controlFlowGraph.addBlock(Collections.singletonList(returnStmt));
+    controlFlowGraph.setStartingStmt(throwStmt);
+    controlFlowGraph.addExceptionalEdge(
         throwStmt,
         new JavaClassType("CustomException", new PackageName("cfg.exceptions")),
         returnStmt);
 
-    return createSootMethod(stmtGraph, "exceptionalEdgesMethod");
+    return createSootMethod(controlFlowGraph, "exceptionalEdgesMethod");
   }
 }

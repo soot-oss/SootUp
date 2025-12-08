@@ -25,7 +25,7 @@ import java.util.Map;
 import qilin.core.PTAScene;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.InvokableStmt;
@@ -108,17 +108,17 @@ public abstract class ReflectionModel {
       }
     }
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     for (Stmt unit : newUnits.keySet()) {
       for (Stmt succ : newUnits.get(unit)) {
         if (succ instanceof JAssignStmt assign) {
-          stmtGraph.insertBefore(unit, assign);
+          controlFlowGraph.insertBefore(unit, assign);
         } else if (succ instanceof JInvokeStmt invoke) {
-          stmtGraph.insertBefore(unit, invoke);
+          controlFlowGraph.insertBefore(unit, invoke);
         } else {
           System.out.println("unit:" + unit);
           System.out.println("succ:" + succ.getClass());
-          stmtGraph.putEdge((FallsThroughStmt) unit, succ);
+          controlFlowGraph.putEdge((FallsThroughStmt) unit, succ);
         }
       }
     }

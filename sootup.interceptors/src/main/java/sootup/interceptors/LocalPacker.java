@@ -24,8 +24,8 @@ package sootup.interceptors;
 import com.google.common.collect.Lists;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -44,7 +44,7 @@ public class LocalPacker implements BodyInterceptor {
 
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);
     // map each original local to a new local
@@ -89,7 +89,7 @@ public class LocalPacker implements BodyInterceptor {
     // store all new locals with reasonable name, if a local is not in newLoals, means that it
     // doesn't has reasonable name
     Set<Local> newLocals = new LinkedHashSet<>();
-    for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
+    for (Stmt stmt : Lists.newArrayList(controlFlowGraph)) {
       Stmt newStmt = stmt;
       for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
         Value use = iterator.next();
@@ -132,7 +132,7 @@ public class LocalPacker implements BodyInterceptor {
         }
       }
       if (!stmt.equals(newStmt)) {
-        stmtGraph.replaceNode(stmt, newStmt);
+        controlFlowGraph.replaceNode(stmt, newStmt);
       }
     }
     builder.setLocals(newLocals);
@@ -223,7 +223,7 @@ public class LocalPacker implements BodyInterceptor {
   private Map<Local, Set<Local>> buildLocalInterferenceMap(Body.BodyBuilder builder) {
     // Maps local to its interfering locals
     Map<Local, Set<Local>> localToLocals = new HashMap<>();
-    StmtGraph<?> graph = builder.getStmtGraph();
+    ControlFlowGraph<?> graph = builder.getControlFlowGraph();
     LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(graph);
 
     // TODO: check if sorted Stmts are necessary

@@ -3,7 +3,7 @@ package sootup.java.bytecode.frontend.interceptors;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
@@ -72,7 +72,7 @@ public class LocalLivenessAnalyserTest {
   public void testLivenessAnalyser() {
     Body body = createBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
-    LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(builder.getStmtGraph());
+    LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(builder.getControlFlowGraph());
     Set<Local> cSet = ImmutableUtils.immutableSet(c);
     Set<Local> ac = ImmutableUtils.immutableSet(a, c);
     Set<Local> bc = ImmutableUtils.immutableSet(b, c);
@@ -93,7 +93,7 @@ public class LocalLivenessAnalyserTest {
   private Body createBody() {
 
     Body.BodyBuilder builder = Body.builder();
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -102,15 +102,15 @@ public class LocalLivenessAnalyserTest {
     builder.setLocals(locals);
 
     // set graph
-    stmtGraph.putEdge(aeq0, beqaplus1);
-    stmtGraph.putEdge(beqaplus1, ceqcplusb);
-    stmtGraph.putEdge(ceqcplusb, aeqbplus2);
-    stmtGraph.putEdge(aeqbplus2, ifalt9);
-    stmtGraph.putEdge(ifalt9, JIfStmt.FALSE_BRANCH_IDX, ret);
-    stmtGraph.putEdge(ifalt9, JIfStmt.TRUE_BRANCH_IDX, beqaplus1);
+    controlFlowGraph.putEdge(aeq0, beqaplus1);
+    controlFlowGraph.putEdge(beqaplus1, ceqcplusb);
+    controlFlowGraph.putEdge(ceqcplusb, aeqbplus2);
+    controlFlowGraph.putEdge(aeqbplus2, ifalt9);
+    controlFlowGraph.putEdge(ifalt9, JIfStmt.FALSE_BRANCH_IDX, ret);
+    controlFlowGraph.putEdge(ifalt9, JIfStmt.TRUE_BRANCH_IDX, beqaplus1);
 
     // set first stmt
-    stmtGraph.setStartingStmt(aeq0);
+    controlFlowGraph.setStartingStmt(aeq0);
 
     // build position
     Position position = NoPositionInformation.getInstance();
