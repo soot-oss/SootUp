@@ -22,17 +22,21 @@ package sootup.apk.frontend.Util;
  * #L%
  */
 
-import java.util.*;
+import org.jf.dexlib2.dexbacked.raw.EncodedValue;
 import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.AnnotationElement;
-import org.jf.dexlib2.iface.value.EncodedValue;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.main.AndroidVersionInfo;
+import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
+import sootup.java.core.ConstantUtil;
+import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+
+import java.util.*;
 
 public class DexUtil {
 
@@ -96,18 +100,35 @@ public class DexUtil {
   }
 
   public static Iterable<AnnotationUsage> createAnnotationUsage(
-      Set<? extends Annotation> annotations) {
+      Set<? extends Annotation> annotations, View view) {
     if (annotations.isEmpty()) {
       return Collections.emptyList();
     }
+    ArrayList<AnnotationUsage> annotationUsage = new ArrayList<>();
+    /* annotation.getVisibility() returns an integer refer org.jf.dexlib2.AnnotationVisibility.java
+     * 0 -> BUILD
+     * 1 -> RUNTIME
+     * 2 -> SYSTEM
+     * */
     Map<String, Object> paramMap = new HashMap<>();
     for (Annotation annotation : annotations) {
       for (AnnotationElement element : annotation.getElements()) {
-        final String annotationName = element.getName();
-        EncodedValue value = element.getValue();
+        String name = element.getName();
+        paramMap.put(name, convertAnnotationValue(element.getValue().getValueType()));
       }
+      ClassType at =
+          view.getIdentifierFactory().getClassType(DexUtil.toQualifiedName(annotation.getType()));
+      annotationUsage.add(new AnnotationUsage(at, paramMap));
     }
-    return null;
+    return annotationUsage;
+  }
+
+  private static Object convertAnnotationValue(Object annotationValue) {
+    if (annotationValue instanceof EncodedValue) {
+      ClassConstant classConstant = JavaJimple.newClassConstant(annotationValue.toString());
+      return ConstantUtil.fromObject(classConstant);
+    }
+    return ConstantUtil.fromObject(annotationValue);
   }
 
   public static ClassType stringToJimpleType(View view, String className) {

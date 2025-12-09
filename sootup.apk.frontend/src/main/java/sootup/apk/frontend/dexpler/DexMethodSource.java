@@ -22,15 +22,9 @@ package sootup.apk.frontend.dexpler;
  * #L%
  */
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.jf.dexlib2.iface.Method;
 import org.jspecify.annotations.NonNull;
+import sootup.apk.frontend.Util.DexUtil;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
@@ -43,7 +37,16 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
+import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootMethod;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class DexMethodSource implements BodySource {
 
@@ -92,6 +95,8 @@ public class DexMethodSource implements BodySource {
   public JavaSootMethod makeSootMethod() {
     JavaSootMethod sootMethod;
     EnumSet<MethodModifier> methodModifiers = Modifiers.getMethodModifiers(method.getAccessFlags());
+    Iterable<AnnotationUsage> annotationUsages = DexUtil.createAnnotationUsage(method.getAnnotations(), view);
+
     try {
       sootMethod =
           new JavaSootMethod(
@@ -99,7 +104,7 @@ public class DexMethodSource implements BodySource {
               getSignature(),
               methodModifiers,
               Collections.emptyList(),
-              Collections.emptySet(),
+              annotationUsages,
               NoPositionInformation.getInstance());
     } catch (IOException e) {
       throw new RuntimeException(e);
