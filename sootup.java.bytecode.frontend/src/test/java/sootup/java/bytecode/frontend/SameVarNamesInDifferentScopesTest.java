@@ -3,7 +3,7 @@ package sootup.java.bytecode.frontend;
 import java.util.Collections;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -27,11 +27,12 @@ public class SameVarNamesInDifferentScopesTest {
             .getMethod("foo", Collections.emptyList())
             .get();
 
-    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
+    ControlFlowGraph<?> controlFlowGraph = method.getBody().getControlFlowGraph();
     Assertions.assertTrue(
-        stmtGraph.getNodes().stream()
+        controlFlowGraph.getNodes().stream()
             .anyMatch(stmt -> stmt.toString().equals("candidate_1 = \"banana\"")));
     Assertions.assertTrue(
-        stmtGraph.getNodes().stream().anyMatch(stmt -> stmt.toString().equals("candidate = 42")));
+        controlFlowGraph.getNodes().stream()
+            .anyMatch(stmt -> stmt.toString().equals("candidate = 42")));
   }
 }

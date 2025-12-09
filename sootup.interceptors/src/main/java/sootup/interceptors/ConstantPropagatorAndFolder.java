@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -59,8 +59,8 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
     // Perform a constant/local propagation pass
     // go through each use in each statement
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    for (Stmt stmt : Lists.newArrayList(controlFlowGraph)) {
       // propagation pass
       if (stmt instanceof JAssignStmt) {
         Value rhs = ((AbstractDefinitionStmt) stmt).getRightOp();
@@ -77,7 +77,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
         BiConsumer<Constant, Stmt> constantStmtBiConsumer =
             (Constant evaluatedValue, Stmt foldingStmt) -> {
               JAssignStmt assignStmt = ((JAssignStmt) foldingStmt).withRValue(evaluatedValue);
-              stmtGraph.replaceNode(foldingStmt, assignStmt);
+              controlFlowGraph.replaceNode(foldingStmt, assignStmt);
               defs.remove(foldingStmt);
               defs.add(assignStmt);
             };
@@ -101,7 +101,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
               || rhs instanceof StringConstant
               || rhs instanceof NullConstant) {
             JReturnStmt returnStmt = ((JReturnStmt) stmt).withReturnValue((Immediate) rhs);
-            stmtGraph.replaceNode(stmt, returnStmt);
+            controlFlowGraph.replaceNode(stmt, returnStmt);
             stmt = returnStmt;
             defs.add(returnStmt); // [ms]: JReturnStmt seems weird as a def? but Soot had it, too.
           }
@@ -111,7 +111,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
         BiConsumer<Constant, Stmt> constantStmtBiConsumer =
             (Constant evaluatedValue, Stmt foldingStmt) -> {
               JReturnStmt returnStmt = ((JReturnStmt) foldingStmt).withReturnValue(evaluatedValue);
-              stmtGraph.replaceNode(foldingStmt, returnStmt);
+              controlFlowGraph.replaceNode(foldingStmt, returnStmt);
             };
 
         fold(stmt, constantStmtBiConsumer);

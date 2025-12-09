@@ -27,6 +27,9 @@ removing the necessity of arcane knowledge, document it more and more - to make 
 So we introduced [Design changes in SootUp](whatsnew.md), which aim to address Soot's shortcomings.
 The goal is a lighter library that can easily be understood and maintained to be included in other projects.
 
+## Publications & Citations
+[The SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) provides additional details and discusses the design decisions behind SootUp. <br />
+[Here](https://scholar.google.de/scholar?cites=7580240720760424326&as_sdt=2005&sciodt=0,5&hl=de) you can find the list of works that cite the paper.
 
 ## Supporters
 The development of SootUp is financed by generous support from the German Research Foundation (DFG) and

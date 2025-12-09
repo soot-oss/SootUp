@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-/** A block iterator that iterates through the blocks of a StmtGraph in post-order. */
+/** A block iterator that iterates through the blocks of a ControlFlowGraph in post-order. */
 public class PostOrderBlockIterator implements BlockIterator {
 
   private final Stack<Frame> stack = new Stack<>();

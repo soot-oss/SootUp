@@ -31,7 +31,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.JimpleUtils;
@@ -201,7 +201,7 @@ public class JimpleConverter {
               try {
                 bodyInterceptor.interceptBody(bodyBuilder, view);
                 bodyBuilder
-                    .getStmtGraph()
+                    .getControlFlowGraph()
                     .validateStmtConnectionsInGraph(); // TODO: remove in the future ;-)
               } catch (Exception e) {
                 throw new IllegalStateException(
@@ -447,7 +447,7 @@ public class JimpleConverter {
         final Body build;
         try {
 
-          MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+          MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
           graph.initializeWith(blocks, successorMap, traps);
           Body.BodyBuilder builder = Body.builder(graph);
 
