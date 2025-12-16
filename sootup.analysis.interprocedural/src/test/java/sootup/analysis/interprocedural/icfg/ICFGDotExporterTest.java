@@ -138,6 +138,13 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
+    List<String> methodsInCallGraph = new ArrayList<>();
+    callGraph.getMethodSignatures().forEach(m -> methodsInCallGraph.add(m.getName()));
+    List<String> methodsInIcfg = new ArrayList<>();
+    for (int i = 0; i < digraph.blocks.length; i++) {
+      methodsInIcfg.add(digraph.blocks[i].label);
+    }
+    assertTrue(methodsInIcfg.stream().allMatch(m -> methodsInCallGraph.contains(m)));
     assertEquals(
         edgesFromCallGraph(entryMethodSignature, icfg, callGraph),
         String.join(" -> ", digraph.blocks[0].edges));
@@ -244,8 +251,8 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     String[] lines = digraphString.split("\n");
     for (String line : lines) {
       line = line.trim();
-      if (line.startsWith("subgraph cluster_")) {
-        String label = line.split("subgraph cluster_")[1].trim();
+      if (line.startsWith("label =")) {
+        String label = line.split("label =")[1].trim().replace("\"", "");
         currentBlock = new Block();
         currentBlock.label = label;
         digraph.blocks = addBlock(digraph.blocks, currentBlock);
