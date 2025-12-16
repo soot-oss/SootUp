@@ -37,9 +37,7 @@ public class CpgCreator {
   private final CdgCreator cdgCreator;
   private final DdgCreator ddgCreator;
 
-  /**
-   * Default constructor that initializes all creators with their default implementations.
-   */
+  /** Default constructor that initializes all creators with their default implementations. */
   public CpgCreator() {
     this.astCreator = new AstCreator();
     this.cfgCreator = new CfgCreator();
