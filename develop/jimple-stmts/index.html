@@ -1576,7 +1576,7 @@
 <h1 id="jimple-stmt-statement">Jimple Stmt ("Statement")</h1>
 <p><span class="tooltip hint--top" aria-label="formerly known as Units">Stmts</span> represent instructions of the JVM.
 Jimple is a 3-address form code so there are max 3 operands used in a ("manipulating") Stmt - i.e. this does not apply to invokes as this is just operand/parameter passing.</p>
-<p>Stmts can be roughly grouped by the amount of successors (in the <code>StmtGraph</code> of a <code>Body</code> of a <code>Method</code>).</p>
+<p>Stmts can be roughly grouped by the amount of successors (in the <code>ControlFlowGraph</code> of a <code>Body</code> of a <code>Method</code>).</p>
 <ul>
 <li>A <code>FallsThroughStmt</code> has always one successor - it basically represents <code>program counter++</code>.</li>
 <li>A <code>BranchingStmt</code> can have one, two or even n successors.</li>
@@ -2763,7 +2763,7 @@ public updateCounter()I
 </div>
 </div>
 <h3 id="jidentitystmt">JIdentityStmt</h3>
-<p>is similar to the <code>JAssignStmt</code> and but handles assignments of <code>IdentityRef</code>s to make implicit assignments explicit into the <code>StmtGraph</code>.</p>
+<p>is similar to the <code>JAssignStmt</code> and but handles assignments of <code>IdentityRef</code>s to make implicit assignments explicit into the <code>ControlFlowGraph</code>.</p>
 <ul>
 <li>Assigns parameters to a <code>Local</code> via <code>JParameterRef</code> like <code>@parameter0: int</code> refering to the first argument of the method (which is of Type int in this case).</li>
 <li>Assigns exceptions to a <code>Local</code> via <code>JCaughtExceptionRef</code> like <code>@caughtexception: java.lang.NullpointerException</code></li>
