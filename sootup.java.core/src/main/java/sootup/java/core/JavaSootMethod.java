@@ -60,6 +60,8 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
 
   @NonNull private final Iterable<AnnotationUsage> annotations;
 
+  @NonNull private final ImmutableList<Set<AnnotationUsage>> parameterAnnotations;
+
   /** Constructs a SootMethod object with the given attributes. */
   public JavaSootMethod(
       @NonNull BodySource source,
@@ -72,6 +74,7 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
     this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
     this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
     this.annotations = ImmutableUtils.emptyImmutableList();
+    this.parameterAnnotations = ImmutableList.of();
   }
 
   public JavaSootMethod(
@@ -86,6 +89,23 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
     this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
     this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
     this.annotations = annotations;
+    this.parameterAnnotations = ImmutableList.of();
+  }
+
+  public JavaSootMethod(
+      @NonNull BodySource source,
+      @NonNull MethodSignature methodSignature,
+      @NonNull Iterable<MethodModifier> modifiers,
+      @NonNull Iterable<ClassType> thrownExceptions,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Position position,
+      @NonNull Iterable<Set<AnnotationUsage>> parameterAnnotations) {
+    super(methodSignature, position);
+    this.bodySource = source;
+    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
+    this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
+    this.annotations = annotations;
+    this.parameterAnnotations = ImmutableList.copyOf(parameterAnnotations);
   }
 
   @NonNull
@@ -164,6 +184,11 @@ public class JavaSootMethod extends SootClassMember<MethodSignature>
   @NonNull
   public Type getParameterType(int n) {
     return getSignature().getParameterType(n);
+  }
+
+  @NonNull
+  public List<Set<AnnotationUsage>> getParameterAnnotations() {
+    return this.parameterAnnotations;
   }
 
   @NonNull

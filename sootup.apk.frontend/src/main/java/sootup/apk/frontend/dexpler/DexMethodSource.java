@@ -22,6 +22,12 @@ package sootup.apk.frontend.dexpler;
  * #L%
  */
 
+import com.google.common.collect.Sets;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+import org.jf.dexlib2.dexbacked.DexBackedMethod;
 import org.jf.dexlib2.iface.Method;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.Util.DexUtil;
@@ -39,14 +45,6 @@ import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootMethod;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public class DexMethodSource implements BodySource {
 
@@ -96,6 +94,14 @@ public class DexMethodSource implements BodySource {
     JavaSootMethod sootMethod;
     EnumSet<MethodModifier> methodModifiers = Modifiers.getMethodModifiers(method.getAccessFlags());
     Iterable<AnnotationUsage> annotationUsages = DexUtil.createAnnotationUsage(method.getAnnotations(), view);
+    List<Set<AnnotationUsage>> parameterAnnotations = Collections.emptyList();
+
+    if (method instanceof DexBackedMethod) {
+      parameterAnnotations = ((DexBackedMethod) method).getParameterAnnotations()
+          .stream()
+          .map(annotations -> (Set<AnnotationUsage>) Sets.newHashSet(DexUtil.createAnnotationUsage(annotations, view)))
+          .toList();
+    }
 
     try {
       sootMethod =
@@ -105,7 +111,8 @@ public class DexMethodSource implements BodySource {
               methodModifiers,
               Collections.emptyList(),
               annotationUsages,
-              NoPositionInformation.getInstance());
+              NoPositionInformation.getInstance(),
+              parameterAnnotations);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
