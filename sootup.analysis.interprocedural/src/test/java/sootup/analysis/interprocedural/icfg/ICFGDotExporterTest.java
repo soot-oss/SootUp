@@ -10,13 +10,21 @@ import sootup.analysis.interprocedural.ifds.IFDSTaintTestSetUp;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.util.DotExporter;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -144,10 +152,14 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     for (int i = 0; i < digraph.blocks.length; i++) {
       methodsInIcfg.add(digraph.blocks[i].label);
     }
-    assertTrue(methodsInIcfg.stream().allMatch(m -> methodsInCallGraph.contains(m)));
+    assertTrue(methodsInCallGraph.containsAll(methodsInIcfg));
     assertEquals(
         edgesFromCallGraph(entryMethodSignature, icfg, callGraph),
         String.join(" -> ", digraph.blocks[0].edges));
+    ControlFlowGraph<?> graph = createControlFlowGraph();
+    expectedCallGraph = DotExporter.buildGraph(graph, false, null, null);
+    digraph = parseDigraph(expectedCallGraph);
+    assertEquals("Block #1", digraph.blocks[0].label);
   }
 
   @Test
@@ -301,5 +313,20 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
       statements = temp;
     }
     return statements;
+  }
+
+  private MutableBlockControlFlowGraph createControlFlowGraph() {
+    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+    JavaClassType intType = factory.getClassType("int");
+    final MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+    Local l3 = JavaJimple.newLocal("l3", intType);
+    StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
+    Local l2hash3 = JavaJimple.newLocal("l2#3", intType);
+    FallsThroughStmt stmt1 =
+        JavaJimple.newAssignStmt(l3, IntConstant.getInstance(10), noStmtPositionInfo);
+    FallsThroughStmt stmt2 = JavaJimple.newAssignStmt(l2hash3, l3, noStmtPositionInfo);
+    graph.putEdge(stmt1, stmt2);
+    graph.setStartingStmt(stmt1);
+    return graph;
   }
 }
