@@ -22,6 +22,11 @@ package sootup.apk.frontend.dexpler;
  * #L%
  */
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
@@ -46,12 +51,6 @@ import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public class DexClassSource extends JavaSootClassSource {
 
@@ -173,7 +172,7 @@ public class DexClassSource extends JavaSootClassSource {
     return dexMethod.makeSootMethod(method, bodyInterceptors, view);
   }
 
-  private static Set<JavaSootField> resolveFields(
+  private Set<JavaSootField> resolveFields(
       Iterable<? extends Field> fields,
       IdentifierFactory signatureFactory,
       ClassType classSignature) {
@@ -186,12 +185,11 @@ public class DexClassSource extends JavaSootClassSource {
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<FieldModifier> modifiers =
                   Modifiers.getFieldModifiers(field.getAccessFlags());
+              Iterable<AnnotationUsage> annotations =
+                  DexUtil.createAnnotationUsage(field.getAnnotations(), view);
 
               return new JavaSootField(
-                  fieldSignature,
-                  modifiers,
-                  Collections.emptySet(), // TODO Fix this annotations [PM] - yes fix that
-                  NoPositionInformation.getInstance());
+                  fieldSignature, modifiers, annotations, NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());
   }
