@@ -86,13 +86,8 @@ public class DotExporter {
           .append("] \n");
 
       sb.append("\tsubgraph cluster_").append(block.hashCode()).append(" { \n");
-      if (methodSignature != null) {
-        sb.append("\t\tlabel = \"").append(methodSignature.getName());
-      } else {
-        sb.append("\t\tlabel = \"Block #").append(++i);
-      }
-      sb.append("\"\n");
-
+      String label = (methodSignature != null) ? methodSignature.getName() : "Block #" + (++i);
+      sb.append("\t\tlabel = \"").append(label).append("\"\n");
       /* print stmts in a block*/
       List<Stmt> stmts = block.getStmts();
       drawnBlocks.add(block);
