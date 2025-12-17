@@ -42,12 +42,13 @@ public class DominanceFinder {
   private List<List<Integer>> domFrontiers;
   private BlockAnalysisDirection direction;
 
-  public DominanceFinder(StmtGraph<?> blockGraph) {
+  public DominanceFinder(ControlFlowGraph<?> blockGraph) {
     // normal DominanceFinder should be in reverse post order
     this(blockGraph, BlockAnalysisDirection.REVERSEPOSTORDERFORWARD);
   }
 
-  protected DominanceFinder(@NonNull StmtGraph<?> blockGraph, BlockAnalysisDirection direction) {
+  protected DominanceFinder(
+      @NonNull ControlFlowGraph<?> blockGraph, BlockAnalysisDirection direction) {
 
     // define the blocks' order
     this.direction = direction;

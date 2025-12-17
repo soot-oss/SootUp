@@ -27,15 +27,15 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
 
 /**
- * forwarding implementation for encapsulating a StmtGraph.
+ * forwarding implementation for encapsulating a ControlFlowGraph.
  *
  * @author Markus Schmidt
  */
-public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
+public class ForwardingControlFlowGraph<V extends BasicBlock<V>> extends ControlFlowGraph<V> {
 
-  @NonNull protected final StmtGraph<V> backingGraph;
+  @NonNull protected final ControlFlowGraph<V> backingGraph;
 
-  public ForwardingStmtGraph(@NonNull StmtGraph<V> backingGraph) {
+  public ForwardingControlFlowGraph(@NonNull ControlFlowGraph<V> backingGraph) {
     this.backingGraph = backingGraph;
   }
 

@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
@@ -375,7 +375,7 @@ public class StaticSingleAssignmentFormerTest {
    * </pre>
    */
   private Body.BodyBuilder createBody() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
@@ -440,7 +440,7 @@ public class StaticSingleAssignmentFormerTest {
    * </pre>
    */
   private Body.BodyBuilder createTrapBody() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 

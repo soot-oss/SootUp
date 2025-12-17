@@ -23,7 +23,7 @@ package sootup.core.validation;
  */
 
 import java.util.*;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -50,7 +50,7 @@ public class NewValidator implements BodyValidator {
 
     List<ValidationException> exceptions = new ArrayList<>();
 
-    StmtGraph<?> g = body.getStmtGraph();
+    ControlFlowGraph<?> g = body.getControlFlowGraph();
     for (Stmt u : body.getStmts()) {
       if (u instanceof JAssignStmt assign) {
 
@@ -81,7 +81,7 @@ public class NewValidator implements BodyValidator {
   }
 
   private boolean checkForInitializerOnPath(
-      StmtGraph<?> g, JAssignStmt newStmt, List<ValidationException> exception) {
+      ControlFlowGraph<?> g, JAssignStmt newStmt, List<ValidationException> exception) {
     List<Stmt> workList = new ArrayList<>();
     Set<Stmt> doneSet = new HashSet<>();
     workList.add(newStmt);

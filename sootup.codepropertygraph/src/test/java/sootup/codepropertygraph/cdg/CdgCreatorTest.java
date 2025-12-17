@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import sootup.codepropertygraph.GraphTestSuiteBase;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.CdgEdge;
-import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
-import sootup.core.graph.MutableBlockStmtGraph;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.codepropertygraph.propertygraph.nodes.ControlFlowGraphNode;
+import sootup.core.graph.MutableBlockControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -73,7 +73,7 @@ public class CdgCreatorTest extends GraphTestSuiteBase {
     for (String expectedNodeType : expectedNodeTypes) {
       assertTrue(
           cdgGraph.getNodes().stream()
-              .map(node -> (StmtGraphNode) node)
+              .map(node -> (ControlFlowGraphNode) node)
               .anyMatch(
                   node -> node.getStmt().getClass().getSimpleName().equals(expectedNodeType)));
     }
@@ -83,8 +83,8 @@ public class CdgCreatorTest extends GraphTestSuiteBase {
           cdgGraph.getEdges().stream()
               .anyMatch(
                   edge -> {
-                    StmtGraphNode src = (StmtGraphNode) edge.getSource();
-                    StmtGraphNode dst = (StmtGraphNode) edge.getDestination();
+                    ControlFlowGraphNode src = (ControlFlowGraphNode) edge.getSource();
+                    ControlFlowGraphNode dst = (ControlFlowGraphNode) edge.getDestination();
                     return src.getStmt().getClass().getSimpleName().equals(expectedEdge[0])
                         && dst.getStmt().getClass().getSimpleName().equals(expectedEdge[1]);
                   }));
@@ -92,38 +92,38 @@ public class CdgCreatorTest extends GraphTestSuiteBase {
   }
 
   private SootMethod createIfStmtMethod() {
-    MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = new MutableBlockControlFlowGraph();
     Local a = Jimple.newLocal("a", PrimitiveType.IntType.getInstance());
     Local b = Jimple.newLocal("b", PrimitiveType.IntType.getInstance());
     JIfStmt ifStmt = Jimple.newIfStmt(new JEqExpr(a, b), new SimpleStmtPositionInfo(1));
     JReturnVoidStmt trueStmt = Jimple.newReturnVoidStmt(new SimpleStmtPositionInfo(2));
     JReturnVoidStmt falseStmt = new JReturnVoidStmt(new SimpleStmtPositionInfo(3));
 
-    stmtGraph.addBlock(Collections.singletonList(ifStmt));
-    stmtGraph.addBlock(Collections.singletonList(trueStmt));
-    stmtGraph.addBlock(Collections.singletonList(falseStmt));
-    stmtGraph.setStartingStmt(ifStmt);
-    stmtGraph.putEdge(ifStmt, JIfStmt.TRUE_BRANCH_IDX, trueStmt);
-    stmtGraph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, falseStmt);
+    controlFlowGraph.addBlock(Collections.singletonList(ifStmt));
+    controlFlowGraph.addBlock(Collections.singletonList(trueStmt));
+    controlFlowGraph.addBlock(Collections.singletonList(falseStmt));
+    controlFlowGraph.setStartingStmt(ifStmt);
+    controlFlowGraph.putEdge(ifStmt, JIfStmt.TRUE_BRANCH_IDX, trueStmt);
+    controlFlowGraph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, falseStmt);
 
-    return createSootMethod(stmtGraph, "ifStmtMethod");
+    return createSootMethod(controlFlowGraph, "ifStmtMethod");
   }
 
   private SootMethod createGotoStmtMethod() {
-    MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = new MutableBlockControlFlowGraph();
     JReturnVoidStmt targetStmt = new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     JGotoStmt gotoStmt = new JGotoStmt(targetStmt.getPositionInfo());
 
-    stmtGraph.addBlock(Collections.singletonList(gotoStmt));
-    stmtGraph.addBlock(Collections.singletonList(targetStmt));
-    stmtGraph.setStartingStmt(gotoStmt);
-    stmtGraph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, targetStmt);
+    controlFlowGraph.addBlock(Collections.singletonList(gotoStmt));
+    controlFlowGraph.addBlock(Collections.singletonList(targetStmt));
+    controlFlowGraph.setStartingStmt(gotoStmt);
+    controlFlowGraph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, targetStmt);
 
-    return createSootMethod(stmtGraph, "gotoStmtMethod");
+    return createSootMethod(controlFlowGraph, "gotoStmtMethod");
   }
 
   private SootMethod createSwitchStmtMethod() {
-    MutableStmtGraph stmtGraph = new MutableBlockStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = new MutableBlockControlFlowGraph();
     JSwitchStmt switchStmt =
         Jimple.newTableSwitchStmt(IntConstant.getInstance(23), 1, 2, new SimpleStmtPositionInfo(1));
 
@@ -132,20 +132,20 @@ public class CdgCreatorTest extends GraphTestSuiteBase {
     JReturnVoidStmt defaultTarget =
         Jimple.newReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
-    stmtGraph.addBlock(Collections.singletonList(switchStmt));
-    stmtGraph.addBlock(Collections.singletonList(target1));
-    stmtGraph.addBlock(Collections.singletonList(target2));
-    stmtGraph.addBlock(Collections.singletonList(defaultTarget));
-    stmtGraph.setStartingStmt(switchStmt);
+    controlFlowGraph.addBlock(Collections.singletonList(switchStmt));
+    controlFlowGraph.addBlock(Collections.singletonList(target1));
+    controlFlowGraph.addBlock(Collections.singletonList(target2));
+    controlFlowGraph.addBlock(Collections.singletonList(defaultTarget));
+    controlFlowGraph.setStartingStmt(switchStmt);
 
     int ctr = 0;
     for (Stmt target : Arrays.asList(target1, target2)) {
-      stmtGraph.addBlock(Collections.singletonList(target));
-      stmtGraph.putEdge(switchStmt, ctr, target);
+      controlFlowGraph.addBlock(Collections.singletonList(target));
+      controlFlowGraph.putEdge(switchStmt, ctr, target);
       ctr++;
     }
-    stmtGraph.putEdge(switchStmt, ctr, defaultTarget);
+    controlFlowGraph.putEdge(switchStmt, ctr, defaultTarget);
 
-    return createSootMethod(stmtGraph, "switchStmtMethod");
+    return createSootMethod(controlFlowGraph, "switchStmtMethod");
   }
 }

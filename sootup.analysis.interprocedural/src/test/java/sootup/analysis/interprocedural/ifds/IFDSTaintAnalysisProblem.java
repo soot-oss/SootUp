@@ -60,7 +60,8 @@ public class IFDSTaintAnalysisProblem
   @Override
   public Map<Stmt, Set<Value>> initialSeeds() {
     return DefaultSeeds.make(
-        Collections.singleton(entryMethod.getBody().getStmtGraph().getStartingStmt()), zeroValue());
+        Collections.singleton(entryMethod.getBody().getControlFlowGraph().getStartingStmt()),
+        zeroValue());
   }
 
   @Override

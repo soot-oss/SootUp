@@ -41,7 +41,7 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.*;
 import sootup.core.frontend.BodySource;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.Immediate;
@@ -185,7 +185,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     /* build body (add stmts, locals, traps, etc.) */
-    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    final MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder bodyBuilder = Body.builder(graph);
     bodyBuilder.setModifiers(Modifiers.getMethodModifiers(access));
 
@@ -240,7 +240,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       try {
         bodyInterceptor.interceptBody(bodyBuilder, view);
         bodyBuilder
-            .getStmtGraph()
+            .getControlFlowGraph()
             .validateStmtConnectionsInGraph(); // TODO: remove in the future ;-)
       } catch (Exception e) {
         throw new IllegalStateException(
@@ -1660,9 +1660,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return traps;
   }
 
-  /** all Instructions are converted. Now they can be arranged into the StmtGraph. */
+  /** all Instructions are converted. Now they can be arranged into the ControlFlowGraph. */
   private void arrangeStmts(
-      MutableBlockStmtGraph graph, Body.BodyBuilder bodyBuilder, List<Stmt> preambleStmts) {
+      MutableBlockControlFlowGraph graph, Body.BodyBuilder bodyBuilder, List<Stmt> preambleStmts) {
 
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();

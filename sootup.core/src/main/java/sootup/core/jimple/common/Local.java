@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.LocalGenerator;
@@ -131,7 +131,7 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
    * @param graph a stmt graph which contains the given stmts.
    * @param stmt a stmt which uses the given local.
    */
-  public List<Stmt> getDefsForLocalUse(StmtGraph<?> graph, Stmt stmt) {
+  public List<Stmt> getDefsForLocalUse(ControlFlowGraph<?> graph, Stmt stmt) {
     if (stmt.getUses().noneMatch(v -> v == this)) {
       throw new RuntimeException(stmt + " doesn't use the local " + this);
     }

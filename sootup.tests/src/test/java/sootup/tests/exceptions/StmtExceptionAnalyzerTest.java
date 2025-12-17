@@ -293,7 +293,8 @@ public class StmtExceptionAnalyzerTest {
                             ExceptionInferResult.ExceptionType.ILLEGAL_MONITOR_STATE_EXCEPTION));
               } else if (stmt instanceof JThrowStmt) {
                 result =
-                    exceptionAnalyser.mightThrowExplicitly((JThrowStmt) stmt, body.getStmtGraph());
+                    exceptionAnalyser.mightThrowExplicitly(
+                        (JThrowStmt) stmt, body.getControlFlowGraph());
                 Assertions.assertEquals(1, result.getExceptions().size());
                 Assertions.assertTrue(
                     result.getExceptions().contains(ExceptionInferResult.ExceptionType.THROWABLE));

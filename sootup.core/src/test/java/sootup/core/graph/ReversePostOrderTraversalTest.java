@@ -12,7 +12,7 @@ public class ReversePostOrderTraversalTest {
 
   @Test
   void testReversePostOrderTraversal1() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph();
     Map<BasicBlock<?>, Integer> blockToId = new HashMap<>();
     // assign ids according to blocks sorted by BasicBlock::toString
     List<? extends BasicBlock<?>> blocks =
@@ -37,7 +37,7 @@ public class ReversePostOrderTraversalTest {
 
   @Test
   void testReversePostOrderTraversal2() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph2();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph2();
     Map<BasicBlock<?>, Integer> blocksToId = new HashMap<>();
     Map<BasicBlock<?>, Integer> blockToRPOId = new HashMap<>();
     // assign ids according to blocks sorted by BasicBlock::toString

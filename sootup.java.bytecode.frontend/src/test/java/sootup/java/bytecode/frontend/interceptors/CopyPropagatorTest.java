@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -184,7 +184,7 @@ public class CopyPropagatorTest {
     propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedChainBody();
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    AssertUtils.assertControlFlowGraphEquiv(expectedBody, builder.build());
   }
 
   /** Test the copy propagation for loop */
@@ -197,7 +197,7 @@ public class CopyPropagatorTest {
     propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedLoopBody();
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    AssertUtils.assertControlFlowGraphEquiv(expectedBody, builder.build());
   }
 
   /** Test the copy propagation for castExpr */
@@ -210,7 +210,7 @@ public class CopyPropagatorTest {
     propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedCastExprBody();
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    AssertUtils.assertControlFlowGraphEquiv(expectedBody, builder.build());
   }
 
   /** r0 := @this Test; r1 = new ref; r2 = r1; r3 = r2; r4 = r3; return */
@@ -224,17 +224,17 @@ public class CopyPropagatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4);
 
     builder.setLocals(locals);
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // build stmtsGraph for the builder
-    stmtGraph.putEdge(startingStmt, stmt1);
-    stmtGraph.putEdge(stmt1, stmt2);
-    stmtGraph.putEdge(stmt2, stmt3);
-    stmtGraph.putEdge(stmt3, stmt4);
-    stmtGraph.putEdge(stmt4, ret);
+    controlFlowGraph.putEdge(startingStmt, stmt1);
+    controlFlowGraph.putEdge(stmt1, stmt2);
+    controlFlowGraph.putEdge(stmt2, stmt3);
+    controlFlowGraph.putEdge(stmt3, stmt4);
+    controlFlowGraph.putEdge(stmt4, ret);
 
     // set startingStmt
-    stmtGraph.setStartingStmt(startingStmt);
+    controlFlowGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -253,17 +253,17 @@ public class CopyPropagatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4);
 
     builder.setLocals(locals);
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // build stmtsGraph for the builder
-    stmtGraph.putEdge(startingStmt, stmt1);
-    stmtGraph.putEdge(stmt1, stmt2);
-    stmtGraph.putEdge(stmt2, estmt3);
-    stmtGraph.putEdge(estmt3, estmt4);
-    stmtGraph.putEdge(estmt4, ret);
+    controlFlowGraph.putEdge(startingStmt, stmt1);
+    controlFlowGraph.putEdge(stmt1, stmt2);
+    controlFlowGraph.putEdge(stmt2, estmt3);
+    controlFlowGraph.putEdge(estmt3, estmt4);
+    controlFlowGraph.putEdge(estmt4, ret);
 
     // set startingStmt
-    stmtGraph.setStartingStmt(startingStmt);
+    controlFlowGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -285,20 +285,20 @@ public class CopyPropagatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(r0, i1, i2, i3);
 
     builder.setLocals(locals);
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // build stmtsGraph for the builder
-    stmtGraph.putEdge(startingStmt, stmt5);
-    stmtGraph.putEdge(stmt5, stmt6);
-    stmtGraph.putEdge(stmt6, ifStmt7);
-    stmtGraph.putEdge(ifStmt7, JIfStmt.FALSE_BRANCH_IDX, stmt8);
-    stmtGraph.putEdge(stmt8, stmt9);
-    stmtGraph.putEdge(stmt9, gotoStmt);
-    stmtGraph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, ifStmt7);
-    stmtGraph.putEdge(ifStmt7, JIfStmt.TRUE_BRANCH_IDX, ret);
+    controlFlowGraph.putEdge(startingStmt, stmt5);
+    controlFlowGraph.putEdge(stmt5, stmt6);
+    controlFlowGraph.putEdge(stmt6, ifStmt7);
+    controlFlowGraph.putEdge(ifStmt7, JIfStmt.FALSE_BRANCH_IDX, stmt8);
+    controlFlowGraph.putEdge(stmt8, stmt9);
+    controlFlowGraph.putEdge(stmt9, gotoStmt);
+    controlFlowGraph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, ifStmt7);
+    controlFlowGraph.putEdge(ifStmt7, JIfStmt.TRUE_BRANCH_IDX, ret);
 
     // set startingStmt
-    stmtGraph.setStartingStmt(startingStmt);
+    controlFlowGraph.setStartingStmt(startingStmt);
 
     return builder;
   }
@@ -316,19 +316,19 @@ public class CopyPropagatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(r0, i1, i2, i3);
 
     builder.setLocals(locals);
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     // build stmtsGraph for the builder
-    stmtGraph.putEdge(startingStmt, stmt5);
-    stmtGraph.putEdge(stmt5, stmt6);
-    stmtGraph.putEdge(stmt6, eifstmt7);
-    stmtGraph.putEdge(eifstmt7, JIfStmt.FALSE_BRANCH_IDX, estmt8);
-    stmtGraph.putEdge(estmt8, stmt9);
-    stmtGraph.putEdge(stmt9, gotoStmt);
-    stmtGraph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, eifstmt7);
-    stmtGraph.putEdge(eifstmt7, JIfStmt.TRUE_BRANCH_IDX, ret);
+    controlFlowGraph.putEdge(startingStmt, stmt5);
+    controlFlowGraph.putEdge(stmt5, stmt6);
+    controlFlowGraph.putEdge(stmt6, eifstmt7);
+    controlFlowGraph.putEdge(eifstmt7, JIfStmt.FALSE_BRANCH_IDX, estmt8);
+    controlFlowGraph.putEdge(estmt8, stmt9);
+    controlFlowGraph.putEdge(stmt9, gotoStmt);
+    controlFlowGraph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, eifstmt7);
+    controlFlowGraph.putEdge(eifstmt7, JIfStmt.TRUE_BRANCH_IDX, ret);
 
     // set startingStmt
-    stmtGraph.setStartingStmt(startingStmt);
+    controlFlowGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -349,19 +349,19 @@ public class CopyPropagatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4, r5);
 
     builder.setLocals(locals);
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // build stmtsGraph for the builder
-    stmtGraph.putEdge(startingStmt, stmt10);
-    stmtGraph.putEdge(stmt10, stmt11);
-    stmtGraph.putEdge(stmt11, stmt12);
-    stmtGraph.putEdge(stmt12, estmt4);
-    stmtGraph.putEdge(estmt4, stmt13);
-    stmtGraph.putEdge(stmt13, stmt14);
-    stmtGraph.putEdge(stmt14, ret);
+    controlFlowGraph.putEdge(startingStmt, stmt10);
+    controlFlowGraph.putEdge(stmt10, stmt11);
+    controlFlowGraph.putEdge(stmt11, stmt12);
+    controlFlowGraph.putEdge(stmt12, estmt4);
+    controlFlowGraph.putEdge(estmt4, stmt13);
+    controlFlowGraph.putEdge(stmt13, stmt14);
+    controlFlowGraph.putEdge(stmt14, ret);
 
     // set startingStmt
-    stmtGraph.setStartingStmt(startingStmt);
+    controlFlowGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -380,19 +380,19 @@ public class CopyPropagatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(r0, r1, r2, r3, r4, r5);
 
     builder.setLocals(locals);
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     // build stmtsGraph for the builder
-    stmtGraph.putEdge(startingStmt, stmt10);
-    stmtGraph.putEdge(stmt10, stmt11);
-    stmtGraph.putEdge(stmt11, stmt12);
-    stmtGraph.putEdge(stmt12, eestmt4);
-    stmtGraph.putEdge(eestmt4, estmt13);
-    stmtGraph.putEdge(estmt13, stmt14);
-    stmtGraph.putEdge(stmt14, ret);
+    controlFlowGraph.putEdge(startingStmt, stmt10);
+    controlFlowGraph.putEdge(stmt10, stmt11);
+    controlFlowGraph.putEdge(stmt11, stmt12);
+    controlFlowGraph.putEdge(stmt12, eestmt4);
+    controlFlowGraph.putEdge(eestmt4, estmt13);
+    controlFlowGraph.putEdge(estmt13, stmt14);
+    controlFlowGraph.putEdge(stmt14, ret);
 
     // set startingStmt
-    stmtGraph.setStartingStmt(startingStmt);
+    controlFlowGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
