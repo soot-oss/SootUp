@@ -242,6 +242,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull InvokableStmt invokeStmt,
       @NonNull MutableCallGraph cg,
       @NonNull Deque<MethodSignature> workList) {
+    if (!includeCallToTarget(source, target)) {
+      return;
+    }
+
     if (!cg.containsMethod(source)) {
       cg.addMethod(source);
       workList.push(source);
