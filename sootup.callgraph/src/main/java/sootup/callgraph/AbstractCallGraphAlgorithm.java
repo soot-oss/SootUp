@@ -84,6 +84,18 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
+   * Decide whether a call from <code>sourceMethod</code> to the <code>targetMethod</code> shall be
+   * added to the call graph. Default: accept everything. Subclasses can override this method to
+   * implement pruning.
+   *
+   * @param sourceMethod the source (caller) method
+   * @param targetMethod the target method of the call
+   */
+  protected boolean includeCallToTarget(@NonNull MethodSignature sourceMethod, @NonNull MethodSignature targetMethod) {
+    return true;
+  }
+
+  /**
    * This method starts the construction of the call graph algorithm. It initializes the needed
    * objects for the call graph generation and calls processWorkList method.
    *
