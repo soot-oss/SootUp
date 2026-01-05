@@ -14,6 +14,7 @@
 ### Code style & guidelines
 - [ ] I ran the formatter: `mvn com.spotify.fmt:fmt-maven-plugin:format`
 - [ ] I added the necessary comments in the code
+- [ ] I provided meaningful tests for my proposed change
 - [ ] I updated documentation (if needed)
 
 ### Self-review
