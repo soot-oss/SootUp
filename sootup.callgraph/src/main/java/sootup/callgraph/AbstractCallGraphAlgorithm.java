@@ -22,6 +22,11 @@ package sootup.callgraph;
  * #L%
  */
 
+import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -45,12 +50,6 @@ import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.core.views.View;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 
 /**
  * The AbstractCallGraphAlgorithm class is the super class of all call graph algorithm. It provides
@@ -91,7 +90,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param sourceMethod the source (caller) method
    * @param targetMethod the target method of the call
    */
-  protected boolean includeCallToTarget(@NonNull MethodSignature sourceMethod, @NonNull MethodSignature targetMethod) {
+  protected boolean includeCallToTarget(
+      @NonNull MethodSignature sourceMethod, @NonNull MethodSignature targetMethod) {
     return true;
   }
 
@@ -104,10 +104,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return the complete constructed call graph starting from the entry methods.
    */
   @NonNull
-  final CallGraph constructCompleteCallGraph(List<MethodSignature> entryPoints, @Nullable String applicationBasePackageName) {
-    applicationBasePackageName = applicationBasePackageName != null
-            ? applicationBasePackageName.toLowerCase()
-            : null;
+  final CallGraph constructCompleteCallGraph(
+      List<MethodSignature> entryPoints, @Nullable String applicationBasePackageName) {
+    applicationBasePackageName =
+        applicationBasePackageName != null ? applicationBasePackageName.toLowerCase() : null;
 
     Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
     Set<MethodSignature> processed = new HashSet<>();
@@ -168,8 +168,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param processed the list of processed method to only process the method once.
    * @param cg the call graph object that is filled with the found methods and call edges.
    */
-  final void processWorkList(Deque<MethodSignature> workList, Set<MethodSignature> processed,
-                             MutableCallGraph cg, @Nullable String applicationBasePackageName) {
+  final void processWorkList(
+      Deque<MethodSignature> workList,
+      Set<MethodSignature> processed,
+      MutableCallGraph cg,
+      @Nullable String applicationBasePackageName) {
     while (!workList.isEmpty()) {
       MethodSignature currentMethodSignature = workList.pop();
       // skip if already processed
@@ -182,7 +185,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
       if (currentClass == null
           || currentClass.isLibraryClass()
-          || (applicationBasePackageName != null && !isClassPartOfApplication(currentClass, applicationBasePackageName))) {
+          || (applicationBasePackageName != null
+              && !isClassPartOfApplication(currentClass, applicationBasePackageName))) {
         continue;
       }
 
@@ -206,7 +210,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                 resolveAllCallsFromSourceMethod(currentMethod, cg, workList);
 
                 // get all call targets of implicit edges in the method body
-                resolveAllImplicitCallsFromSourceMethod(currentMethod, cg, workList);
+                resolveAllImplicitCallsFromSourceMethod(
+                    currentMethod, cg, workList, applicationBasePackageName);
               });
 
       // set method as processed
@@ -216,13 +221,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       postProcessingMethod(currentMethodSignature, workList, cg);
     }
   }
+
   private boolean isClassPartOfApplication(SootClass sootClass, String applicationBasePackageName) {
-      return sootClass.getClassSource()
-              .getClassType()
-              .getPackageName()
-              .toString()
-              .toLowerCase()
-              .contains(applicationBasePackageName);
+    return isClassPartOfApplication(
+        sootClass.getClassSource().getClassType(), applicationBasePackageName);
+  }
+
+  private boolean isClassPartOfApplication(ClassType classType, String applicationBasePackageName) {
+    return classType.getPackageName().toString().toLowerCase().contains(applicationBasePackageName);
   }
 
   /**
@@ -373,10 +379,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   protected void resolveAllImplicitCallsFromSourceMethod(
       @NonNull SootMethod sourceMethod,
       @NonNull MutableCallGraph cg,
-      @NonNull Deque<MethodSignature> workList) {
+      @NonNull Deque<MethodSignature> workList,
+      @Nullable String applicationBasePackageName) {
     implicitStartRunCall(sourceMethod, cg, workList);
     // collect all static initializer calls
-    resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
+    resolveAllStaticInitializerCalls(sourceMethod, cg, workList, applicationBasePackageName);
   }
 
   /**
@@ -389,7 +396,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   protected void resolveAllStaticInitializerCalls(
       @NonNull SootMethod sourceMethod,
       @NonNull MutableCallGraph cg,
-      @NonNull Deque<MethodSignature> workList) {
+      @NonNull Deque<MethodSignature> workList,
+      @Nullable String applicationBasePackageName) {
     MethodSignature sourceMethodSignature = sourceMethod.getSignature();
 
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
@@ -403,12 +411,19 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               if (invokableStmt.containsFieldRef()
                   && invokableStmt.getFieldRef() instanceof JStaticFieldRef) {
                 targetClass = invokableStmt.getFieldRef().getFieldSignature().getDeclClassType();
-                if (!(targetClass
-                        .getFullyQualifiedName()
-                        .equals(sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
-                    && sourceMethodSignature.getName().equals("<clinit>"))) {
+                if (isClassPartOfApplication(targetClass, applicationBasePackageName)
+                    && !(targetClass
+                            .getFullyQualifiedName()
+                            .equals(
+                                sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
+                        && sourceMethodSignature.getName().equals("<clinit>"))) {
                   addStaticInitializerCalls(
-                      sourceMethodSignature, targetClass, invokableStmt, cg, workList);
+                      sourceMethodSignature,
+                      targetClass,
+                      invokableStmt,
+                      cg,
+                      workList,
+                      applicationBasePackageName);
                 }
               }
               // static method
@@ -419,13 +434,21 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   ClassType newTargetClass = expr.getMethodSignature().getDeclClassType();
                   // checks if the field points to the same clinit
                   if (!newTargetClass.equals(targetClass)) {
-                    if (!(newTargetClass
-                            .getFullyQualifiedName()
-                            .equals(
-                                sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
-                        && sourceMethodSignature.getName().equals("<clinit>"))) {
+                    if (isClassPartOfApplication(newTargetClass, applicationBasePackageName)
+                        && !(newTargetClass
+                                .getFullyQualifiedName()
+                                .equals(
+                                    sourceMethodSignature
+                                        .getDeclClassType()
+                                        .getFullyQualifiedName())
+                            && sourceMethodSignature.getName().equals("<clinit>"))) {
                       addStaticInitializerCalls(
-                          sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
+                          sourceMethodSignature,
+                          newTargetClass,
+                          invokableStmt,
+                          cg,
+                          workList,
+                          applicationBasePackageName);
                     }
                   }
                 }
@@ -438,13 +461,21 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   ClassType newTargetClass = instantiateVisitor.getResult();
                   // check if class type is the same as in the field which could be on the left op
                   if (newTargetClass != null && !newTargetClass.equals(targetClass)) {
-                    if (!(newTargetClass
-                            .getFullyQualifiedName()
-                            .equals(
-                                sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
-                        && sourceMethodSignature.getName().equals("<clinit>"))) {
+                    if (isClassPartOfApplication(newTargetClass, applicationBasePackageName)
+                        && !(newTargetClass
+                                .getFullyQualifiedName()
+                                .equals(
+                                    sourceMethodSignature
+                                        .getDeclClassType()
+                                        .getFullyQualifiedName())
+                            && sourceMethodSignature.getName().equals("<clinit>"))) {
                       addStaticInitializerCalls(
-                          sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
+                          sourceMethodSignature,
+                          newTargetClass,
+                          invokableStmt,
+                          cg,
+                          workList,
+                          applicationBasePackageName);
                     }
                   }
                 }
@@ -468,7 +499,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       ClassType targetClass,
       InvokableStmt invokableStmt,
       MutableCallGraph cg,
-      Deque<MethodSignature> workList) {
+      Deque<MethodSignature> workList,
+      String applicationBasePackageName) {
     // static initializer call of class
     view.getMethod(view.getIdentifierFactory().getStaticInitializerSignature(targetClass))
         .ifPresent(
@@ -477,6 +509,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     // static initializer calls of all superclasses
     typeHierarchy
         .superClassesOf(targetClass)
+        .filter(classType -> isClassPartOfApplication(classType, applicationBasePackageName))
         .map(
             classType ->
                 view.getMethod(

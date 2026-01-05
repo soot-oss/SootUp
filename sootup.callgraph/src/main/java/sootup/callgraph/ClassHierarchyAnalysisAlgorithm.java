@@ -22,6 +22,9 @@ package sootup.callgraph;
  * #L%
  */
 
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -35,10 +38,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This class implements the Class Hierarchy Analysis call graph algorithm. In this algorithm, every
@@ -94,6 +93,10 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     AbstractInvokeExpr invokeExpr = optInvokeExpr.get();
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
     if ((invokeExpr instanceof JDynamicInvokeExpr)) {
+      return Stream.empty();
+    }
+
+    if (!includeCallToTarget(method.getSignature(), targetMethodSignature)) {
       return Stream.empty();
     }
 
