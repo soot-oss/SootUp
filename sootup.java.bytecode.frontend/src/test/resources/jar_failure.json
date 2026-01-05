@@ -1,0 +1,8 @@
+[
+{
+  "jar_name": "southbound-karaf-1.2.2-Beryllium-SR1.jar",
+  "exception": "java.lang.RuntimeException: Could not open file system of /tmp/tempDir11926861353847546046/southbound-karaf-1.2.2-Beryllium-SR1.jar",
+  "download_url": "https://repo1.maven.org/maven2/org/opendaylight/ovsdb/southbound-karaf/1.2.2-Beryllium-SR1/southbound-karaf-1.2.2-Beryllium-SR1.jar",
+  "failedMethodSignature": ""
+}
+]
