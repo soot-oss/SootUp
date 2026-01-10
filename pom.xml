@@ -91,6 +91,7 @@
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
         <reactorRootsTarget>${basedir}/target</reactorRootsTarget>
         <junit.version>6.0.1</junit.version>
+        <lombok.version>1.18.42</lombok.version>
     </properties>
 
     <profiles>
@@ -240,6 +241,13 @@
                         <!-- Prevents recompilation due to missing package-info.class, see MCOMPILER-205 -->
                         <arg>-Xpkginfo:always</arg>
                     </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
@@ -457,7 +465,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.42</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
