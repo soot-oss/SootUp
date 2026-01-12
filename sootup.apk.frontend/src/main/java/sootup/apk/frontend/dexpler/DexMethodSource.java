@@ -41,6 +41,7 @@ import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.types.ClassType;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
@@ -95,6 +96,7 @@ public class DexMethodSource implements BodySource {
     EnumSet<MethodModifier> methodModifiers = Modifiers.getMethodModifiers(method.getAccessFlags());
     Iterable<AnnotationUsage> annotationUsages = DexUtil.createAnnotationUsage(method.getAnnotations(), view);
     List<Set<AnnotationUsage>> parameterAnnotations = Collections.emptyList();
+    Iterable<ClassType> thrownExceptions = DexUtil.extractThrownExceptions(method.getAnnotations(), view);
 
     if (method instanceof DexBackedMethod) {
       parameterAnnotations = ((DexBackedMethod) method).getParameterAnnotations()
@@ -109,7 +111,7 @@ public class DexMethodSource implements BodySource {
               new OverridingBodySource(getSignature(), resolveBody(methodModifiers)),
               getSignature(),
               methodModifiers,
-              Collections.emptyList(),
+              thrownExceptions,
               annotationUsages,
               NoPositionInformation.getInstance(),
               parameterAnnotations);
