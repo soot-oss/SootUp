@@ -29,8 +29,8 @@ import sootup.analysis.intraprocedural.reachingdefs.ReachingDefs;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.StmtMethodPropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.DdgEdge;
-import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
-import sootup.core.graph.StmtGraph;
+import sootup.codepropertygraph.propertygraph.nodes.ControlFlowGraphNode;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -54,8 +54,8 @@ public class DdgCreator {
       return graphBuilder.build();
     }
 
-    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
-    Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(stmtGraph)).getReachingDefs();
+    ControlFlowGraph<?> controlFlowGraph = method.getBody().getControlFlowGraph();
+    Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(controlFlowGraph)).getReachingDefs();
 
     // Custom comparator for Stmt objects
     Comparator<Stmt> stmtComparator = Comparator.comparing(Stmt::toString);
@@ -65,7 +65,7 @@ public class DdgCreator {
         .sorted(stmtComparator)
         .forEach(
             key -> {
-              StmtGraphNode destinationNode = new StmtGraphNode(key);
+              ControlFlowGraphNode destinationNode = new ControlFlowGraphNode(key);
               List<Stmt> values = reachingDefs.get(key);
 
               // Sort values for deterministic order
@@ -73,7 +73,7 @@ public class DdgCreator {
                   .sorted(stmtComparator)
                   .forEach(
                       value -> {
-                        StmtGraphNode sourceNode = new StmtGraphNode(value);
+                        ControlFlowGraphNode sourceNode = new ControlFlowGraphNode(value);
                         graphBuilder.addEdge(new DdgEdge(sourceNode, destinationNode));
                       });
             });

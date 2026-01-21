@@ -60,7 +60,7 @@ public class JavaClassType extends ClassType {
     }
     this.className = realClassName;
     this.packageName = packageName;
-    this.hashCode = Objects.hashCode(className, packageName);
+    this.hashCode = Objects.hashCode(realClassName, packageName);
   }
 
   @Override

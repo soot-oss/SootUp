@@ -26,7 +26,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 
 /**
@@ -39,13 +39,13 @@ import sootup.core.jimple.common.stmt.Stmt;
 public abstract class AbstractFlowAnalysis<F> {
 
   /** The graph being analysed. */
-  protected final StmtGraph<? extends BasicBlock<?>> graph;
+  protected final ControlFlowGraph<? extends BasicBlock<?>> graph;
 
   /** Maps graph nodes to IN sets. */
   protected final Map<Stmt, F> stmtToBeforeFlow;
 
-  /** Constructs a flow analysis on the given <code>StmtGraph</code>. */
-  public AbstractFlowAnalysis(StmtGraph<? extends BasicBlock<?>> graph) {
+  /** Constructs a flow analysis on the given <code>ControlFlowGraph</code>. */
+  public AbstractFlowAnalysis(ControlFlowGraph<? extends BasicBlock<?>> graph) {
     this.graph = graph;
     this.stmtToBeforeFlow = new IdentityHashMap<>(graph.getNodes().size() * 2 + 1);
   }

@@ -52,7 +52,7 @@ public class BytecodeHierarchyTest {
 
   public void setUp() {
     String jarFile =
-        "../shared-test-resources/TypeResolverTestSuite/ByteCodeHierarchyTest/MiniHierarchy.jar";
+        "src/test/resources/TypeResolverTestSuite/ByteCodeHierarchyTest/MiniHierarchy.jar";
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile);
     view =

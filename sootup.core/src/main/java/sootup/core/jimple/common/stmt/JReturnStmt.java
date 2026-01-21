@@ -34,7 +34,7 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A statement that ends the method, returning a value. */
-public final class JReturnStmt extends AbstractStmt {
+public final class JReturnStmt extends AbstractStmt implements ReturnStmt {
 
   private final Immediate op;
 

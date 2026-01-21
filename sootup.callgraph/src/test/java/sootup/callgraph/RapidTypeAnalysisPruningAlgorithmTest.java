@@ -5,12 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
+import sootup.callgraph.mock.RapidTypeAnalysisPruningAlgorithm;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.views.JavaView;
 
-public class RapidTypeAnalysisPruningAlgorithmTest extends CallGraphTestMethods {
+public class RapidTypeAnalysisPruningAlgorithmTest extends CallGraphTest {
 
   @Override
   protected RapidTypeAnalysisPruningAlgorithm createAlgorithm(JavaView view) {

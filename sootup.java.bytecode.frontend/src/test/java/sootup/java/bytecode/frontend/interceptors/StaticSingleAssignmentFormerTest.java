@@ -2,12 +2,11 @@ package sootup.java.bytecode.frontend.interceptors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
@@ -36,10 +35,7 @@ public class StaticSingleAssignmentFormerTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
-  final String location =
-      Paths.get(System.getProperty("user.dir")).getParent()
-          + File.separator
-          + "shared-test-resources/bugfixes/";
+  final String location = "src/test/resources/bugfixes/";
 
   JavaClassType intType = factory.getClassType("int");
   JavaClassType classType = factory.getClassType("Test");
@@ -379,7 +375,7 @@ public class StaticSingleAssignmentFormerTest {
    * </pre>
    */
   private Body.BodyBuilder createBody() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
@@ -444,7 +440,7 @@ public class StaticSingleAssignmentFormerTest {
    * </pre>
    */
   private Body.BodyBuilder createTrapBody() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 

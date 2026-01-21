@@ -68,7 +68,9 @@ public abstract class AbstractStmt implements Stmt {
     return def.map(lValue -> Stream.concat(getUses(), Stream.of(lValue))).orElseGet(this::getUses);
   }
 
-  /** Returns the amount of unexceptional successors the Stmt needs to have in the StmtGraph. */
+  /**
+   * Returns the amount of unexceptional successors the Stmt needs to have in the ControlFlowGraph.
+   */
   @Override
   public int getExpectedSuccessorCount() {
     return 1;

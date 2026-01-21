@@ -27,17 +27,17 @@ nav:
   - How to..:
       - Write a Dataflow analysis: write_analyses.md
       - Incorporate Pointer Analysis: qilin.md
-  #  - Modify a StmtGraph: mutable_stmtgraph.md
+  #  - Modify a ControlFlowGraph: mutable_controlflowgraph.md
   #  - Modify a View: mutable_view.md
   #  - Implement a BodyInterceptor: body_interceptor.md
   #  - Implement an AnalysisTool: write_analysis_tool.md
   #  - From Prototype to Tool: tool_setup.md
 
-  - Misc & More information:
+  - Misc & More:
       - Announcements: announcement.md
       - Design Decisions: whatsnew.md
       - Migration Help: migrating.md
-      - Latest Javadoc: /SootUp/apidocs
+      - Javadoc: api/index.html
       - Troubleshooting & FAQ: faq.md
     # - Based on SootUp: tools.md
 
@@ -59,8 +59,6 @@ extra_css:
 plugins:
   - tooltips
   - search
-  - include:
-      src_path: 'sootup.examples/src/test/java/sootup/examples'
 
 markdown_extensions:
   - pymdownx.highlight:

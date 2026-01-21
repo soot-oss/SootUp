@@ -23,7 +23,7 @@ import sootup.java.core.views.JavaModuleView;
 
 public class JavaModulePathAnalysisInputLocationTest {
 
-  private final String testPath = "../shared-test-resources/jigsaw-examples/";
+  private final String testPath = "src/test/resources/jigsaw-examples/";
 
   @Test
   public void testJarModule() {

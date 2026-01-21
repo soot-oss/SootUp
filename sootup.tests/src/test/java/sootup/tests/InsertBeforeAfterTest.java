@@ -1,13 +1,12 @@
 package sootup.tests;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -26,10 +25,7 @@ import sootup.java.core.views.JavaView;
 
 public class InsertBeforeAfterTest {
 
-  String location =
-      Paths.get(System.getProperty("user.dir")).getParent()
-          + File.separator
-          + "shared-test-resources/bugfixes/";
+  String location = "src/test/resources/bugs/bugfixes/";
   final Path path = Paths.get(location + "TrapBlockCheck.class");
   PathBasedAnalysisInputLocation inputLocation =
       new ClassFileBasedAnalysisInputLocation(
@@ -55,7 +51,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertBeforeBlockHead1() {
 
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // head of a block
     String s = "l2 = 0";
@@ -129,7 +126,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertBeforeBlockHead2() {
 
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // head of a block
     String s = "l2 = 0";
@@ -203,7 +201,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertBeforeBlockMiddle1() {
 
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // middle stmt of a block
     String s = "if l1 != l2";
@@ -278,7 +277,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertBeforeBlockMiddle2() {
 
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // middle stmt of a block
     String s = "if l1 != l2";
@@ -357,7 +357,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertAfterBlockTail1() {
 
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // head of a block
     String s = "l2 = l2 + 1";
@@ -434,7 +435,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertAfterBlockTail2() {
 
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // head of a block
     String s = "l2 = l2 + 1";
@@ -509,7 +511,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertAfterBlockMiddle1() {
 
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // middle stmt of a block
     String s = "l2 = 0";
@@ -584,7 +587,8 @@ public class InsertBeforeAfterTest {
   @Test
   public void testInsertAfterBlockMiddle2() {
 
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     List<Stmt> stmts = graph.getStmts();
     // middle stmt of a block
     String s = "l2 = 0";

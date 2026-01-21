@@ -7,7 +7,7 @@ import java.io.StringWriter;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -83,15 +83,15 @@ public class LegacyJimplePrinterTest {
 
     {
       Body.BodyBuilder builder = Body.builder();
-      final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-      stmtGraph.setStartingStmt(tableSwitch);
+      final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+      controlFlowGraph.setStartingStmt(tableSwitch);
 
-      stmtGraph.putEdge(tableSwitch, 0, jNop);
-      stmtGraph.putEdge(tableSwitch, 1, jNop2);
-      stmtGraph.putEdge(tableSwitch, 2, returnstmt);
+      controlFlowGraph.putEdge(tableSwitch, 0, jNop);
+      controlFlowGraph.putEdge(tableSwitch, 1, jNop2);
+      controlFlowGraph.putEdge(tableSwitch, 2, returnstmt);
 
-      stmtGraph.putEdge(jNop, jNop2);
-      stmtGraph.putEdge(jNop2, returnstmt);
+      controlFlowGraph.putEdge(jNop, jNop2);
+      controlFlowGraph.putEdge(jNop2, returnstmt);
 
       SootClass tableClass = buildClass(builder);
 
@@ -120,15 +120,15 @@ public class LegacyJimplePrinterTest {
           new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
 
       Body.BodyBuilder builder = Body.builder();
-      final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-      stmtGraph.setStartingStmt(lookupSwitch);
+      final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+      controlFlowGraph.setStartingStmt(lookupSwitch);
 
-      stmtGraph.putEdge(lookupSwitch, 0, jNop);
-      stmtGraph.putEdge(lookupSwitch, 1, jNop2);
-      stmtGraph.putEdge(lookupSwitch, 2, returnstmt);
+      controlFlowGraph.putEdge(lookupSwitch, 0, jNop);
+      controlFlowGraph.putEdge(lookupSwitch, 1, jNop2);
+      controlFlowGraph.putEdge(lookupSwitch, 2, returnstmt);
 
-      stmtGraph.putEdge(jNop, jNop2);
-      stmtGraph.putEdge(jNop2, returnstmt);
+      controlFlowGraph.putEdge(jNop, jNop2);
+      controlFlowGraph.putEdge(jNop2, returnstmt);
 
       SootClass lookupClass = buildClass(builder);
 

@@ -42,7 +42,7 @@ import sootup.java.core.views.JavaView;
 
 public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
-  final Path mrj = Paths.get("../shared-test-resources/multi-release-jar/mrjar.jar");
+  final Path mrj = Paths.get("src/test/resources/multi-release-jar/mrjar.jar");
   JavaView view_min;
   JavaView view_8;
   JavaView view_9;

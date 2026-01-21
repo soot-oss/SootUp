@@ -29,21 +29,22 @@ import java.util.*;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 
 /**
- * Exports a StmtGraph into a Dot representation (see https://graphviz.org) to visualize the Graph
+ * Exports a ControlFlowGraph into a Dot representation (see https://graphviz.org) to visualize the
+ * Graph
  *
  * @author Markus Schmidt
  */
 public class DotExporter {
 
   public static String buildGraph(
-      @NonNull StmtGraph<?> graph,
+      @NonNull ControlFlowGraph<?> graph,
       boolean isICFG,
       Map<Integer, MethodSignature> calls,
       MethodSignature methodSignature) {
@@ -84,13 +85,9 @@ public class DotExporter {
           .append(block.getTail().getPositionInfo().getStmtPosition().getFirstLine())
           .append("] \n");
 
-      sb.append("\tsubgraph cluster_")
-          .append(block.hashCode())
-          .append(" { \n")
-          .append("\t\tlabel = \"Block #")
-          .append(++i)
-          .append("\"\n");
-
+      sb.append("\tsubgraph cluster_").append(block.hashCode()).append(" { \n");
+      String label = (methodSignature != null) ? methodSignature.getName() : "Block #" + (++i);
+      sb.append("\t\tlabel = \"").append(label).append("\"\n");
       /* print stmts in a block*/
       List<Stmt> stmts = block.getStmts();
       drawnBlocks.add(block);
@@ -217,7 +214,7 @@ public class DotExporter {
     return sb;
   }
 
-  public static String createUrlToWebeditor(@NonNull StmtGraph<?> graph) {
+  public static String createUrlToWebeditor(@NonNull ControlFlowGraph<?> graph) {
     try {
       return "http://magjac.com/graphviz-visual-editor/?dot="
           + URLEncoder.encode(buildGraph(graph, false, null, null), "UTF-8");
