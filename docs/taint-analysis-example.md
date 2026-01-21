@@ -75,139 +75,29 @@ In this example:
 
 ## Step 2: Setting Up the Analysis Infrastructure
 
-### 2.1 Create the Analysis Runner
+### 2.1 Analysis Runner Class Structure
 
-First, create a class to handle the analysis setup:
+First, define the class with its core fields:
 
 ```java
-static class AnalysisRunner {
-    protected JavaView view;
-    protected MethodSignature entryMethodSignature;
-    protected SootMethod entryMethod;
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+protected JavaView view;
+protected MethodSignature entryMethodSignature;
+protected SootMethod entryMethod;
+JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
-    private JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> solved = null;
-
-    // executeStaticAnalysis {
-    protected JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> executeStaticAnalysis(
-            String pathToJar, String targetTestClassName) {
-        setupSoot(pathToJar, targetTestClassName);
-        runAnalysis();
-        if (solved == null) {
-            throw new NullPointerException("Something went wrong solving the IFDS problem!");
-        }
-        return solved;
-    }
-    // } executeStaticAnalysis
-
-    private void runAnalysis() {
-        JimpleBasedInterproceduralCFG icfg =
-                new JimpleBasedInterproceduralCFG((View) view, entryMethodSignature, false, false);
-        TaintAnalysisProblem problem = new TaintAnalysisProblem(icfg, entryMethod);
-        JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> solver =
-                new JimpleIFDSSolver(problem);
-        solver.solve(entryMethod.getDeclaringClassType().getClassName());
-        solved = solver;
-    }
-
-    private void setupSoot(String pathToJar, String targetTestClassName) {
-        List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-        inputLocations.add(new JavaClassPathAnalysisInputLocation(pathToJar, SourceType.Application));
-
-        view = new JavaView(inputLocations);
-
-        JavaClassType mainClassSignature = identifierFactory.getClassType(targetTestClassName);
-        Optional<? extends SootClass> scOpt = view.getClass(mainClassSignature);
-        if (!scOpt.isPresent()) {
-            throw new RuntimeException("Class not found: " + targetTestClassName);
-        }
-        SootClass sc = scOpt.get();
-        Optional<? extends SootMethod> entryMethodOpt = sc.getMethods().stream()
-                .filter(e -> e.getName().equals("entryPoint"))
-                .findFirst();
-        if (!entryMethodOpt.isPresent()) {
-            throw new RuntimeException("entryPoint method not found in class: " + targetTestClassName);
-        }
-        entryMethod = entryMethodOpt.get();
-        entryMethodSignature = entryMethod.getSignature();
-    }
-
-    public Set<Object> taintedVariablesAtSink(
-            JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis) {
-        // Find sink statements using simple loop to avoid Optional issues
-        for (Stmt stmt : entryMethod.getBody().getStmts()) {
-            if (stmt instanceof JInvokeStmt) {
-                JInvokeStmt invokeStmt = (JInvokeStmt) stmt;
-                Optional<AbstractInvokeExpr> ieOpt = invokeStmt.getInvokeExpr();
-                if (ieOpt.isPresent() && ieOpt.get().getMethodSignature().getName().equals("sink")) {
-                    Set<?> rawSet = analysis.ifdsResultsAt(stmt);
-                    Set<Object> names = new HashSet<>();
-                    for (Object fact : rawSet) {
-                        names.add(fact);
-                    }
-                    return names;
-                }
-            }
-        }
-        return new HashSet<>();
-    }
-
-    // checkLeak {
-    public void checkLeak(JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis) {
-        Set<Object> taintedVars = taintedVariablesAtSink(analysis);
-        AbstractInvokeExpr sinkMethod = null;
-        for (Stmt stmt : entryMethod.getBody().getStmts()) {
-            if (stmt instanceof JInvokeStmt) {
-                JInvokeStmt invokeStmt = (JInvokeStmt) stmt;
-                Optional<AbstractInvokeExpr> ieOpt = invokeStmt.getInvokeExpr();
-                if (ieOpt.isPresent() && ieOpt.get().getMethodSignature().getName().equals("sink")) {
-                    sinkMethod = ieOpt.get();
-                    break;
-                }
-            }
-        }
-
-        if (sinkMethod == null) {
-            return;
-        }
-
-        if (sinkMethod.getArgs().isEmpty()) {
-            return;
-        }
-
-        Object arg = sinkMethod.getArgs().get(0);
-        Object lastAssignment = arg;
-        if (arg.toString().contains("stack")) {
-            lastAssignment = getLastAssignment(arg);
-        }
-        Object leaked = null;
-        for (Object taintedVar : taintedVars) {
-            if (lastAssignment.toString().equals(taintedVar.toString())) {
-                leaked = taintedVar;
-            }
-        }
-    }
-    // } checkLeak
-
-    Object getLastAssignment(Object stackVar) {
-        List<Stmt> stmts = new ArrayList<>(entryMethod.getBody().getStmts());
-        Collections.reverse(stmts);
-        for (Stmt stmt : stmts) {
-            if (stmt instanceof AbstractDefinitionStmt) {
-                AbstractDefinitionStmt def = (AbstractDefinitionStmt) stmt;
-                if (def.getLeftOp().equals(stackVar)) {
-                    return def.getRightOp();
-                }
-            }
-        }
-        throw new RuntimeException("Var not found: " + stackVar);
-    }
-}
+private JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> solved = null;
 ```
 
-### 2.2 Initialize SootUp View
+**Field purposes:**
+- `view`: SootUp's representation of the program
+- `entryMethodSignature`: Signature of the method to analyze
+- `entryMethod`: The actual method object to analyze
+- `identifierFactory`: Creates type and method identifiers
+- `solved`: Stores the IFDS solver after analysis completes
 
-The analysis requires a SootUp view to access the program's intermediate representation:
+### 2.2 Main Analysis Entry Point
+
+The main method that orchestrates the entire analysis:
 
 ```java
 protected JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> executeStaticAnalysis(
@@ -221,6 +111,112 @@ protected JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> executeStati
 }
 ```
 
+**Workflow:**
+1. Set up SootUp to load the target class
+2. Run the IFDS analysis
+3. Verify the solver completed successfully
+4. Return the solver for result inspection
+
+### 2.3 Setting Up SootUp
+
+Configure SootUp to load and prepare the target program:
+
+```java
+private void setupSoot(String pathToJar, String targetTestClassName) {
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
+    inputLocations.add(new JavaClassPathAnalysisInputLocation(pathToJar, SourceType.Application));
+
+    view = new JavaView(inputLocations);
+
+    JavaClassType mainClassSignature = identifierFactory.getClassType(targetTestClassName);
+    Optional<? extends SootClass> scOpt = view.getClass(mainClassSignature);
+    if (!scOpt.isPresent()) {
+        throw new RuntimeException("Class not found: " + targetTestClassName);
+    }
+    SootClass sc = scOpt.get();
+    Optional<? extends SootMethod> entryMethodOpt = sc.getMethods().stream()
+            .filter(e -> e.getName().equals("entryPoint"))
+            .findFirst();
+    if (!entryMethodOpt.isPresent()) {
+        throw new RuntimeException("entryPoint method not found in class: " + targetTestClassName);
+    }
+    entryMethod = entryMethodOpt.get();
+    entryMethodSignature = entryMethod.getSignature();
+}
+```
+
+**What this does:**
+- Creates an analysis input location from the classpath
+- Initializes a JavaView to access program classes
+- Locates the target class and entry method
+- Stores the method signature for ICFG construction
+
+**Key concepts:**
+- `AnalysisInputLocation`: Tells SootUp where to find bytecode
+- `JavaView`: Provides access to classes and methods
+- `entryPoint` method: Our analysis starting point
+
+### 2.4 Running the IFDS Solver
+
+Execute the actual taint analysis:
+
+```java
+private void runAnalysis() {
+    JimpleBasedInterproceduralCFG icfg =
+            new JimpleBasedInterproceduralCFG((View) view, entryMethodSignature, false, false);
+    TaintAnalysisProblem problem = new TaintAnalysisProblem(icfg, entryMethod);
+    JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> solver =
+            new JimpleIFDSSolver(problem);
+    solver.solve(entryMethod.getDeclaringClassType().getClassName());
+    solved = solver;
+}
+```
+
+**Analysis steps:**
+1. Build the interprocedural control flow graph (ICFG)
+2. Create the taint analysis problem instance
+3. Initialize the IFDS solver with our problem
+4. Run the solver on the target class
+5. Store results for inspection
+
+**ICFG parameters:**
+- `view`: The SootUp view of the program
+- `entryMethodSignature`: Starting point for graph construction
+- `false, false`: Flags for enabling/disabling certain features
+
+### 2.5 Querying Analysis Results
+
+Helper method to extract tainted variables at sink points:
+
+```java
+public Set<Object> taintedVariablesAtSink(
+        JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis) {
+    // Find sink statements using simple loop to avoid Optional issues
+    for (Stmt stmt : entryMethod.getBody().getStmts()) {
+        if (stmt instanceof JInvokeStmt) {
+            JInvokeStmt invokeStmt = (JInvokeStmt) stmt;
+            Optional<AbstractInvokeExpr> ieOpt = invokeStmt.getInvokeExpr();
+            if (ieOpt.isPresent() && ieOpt.get().getMethodSignature().getName().equals("sink")) {
+                Set<?> rawSet = analysis.ifdsResultsAt(stmt);
+                Set<Object> names = new HashSet<>();
+                for (Object fact : rawSet) {
+                    names.add(fact);
+                }
+                return names;
+            }
+        }
+    }
+    return new HashSet<>();
+}
+```
+
+**How it works:**
+- Scans all statements in the entry method
+- Finds invoke statements calling methods named "sink"
+- Retrieves IFDS facts (tainted variables) at those statements
+- Returns the set of all tainted facts reaching sinks
+
+This method is crucial for determining if sensitive data leaks to dangerous operations.
 **Key components:**
 - **JavaView**: Provides access to classes and methods
 - **AnalysisInputLocation**: Specifies where to find bytecode
@@ -230,143 +226,38 @@ protected JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> executeStati
 
 ### 3.1 Create the IFDS Problem Class
 
-The core analysis logic extends `DefaultJimpleIFDSTabulationProblem`:
+The core analysis logic extends `DefaultJimpleIFDSTabulationProblem`, which provides the IFDS framework structure. Let's build it step by step.
+
+#### Class Structure and Fields
+
+First, define the class and its core dependencies:
 
 ```java
-static class TaintAnalysisProblem extends DefaultJimpleIFDSTabulationProblem<Object, InterproceduralCFG<Stmt, SootMethod>> {
+private final SootMethod entryMethod;
+private final InterproceduralCFG<Stmt, SootMethod> icfg;
+```
 
-    private final SootMethod entryMethod;
-    private final InterproceduralCFG<Stmt, SootMethod> icfg;
+**Fields explanation:**
+- `entryMethod`: The starting point for our analysis
+- `icfg`: Interprocedural control flow graph for navigating method calls
 
-    public TaintAnalysisProblem(InterproceduralCFG<Stmt, SootMethod> icfg, SootMethod entryMethod) {
-        super(icfg);
-        this.icfg = icfg;
-        this.entryMethod = entryMethod;
-    }
+#### Constructor
 
-    @Override
-    public Map<Stmt, Set<Object>> initialSeeds() {
-        return DefaultSeeds.make(
-                Collections.singleton(entryMethod.getBody().getStmtGraph().getStartingStmt()),
-                zeroValue());
-    }
+Initialize the problem with the ICFG and entry method:
 
-    @Override
-    protected FlowFunctions<Stmt, Object, SootMethod> createFlowFunctionsFactory() {
-        return new FlowFunctions<Stmt, Object, SootMethod>() {
-
-            @Override
-            public FlowFunction<Object> getNormalFlowFunction(Stmt curr, Stmt succ) {
-                return getNormalFlow(curr, succ);
-            }
-
-            @Override
-            public FlowFunction<Object> getCallFlowFunction(Stmt callStmt, SootMethod destinationMethod) {
-                return getCallFlow(callStmt, destinationMethod);
-            }
-
-            @Override
-            public FlowFunction<Object> getReturnFlowFunction(
-                    Stmt callSite, SootMethod calleeMethod, Stmt exitStmt, Stmt returnSite) {
-                return getReturnFlow(callSite, calleeMethod, exitStmt, returnSite);
-            }
-
-            @Override
-            public FlowFunction<Object> getCallToReturnFlowFunction(Stmt callSite, Stmt returnSite) {
-                return getCallToReturnFlow(callSite, returnSite);
-            }
-        };
-    }
-
-    @Override
-    protected Object createZeroValue() {
-        return new Object() {
-            @Override
-            public String toString() {
-                return "<<zero>>";
-            }
-        };
-    }
-    // getNormalFlow {
-    FlowFunction<Object> getNormalFlow(Stmt currentStmt, Stmt successorStmt) {
-        if (currentStmt instanceof JAssignStmt) {
-            final JAssignStmt assign = (JAssignStmt) currentStmt;
-            final Object leftOp = assign.getLeftOp();
-            final Object rightOp = assign.getRightOp();
-
-            if (rightOp instanceof StringConstant) {
-                StringConstant str = (StringConstant) rightOp;
-                if (str.getValue().equals("SECRET")) {
-                    return new Gen<>(leftOp, zeroValue());
-                }
-            }
-            return new Transfer<>(leftOp, rightOp);
-        }
-        return Identity.v();
-    }
-    // } getNormalFlow
-
-    // getCallFlow {
-    FlowFunction<Object> getCallFlow(Stmt callStmt, final SootMethod destinationMethod) {
-        if (!(callStmt instanceof JInvokeStmt)) {
-            return KillAll.v();
-        }
-
-        JInvokeStmt invokeStmt = (JInvokeStmt) callStmt;
-        Optional<AbstractInvokeExpr> ieOpt = invokeStmt.getInvokeExpr();
-        if (!ieOpt.isPresent()) {
-            return KillAll.v();
-        }
-
-        AbstractInvokeExpr ie = ieOpt.get();
-        final List<?> callArgs = ie.getArgs();
-
-        // Simplified mapping for API compatibility
-        if (!callArgs.isEmpty() && destinationMethod.getParameterCount() > 0) {
-            Object firstCallArg = callArgs.get(0);
-            Object firstParam = destinationMethod.getBody().getParameterLocal(0);
-            return new Transfer<>(firstParam, firstCallArg);
-        }
-
-        return KillAll.v();
-    }
-    // } getCallFlow
-
-    // getReturnFlow {
-    FlowFunction<Object> getReturnFlow(
-            final Stmt callSite, final SootMethod calleeMethod, Stmt exitStmt, Stmt returnSite) {
-        if (exitStmt instanceof JReturnStmt) {
-            JReturnStmt returnStmt = (JReturnStmt) exitStmt;
-            if (callSite instanceof JAssignStmt) {
-                JAssignStmt assignStmt = (JAssignStmt) callSite;
-                final Object retOp = returnStmt.getOp();
-                if (!(retOp instanceof StringConstant)) {
-                    Object leftOp = assignStmt.getLeftOp();
-                    return new Transfer<>(leftOp, retOp);
-                } else {
-                    StringConstant str = (StringConstant) retOp;
-                    if (str.getValue().equals("SECRET")) {
-                        final Object leftOp = assignStmt.getLeftOp();
-                        return new Gen<>(leftOp, zeroValue());
-                    }
-                }
-            }
-        }
-        return KillAll.v();
-    }
-    // } getReturnFlow
-
-    // getCallToReturnFlow {
-    FlowFunction<Object> getCallToReturnFlow(final Stmt callSite, Stmt returnSite) {
-        return Identity.v();
-    }
-    // } getCallToReturnFlow
+```java
+public TaintAnalysisProblem(InterproceduralCFG<Stmt, SootMethod> icfg, SootMethod entryMethod) {
+    super(icfg);
+    this.icfg = icfg;
+    this.entryMethod = entryMethod;
 }
 ```
 
-### 3.2 Define Initial Seeds
+The constructor passes the ICFG to the parent class and stores both dependencies for later use.
 
-The analysis starts from the entry method:
+#### Initial Seeds
+
+Define where the analysis starts:
 
 ```java
 @Override
@@ -377,7 +268,69 @@ public Map<Stmt, Set<Object>> initialSeeds() {
 }
 ```
 
-**Zero value**: Represents "no taint" - the bottom element of the analysis lattice.
+**What this does:**
+- Starts analysis at the first statement of the entry method
+- Associates it with the zero value (representing "no taint" initially)
+- The IFDS solver will propagate facts from this starting point
+
+#### Flow Functions Factory
+
+Create the factory that provides flow functions for different statement types:
+
+```java
+@Override
+protected FlowFunctions<Stmt, Object, SootMethod> createFlowFunctionsFactory() {
+    return new FlowFunctions<Stmt, Object, SootMethod>() {
+
+        @Override
+        public FlowFunction<Object> getNormalFlowFunction(Stmt curr, Stmt succ) {
+            return getNormalFlow(curr, succ);
+        }
+
+        @Override
+        public FlowFunction<Object> getCallFlowFunction(Stmt callStmt, SootMethod destinationMethod) {
+            return getCallFlow(callStmt, destinationMethod);
+        }
+
+        @Override
+        public FlowFunction<Object> getReturnFlowFunction(
+                Stmt callSite, SootMethod calleeMethod, Stmt exitStmt, Stmt returnSite) {
+            return getReturnFlow(callSite, calleeMethod, exitStmt, returnSite);
+        }
+
+        @Override
+        public FlowFunction<Object> getCallToReturnFlowFunction(Stmt callSite, Stmt returnSite) {
+            return getCallToReturnFlow(callSite, returnSite);
+        }
+    };
+}
+```
+
+**This factory delegates to four specialized methods:**
+- `getNormalFlow`: Handles regular intraprocedural statements
+- `getCallFlow`: Maps arguments to parameters at call sites
+- `getReturnFlow`: Maps return values back to callers
+- `getCallToReturnFlow`: Preserves local facts across calls
+
+We'll implement each of these in the next step.
+
+#### Zero Value
+
+Define the lattice bottom element:
+
+```java
+@Override
+protected Object createZeroValue() {
+    return new Object() {
+        @Override
+        public String toString() {
+            return "<<zero>>";
+        }
+    };
+}
+```
+
+The zero value represents "no taint" and is used as the baseline for all analysis facts.
 
 ## Step 4: Implementing Flow Functions
 
