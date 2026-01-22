@@ -40,6 +40,10 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 For feedback and feature requests, best create appropriate [issues](../../issues).  
 For questions and clarification, please use the [discussions](../../discussions).
 
+## Who Uses SootUp? 
+- **Team Atlanta**, [the winner of DARPA's AI Cyber Challenge (AIxCC)](https://aicyberchallenge.com/finals-winners-announcement/) uses **SootUp** to improve their [reachability analysis](https://arxiv.org/pdf/2509.14589).
+
+Let us know how you are using SootUp by filling out [this form](https://forms.gle/Cr6noNjM6XYLXiTZ7).
 
 ## Publications
 [The SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) explains further details and the design decision behind SootUp.  
