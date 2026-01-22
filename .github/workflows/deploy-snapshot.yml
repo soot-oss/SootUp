@@ -1,0 +1,28 @@
+name: Deploy SNAPSHOT versions
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy-snapshot:
+    runs-on: ubuntu-latest
+    name: Deploy SNAPSHOT version
+    environment: Deploy
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Deploy SNAPSHOT version
+        uses: secure-software-engineering/actions/deployment/maven-deployment@develop
+        with:
+          java-distribution: adopt
+          java-version: 11
+          server-id: central
+          server-username: ${{ secrets.MAVEN_USERNAME }}
+          server-password: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+          mvn-cli-args: '-DskipTests -Drelease'
+          deploy-mode: snapshot

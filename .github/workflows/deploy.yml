@@ -4,7 +4,6 @@ run-name: Deploy run ${{ github.run_number }} # Enumerates entries in the "workf
 on:
   push:
     branches:
-      - develop
       - master
 
 env:
