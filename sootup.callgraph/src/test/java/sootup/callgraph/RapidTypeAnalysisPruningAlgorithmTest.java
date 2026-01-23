@@ -34,7 +34,7 @@ public class RapidTypeAnalysisPruningAlgorithmTest extends CallGraphTest {
     mainClassSignature = identifierFactory.getClassType("prune.Pruning");
     mainMethodSignature =
         identifierFactory.getMethodSignature(
-            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, identifierFactory.getMainSubSignature());
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);

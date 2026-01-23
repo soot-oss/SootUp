@@ -30,10 +30,7 @@ import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.Type;
+import sootup.core.types.*;
 
 /**
  * A factory used for creating language-specific objects representing entities of the language, for
@@ -249,4 +246,6 @@ public interface IdentifierFactory {
   boolean isConstructorSubSignature(@NonNull MethodSubSignature methodSubSignature);
 
   boolean isMainSubSignature(@NonNull MethodSubSignature methodSubSignature);
+
+  MethodSubSignature getMainSubSignature();
 }
