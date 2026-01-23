@@ -239,13 +239,37 @@ public interface IdentifierFactory {
    */
   MethodSignature getStaticInitializerSignature(ClassType declaringClassSignature);
 
+  /**
+   * Checks whether the given method sub signature is a static initializer
+   * @param methodSubSignature
+   * @return
+   */
   boolean isStaticInitializerSubSignature(@NonNull MethodSubSignature methodSubSignature);
 
+  /**
+   * Checks whether the given method signature is a constructor
+   * @param methodSignature
+   * @return
+   */
   boolean isConstructorSignature(@NonNull MethodSignature methodSignature);
 
+  /**
+   * Checks whether the given method sub signature is a constructor
+   * @param methodSubSignature
+   * @return
+   */
   boolean isConstructorSubSignature(@NonNull MethodSubSignature methodSubSignature);
 
+  /**
+   * Checks whether the given method sub signature is the main method signature
+   * @param methodSubSignature
+   * @return
+   */
   boolean isMainSubSignature(@NonNull MethodSubSignature methodSubSignature);
 
+  /**
+   * Returns the main method sub signature
+   * @return
+   */
   MethodSubSignature getMainSubSignature();
 }
