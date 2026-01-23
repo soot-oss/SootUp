@@ -26,31 +26,40 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import sootup.core.jimple.common.stmt.*;
-import sootup.core.jimple.visitor.AbstractStmtVisitor;
+import sootup.callgraph.CallGraph;
+import sootup.core.jimple.common.expr.JNewExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.views.View;
 
-@Slf4j
 @Builder
 @Getter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class PAGStmtVisitor extends AbstractStmtVisitor {
+public class Solver {
 
-  PAG PAG;
+  private View view;
 
-  @Override
-  public void caseAssignStmt(JAssignStmt stmt) {
-    val left = stmt.getLeftOp();
-    val right = stmt.getRightOp();
-    val leftNode = NodeFactory.createNode(left);
-    val rightNode = NodeFactory.createNode(right);
-    if (leftNode.isPresent() && rightNode.isPresent()) {
-      val source = rightNode.get();
-      val target = leftNode.get();
-      PAG.addEdge(source, target);
-    } else {
-      log.warn("Missing nodes for left: {} <- right: {}", left, right);
-    }
+  private CallGraph callGraph;
+
+  private PAG pag = new PAG();
+
+  private PAGStmtVisitor stmtVisitor = PAGStmtVisitor.builder().PAG(pag).build();
+
+  public void solve() {
+    MethodSignature methodSignature = callGraph.getEntryMethods().get(0);
+    view.getMethod(methodSignature).ifPresent(this::buildMethodPAG);
+  }
+
+  private void buildMethodPAG(SootMethod method) {
+
+    // first add the new
+    method.getBody().getStmts().stream()
+        .filter(JAssignStmt.class::isInstance)
+        .map(JAssignStmt.class::cast)
+        .filter(s -> s.getRightOp() instanceof JNewExpr)
+        .forEach(s -> s.accept(stmtVisitor));
+
+    method.getBody().getStmts().forEach(stmt -> stmt.accept(stmtVisitor));
   }
 }

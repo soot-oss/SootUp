@@ -249,4 +249,5 @@ public interface IdentifierFactory {
   boolean isConstructorSubSignature(@NonNull MethodSubSignature methodSubSignature);
 
   boolean isMainSubSignature(@NonNull MethodSubSignature methodSubSignature);
+
 }
