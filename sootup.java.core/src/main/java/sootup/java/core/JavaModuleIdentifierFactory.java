@@ -24,14 +24,12 @@ package sootup.java.core;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.ClassUtils;
 import org.jspecify.annotations.NonNull;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.Type;
-import sootup.core.types.VoidType;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.ModuleJavaClassType;
@@ -78,18 +76,11 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
     if (methodSubSignature.getName().equals("main")) {
       final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
       if (parameterTypes.size() == 1) {
-        return parameterTypes.get(0).toString().equals("java.base/java.lang.String[]");
+        return parameterTypes.get(0).toString().equals("java.lang.String[]")
+            || parameterTypes.get(0).toString().equals("java.base/java.lang.String[]");
       }
     }
     return false;
-  }
-
-  @Override
-  public MethodSubSignature getMainSubSignature() {
-    return getMethodSubSignature(
-        "main",
-        VoidType.getInstance(),
-        Collections.singletonList(getType("java.base/java.lang.String[]")));
   }
 
   @Override

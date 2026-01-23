@@ -22,6 +22,7 @@ package sootup.core;
  * #L%
  */
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
@@ -276,5 +277,8 @@ public interface IdentifierFactory {
    *
    * @return
    */
-  MethodSubSignature getMainSubSignature();
+  default MethodSubSignature getMainSubSignature() {
+    return getMethodSubSignature(
+        "main", VoidType.getInstance(), Collections.singletonList(getType("java.lang.String[]")));
+  }
 }

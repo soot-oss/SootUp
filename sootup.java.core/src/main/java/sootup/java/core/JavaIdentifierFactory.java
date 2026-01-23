@@ -669,10 +669,4 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     }
     return false;
   }
-
-  @Override
-  public MethodSubSignature getMainSubSignature() {
-    return getMethodSubSignature(
-        "main", VoidType.getInstance(), Collections.singletonList(getType("java.lang.String[]")));
-  }
 }
