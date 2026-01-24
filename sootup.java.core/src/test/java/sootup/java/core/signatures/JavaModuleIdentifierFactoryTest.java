@@ -175,4 +175,18 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
           "<java.base/java.lang.String: boolean startsWith(String)>", methodSignature.toString());
     }
   }
+
+  @Test
+  public void isMainMethod() {
+    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
+    MethodSignature mainMethodSig =
+        identifierFactory.parseMethodSignature(
+            "<modmain/pkgmain.Main: void main(java.lang.String[])>");
+    assertTrue(identifierFactory.isMainSubSignature(mainMethodSig.getSubSignature()));
+    // After Java9, we could have the following
+    MethodSignature mainMethodSigJ9 =
+        identifierFactory.parseMethodSignature(
+            "<modmain/pkgmain.Main: void main(java.base/java.lang.String[])>");
+    assertTrue(identifierFactory.isMainSubSignature(mainMethodSigJ9.getSubSignature()));
+  }
 }
