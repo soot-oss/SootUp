@@ -45,6 +45,10 @@ public interface CallGraph {
       this.targetMethodSignature = targetMethodSignature;
     }
 
+    public int getLineNumber() {
+      return invokableStmt.getPositionInfo().getStmtPosition().getFirstLine();
+    }
+
     @Nonnull
     public MethodSignature getSourceMethodSignature() {
       return sourceMethodSignature;
@@ -103,6 +107,8 @@ public interface CallGraph {
    */
   @Nonnull
   Set<MethodSignature> getMethodSignatures();
+
+  Set<Call> getCalls();
 
   /**
    * This method returns all method signatures that are called by a given method signature. It

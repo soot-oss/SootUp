@@ -456,6 +456,13 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
     return new HashSet<>(this.methods);
   }
 
+  @Override
+  public Set<Call> getCalls() {
+    return calls.entrySet().stream()
+        .flatMap(e -> e.getValue().stream())
+        .collect(Collectors.toSet());
+  }
+
   @Nonnull
   @Override
   public MutableCallGraph copy() {

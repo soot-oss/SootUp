@@ -115,6 +115,11 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     return signatureToVertex.keySet();
   }
 
+  @Override
+  public Set<Call> getCalls() {
+    return graph.edgeSet();
+  }
+
   @Nonnull
   @Override
   public Set<MethodSignature> callTargetsFrom(@Nonnull MethodSignature sourceMethod) {
