@@ -13,8 +13,8 @@ public class ImplicitCallEdgeDeserializer implements JsonDeserializer<ImplicitCa
     int category = jsonObject.has("category") ? jsonObject.get("category").getAsInt() : -1;
     Class<? extends ImplicitCallEdge> subType =
         switch (category) {
-          case 1 -> FixImplicitCallEdge.class;
-          case 2 -> IntraImplicitCallEdge.class;
+          case 1 -> StaticImplicitCallEdge.class;
+          case 2 -> PolymorphicImplicitCallEdge.class;
           default -> throw new JsonParseException("Unknown pattern category: " + category);
         };
 

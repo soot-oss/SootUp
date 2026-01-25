@@ -1,152 +1,98 @@
 package sootup.callgraph;
 
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.Collections;
+import java.util.Set;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import org.junit.jupiter.api.Test;
+import sootup.core.signatures.MethodSignature;
 
 public abstract class CallGraphAlgorithmTest extends CallGraphTest {
+  // StaticImplicitCallEdges tests
   @Test
-  public void testApacheAntCallGraph() {
-    CallGraph cg = loadCallGraph("org.apache.tools.ant.Main");
-    Path output = Path.of("target/eclipse-output.txt");
-    try (BufferedWriter writer =
-        Files.newBufferedWriter(
-            output, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-      for (CallGraph.Call call : cg.getCalls()) {
-        try {
-          writer.write(call.toString() + " " + call.getLineNumber());
-          writer.newLine();
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    assertTrue(cg.callCount() > 0);
+  public void testForNameDemo1() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.fix.ForNameDemo1");
+    MethodSignature calleeMethodSig =
+            identifierFactory.getMethodSignature(
+                    identifierFactory.getClassType("bachelor.fix.Target1"),
+                    "<clinit>",
+                    "void",
+                    Collections.emptyList());
+    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
   }
 
-  // invokedynamic
-  //  @Test
-  //  public void testResolveMethodHandle1() {
-  //    CallGraph cg = loadCallGraph("bachelor.invokedynamic.ResolveMethodHandle1");
-  //    for (CallGraph.Call call : cg.getCalls()) {
-  //      if (call.toString().contains("void run()")) {
-  //        System.out.println(call);
-  //      }
-  //    }
-  //    assertTrue(cg.callCount() > 0);
-  //  }
-  //
-  //  @Test
-  //  public void testResolveMethodHandle3() {
-  //    CallGraph cg = loadCallGraph("bachelor.invokedynamic.ResolveMethodHandle3");
-  //    for (CallGraph.Call call : cg.getCalls()) {
-  //      System.out.println(call);
-  //    }
-  //    assertTrue(cg.callCount() > 0);
-  //  }
-  //
-  //  @Test
-  //  public void testResolveMethodHandle4() {
-  //    CallGraph cg = loadCallGraph("bachelor.invokedynamic.ResolveMethodHandle4");
-  //    for (CallGraph.Call call : cg.getCalls()) {
-  //      System.out.println(call);
-  //    }
-  //    assertTrue(cg.callCount() > 0);
-  //  }
-  //
-  //  @Test
-  //  public void testResolveMethodHandle5() {
-  //    CallGraph cg = loadCallGraph("bachelor.invokedynamic.ResolveMethodHandle5");
-  //    for (CallGraph.Call call : cg.getCalls()) {
-  //      System.out.println(call);
-  //    }
-  //    assertTrue(cg.callCount() > 0);
-  //  }
-  //
-  //  @Test
-  //  public void testResolveMethodHandle6() {
-  //    CallGraph cg = loadCallGraph("bachelor.invokedynamic.ResolveMethodHandle6");
-  //    for (CallGraph.Call call : cg.getCalls()) {
-  //      System.out.println(call);
-  //    }
-  //    assertTrue(cg.callCount() > 0);
-  //  }
-  //
-  //  // Fix calls tests
-  //
-  //  @Test
-  //  public void testTriggerSystemRunFinalization() {
-  //    CallGraph cg = loadCallGraph("Implicit", "bachelor.fix.TriggerSystemRunFinalization");
-  //    MethodSignature calleeMethodSig =
-  //        identifierFactory.getMethodSignature(
-  //            identifierFactory.getClassType("java.lang.ref.Finalizer"),
-  //            "runFinalization",
-  //            "void",
-  //            Collections.emptyList());
-  //    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
-  //    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
-  //  }
-  //
-  //  // Intra Calls tests
-  //
-  //  @Test
-  //  public void testSubClassExternalizable() {
-  //    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.SubClassExternalizable");
-  //    MethodSignature calleeMethodSigWrite =
-  //        identifierFactory.getMethodSignature(
-  //            identifierFactory.getClassType("bachelor.intra.other.SuperClassExternalizable"),
-  //            "writeExternal",
-  //            "void",
-  //            Collections.singletonList("java.io.ObjectOutput"));
-  //    Set<MethodSignature> calleeSourcesMethodSigWrite = cg.callSourcesTo(calleeMethodSigWrite);
-  //    assertTrue(calleeSourcesMethodSigWrite.contains(mainMethodSignature));
-  //  }
-  //
-  //  @Test
-  //  public void testSubClassSerializable() {
-  //    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.SubClassSerializable");
-  //    MethodSignature calleeMethodSigWrite =
-  //        identifierFactory.getMethodSignature(
-  //            identifierFactory.getClassType("bachelor.intra.other.SubClassSerializable"),
-  //            "writeObject",
-  //            "void",
-  //            Collections.singletonList("java.io.ObjectOutputStream"));
-  //    Set<MethodSignature> calleeSourcesMethodSigWrite = cg.callSourcesTo(calleeMethodSigWrite);
-  //    assertTrue(calleeSourcesMethodSigWrite.contains(mainMethodSignature));
-  //  }
-  //
-  //  @Test
-  //  public void testForNameDemo1() {
-  //    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.ForNameDemo1");
-  //    MethodSignature calleeMethodSig =
-  //        identifierFactory.getMethodSignature(
-  //            identifierFactory.getClassType("bachelor.intra.other.Target1"),
-  //            "<clinit>",
-  //            "void",
-  //            Collections.emptyList());
-  //    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
-  //    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
-  //  }
-  //
-  //  @Test
-  //  public void testForNameDemo2() {
-  //    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.ForNameDemo2");
-  //    MethodSignature calleeMethodSig =
-  //        identifierFactory.getMethodSignature(
-  //            identifierFactory.getClassType("bachelor.intra.other.Target2"),
-  //            "<clinit>",
-  //            "void",
-  //            Collections.emptyList());
-  //    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
-  //    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
-  //  }
+  @Test
+  public void testForNameDemo2() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.fix.ForNameDemo2");
+    MethodSignature calleeMethodSig =
+            identifierFactory.getMethodSignature(
+                    identifierFactory.getClassType("bachelor.fix.Target2"),
+                    "<clinit>",
+                    "void",
+                    Collections.emptyList());
+    Set<MethodSignature> calleeSourcesMethodSig = cg.callSourcesTo(calleeMethodSig);
+    assertTrue(calleeSourcesMethodSig.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testSystemExit() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.fix.SystemExit");
+    for (CallGraph.Call call : cg.getCalls()) {
+      if (call.sourceMethodSignature().getName().equals("exit")
+              && call.sourceMethodSignature().getDeclClassType().toString().equals("java.lang.System")
+      ) {
+        MethodSignature targetMethodSig = call.targetMethodSignature();
+        assertEquals("runHooks", targetMethodSig.getName());
+        assertEquals("java.lang.ApplicationShutdownHooks", targetMethodSig.getDeclClassType().toString());
+        assertEquals("void", targetMethodSig.getType().toString());
+        assertEquals(Collections.emptyList(), targetMethodSig.getParameterTypes());
+      }
+    }
+  }
+
+  @Test
+  public void testRuntimeExit() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.fix.RuntimeExit");
+    for (CallGraph.Call call : cg.getCalls()) {
+      if (call.sourceMethodSignature().getName().equals("exit")
+              && call.sourceMethodSignature().getDeclClassType().toString().equals("java.lang.Runtime")
+      ) {
+        MethodSignature targetMethodSig = call.targetMethodSignature();
+        assertEquals("runHooks", targetMethodSig.getName());
+        assertEquals("java.lang.ApplicationShutdownHooks", targetMethodSig.getDeclClassType().toString());
+        assertEquals("void", targetMethodSig.getType().toString());
+        assertEquals(Collections.emptyList(), targetMethodSig.getParameterTypes());
+      }
+    }
+  }
+
+  // PolymorphicImplicitCallEdge tests
+  @Test
+  public void testSubClassExternalizable() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.SubClassExternalizable");
+    MethodSignature calleeMethodSigWrite =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("bachelor.intra.other.SuperClassExternalizable"),
+            "writeExternal",
+            "void",
+            Collections.singletonList("java.io.ObjectOutput"));
+    Set<MethodSignature> calleeSourcesMethodSigWrite = cg.callSourcesTo(calleeMethodSigWrite);
+    assertTrue(calleeSourcesMethodSigWrite.contains(mainMethodSignature));
+  }
+
+  @Test
+  public void testSubClassSerializable() {
+    CallGraph cg = loadCallGraph("Implicit", "bachelor.intra.other.SubClassSerializable");
+    MethodSignature calleeMethodSigWrite =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("bachelor.intra.other.SubClassSerializable"),
+            "writeObject",
+            "void",
+            Collections.singletonList("java.io.ObjectOutputStream"));
+    Set<MethodSignature> calleeSourcesMethodSigWrite = cg.callSourcesTo(calleeMethodSigWrite);
+    assertTrue(calleeSourcesMethodSigWrite.contains(mainMethodSignature));
+  }
 
   //
   //  @Test

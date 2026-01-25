@@ -131,6 +131,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * in a map. Later, the map is used to catch matching <code>MethodSignature</code> instances.
    */
   protected Map<MethodSignature, List<ImplicitCallEdge>> getImplicitCallEdges() {
+    new ImplicitPatternsValidator().validateImplicitPatterns();
     Map<MethodSignature, List<ImplicitCallEdge>> patternsMultiMap = new HashMap<>();
     InputStream in =
         GsonImplicitPatternsLoader.class.getResourceAsStream("/Implicit/ImplicitPatterns.json");
@@ -316,12 +317,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                             for (ImplicitCallEdge edge : implicitCallEdgesList) {
                               int category = edge.getCategory();
                               if (category == 1) {
-                                resolveFixImplicitCallEdge(
-                                    sourceMethodSig, edge.getCallee(), stmt, cg, workList);
+                                StaticImplicitCallEdge staticEdge = (StaticImplicitCallEdge) edge;
+                                resolveStaticImplicitCallEdge(
+                                    sourceMethod, staticEdge, stmt, cg, workList);
                               } else if (category == 2) {
-                                IntraImplicitCallEdge intraEdge = (IntraImplicitCallEdge) edge;
-                                resolveIntraImplicitCallEdge(
-                                    sourceMethod, intraEdge, stmt, cg, workList);
+                                PolymorphicImplicitCallEdge polyEdge = (PolymorphicImplicitCallEdge) edge;
+                                resolvePolymorphicImplicitCallEdge(
+                                    sourceMethod, polyEdge, stmt, cg, workList);
                               }
                             }
                           }
@@ -353,29 +355,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * Method to resolve implicit call edges, which do not need further resolution. Fix implicit
-   * patterns can directly create an edge between the source method and the corresponding <code>
-   * Callee</code> method, if the <code>Caller</code> is invoked.
-   *
-   * @param sourceMethodSig Caller of the resulting implicit call edge
-   * @param callee resolve to obtain the method signature, which serves as callee of the implicit
-   *     call edge
-   * @param fixStmt invoke stmt for implicit call edge
-   * @param cg add the implicit edge here
-   * @param workList sourceMethodSig and callee are added for further resolution
-   */
-  protected void resolveFixImplicitCallEdge(
-      MethodSignature sourceMethodSig,
-      MethodSpec callee,
-      InvokableStmt fixStmt,
-      CallGraph cg,
-      Deque<MethodSignature> workList) {
-    MethodSignature calleeMethodSig = resolveMethodSpec(callee);
-    addCallToCG(sourceMethodSig, calleeMethodSig, fixStmt, (MutableCallGraph) cg, workList);
-  }
-
-  /**
-   * Method to resolve implicit call edges, which need some type of intra-procedural resolution.
+   * Method to resolve implicit call edges, where the <code>Callee</code> method signature is completely
+   * derived from the <code>ImplicitPatterns</code> file and the arguments from the <code>Caller</code>.
    *
    * @param sourceMethod serves as caller for the implicit edge
    * @param edge to obtain information from the pattern e.g. the callee/caller
@@ -383,9 +364,80 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param cg implicit call will be added to the call graph
    * @param workList sourceMethodSig and callee are added for further resolution
    */
-  protected void resolveIntraImplicitCallEdge(
+  protected void resolveStaticImplicitCallEdge(
       SootMethod sourceMethod,
-      IntraImplicitCallEdge edge,
+      StaticImplicitCallEdge edge,
+      InvokableStmt fixStmt,
+      CallGraph cg,
+      Deque<MethodSignature> workList) {
+    for (Stmt stmt : sourceMethod.getBody().getStmts()) {
+      if (!stmt.isInvokableStmt()) {
+        continue;
+      }
+      AbstractInvokeExpr sourceMethodInvokeExpr =
+              stmt.asInvokableStmt().getInvokeExpr().orElse(null);
+      if (sourceMethodInvokeExpr == null
+              || !sourceMethodInvokeExpr.isJVirtualInvokeExpr()
+              && !sourceMethodInvokeExpr.isJStaticInvokeExpr()) {
+        continue;
+      }
+      MethodSignature methodSig = sourceMethodInvokeExpr.getMethodSignature();
+      String methodSigName = methodSig.getName();
+      List<Type> methodSigParam = methodSig.getParameterTypes();
+      Type methodSigReturnType = methodSig.getType();
+      ClassType methodSigClassType = methodSig.getDeclClassType();
+      // resolution of ClassForName
+      if (methodSigReturnType.toString().equals("java.lang.Class")
+              && methodSigName.equals("forName")) {
+        // forName(String) or forName(String, true, ClassLoader) create this implicit edge
+        if (methodSigParam.size() == 1
+                || (methodSigParam.size() == 3
+                && sourceMethodInvokeExpr.getArg(1).toString().equals("1"))) {
+          if (!matchingCallerType(methodSigClassType, edge)) {
+            continue;
+          }
+          String targetClassTypeRaw = sourceMethodInvokeExpr.getArg(0).toString();
+          String targetClassTypeClean = targetClassTypeRaw.replace("\"", "");
+          MethodSpec callee = edge.getCallee();
+          callee.setFullyQualifiedClassName(targetClassTypeClean);
+          MethodSignature calleeMethodSig = resolveMethodSpec(callee);
+          addCallToCG(
+                  sourceMethod.getSignature(),
+                  calleeMethodSig,
+                  fixStmt,
+                  (MutableCallGraph) cg,
+                  workList);
+        }
+      }
+      // resolution of SystemExit and RuntimeExit
+      if (methodSigReturnType.toString().equals("java.lang.System")
+              || methodSigReturnType.toString().equals("java.lang.Runtime")
+              && methodSigName.equals("exit")
+              && methodSigReturnType.toString().equals("void")
+              && methodSigParam.isEmpty()) {
+        if (!matchingCallerType(methodSigClassType, edge)) {
+          continue;
+        }
+        MethodSpec callee = edge.getCallee();
+        MethodSignature calleeMethodSig = resolveMethodSpec(callee);
+        addCallToCG(sourceMethod.getSignature(), calleeMethodSig, fixStmt, (MutableCallGraph) cg, workList);
+      }
+    }
+  }
+
+  /**
+   * Method to resolve implicit call edges, where the <code>Callee</code> method signature depends on the runtime
+   * type of the <code>Caller</code>.
+   *
+   * @param sourceMethod serves as caller for the implicit edge
+   * @param edge to obtain information from the pattern e.g. the callee/caller
+   * @param fixStmt invoke stmt for implicit call edge from sourceMethodSig to callee
+   * @param cg implicit call will be added to the call graph
+   * @param workList sourceMethodSig and callee are added for further resolution
+   */
+  protected void resolvePolymorphicImplicitCallEdge(
+      SootMethod sourceMethod,
+      PolymorphicImplicitCallEdge edge,
       InvokableStmt fixStmt,
       CallGraph cg,
       Deque<MethodSignature> workList) {
@@ -528,29 +580,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           }
         }
       }
-      // resolution of ClassForName
-      if (methodSigReturnType.toString().equals("java.lang.Class")
-          && methodSigName.equals("forName")) {
-        // forName(String) or forName(String, true, ClassLoader) create this implicit edge
-        if (methodSigParam.size() == 1
-            || (methodSigParam.size() == 3
-                && sourceMethodInvokeExpr.getArg(1).toString().equals("1"))) {
-          if (!matchingCallerType(methodSigClassType, edge)) {
-            continue;
-          }
-          String targetClassTypeRaw = sourceMethodInvokeExpr.getArg(0).toString();
-          String targetClassTypeClean = targetClassTypeRaw.replace("\"", "");
-          MethodSpec callee = edge.getCallee();
-          callee.setFullyQualifiedClassName(targetClassTypeClean);
-          MethodSignature calleeMethodSig = resolveMethodSpec(callee);
-          addCallToCG(
-              sourceMethod.getSignature(),
-              calleeMethodSig,
-              fixStmt,
-              (MutableCallGraph) cg,
-              workList);
-        }
-      }
     }
   }
 
@@ -601,7 +630,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * This method returns true if the caller of the edge or any of its super classes possesses the
    * expected <code>ClassType</code>.
    */
-  protected boolean matchingCallerType(ClassType methodSigClassType, IntraImplicitCallEdge edge) {
+  protected boolean matchingCallerType(ClassType methodSigClassType, ImplicitCallEdge edge) {
     boolean matchingCallerType = true;
     MethodSpec caller = edge.getCaller();
     ClassType callerClassType =

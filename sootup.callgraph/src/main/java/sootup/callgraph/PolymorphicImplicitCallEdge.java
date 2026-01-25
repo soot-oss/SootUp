@@ -1,10 +1,14 @@
 package sootup.callgraph;
+/**
+ * For implicit method calls that do require an analysis to resolve the receiver's object type hierarchy.
+ * Especially, the <code>Callee's</code> signature of the declaring class could be overridden.
+ */
 
-public class IntraImplicitCallEdge extends ImplicitCallEdge {
+public class PolymorphicImplicitCallEdge extends ImplicitCallEdge {
   Boolean resolveCalleeClassName;
   String interfaceType;
 
-  protected IntraImplicitCallEdge(
+  protected PolymorphicImplicitCallEdge(
       String id,
       int category,
       MethodSpec caller,

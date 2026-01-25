@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "ImplicitPatterns",
-  "description": "Pattern for implicit call edges used in the analysis",
+  "description": "Pattern for implicit call edges used",
   "type": "object",
   "properties": {
     "implicitPatterns": {
@@ -14,16 +14,24 @@
             "type": "string"
           },
           "category": {
-            "description": "Category identifier for the resolution",
+            "description": "Category identifier for the resolution (e.g., 1 or 2)",
             "type": "integer"
           },
           "caller": {
             "type": "object",
             "properties": {
-              "callerFullyQualifiedClassName": { "type": "string" },
-              "callerName": { "type": "string" },
-              "callerParam": { "type": "string" },
-              "callerReturnType": { "type": "string" }
+              "callerFullyQualifiedClassName": {
+                "type": "string"
+              },
+              "callerName": {
+                "type": "string"
+              },
+              "callerParam": {
+                "type": "string"
+              },
+              "callerReturnType": {
+                "type": "string"
+              }
             },
             "required": [
               "callerFullyQualifiedClassName",
@@ -35,10 +43,18 @@
           "callee": {
             "type": "object",
             "properties": {
-              "calleeFullyQualifiedClassName": { "type": "string" },
-              "calleeName": { "type": "string" },
-              "calleeParam": { "type": "string" },
-              "calleeReturnType": { "type": "string" }
+              "calleeFullyQualifiedClassName": {
+                "type": "string"
+              },
+              "calleeName": {
+                "type": "string"
+              },
+              "calleeParam": {
+                "type": "string"
+              },
+              "calleeReturnType": {
+                "type": "string"
+              }
             },
             "required": [
               "calleeFullyQualifiedClassName",
@@ -48,17 +64,24 @@
             ]
           },
           "resolveCalleeClassName": {
-            "description": "Whether the callee class name must be resolved",
+            "description": "Whether the callee class name must be resolved (Required for Category 2)",
             "type": "boolean"
           },
           "interfaceType": {
-            "description": "The interface/superClass of the caller",
+            "description": "The interface/superClass of the caller (Required for Category 2)",
             "type": "string"
           }
         },
-        "required": ["id", "category", "caller", "callee"]
+        "required": [
+          "id",
+          "category",
+          "caller",
+          "callee"
+        ]
       }
     }
   },
-  "required": ["implicitPatterns"]
+  "required": [
+    "implicitPatterns"
+  ]
 }

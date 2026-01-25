@@ -1,37 +1,73 @@
 {
   "implicitPatterns": [
     {
-      "id": "FinalizerRun",
+      "id": "ClassForName",
       "category": 1,
       "caller":
       {
-        "callerFullyQualifiedClassName": "java.lang.Runtime",
-        "callerName": "runFinalization",
-        "callerParam": "",
-        "callerReturnType": "void"
+        "callerFullyQualifiedClassName": "java.lang.Class",
+        "callerName": "forName",
+        "callerParam": "java.lang.String",
+        "callerReturnType": "java.lang.Class"
       },
       "callee":
       {
-        "calleeFullyQualifiedClassName": "java.lang.ref.Finalizer",
-        "calleeName": "runFinalization",
+        "calleeFullyQualifiedClassName": "",
+        "calleeName": "<clinit>",
         "calleeParam": "",
         "calleeReturnType": "void"
       }
     },
     {
-      "id": "FinalizerRun2",
+      "id": "ClassForName2",
+      "category": 1,
+      "caller":
+      {
+        "callerFullyQualifiedClassName": "java.lang.Class",
+        "callerName": "forName",
+        "callerParam": "java.lang.String, boolean, java.lang.ClassLoader",
+        "callerReturnType": "java.lang.Class"
+      },
+      "callee":
+      {
+        "calleeFullyQualifiedClassName": "",
+        "calleeName": "<clinit>",
+        "calleeParam": "",
+        "calleeReturnType": "void"
+      }
+    },
+    {
+      "id": "SystemExit",
       "category": 1,
       "caller":
       {
         "callerFullyQualifiedClassName": "java.lang.System",
-        "callerName": "runFinalization",
-        "callerParam": "",
+        "callerName": "exit",
+        "callerParam": "int",
         "callerReturnType": "void"
       },
       "callee":
       {
-        "calleeFullyQualifiedClassName": "java.lang.ref.Finalizer",
-        "calleeName": "runFinalization",
+        "calleeFullyQualifiedClassName": "java.lang.ApplicationShutdownHooks",
+        "calleeName": "runHooks",
+        "calleeParam": "",
+        "calleeReturnType": "void"
+      }
+    },
+    {
+      "id": "RuntimeExit",
+      "category": 1,
+      "caller":
+      {
+        "callerFullyQualifiedClassName": "java.lang.Runtime",
+        "callerName": "exit",
+        "callerParam": "int",
+        "callerReturnType": "void"
+      },
+      "callee":
+      {
+        "calleeFullyQualifiedClassName": "java.lang.ApplicationShutdownHooks",
+        "calleeName": "runHooks",
         "calleeParam": "",
         "calleeReturnType": "void"
       }
@@ -115,46 +151,6 @@
       },
       "resolveCalleeClassName": true,
       "interfaceType": "java.lang.reflect.Constructor"
-    },
-    {
-      "id": "ClassForName",
-      "category": 2,
-      "caller":
-      {
-        "callerFullyQualifiedClassName": "java.lang.Class",
-        "callerName": "forName",
-        "callerParam": "java.lang.String",
-        "callerReturnType": "java.lang.Class"
-      },
-      "callee":
-      {
-        "calleeFullyQualifiedClassName": "",
-        "calleeName": "<clinit>",
-        "calleeParam": "",
-        "calleeReturnType": "void"
-      },
-      "resolveCalleeClassName": true,
-      "interfaceType": "java.lang.Class"
-    },
-    {
-      "id": "ClassForName2",
-      "category": 2,
-      "caller":
-      {
-        "callerFullyQualifiedClassName": "java.lang.Class",
-        "callerName": "forName",
-        "callerParam": "java.lang.String, boolean, java.lang.ClassLoader",
-        "callerReturnType": "java.lang.Class"
-      },
-      "callee":
-      {
-        "calleeFullyQualifiedClassName": "",
-        "calleeName": "<clinit>",
-        "calleeParam": "",
-        "calleeReturnType": "void"
-      },
-      "resolveCalleeClassName": true,
-      "interfaceType": "java.lang.Class"
     }
   ]
 }
