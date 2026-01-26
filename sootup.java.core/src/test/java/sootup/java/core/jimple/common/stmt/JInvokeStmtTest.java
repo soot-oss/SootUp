@@ -69,8 +69,8 @@ public class JInvokeStmtTest {
     JavaClassType superClassSignature = dif.getClassType("java.lang.Object");
     Set<JavaSootField> fields = new LinkedHashSet<>();
     Set<JavaSootMethod> methods = new LinkedHashSet<>();
-    OverridingJavaClassSource javaClassSource =
-        new OverridingJavaClassSource(
+    InMemoryOverridingJavaClassSource javaClassSource =
+        new InMemoryOverridingJavaClassSource(
             new EagerInputLocation(),
             dummyPath,
             dif.getClassType("de.upb.sootup.instructions.stmt.IdentityStmt"),

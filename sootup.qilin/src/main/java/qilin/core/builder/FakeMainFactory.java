@@ -109,7 +109,7 @@ public class FakeMainFactory extends ArtificialMethod {
     this.method = dummyMainMethod;
     this.fakeClass =
         new JavaSootClass(
-            new OverridingJavaClassSource(
+            new InMemoryOverridingJavaClassSource(
                 Collections.singleton(dummyMainMethod),
                 new LinkedHashSet<>(Arrays.asList(currentThread, globalThrow)),
                 EnumSet.of(ClassModifier.PUBLIC),

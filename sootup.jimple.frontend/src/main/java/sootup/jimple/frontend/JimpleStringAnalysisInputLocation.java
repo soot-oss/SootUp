@@ -36,7 +36,7 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.interceptors.BytecodeBodyInterceptors;
-import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.InMemoryOverridingJavaClassSource;
 
 /**
  * This AnalysisInputLocation encapsulates and represents a single Jimple "file" - the contents of
@@ -67,9 +67,9 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
     this.sourceType = sourceType;
   }
 
-  private OverridingJavaClassSource getOverridingClassSource(
+  private InMemoryOverridingJavaClassSource getOverridingClassSource(
       String jimpleFileContents, List<BodyInterceptor> bodyInterceptors, View view) {
-    final OverridingJavaClassSource classSource;
+    final InMemoryOverridingJavaClassSource classSource;
     try {
       JimpleConverter jimpleConverter = new JimpleConverter();
       classSource =

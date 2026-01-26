@@ -17,9 +17,9 @@ import sootup.core.model.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
+import sootup.java.core.InMemoryOverridingJavaClassSource;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.MutableJavaView;
 
@@ -67,8 +67,8 @@ public class MutableSootClientTest {
   @Test
   public void classAdditionTest() {
     JavaClassType addedClassType = mv.getIdentifierFactory().getClassType("AddedClass");
-    OverridingJavaClassSource newClass =
-        new OverridingJavaClassSource(
+    InMemoryOverridingJavaClassSource newClass =
+        new InMemoryOverridingJavaClassSource(
             location,
             pathToJar,
             addedClassType,

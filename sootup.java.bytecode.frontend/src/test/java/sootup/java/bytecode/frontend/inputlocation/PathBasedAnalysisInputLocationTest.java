@@ -151,7 +151,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     // Build a soot class
     JavaSootClass c =
         new JavaSootClass(
-            new OverridingJavaClassSource(
+            new InMemoryOverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
                 classSignature,

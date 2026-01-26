@@ -73,7 +73,7 @@ public class MethodDeclarationValidatorTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new OverridingJavaClassSource(
+            new InMemoryOverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),

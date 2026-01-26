@@ -21,10 +21,7 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.core.util.Utils;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.*;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -69,8 +66,8 @@ public class SootMethodTest {
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
-    OverridingJavaClassSource overridingJavaClassSource =
-        new OverridingJavaClassSource(
+    InMemoryOverridingJavaClassSource overridingJavaClassSource =
+        new InMemoryOverridingJavaClassSource(
             new EagerInputLocation(),
             null,
             view.getIdentifierFactory().getClassType("dummyMain"),

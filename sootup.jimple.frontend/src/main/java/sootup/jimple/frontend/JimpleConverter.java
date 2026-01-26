@@ -51,10 +51,7 @@ import sootup.core.signatures.SootClassMemberSubSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootField;
-import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.*;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.jimple.JimpleBaseVisitor;
@@ -62,7 +59,7 @@ import sootup.jimple.JimpleParser;
 
 public class JimpleConverter {
 
-  public OverridingJavaClassSource run(
+  public InMemoryOverridingJavaClassSource run(
       @NonNull CharStream charStream,
       @NonNull AnalysisInputLocation inputlocation,
       @NonNull Path sourcePath,
@@ -76,7 +73,7 @@ public class JimpleConverter {
     return run(jimpleParser, inputlocation, sourcePath, bodyInterceptors, view);
   }
 
-  public OverridingJavaClassSource run(
+  public InMemoryOverridingJavaClassSource run(
       @NonNull JimpleParser parser,
       @NonNull AnalysisInputLocation inputlocation,
       @NonNull Path sourcePath,
@@ -91,7 +88,7 @@ public class JimpleConverter {
       throw new ResolveException("Syntax Error", sourcePath, ex);
     }
 
-    return new OverridingJavaClassSource(
+    return new InMemoryOverridingJavaClassSource(
         classVisitor.methods,
         classVisitor.fields,
         classVisitor.modifiers,

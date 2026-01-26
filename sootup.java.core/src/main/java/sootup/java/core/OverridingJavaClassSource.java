@@ -109,62 +109,6 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
     this.fieldAnnotations = fieldAnnotations;
   }
 
-  /** Class source where all information already available */
-  public OverridingJavaClassSource(
-      @NonNull AnalysisInputLocation srcNamespace,
-      @NonNull Path sourcePath,
-      @NonNull ClassType classType,
-      @Nullable JavaClassType superClass,
-      @NonNull Set<JavaClassType> interfaces,
-      @Nullable JavaClassType outerClass,
-      @NonNull Set<JavaSootField> sootFields,
-      @NonNull Set<JavaSootMethod> sootMethods,
-      @NonNull Position position,
-      @NonNull EnumSet<ClassModifier> modifiers,
-      @NonNull Iterable<AnnotationUsage> annotations,
-      @NonNull Iterable<AnnotationUsage> methodAnnotations,
-      @Nullable Iterable<AnnotationUsage> fieldAnnotations) {
-    super(srcNamespace, classType, sourcePath);
-
-    this.delegate = null;
-    this.overriddenSootMethods = sootMethods;
-    this.overriddenSootFields = sootFields;
-    this.overriddenModifiers = modifiers;
-    this.overriddenInterfaces = interfaces;
-    this.overriddenSuperclass = Optional.ofNullable(superClass);
-    this.overriddenOuterClass = Optional.ofNullable(outerClass);
-    this.position = position;
-    this.annotations = annotations;
-    this.methodAnnotations = methodAnnotations;
-    this.fieldAnnotations = fieldAnnotations;
-  }
-
-  public OverridingJavaClassSource(
-      @NonNull Set<JavaSootMethod> sootMethods,
-      @NonNull Set<JavaSootField> sootFields,
-      @NonNull EnumSet<ClassModifier> modifiers,
-      @NonNull Set<JavaClassType> interfaces,
-      @NonNull JavaClassType superClass,
-      @NonNull JavaClassType outerClass,
-      @NonNull Position position,
-      @NonNull Path sourcePath,
-      @NonNull ClassType classType,
-      @NonNull AnalysisInputLocation srcNamespace) {
-    super(srcNamespace, classType, sourcePath);
-
-    this.delegate = null;
-    this.overriddenSootMethods = sootMethods;
-    this.overriddenSootFields = sootFields;
-    this.overriddenModifiers = modifiers;
-    this.overriddenInterfaces = interfaces;
-    this.overriddenSuperclass = Optional.ofNullable(superClass);
-    this.overriddenOuterClass = Optional.ofNullable(outerClass);
-    this.position = position;
-    this.annotations = Collections.emptyList();
-    this.methodAnnotations = Collections.emptyList();
-    this.fieldAnnotations = Collections.emptyList();
-  }
-
   @NonNull
   @Override
   public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
@@ -509,18 +453,6 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       CompleteStep withFieldAnnotation(@NonNull Iterable<AnnotationUsage> fieldAnnotations);
     }
 
-    public interface SourcePathStep {
-      CompleteStep withSourcePath(@Nullable Path sourcePath);
-    }
-
-    public interface ClassTypeStep {
-      CompleteStep withClassType(@Nullable ClassType classType);
-    }
-
-    public interface AnalysisInputLocationStep {
-      CompleteStep withAnalysisInputLocation(@Nullable AnalysisInputLocation analysisInputLocation);
-    }
-
     public interface CompleteStep
         extends SootClassSourceStep,
             MethodsStep,
@@ -533,9 +465,6 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
             AnnotationStep,
             MethodAnnotationStep,
             FieldAnnotationStep,
-            SourcePathStep,
-            ClassTypeStep,
-            AnalysisInputLocationStep,
             Build {}
 
     public interface Build {
@@ -655,73 +584,24 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       }
 
       @Override
-      public CompleteStep withSourcePath(@Nullable Path sourcePath) {
-        instance.sourcePath = sourcePath;
-        return this;
-      }
-
-      @Override
-      public CompleteStep withClassType(@Nullable ClassType classType) {
-        instance.classType = classType;
-        return this;
-      }
-
-      @Override
-      public CompleteStep withAnalysisInputLocation(
-          @Nullable AnalysisInputLocation analysisInputLocation) {
-        instance.srcNamespace = analysisInputLocation;
-        return this;
-      }
-
-      @Override
       public OverridingJavaClassSource build() {
-        if (instance.srcNamespace != null
-            && instance.classType != null
-            && instance.sourcePath != null) {
+        if (instance.delegate != null) {
           return new OverridingJavaClassSource(
-              instance.srcNamespace,
-              instance.sourcePath,
-              instance.classType,
-              instance.overriddenSuperclass == null
-                  ? null
-                  : instance.overriddenSuperclass.orElse(null),
-              instance.overriddenInterfaces,
-              instance.overriddenOuterClass == null
-                  ? null
-                  : instance.overriddenOuterClass.orElse(null),
-              instance.overriddenSootFields,
               instance.overriddenSootMethods,
-              instance.position,
+              instance.overriddenSootFields,
               instance.overriddenModifiers,
+              instance.overriddenInterfaces,
+              instance.overriddenSuperclass,
+              instance.overriddenOuterClass,
+              instance.position,
               instance.annotations,
               instance.methodAnnotations,
-              instance.fieldAnnotations);
+              instance.fieldAnnotations,
+              instance.delegate);
         } else {
-          if (instance.delegate != null) {
-            return new OverridingJavaClassSource(
-                instance.overriddenSootMethods,
-                instance.overriddenSootFields,
-                instance.overriddenModifiers,
-                instance.overriddenInterfaces,
-                instance.overriddenSuperclass,
-                instance.overriddenOuterClass,
-                instance.position,
-                instance.annotations,
-                instance.methodAnnotations,
-                instance.fieldAnnotations,
-                instance.delegate);
-          }
-          return new OverridingJavaClassSource(
-              instance.overriddenSootMethods,
-              instance.overriddenSootFields,
-              instance.overriddenModifiers,
-              instance.overriddenInterfaces,
-              instance.overriddenSuperclass.orElse(null),
-              instance.overriddenOuterClass.orElse(null),
-              instance.position,
-              instance.sourcePath,
-              instance.classType,
-              instance.srcNamespace);
+          throw new IllegalStateException(
+              "OverridingJavaClassSourceBuilder requires a delegate. "
+                  + "Use InMemoryOverridingJavaClassSource for standalone/in-memory construction.");
         }
       }
     }
