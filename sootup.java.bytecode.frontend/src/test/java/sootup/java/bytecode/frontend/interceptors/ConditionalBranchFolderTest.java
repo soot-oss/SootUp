@@ -75,10 +75,7 @@ public class ConditionalBranchFolderTest {
     new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
-    assertEquals(
-            Utils.bodyStmtsAsStrings(originalBody),
-            Utils.bodyStmtsAsStrings(processedBody)
-    );
+    assertEquals(Utils.bodyStmtsAsStrings(originalBody), Utils.bodyStmtsAsStrings(processedBody));
   }
 
   /**
