@@ -10,12 +10,29 @@ public abstract class AIR {
     public static final String ASSUME = "assume ";
     public static final String GOTO = "goto ";
     public static final String LOOP_HEADER = "LOOP_HEADER: ";
+    public static final String STORE = "store ";
+    public static final String LOAD = "load ";
+    public static final String SEPARATOR = ", ";
+    public static final String DOT = ".";
 
     public static class Ops{
         public static final String ADD = "Add ";
         public static final String SUB = "Sub ";
         public static final String MUL = "Mul ";
         public static final String DIV = "Div ";
+    }
+
+    // Represents: base.field = source (e.g., person.name = n)
+    public record AIRStoreStmt(String base, String field, String source) implements AIRStmt{
+        @Override
+        public String toString() {return STORE + source + SEPARATOR + base + DOT + field; }
+    }
+
+    // Represents: dest = base.field (e.g., n = person.name)
+    public record AIRLoadStmt(String destination, String base, String field) implements AIRStmt {
+        @Override public String toString() {
+            return LOAD + base + DOT + field + SEPARATOR + destination;
+        }
     }
 
     public record AIRSetConstantStmt(String variableName, String value) implements AIRStmt {

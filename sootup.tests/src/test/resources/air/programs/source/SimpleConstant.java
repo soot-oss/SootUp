@@ -1,10 +1,11 @@
 public class SimpleConstant {
+    int a = 5;
+    int b = 5;
     public static int main(String[] args) {
-        int a = 5;
-        int b = 5;
         int c = 0;
-        String sql = "SELECT...." + c;
-        sql = sql + "ANOTHER SELECT";
+        SimpleConstant simpleConstant = new SimpleConstant();
+        int loadVariable = simpleConstant.a;
+        int storeVariable = simpleConstant.b = 10;
         return c;
     }
 }

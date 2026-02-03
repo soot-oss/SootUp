@@ -1,6 +1,7 @@
 package sootup.tests;
 
 import org.junit.jupiter.api.Test;
+import sootup.core.air.AIRBody;
 import sootup.core.air.AIRConverter;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
@@ -53,8 +54,8 @@ public class AIRTest {
         assertNotNull(sc);
         SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
         assert m != null;
-        m.getBody().getStmts().forEach(System.out::println);
-        System.out.println("***********AIR Statements************");
-        new AIRConverter().convert(m.getBody()).forEach(System.out::println);
+        System.out.println(m.getBody());
+        AIRBody airBody = new AIRConverter().convert(m.getBody());
+        System.out.println(airBody.toString());
     }
 }

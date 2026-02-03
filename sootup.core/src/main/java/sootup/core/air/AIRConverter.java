@@ -5,6 +5,7 @@ import sootup.core.air.common.AIRStmt;
 import sootup.core.air.AIR.*;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.expr.*;
+import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.model.Body;
@@ -12,7 +13,8 @@ import sootup.core.model.Body;
 import java.util.*;
 
 public class AIRConverter {
-    public List<AIRStmt> convert(Body jimpleBody) {
+    public AIRBody convert(Body jimpleBody) {
+        AIRBody.AIRBodyBuilder builder = new AIRBody.AIRBodyBuilder().setMethodSignature(jimpleBody.getMethodSignature().toString());
 
         AIRTranslationVisitor translator = new AIRTranslationVisitor(jimpleBody);
 
@@ -20,8 +22,10 @@ public class AIRConverter {
         for (Stmt stmt : jimpleBody.getStmts()) {
             stmt.accept(translator);
         }
-
-        return translator.getAirStmts();
+        for(AIRStmt stmt: translator.getAirStmts()){
+            builder.addStatement(stmt);
+        }
+        return builder.build();
     }
 
     /**
@@ -44,8 +48,25 @@ public class AIRConverter {
         public void caseAssignStmt(@NonNull JAssignStmt stmt) {
             String leftVar = stmt.getLeftOp().toString();
             var rightOp = stmt.getRightOp();
+            var leftOp = stmt.getLeftOp();
 
-            if (rightOp instanceof Constant) {
+            // CASE: Load (x = y.f)
+            if (rightOp instanceof JInstanceFieldRef fieldRef) {
+                airStmts.add(new AIR.AIRLoadStmt(
+                        leftOp.toString(),
+                        fieldRef.getBase().toString(),
+                        fieldRef.getFieldSignature().getName()
+                ));
+            }
+            // CASE: Store (x.f = y)
+            else if (leftOp instanceof JInstanceFieldRef fieldRef) {
+                airStmts.add(new AIR.AIRStoreStmt(
+                        fieldRef.getBase().toString(),
+                        fieldRef.getFieldSignature().getName(),
+                        rightOp.toString()
+                ));
+            }
+            else if (rightOp instanceof Constant) {
                 airStmts.add(new AIRSetConstantStmt(leftVar, rightOp.toString()));
             } else if (rightOp instanceof AbstractBinopExpr expr) {
                 airStmts.add(new AIRApplyStmt(leftVar, expr.getSymbol(),
