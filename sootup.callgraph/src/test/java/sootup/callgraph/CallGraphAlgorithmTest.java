@@ -3,7 +3,20 @@ package sootup.callgraph;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 

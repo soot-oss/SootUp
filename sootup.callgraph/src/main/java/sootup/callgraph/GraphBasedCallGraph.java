@@ -22,12 +22,7 @@ package sootup.callgraph;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.jgrapht.graph.DirectedPseudograph;
 import org.jspecify.annotations.NonNull;
@@ -140,6 +135,17 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public Set<Call> callsFrom(@NonNull MethodSignature sourceMethod) {
     return graph.outgoingEdgesOf(vertexOf(sourceMethod));
+  }
+
+  @NonNull
+  @Override
+  public Set<Call> sortedCallsFrom(@NonNull MethodSignature sourceMethod) {
+    Set<Call> edges = callsFrom(sourceMethod);
+    if (edges.isEmpty()) return edges;
+
+    List<Call> sorted = new ArrayList<>(edges);
+    sorted.sort(new CallSequenceComparator());
+    return new LinkedHashSet<>(sorted);
   }
 
   @NonNull
