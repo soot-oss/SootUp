@@ -359,7 +359,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull MutableCallGraph cg,
       @NonNull Deque<MethodSignature> workList) {
     MethodSignature sourceMethodSignature = sourceMethod.getSignature();
-
+    // store all declared class types which are initialized outside an if-block/branch
+    List<ClassType> clinitTypes = new ArrayList<>();
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
     sourceMethod.getBody().getStmts().stream()
         .filter(Stmt::isInvokableStmt)
@@ -375,8 +376,23 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         .getFullyQualifiedName()
                         .equals(sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
                     && sourceMethodSignature.getName().equals("<clinit>"))) {
-                  addStaticInitializerCalls(
-                      sourceMethodSignature, targetClass, invokableStmt, cg, workList);
+//                  if (targetClass.getFullyQualifiedName().equals("ccp.ClinitCallPruning$Operation")) {
+//                    System.out.println("HERE 1: " + sourceMethodSignature.getDeclClassType().getFullyQualifiedName());
+//                  }
+//                  System.out.println("Added Call 1: " + sourceMethodSignature + ", " + targetClass + ", " + invokableStmt);
+                  System.out.println("SourceMethodSig1: " + sourceMethodSignature);
+                  System.out.println("TargetClass fullyqualifiedname1: " + targetClass.getFullyQualifiedName());
+                  if (clinitTypes.contains(targetClass)) {
+                    System.out.println("Wanted to add a duplicate: " + invokableStmt + " " + targetClass);
+                  } else {
+                    addStaticInitializerCalls(
+                            sourceMethodSignature, targetClass, invokableStmt, cg, workList);
+                    if (!invokableStmt.branches()) {
+                      System.out.println("Branches 1: " + invokableStmt);
+                      // only mark as initialized if the flow is linear (does not branch)
+                      clinitTypes.add(targetClass);
+                    }
+                  }
                 }
               }
               // static method
@@ -392,8 +408,23 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                             .equals(
                                 sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
                         && sourceMethodSignature.getName().equals("<clinit>"))) {
-                      addStaticInitializerCalls(
-                          sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
+//                      if (newTargetClass.getFullyQualifiedName().equals("ccp.ClinitCallPruning$Operation")) {
+//                        System.out.println("HERE 2:" + sourceMethodSignature.getDeclClassType().getFullyQualifiedName());
+//                      }
+//                      System.out.println("Added Call 2: " + sourceMethodSignature + ", " + newTargetClass + ", " + invokableStmt);
+                      System.out.println("SourceMethodSig2: " + sourceMethodSignature);
+                      System.out.println("NewTargetClass fullyqualifiedname2: " + newTargetClass.getFullyQualifiedName());
+                      if (clinitTypes.contains(newTargetClass)) {
+                        System.out.println("Wanted to add a duplicate: " + invokableStmt + " " + newTargetClass);
+                      } else {
+                        addStaticInitializerCalls(
+                                sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
+                        if (!invokableStmt.branches()) {
+                          System.out.println("Branches 2: " + invokableStmt);
+                          // only mark as initialized if the flow is linear (does not branch)
+                          clinitTypes.add(newTargetClass);
+                        }
+                      }
                     }
                   }
                 }
@@ -411,8 +442,23 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                             .equals(
                                 sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
                         && sourceMethodSignature.getName().equals("<clinit>"))) {
-                      addStaticInitializerCalls(
-                          sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
+//                      if (newTargetClass.getFullyQualifiedName().equals("ccp.ClinitCallPruning$Operation")) {
+//                        System.out.println("HERE 3: " + sourceMethodSignature.getDeclClassType().getFullyQualifiedName());
+//                      }
+//                      System.out.println("Added Call 3: " + sourceMethodSignature + ", " + newTargetClass + ", " + invokableStmt);
+                      System.out.println("SourceMethodSigdirts: " + sourceMethodSignature);
+                      System.out.println("NewTargetClass fullyqualifiedname3: " + newTargetClass.getFullyQualifiedName());
+                      if (clinitTypes.contains(newTargetClass)) {
+                        System.out.println("Wanted to add a duplicate: " + invokableStmt + " " + newTargetClass);
+                      } else {
+                        addStaticInitializerCalls(
+                                sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
+                        if (!invokableStmt.branches()) {
+                          System.out.println("Branches 3: " + invokableStmt);
+                          // only mark as initialized if the flow is linear (does not branch)
+                          clinitTypes.add(newTargetClass);
+                        }
+                      }
                     }
                   }
                 }

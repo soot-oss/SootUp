@@ -5,7 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
+import sootup.core.IdentifierFactory;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootClass;
@@ -1221,8 +1224,29 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   @Test
   public void testClinitCallPruning() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccp.ClinitCallPruning");
+    IdentifierFactory id = view.getIdentifierFactory();
+    MethodSignature methodSigSystem = id.getMethodSignature("java.lang.System", "<clinit>", "void", Collections.emptyList());
+    MethodSignature methodSigInteger = id.getMethodSignature("java.lang.Integer", "<clinit>", "void", Collections.emptyList());
+    MethodSignature methodSigOperation = id.getMethodSignature("ccp.ClinitCallPruning$Operation", "<clinit>", "void", Collections.emptyList());
+    System.out.println("System: " + cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigSystem)).count() + "\n"
+            + "Integer: " + cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigInteger)).count() + "\n"
+            + "Operation: " + cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigOperation)).count() + "\n");
+    // assertEquals(1, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigSystem)).count());
+    // assertEquals(1, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigInteger)).count());
+    // assertEquals(1, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigOperation)).count());
     for (CallGraph.Call call : cg.getCalls()) {
       System.out.println(call);
     }
   }
+
+//  @Test
+//  public void testClinitCallPruning2() {
+//    CallGraph cg = loadCallGraph("ClinitCall", "ccp2.ClinitCallPruning2");
+//    Stream<String> callGraphStream = cg.exportAsDot();
+//    for (CallGraph.Call call : cg.getCalls()) {
+//      System.out.println(call);
+//    }
+//    System.out.println("Call Graph Stream:");
+//    System.out.println(callGraphStream.toList());
+//  }
 }
