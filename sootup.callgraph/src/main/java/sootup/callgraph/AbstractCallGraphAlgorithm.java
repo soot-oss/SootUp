@@ -31,6 +31,8 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
+import sootup.core.graph.BasicBlock;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
@@ -40,6 +42,7 @@ import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -358,11 +361,17 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull SootMethod sourceMethod,
       @NonNull MutableCallGraph cg,
       @NonNull Deque<MethodSignature> workList) {
-    MethodSignature sourceMethodSignature = sourceMethod.getSignature();
+    Body sourceBody = sourceMethod.getBody();
     // store all declared class types which are initialized outside an if-block/branch
     List<ClassType> clinitTypes = new ArrayList<>();
+    // method in main block -> prune, otherwise do not prune
+    BasicBlock<?> sourceStartingBlock = sourceBody.getControlFlowGraph().getStartingStmtBlock();
+    // System.out.println(sourceStartingBlock);
+    // System.out.println("Block Stmts: " + sourceStartingBlock.getStmts());
+
+    MethodSignature sourceMethodSignature = sourceMethod.getSignature();
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
-    sourceMethod.getBody().getStmts().stream()
+    sourceBody.getStmts().stream()
         .filter(Stmt::isInvokableStmt)
         .map(Stmt::asInvokableStmt)
         .forEach(
@@ -380,16 +389,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 //                    System.out.println("HERE 1: " + sourceMethodSignature.getDeclClassType().getFullyQualifiedName());
 //                  }
 //                  System.out.println("Added Call 1: " + sourceMethodSignature + ", " + targetClass + ", " + invokableStmt);
-                  System.out.println("SourceMethodSig1: " + sourceMethodSignature);
-                  System.out.println("TargetClass fullyqualifiedname1: " + targetClass.getFullyQualifiedName());
-                  if (clinitTypes.contains(targetClass)) {
-                    System.out.println("Wanted to add a duplicate: " + invokableStmt + " " + targetClass);
-                  } else {
+//                  System.out.println("SourceMethodSig1: " + sourceMethodSignature);
+//                  System.out.println("TargetClass fullyqualifiedname1: " + targetClass.getFullyQualifiedName());
+                  if (!clinitTypes.contains(targetClass)) {
                     addStaticInitializerCalls(
                             sourceMethodSignature, targetClass, invokableStmt, cg, workList);
-                    if (!invokableStmt.branches()) {
-                      System.out.println("Branches 1: " + invokableStmt);
-                      // only mark as initialized if the flow is linear (does not branch)
+                    if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
                       clinitTypes.add(targetClass);
                     }
                   }
@@ -412,16 +417,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 //                        System.out.println("HERE 2:" + sourceMethodSignature.getDeclClassType().getFullyQualifiedName());
 //                      }
 //                      System.out.println("Added Call 2: " + sourceMethodSignature + ", " + newTargetClass + ", " + invokableStmt);
-                      System.out.println("SourceMethodSig2: " + sourceMethodSignature);
-                      System.out.println("NewTargetClass fullyqualifiedname2: " + newTargetClass.getFullyQualifiedName());
-                      if (clinitTypes.contains(newTargetClass)) {
-                        System.out.println("Wanted to add a duplicate: " + invokableStmt + " " + newTargetClass);
-                      } else {
+//                      System.out.println("SourceMethodSig2: " + sourceMethodSignature);
+//                      System.out.println("NewTargetClass fullyqualifiedname2: " + newTargetClass.getFullyQualifiedName());
+                      if (!clinitTypes.contains(newTargetClass)) {
                         addStaticInitializerCalls(
                                 sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
-                        if (!invokableStmt.branches()) {
-                          System.out.println("Branches 2: " + invokableStmt);
-                          // only mark as initialized if the flow is linear (does not branch)
+                        if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
                           clinitTypes.add(newTargetClass);
                         }
                       }
@@ -446,16 +447,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 //                        System.out.println("HERE 3: " + sourceMethodSignature.getDeclClassType().getFullyQualifiedName());
 //                      }
 //                      System.out.println("Added Call 3: " + sourceMethodSignature + ", " + newTargetClass + ", " + invokableStmt);
-                      System.out.println("SourceMethodSig3: " + sourceMethodSignature);
-                      System.out.println("NewTargetClass fullyqualifiedname3: " + newTargetClass.getFullyQualifiedName());
-                      if (clinitTypes.contains(newTargetClass)) {
-                        System.out.println("Wanted to add a duplicate: " + invokableStmt + " " + newTargetClass);
-                      } else {
+//                      System.out.println("SourceMethodSig3: " + sourceMethodSignature);
+//                      System.out.println("NewTargetClass fullyqualifiedname3: " + newTargetClass.getFullyQualifiedName());
+                      if (!clinitTypes.contains(newTargetClass)) {
                         addStaticInitializerCalls(
                                 sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
-                        if (!invokableStmt.branches()) {
-                          System.out.println("Branches 3: " + invokableStmt);
-                          // only mark as initialized if the flow is linear (does not branch)
+                        if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
                           clinitTypes.add(newTargetClass);
                         }
                       }
