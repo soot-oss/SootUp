@@ -446,7 +446,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 //                        System.out.println("HERE 3: " + sourceMethodSignature.getDeclClassType().getFullyQualifiedName());
 //                      }
 //                      System.out.println("Added Call 3: " + sourceMethodSignature + ", " + newTargetClass + ", " + invokableStmt);
-                      System.out.println("SourceMethodSigdirts: " + sourceMethodSignature);
+                      System.out.println("SourceMethodSig3: " + sourceMethodSignature);
                       System.out.println("NewTargetClass fullyqualifiedname3: " + newTargetClass.getFullyQualifiedName());
                       if (clinitTypes.contains(newTargetClass)) {
                         System.out.println("Wanted to add a duplicate: " + invokableStmt + " " + newTargetClass);
@@ -498,8 +498,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .filter(Optional::isPresent)
         .map(Optional::get)
         .forEach(
-            targetSig ->
-                addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList));
+                targetSig -> {
+                  // no self-calls for the clinit method; e.g.: <ccp.ClinitCallPruning$Operation: void <clinit>()> ->
+                  // <ccp.ClinitCallPruning$Operation: void <clinit>()> via $stack0 = new ccp.ClinitCallPruning$Operation$1;
+                  if (!sourceSig.equals(targetSig.getSignature())) {
+                    addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList);
+                  }
+                });
   }
 
   /**
