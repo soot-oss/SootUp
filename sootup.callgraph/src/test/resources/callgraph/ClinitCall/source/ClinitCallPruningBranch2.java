@@ -1,6 +1,6 @@
-package ccpb;
+package ccpb2;
 
-class ClinitCallPruningBranch {
+class ClinitCallPruningBranch2 {
     public enum Operation {
         ADD {
             @Override
@@ -27,10 +27,9 @@ class Main {
         // Hard‑coded sample data
         int a = 12;
         int b = 4;
+        ClinitCallPruningBranch2.Operation.ADD.apply(a, b);
         if (b != 0) {
-            ClinitCallPruningBranch.Operation.DIVIDE.apply(a, b);
-        } else {
-            ClinitCallPruningBranch.Operation.ADD.apply(a, b);
+            ClinitCallPruningBranch2.Operation.DIVIDE.apply(a, b);
         }
     }
 }

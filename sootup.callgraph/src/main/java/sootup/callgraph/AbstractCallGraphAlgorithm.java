@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
@@ -363,11 +362,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull Deque<MethodSignature> workList) {
     Body sourceBody = sourceMethod.getBody();
     // store all declared class types which are initialized outside an if-block/branch
-    List<ClassType> clinitTypes = new ArrayList<>();
+    HashSet<ClassType> clinitTypes = new HashSet<>();
     // method in main block -> prune, otherwise do not prune
     BasicBlock<?> sourceStartingBlock = sourceBody.getControlFlowGraph().getStartingStmtBlock();
-    // System.out.println(sourceStartingBlock);
-    // System.out.println("Block Stmts: " + sourceStartingBlock.getStmts());
 
     MethodSignature sourceMethodSignature = sourceMethod.getSignature();
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
@@ -385,15 +382,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         .getFullyQualifiedName()
                         .equals(sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
                     && sourceMethodSignature.getName().equals("<clinit>"))) {
-//                  if (targetClass.getFullyQualifiedName().equals("ccp.ClinitCallPruning$Operation")) {
-//                    System.out.println("HERE 1: " + sourceMethodSignature.getDeclClassType().getFullyQualifiedName());
-//                  }
-//                  System.out.println("Added Call 1: " + sourceMethodSignature + ", " + targetClass + ", " + invokableStmt);
-//                  System.out.println("SourceMethodSig1: " + sourceMethodSignature);
-//                  System.out.println("TargetClass fullyqualifiedname1: " + targetClass.getFullyQualifiedName());
                   if (!clinitTypes.contains(targetClass)) {
                     addStaticInitializerCalls(
-                            sourceMethodSignature, targetClass, invokableStmt, cg, workList);
+                        sourceMethodSignature, targetClass, invokableStmt, cg, workList);
                     if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
                       clinitTypes.add(targetClass);
                     }
@@ -413,15 +404,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                             .equals(
                                 sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
                         && sourceMethodSignature.getName().equals("<clinit>"))) {
-//                      if (newTargetClass.getFullyQualifiedName().equals("ccp.ClinitCallPruning$Operation")) {
-//                        System.out.println("HERE 2:" + sourceMethodSignature.getDeclClassType().getFullyQualifiedName());
-//                      }
-//                      System.out.println("Added Call 2: " + sourceMethodSignature + ", " + newTargetClass + ", " + invokableStmt);
-//                      System.out.println("SourceMethodSig2: " + sourceMethodSignature);
-//                      System.out.println("NewTargetClass fullyqualifiedname2: " + newTargetClass.getFullyQualifiedName());
                       if (!clinitTypes.contains(newTargetClass)) {
                         addStaticInitializerCalls(
-                                sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
+                            sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
                         if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
                           clinitTypes.add(newTargetClass);
                         }
@@ -443,15 +428,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                             .equals(
                                 sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
                         && sourceMethodSignature.getName().equals("<clinit>"))) {
-//                      if (newTargetClass.getFullyQualifiedName().equals("ccp.ClinitCallPruning$Operation")) {
-//                        System.out.println("HERE 3: " + sourceMethodSignature.getDeclClassType().getFullyQualifiedName());
-//                      }
-//                      System.out.println("Added Call 3: " + sourceMethodSignature + ", " + newTargetClass + ", " + invokableStmt);
-//                      System.out.println("SourceMethodSig3: " + sourceMethodSignature);
-//                      System.out.println("NewTargetClass fullyqualifiedname3: " + newTargetClass.getFullyQualifiedName());
                       if (!clinitTypes.contains(newTargetClass)) {
                         addStaticInitializerCalls(
-                                sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
+                            sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
                         if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
                           clinitTypes.add(newTargetClass);
                         }
@@ -483,8 +462,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     // static initializer call of class
     view.getMethod(view.getIdentifierFactory().getStaticInitializerSignature(targetClass))
         .ifPresent(
-            targetSig ->
-                addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList));
+            targetSig -> {
+              if (!sourceSig.equals(targetSig.getSignature())) {
+                addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList);
+              }
+            });
     // static initializer calls of all superclasses
     typeHierarchy
         .superClassesOf(targetClass)
@@ -495,13 +477,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .filter(Optional::isPresent)
         .map(Optional::get)
         .forEach(
-                targetSig -> {
-                  // no self-calls for the clinit method; e.g.: <ccp.ClinitCallPruning$Operation: void <clinit>()> ->
-                  // <ccp.ClinitCallPruning$Operation: void <clinit>()> via $stack0 = new ccp.ClinitCallPruning$Operation$1;
-                  if (!sourceSig.equals(targetSig.getSignature())) {
-                    addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList);
-                  }
-                });
+            targetSig -> {
+              // no self-calls for the clinit method; e.g.: <ccp.ClinitCallPruning$Operation: void
+              // <clinit>()> ->
+              // <ccp.ClinitCallPruning$Operation: void <clinit>()> via $stack0 = new
+              // ccp.ClinitCallPruning$Operation$1;
+              if (!sourceSig.equals(targetSig.getSignature())) {
+                addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList);
+              }
+            });
   }
 
   /**

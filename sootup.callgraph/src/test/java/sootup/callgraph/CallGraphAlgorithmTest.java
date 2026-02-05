@@ -3,23 +3,9 @@ package sootup.callgraph;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
-import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.jimple.common.stmt.InvokableStmt;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
-import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.types.ClassType;
-import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
-import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.types.JavaClassType;
-import sootup.java.core.views.JavaView;
 
 public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
@@ -1223,15 +1209,31 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
   @Test
   public void testClinitCallPruning() {
-    CallGraph cg = loadCallGraph("ClinitCall", "ccp.ClinitCallPruning");
+    CallGraph cg = loadCallGraph("ClinitCall", "ccp.Main");
     IdentifierFactory id = view.getIdentifierFactory();
-    MethodSignature methodSigSystem = id.getMethodSignature("java.lang.System", "<clinit>", "void", Collections.emptyList());
-    MethodSignature methodSigInteger = id.getMethodSignature("java.lang.Integer", "<clinit>", "void", Collections.emptyList());
-    MethodSignature methodSigOperation = id.getMethodSignature("ccp.ClinitCallPruning$Operation", "<clinit>", "void", Collections.emptyList());
+    MethodSignature methodSigSystem =
+        id.getMethodSignature("java.lang.System", "<clinit>", "void", Collections.emptyList());
+    MethodSignature methodSigInteger =
+        id.getMethodSignature("java.lang.Integer", "<clinit>", "void", Collections.emptyList());
+    MethodSignature methodSigOperation =
+        id.getMethodSignature(
+            "ccp.ClinitCallPruning$Operation", "<clinit>", "void", Collections.emptyList());
     // no duplicates
-    assertEquals(1, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigSystem)).count());
-    assertEquals(1, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigInteger)).count());
-    assertEquals(1, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigOperation)).count());
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigSystem))
+            .count());
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigInteger))
+            .count());
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigOperation))
+            .count());
     // no self-calls
     for (CallGraph.Call call : cg.getCalls()) {
       assertNotEquals(call.sourceMethodSignature(), call.targetMethodSignature());
@@ -1240,28 +1242,79 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
   @Test
   public void testClinitCallPruningBranch() {
-    CallGraph cg = loadCallGraph("ClinitCall", "ccpb.ClinitCallPruningBranch");
+    CallGraph cg = loadCallGraph("ClinitCall", "ccpb.Main");
     IdentifierFactory id = view.getIdentifierFactory();
-    MethodSignature methodSigOperation = id.getMethodSignature("ccpb.ClinitCallPruningBranch$Operation", "<clinit>", "void", Collections.emptyList());
+    MethodSignature methodSigOperation =
+        id.getMethodSignature(
+            "ccpb.ClinitCallPruningBranch$Operation", "<clinit>", "void", Collections.emptyList());
+    // include duplicate (method invocations within if-block)
+    assertEquals(
+        2,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigOperation))
+            .count());
+  }
+
+  @Test
+  public void testClinitCallPruningBranch2() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccpb2.Main");
+    IdentifierFactory id = view.getIdentifierFactory();
+    MethodSignature methodSigOperation =
+        id.getMethodSignature(
+            "ccpb2.ClinitCallPruningBranch2$Operation",
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    // do not include duplicate (method invocation before if-block)
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigOperation))
+            .count());
+  }
+
+  @Test
+  public void testClinitCallPruningChild() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccpc.Main");
+    IdentifierFactory id = view.getIdentifierFactory();
+    MethodSignature methodSigChild =
+        id.getMethodSignature(
+            "ccpc.ClinitCallPruningChild", "<clinit>", "void", Collections.emptyList());
+    MethodSignature methodSigParent =
+        id.getMethodSignature(
+            "ccpc.ClinitCallPruningParent", "<clinit>", "void", Collections.emptyList());
     for (CallGraph.Call call : cg.getCalls()) {
       System.out.println(call);
     }
-    // include duplicate (method invocations within if-block)
-    assertEquals(2, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigOperation)).count());
+    // Child extends Parent; Parent is already initialized, Child.caller -> Child.clinit should
+    // exist BUT
+    // Child.caller -> Parent.clinit should be pruned
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigChild))
+            .count());
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(
+                call ->
+                    call.targetMethodSignature().equals(methodSigParent)
+                        && call.invokableStmt().toString().contains("Parent"))
+            .count());
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigParent))
+            .count());
   }
 
-//  @Test
-//  public void testClinitCallPruningChild() {
-//    CallGraph cg = loadCallGraph("ClinitCall", "ccpc.ClinitCallPruningChild");
-//    IdentifierFactory id = view.getIdentifierFactory();
-//    MethodSignature methodSigChild = id.getMethodSignature("ccpc.ClinitCallPruningChild", "<clinit>", "void", Collections.emptyList());
-//    MethodSignature methodSigParent = id.getMethodSignature("ccpc.ClinitCallPruningParent", "<clinit>", "void", Collections.emptyList());
-//    for (CallGraph.Call call : cg.getCalls()) {
-//      System.out.println(call);
-//    }
-//    // Child extends Parent, resulting edges: Child.main -> Child.clinit -> Parent.clinit
-//    assertEquals(1, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigChild)).count());
-//    assertEquals(0, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigParent)).count());
-//    assertEquals(1, cg.callsFrom(methodSigChild).stream().filter(call -> call.targetMethodSignature().equals(methodSigParent)).count());
-//  }
+  @Test
+  public void testClinitCallPruningSelf() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccps.Main");
+    // no self-call
+    for (CallGraph.Call call : cg.getCalls()) {
+      assertNotEquals(call.sourceMethodSignature(), call.targetMethodSignature());
+    }
+  }
 }

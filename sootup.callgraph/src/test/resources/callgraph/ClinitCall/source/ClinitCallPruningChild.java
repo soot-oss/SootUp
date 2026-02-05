@@ -1,13 +1,17 @@
 package ccpc;
 
 class ClinitCallPruningParent{
-    static {}
+    public static int x = 4;
 }
 
 class ClinitCallPruningChild extends ClinitCallPruningParent {
-    static {}
+    public static int y = 1;
 
+
+}
+class Main{
     public static void main(String[] args) {
-        ClinitCallPruningChild child = new ClinitCallPruningChild();
+        ClinitCallPruningParent.x=2;
+        ClinitCallPruningChild.y=3;
     }
 }
