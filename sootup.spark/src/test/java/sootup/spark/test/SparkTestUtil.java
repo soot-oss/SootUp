@@ -4,7 +4,6 @@ import java.io.StringWriter;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.nio.dot.DOTExporter;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;

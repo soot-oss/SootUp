@@ -34,8 +34,8 @@ public class MethodToPAGConversionTest {
     Optional<? extends SootMethod> method = view.getMethod(mainMethodSig);
     assertTrue(method.isPresent());
 
-
-    Solver solver = Solver.builder().view(view).entryPoints(Collections.singletonList(mainMethodSig)).build();
+    Solver solver =
+        Solver.builder().view(view).entryPoints(Collections.singletonList(mainMethodSig)).build();
     solver.solve();
 
     PAG pag = solver.getPag();

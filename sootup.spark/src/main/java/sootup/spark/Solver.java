@@ -22,6 +22,7 @@ package sootup.spark;
  * #L%
  */
 
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,8 +35,6 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
-import java.util.List;
-
 @Getter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Solver {
@@ -47,7 +46,7 @@ public class Solver {
   private List<MethodSignature> entryPoints;
 
   @Builder
-  public Solver(View view, List<MethodSignature> entryPoints){
+  public Solver(View view, List<MethodSignature> entryPoints) {
     this.view = view;
     this.entryPoints = entryPoints;
     // TODO: Build OTF CG
