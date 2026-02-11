@@ -1283,12 +1283,6 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
     MethodSignature methodSigParent =
         id.getMethodSignature(
             "ccpc.ClinitCallPruningParent", "<clinit>", "void", Collections.emptyList());
-    for (CallGraph.Call call : cg.getCalls()) {
-      System.out.println(call);
-    }
-    // Child extends Parent; Parent is already initialized, Child.caller -> Child.clinit should
-    // exist BUT
-    // Child.caller -> Parent.clinit should be pruned
     assertEquals(
         1,
         cg.callsFrom(mainMethodSignature).stream()
@@ -1307,6 +1301,39 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
         cg.callsFrom(mainMethodSignature).stream()
             .filter(call -> call.targetMethodSignature().equals(methodSigParent))
             .count());
+  }
+
+  @Test
+  public void testClinitCallPruningChild2() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccpc2.Main");
+    IdentifierFactory id = view.getIdentifierFactory();
+    MethodSignature methodSigChild2 =
+            id.getMethodSignature(
+                    "ccpc2.ClinitCallPruningChild2", "<clinit>", "void", Collections.emptyList());
+    MethodSignature methodSigParent2 =
+            id.getMethodSignature(
+                    "ccpc2.ClinitCallPruningParent2", "<clinit>", "void", Collections.emptyList());
+    for (CallGraph.Call call : cg.getCalls()) {
+      System.out.println(call);
+    }
+    assertEquals(
+            1,
+            cg.callsFrom(mainMethodSignature).stream()
+                    .filter(call -> call.targetMethodSignature().equals(methodSigChild2))
+                    .count());
+    assertEquals(
+            1,
+            cg.callsFrom(mainMethodSignature).stream()
+                    .filter(
+                            call ->
+                                    call.targetMethodSignature().equals(methodSigParent2)
+                                            && call.invokableStmt().toString().contains("Child"))
+                    .count());
+    assertEquals(
+            1,
+            cg.callsFrom(mainMethodSignature).stream()
+                    .filter(call -> call.targetMethodSignature().equals(methodSigParent2))
+                    .count());
   }
 
   @Test

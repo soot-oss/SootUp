@@ -384,8 +384,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                     && sourceMethodSignature.getName().equals("<clinit>"))) {
                   if (!clinitTypes.contains(targetClass)) {
                     addStaticInitializerCalls(
-                        sourceMethodSignature, targetClass, invokableStmt, cg, workList);
+                        sourceMethodSignature, targetClass, invokableStmt, cg, workList, clinitTypes);
                     if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
+                      System.out.println("Added: " + targetClass);
                       clinitTypes.add(targetClass);
                     }
                   }
@@ -406,8 +407,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         && sourceMethodSignature.getName().equals("<clinit>"))) {
                       if (!clinitTypes.contains(newTargetClass)) {
                         addStaticInitializerCalls(
-                            sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
+                            sourceMethodSignature, newTargetClass, invokableStmt, cg, workList, clinitTypes);
                         if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
+                          System.out.println("Added: " + newTargetClass);
                           clinitTypes.add(newTargetClass);
                         }
                       }
@@ -430,8 +432,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         && sourceMethodSignature.getName().equals("<clinit>"))) {
                       if (!clinitTypes.contains(newTargetClass)) {
                         addStaticInitializerCalls(
-                            sourceMethodSignature, newTargetClass, invokableStmt, cg, workList);
+                            sourceMethodSignature, newTargetClass, invokableStmt, cg, workList, clinitTypes);
                         if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
+                          System.out.println("Added: " + newTargetClass);
                           clinitTypes.add(newTargetClass);
                         }
                       }
@@ -452,19 +455,34 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param invokableStmt the statement causing the call
    * @param cg the call graph that will contain the found calls
    * @param workList the work list that will be updated with new target methods
+   * @param clinitTypes all declared class types which are initialized inside the starting stmt block
    */
   private void addStaticInitializerCalls(
       MethodSignature sourceSig,
       ClassType targetClass,
       InvokableStmt invokableStmt,
       MutableCallGraph cg,
-      Deque<MethodSignature> workList) {
+      Deque<MethodSignature> workList,
+      HashSet<ClassType> clinitTypes) {
     // static initializer call of class
     view.getMethod(view.getIdentifierFactory().getStaticInitializerSignature(targetClass))
         .ifPresent(
-            targetSig -> {
-              if (!sourceSig.equals(targetSig.getSignature())) {
-                addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList);
+            targetSigSootMethod -> {
+              MethodSignature targetSig = targetSigSootMethod.getSignature();
+              // self-call check
+              if (sourceSig.equals(targetSig)) {
+                return;
+              }
+              // duplicate: call graph already contains the edge and the targetSig was already initialized within the starting stmt block
+              System.out.println("Current Source Method1: " + sourceSig);
+              System.out.println("Calls From Source1: " + cg.callsFrom(sourceSig).stream().toList());
+              System.out.println("Target Method1: " + targetSig);
+              System.out.println("ClinitTypes1: " + clinitTypes);
+              System.out.println("Target Class Type1: " + targetClass);
+              ClassType targetSigType = targetSig.getDeclClassType();
+              boolean duplicate = clinitTypes.contains(targetSigType) && cg.callsFrom(sourceSig).stream().anyMatch(call -> call.targetMethodSignature().equals(targetSig));
+              if (!duplicate) {
+                addCallToCG(sourceSig, targetSig, invokableStmt, cg, workList);
               }
             });
     // static initializer calls of all superclasses
@@ -477,13 +495,25 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .filter(Optional::isPresent)
         .map(Optional::get)
         .forEach(
-            targetSig -> {
+                targetSigSootMethod -> {
+              MethodSignature targetSig = targetSigSootMethod.getSignature();
               // no self-calls for the clinit method; e.g.: <ccp.ClinitCallPruning$Operation: void
               // <clinit>()> ->
               // <ccp.ClinitCallPruning$Operation: void <clinit>()> via $stack0 = new
               // ccp.ClinitCallPruning$Operation$1;
-              if (!sourceSig.equals(targetSig.getSignature())) {
-                addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList);
+              if (sourceSig.equals(targetSig)) {
+                return;
+              }
+              // duplicate: call graph already contains the edge and the targetSig was already initialized within the starting stmt block
+              System.out.println("Current Source Method2: " + sourceSig);
+              System.out.println("Calls From Source2: " + cg.callsFrom(sourceSig).stream().toList());
+              System.out.println("Target Method2: " + targetSig);
+              System.out.println("ClinitTypes2: " + clinitTypes);
+              System.out.println("Target Class Type2: " + targetClass);
+              ClassType targetSigType = targetSig.getDeclClassType();
+              boolean duplicate = clinitTypes.contains(targetSigType) && cg.callsFrom(sourceSig).stream().anyMatch(call -> call.targetMethodSignature().equals(targetSig));
+              if (!duplicate) {
+                addCallToCG(sourceSig, targetSig, invokableStmt, cg, workList);
               }
             });
   }
