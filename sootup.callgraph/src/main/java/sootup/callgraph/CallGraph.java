@@ -120,6 +120,17 @@ public interface CallGraph {
   @NonNull Set<Call> callsFrom(@NonNull MethodSignature sourceMethod);
 
   /**
+   * This method returns all method signatures that are called by a given method signature. It
+   * returns the targets of outgoing edges of the given node (method signature) in the call graph
+   * sorted by the call sequence.
+   *
+   * @param sourceMethod the method signature of the requested node in the call graph
+   * @return a sorted set of method signatures that are reached by a direct outgoing edge in the
+   *     call graph
+   */
+  @NonNull Set<Call> sortedCallsFrom(@NonNull MethodSignature sourceMethod);
+
+  /**
    * This method returns all method signatures that call a given method signature. It returns the
    * sources of incoming edges of the given node (method signature) in the call graph
    *
