@@ -35,7 +35,7 @@ public class ClassHierarchyAnalysisPruningAlgorithmTest extends CallGraphTest {
         (JavaClassType) identifierFactory.getClassType("prune.Pruning");
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(
-            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, identifierFactory.getMainSubSignature());
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
