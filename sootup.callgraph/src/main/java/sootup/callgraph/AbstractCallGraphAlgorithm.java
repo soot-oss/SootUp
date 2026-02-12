@@ -365,8 +365,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     HashSet<ClassType> clinitTypes = new HashSet<>();
     // method in main block -> prune, otherwise do not prune
     BasicBlock<?> sourceStartingBlock = sourceBody.getControlFlowGraph().getStartingStmtBlock();
-    System.out.println("SourceStartingBlock: " + sourceStartingBlock);
-    System.out.println("SourceStartingBlock Stmts: " + sourceStartingBlock.getStmts());
+    System.out.println("Starting Block:");
+    System.out.println(sourceStartingBlock);
+    Collection<? extends BasicBlock<?>> sourceBlocks = sourceBody.getControlFlowGraph().getBlocks();
+    System.out.println("Source Blocks:");
+    for (BasicBlock<?> block : sourceBlocks) {
+      System.out.println(block);
+    }
 
     MethodSignature sourceMethodSignature = sourceMethod.getSignature();
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
