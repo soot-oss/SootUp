@@ -1,0 +1,66 @@
+package ccp2;
+
+// testClinitCallPruningChild
+class ClinitCallPruningParent{
+    public static int x = 4;
+}
+
+class ClinitCallPruningChild extends ClinitCallPruningParent {
+    public static int y = 1;
+}
+
+// testClinitCallPruningChild2
+class ClinitCallPruningParent2{
+    public static int x = 4;
+}
+
+class ClinitCallPruningChild2 extends ClinitCallPruningParent2 {
+    public static int y = 1;
+}
+
+// testClinitCallPruningSelf
+class ClinitCallPruningSelf {
+    public static int x = g();
+    public static int g(){return 4;}
+}
+
+// testClinitCallPruningBranch
+class ClinitCallPruningBranch {
+    // force <clinit> generation
+    public static int dummy = 1;
+    public static void method() {}
+}
+
+// testClinitCallPruningBranch2
+class ClinitCallPruningBranch2 {
+    public static int dummy2 = 2;
+    public static void method2() {}
+}
+
+class ClinitCallPruning2{
+    public static void main(String[] args) {
+        // testClinitPruningChild
+        ClinitCallPruningParent.x=2;
+        ClinitCallPruningChild.y=3;
+
+        // testClinitPruningChild2
+        ClinitCallPruningChild2.y=3;
+        ClinitCallPruningParent2.x=2;
+
+        // testClinitCallPruningSelf
+        int xValue = ClinitCallPruningSelf.x;
+
+        // testClinitCallPruningBranch
+        if (args.length > 0) {
+            ClinitCallPruningBranch.method();
+        } else {
+            ClinitCallPruningBranch.method();
+        }
+
+        // testClinitCallPruningBranch2
+        ClinitCallPruningBranch2.method2();
+        if (args.length > 0) {
+            ClinitCallPruningBranch2.method2();
+        }
+    }
+}

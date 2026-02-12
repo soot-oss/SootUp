@@ -391,6 +391,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         workList,
                         clinitTypes);
                     if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
+                      // System.out.println("Added: " + targetClass);
                       clinitTypes.add(targetClass);
                     }
                   }
@@ -418,6 +419,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                             workList,
                             clinitTypes);
                         if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
+                          // System.out.println("Added: " + newTargetClass);
                           clinitTypes.add(newTargetClass);
                         }
                       }
@@ -447,6 +449,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                             workList,
                             clinitTypes);
                         if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
+                          // System.out.println("Added: " + newTargetClass);
                           clinitTypes.add(newTargetClass);
                         }
                       }
@@ -488,6 +491,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               }
               // duplicate: call graph already contains the edge and the targetSig was already
               // initialized within the starting stmt block
+//              System.out.println("Current Source Method1: " + sourceSig);
+//              System.out.println("Calls From Source1: " + cg.callsFrom(sourceSig).stream().toList());
+//              System.out.println("Target Method1: " + targetSig);
+//              System.out.println("ClinitTypes1: " + clinitTypes);
+//              System.out.println("Target Class Type1: " + targetClass);
               ClassType targetSigType = targetSig.getDeclClassType();
               boolean duplicate =
                   clinitTypes.contains(targetSigType)
@@ -518,6 +526,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               }
               // duplicate: call graph already contains the edge and the targetSig was already
               // initialized within the starting stmt block
+//              System.out.println("Current Source Method2: " + sourceSig);
+//              System.out.println("Calls From Source2: " + cg.callsFrom(sourceSig).stream().toList());
+//              System.out.println("Target Method2: " + targetSig);
+//              System.out.println("ClinitTypes2: " + clinitTypes);
+//              System.out.println("Target Class Type2: " + targetClass);
               ClassType targetSigType = targetSig.getDeclClassType();
               boolean duplicate =
                   clinitTypes.contains(targetSigType)
