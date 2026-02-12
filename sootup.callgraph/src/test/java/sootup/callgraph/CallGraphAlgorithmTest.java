@@ -1274,7 +1274,7 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
                                             && call.invokableStmt().toString().contains("Child"))
                     .count());
     // TODO: fails currently
-    // assertEquals(1, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigParent2)).count());
+    assertEquals(1, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigParent2)).count());
 
     // testClinitCallPruningSelf
     // no self-call
@@ -1302,10 +1302,6 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
                     Collections.emptyList());
     // TODO: fails currently
     // do not include duplicate (method invocation before if-block)
-    assertEquals(
-            1,
-            cg.callsFrom(mainMethodSignature).stream()
-                    .filter(call -> call.targetMethodSignature().equals(methodSigOperation2))
-                    .count());
+    assertEquals(1, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigOperation2)).count());
   }
 }

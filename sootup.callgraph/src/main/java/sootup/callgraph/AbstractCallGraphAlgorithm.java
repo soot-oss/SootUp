@@ -365,6 +365,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     HashSet<ClassType> clinitTypes = new HashSet<>();
     // method in main block -> prune, otherwise do not prune
     BasicBlock<?> sourceStartingBlock = sourceBody.getControlFlowGraph().getStartingStmtBlock();
+    System.out.println("SourceStartingBlock: " + sourceStartingBlock);
+    System.out.println("SourceStartingBlock Stmts: " + sourceStartingBlock.getStmts());
 
     MethodSignature sourceMethodSignature = sourceMethod.getSignature();
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
@@ -393,6 +395,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                     if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
                       // System.out.println("Added: " + targetClass);
                       clinitTypes.add(targetClass);
+                      typeHierarchy.superClassesOf(targetClass).forEach(clinitTypes::add);
                     }
                   }
                 }
@@ -421,6 +424,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
                           // System.out.println("Added: " + newTargetClass);
                           clinitTypes.add(newTargetClass);
+                          typeHierarchy.superClassesOf(newTargetClass).forEach(clinitTypes::add);
                         }
                       }
                     }
@@ -451,6 +455,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
                           // System.out.println("Added: " + newTargetClass);
                           clinitTypes.add(newTargetClass);
+                          typeHierarchy.superClassesOf(newTargetClass).forEach(clinitTypes::add);
                         }
                       }
                     }
@@ -496,14 +501,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 //              System.out.println("Target Method1: " + targetSig);
 //              System.out.println("ClinitTypes1: " + clinitTypes);
 //              System.out.println("Target Class Type1: " + targetClass);
-              ClassType targetSigType = targetSig.getDeclClassType();
-              boolean duplicate =
-                  clinitTypes.contains(targetSigType)
-                      && cg.callsFrom(sourceSig).stream()
-                          .anyMatch(call -> call.targetMethodSignature().equals(targetSig));
-              if (!duplicate) {
                 addCallToCG(sourceSig, targetSig, invokableStmt, cg, workList);
-              }
             });
     // static initializer calls of all superclasses
     typeHierarchy
@@ -532,11 +530,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 //              System.out.println("ClinitTypes2: " + clinitTypes);
 //              System.out.println("Target Class Type2: " + targetClass);
               ClassType targetSigType = targetSig.getDeclClassType();
-              boolean duplicate =
-                  clinitTypes.contains(targetSigType)
-                      && cg.callsFrom(sourceSig).stream()
-                          .anyMatch(call -> call.targetMethodSignature().equals(targetSig));
-              if (!duplicate) {
+              if (!clinitTypes.contains(targetSigType)) {
                 addCallToCG(sourceSig, targetSig, invokableStmt, cg, workList);
               }
             });
