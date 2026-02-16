@@ -69,8 +69,8 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
 
   @Override
   public @NonNull CallGraph initialize(
-      @NonNull List<MethodSignature> entryPoints, @Nullable String applicationBasePackageName) {
-    return constructCompleteCallGraph(entryPoints, applicationBasePackageName);
+      @NonNull List<MethodSignature> entryPoints, @Nullable String basePackageName) {
+    return constructCompleteCallGraph(entryPoints, basePackageName);
   }
 
   /**

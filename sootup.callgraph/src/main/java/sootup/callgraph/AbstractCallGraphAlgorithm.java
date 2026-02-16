@@ -104,10 +104,24 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return the complete constructed call graph starting from the entry methods.
    */
   @NonNull
+  final CallGraph constructCompleteCallGraph(List<MethodSignature> entryPoints) {
+    return constructCompleteCallGraph(entryPoints, null);
+  }
+
+  /**
+   * This method starts the construction of the call graph algorithm. It initializes the needed
+   * objects for the call graph generation and calls processWorkList method.
+   *
+   * @param entryPoints a list of method signatures that will be added to the work list in the call
+   *     graph generation.
+   * @param basePackageName the base package name of the source application. This is used to
+   *     filter out all classes from the call graph that do not contain this package name.
+   * @return the complete constructed call graph starting from the entry methods.
+   */
+  @NonNull
   final CallGraph constructCompleteCallGraph(
-      List<MethodSignature> entryPoints, @Nullable String applicationBasePackageName) {
-    applicationBasePackageName =
-        applicationBasePackageName != null ? applicationBasePackageName.toLowerCase() : null;
+      List<MethodSignature> entryPoints, @Nullable String basePackageName) {
+    basePackageName = basePackageName != null ? basePackageName.toLowerCase() : null;
 
     Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
     Set<MethodSignature> processed = new HashSet<>();
@@ -118,7 +132,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     workList.addAll(clinits);
     MutableCallGraph cg = initializeCallGraph(entryPoints, clinits);
 
-    processWorkList(workList, processed, cg, applicationBasePackageName);
+    processWorkList(workList, processed, cg, basePackageName);
     return cg;
   }
 
@@ -167,12 +181,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *     This list is filled in the execution with found call targets in the call graph algorithm.
    * @param processed the list of processed method to only process the method once.
    * @param cg the call graph object that is filled with the found methods and call edges.
+   * @param basePackageName the base package name of the source application. This is used to
+   *     filter out all classes from the call graph that do not contain this package name.
    */
   final void processWorkList(
       Deque<MethodSignature> workList,
       Set<MethodSignature> processed,
       MutableCallGraph cg,
-      @Nullable String applicationBasePackageName) {
+      @Nullable String basePackageName) {
     while (!workList.isEmpty()) {
       MethodSignature currentMethodSignature = workList.pop();
       // skip if already processed
@@ -185,8 +201,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
       if (currentClass == null
           || currentClass.isLibraryClass()
-          || (applicationBasePackageName != null
-              && !isClassPartOfApplication(currentClass, applicationBasePackageName))) {
+          || (basePackageName != null
+              && !isClassPartOfApplication(currentClass, basePackageName))) {
         continue;
       }
 
@@ -211,7 +227,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
                 // get all call targets of implicit edges in the method body
                 resolveAllImplicitCallsFromSourceMethod(
-                    currentMethod, cg, workList, applicationBasePackageName);
+                    currentMethod, cg, workList, basePackageName);
               });
 
       // set method as processed
@@ -222,13 +238,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
   }
 
-  private boolean isClassPartOfApplication(SootClass sootClass, String applicationBasePackageName) {
+  private boolean isClassPartOfApplication(SootClass sootClass, String basePackageName) {
     return isClassPartOfApplication(
-        sootClass.getClassSource().getClassType(), applicationBasePackageName);
+        sootClass.getClassSource().getClassType(), basePackageName);
   }
 
-  private boolean isClassPartOfApplication(ClassType classType, String applicationBasePackageName) {
-    return classType.getPackageName().toString().toLowerCase().contains(applicationBasePackageName);
+  private boolean isClassPartOfApplication(ClassType classType, String basePackageName) {
+    return classType.getPackageName().toString().toLowerCase().contains(basePackageName);
   }
 
   /**
@@ -375,15 +391,17 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param sourceMethod the inspected source method
    * @param cg new calls will be added to the call graph
    * @param workList new target methods will be added to the work list
+   * @param basePackageName the base package name of the source application. This is used to
+   *     filter out all classes from the call graph that do not contain this package name.
    */
   protected void resolveAllImplicitCallsFromSourceMethod(
       @NonNull SootMethod sourceMethod,
       @NonNull MutableCallGraph cg,
       @NonNull Deque<MethodSignature> workList,
-      @Nullable String applicationBasePackageName) {
+      @Nullable String basePackageName) {
     implicitStartRunCall(sourceMethod, cg, workList);
     // collect all static initializer calls
-    resolveAllStaticInitializerCalls(sourceMethod, cg, workList, applicationBasePackageName);
+    resolveAllStaticInitializerCalls(sourceMethod, cg, workList, basePackageName);
   }
 
   /**
@@ -392,12 +410,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param sourceMethod the inspected source method
    * @param cg clinit calls will be added to the call graph
    * @param workList found clinit methods will be added to the work list
+   * @param basePackageName the base package name of the source application. This is used to
+   *     filter out all classes from the call graph that do not contain this package name.
    */
   protected void resolveAllStaticInitializerCalls(
       @NonNull SootMethod sourceMethod,
       @NonNull MutableCallGraph cg,
       @NonNull Deque<MethodSignature> workList,
-      @Nullable String applicationBasePackageName) {
+      @Nullable String basePackageName) {
     MethodSignature sourceMethodSignature = sourceMethod.getSignature();
 
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
@@ -411,7 +431,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               if (invokableStmt.containsFieldRef()
                   && invokableStmt.getFieldRef() instanceof JStaticFieldRef) {
                 targetClass = invokableStmt.getFieldRef().getFieldSignature().getDeclClassType();
-                if (isClassPartOfApplication(targetClass, applicationBasePackageName)
+                if (isClassPartOfApplication(targetClass, basePackageName)
                     && !(targetClass
                             .getFullyQualifiedName()
                             .equals(
@@ -423,7 +443,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                       invokableStmt,
                       cg,
                       workList,
-                      applicationBasePackageName);
+                      basePackageName);
                 }
               }
               // static method
@@ -434,7 +454,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   ClassType newTargetClass = expr.getMethodSignature().getDeclClassType();
                   // checks if the field points to the same clinit
                   if (!newTargetClass.equals(targetClass)) {
-                    if (isClassPartOfApplication(newTargetClass, applicationBasePackageName)
+                    if (isClassPartOfApplication(newTargetClass, basePackageName)
                         && !(newTargetClass
                                 .getFullyQualifiedName()
                                 .equals(
@@ -448,7 +468,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                           invokableStmt,
                           cg,
                           workList,
-                          applicationBasePackageName);
+                          basePackageName);
                     }
                   }
                 }
@@ -461,7 +481,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   ClassType newTargetClass = instantiateVisitor.getResult();
                   // check if class type is the same as in the field which could be on the left op
                   if (newTargetClass != null && !newTargetClass.equals(targetClass)) {
-                    if (isClassPartOfApplication(newTargetClass, applicationBasePackageName)
+                    if (isClassPartOfApplication(newTargetClass, basePackageName)
                         && !(newTargetClass
                                 .getFullyQualifiedName()
                                 .equals(
@@ -475,7 +495,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                           invokableStmt,
                           cg,
                           workList,
-                          applicationBasePackageName);
+                          basePackageName);
                     }
                   }
                 }
@@ -493,6 +513,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param invokableStmt the statement causing the call
    * @param cg the call graph that will contain the found calls
    * @param workList the work list that will be updated with new target methods
+   * @param basePackageName the base package name of the source application. This is used to
+   *     filter out all classes from the call graph that do not contain this package name.
    */
   private void addStaticInitializerCalls(
       MethodSignature sourceSig,
@@ -500,7 +522,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       InvokableStmt invokableStmt,
       MutableCallGraph cg,
       Deque<MethodSignature> workList,
-      String applicationBasePackageName) {
+      String basePackageName) {
     // static initializer call of class
     view.getMethod(view.getIdentifierFactory().getStaticInitializerSignature(targetClass))
         .ifPresent(
@@ -509,7 +531,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     // static initializer calls of all superclasses
     typeHierarchy
         .superClassesOf(targetClass)
-        .filter(classType -> isClassPartOfApplication(classType, applicationBasePackageName))
+        .filter(classType -> isClassPartOfApplication(classType, basePackageName))
         .map(
             classType ->
                 view.getMethod(

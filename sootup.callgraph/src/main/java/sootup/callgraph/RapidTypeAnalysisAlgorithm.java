@@ -92,12 +92,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @NonNull
   @Override
   public CallGraph initialize(
-      @NonNull List<MethodSignature> entryPoints, @Nullable String applicationBasePackageName) {
+      @NonNull List<MethodSignature> entryPoints, @Nullable String basePackageName) {
     // init helper data structures
     instantiatedClasses = new HashSet<>(instantiatedClasses);
     ignoredCalls = ArrayListMultimap.create();
 
-    CallGraph cg = constructCompleteCallGraph(entryPoints, applicationBasePackageName);
+    CallGraph cg = constructCompleteCallGraph(entryPoints, basePackageName);
 
     // delete the data structures
     instantiatedClasses = Collections.emptySet();

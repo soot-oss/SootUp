@@ -49,8 +49,18 @@ public interface CallGraphAlgorithm {
    */
   @NonNull CallGraph initialize(@NonNull List<MethodSignature> entryPoints);
 
+  /**
+   * This method initializes and starts the call graph algorithm with given entry points. The entry
+   * points define the start methods in the call graph algorithm.
+   *
+   * @param entryPoints a list of entry points for the call graph algorithm. The algorithm starts at
+   *     these methods and inspects all reachable methods.
+   * @param basePackageName the base package name of the source application. This is used to
+   *     filter out all classes from the call graph that do not contain this package name.
+   * @return a generated call graph with every entry point as starting point.
+   */
   @NonNull CallGraph initialize(
-      @NonNull List<MethodSignature> entryPoints, @Nullable String applicationBasePackageName);
+      @NonNull List<MethodSignature> entryPoints, @Nullable String basePackageName);
 
   /**
    * Adds a class to the call graph. All methods will be set as entry points in the call graph
