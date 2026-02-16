@@ -22,8 +22,10 @@ package sootup.callgraph;
  * #L%
  */
 
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -35,10 +37,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This class implements the Class Hierarchy Analysis call graph algorithm. In this algorithm, every
@@ -59,19 +57,13 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   @NonNull
   @Override
   public CallGraph initialize() {
-    return constructCompleteCallGraph(Collections.singletonList(findMainMethod()), null);
+    return constructCompleteCallGraph(Collections.singletonList(findMainMethod()));
   }
 
   @NonNull
   @Override
   public CallGraph initialize(@NonNull List<MethodSignature> entryPoints) {
-    return constructCompleteCallGraph(entryPoints, null);
-  }
-
-  @Override
-  public @NonNull CallGraph initialize(
-      @NonNull List<MethodSignature> entryPoints, @Nullable String applicationBasePackageName) {
-    return constructCompleteCallGraph(entryPoints, applicationBasePackageName);
+    return constructCompleteCallGraph(entryPoints);
   }
 
   /**
