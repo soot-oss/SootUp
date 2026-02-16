@@ -23,12 +23,10 @@ package sootup.apk.frontend.dexpler;
  */
 
 import com.google.common.collect.Sets;
-
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import org.jf.dexlib2.dexbacked.DexBackedMethod;
 import org.jf.dexlib2.iface.Method;
 import org.jspecify.annotations.NonNull;
@@ -57,8 +55,7 @@ public class DexMethodSource implements BodySource {
 
   private final List<BodyInterceptor> bodyInterceptors;
 
-  @NonNull
-  private final View view;
+  @NonNull private final View view;
   private final MethodSignature methodSignature;
 
   public DexMethodSource(
@@ -97,15 +94,21 @@ public class DexMethodSource implements BodySource {
   public JavaSootMethod makeSootMethod() {
     JavaSootMethod sootMethod;
     EnumSet<MethodModifier> methodModifiers = Modifiers.getMethodModifiers(method.getAccessFlags());
-    Iterable<AnnotationUsage> annotationUsages = DexUtil.createAnnotationUsage(method.getAnnotations(), view);
+    Iterable<AnnotationUsage> annotationUsages =
+        DexUtil.createAnnotationUsage(method.getAnnotations(), view);
     List<Set<AnnotationUsage>> parameterAnnotations = Collections.emptyList();
-    Iterable<ClassType> thrownExceptions = DexUtil.extractThrownExceptions(method.getAnnotations(), view);
+    Iterable<ClassType> thrownExceptions =
+        DexUtil.extractThrownExceptions(method.getAnnotations(), view);
 
     if (method instanceof DexBackedMethod) {
-      parameterAnnotations = ((DexBackedMethod) method).getParameterAnnotations()
-          .stream()
-          .map(annotations -> (Set<AnnotationUsage>) Sets.newHashSet(DexUtil.createAnnotationUsage(annotations, view)))
-          .toList();
+      parameterAnnotations =
+          ((DexBackedMethod) method)
+              .getParameterAnnotations().stream()
+                  .map(
+                      annotations ->
+                          (Set<AnnotationUsage>)
+                              Sets.newHashSet(DexUtil.createAnnotationUsage(annotations, view)))
+                  .toList();
     }
 
     try {

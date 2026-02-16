@@ -27,7 +27,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
@@ -61,8 +60,7 @@ public class DexClassSource extends JavaSootClassSource {
 
   List<BodyInterceptor> bodyInterceptors;
 
-  @NonNull
-  private final View view;
+  @NonNull private final View view;
 
   @NonNull
   public View getView() {
@@ -160,7 +158,8 @@ public class DexClassSource extends JavaSootClassSource {
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
     if (classInformation != null) {
-      return DexUtil.createAnnotationUsage(classInformation.classDefinition.getAnnotations(), getView());
+      return DexUtil.createAnnotationUsage(
+          classInformation.classDefinition.getAnnotations(), getView());
     }
     return Collections.emptyList();
   }
