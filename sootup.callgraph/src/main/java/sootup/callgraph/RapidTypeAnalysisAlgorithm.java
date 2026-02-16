@@ -23,6 +23,8 @@ package sootup.callgraph;
  */
 
 import com.google.common.collect.ArrayListMultimap;
+import java.util.*;
+import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.callgraph.CallGraph.Call;
@@ -39,9 +41,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-
-import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * This class implements the Rapid Type Analysis call graph algorithm. In this algorithm, every
@@ -92,7 +91,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
   @NonNull
   @Override
-  public CallGraph initialize(@NonNull List<MethodSignature> entryPoints, @Nullable String applicationBasePackageName) {
+  public CallGraph initialize(
+      @NonNull List<MethodSignature> entryPoints, @Nullable String applicationBasePackageName) {
     // init helper data structures
     instantiatedClasses = new HashSet<>(instantiatedClasses);
     ignoredCalls = ArrayListMultimap.create();

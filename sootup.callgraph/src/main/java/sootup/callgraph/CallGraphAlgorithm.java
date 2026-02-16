@@ -22,12 +22,11 @@ package sootup.callgraph;
  * #L%
  */
 
+import java.util.List;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-
-import java.util.List;
 
 /** The interface of a implemented call graph algorithms */
 public interface CallGraphAlgorithm {
@@ -50,7 +49,8 @@ public interface CallGraphAlgorithm {
    */
   @NonNull CallGraph initialize(@NonNull List<MethodSignature> entryPoints);
 
-  @NonNull CallGraph initialize(@NonNull List<MethodSignature> entryPoints, @Nullable String applicationBasePackageName);
+  @NonNull CallGraph initialize(
+      @NonNull List<MethodSignature> entryPoints, @Nullable String applicationBasePackageName);
 
   /**
    * Adds a class to the call graph. All methods will be set as entry points in the call graph
