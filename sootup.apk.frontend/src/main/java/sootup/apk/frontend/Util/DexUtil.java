@@ -100,8 +100,7 @@ public class DexUtil {
     return str.replace('/', '.');
   }
 
-  public static Iterable<ClassType> extractThrownExceptions(
-      Set<? extends Annotation> annotations, View view) {
+  public static Iterable<ClassType> extractThrownExceptions(Set<? extends Annotation> annotations, View view) {
     for (Annotation annotation : annotations) {
       ClassType at = view.getIdentifierFactory()
           .getClassType(DexUtil.toQualifiedName(annotation.getType()));
@@ -110,8 +109,8 @@ public class DexUtil {
         for (AnnotationElement element : annotation.getElements()) {
           var exceptionsList = ((DexBackedArrayEncodedValue) element.getValue()).getValue();
           return exceptionsList.stream()
-                  .map(encodedValue -> (ClassType) toSootType(encodedValue.toString(), 0))
-                  .toList();
+              .map(encodedValue -> (ClassType) toSootType(encodedValue.toString(), 0))
+              .toList();
         }
       }
     }
@@ -119,31 +118,18 @@ public class DexUtil {
     return Collections.emptyList();
   }
 
-  public static Iterable<AnnotationUsage> createAnnotationUsage(
-      Set<? extends Annotation> annotations, View view) {
+  public static Iterable<AnnotationUsage> createAnnotationUsage(Set<? extends Annotation> annotations, View view) {
     if (annotations.isEmpty()) {
       return Collections.emptyList();
     }
+
     ArrayList<AnnotationUsage> annotationUsage = new ArrayList<>();
-    /* annotation.getVisibility() returns an integer refer org.jf.dexlib2.AnnotationVisibility.java
-     * 0 -> BUILD
-     * 1 -> RUNTIME
-     * 2 -> SYSTEM
-     * */
     Map<String, Object> paramMap = new HashMap<>();
+
     for (Annotation annotation : annotations) {
-      ClassType at =
-          view.getIdentifierFactory().getClassType(DexUtil.toQualifiedName(annotation.getType()));
+      ClassType at = view.getIdentifierFactory().getClassType(DexUtil.toQualifiedName(annotation.getType()));
 
-      if (at.getPackageName().equals("dalvik.annotation") && at.getClassName().equals("Throws")) {
-        for (AnnotationElement element : annotation.getElements()) {
-          ((DexBackedArrayEncodedValue) element.getValue()).getValue(); // List of exceptions
-          Type exceptionType =  toSootType(((DexBackedArrayEncodedValue) element.getValue()).getValue().get(0).toString(), 0); // is JavaClassType
-
-        }
-
-
-      } else {
+      if (!at.getPackageName().getName().equals("dalvik.annotation") || !at.getClassName().equals("Throws")) {
         for (AnnotationElement element : annotation.getElements()) {
           String name = element.getName();
           paramMap.put(name, convertAnnotationValue(element.getValue().getValueType()));
@@ -151,6 +137,7 @@ public class DexUtil {
         annotationUsage.add(new AnnotationUsage(at, paramMap));
       }
     }
+
     return annotationUsage;
   }
 

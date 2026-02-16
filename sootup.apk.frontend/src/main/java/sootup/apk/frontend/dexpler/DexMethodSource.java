@@ -23,10 +23,12 @@ package sootup.apk.frontend.dexpler;
  */
 
 import com.google.common.collect.Sets;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
 import org.jf.dexlib2.dexbacked.DexBackedMethod;
 import org.jf.dexlib2.iface.Method;
 import org.jspecify.annotations.NonNull;
@@ -55,7 +57,8 @@ public class DexMethodSource implements BodySource {
 
   private final List<BodyInterceptor> bodyInterceptors;
 
-  @NonNull private final View view;
+  @NonNull
+  private final View view;
   private final MethodSignature methodSignature;
 
   public DexMethodSource(
