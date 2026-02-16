@@ -243,6 +243,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   private boolean isClassPartOfApplication(ClassType classType, String basePackageName) {
+    if (basePackageName == null) {
+      return true;
+    }
     return classType.getPackageName().toString().toLowerCase().contains(basePackageName);
   }
 
