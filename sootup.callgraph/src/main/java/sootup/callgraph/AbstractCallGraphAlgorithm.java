@@ -114,8 +114,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *
    * @param entryPoints a list of method signatures that will be added to the work list in the call
    *     graph generation.
-   * @param basePackageName the base package name of the source application. This is used to
-   *     filter out all classes from the call graph that do not contain this package name.
+   * @param basePackageName the base package name of the source application. This is used to filter
+   *     out all classes from the call graph that do not contain this package name.
    * @return the complete constructed call graph starting from the entry methods.
    */
   @NonNull
@@ -181,8 +181,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *     This list is filled in the execution with found call targets in the call graph algorithm.
    * @param processed the list of processed method to only process the method once.
    * @param cg the call graph object that is filled with the found methods and call edges.
-   * @param basePackageName the base package name of the source application. This is used to
-   *     filter out all classes from the call graph that do not contain this package name.
+   * @param basePackageName the base package name of the source application. This is used to filter
+   *     out all classes from the call graph that do not contain this package name.
    */
   final void processWorkList(
       Deque<MethodSignature> workList,
@@ -239,8 +239,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   private boolean isClassPartOfApplication(SootClass sootClass, String basePackageName) {
-    return isClassPartOfApplication(
-        sootClass.getClassSource().getClassType(), basePackageName);
+    return isClassPartOfApplication(sootClass.getClassSource().getClassType(), basePackageName);
   }
 
   private boolean isClassPartOfApplication(ClassType classType, String basePackageName) {
@@ -391,8 +390,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param sourceMethod the inspected source method
    * @param cg new calls will be added to the call graph
    * @param workList new target methods will be added to the work list
-   * @param basePackageName the base package name of the source application. This is used to
-   *     filter out all classes from the call graph that do not contain this package name.
+   * @param basePackageName the base package name of the source application. This is used to filter
+   *     out all classes from the call graph that do not contain this package name.
    */
   protected void resolveAllImplicitCallsFromSourceMethod(
       @NonNull SootMethod sourceMethod,
@@ -410,8 +409,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param sourceMethod the inspected source method
    * @param cg clinit calls will be added to the call graph
    * @param workList found clinit methods will be added to the work list
-   * @param basePackageName the base package name of the source application. This is used to
-   *     filter out all classes from the call graph that do not contain this package name.
+   * @param basePackageName the base package name of the source application. This is used to filter
+   *     out all classes from the call graph that do not contain this package name.
    */
   protected void resolveAllStaticInitializerCalls(
       @NonNull SootMethod sourceMethod,
@@ -513,8 +512,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param invokableStmt the statement causing the call
    * @param cg the call graph that will contain the found calls
    * @param workList the work list that will be updated with new target methods
-   * @param basePackageName the base package name of the source application. This is used to
-   *     filter out all classes from the call graph that do not contain this package name.
+   * @param basePackageName the base package name of the source application. This is used to filter
+   *     out all classes from the call graph that do not contain this package name.
    */
   private void addStaticInitializerCalls(
       MethodSignature sourceSig,
