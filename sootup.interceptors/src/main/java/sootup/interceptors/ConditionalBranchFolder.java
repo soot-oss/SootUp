@@ -52,35 +52,34 @@ public class ConditionalBranchFolder implements BodyInterceptor {
     final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
     for (Stmt stmt : Lists.newArrayList(controlFlowGraph.getNodes())) {
-      if (!(stmt instanceof JIfStmt)) {
+      if (!(stmt instanceof JIfStmt ifStmt)) {
         continue;
       }
 
-      JIfStmt ifStmt = (JIfStmt) stmt;
       // check for constant-valued conditions
       Constant evaluatedCondition = Evaluator.getConstantValueOf(ifStmt.getCondition());
 
       boolean removeTrueBranch;
       if (evaluatedCondition instanceof BooleanConstant) {
-        removeTrueBranch = evaluatedCondition == BooleanConstant.getTrue();
+        removeTrueBranch = evaluatedCondition == BooleanConstant.getFalse();
       } else if (evaluatedCondition instanceof IntConstant) {
         removeTrueBranch =
             IntConstant.getInstance(0).equalEqual(((IntConstant) evaluatedCondition))
-                == BooleanConstant.getFalse();
+                == BooleanConstant.getTrue();
       }
       /* TODO: check if the following Constant types are even possible in valid Jimple */
       else if (evaluatedCondition instanceof DoubleConstant) {
         removeTrueBranch =
             DoubleConstant.getInstance(0).equalEqual((DoubleConstant) evaluatedCondition)
-                == BooleanConstant.getFalse();
+                == BooleanConstant.getTrue();
       } else if (evaluatedCondition instanceof FloatConstant) {
         removeTrueBranch =
             FloatConstant.getInstance(0).equalEqual((FloatConstant) evaluatedCondition)
-                == BooleanConstant.getFalse();
+                == BooleanConstant.getTrue();
       } else if (evaluatedCondition instanceof LongConstant) {
         removeTrueBranch =
             LongConstant.getInstance(0).equalEqual((LongConstant) evaluatedCondition)
-                == BooleanConstant.getFalse();
+                == BooleanConstant.getTrue();
       } else {
         // not or not "easy" evaluatable
         continue;
@@ -182,7 +181,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       if (predecessor.fallsThrough()) {
         if (predecessor instanceof JIfStmt) {
           final List<Stmt> predsSuccessors = graph.successors(predecessor);
-          if (predsSuccessors.size() > 0 && predsSuccessors.get(0) == stmt) {
+          if (!predsSuccessors.isEmpty() && predsSuccessors.get(0) == stmt) {
             // TODO: hint: possible problem occurs with partial removed targets as they change the
             // idx positions..
             amount--;

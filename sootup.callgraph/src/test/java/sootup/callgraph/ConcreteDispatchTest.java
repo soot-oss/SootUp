@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
@@ -31,8 +32,11 @@ public class ConcreteDispatchTest {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation(
-            "src/test/resources/callgraph/ConcreteDispatch/binary"));
-    inputLocations.add(new DefaultRuntimeAnalysisInputLocation());
+            "src/test/resources/callgraph/ConcreteDispatch/binary",
+            SourceType.Application,
+            Collections.emptyList()));
+    inputLocations.add(
+        new DefaultRuntimeAnalysisInputLocation(SourceType.Library, Collections.emptyList()));
     view = new JavaView(inputLocations);
   }
 
