@@ -1212,6 +1212,10 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   @Test
   public void testClinitCallPruning() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccp.Main");
+    // TODO: delete
+    for (CallGraph.Call call : cg.getCalls()) {
+      System.out.println(call);
+    }
     IdentifierFactory id = view.getIdentifierFactory();
     MethodSignature methodSigSystem =
         id.getMethodSignature("java.lang.System", "<clinit>", "void", Collections.emptyList());
@@ -1249,7 +1253,6 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
     for (CallGraph.Call call : cg.getCalls()) {
       System.out.println(call);
     }
-
     IdentifierFactory id = view.getIdentifierFactory();
 
     // testClinitCallPruningChild

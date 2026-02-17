@@ -24,6 +24,7 @@ package sootup.callgraph;
 
 import static sootup.core.jimple.basic.StmtPositionInfo.getNoStmtPositionInfo;
 
+import com.google.common.collect.ArrayListMultimap;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,7 +32,6 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
-import sootup.core.graph.BasicBlock;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
@@ -41,7 +41,6 @@ import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -346,36 +345,28 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull Deque<MethodSignature> workList) {
     implicitStartRunCall(sourceMethod, cg, workList);
     // collect all static initializer calls
-    resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
+
+    // 1. resolveAllStaticInitializerCalls to
+    ArrayListMultimap<ClassType, Call> potentialStaticInitializerCalls =
+        resolveAllStaticInitializerCalls(sourceMethod);
+    // 2. prune the potential clinit calls, only if the multimap holds multiple calls for one
+    // classType
+    // and at the end add the remaining clint calls
+    postProcessingStaticInitializerCalls(
+        sourceMethod, cg, workList, potentialStaticInitializerCalls);
   }
 
   /**
    * It resolves all static initializer calls caused by the given source method
    *
    * @param sourceMethod the inspected source method
-   * @param cg clinit calls will be added to the call graph
-   * @param workList found clinit methods will be added to the work list
    */
-  protected void resolveAllStaticInitializerCalls(
-      @NonNull SootMethod sourceMethod,
-      @NonNull MutableCallGraph cg,
-      @NonNull Deque<MethodSignature> workList) {
-    Body sourceBody = sourceMethod.getBody();
-    // store all declared class types which are initialized outside an if-block/branch
-    HashSet<ClassType> clinitTypes = new HashSet<>();
-    // method in main block -> prune, otherwise do not prune
-    BasicBlock<?> sourceStartingBlock = sourceBody.getControlFlowGraph().getStartingStmtBlock();
-    System.out.println("Starting Block:");
-    System.out.println(sourceStartingBlock);
-    Collection<? extends BasicBlock<?>> sourceBlocks = sourceBody.getControlFlowGraph().getBlocks();
-    System.out.println("Source Blocks:");
-    for (BasicBlock<?> block : sourceBlocks) {
-      System.out.println(block);
-    }
-
+  protected ArrayListMultimap<ClassType, Call> resolveAllStaticInitializerCalls(
+      @NonNull SootMethod sourceMethod) {
     MethodSignature sourceMethodSignature = sourceMethod.getSignature();
+    ArrayListMultimap<ClassType, Call> potentialClinitCalls = ArrayListMultimap.create();
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
-    sourceBody.getStmts().stream()
+    sourceMethod.getBody().getStmts().stream()
         .filter(Stmt::isInvokableStmt)
         .map(Stmt::asInvokableStmt)
         .forEach(
@@ -389,20 +380,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         .getFullyQualifiedName()
                         .equals(sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
                     && sourceMethodSignature.getName().equals("<clinit>"))) {
-                  if (!clinitTypes.contains(targetClass)) {
-                    addStaticInitializerCalls(
-                        sourceMethodSignature,
-                        targetClass,
-                        invokableStmt,
-                        cg,
-                        workList,
-                        clinitTypes);
-                    if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
-                      // System.out.println("Added: " + targetClass);
-                      clinitTypes.add(targetClass);
-                      typeHierarchy.superClassesOf(targetClass).forEach(clinitTypes::add);
-                    }
-                  }
+                  potentialClinitCalls.putAll(
+                      findStaticInitializerCalls(
+                          sourceMethodSignature, targetClass, invokableStmt));
                 }
               }
               // static method
@@ -418,20 +398,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                             .equals(
                                 sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
                         && sourceMethodSignature.getName().equals("<clinit>"))) {
-                      if (!clinitTypes.contains(newTargetClass)) {
-                        addStaticInitializerCalls(
-                            sourceMethodSignature,
-                            newTargetClass,
-                            invokableStmt,
-                            cg,
-                            workList,
-                            clinitTypes);
-                        if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
-                          // System.out.println("Added: " + newTargetClass);
-                          clinitTypes.add(newTargetClass);
-                          typeHierarchy.superClassesOf(newTargetClass).forEach(clinitTypes::add);
-                        }
-                      }
+                      potentialClinitCalls.putAll(
+                          findStaticInitializerCalls(
+                              sourceMethodSignature, newTargetClass, invokableStmt));
                     }
                   }
                 }
@@ -449,27 +418,20 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                             .equals(
                                 sourceMethodSignature.getDeclClassType().getFullyQualifiedName())
                         && sourceMethodSignature.getName().equals("<clinit>"))) {
-                      if (!clinitTypes.contains(newTargetClass)) {
-                        addStaticInitializerCalls(
-                            sourceMethodSignature,
-                            newTargetClass,
-                            invokableStmt,
-                            cg,
-                            workList,
-                            clinitTypes);
-                        if (sourceStartingBlock.getStmts().contains(invokableStmt)) {
-                          // System.out.println("Added: " + newTargetClass);
-                          clinitTypes.add(newTargetClass);
-                          typeHierarchy.superClassesOf(newTargetClass).forEach(clinitTypes::add);
-                        }
-                      }
+                      potentialClinitCalls.putAll(
+                          findStaticInitializerCalls(
+                              sourceMethodSignature, newTargetClass, invokableStmt));
                     }
                   }
                 }
               }
             });
+    System.out.println("Added Calls: ");
+    System.out.println(potentialClinitCalls);
+    return potentialClinitCalls;
   }
 
+  // TODO: shouldn't already add the calls but store potential clinit calls in a ArrayListMultiMap
   /**
    * Adds all static initializer calls of the given targetClass. An edge from the sourceSig to all
    * clinit methods of the targetClass and Superclasses will be added to the call graph. If new
@@ -478,36 +440,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param sourceSig the source method causing the static initilzer call
    * @param targetClass the class that is statically initialized
    * @param invokableStmt the statement causing the call
-   * @param cg the call graph that will contain the found calls
-   * @param workList the work list that will be updated with new target methods
-   * @param clinitTypes all declared class types which are initialized inside the starting stmt
-   *     block
    */
-  private void addStaticInitializerCalls(
-      MethodSignature sourceSig,
-      ClassType targetClass,
-      InvokableStmt invokableStmt,
-      MutableCallGraph cg,
-      Deque<MethodSignature> workList,
-      HashSet<ClassType> clinitTypes) {
+  private ArrayListMultimap<ClassType, Call> findStaticInitializerCalls(
+      MethodSignature sourceSig, ClassType targetClass, InvokableStmt invokableStmt) {
+    ArrayListMultimap<ClassType, Call> potentialClinitCalls = ArrayListMultimap.create();
     // static initializer call of class
     view.getMethod(view.getIdentifierFactory().getStaticInitializerSignature(targetClass))
         .ifPresent(
-            targetSigSootMethod -> {
-              MethodSignature targetSig = targetSigSootMethod.getSignature();
-              // self-call check
-              if (sourceSig.equals(targetSig)) {
-                return;
-              }
-              // duplicate: call graph already contains the edge and the targetSig was already
-              // initialized within the starting stmt block
-              //              System.out.println("Current Source Method1: " + sourceSig);
-              //              System.out.println("Calls From Source1: " +
-              // cg.callsFrom(sourceSig).stream().toList());
-              //              System.out.println("Target Method1: " + targetSig);
-              //              System.out.println("ClinitTypes1: " + clinitTypes);
-              //              System.out.println("Target Class Type1: " + targetClass);
-              addCallToCG(sourceSig, targetSig, invokableStmt, cg, workList);
+            targetSig -> {
+              Call callToAdd = new Call(sourceSig, targetSig.getSignature(), invokableStmt);
+              potentialClinitCalls.put(targetSig.getDeclaringClassType(), callToAdd);
             });
     // static initializer calls of all superclasses
     typeHierarchy
@@ -519,26 +461,38 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .filter(Optional::isPresent)
         .map(Optional::get)
         .forEach(
-            targetSigSootMethod -> {
-              MethodSignature targetSig = targetSigSootMethod.getSignature();
-              // no self-calls for the clinit method; e.g.: <ccp.ClinitCallPruning$Operation: void
-              // <clinit>()> ->
-              // <ccp.ClinitCallPruning$Operation: void <clinit>()> via $stack0 = new
-              // ccp.ClinitCallPruning$Operation$1;
-              if (sourceSig.equals(targetSig)) {
-                return;
+            targetSig -> {
+              Call callToAdd = new Call(sourceSig, targetSig.getSignature(), invokableStmt);
+              potentialClinitCalls.put(targetSig.getDeclaringClassType(), callToAdd);
+            });
+    return potentialClinitCalls;
+  }
+
+  /**
+   * This method post-processing the <code><clinit></></code> call edges of a method and if
+   * applicable prune <code><clinit></></code> calls.
+   *
+   * @param sourceMethod the processed method
+   * @param potentialStaticInitializerCalls all potential static initializer calls (corresponding to
+   *     the <code>sourceMethod</code>)
+   */
+  protected void postProcessingStaticInitializerCalls(
+      @NonNull SootMethod sourceMethod,
+      MutableCallGraph cg,
+      Deque<MethodSignature> workList,
+      @NonNull ArrayListMultimap<ClassType, Call> potentialStaticInitializerCalls) {
+    // do the post-processing of the clinit method calls based on the MultiMap
+    potentialStaticInitializerCalls
+        .asMap()
+        .forEach(
+            (classType, callCollection) -> {
+              if (callCollection.size() > 1) {
+                // check with call(s) must be removed
+                System.out.println("Must be check and maybe pruned!");
+                System.out.println("ClassType: " + classType + " Calls: " + callCollection);
               }
-              // duplicate: call graph already contains the edge and the targetSig was already
-              // initialized within the starting stmt block
-              //              System.out.println("Current Source Method2: " + sourceSig);
-              //              System.out.println("Calls From Source2: " +
-              // cg.callsFrom(sourceSig).stream().toList());
-              //              System.out.println("Target Method2: " + targetSig);
-              //              System.out.println("ClinitTypes2: " + clinitTypes);
-              //              System.out.println("Target Class Type2: " + targetClass);
-              ClassType targetSigType = targetSig.getDeclClassType();
-              if (!clinitTypes.contains(targetSigType)) {
-                addCallToCG(sourceSig, targetSig, invokableStmt, cg, workList);
+              for (Call call : callCollection) {
+                addCallToCG(call, cg, workList);
               }
             });
   }
