@@ -76,7 +76,8 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
     if (methodSubSignature.getName().equals("main")) {
       final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
       if (parameterTypes.size() == 1) {
-        return parameterTypes.get(0).toString().equals("java.base/java.lang.String[]");
+        return parameterTypes.get(0).toString().equals("java.lang.String[]")
+            || parameterTypes.get(0).toString().equals("java.base/java.lang.String[]");
       }
     }
     return false;

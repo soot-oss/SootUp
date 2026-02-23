@@ -31,7 +31,6 @@ import sootup.java.core.views.JavaView;
  * @author Marcus Nachtigall
  */
 public class ConditionalBranchFolderTest {
-
   /**
    * Tests the correct deletion of an if-statement with a constant condition. Transforms from
    *
@@ -45,9 +44,11 @@ public class ConditionalBranchFolderTest {
   public void testUnconditionalBranching() {
     Body.BodyBuilder builder = createBodyBuilder(0);
     new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
+    Body processedBody = builder.build();
+
     assertEquals(
         Arrays.asList("a = \"str\"", "b = \"str\"", "return a"),
-        Utils.bodyStmtsAsStrings(builder.build()));
+        Utils.bodyStmtsAsStrings(processedBody));
   }
 
   /**
@@ -59,7 +60,6 @@ public class ConditionalBranchFolderTest {
   @Test
   public void testConditionalBranching() {
     Body.BodyBuilder builder = createBodyBuilder(1);
-    Body originalBody = builder.build();
     new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
@@ -140,8 +140,8 @@ public class ConditionalBranchFolderTest {
     bodyBuilder.setLocals(locals);
     controlFlowGraph.putEdge(strToA, strToB);
     controlFlowGraph.putEdge(strToB, ifStmt);
-    controlFlowGraph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, reta);
-    controlFlowGraph.putEdge(ifStmt, JIfStmt.TRUE_BRANCH_IDX, retb);
+    controlFlowGraph.putEdge(ifStmt, JIfStmt.TRUE_BRANCH_IDX, reta);
+    controlFlowGraph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, retb);
     controlFlowGraph.setStartingStmt(strToA);
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
