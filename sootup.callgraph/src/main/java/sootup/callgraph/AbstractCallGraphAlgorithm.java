@@ -431,7 +431,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     return potentialClinitCalls;
   }
 
-  // TODO: shouldn't already add the calls but store potential clinit calls in a ArrayListMultiMap
   /**
    * Adds all static initializer calls of the given targetClass. An edge from the sourceSig to all
    * clinit methods of the targetClass and Superclasses will be added to the call graph. If new
@@ -486,15 +485,29 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .asMap()
         .forEach(
             (classType, callCollection) -> {
-              if (callCollection.size() > 1) {
-                // check with call(s) must be removed
-                System.out.println("Must be check and maybe pruned!");
-                System.out.println("ClassType: " + classType + " Calls: " + callCollection);
-              }
-              for (Call call : callCollection) {
-                addCallToCG(call, cg, workList);
+              // set of seen calls
+              Set<List<MethodSignature>> seenCalls = new HashSet<>();
+              // use explicit iterator instead of a for-each loop
+              java.util.Iterator<Call> callIterator = callCollection.iterator();
+              while (callIterator.hasNext()) {
+                Call call = callIterator.next();
+                MethodSignature sourceSig = call.sourceMethodSignature();
+                MethodSignature targetSig = call.targetMethodSignature();
+                List<MethodSignature> key = Arrays.asList(targetSig, sourceSig);
+                // remove clinit self-calls
+                if (targetSig.equals(sourceSig) && sourceSig.getName().equals("<clinit>")) {
+                  callIterator.remove();
+                  continue;
+                }
+                // remove all duplicates TODO: scope required
+                if (!seenCalls.add(key)) {
+                  callIterator.remove();
+                }
               }
             });
+    for (Call call : potentialStaticInitializerCalls.values()) {
+      addCallToCG(call, cg, workList);
+    }
   }
 
   /**
