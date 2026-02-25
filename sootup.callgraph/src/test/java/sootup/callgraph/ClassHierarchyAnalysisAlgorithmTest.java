@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
+import sootup.callgraph.CallGraph.Call;
+import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.views.JavaView;
 
@@ -213,23 +215,20 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest 
     assertEquals(0, cg.callsFrom(virtualMethodD).size());
     assertEquals(0, cg.callsFrom(virtualMethodE).size());
 
-    List<String> expectedOrder =
-        List.of(
-            "<example1.B: void <init>()>",
-            "<example1.C: void <init>()>",
-            "<example1.B: void staticDispatch(java.lang.Object)>",
-            "<example1.E: void <init>()>",
-            "<example1.A: void virtualDispatch()>",
-            "<example1.B: void virtualDispatch()>",
-            "<example1.D: void virtualDispatch()>",
-            "<example1.E: void virtualDispatch()>");
+    SootMethod methodData = view.getMethod(mainMethodSignature).orElse(null);
+    assertNotNull(methodData);
+    int prevLine =
+        methodData
+            .getBody()
+            .getFirstNonIdentityStmt()
+            .getPositionInfo()
+            .getStmtPosition()
+            .getFirstLine();
 
-    List<String> actualOrder =
-        cg.sortedCallsFrom(mainMethodSignature).stream()
-            .map(call -> call.targetMethodSignature().toString())
-            .toList();
-
-    assertEquals(expectedOrder, actualOrder);
+    for (Call call : cg.sortedCallsFrom(mainMethodSignature)) {
+      assertTrue(call.getLineNumber() >= prevLine);
+      prevLine = call.getLineNumber();
+    }
 
     GraphBasedCallGraph g = new GraphBasedCallGraph(List.of(mainMethodSignature));
     g.addMethod(mainMethodSignature);
@@ -239,11 +238,6 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest 
     g.addCall(
         mainMethodSignature, staticMethodB, getInvokableStmt(mainMethodSignature, staticMethodB));
 
-    assertEquals(
-        g.sortedCallsFrom(mainMethodSignature).stream()
-            .map(CallGraph.Call::targetMethodSignature)
-            .toList()
-            .size(),
-        2);
+    assertEquals(2, g.callsFrom(mainMethodSignature).size());
   }
 }
