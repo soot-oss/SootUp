@@ -21,10 +21,10 @@ public class MethodToPAGConversionTest {
 
   @Test
   public void methodToPAG() {
-    AnalysisInputLocation input = new JavaClassPathAnalysisInputLocation("target/test-classes");
+    AnalysisInputLocation input = new JavaClassPathAnalysisInputLocation("src/test/resources/pta/binary");
     View view = new JavaView(input);
     JavaIdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
-    ClassType classSig = idFactory.getClassType("sootup.spark.target.Basic");
+    ClassType classSig = idFactory.getClassType("Basic");
     Optional<? extends SootClass> classOpt = view.getClass(classSig);
     assertTrue(classOpt.isPresent());
 
@@ -39,6 +39,6 @@ public class MethodToPAGConversionTest {
     solver.solve();
 
     PAG pag = solver.getPag();
-    SparkTestUtil.vizualizeMehodPAG(pag.getDelegate());
+    //SparkTestUtil.vizualizeMehodPAG(pag.getDelegate());
   }
 }
