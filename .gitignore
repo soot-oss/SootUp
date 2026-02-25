@@ -7,6 +7,7 @@
 !sootup.codepropertygraph/src/test/resources/**/*.class
 !sootup.tests/src/test/resources/**/*.class
 !sootup.java.bytecode.frontend/src/test/resources/**/*.class
+!sootup.spark/src/test/resources/pta/binary/**/*.class
 
 # Log file
 *.log
