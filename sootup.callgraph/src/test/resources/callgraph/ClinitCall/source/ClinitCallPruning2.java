@@ -37,6 +37,11 @@ class ClinitCallPruningBranch2 {
     public static void method2() {}
 }
 
+// testClinitCallPruningBranch3
+class ClinitCallPruningBranch3 {
+    static int value = 100;
+}
+
 class ClinitCallPruning2{
     public static void main(String[] args) {
         // testClinitPruningChild
@@ -61,6 +66,16 @@ class ClinitCallPruning2{
         ClinitCallPruningBranch2.method2();
         if (args.length > 0) {
             ClinitCallPruningBranch2.method2();
+        }
+
+        // testClinitCallPruningBranch3
+        boolean condition = true;
+        int a = ClinitCallPruningBranch3.value;
+        while (condition) {
+            int b = ClinitCallPruningBranch3.value;
+            if (b > 50) {
+                condition = false;
+            }
         }
     }
 }
