@@ -114,13 +114,13 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
     return androidJarInputLocation;
   }
 
-
   @NonNull
   @Override
   public Optional<? extends SootClassSource> getClassSource(
       @NonNull ClassType type, @NonNull View view) {
-    if (type.getPackageName().getName().isEmpty() || // for annotation classes?
-            packageNamesInApk.contains(type.getPackageName().getName())) {
+    if (type.getPackageName().getName().isEmpty()
+        || // for annotation classes?
+        packageNamesInApk.contains(type.getPackageName().getName())) {
       return Objects.requireNonNull(getClassSourceInternal(type, new DexClassProvider(view)));
     }
     return androidJarInputLocation != null
