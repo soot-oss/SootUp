@@ -22,6 +22,7 @@ package sootup.apk.frontend;
  * #L%
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -41,6 +42,7 @@ import sootup.core.types.ClassType;
 import sootup.core.util.Modifiers;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 
 public class ApkAnalysisInputLocation implements AnalysisInputLocation {
 
@@ -52,6 +54,10 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
 
   private final List<BodyInterceptor> bodyInterceptors;
 
+  private final Set<String> packageNamesInApk = new HashSet<>();
+
+  private JavaClassPathAnalysisInputLocation androidJarInputLocation;
+
   final Map<String, EnumSet<ClassModifier>> classNamesList;
 
   public ApkAnalysisInputLocation(
@@ -61,6 +67,18 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
     this.android_jar_path = android_jar_path;
     this.bodyInterceptors = bodyInterceptors;
     this.classNamesList = extractDexFilesFromPath();
+    if (!android_jar_path.isEmpty()) {
+      String classPath =
+          android_jar_path
+              + File.separatorChar
+              + "android-"
+              + androidSDKVersionInfo.getApi_version()
+              + File.separatorChar
+              + "android.jar";
+      androidJarInputLocation =
+          new JavaClassPathAnalysisInputLocation(
+              classPath, SourceType.Application, bodyInterceptors);
+    }
   }
 
   private Map<String, EnumSet<ClassModifier>> extractDexFilesFromPath() {
@@ -81,18 +99,32 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
                 .getDexFile()
                 .getClasses()
                 .forEach(
-                    dexClass ->
-                        classList.put(
-                            DexUtil.dottedClassName(dexClass.toString()),
-                            Modifiers.getClassModifiers(dexClass.getAccessFlags()))));
+                    dexClass -> {
+                      classList.put(
+                          DexUtil.dottedClassName(dexClass.toString()),
+                          Modifiers.getClassModifiers(dexClass.getAccessFlags()));
+                      String fullyQualifiedName = DexUtil.dottedClassName(dexClass.toString());
+                      packageNamesInApk.add(
+                          fullyQualifiedName.substring(0, fullyQualifiedName.lastIndexOf('.')));
+                    }));
     return classList;
   }
+
+  public AnalysisInputLocation getAndroidJarInputLocation() {
+    return androidJarInputLocation;
+  }
+
 
   @NonNull
   @Override
   public Optional<? extends SootClassSource> getClassSource(
       @NonNull ClassType type, @NonNull View view) {
-    return Objects.requireNonNull(getClassSourceInternal(type, new DexClassProvider(view)));
+    if (packageNamesInApk.contains(type.getPackageName().getName())) {
+      return Objects.requireNonNull(getClassSourceInternal(type, new DexClassProvider(view)));
+    }
+    return androidJarInputLocation != null
+        ? androidJarInputLocation.getClassSource(type, view)
+        : Optional.empty();
   }
 
   private Optional<? extends SootClassSource> getClassSourceInternal(
