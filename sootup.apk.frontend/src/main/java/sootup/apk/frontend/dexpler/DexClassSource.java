@@ -32,6 +32,8 @@ import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
@@ -49,6 +51,8 @@ import sootup.java.core.*;
 import sootup.java.core.language.JavaJimple;
 
 public class DexClassSource extends JavaSootClassSource {
+
+  private static final Logger logger = LoggerFactory.getLogger(DexClassSource.class);
 
   DexLibWrapper wrapper;
 
@@ -88,7 +92,10 @@ public class DexClassSource extends JavaSootClassSource {
           .map(method -> loadMethod(method, dexMethod))
           .collect(Collectors.toSet());
     } else {
-      throw new IllegalStateException("Class Information Should not be null");
+      logger.warn(
+          "classInformation is null for class '{}'. Unable to resolve methods. Returning empty set.",
+          classSignature);
+      return Collections.emptySet();
     }
   }
 
@@ -128,7 +135,10 @@ public class DexClassSource extends JavaSootClassSource {
         return Optional.ofNullable(DexUtil.stringToJimpleType(view, superclass));
       }
     } else {
-      throw new IllegalStateException("Class Information Should not be null");
+      logger.warn(
+          "classInformation is null for class '{}'. Unable to resolve superclass. Returning empty.",
+          classSignature);
+      return Optional.empty();
     }
   }
 
