@@ -3,6 +3,7 @@ package sootup.apk.frontend;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.RapidTypeAnalysisAlgorithm;
 import sootup.core.signatures.MethodSignature;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
@@ -30,8 +32,20 @@ public class CallGraphTest {
     String apk_path = "resources/FlowSensitivity1.apk";
     ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation(
-            Paths.get(apk_path), "", DexBodyInterceptors.Default.bodyInterceptors());
-    view = new JavaView(sootClassApkAnalysisInputLocation);
+            Paths.get(apk_path),
+            "resources/platforms",
+            DexBodyInterceptors.Default.bodyInterceptors());
+    JavaClassPathAnalysisInputLocation classPathAnalysisInputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            "resources"
+                + File.separator
+                + "platforms"
+                + File.separator
+                + "android-"
+                + sootClassApkAnalysisInputLocation.getAndroidSDKVersionInfo().getApi_version()
+                + File.separator
+                + "android.jar");
+    view = new JavaView(List.of(sootClassApkAnalysisInputLocation, classPathAnalysisInputLocation));
   }
 
   @Test
