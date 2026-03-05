@@ -22,7 +22,6 @@ package sootup.apk.frontend;
  * #L%
  */
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -42,43 +41,53 @@ import sootup.core.types.ClassType;
 import sootup.core.util.Modifiers;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
-import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 
+/**
+ * Analysis input location for Android APK files.
+ *
+ * <p>This class provides an entry point for analyzing Android APK files by extracting and
+ * processing DEX (Dalvik Executable) files contained within the APK.
+ */
 public class ApkAnalysisInputLocation implements AnalysisInputLocation {
 
   Path apk_path;
 
-  String android_jar_path;
+  /**
+   * Path to the Android platforms directory containing Android system libraries (android.jar files)
+   * for different API levels. This directory is required to resolve method calls and class
+   * references that are not defined in the APK itself, but are part of the Android system
+   * libraries.
+   *
+   * <p>The Android platforms directory can be obtained from: <a
+   * href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a>
+   */
+  String androidPlatformsPath;
 
   private final AndroidVersionInfo androidSDKVersionInfo;
 
   private final List<BodyInterceptor> bodyInterceptors;
 
-  private final Set<String> packageNamesInApk = new HashSet<>();
-
-  private JavaClassPathAnalysisInputLocation androidJarInputLocation;
-
   final Map<String, EnumSet<ClassModifier>> classNamesList;
 
+  /**
+   * Creates a new ApkAnalysisInputLocation.
+   *
+   * @param apkPath the path to the APK file to analyze
+   * @param androidPlatformsPath the path to the Android platforms directory containing Android
+   *     system libraries (android.jar files) for different API levels. This directory is required
+   *     to resolve method calls and class references that are not defined in the APK itself, but
+   *     are part of the Android system libraries. The Android platforms directory can be obtained
+   *     from <a
+   *     href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a>
+   * @param bodyInterceptors the list of body interceptors to apply during analysis
+   */
   public ApkAnalysisInputLocation(
-      Path apkPath, String android_jar_path, List<BodyInterceptor> bodyInterceptors) {
+      Path apkPath, String androidPlatformsPath, List<BodyInterceptor> bodyInterceptors) {
     this.apk_path = apkPath;
-    androidSDKVersionInfo = new AndroidVersionInfo(apkPath, android_jar_path);
-    this.android_jar_path = android_jar_path;
+    androidSDKVersionInfo = new AndroidVersionInfo(apkPath, androidPlatformsPath);
+    this.androidPlatformsPath = androidPlatformsPath;
     this.bodyInterceptors = bodyInterceptors;
     this.classNamesList = extractDexFilesFromPath();
-    if (!android_jar_path.isEmpty()) {
-      String classPath =
-          android_jar_path
-              + File.separatorChar
-              + "android-"
-              + androidSDKVersionInfo.getApi_version()
-              + File.separatorChar
-              + "android.jar";
-      androidJarInputLocation =
-          new JavaClassPathAnalysisInputLocation(
-              classPath, SourceType.Application, bodyInterceptors);
-    }
   }
 
   private Map<String, EnumSet<ClassModifier>> extractDexFilesFromPath() {
@@ -99,39 +108,28 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
                 .getDexFile()
                 .getClasses()
                 .forEach(
-                    dexClass -> {
-                      classList.put(
-                          DexUtil.dottedClassName(dexClass.toString()),
-                          Modifiers.getClassModifiers(dexClass.getAccessFlags()));
-                      String fullyQualifiedName = DexUtil.dottedClassName(dexClass.toString());
-                      packageNamesInApk.add(
-                          fullyQualifiedName.substring(0, fullyQualifiedName.lastIndexOf('.')));
-                    }));
+                    dexClass ->
+                        classList.put(
+                            DexUtil.dottedClassName(dexClass.toString()),
+                            Modifiers.getClassModifiers(dexClass.getAccessFlags()))));
     return classList;
-  }
-
-  public AnalysisInputLocation getAndroidJarInputLocation() {
-    return androidJarInputLocation;
   }
 
   @NonNull
   @Override
   public Optional<? extends SootClassSource> getClassSource(
       @NonNull ClassType type, @NonNull View view) {
-    if (type.getPackageName().getName().isEmpty()
-        || // for annotation classes?
-        packageNamesInApk.contains(type.getPackageName().getName())) {
-      return Objects.requireNonNull(getClassSourceInternal(type, new DexClassProvider(view)));
-    }
-    return androidJarInputLocation != null
-        ? androidJarInputLocation.getClassSource(type, view)
-        : Optional.empty();
+    return Objects.requireNonNull(getClassSourceInternal(type, new DexClassProvider(view)));
   }
 
   private Optional<? extends SootClassSource> getClassSourceInternal(
       ClassType type, DexClassProvider dexClassProvider) {
 
     return dexClassProvider.createClassSource(this, apk_path, type);
+  }
+
+  public AndroidVersionInfo getAndroidSDKVersionInfo() {
+    return androidSDKVersionInfo;
   }
 
   @NonNull
