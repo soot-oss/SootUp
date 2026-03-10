@@ -109,7 +109,8 @@ public class CopyPropagatorTest {
   AbstractConditionExpr econdition = JavaJimple.newGtExpr(i2, IntConstant.getInstance(5));
   BranchingStmt eifstmt7 = JavaJimple.newIfStmt(econdition, noStmtPositionInfo);
   // i3 = 6
-  FallsThroughStmt estmt8 = JavaJimple.newAssignStmt(i3, IntConstant.getInstance(6), noStmtPositionInfo);
+  FallsThroughStmt estmt8 =
+      JavaJimple.newAssignStmt(i3, IntConstant.getInstance(6), noStmtPositionInfo);
 
   // r0 := @this Test; r1 = (ref) 0; r2 = (ref) 0L; r3 = (ref) 1; r4 = r1, r5 = r2
   // r1 = (ref) 0
