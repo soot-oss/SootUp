@@ -31,10 +31,8 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
-import sootup.core.jimple.common.constant.Constant;
-import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.constant.LongConstant;
-import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.constant.*;
+import sootup.core.jimple.common.expr.AbstractBinopExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -80,6 +78,23 @@ public class CopyPropagator implements BodyInterceptor {
         // if rhs is a constant, then replace use, if it is possible
         if (rhs instanceof Constant) {
           newStmt = replaceUse(controlFlowGraph, newStmt, use, rhs);
+          // Simplifying trivial binary expression further for copy propagation
+
+          if (newStmt instanceof JAssignStmt) {
+            Value newRhs = ((JAssignStmt) newStmt).getRightOp();
+            if (newRhs instanceof AbstractBinopExpr) {
+              Value op1 = ((AbstractBinopExpr) newRhs).getOp1();
+              Value op2 = ((AbstractBinopExpr) newRhs).getOp2();
+
+              if (op1 instanceof NumericConstant && op2 instanceof NumericConstant) {
+                Constant folded = Evaluator.getConstantValueOf(newRhs);
+                if (folded != null) {
+                  JAssignStmt modifiedStmt = ((JAssignStmt) newStmt).withRValue(folded);
+                  controlFlowGraph.replaceNode(newStmt, modifiedStmt);
+                }
+              }
+            }
+          }
         }
 
         // if rhs is a cast expr with a ref type and its op is 0 (IntConstant or LongConstant)
