@@ -82,11 +82,11 @@ public class CopyPropagator implements BodyInterceptor {
           if (newStmt instanceof JAssignStmt) {
             Value newRhs = ((JAssignStmt) newStmt).getRightOp();
             Constant foldedRhs = Evaluator.getConstantValueOf(newRhs);
-              if (foldedRhs != null) {
-                JAssignStmt modifiedStmt = ((JAssignStmt) newStmt).withRValue(foldedRhs);
-                controlFlowGraph.replaceNode(newStmt, modifiedStmt);
-              }
+            if (foldedRhs != null) {
+              JAssignStmt modifiedStmt = ((JAssignStmt) newStmt).withRValue(foldedRhs);
+              controlFlowGraph.replaceNode(newStmt, modifiedStmt);
             }
+          }
         }
 
         // if rhs is a cast expr with a ref type and its op is 0 (IntConstant or LongConstant)
