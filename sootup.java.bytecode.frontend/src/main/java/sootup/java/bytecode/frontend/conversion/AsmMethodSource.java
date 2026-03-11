@@ -340,9 +340,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (oldStmt != null) {
         JIdentityStmt newStmt =
             Jimple.newIdentityStmt(
-                newLocal,
-                (JCaughtExceptionRef) oldStmt.getRightOp(),
-                oldStmt.getPositionInfo());
+                newLocal, (JCaughtExceptionRef) oldStmt.getRightOp(), oldStmt.getPositionInfo());
         inlineExceptionHandlers.put(labelNode, newStmt);
       }
     }
