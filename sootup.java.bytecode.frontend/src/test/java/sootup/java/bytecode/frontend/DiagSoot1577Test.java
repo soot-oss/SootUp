@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -34,9 +35,11 @@ import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
@@ -66,10 +69,90 @@ public class DiagSoot1577Test {
                 "int",
                 Arrays.asList("android.content.Context"));
     Body body = view.getMethod(sig).get().getBody();
+
+    assertNoDuplicateCaughtExceptionOnPath(body);
+  }
+
+  @Test
+  public void testInlineHandlerBodyHasCaughtExceptionStmt() {
+    AnalysisInputLocation inputLocation =
+        new ClassFileBasedAnalysisInputLocation(
+            Paths.get("src/test/resources/soot-1577/g.class"),
+            "cn.com.chinatelecom.account.api.c",
+            SourceType.Application);
+
+    JavaView view = new JavaView(inputLocation);
+
+    MethodSignature sig =
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature(
+                "cn.com.chinatelecom.account.api.c.g",
+                "h",
+                "int",
+                Arrays.asList("android.content.Context"));
+    Body body = view.getMethod(sig).get().getBody();
+
+    // The method must have at least one @caughtexception identity statement
+    List<Stmt> caughtExceptionStmts =
+        body.getStmts().stream()
+            .filter(DiagSoot1577Test::isCaughtExceptionStmt)
+            .collect(Collectors.toList());
+    assertFalse(caughtExceptionStmts.isEmpty(), "Expected at least one @caughtexception stmt");
+
+    // Each @caughtexception stmt must have at least one successor (it should be followed
+    // by handler code, not be a dead end)
+    ControlFlowGraph<?> cfg = body.getControlFlowGraph();
+    for (Stmt stmt : caughtExceptionStmts) {
+      assertFalse(
+          cfg.successors(stmt).isEmpty(), "@caughtexception stmt has no successors: " + stmt);
+    }
+  }
+
+  @Test
+  public void testAllMethodsInClassConvertSuccessfully() {
+    AnalysisInputLocation inputLocation =
+        new ClassFileBasedAnalysisInputLocation(
+            Paths.get("src/test/resources/soot-1577/g.class"),
+            "cn.com.chinatelecom.account.api.c",
+            SourceType.Application);
+
+    JavaView view = new JavaView(inputLocation);
+
+    // Converting all methods should not throw any exceptions
+    view.getClasses()
+        .findFirst()
+        .get()
+        .getMethods()
+        .forEach(
+            method -> {
+              Body body = method.getBody();
+              assertNotNull(body, "Body should not be null for " + method.getSignature());
+              assertNoDuplicateCaughtExceptionOnPath(body);
+            });
+  }
+
+  @Test
+  public void testNestedTryCatchNoDuplicateCaughtException() {
+    JavaClassPathAnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            "src/test/resources/bugfixes/", SourceType.Application, Collections.emptyList());
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+
+    // NestedTryCatchFlow has complex nested try-catch with multiple exception types
+    // and handler sharing - verify no duplicate @caughtexception on any path
+    SootMethod method =
+        view.getMethod(
+                view.getIdentifierFactory()
+                    .parseMethodSignature("<NestedTryCatchFlow: int test_nested_try_catch_2(int)>"))
+            .orElse(null);
+    assertNotNull(method);
+    Body body = method.getBody();
+    assertNoDuplicateCaughtExceptionOnPath(body);
+  }
+
+  private void assertNoDuplicateCaughtExceptionOnPath(Body body) {
     ControlFlowGraph<?> cfg = body.getControlFlowGraph();
 
-    // Verify: no @caughtexception identity statement should have a successor path
-    // that reaches another @caughtexception identity statement via normal control flow.
     for (Stmt stmt : body.getStmts()) {
       if (isCaughtExceptionStmt(stmt)) {
         // BFS from this caught exception stmt to check if another caught exception stmt
