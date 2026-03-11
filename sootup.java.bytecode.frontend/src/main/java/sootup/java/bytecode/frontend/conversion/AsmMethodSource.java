@@ -339,6 +339,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   void updateInlineExceptionHandler(@NonNull AbstractInsnNode insn, @NonNull Local newLocal) {
     LabelNode labelNode = (LabelNode) insn;
     JIdentityStmt oldStmt = inlineExceptionHandlers.get(labelNode);
+    assert oldStmt != null : "updateInlineExceptionHandler called for non-inline handler: " + insn;
     JIdentityStmt newStmt =
         Jimple.newIdentityStmt(
             newLocal, (JCaughtExceptionRef) oldStmt.getRightOp(), oldStmt.getPositionInfo());
