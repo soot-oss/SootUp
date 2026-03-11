@@ -120,9 +120,15 @@ class Operand {
     if (!(stmt instanceof JAssignStmt)) {
       // emit `$newStackLocal = value`
       if (value instanceof JCaughtExceptionRef) {
-        JIdentityStmt identityStmt =
-            Jimple.newIdentityStmt(newStackLocal, (JCaughtExceptionRef) value, positionInfo);
-        methodSource.setStmt(insn, identityStmt);
+        if (methodSource.isInlineExceptionHandler(insn)) {
+          // For inline exception handlers, don't replace the NOP at the handler label.
+          // Instead, update the identity statement in the separate inline handler block.
+          methodSource.updateInlineExceptionHandler(insn, newStackLocal);
+        } else {
+          JIdentityStmt identityStmt =
+              Jimple.newIdentityStmt(newStackLocal, (JCaughtExceptionRef) value, positionInfo);
+          methodSource.setStmt(insn, identityStmt);
+        }
       } else {
         methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
       }
