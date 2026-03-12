@@ -144,7 +144,6 @@
                         <version>${maven-gpg-plugin.version}</version>
                         <configuration>
                             <bestPractices>true</bestPractices>
-                            <passphraseEnvName>GPG_PRIVATE_KEY_PASSPHRASE</passphraseEnvName>
                         </configuration>
                         <executions>
                             <execution>
