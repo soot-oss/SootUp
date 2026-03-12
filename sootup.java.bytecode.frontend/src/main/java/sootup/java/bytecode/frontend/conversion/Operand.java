@@ -119,15 +119,12 @@ class Operand {
     if (!(stmt instanceof JAssignStmt)) {
       // emit `$newStackLocal = value`
       if (value instanceof JCaughtExceptionRef) {
-        if (methodSource.isInlineExceptionHandler(insn)) {
-          // For inline exception handlers, don't replace the NOP at the handler label.
-          // Instead, update the identity statement in the separate inline handler block.
-          methodSource.updateInlineExceptionHandler(insn, newStackLocal);
-        } else {
-          methodSource.setStmt(
-              insn,
-              Jimple.newIdentityStmt(newStackLocal, (JCaughtExceptionRef) value, positionInfo));
-        }
+        // During operand merging, only inline exception handlers reach this point
+        // because non-inline handlers are visited exactly once from the worklist and
+        // create their identity stmt in convertLabel() directly, never via changeStackLocal.
+        // Update the identity statement in the separate inline handler block instead of
+        // overwriting the NOP placeholder at the handler label.
+        methodSource.updateInlineExceptionHandler(insn, newStackLocal);
       } else {
         methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
       }

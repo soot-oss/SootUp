@@ -317,21 +317,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   /**
-   * Checks if the given instruction is an inline exception handler label.
-   *
-   * @param insn the instruction to check
-   * @return true if the instruction is an inline exception handler label
-   */
-  boolean isInlineExceptionHandler(@NonNull AbstractInsnNode insn) {
-    return insn instanceof LabelNode && inlineExceptionHandlers.containsKey((LabelNode) insn);
-  }
-
-  /**
    * Updates the identity statement of an inline exception handler to use a new local variable. This
    * is needed when operand merging assigns a common stack local to the caught exception operand.
    *
-   * <p>Precondition: {@link #isInlineExceptionHandler(AbstractInsnNode)} must return true for the
-   * given instruction.
+   * <p>Only inline exception handlers should call this method, since non-inline handlers create
+   * their identity statement directly in {@code convertLabel()} and never reach {@code
+   * changeStackLocal()} for their caught exception operand.
    *
    * @param insn the handler label node
    * @param newLocal the new local to assign the caught exception to
