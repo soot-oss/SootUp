@@ -12,7 +12,7 @@ jobs:
     environment: deployment
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Deploy SNAPSHOT version
         uses: secure-software-engineering/actions/deployment/maven-deployment@develop

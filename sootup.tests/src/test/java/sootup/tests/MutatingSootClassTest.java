@@ -32,12 +32,8 @@ import sootup.core.types.PrimitiveType.BooleanType;
 import sootup.core.types.PrimitiveType.IntType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootClassSource;
-import sootup.java.core.JavaSootField;
+import sootup.java.core.*;
 import sootup.java.core.JavaSootField.JavaSootFieldBuilder;
-import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -56,13 +52,12 @@ public class MutatingSootClassTest {
     JavaView view = new JavaView(inputLocation);
 
     // Create a signature for the class we want to analyze
-    JavaClassType classType = view.getIdentifierFactory().getClassType("HelloWorld");
+    JavaIdentifierFactory identifierFactory = view.getIdentifierFactory();
+    JavaClassType classType = identifierFactory.getClassType("HelloWorld");
 
     // Create a signature for the method we want to analyze
     MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature(
-                classType, "main", "void", Collections.singletonList("java.lang.String[]"));
+        identifierFactory.getMethodSignature(classType, identifierFactory.getMainSubSignature());
 
     // Assert that class is present
     assertTrue(view.getClass(classType).isPresent());

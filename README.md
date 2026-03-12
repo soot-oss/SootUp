@@ -2,7 +2,10 @@
 <img width="350px" src="https://github.com/soot-oss/SootUp/blob/develop/docs/img/SootUpLogo.svg">
 </p> 
 
-# SootUp library ![Java CI with Maven](https://github.com/soot-oss/SootUp/workflows/Java%20Tests%20with%20Maven/badge.svg?branch=develop) [![codecov](https://codecov.io/gh/soot-oss/SootUp/branch/develop/graph/badge.svg?token=ELA7U7IAWD)](https://codecov.io/gh/soot-oss/SootUp) [![javadoc](https://javadoc.io/badge2/org.soot-oss/sootup.core/javadoc.svg)](https://javadoc.io/doc/org.soot-oss/sootup.core) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.soot-oss/sootup.core/badge.svg)](https://central.sonatype.com/artifact/org.soot-oss/sootup) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/soot-oss/SootUp/badge)](https://scorecard.dev/viewer/?uri=github.com/soot-oss/SootUp)
+# SootUp library
+[![Unit & Integration Tests with Maven](https://github.com/soot-oss/SootUp/actions/workflows/tests.yml/badge.svg)](https://github.com/soot-oss/SootUp/actions/workflows/tests.yml) [![codecov](https://codecov.io/gh/soot-oss/SootUp/branch/develop/graph/badge.svg?token=ELA7U7IAWD)](https://codecov.io/gh/soot-oss/SootUp) [![javadoc](https://javadoc.io/badge2/org.soot-oss/sootup.core/javadoc.svg)](https://javadoc.io/doc/org.soot-oss/sootup.core) [![Maven Central Version](https://img.shields.io/maven-central/v/org.soot-oss/sootup)](https://central.sonatype.com/artifact/org.soot-oss/sootup) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/soot-oss/SootUp/badge)](https://scorecard.dev/viewer/?uri=github.com/soot-oss/SootUp)
+
+
 
 This is the home of the **SootUp** project.
 A complete overhaul of the good, old static analysis framework [Soot](https://github.com/soot-oss/soot).
@@ -37,6 +40,10 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 For feedback and feature requests, best create appropriate [issues](../../issues).  
 For questions and clarification, please use the [discussions](../../discussions).
 
+## Who Uses SootUp? 
+- **Team Atlanta**, [the winner of DARPA's AI Cyber Challenge (AIxCC)](https://aicyberchallenge.com/finals-winners-announcement/) uses **SootUp** to improve their [reachability analysis](https://arxiv.org/pdf/2509.14589).
+
+Let us know how you are using SootUp by filling out [this form](https://forms.gle/Cr6noNjM6XYLXiTZ7).
 
 ## Publications
 [The SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) explains further details and the design decision behind SootUp.  

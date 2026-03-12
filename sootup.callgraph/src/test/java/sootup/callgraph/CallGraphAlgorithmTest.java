@@ -872,7 +872,7 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
     JavaClassType mainClassSignature = identifierFactory.getClassType("example2.Example");
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(
-            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, identifierFactory.getMainSubSignature());
 
     CallGraphAlgorithm algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize();
@@ -939,7 +939,8 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(
-            "app.Application", "main", "void", Collections.singletonList("java.lang.String[]"));
+            identifierFactory.getClassType("app.Application"),
+            identifierFactory.getMainSubSignature());
     CallGraphAlgorithm algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 

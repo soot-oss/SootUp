@@ -136,8 +136,7 @@ public class StaticSingleAssignmentFormerTest {
   public void testSSA2() {
     ClassType clazzType = factory.getClassType("TrapSSA");
     MethodSignature methodSignature =
-        factory.getMethodSignature(
-            clazzType, "main", "void", Collections.singletonList("java.lang.String[]"));
+        factory.getMethodSignature(clazzType, factory.getMainSubSignature());
     final Path path = Paths.get(location + "TrapSSA.class");
     PathBasedAnalysisInputLocation inputLocationWithSSA =
         new ClassFileBasedAnalysisInputLocation(
@@ -243,8 +242,7 @@ public class StaticSingleAssignmentFormerTest {
   public void testSSA3() {
     ClassType clazzType = factory.getClassType("ForLoopSSA");
     MethodSignature methodSignature =
-        factory.getMethodSignature(
-            clazzType, "main", "void", Collections.singletonList("java.lang.String[]"));
+        factory.getMethodSignature(clazzType, factory.getMainSubSignature());
     final Path path = Paths.get(location + "ForLoopSSA.class");
     PathBasedAnalysisInputLocation inputLocationWithSSA =
         new ClassFileBasedAnalysisInputLocation(

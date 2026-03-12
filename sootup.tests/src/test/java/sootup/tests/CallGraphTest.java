@@ -63,7 +63,7 @@ public class CallGraphTest {
     mainClassSignature = identifierFactory.getClassType("Main");
     mainMethodSignature =
         identifierFactory.getMethodSignature(
-            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, identifierFactory.getMainSubSignature());
 
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);

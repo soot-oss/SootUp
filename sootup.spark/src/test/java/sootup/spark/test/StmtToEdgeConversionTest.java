@@ -93,11 +93,11 @@ public class StmtToEdgeConversionTest {
 
   private PAGEdge doAssignment(Value right, LValue left, PAG methodPAG, PAGEdge.EdgeType edgeType) {
     JAssignStmt assignStmt = new JAssignStmt(left, right, StmtPositionInfo.getNoStmtPositionInfo());
-    assignStmt.accept(PAGStmtVisitor.builder().PAG(methodPAG).build());
+    PAGStmtVisitor stmtVisitor = PAGStmtVisitor.builder().PAG(methodPAG).build();
+    assignStmt.accept(stmtVisitor);
     val edgeOpt =
         methodPAG.getDelegate().edgeSet().stream()
             .filter(PAGEdge.class::isInstance)
-            .map(PAGEdge.class::cast)
             .filter(e -> edgeType.equals(e.getEdgeType()))
             .findFirst();
     assertTrue(edgeOpt.isPresent());
