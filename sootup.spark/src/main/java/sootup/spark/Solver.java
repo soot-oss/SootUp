@@ -29,8 +29,6 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
-import sootup.core.jimple.common.expr.JNewExpr;
-import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
@@ -61,14 +59,6 @@ public class Solver {
   }
 
   private void buildMethodPAG(SootMethod method) {
-
-    // first add the new
-    method.getBody().getStmts().stream()
-        .filter(JAssignStmt.class::isInstance)
-        .map(JAssignStmt.class::cast)
-        .filter(s -> s.getRightOp() instanceof JNewExpr)
-        .forEach(s -> s.accept(stmtVisitor));
-
     method.getBody().getStmts().forEach(stmt -> stmt.accept(stmtVisitor));
   }
 }

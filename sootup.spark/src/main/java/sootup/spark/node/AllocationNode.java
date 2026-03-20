@@ -24,19 +24,21 @@ package sootup.spark.node;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 /** Models PAG node object allocation */
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @SuperBuilder
+@Getter
 @EqualsAndHashCode(callSuper = true)
 public class AllocationNode extends Node {
 
-  // TODO: we might have to distinguish different allocation sites
+  Object allocationSite;
 
   @Override
   public String toString() {
-    return String.format("\"new %s\"", getType());
+    return String.format("\"%s:new %s\"", getAllocationSite(), getType());
   }
 }
