@@ -9,6 +9,9 @@ on:
       - reopened
       - synchronize
 
+permissions:
+  contents: read
+
 env:
   HEAD_BRANCH: develop
 
