@@ -4,7 +4,7 @@ package sootup.spark.node;
  * #%L
  * SootUp
  * %%
- * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya, Palaniappan Muthuraman
+ * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -39,6 +39,7 @@ import sootup.core.jimple.visitor.AbstractValueVisitor;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.spark.Engine;
 
 /**
  * {@link Value} to {@link Node} converter. Supported nodes according to the Spark thesis:
@@ -84,7 +85,8 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseNewExpr(@NonNull JNewExpr expr) {
-    this.node = AllocationNode.builder().type(expr.getType()).build();
+    long allocCount = Engine.incrementAndGetAllocCount();
+    this.node = AllocationNode.builder().type(expr.getType()).allocationSite(allocCount).build();
   }
 
   @Override

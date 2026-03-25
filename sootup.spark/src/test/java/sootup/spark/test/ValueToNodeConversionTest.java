@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import lombok.val;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -18,6 +19,7 @@ import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
+import sootup.spark.Engine;
 import sootup.spark.NodeFactory;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
@@ -31,6 +33,11 @@ class ValueToNodeConversionTest {
   FieldSignature fieldSig =
       JavaIdentifierFactory.getInstance().getFieldSignature("f", aType, bType);
   View view;
+
+  @BeforeEach
+  public void reset() {
+    Engine.resetAllocCount();
+  }
 
   @Test
   void testLocalToNodeConversion() {
@@ -55,7 +62,7 @@ class ValueToNodeConversionTest {
     val allocNode = allocNodeOpt.get();
     assertTrue(allocNode instanceof AllocationNode);
     assertEquals(aType, allocNode.getType());
-    assertEquals("\"new A\"", allocNode.toString());
+    assertEquals("\"1:new A\"", allocNode.toString());
   }
 
   @Test

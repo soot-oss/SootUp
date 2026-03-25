@@ -40,14 +40,14 @@ jobs:
       - name: Compile & Test
         run: mvn -B verify -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: ${{ always() }}
         with:
           name: coverage-exec
           path: |
             **/target/coverage-reports/jacoco-ut.exec
 
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: ${{ always() }}
         with:
           name: test-reports
@@ -61,7 +61,7 @@ jobs:
         run: mvn -ntp jacoco:report-aggregate@generate-coverage-report -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: upload aggregated coverage artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: aggregated-coverage-report
           path: sootup.report/target/jacoco-aggregate/
@@ -73,7 +73,7 @@ jobs:
           jacoco-csv-file: sootup.report/target/jacoco-aggregate/jacoco.csv
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.5.3
         with:
           files: sootup.report/target/jacoco-aggregate/jacoco.xml
           token: ${{ secrets.CODECOV_TOKEN }}

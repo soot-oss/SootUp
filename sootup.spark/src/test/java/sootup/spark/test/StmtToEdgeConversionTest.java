@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import lombok.val;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.LValue;
@@ -15,10 +16,13 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.spark.NodeFactory;
+import sootup.spark.Engine;
 import sootup.spark.PAG;
 import sootup.spark.PAGEdge;
 import sootup.spark.PAGStmtVisitor;
+import sootup.spark.node.AllocationNode;
+import sootup.spark.node.InstanceFieldRefNode;
+import sootup.spark.node.VariableNode;
 
 public class StmtToEdgeConversionTest {
 
@@ -26,6 +30,11 @@ public class StmtToEdgeConversionTest {
   ClassType bType = SparkTestUtil.simpleType("B");
   FieldSignature fieldSig =
       JavaIdentifierFactory.getInstance().getFieldSignature("f", aType, bType);
+
+  @BeforeEach
+  public void reset() {
+    Engine.resetAllocCount();
+  }
 
   @Test
   public void testAllocEdge() {
@@ -36,8 +45,8 @@ public class StmtToEdgeConversionTest {
 
     val source = methodPAG.getDelegate().getEdgeSource(edge);
     val target = methodPAG.getDelegate().getEdgeTarget(edge);
-    val expectedTarget = NodeFactory.createNode(left).get();
-    val expectedSource = NodeFactory.createNode(right).get();
+    val expectedTarget = VariableNode.builder().type(aType).name("a").build();
+    val expectedSource = AllocationNode.builder().type(aType).allocationSite(1L).build();
     assertEquals(expectedTarget, target);
     assertEquals(expectedSource, source);
   }
@@ -51,8 +60,8 @@ public class StmtToEdgeConversionTest {
 
     val source = methodPAG.getDelegate().getEdgeSource(edge);
     val target = methodPAG.getDelegate().getEdgeTarget(edge);
-    val expectedTarget = NodeFactory.createNode(left).get();
-    val expectedSource = NodeFactory.createNode(right).get();
+    val expectedTarget = VariableNode.builder().type(aType).name("b").build();
+    val expectedSource = VariableNode.builder().type(aType).name("a").build();
     assertEquals(expectedTarget, target);
     assertEquals(expectedSource, source);
   }
@@ -68,8 +77,14 @@ public class StmtToEdgeConversionTest {
 
     val source = methodPAG.getDelegate().getEdgeSource(edge);
     val target = methodPAG.getDelegate().getEdgeTarget(edge);
-    val expectedTarget = NodeFactory.createNode(left).get();
-    val expectedSource = NodeFactory.createNode(right).get();
+    val expectedTarget = VariableNode.builder().type(aType).name("b").build();
+    val baseNode = VariableNode.builder().type(aType).name("someB").build();
+    val expectedSource =
+        InstanceFieldRefNode.builder()
+            .type(fieldSig.getType())
+            .base(baseNode)
+            .field(fieldSig)
+            .build();
     assertEquals(expectedTarget, target);
     assertEquals(expectedSource, source);
   }
@@ -85,19 +100,25 @@ public class StmtToEdgeConversionTest {
 
     val source = methodPAG.getDelegate().getEdgeSource(edge);
     val target = methodPAG.getDelegate().getEdgeTarget(edge);
-    val expectedTarget = NodeFactory.createNode(left).get();
-    val expectedSource = NodeFactory.createNode(right).get();
+    val baseNode = VariableNode.builder().type(aType).name("someB").build();
+    val expectedTarget =
+        InstanceFieldRefNode.builder()
+            .type(fieldSig.getType())
+            .base(baseNode)
+            .field(fieldSig)
+            .build();
+    val expectedSource = VariableNode.builder().type(aType).name("b").build();
     assertEquals(expectedTarget, target);
     assertEquals(expectedSource, source);
   }
 
   private PAGEdge doAssignment(Value right, LValue left, PAG methodPAG, PAGEdge.EdgeType edgeType) {
     JAssignStmt assignStmt = new JAssignStmt(left, right, StmtPositionInfo.getNoStmtPositionInfo());
-    assignStmt.accept(PAGStmtVisitor.builder().PAG(methodPAG).build());
+    PAGStmtVisitor stmtVisitor = PAGStmtVisitor.builder().PAG(methodPAG).build();
+    assignStmt.accept(stmtVisitor);
     val edgeOpt =
         methodPAG.getDelegate().edgeSet().stream()
             .filter(PAGEdge.class::isInstance)
-            .map(PAGEdge.class::cast)
             .filter(e -> edgeType.equals(e.getEdgeType()))
             .findFirst();
     assertTrue(edgeOpt.isPresent());

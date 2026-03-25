@@ -82,7 +82,7 @@
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
@@ -90,8 +90,8 @@
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
         <reactorRootsTarget>${basedir}/target</reactorRootsTarget>
-        <junit.version>6.0.2</junit.version>
-        <lombok.version>1.18.42</lombok.version>
+        <junit.version>6.0.3</junit.version>
+        <lombok.version>1.18.44</lombok.version>
     </properties>
 
     <profiles>
@@ -144,7 +144,6 @@
                         <version>${maven-gpg-plugin.version}</version>
                         <configuration>
                             <bestPractices>true</bestPractices>
-                            <passphraseEnvName>GPG_PRIVATE_KEY_PASSPHRASE</passphraseEnvName>
                         </configuration>
                         <executions>
                             <execution>
@@ -323,7 +322,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>3.5.4</version>
+                <version>3.5.5</version>
                 <configuration>
                     <showSuccess>false</showSuccess>
                 </configuration>
@@ -455,7 +454,7 @@
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>6.9.3</version>
+            <version>6.10.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -497,13 +496,13 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.21.0</version>
+            <version>5.22.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.21.0</version>
+            <version>5.22.0</version>
             <scope>test</scope>
         </dependency>
         <!-- adds `@Nullable` and `@NonNull ` annotations -->
