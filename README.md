@@ -1,5 +1,5 @@
-<p align="center">
-<img width="350px" src="https://github.com/soot-oss/SootUp/blob/develop/docs/img/SootUpLogo.svg">
+<p>
+<img width="350px" alt="Logo of SootUp" src="https://github.com/soot-oss/SootUp/blob/develop/docs/img/SootUpLogo.svg">
 </p> 
 
 # SootUp library
@@ -76,10 +76,10 @@ isbn="978-3-031-57246-3"
 The development of SootUp is financed by generous support from the German Research Foundation (DFG) and
 the Heinz Nixdorf Institute (HNI).
 
-<table border="0">
+<table>
 <tr>
-<td><img src="https://soot-oss.github.io/soot/images/dfg_logo_englisch_blau_en.jpg" width="250" > </td>
-<td><img src="https://soot-oss.github.io/soot/images/Heinz_Nixdorf_Institut_Logo_CMYK.jpg" width="250" ></td>
+<td><img alt="Logo of DFG" src="https://soot-oss.github.io/soot/images/dfg_logo_englisch_blau_en.jpg" width="250" > </td>
+<td><img alt="Logo of HNI" src="https://soot-oss.github.io/soot/images/Heinz_Nixdorf_Institut_Logo_CMYK.jpg" width="250" ></td>
 </tr>
 </table>
 
