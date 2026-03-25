@@ -6,6 +6,9 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+
 env:
   LATEST_BRANCH_NAME: develop
   SNAPSHOT_BRANCH_NAME: snapshot_version
@@ -15,6 +18,8 @@ jobs:
     name: Deployment
     runs-on: ubuntu-latest
     environment: deployment
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -93,6 +98,9 @@ jobs:
     if: ${{ github.ref_name == 'master' }}
     runs-on: ubuntu-latest
     needs: deployment
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout source code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
