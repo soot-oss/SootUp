@@ -39,6 +39,7 @@ public class AllocationNode extends Node {
 
   @Override
   public String toString() {
-    return String.format("\"%s:new %s\"", getAllocationSite(), getType());
+    return String.format(
+        "\"%s{%s:new %s}\"", getContainingMethodSig().getName(), getAllocationSite(), getType());
   }
 }

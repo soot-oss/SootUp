@@ -26,6 +26,7 @@ import java.util.Optional;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import sootup.core.jimple.common.Value;
+import sootup.core.signatures.MethodSignature;
 import sootup.spark.node.Node;
 import sootup.spark.node.ValueToNodeConversionVisitor;
 
@@ -43,8 +44,8 @@ public class NodeFactory {
    * @return a PAG node
    */
   @NonNull
-  public Optional<Node> createNode(@NonNull Value value) {
-    ValueToNodeConversionVisitor visitor = new ValueToNodeConversionVisitor();
+  public Optional<Node> createNode(@NonNull Value value, MethodSignature containingMethodSig) {
+    ValueToNodeConversionVisitor visitor = new ValueToNodeConversionVisitor(containingMethodSig);
     value.accept(visitor);
     return visitor.getResult();
   }
