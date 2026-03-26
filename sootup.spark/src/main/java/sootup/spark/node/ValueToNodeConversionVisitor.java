@@ -37,6 +37,7 @@ import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.visitor.AbstractValueVisitor;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.spark.Engine;
@@ -54,7 +55,12 @@ import sootup.spark.Engine;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
+  final MethodSignature containingMethodSig;
   Node node;
+
+  public ValueToNodeConversionVisitor(MethodSignature containingMethodSig) {
+    this.containingMethodSig = containingMethodSig;
+  }
 
   /**
    * returns a node as a result of the value to node conversion
@@ -86,7 +92,12 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   @Override
   public void caseNewExpr(@NonNull JNewExpr expr) {
     long allocCount = Engine.incrementAndGetAllocCount();
-    this.node = AllocationNode.builder().type(expr.getType()).allocationSite(allocCount).build();
+    this.node =
+        AllocationNode.builder()
+            .type(expr.getType())
+            .allocationSite(allocCount)
+            .containingMethodSig(containingMethodSig)
+            .build();
   }
 
   @Override
@@ -95,18 +106,24 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
         StaticFieldRefNode.builder()
             .field(ref.getFieldSignature())
             .type(ref.getFieldSignature().getDeclClassType())
+            .containingMethodSig(containingMethodSig)
             .build();
   }
 
   @Override
   public void caseInstanceFieldRef(@NonNull JInstanceFieldRef ref) {
     val base =
-        VariableNode.builder().name(ref.getBase().getName()).type(ref.getBase().getType()).build();
+        VariableNode.builder()
+            .name(ref.getBase().getName())
+            .type(ref.getBase().getType())
+            .containingMethodSig(containingMethodSig)
+            .build();
     this.node =
         InstanceFieldRefNode.builder()
             .base(base)
             .field(ref.getFieldSignature())
             .type(ref.getType())
+            .containingMethodSig(containingMethodSig)
             .build();
   }
 
@@ -122,17 +139,27 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
             VariableNode.builder()
                 .name(ref.getBase().getName())
                 .type(ref.getBase().getType())
+                .containingMethodSig(containingMethodSig)
                 .build();
         this.node =
-            InstanceFieldRefNode.builder().base(base).field(field).type(ref.getType()).build();
+            InstanceFieldRefNode.builder()
+                .base(base)
+                .field(field)
+                .type(ref.getType())
+                .containingMethodSig(containingMethodSig)
+                .build();
       }
     }
   }
 
   @Override
   public void caseParameterRef(@NonNull JParameterRef ref) {
-    // TODO: wip
-    defaultCaseValue(ref);
+    this.node =
+        VariableNode.builder()
+            .name("@parameter" + ref.getIndex())
+            .type(ref.getType())
+            .containingMethodSig(containingMethodSig)
+            .build();
   }
 
   @Override
@@ -143,7 +170,12 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseLocal(@NonNull Local local) {
-    this.node = VariableNode.builder().type(local.getType()).name(local.getName()).build();
+    this.node =
+        VariableNode.builder()
+            .type(local.getType())
+            .name(local.getName())
+            .containingMethodSig(containingMethodSig)
+            .build();
   }
 
   @Override
