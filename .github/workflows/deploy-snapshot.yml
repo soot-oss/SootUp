@@ -12,10 +12,10 @@ jobs:
     environment: deployment
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Deploy SNAPSHOT version
-        uses: secure-software-engineering/actions/deployment/maven-deployment@develop
+        uses: secure-software-engineering/actions/deployment/maven-deployment@7f1c18bf8073213959da2e065baa9d7c2955e0f8 # develop
         with:
           java-distribution: adopt
           java-version: 17
