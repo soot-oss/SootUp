@@ -4,6 +4,9 @@ on:
   pull_request:
   merge_group:
 
+permissions:
+  contents: read
+
 env:
   LATEST_BRANCH_NAME: develop
   FINAL_BRANCH_NAME: master
