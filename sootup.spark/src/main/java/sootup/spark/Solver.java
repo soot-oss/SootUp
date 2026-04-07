@@ -40,7 +40,6 @@ public class Solver {
   private View view;
   private CallGraph callGraph;
   private PAG pag;
-  private PAGStmtVisitor stmtVisitor;
   private List<MethodSignature> entryPoints;
 
   @Builder
@@ -50,15 +49,23 @@ public class Solver {
     // TODO: Build OTF CG
     this.callGraph = new ClassHierarchyAnalysisAlgorithm(view).initialize(entryPoints);
     this.pag = new PAG();
-    this.stmtVisitor = PAGStmtVisitor.builder().PAG(pag).build();
   }
 
   public void solve() {
-    MethodSignature methodSignature = callGraph.getEntryMethods().get(0);
-    view.getMethod(methodSignature).ifPresent(this::buildMethodPAG);
+    callGraph
+        .getMethodSignatures()
+        .forEach(
+            methodSignature -> view.getMethod(methodSignature).ifPresent(this::buildMethodPAG));
   }
 
   private void buildMethodPAG(SootMethod method) {
+    MethodPAGStmtVisitor stmtVisitor =
+        MethodPAGStmtVisitor.builder()
+            .methodSignature(method.getSignature())
+            .PAG(pag)
+            .callGraph(callGraph)
+            .view(view)
+            .build();
     method.getBody().getStmts().forEach(stmt -> stmt.accept(stmtVisitor));
   }
 }
