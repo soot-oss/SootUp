@@ -22,6 +22,7 @@ package sootup.spark;
  * #L%
  */
 
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,11 +30,13 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import sootup.callgraph.CallGraph;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
+import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
@@ -52,7 +55,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   @Override
   public void caseAssignStmt(JAssignStmt stmt) {
     if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
-      handleInvokeExpr(stmt.asInvokableStmt().getInvokeExpr().get());
+      handleInvokeExpr(stmt.asInvokableStmt().getInvokeExpr().get(), Optional.of(stmt.getLeftOp()));
     } else { // regular assignment
       val left = stmt.getLeftOp();
       val right = stmt.getRightOp();
@@ -85,7 +88,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
    *
    * @param expr
    */
-  private void handleInvokeExpr(AbstractInvokeExpr expr) {
+  private void handleInvokeExpr(AbstractInvokeExpr expr, Optional<Value> lhs) {
     val targets = callGraph.callTargetsFrom(methodSignature);
     targets.stream()
         .filter(
@@ -98,6 +101,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
                 view.getMethod(targetMethodSig)
                     .ifPresent(
                         sootMethod -> {
+                          // add edges for parameter mapping
                           for (int i = 0; i < expr.getArgCount(); i++) {
                             val argNode = NodeFactory.createNode(expr.getArg(i), methodSignature);
                             final int index = i;
@@ -117,6 +121,20 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
                               paramNode.ifPresent(node -> PAG.addEdge(argNode.get(), node));
                             }
                           }
+                          // add edges for return value mapping
+                          lhs.flatMap(l -> NodeFactory.createNode(l, methodSignature))
+                              .ifPresent(
+                                  lhsNode ->
+                                      sootMethod.getBody().getStmts().stream()
+                                          .filter(stmt -> stmt instanceof JReturnStmt)
+                                          .map(stmt -> (JReturnStmt) stmt)
+                                          .forEach(
+                                              returnStmt ->
+                                                  NodeFactory.createNode(
+                                                          returnStmt.getOp(), targetMethodSig)
+                                                      .ifPresent(
+                                                          retOpNode ->
+                                                              PAG.addEdge(retOpNode, lhsNode))));
                         }));
   }
 }
