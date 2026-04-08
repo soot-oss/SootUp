@@ -293,6 +293,8 @@ public class MethodToPAGConversionTest {
             .name("$stack1")
             .containingMethodSig(barMethodSig)
             .build();
+    var l4 =
+        VariableNode.builder().type(oType).name("l4").containingMethodSig(mainMethodSig).build();
 
     // main intraprocedural edges
     assertTrue(delegate.containsEdge(newO1, stack5), "alloc(O,1) -> $stack5");
@@ -307,5 +309,8 @@ public class MethodToPAGConversionTest {
 
     // bar intraprocedural edge: l0.f -> $stack1 (load)
     assertTrue(delegate.containsEdge(l0fRef, stack1), "bar: l0.f -> $stack1 (load)");
+
+    // interprocedural return edge: bar:$stack1 -> main:l4
+    assertTrue(delegate.containsEdge(stack1, l4), "bar:$stack1 -> main:l4 (return value)");
   }
 }
