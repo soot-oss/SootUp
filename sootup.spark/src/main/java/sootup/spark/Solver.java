@@ -29,8 +29,6 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
-import sootup.core.jimple.common.expr.JNewExpr;
-import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
@@ -42,7 +40,6 @@ public class Solver {
   private View view;
   private CallGraph callGraph;
   private PAG pag;
-  private PAGStmtVisitor stmtVisitor;
   private List<MethodSignature> entryPoints;
 
   @Builder
@@ -52,23 +49,23 @@ public class Solver {
     // TODO: Build OTF CG
     this.callGraph = new ClassHierarchyAnalysisAlgorithm(view).initialize(entryPoints);
     this.pag = new PAG();
-    this.stmtVisitor = PAGStmtVisitor.builder().PAG(pag).build();
   }
 
   public void solve() {
-    MethodSignature methodSignature = callGraph.getEntryMethods().get(0);
-    view.getMethod(methodSignature).ifPresent(this::buildMethodPAG);
+    callGraph
+        .getMethodSignatures()
+        .forEach(
+            methodSignature -> view.getMethod(methodSignature).ifPresent(this::buildMethodPAG));
   }
 
   private void buildMethodPAG(SootMethod method) {
-
-    // first add the new
-    method.getBody().getStmts().stream()
-        .filter(JAssignStmt.class::isInstance)
-        .map(JAssignStmt.class::cast)
-        .filter(s -> s.getRightOp() instanceof JNewExpr)
-        .forEach(s -> s.accept(stmtVisitor));
-
+    MethodPAGStmtVisitor stmtVisitor =
+        MethodPAGStmtVisitor.builder()
+            .methodSignature(method.getSignature())
+            .PAG(pag)
+            .callGraph(callGraph)
+            .view(view)
+            .build();
     method.getBody().getStmts().forEach(stmt -> stmt.accept(stmtVisitor));
   }
 }

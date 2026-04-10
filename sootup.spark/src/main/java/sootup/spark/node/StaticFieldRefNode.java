@@ -41,6 +41,8 @@ public class StaticFieldRefNode extends Node {
 
   @Override
   public String toString() {
-    return String.format("\"%s %s.%s\"", field.getType(), getType(), field.getName());
+    return String.format(
+        "\"%s{%s %s.%s}\"",
+        getContainingMethodSig().getName(), field.getType(), getType(), field.getName());
   }
 }
