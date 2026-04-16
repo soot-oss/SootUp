@@ -29,6 +29,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultUndirectedGraph;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
 import sootup.spark.node.Node;
@@ -40,7 +41,20 @@ import sootup.spark.node.VariableNode;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class PAG {
 
-  @NonNull Graph<Node, PAGEdge> delegate = new DefaultDirectedGraph<>(PAGEdge.class);
+  SparkOptions options;
+  Graph<Node, PAGEdge> delegate;
+
+  public PAG() {
+    this(SparkOptions.defaultOptions());
+  }
+
+  public PAG(@NonNull SparkOptions options) {
+    this.options = options;
+    this.delegate =
+        options.isSimpleEdgesBidirectional()
+            ? new DefaultUndirectedGraph<>(PAGEdge.class)
+            : new DefaultDirectedGraph<>(PAGEdge.class);
+  }
 
   public void addEdge(Node source, Node target) {
     if (source instanceof VariableNode) {

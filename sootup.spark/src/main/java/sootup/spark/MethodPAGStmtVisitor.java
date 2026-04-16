@@ -51,6 +51,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   PAG PAG;
   CallGraph callGraph;
   View view;
+  SparkOptions sparkOptions;
 
   @Override
   public void caseAssignStmt(JAssignStmt stmt) {
