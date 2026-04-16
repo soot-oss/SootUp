@@ -22,8 +22,8 @@ package sootup.spark.node;
  * #L%
  */
 
+import java.util.Objects;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -32,14 +32,34 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @SuperBuilder
 @Getter
-@EqualsAndHashCode(callSuper = true)
 public class AllocationNode extends Node {
 
   Object allocationSite;
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof AllocationNode other)) return false;
+    if (allocationSite == null) {
+      return Objects.equals(getType(), other.getType());
+    }
+    return super.equals(o) && Objects.equals(allocationSite, other.allocationSite);
+  }
+
+  @Override
+  public int hashCode() {
+    if (allocationSite == null) {
+      return Objects.hash(getType());
+    }
+    return Objects.hash(super.hashCode(), allocationSite);
+  }
+
+  @Override
   public String toString() {
+    if (allocationSite == null) {
+      return String.format("\"%s{%s}\"", getContainingMethodSig().getName(), getType());
+    }
     return String.format(
-        "\"%s{%s:new %s}\"", getContainingMethodSig().getName(), getAllocationSite(), getType());
+        "\"%s{%s:new %s}\"", getContainingMethodSig().getName(), allocationSite, getType());
   }
 }

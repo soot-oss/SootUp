@@ -22,6 +22,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.spark.Engine;
 import sootup.spark.NodeFactory;
+import sootup.spark.SparkOptions;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
 import sootup.spark.node.StaticFieldRefNode;
@@ -29,6 +30,7 @@ import sootup.spark.node.VariableNode;
 
 class ValueToNodeConversionTest {
 
+  NodeFactory nodeFactory = new NodeFactory(SparkOptions.defaultOptions());
   ClassType aType = SparkTestUtil.simpleType("A");
   ClassType bType = SparkTestUtil.simpleType("B");
   FieldSignature fieldSig =
@@ -46,7 +48,7 @@ class ValueToNodeConversionTest {
   void testLocalToNodeConversion() {
     // Local variable
     val local = new Local("a", aType);
-    val varNodeOpt = NodeFactory.createNode(local, methodSig);
+    val varNodeOpt = nodeFactory.createNode(local, methodSig);
     assertTrue(varNodeOpt.isPresent());
     val varNode = varNodeOpt.get();
     assertTrue(varNode instanceof VariableNode);
@@ -60,7 +62,7 @@ class ValueToNodeConversionTest {
   void testNewExprToNodeConversion() {
     // New allocation
     val newExpr = new JNewExpr(aType);
-    val allocNodeOpt = NodeFactory.createNode(newExpr, methodSig);
+    val allocNodeOpt = nodeFactory.createNode(newExpr, methodSig);
     assertTrue(allocNodeOpt.isPresent());
     val allocNode = allocNodeOpt.get();
     assertTrue(allocNode instanceof AllocationNode);
@@ -73,7 +75,7 @@ class ValueToNodeConversionTest {
     // Instance FieldRef class A{B someB.f}
     val base = new Local("someB", aType);
     val instanceFieldRef = new JInstanceFieldRef(base, fieldSig);
-    val instanceFieldRefNodeOpt = NodeFactory.createNode(instanceFieldRef, methodSig);
+    val instanceFieldRefNodeOpt = nodeFactory.createNode(instanceFieldRef, methodSig);
     assertTrue(instanceFieldRefNodeOpt.isPresent());
     val refNode = instanceFieldRefNodeOpt.get();
     assertTrue(refNode instanceof InstanceFieldRefNode);
@@ -89,7 +91,7 @@ class ValueToNodeConversionTest {
   void testStaticFieldRefToNodeConversion() {
     // Static FieldRef A{B f}
     val staticFieldRef = new JStaticFieldRef(fieldSig);
-    val staticFieldRefNodeOpt = NodeFactory.createNode(staticFieldRef, methodSig);
+    val staticFieldRefNodeOpt = nodeFactory.createNode(staticFieldRef, methodSig);
     assertTrue(staticFieldRefNodeOpt.isPresent());
     val sRefNode = staticFieldRefNodeOpt.get();
     assertTrue(sRefNode instanceof StaticFieldRefNode);
@@ -104,7 +106,7 @@ class ValueToNodeConversionTest {
     // Array Element
     val arrayType = ArrayType.createArrayType(aType, 1);
     val arrayRef = new JArrayRef(new Local("array", arrayType), IntConstant.getInstance(42));
-    val arrayRefNodeOpt = NodeFactory.createNode(arrayRef, methodSig);
+    val arrayRefNodeOpt = nodeFactory.createNode(arrayRef, methodSig);
     assertTrue(arrayRefNodeOpt.isPresent());
     val arrayNode = arrayRefNodeOpt.get();
     assertTrue(arrayNode instanceof InstanceFieldRefNode);
@@ -121,7 +123,7 @@ class ValueToNodeConversionTest {
   void testCastExprToNodeConversion() {
     val local = JavaJimple.newLocal("r0", bType);
     val jcastExpr = JavaJimple.newCastExpr(local, aType);
-    val node = NodeFactory.createNode(jcastExpr, methodSig);
+    val node = nodeFactory.createNode(jcastExpr, methodSig);
     assertTrue(node.isEmpty());
   }
 
@@ -131,7 +133,7 @@ class ValueToNodeConversionTest {
     val newArrayExpr =
         JavaJimple.newNewArrayExpr(
             aType, IntConstant.getInstance(1), JavaIdentifierFactory.getInstance());
-    val node = NodeFactory.createNode(newArrayExpr, methodSig);
+    val node = nodeFactory.createNode(newArrayExpr, methodSig);
     assertTrue(node.isEmpty());
   }
 
@@ -142,14 +144,14 @@ class ValueToNodeConversionTest {
     val newMultiArrayExpr =
         JavaJimple.newNewMultiArrayExpr(
             arrayType, List.of(IntConstant.getInstance(1), IntConstant.getInstance(1)));
-    val node = NodeFactory.createNode(newMultiArrayExpr, methodSig);
+    val node = nodeFactory.createNode(newMultiArrayExpr, methodSig);
     assertTrue(node.isEmpty());
   }
 
   @Test
   void testParameterRefToNodeConversion() {
     val paramRef = JavaJimple.newParameterRef(aType, 1);
-    val node = NodeFactory.createNode(paramRef, methodSig);
+    val node = nodeFactory.createNode(paramRef, methodSig);
     assertTrue(node.isPresent());
     assertTrue(node.get() instanceof VariableNode);
     assertEquals("\"test{A @parameter1}\"", node.get().toString());
@@ -159,7 +161,7 @@ class ValueToNodeConversionTest {
   @Test
   void testThisRefToNodeConversion() {
     val thisRef = JavaJimple.newThisRef(aType);
-    val node = NodeFactory.createNode(thisRef, methodSig);
+    val node = nodeFactory.createNode(thisRef, methodSig);
     assertTrue(node.isEmpty());
   }
 }
