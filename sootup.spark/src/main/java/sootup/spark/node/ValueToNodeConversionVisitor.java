@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -179,6 +180,16 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
             .name(local.getName())
             .containingMethodSig(containingMethodSig)
             .build();
+  }
+
+  @Override
+  public void caseStringConstant(@NonNull StringConstant constant) {
+    AllocationNode.AllocationNodeBuilder<?, ?> builder =
+        AllocationNode.builder().type(constant.getType()).containingMethodSig(containingMethodSig);
+    if (!sparkOptions.isTypesForSites()) {
+      builder.allocationSite(Engine.incrementAndGetAllocCount());
+    }
+    this.node = builder.build();
   }
 
   @Override
