@@ -140,9 +140,6 @@ public class MethodToPAGConversionTest {
 
     var delegate = pag.getDelegate();
 
-    System.out.println(method.get().getBody());
-    SparkTestUtil.vizualizeMehodPAG(delegate);
-
     ClassType oType = idFactory.getClassType("MultiAllocSameType$O");
 
     // First allocation
@@ -224,14 +221,8 @@ public class MethodToPAGConversionTest {
         Solver.builder().view(view).entryPoints(Collections.singletonList(mainMethodSig)).build();
     solver.solve();
 
-    solver
-        .getCallGraph()
-        .getMethodSignatures()
-        .forEach(sig -> view.getMethod(sig).ifPresent(m -> System.out.println(m.getBody())));
-
     PAG pag = solver.getPag();
     var delegate = pag.getDelegate();
-    SparkTestUtil.vizualizeMehodPAG(delegate);
 
     ClassType oType = idFactory.getClassType("BasicInter$O");
     MethodSignature barMethodSig =
