@@ -40,7 +40,7 @@ public class AllocationNode extends Node {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof AllocationNode other)) return false;
-    if (allocationSite == null) {
+    if (allocationSite == null && other.allocationSite == null) {
       return Objects.equals(getType(), other.getType());
     }
     return super.equals(o) && Objects.equals(allocationSite, other.allocationSite);
