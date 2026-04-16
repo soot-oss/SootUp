@@ -140,7 +140,6 @@ public class MethodToPAGConversionTest {
 
     var delegate = pag.getDelegate();
 
-
     ClassType oType = idFactory.getClassType("MultiAllocSameType$O");
 
     // First allocation
