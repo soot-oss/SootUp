@@ -41,6 +41,6 @@ jobs:
         run: rm -rf docs/api; mkdir -p docs/api; mv target/reports/apidocs/* docs/api
 
       - name: Deploy Documentation
-        uses: secure-software-engineering/actions/documentation/deployment@1586956654997710ed19fbc7953cd4336af63a87 # develop
+        uses: secure-software-engineering/actions/documentation/deployment@450bba69b4928dfedda9ba3f41e1aec8ac55e059 # develop
         with:
           version: ${{ github.ref_name }}
