@@ -109,8 +109,8 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
 
   @Override
   @NonNull
-  public Stream<Value> getUses() {
-    return Stream.empty();
+  public Iterable<Value> getUses() {
+    return Collections.emptyList();
   }
 
   /** returns a List that can contain: Locals, JFieldRefs, JArrayRefs */

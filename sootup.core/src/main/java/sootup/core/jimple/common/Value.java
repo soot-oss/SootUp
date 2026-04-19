@@ -22,7 +22,9 @@ package sootup.core.jimple.common;
  * #L%
  */
 
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.JimpleIR;
 import sootup.core.jimple.basic.EquivTo;
@@ -47,7 +49,14 @@ public interface Value extends EquivTo, JimpleIR {
    *
    * @return
    */
-  @NonNull Stream<Value> getUses();
+  @NonNull
+  default List<Value> getUses() {
+    ArrayList<Value> collector = new ArrayList<>();
+    collectUses(collector);
+    return collector;
+  }
+
+  void collectUses(List<Value> collector);
 
   /** Returns the Soot type of this Value. */
   @NonNull Type getType();

@@ -22,6 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.List;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -50,10 +51,11 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   @Override
-  @NonNull
-  public final Stream<Value> getUses() {
-    return Stream.concat(
-        Stream.concat(Stream.concat(op1.getUses(), Stream.of(op1)), op2.getUses()), Stream.of(op2));
+  public void collectUses(List<Value> collector) {
+    op1.collectUses(collector);
+    collector.add(op1);
+    op2.collectUses(collector);
+    collector.add(op2);
   }
 
   @Override

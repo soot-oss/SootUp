@@ -49,9 +49,21 @@ public class WitherTest {
     identifierFactory = loader.getIdentifierFactory();
     declareClassSig = identifierFactory.getClassType("BinaryOperations");
   }
+    void handleStmt(Stmt stmt) {
+        Set<String> sources = Set.of(parseMethodSignature("<Scanner: String nextLine()>"));
+        Set<String> sinks = Set.of(parseMethodSignature("<TaintExample: void sink()>"))
 
+        if (stmt instanceof JAssignStmt assignStmt) {
+            Value right = assignStmt.getRightOp();
+            if(sources.contains(right) && assignStmt.getLeftOp() instanceof Local ){
+                Local left = (Local) assignStmt.getLeftOp();
+                this.taintedVars.add(left);
+            }
+        }
+    }
   @Test
   public void testWithers() {
+
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
     JavaSootClass clazz = loader.getClass(declareClassSig).orElse(null);

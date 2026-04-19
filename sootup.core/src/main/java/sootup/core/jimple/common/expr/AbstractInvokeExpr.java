@@ -22,10 +22,6 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Value;
@@ -33,70 +29,82 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public abstract class AbstractInvokeExpr implements Expr {
 
-  @NonNull private final MethodSignature methodSignature;
-  @NonNull private final Immediate[] args;
+    @NonNull
+    private final MethodSignature methodSignature;
+    @NonNull
+    private final Immediate[] args;
 
-  protected AbstractInvokeExpr(@NonNull MethodSignature method, @NonNull Immediate[] args) {
-    this.methodSignature = method;
-    for (Immediate arg : args) {
-      if (arg == null) {
-        throw new IllegalArgumentException("arg may not be null");
-      }
+    protected AbstractInvokeExpr(@NonNull MethodSignature method, @NonNull Immediate[] args) {
+        this.methodSignature = method;
+        for (Immediate arg : args) {
+            if (arg == null) {
+                throw new IllegalArgumentException("arg may not be null");
+            }
+        }
+        this.args = args;
     }
-    this.args = args;
-  }
 
-  @NonNull
-  public MethodSignature getMethodSignature() {
-    return this.methodSignature;
-  }
-
-  public Immediate getArg(int index) {
-    return args[index];
-  }
-
-  /** Returns a list of arguments. */
-  public List<Immediate> getArgs() {
-    return Collections.unmodifiableList(Arrays.asList(args));
-  }
-
-  public int getArgCount() {
-    return args.length;
-  }
-
-  @NonNull
-  @Override
-  public Type getType() {
-    return methodSignature.getType();
-  }
-
-  @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(Stream.of(args), Stream.of(args).flatMap(Value::getUses));
-  }
-
-  protected void argsToString(@NonNull StringBuilder builder) {
-    final int len = getArgCount();
-    if (0 < len) {
-      builder.append(args[0]);
-      for (int i = 1; i < len; i++) {
-        builder.append(", ");
-        builder.append(args[i]);
-      }
+    @NonNull
+    public MethodSignature getMethodSignature() {
+        return this.methodSignature;
     }
-  }
 
-  protected void argsToPrinter(@NonNull StmtPrinter up) {
-    final int len = getArgCount();
-    if (0 < len) {
-      args[0].toString(up);
-      for (int i = 1; i < len; i++) {
-        up.literal(", ");
-        args[i].toString(up);
-      }
+    public Immediate getArg(int index) {
+        return args[index];
     }
-  }
+
+    /**
+     * Returns a list of arguments.
+     */
+    public List<Immediate> getArgs() {
+        return Collections.unmodifiableList(Arrays.asList(args));
+    }
+
+    public int getArgCount() {
+        return args.length;
+    }
+
+    @NonNull
+    @Override
+    public Type getType() {
+        return methodSignature.getType();
+    }
+
+
+    @Override
+    public void collectUses(List<Value> collector) {
+        collector.addAll(Arrays.asList(args));
+        for (Immediate arg : args) {
+            arg.collectUses(collector);
+        }
+    }
+
+    protected void argsToString(@NonNull StringBuilder builder) {
+        final int len = getArgCount();
+        if (0 < len) {
+            builder.append(args[0]);
+            for (int i = 1; i < len; i++) {
+                builder.append(", ");
+                builder.append(args[i]);
+            }
+        }
+    }
+
+    protected void argsToPrinter(@NonNull StmtPrinter up) {
+        final int len = getArgCount();
+        if (0 < len) {
+            args[0].toString(up);
+            for (int i = 1; i < len; i++) {
+                up.literal(", ");
+                args[i].toString(up);
+            }
+        }
+    }
 }
