@@ -60,8 +60,7 @@ public class TypesForSitesTest {
         "Edge $stack6 -> l3 not found");
   }
 
-
-@Test
+  @Test
   public void testMethodToPAGStringAllocTypesForSites() {
     ClassType classSig = SparkTestUtil.idFactory.getClassType("StringAlloc");
     MethodSignature mainSig =
@@ -89,5 +88,4 @@ public class TypesForSitesTest {
     assertTrue(delegate.containsEdge(typeNode, stack4), "typeNode -> $stack4");
     assertTrue(delegate.containsEdge(stack4, l3), "$stack4 -> l3");
   }
-
 }
