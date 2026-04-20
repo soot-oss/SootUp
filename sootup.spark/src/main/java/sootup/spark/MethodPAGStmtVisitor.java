@@ -51,7 +51,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   PAG PAG;
   CallGraph callGraph;
   View view;
-  SparkOptions sparkOptions;
+  NodeFactory nodeFactory;
 
   @Override
   public void caseAssignStmt(JAssignStmt stmt) {
@@ -60,8 +60,8 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
     } else { // regular assignment
       val left = stmt.getLeftOp();
       val right = stmt.getRightOp();
-      val leftNode = NodeFactory.createNode(left, methodSignature);
-      val rightNode = NodeFactory.createNode(right, methodSignature);
+      val leftNode = nodeFactory.createNode(left, methodSignature);
+      val rightNode = nodeFactory.createNode(right, methodSignature);
       if (leftNode.isPresent() && rightNode.isPresent()) {
         val source = rightNode.get();
         val target = leftNode.get();
@@ -104,7 +104,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
                         sootMethod -> {
                           // add edges for parameter mapping
                           for (int i = 0; i < expr.getArgCount(); i++) {
-                            val argNode = NodeFactory.createNode(expr.getArg(i), methodSignature);
+                            val argNode = nodeFactory.createNode(expr.getArg(i), methodSignature);
                             final int index = i;
                             val paramLocal =
                                 sootMethod.getBody().getStmts().stream()
@@ -118,12 +118,12 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
                                     .findFirst();
                             if (argNode.isPresent() && paramLocal.isPresent()) {
                               val paramNode =
-                                  NodeFactory.createNode(paramLocal.get(), targetMethodSig);
+                                  nodeFactory.createNode(paramLocal.get(), targetMethodSig);
                               paramNode.ifPresent(node -> PAG.addEdge(argNode.get(), node));
                             }
                           }
                           // add edges for return value mapping
-                          lhs.flatMap(l -> NodeFactory.createNode(l, methodSignature))
+                          lhs.flatMap(l -> nodeFactory.createNode(l, methodSignature))
                               .ifPresent(
                                   lhsNode ->
                                       sootMethod.getBody().getStmts().stream()
@@ -131,7 +131,8 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
                                           .map(stmt -> (JReturnStmt) stmt)
                                           .forEach(
                                               returnStmt ->
-                                                  NodeFactory.createNode(
+                                                  nodeFactory
+                                                      .createNode(
                                                           returnStmt.getOp(), targetMethodSig)
                                                       .ifPresent(
                                                           retOpNode ->

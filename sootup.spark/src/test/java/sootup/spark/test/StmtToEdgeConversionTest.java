@@ -20,8 +20,10 @@ import sootup.core.types.ClassType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.spark.Engine;
 import sootup.spark.MethodPAGStmtVisitor;
+import sootup.spark.NodeFactory;
 import sootup.spark.PAG;
 import sootup.spark.PAGEdge;
+import sootup.spark.SparkOptions;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
 import sootup.spark.node.VariableNode;
@@ -45,7 +47,7 @@ public class StmtToEdgeConversionTest {
   public void testAllocEdge() {
     LValue left = new Local("a", aType);
     Value right = new JNewExpr(SparkTestUtil.simpleType("A"));
-    val methodPAG = new PAG();
+    val methodPAG = new PAG(SparkOptions.defaultOptions());
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.ALLOCATION);
 
     val source = methodPAG.getDelegate().getEdgeSource(edge);
@@ -66,7 +68,7 @@ public class StmtToEdgeConversionTest {
   public void testAssignEdge() {
     LValue left = new Local("b", aType);
     Value right = new Local("a", aType);
-    val methodPAG = new PAG();
+    val methodPAG = new PAG(SparkOptions.defaultOptions());
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.ASSIGNMENT);
 
     val source = methodPAG.getDelegate().getEdgeSource(edge);
@@ -85,7 +87,7 @@ public class StmtToEdgeConversionTest {
     val base = new Local("someB", aType);
     val right = new JInstanceFieldRef(base, fieldSig);
     LValue left = new Local("b", aType);
-    val methodPAG = new PAG();
+    val methodPAG = new PAG(SparkOptions.defaultOptions());
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.LOAD);
 
     val source = methodPAG.getDelegate().getEdgeSource(edge);
@@ -111,7 +113,7 @@ public class StmtToEdgeConversionTest {
     val base = new Local("someB", aType);
     val left = new JInstanceFieldRef(base, fieldSig);
     LValue right = new Local("b", aType);
-    val methodPAG = new PAG();
+    val methodPAG = new PAG(SparkOptions.defaultOptions());
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.STORE);
 
     val source = methodPAG.getDelegate().getEdgeSource(edge);
@@ -134,7 +136,11 @@ public class StmtToEdgeConversionTest {
   private PAGEdge doAssignment(Value right, LValue left, PAG methodPAG, PAGEdge.EdgeType edgeType) {
     JAssignStmt assignStmt = new JAssignStmt(left, right, StmtPositionInfo.getNoStmtPositionInfo());
     MethodPAGStmtVisitor stmtVisitor =
-        MethodPAGStmtVisitor.builder().PAG(methodPAG).methodSignature(methodSig).build();
+        MethodPAGStmtVisitor.builder()
+            .PAG(methodPAG)
+            .nodeFactory(new NodeFactory(SparkOptions.defaultOptions()))
+            .methodSignature(methodSig)
+            .build();
     assignStmt.accept(stmtVisitor);
     val edgeOpt =
         methodPAG.getDelegate().edgeSet().stream()

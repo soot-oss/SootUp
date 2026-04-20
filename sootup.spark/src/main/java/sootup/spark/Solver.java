@@ -67,6 +67,7 @@ public class Solver {
             .PAG(pag)
             .callGraph(callGraph)
             .view(view)
+            .nodeFactory(new NodeFactory(sparkOptions))
             .build();
     method.getBody().getStmts().forEach(stmt -> stmt.accept(stmtVisitor));
   }
