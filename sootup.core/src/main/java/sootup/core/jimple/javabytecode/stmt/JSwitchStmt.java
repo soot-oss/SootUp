@@ -23,7 +23,6 @@ package sootup.core.jimple.javabytecode.stmt;
  */
 
 import java.util.*;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -90,9 +89,9 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(getKey().getUses(), Stream.of(getKey()));
+  public void collectUses(List<Value> collector) {
+    getKey().collectUses(collector);
+    collector.add(getKey());
   }
 
   @Override

@@ -1851,11 +1851,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    */
   public Stream<Stmt> getStmtsThatUse(@NonNull Value value) {
     Stream<Stmt> currentUses =
-        insnToStmt.values().stream().filter(stmt -> stmt.getUses().anyMatch(v -> v == value));
+        insnToStmt.values().stream().filter(stmt -> stmt.getUses().stream().anyMatch(v -> v == value));
 
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()
-            .filter(stmt -> stmt.getKey().getUses().anyMatch(v -> v == value))
+            .filter(stmt -> stmt.getKey().getUses().stream().anyMatch(v -> v == value))
             .map(stmt -> getLatestVersionOfStmt(stmt.getValue()));
 
     return Stream.concat(currentUses, oldMappedUses);

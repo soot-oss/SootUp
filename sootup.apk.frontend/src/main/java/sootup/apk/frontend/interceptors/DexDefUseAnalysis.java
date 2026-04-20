@@ -23,7 +23,6 @@ package sootup.apk.frontend.interceptors;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
@@ -68,7 +67,7 @@ public class DexDefUseAnalysis {
         Value val = ((AbstractDefinitionStmt) stmt).getLeftOp();
         addLocalToUseBits(i, val, localToDefsBits);
       }
-      List<Value> collect = stmt.getUses().collect(Collectors.toList());
+      List<Value> collect = stmt.getUses();
       // Record the uses
       for (Value val : collect) {
         addLocalToUseBits(i, val, localToUsesBits);

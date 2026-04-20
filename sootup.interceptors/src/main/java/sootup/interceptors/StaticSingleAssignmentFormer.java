@@ -23,7 +23,6 @@ package sootup.interceptors;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.DominanceFinder;
@@ -117,7 +116,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
       Set<FallsThroughStmt> newPhiStmts = new HashSet<>();
       for (Stmt stmt : block.getStmts()) {
         // replace use
-        final List<Value> uses = stmt.getUses().collect(Collectors.toList());
+        final List<Value> uses = stmt.getUses();
         if (!uses.isEmpty() && !containsPhiExpr(stmt)) {
           for (Value use : uses) {
             if (use instanceof Local) {

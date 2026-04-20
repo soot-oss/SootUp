@@ -22,8 +22,8 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
@@ -107,9 +107,9 @@ public final class JNewArrayExpr implements Expr {
    * @return
    */
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(size.getUses(), Stream.of(size));
+  public void collectUses(List<Value> collector) {
+    size.collectUses(collector);
+    collector.add(size);
   }
 
   /** Returns an instance of ArrayType(). */

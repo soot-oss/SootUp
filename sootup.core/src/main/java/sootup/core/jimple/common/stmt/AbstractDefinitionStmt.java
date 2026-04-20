@@ -22,8 +22,8 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.LValue;
@@ -55,11 +55,11 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
   }
 
   @Override
-  @NonNull
-  public final Stream<Value> getUses() {
+  public final void collectUses(List<Value> collector) {
     Value rightOp = getRightOp();
-    return Stream.concat(
-        Stream.concat(getLeftOp().getUses(), Stream.of(rightOp)), rightOp.getUses());
+    getLeftOp().collectUses(collector);
+    collector.add(rightOp);
+    rightOp.collectUses(collector);
   }
 
   @Override
