@@ -454,7 +454,7 @@
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>6.11.0</version>
+            <version>6.11.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
