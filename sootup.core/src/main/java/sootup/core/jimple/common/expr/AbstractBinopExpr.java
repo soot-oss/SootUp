@@ -23,7 +23,6 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.common.Immediate;

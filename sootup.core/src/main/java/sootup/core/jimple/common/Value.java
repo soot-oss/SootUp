@@ -24,7 +24,6 @@ package sootup.core.jimple.common;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.JimpleIR;
 import sootup.core.jimple.basic.EquivTo;

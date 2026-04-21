@@ -2,11 +2,8 @@ package sootup.tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.SootClassSource;
@@ -49,18 +46,7 @@ public class WitherTest {
     identifierFactory = loader.getIdentifierFactory();
     declareClassSig = identifierFactory.getClassType("BinaryOperations");
   }
-    void handleStmt(Stmt stmt) {
-        Set<String> sources = Set.of(parseMethodSignature("<Scanner: String nextLine()>"));
-        Set<String> sinks = Set.of(parseMethodSignature("<TaintExample: void sink()>"))
 
-        if (stmt instanceof JAssignStmt assignStmt) {
-            Value right = assignStmt.getRightOp();
-            if(sources.contains(right) && assignStmt.getLeftOp() instanceof Local ){
-                Local left = (Local) assignStmt.getLeftOp();
-                this.taintedVars.add(left);
-            }
-        }
-    }
   @Test
   public void testWithers() {
 

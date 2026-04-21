@@ -51,35 +51,35 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       String stmtStr = s.toString();
       switch (stmtStr) {
         case "l1 = 127":
-          value = s.getUses().findFirst().get();
+          value = s.getUses().get(0);
           stmt = s;
           expected = AugmentIntegerTypes.getInteger127();
           actual = evalFunction.evaluate(specTyping, value, stmt, graph);
           assertEquals(expected, actual);
           break;
         case "l1 = 32111":
-          value = s.getUses().findFirst().get();
+          value = s.getUses().get(0);
           stmt = s;
           expected = AugmentIntegerTypes.getInteger32767();
           actual = evalFunction.evaluate(specTyping, value, stmt, graph);
           assertEquals(expected, actual);
           break;
         case "l1 = -129":
-          value = s.getUses().findFirst().get();
+          value = s.getUses().get(0);
           stmt = s;
           expected = PrimitiveType.getShort();
           actual = evalFunction.evaluate(specTyping, value, stmt, graph);
           assertEquals(expected, actual);
           break;
         case "l2 = 1.0":
-          value = s.getUses().findFirst().get();
+          value = s.getUses().get(0);
           stmt = s;
           expected = PrimitiveType.getDouble();
           actual = evalFunction.evaluate(specTyping, value, stmt, graph);
           assertEquals(expected, actual);
           break;
         case "l4 = \"example\"":
-          value = s.getUses().findFirst().get();
+          value = s.getUses().get(0);
           stmt = s;
           expected = view.getIdentifierFactory().getClassType("java.lang.String");
           actual = evalFunction.evaluate(specTyping, value, stmt, graph);
@@ -93,7 +93,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
     for (Stmt s : graph2.getStmts()) {
       if (s.toString().equals("l1 = class \"LA;\"")) {
-        value = s.getUses().findFirst().get();
+        value = s.getUses().get(0);
         stmt = s;
         break;
       }
@@ -118,7 +118,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     for (Stmt s : graph.getStmts()) {
       if (s.toString().equals("if l1 >= l2")) {
         for (Iterator<Value> iterator =
-                s.getUses().filter(use -> use instanceof AbstractConditionExpr).iterator();
+                s.getUses().stream().filter(use -> use instanceof AbstractConditionExpr).iterator();
             iterator.hasNext(); ) {
           value = iterator.next();
           stmt = s;
@@ -145,8 +145,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
     for (Stmt s : graph.getStmts()) {
       if (s.toString().equals("l4 = l2 << l1")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof AbstractIntLongBinopExpr) {
             value = use;
             stmt = s;
@@ -157,12 +156,10 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
 
       if (s.toString().equals("l6 = l1 << $stack7")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof AbstractIntLongBinopExpr) {
             value = use;
             stmt = s;
-
             assertEquals(
                 PrimitiveType.getInt(), evalFunction.evaluate(specTyping, value, stmt, graph));
             return;
@@ -188,8 +185,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
     for (Stmt s : graph.getStmts()) {
       if (s.toString().equals("l3 = l2 ^ l1")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof AbstractIntLongBinopExpr) {
             value = use;
             stmt = s;
@@ -200,8 +196,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
 
       if (s.toString().equals("l6 = $stack8 ^ l4")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof AbstractIntLongBinopExpr) {
             value = use;
             stmt = s;
@@ -256,8 +251,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
     for (Stmt s : graph.getStmts()) {
       if (s.toString().equals("l3 = l2 + $stack4")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof AbstractFloatBinopExpr) {
             value = use;
             stmt = s;
@@ -268,8 +262,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
 
       if (s.toString().equals("l1 = l1 + 1")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof AbstractFloatBinopExpr) {
             value = use;
             stmt = s;
@@ -284,8 +277,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
     for (Stmt s : graph5.getStmts()) {
       if (s.toString().equals("l2 = lengthof l1")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof JLengthExpr) {
             value = use;
             stmt = s;
@@ -300,8 +292,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
     for (Stmt s : graph6.getStmts()) {
       if (s.toString().equals("$stack3 = l1 instanceof A")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof JInstanceOfExpr) {
             value = use;
             stmt = s;
@@ -316,8 +307,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
     for (Stmt s : graph7.getStmts()) {
       if (s.toString().equals("l1 = newmultiarray (A)[3][3]")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof JNewMultiArrayExpr) {
             value = use;
             stmt = s;
@@ -334,8 +324,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
     for (Stmt s : graph8.getStmts()) {
       if (s.toString().equals("specialinvoke $stack2.<A: void <init>()>()")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof AbstractInvokeExpr) {
             value = use;
             stmt = s;
@@ -344,8 +333,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
           }
         }
       } else if (s.toString().equals("$stack3 = virtualinvoke l1.<A: B method()>()")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof AbstractInvokeExpr) {
             value = use;
             stmt = s;
@@ -370,8 +358,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
     for (Stmt s : graph.getStmts()) {
       if (s.toString().equals("$stack2 := @caughtexception")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof JCaughtExceptionRef) {
             value = use;
             stmt = s;
@@ -387,8 +374,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
     for (Stmt s : graph2.getStmts()) {
       if (s.toString().equals("$stack2 := @caughtexception")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof JCaughtExceptionRef) {
             value = use;
             stmt = s;
@@ -405,8 +391,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
     for (Stmt s : graph3.getStmts()) {
       if (s.toString().equals("l1 = this.<ByteCodeTypeTest: A field>")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof JFieldRef) {
             value = use;
             stmt = s;
@@ -416,8 +401,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
           }
         }
       } else if (s.toString().equals("this := @this: ByteCodeTypeTest")) {
-        for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
+        for (Value use : s.getUses()) {
           if (use instanceof JThisRef) {
             value = use;
             stmt = s;
