@@ -92,9 +92,6 @@ public class DexClassSource extends JavaSootClassSource {
           .map(method -> loadMethod(method, dexMethod))
           .collect(Collectors.toSet());
     } else {
-      logger.warn(
-          "classInformation is null for class '{}'. Unable to resolve methods. Returning empty set.",
-          classSignature);
       return Collections.emptySet();
     }
   }
@@ -135,9 +132,6 @@ public class DexClassSource extends JavaSootClassSource {
         return Optional.ofNullable(DexUtil.stringToJimpleType(view, superclass));
       }
     } else {
-      logger.warn(
-          "classInformation is null for class '{}'. Unable to resolve superclass. Returning empty.",
-          classSignature);
       return Optional.empty();
     }
   }
