@@ -1,10 +1,10 @@
-package sootup.spark.node;
+package sootup.spark;
 
 /*-
  * #%L
  * SootUp
  * %%
- * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya and others
+ * Copyright (C) 2002-2026 Ondrej Lhotak, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,21 +22,17 @@ package sootup.spark.node;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.SuperBuilder;
-import sootup.core.signatures.MethodSignature;
-import sootup.core.types.Type;
+import java.util.concurrent.atomic.AtomicLong;
 
-/** Models a PAG node */
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@Getter
-@SuperBuilder
-@EqualsAndHashCode
-public class Node {
-  @NonNull Type type;
-  @NonNull MethodSignature containingMethodSig;
+public class Engine {
+
+  private static final AtomicLong allocCount = new AtomicLong(0);
+
+  public static long incrementAndGetAllocCount() {
+    return allocCount.incrementAndGet();
+  }
+
+  public static void resetAllocCount() {
+    allocCount.set(0);
+  }
 }

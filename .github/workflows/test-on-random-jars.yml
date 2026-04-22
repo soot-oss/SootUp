@@ -4,13 +4,19 @@ on:
   schedule:
     - cron: '0 9 * * 1' # '0' : 0th minute, '9' : Hour (9 AM) '*' : Day of the month '*' : Month '1' : Day of the week (0 is sunday, 1 is monday)
   workflow_dispatch: # Manual trigger of this action
+
+permissions:
+  contents: read
+
 jobs:
   download-jars:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
+      issues: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
