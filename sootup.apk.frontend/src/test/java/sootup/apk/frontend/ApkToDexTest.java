@@ -3,12 +3,14 @@ package sootup.apk.frontend;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sootup.apk.frontend.Util.DexUtil;
+import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -27,10 +29,15 @@ public class ApkToDexTest {
 
   @BeforeAll
   public static void createView() {
-    String apk_path = "resources/FlowSensitivity1.apk";
+    String apk_path_string = "resources/FlowSensitivity1.apk";
+    Path apkPath = Paths.get(apk_path_string);
+    String androidPlatformsPath = "";
     ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation(
-            Paths.get(apk_path), "", DexBodyInterceptors.Default.bodyInterceptors());
+            apkPath,
+            androidPlatformsPath,
+            new AndroidVersionInfo(apkPath, androidPlatformsPath),
+            DexBodyInterceptors.Default.bodyInterceptors());
     view = new JavaView(sootClassApkAnalysisInputLocation);
   }
 

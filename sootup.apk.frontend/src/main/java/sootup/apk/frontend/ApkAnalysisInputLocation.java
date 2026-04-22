@@ -82,9 +82,12 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
    * @param bodyInterceptors the list of body interceptors to apply during analysis
    */
   public ApkAnalysisInputLocation(
-      Path apkPath, String androidPlatformsPath, List<BodyInterceptor> bodyInterceptors) {
+      Path apkPath,
+      String androidPlatformsPath,
+      AndroidVersionInfo androidSDKVersionInfo,
+      List<BodyInterceptor> bodyInterceptors) {
     this.apk_path = apkPath;
-    androidSDKVersionInfo = new AndroidVersionInfo(apkPath, androidPlatformsPath);
+    this.androidSDKVersionInfo = androidSDKVersionInfo;
     this.androidPlatformsPath = androidPlatformsPath;
     this.bodyInterceptors = bodyInterceptors;
     this.classNamesList = extractDexFilesFromPath();
@@ -126,10 +129,6 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
       ClassType type, DexClassProvider dexClassProvider) {
 
     return dexClassProvider.createClassSource(this, apk_path, type);
-  }
-
-  public AndroidVersionInfo getAndroidSDKVersionInfo() {
-    return androidSDKVersionInfo;
   }
 
   @NonNull
