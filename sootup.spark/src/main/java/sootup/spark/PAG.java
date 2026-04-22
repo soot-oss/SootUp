@@ -44,10 +44,6 @@ public class PAG {
   SparkOptions options;
   Graph<Node, PAGEdge> delegate;
 
-  public PAG() {
-    this(SparkOptions.defaultOptions());
-  }
-
   public PAG(@NonNull SparkOptions options) {
     this.options = options;
     this.delegate =

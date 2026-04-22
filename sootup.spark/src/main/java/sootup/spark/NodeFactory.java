@@ -23,8 +23,10 @@ package sootup.spark;
  */
 
 import java.util.Optional;
+import lombok.AccessLevel;
 import lombok.NonNull;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import sootup.core.jimple.common.Value;
 import sootup.core.signatures.MethodSignature;
 import sootup.spark.node.Node;
@@ -34,8 +36,11 @@ import sootup.spark.node.ValueToNodeConversionVisitor;
  * It is responsible for creating a SPARK representative nodes (nodes present in SPARK, AllocNode,
  * FieldRef Node, and VarNode)
  */
-@UtilityClass
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class NodeFactory {
+
+  @NonNull SparkOptions sparkOptions;
 
   /**
    * creates a PAG node for a given Jimple value
@@ -45,7 +50,8 @@ public class NodeFactory {
    */
   @NonNull
   public Optional<Node> createNode(@NonNull Value value, MethodSignature containingMethodSig) {
-    ValueToNodeConversionVisitor visitor = new ValueToNodeConversionVisitor(containingMethodSig);
+    ValueToNodeConversionVisitor visitor =
+        new ValueToNodeConversionVisitor(containingMethodSig, sparkOptions);
     value.accept(visitor);
     return visitor.getResult();
   }
