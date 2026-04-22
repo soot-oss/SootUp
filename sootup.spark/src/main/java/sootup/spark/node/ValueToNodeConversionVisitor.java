@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -41,6 +42,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.spark.Engine;
+import sootup.spark.SparkOptions;
 
 /**
  * {@link Value} to {@link Node} converter. Supported nodes according to the Spark thesis:
@@ -56,10 +58,13 @@ import sootup.spark.Engine;
 public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   final MethodSignature containingMethodSig;
+  final SparkOptions sparkOptions;
   Node node;
 
-  public ValueToNodeConversionVisitor(MethodSignature containingMethodSig) {
+  public ValueToNodeConversionVisitor(
+      MethodSignature containingMethodSig, SparkOptions sparkOptions) {
     this.containingMethodSig = containingMethodSig;
+    this.sparkOptions = sparkOptions;
   }
 
   /**
@@ -91,13 +96,12 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseNewExpr(@NonNull JNewExpr expr) {
-    long allocCount = Engine.incrementAndGetAllocCount();
-    this.node =
-        AllocationNode.builder()
-            .type(expr.getType())
-            .allocationSite(allocCount)
-            .containingMethodSig(containingMethodSig)
-            .build();
+    AllocationNode.AllocationNodeBuilder<?, ?> builder =
+        AllocationNode.builder().type(expr.getType()).containingMethodSig(containingMethodSig);
+    if (!sparkOptions.isTypesForSites()) {
+      builder.allocationSite(Engine.incrementAndGetAllocCount());
+    }
+    this.node = builder.build();
   }
 
   @Override
@@ -176,6 +180,16 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
             .name(local.getName())
             .containingMethodSig(containingMethodSig)
             .build();
+  }
+
+  @Override
+  public void caseStringConstant(@NonNull StringConstant constant) {
+    AllocationNode.AllocationNodeBuilder<?, ?> builder =
+        AllocationNode.builder().type(constant.getType()).containingMethodSig(containingMethodSig);
+    if (!sparkOptions.isTypesForSites()) {
+      builder.allocationSite(Engine.incrementAndGetAllocCount());
+    }
+    this.node = builder.build();
   }
 
   @Override

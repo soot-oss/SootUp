@@ -41,14 +41,16 @@ public class Solver {
   private CallGraph callGraph;
   private PAG pag;
   private List<MethodSignature> entryPoints;
+  private SparkOptions sparkOptions;
 
   @Builder
-  public Solver(View view, List<MethodSignature> entryPoints) {
+  public Solver(View view, List<MethodSignature> entryPoints, SparkOptions sparkOptions) {
     this.view = view;
     this.entryPoints = entryPoints;
+    this.sparkOptions = sparkOptions != null ? sparkOptions : SparkOptions.defaultOptions();
     // TODO: Build OTF CG
     this.callGraph = new ClassHierarchyAnalysisAlgorithm(view).initialize(entryPoints);
-    this.pag = new PAG();
+    this.pag = new PAG(this.sparkOptions);
   }
 
   public void solve() {
@@ -65,6 +67,7 @@ public class Solver {
             .PAG(pag)
             .callGraph(callGraph)
             .view(view)
+            .nodeFactory(new NodeFactory(sparkOptions))
             .build();
     method.getBody().getStmts().forEach(stmt -> stmt.accept(stmtVisitor));
   }
