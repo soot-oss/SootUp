@@ -3,7 +3,6 @@ package sootup.tests;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.SootClassSource;
@@ -49,7 +48,6 @@ public class WitherTest {
 
   @Test
   public void testWithers() {
-
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
     JavaSootClass clazz = loader.getClass(declareClassSig).orElse(null);
