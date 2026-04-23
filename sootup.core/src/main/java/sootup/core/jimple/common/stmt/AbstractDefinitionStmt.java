@@ -31,18 +31,22 @@ import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.types.Type;
 
+/** Abstract base class for definition statements (assignments). */
 public abstract class AbstractDefinitionStmt extends AbstractStmt {
 
   AbstractDefinitionStmt(@NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);
   }
 
+  /** Returns the left-hand side (defined value) of this definition. */
   @NonNull
   public abstract LValue getLeftOp();
 
+  /** Returns the right-hand side (value being assigned) of this definition. */
   @NonNull
   public abstract Value getRightOp();
 
+  /** Returns the type of the defined value. */
   @NonNull
   public Type getType() {
     return getLeftOp().getType();
@@ -72,6 +76,7 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
     return false;
   }
 
+  /** Returns a copy of this statement with the defined local replaced by newLocal. */
   @NonNull
   public abstract FallsThroughStmt withNewDef(@NonNull Local newLocal);
 }

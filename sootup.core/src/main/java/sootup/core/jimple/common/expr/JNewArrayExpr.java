@@ -101,11 +101,6 @@ public final class JNewArrayExpr implements Expr {
     return size;
   }
 
-  /**
-   * Returns a list of type Value, contains a list of values with size
-   *
-   * @return
-   */
   @Override
   public void collectUses(List<Value> collector) {
     size.collectUses(collector);

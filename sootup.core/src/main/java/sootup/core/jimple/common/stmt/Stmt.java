@@ -37,6 +37,7 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
+  /** Collects all values used by this statement into the given list. */
   void collectUses(List<Value> collector);
 
   @NonNull
@@ -46,6 +47,7 @@ public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
     return collector;
   }
 
+  /** Returns the value defined (written) by this statement, if any. */
   @NonNull Optional<LValue> getDef();
 
   @NonNull
@@ -59,12 +61,16 @@ public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
   /**
    * Returns true if execution after this statement may continue at the following statement. (e.g.
    * GotoStmt will return false and e.g. IfStmt will return true).
+   *
+   * @return true if control may fall through to the next statement
    */
   boolean fallsThrough();
 
   /**
    * Returns true if execution after this statement does not necessarily continue at the following
    * statement. The {@link BranchingStmt}'s GotoStmt, JSwitchStmt and IfStmt will return true.
+   *
+   * @return true if this statement may branch to a non-sequential successor
    */
   boolean branches();
 

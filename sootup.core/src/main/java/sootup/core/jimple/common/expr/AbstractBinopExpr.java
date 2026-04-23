@@ -29,6 +29,7 @@ import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Value;
 import sootup.core.util.printer.StmtPrinter;
 
+/** Abstract base class for binary operator expressions. */
 public abstract class AbstractBinopExpr implements Expr {
 
   @NonNull private final Immediate op1;
@@ -39,11 +40,13 @@ public abstract class AbstractBinopExpr implements Expr {
     this.op2 = op2;
   }
 
+  /** Returns the left operand of this binary expression. */
   @NonNull
   public Immediate getOp1() {
     return op1;
   }
 
+  /** Returns the right operand of this binary expression. */
   @NonNull
   public Immediate getOp2() {
     return op2;
@@ -68,7 +71,11 @@ public abstract class AbstractBinopExpr implements Expr {
     return op1.equivHashCode() * 101 + op2.equivHashCode() + 17 ^ getSymbol().hashCode();
   }
 
-  /** Returns the unique symbol for an operator. */
+  /**
+   * Returns the unique symbol for an operator.
+   *
+   * @return the operator symbol string (e.g., "+", "-")
+   */
   @NonNull
   public abstract String getSymbol();
 
@@ -86,9 +93,11 @@ public abstract class AbstractBinopExpr implements Expr {
     op2.toString(up);
   }
 
+  /** Returns a copy of this expression with the left operand replaced. */
   @NonNull
   public abstract AbstractBinopExpr withOp1(@NonNull Immediate value);
 
+  /** Returns a copy of this expression with the right operand replaced. */
   @NonNull
   public abstract AbstractBinopExpr withOp2(@NonNull Immediate value);
 }
