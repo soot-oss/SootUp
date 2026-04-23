@@ -27,26 +27,30 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import org.jf.dexlib2.dexbacked.raw.EncodedValue;
-import org.jf.dexlib2.iface.*;
+import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
+import org.jf.dexlib2.iface.MultiDexContainer;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.jimple.common.constant.ClassConstant;
-import sootup.core.model.*;
+import sootup.core.model.ClassModifier;
+import sootup.core.model.FieldModifier;
+import sootup.core.model.Position;
+import sootup.core.model.SootField;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
-import sootup.java.core.*;
-import sootup.java.core.language.JavaJimple;
+import sootup.java.core.AnnotationUsage;
+import sootup.java.core.JavaSootClassSource;
+import sootup.java.core.JavaSootField;
+import sootup.java.core.JavaSootMethod;
 
 public class DexClassSource extends JavaSootClassSource {
 
@@ -154,7 +158,8 @@ public class DexClassSource extends JavaSootClassSource {
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
     if (classInformation != null) {
-      return convertAnnotation(classInformation.classDefinition.getAnnotations());
+      return DexUtil.createAnnotationUsage(
+          classInformation.classDefinition.getAnnotations(), getView());
     }
     return Collections.emptyList();
   }
@@ -168,40 +173,7 @@ public class DexClassSource extends JavaSootClassSource {
     return dexMethod.makeSootMethod(method, bodyInterceptors, view);
   }
 
-  protected List<AnnotationUsage> convertAnnotation(Set<? extends Annotation> annotations) {
-    if (annotations.isEmpty()) {
-      return Collections.emptyList();
-    }
-    ArrayList<AnnotationUsage> annotationUsage = new ArrayList<>();
-    /* annotation.getVisibility() returns an integer refer org.jf.dexlib2.AnnotationVisibility.java
-     * 0 -> BUILD
-     * 1 -> RUNTIME
-     * 2 -> SYSTEM
-     * */
-    Map<String, Object> paramMap = new HashMap<>();
-    for (Annotation annotation : annotations) {
-      for (AnnotationElement element : annotation.getElements()) {
-        String name = element.getName();
-        paramMap.put(name, convertAnnotationValue(element.getValue().getValueType()));
-      }
-      ClassType at =
-          getView()
-              .getIdentifierFactory()
-              .getClassType(DexUtil.toQualifiedName(annotation.getType()));
-      annotationUsage.add(new AnnotationUsage(at, paramMap));
-    }
-    return annotationUsage;
-  }
-
-  private static Object convertAnnotationValue(Object annotationValue) {
-    if (annotationValue instanceof EncodedValue) {
-      ClassConstant classConstant = JavaJimple.newClassConstant(annotationValue.toString());
-      return ConstantUtil.fromObject(classConstant);
-    }
-    return ConstantUtil.fromObject(annotationValue);
-  }
-
-  private static Set<JavaSootField> resolveFields(
+  private Set<JavaSootField> resolveFields(
       Iterable<? extends Field> fields,
       IdentifierFactory signatureFactory,
       ClassType classSignature) {
@@ -214,12 +186,11 @@ public class DexClassSource extends JavaSootClassSource {
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<FieldModifier> modifiers =
                   Modifiers.getFieldModifiers(field.getAccessFlags());
+              Iterable<AnnotationUsage> annotations =
+                  DexUtil.createAnnotationUsage(field.getAnnotations(), view);
 
               return new JavaSootField(
-                  fieldSignature,
-                  modifiers,
-                  Collections.emptySet(), // TODO Fix this annotations [PM]
-                  NoPositionInformation.getInstance());
+                  fieldSignature, modifiers, annotations, NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());
   }
