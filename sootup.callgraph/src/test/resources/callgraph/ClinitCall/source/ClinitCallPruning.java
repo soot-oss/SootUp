@@ -74,25 +74,21 @@ class Main {
         int a = 12;
         int b = 4;
 
-        // Direct enum method calls
-        System.out.println("Direct enum calls:");
-        System.out.printf("%d + %d = %d%n", a, b, ClinitCallPruning.Operation.ADD.apply(a, b));
-        System.out.printf("%d - %d = %d%n", a, b, ClinitCallPruning.Operation.SUBTRACT.apply(a, b));
-        System.out.printf("%d * %d = %d%n", a, b, ClinitCallPruning.Operation.MULTIPLY.apply(a, b));
-        System.out.printf("%d / %d = %d%n", a, b, ClinitCallPruning.Operation.DIVIDE.apply(a, b));
+        ClinitCallPruning.Operation.ADD.apply(a, b);
+        ClinitCallPruning.Operation.SUBTRACT.apply(a, b);
+        ClinitCallPruning.Operation.MULTIPLY.apply(a, b);
+        ClinitCallPruning.Operation.DIVIDE.apply(a, b);
 
-        // Calls via the static helper
-        System.out.println("\nCalls via Operation.execute(...):");
-        System.out.printf("%d + %d = %d%n", a, b, ClinitCallPruning.Operation.execute("+", a, b));
-        System.out.printf("%d - %d = %d%n", a, b, ClinitCallPruning.Operation.execute("-", a, b));
-        System.out.printf("%d * %d = %d%n", a, b, ClinitCallPruning.Operation.execute("*", a, b));
-        System.out.printf("%d / %d = %d%n", a, b, ClinitCallPruning.Operation.execute("/", a, b));
+        ClinitCallPruning.Operation.execute("+", a, b);
+        ClinitCallPruning.Operation.execute("-", a, b);
+        ClinitCallPruning.Operation.execute("*", a, b);
+        ClinitCallPruning.Operation.execute("/", a, b);
 
         // Demonstrate exception handling (optional)
         try {
             ClinitCallPruning.Operation.execute("/", a, 0);
         } catch (ArithmeticException ex) {
-            System.out.println("\nCaught expected exception: " + ex.getMessage());
+            ex.getMessage();
         }
     }
 }

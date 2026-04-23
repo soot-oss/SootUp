@@ -1213,24 +1213,10 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   public void testClinitCallPruning() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccp.Main");
     IdentifierFactory id = view.getIdentifierFactory();
-    MethodSignature methodSigSystem =
-        id.getMethodSignature("java.lang.System", "<clinit>", "void", Collections.emptyList());
-    MethodSignature methodSigInteger =
-        id.getMethodSignature("java.lang.Integer", "<clinit>", "void", Collections.emptyList());
     MethodSignature methodSigOperation =
         id.getMethodSignature(
             "ccp.ClinitCallPruning$Operation", "<clinit>", "void", Collections.emptyList());
     // no duplicates
-    assertEquals(
-        1,
-        cg.callsFrom(mainMethodSignature).stream()
-            .filter(call -> call.targetMethodSignature().equals(methodSigSystem))
-            .count());
-    assertEquals(
-        1,
-        cg.callsFrom(mainMethodSignature).stream()
-            .filter(call -> call.targetMethodSignature().equals(methodSigInteger))
-            .count());
     assertEquals(
         1,
         cg.callsFrom(mainMethodSignature).stream()
@@ -1313,11 +1299,8 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
         id.getMethodSignature(
             "ccp2.ClinitCallPruningBranch", "<clinit>", "void", Collections.emptyList());
     // include duplicate (method invocations within if-block)
-    assertEquals(
-        2,
-        cg.callsFrom(mainMethodSignature).stream()
-            .filter(call -> call.targetMethodSignature().equals(methodSigOperation))
-            .count());
+    // TODO: currently failing -> aktuell werden alle duplicate am ende eliminiert...
+    assertEquals(2,cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigOperation)).count());
 
     // testClinitCallPruningBranch2
     MethodSignature methodSigOperation2 =
@@ -1331,8 +1314,14 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             .count());
 
     // testClinitCallPruningBranch3
-    // MethodSignature methodSigOperation3 = id.getMethodSignature("ccp2.ClinitCallPruningBranch3",
-    // "<clinit>", "void", Collections.emptyList());
+    MethodSignature methodSigOperation3 = id.getMethodSignature("ccp2.ClinitCallPruningBranch3", "<clinit>", "void", Collections.emptyList());
+    // do not include duplicate (method invocation before while-loop)
+    // TODO: currently failing
+    assertEquals(1, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigOperation3)).count());
 
+    // testClinitCallPruningBranch4
+    MethodSignature methodSigOperation4 = id.getMethodSignature("ccp2.ClinitCallPruningBranch4", "<clinit>", "void", Collections.emptyList());
+    // do not include duplicate
+    assertEquals(1, cg.callsFrom(mainMethodSignature).stream().filter(call -> call.targetMethodSignature().equals(methodSigOperation4)).count());
   }
 }

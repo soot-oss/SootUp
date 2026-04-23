@@ -42,6 +42,11 @@ class ClinitCallPruningBranch3 {
     static int value = 100;
 }
 
+// testClinitCallPruningBranch4
+class ClinitCallPruningBranch4 {
+    public static int value2 = 200;
+}
+
 class ClinitCallPruning2{
     public static void main(String[] args) {
         // testClinitPruningChild
@@ -77,5 +82,14 @@ class ClinitCallPruning2{
                 condition = false;
             }
         }
+
+        // testClinitCallPruningBranch4
+        int c = ClinitCallPruningBranch4.value2;
+        if (c > 400) {
+            // to create an if-block
+            int i = 10;
+            i += 10;
+        }
+        int d = ClinitCallPruningBranch4.value2;
     }
 }
