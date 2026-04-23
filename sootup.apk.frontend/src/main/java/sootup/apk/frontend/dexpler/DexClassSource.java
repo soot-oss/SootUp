@@ -99,6 +99,9 @@ public class DexClassSource extends JavaSootClassSource {
   @NonNull
   @Override
   public Collection<? extends SootField> resolveFields() throws ResolveException {
+    if (classInformation == null) {
+      return Collections.emptySet();
+    }
     return resolveFields(
         classInformation.classDefinition.getFields(), view.getIdentifierFactory(), classSignature);
   }
@@ -106,12 +109,18 @@ public class DexClassSource extends JavaSootClassSource {
   @NonNull
   @Override
   public Set<ClassModifier> resolveModifiers() {
+    if (classInformation == null) {
+      return Collections.emptySet();
+    }
     return Modifiers.getClassModifiers(classInformation.classDefinition.getAccessFlags());
   }
 
   @NonNull
   @Override
   public Set<? extends ClassType> resolveInterfaces() {
+    if (classInformation == null) {
+      return Collections.emptySet();
+    }
     List<String> interfaces = classInformation.classDefinition.getInterfaces();
     if (interfaces.isEmpty()) {
       return new HashSet<>();
@@ -152,6 +161,9 @@ public class DexClassSource extends JavaSootClassSource {
    * @return The source file for this class as specified in the dex file.
    */
   public Optional<String> getSourceFile() {
+    if (classInformation == null) {
+      return Optional.empty();
+    }
     return Optional.ofNullable(classInformation.classDefinition.getSourceFile());
   }
 
