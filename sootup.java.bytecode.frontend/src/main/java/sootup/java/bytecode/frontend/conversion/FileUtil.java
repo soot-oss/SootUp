@@ -1,4 +1,4 @@
-package sootup.java.bytecode.frontend;
+package sootup.java.bytecode.frontend.conversion;
 
 import java.io.IOException;
 import java.nio.file.Files;

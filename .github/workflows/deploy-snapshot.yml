@@ -5,20 +5,23 @@ on:
     branches:
       - develop
 
+permissions:
+  contents: read
+
 jobs:
   deploy-snapshot:
     runs-on: ubuntu-latest
     name: Deploy SNAPSHOT version
-    environment: Deploy
+    environment: deployment
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Deploy SNAPSHOT version
-        uses: secure-software-engineering/actions/deployment/maven-deployment@develop
+        uses: secure-software-engineering/actions/deployment/maven-deployment@450bba69b4928dfedda9ba3f41e1aec8ac55e059 # develop
         with:
           java-distribution: adopt
-          java-version: 11
+          java-version: 17
           server-id: central
           server-username: ${{ secrets.MAVEN_USERNAME }}
           server-password: ${{ secrets.MAVEN_CENTRAL_TOKEN }}

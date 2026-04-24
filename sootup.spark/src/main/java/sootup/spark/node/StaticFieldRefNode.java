@@ -4,7 +4,7 @@ package sootup.spark.node;
  * #%L
  * SootUp
  * %%
- * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya, Palaniappan Muthuraman
+ * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -41,6 +41,8 @@ public class StaticFieldRefNode extends Node {
 
   @Override
   public String toString() {
-    return String.format("\"%s %s.%s\"", field.getType(), getType(), field.getName());
+    return String.format(
+        "\"%s{%s %s.%s}\"",
+        getContainingMethodSig().getName(), field.getType(), getType(), field.getName());
   }
 }

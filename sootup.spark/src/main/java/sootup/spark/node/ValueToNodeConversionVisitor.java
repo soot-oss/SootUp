@@ -4,7 +4,7 @@ package sootup.spark.node;
  * #%L
  * SootUp
  * %%
- * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya, Palaniappan Muthuraman
+ * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -37,8 +38,11 @@ import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.visitor.AbstractValueVisitor;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.spark.Engine;
+import sootup.spark.SparkOptions;
 
 /**
  * {@link Value} to {@link Node} converter. Supported nodes according to the Spark thesis:
@@ -53,7 +57,15 @@ import sootup.core.types.ClassType;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
+  final MethodSignature containingMethodSig;
+  final SparkOptions sparkOptions;
   Node node;
+
+  public ValueToNodeConversionVisitor(
+      MethodSignature containingMethodSig, SparkOptions sparkOptions) {
+    this.containingMethodSig = containingMethodSig;
+    this.sparkOptions = sparkOptions;
+  }
 
   /**
    * returns a node as a result of the value to node conversion
@@ -84,7 +96,12 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseNewExpr(@NonNull JNewExpr expr) {
-    this.node = AllocationNode.builder().type(expr.getType()).build();
+    AllocationNode.AllocationNodeBuilder<?, ?> builder =
+        AllocationNode.builder().type(expr.getType()).containingMethodSig(containingMethodSig);
+    if (!sparkOptions.isTypesForSites()) {
+      builder.allocationSite(Engine.incrementAndGetAllocCount());
+    }
+    this.node = builder.build();
   }
 
   @Override
@@ -93,18 +110,24 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
         StaticFieldRefNode.builder()
             .field(ref.getFieldSignature())
             .type(ref.getFieldSignature().getDeclClassType())
+            .containingMethodSig(containingMethodSig)
             .build();
   }
 
   @Override
   public void caseInstanceFieldRef(@NonNull JInstanceFieldRef ref) {
     val base =
-        VariableNode.builder().name(ref.getBase().getName()).type(ref.getBase().getType()).build();
+        VariableNode.builder()
+            .name(ref.getBase().getName())
+            .type(ref.getBase().getType())
+            .containingMethodSig(containingMethodSig)
+            .build();
     this.node =
         InstanceFieldRefNode.builder()
             .base(base)
             .field(ref.getFieldSignature())
             .type(ref.getType())
+            .containingMethodSig(containingMethodSig)
             .build();
   }
 
@@ -120,17 +143,27 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
             VariableNode.builder()
                 .name(ref.getBase().getName())
                 .type(ref.getBase().getType())
+                .containingMethodSig(containingMethodSig)
                 .build();
         this.node =
-            InstanceFieldRefNode.builder().base(base).field(field).type(ref.getType()).build();
+            InstanceFieldRefNode.builder()
+                .base(base)
+                .field(field)
+                .type(ref.getType())
+                .containingMethodSig(containingMethodSig)
+                .build();
       }
     }
   }
 
   @Override
   public void caseParameterRef(@NonNull JParameterRef ref) {
-    // TODO: wip
-    defaultCaseValue(ref);
+    this.node =
+        VariableNode.builder()
+            .name("@parameter" + ref.getIndex())
+            .type(ref.getType())
+            .containingMethodSig(containingMethodSig)
+            .build();
   }
 
   @Override
@@ -141,7 +174,22 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseLocal(@NonNull Local local) {
-    this.node = VariableNode.builder().type(local.getType()).name(local.getName()).build();
+    this.node =
+        VariableNode.builder()
+            .type(local.getType())
+            .name(local.getName())
+            .containingMethodSig(containingMethodSig)
+            .build();
+  }
+
+  @Override
+  public void caseStringConstant(@NonNull StringConstant constant) {
+    AllocationNode.AllocationNodeBuilder<?, ?> builder =
+        AllocationNode.builder().type(constant.getType()).containingMethodSig(containingMethodSig);
+    if (!sparkOptions.isTypesForSites()) {
+      builder.allocationSite(Engine.incrementAndGetAllocCount());
+    }
+    this.node = builder.build();
   }
 
   @Override

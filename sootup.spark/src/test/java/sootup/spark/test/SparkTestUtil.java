@@ -1,17 +1,32 @@
 package sootup.spark.test;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.StringWriter;
+import java.util.Collections;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.nio.dot.DOTExporter;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.views.JavaView;
+import sootup.spark.PAGEdge;
+import sootup.spark.Solver;
+import sootup.spark.SparkOptions;
+import sootup.spark.node.AllocationNode;
 import sootup.spark.node.Node;
+import sootup.spark.node.VariableNode;
 
 @UtilityClass
 public class SparkTestUtil {
+
+  public static final JavaIdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
+  public static final JavaView view =
+      new JavaView(new JavaClassPathAnalysisInputLocation("src/test/resources/pta/binary"));
 
   public static ClassType simpleType(String name) {
     return new ClassType() {
@@ -32,9 +47,44 @@ public class SparkTestUtil {
     };
   }
 
-  public static void vizualizeMehodPAG(Graph<Node, DefaultEdge> pag) {
-    val exporter = new DOTExporter<Node, DefaultEdge>(Node::toString);
+  public static Graph<Node, PAGEdge> solveMain(MethodSignature mainSig) {
+    assertTrue(view.getClass(mainSig.getDeclClassType()).isPresent());
+    assertTrue(view.getMethod(mainSig).isPresent());
+    Solver solver =
+        Solver.builder().view(view).entryPoints(Collections.singletonList(mainSig)).build();
+    solver.solve();
+    return solver.getPag().getDelegate();
+  }
+
+  public static Graph<Node, PAGEdge> solveMain(MethodSignature mainSig, SparkOptions options) {
+    assertTrue(view.getClass(mainSig.getDeclClassType()).isPresent());
+    assertTrue(view.getMethod(mainSig).isPresent());
+    Solver solver =
+        Solver.builder()
+            .view(view)
+            .entryPoints(Collections.singletonList(mainSig))
+            .sparkOptions(options)
+            .build();
+    solver.solve();
+    return solver.getPag().getDelegate();
+  }
+
+  public static AllocationNode alloc(ClassType type, long site, MethodSignature sig) {
+    return AllocationNode.builder()
+        .type(type)
+        .allocationSite(site)
+        .containingMethodSig(sig)
+        .build();
+  }
+
+  public static VariableNode var(ClassType type, String name, MethodSignature sig) {
+    return VariableNode.builder().type(type).name(name).containingMethodSig(sig).build();
+  }
+
+  public static void vizualizeMehodPAG(Graph<Node, PAGEdge> pag) {
+    val exporter = new DOTExporter<Node, PAGEdge>(Node::toString);
     StringWriter writer = new StringWriter();
     exporter.exportGraph(pag, writer);
+    System.out.println(writer);
   }
 }
