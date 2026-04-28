@@ -23,16 +23,22 @@ import sootup.java.core.views.JavaView;
 public class CallGraphTest {
 
   public static JavaView view;
+  public static JavaView locationLeakView;
 
-  String className = "de.ecspride.MainActivity";
+  String flowSensitivityClassName = "de.ecspride.MainActivity";
+  String locationLeakClassName = "de.ecspride.LocationLeak1";
   String methodName = "onCreate";
   List<String> methodParameters = List.of("android.os.Bundle");
   String methodReturnType = "void";
 
   @BeforeAll
   public static void createView() {
-    String apk_path_string = "resources/FlowSensitivity1.apk";
-    Path apkPath = Paths.get(apk_path_string);
+    view = createViewForApk("resources/FlowSensitivity1.apk");
+    locationLeakView = createViewForApk("resources/LocationLeak1.apk");
+  }
+
+  private static JavaView createViewForApk(String apkPathString) {
+    Path apkPath = Paths.get(apkPathString);
     String androidPlatformsPath = "resources/platforms";
     AndroidVersionInfo androidVersionInfo = new AndroidVersionInfo(apkPath, androidPlatformsPath);
 
@@ -52,7 +58,8 @@ public class CallGraphTest {
                 + androidVersionInfo.getApi_version()
                 + File.separator
                 + "android.jar");
-    view = new JavaView(List.of(sootClassApkAnalysisInputLocation, classPathAnalysisInputLocation));
+
+    return new JavaView(List.of(sootClassApkAnalysisInputLocation, classPathAnalysisInputLocation));
   }
 
   @Test
@@ -60,7 +67,8 @@ public class CallGraphTest {
 
     MethodSignature onCreateMethodSignature =
         view.getIdentifierFactory()
-            .getMethodSignature(className, methodName, methodReturnType, methodParameters);
+            .getMethodSignature(
+                flowSensitivityClassName, methodName, methodReturnType, methodParameters);
 
     CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view);
     CallGraph cg = cha.initialize(List.of(onCreateMethodSignature));
@@ -74,7 +82,8 @@ public class CallGraphTest {
 
     MethodSignature onCreateMethodSignature =
         view.getIdentifierFactory()
-            .getMethodSignature(className, methodName, methodReturnType, methodParameters);
+            .getMethodSignature(
+                flowSensitivityClassName, methodName, methodReturnType, methodParameters);
 
     CallGraphAlgorithm rta =
         new RapidTypeAnalysisAlgorithm(
@@ -84,5 +93,41 @@ public class CallGraphTest {
 
     assertTrue(cg.containsMethod(onCreateMethodSignature));
     assertEquals(9, cg.callsFrom(onCreateMethodSignature).size());
+  }
+
+  @Test
+  public void testLocationLeakCHACallGraphAlgorithm() {
+
+    MethodSignature onCreateMethodSignature =
+        locationLeakView
+            .getIdentifierFactory()
+            .getMethodSignature(
+                locationLeakClassName, methodName, methodReturnType, methodParameters);
+
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(locationLeakView);
+    CallGraph cg = cha.initialize(List.of(onCreateMethodSignature));
+
+    assertTrue(cg.containsMethod(onCreateMethodSignature));
+    assertEquals(5, cg.callsFrom(onCreateMethodSignature).size());
+  }
+
+  @Test
+  public void testLocationLeakRTACallGraphAlgorithm() {
+
+    MethodSignature onCreateMethodSignature =
+        locationLeakView
+            .getIdentifierFactory()
+            .getMethodSignature(
+                locationLeakClassName, methodName, methodReturnType, methodParameters);
+
+    CallGraphAlgorithm rta =
+        new RapidTypeAnalysisAlgorithm(
+            locationLeakView,
+            locationLeakView.getClasses().map(JavaSootClass::getType).collect(Collectors.toSet()));
+
+    CallGraph cg = rta.initialize(List.of(onCreateMethodSignature));
+
+    assertTrue(cg.containsMethod(onCreateMethodSignature));
+    assertEquals(5, cg.callsFrom(onCreateMethodSignature).size());
   }
 }
