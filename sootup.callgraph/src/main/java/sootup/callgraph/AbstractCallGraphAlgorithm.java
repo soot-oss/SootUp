@@ -379,6 +379,38 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     Set<BasicBlock<?>> visitedBlocks = new HashSet<>();
     sourceMethod.getBody().getControlFlowGraph().getBlocksSorted()
         .forEach(basicBlock -> {
+
+          // --- NEW: Block-level State Propagation ---
+          // Propagate the clinit flags from predecessors BEFORE evaluating statements
+          List<?> preBlocks = basicBlock.getPredecessors();
+          if (!preBlocks.isEmpty()) {
+            BasicBlock<?> firstPre = findFirstVisitedPredBlock(preBlocks, visitedBlocks);
+            if (firstPre != null) {
+              Set<ClassType> clinitFlagsInFirstPred = new HashSet<>();
+              Map<ClassType, Boolean> firstPreClasses = table.column(firstPre);
+
+              for (Map.Entry<ClassType, Boolean> entry : firstPreClasses.entrySet()) {
+                if (Boolean.TRUE.equals(entry.getValue())) {
+                  clinitFlagsInFirstPred.add(entry.getKey());
+                }
+              }
+
+              for (Object preObj : preBlocks) {
+                BasicBlock<?> preBlock = (BasicBlock<?>) preObj;
+                if (!preBlock.equals(basicBlock) && visitedBlocks.contains(preBlock)) {
+                  clinitFlagsInFirstPred.removeIf(classType ->
+                          !Boolean.TRUE.equals(table.get(classType, preBlock)));
+                }
+              }
+
+              // Apply inherited state to the current block
+              for (ClassType type : clinitFlagsInFirstPred) {
+                table.put(type, basicBlock, Boolean.TRUE);
+              }
+            }
+          }
+          // ------------------------------------------
+
           for (Stmt stmt : basicBlock.getStmts()) {
             if (!stmt.isInvokableStmt()) {
               continue;
@@ -460,39 +492,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       InvokableStmt invokableStmt,
       Table<ClassType, BasicBlock<?>, Boolean> clinitCallTable,
       Set<BasicBlock<?>> visitedBlocks) {
+
     ControlFlowGraph<?> cfg = sourceMethod.getBody().getControlFlowGraph();
     BasicBlock<?> currentBlock = cfg.getBlockOf(invokableStmt);
     MethodSignature sourceSig = sourceMethod.getSignature();
     ArrayListMultimap<ClassType, Call> potentialClinitCalls = ArrayListMultimap.create();
-    // check for common classType under all predecessors TODO: currently without visited check
-    List<?> preBlocks = currentBlock.getPredecessors();
-    if (!preBlocks.isEmpty()) {
-      // get first predecessor-block and save classes marked as TRUE
-      BasicBlock<?> firstPre = findFirstVisitedPredBlock(preBlocks, visitedBlocks);
-      assert firstPre != null;
-      System.out.println("FirstPreBlock: " + firstPre);
-      Set<ClassType> clinitFlagsInFirstPred = new HashSet<>();
-      // iterate column of the first predecessor-block
-      Map<ClassType, Boolean> firstPreClasses = clinitCallTable.column(firstPre);
-      for (Map.Entry<ClassType, Boolean> entry : firstPreClasses.entrySet()) {
-        if (Boolean.TRUE.equals(entry.getValue())) {
-          clinitFlagsInFirstPred.add(entry.getKey());
-        }
-      }
-      // keep class only if clinitCallTable.get(classType, preBlock) is TRUE for ALL preBlocks
-      for (Object preObj : preBlocks) {
-        BasicBlock<?> preBlock = (BasicBlock<?>) preObj;
-        if (visitedBlocks.contains(preBlock)) {
-          if (clinitFlagsInFirstPred.isEmpty()) break;
-          // remove class if NOT initialized in VISITED predecessor
-          clinitFlagsInFirstPred.removeIf(classType -> Boolean.FALSE.equals(clinitCallTable.get(classType, preBlock)));
-        }
-      }
-      // update clinitCallTable for currentBlock
-      for (ClassType type : clinitFlagsInFirstPred) {
-        clinitCallTable.put(type, currentBlock, Boolean.TRUE);
-      }
-    }
 
     // static initializer call of class
     view.getMethod(view.getIdentifierFactory().getStaticInitializerSignature(targetClass))
@@ -500,6 +504,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             targetMethod -> {
               MethodSignature targetSig = targetMethod.getSignature();
               ClassType targetClassType = targetSig.getDeclClassType();
+
               if (clinitCallTable.get(targetClassType, currentBlock) == null
                   || clinitCallTable.get(targetClassType, currentBlock) == Boolean.FALSE) {
                 clinitCallTable.put(targetClassType, currentBlock, Boolean.TRUE);
@@ -514,7 +519,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   System.out.println("Successors1: " + currentBlock.getSuccessors());
                 }
                 potentialClinitCalls.put(targetMethod.getDeclaringClassType(), callToAdd);
-                visitedBlocks.add(currentBlock);
+                // visitedBlocks.add(currentBlock);
               }
             });
     // static initializer calls of all superclasses
@@ -530,6 +535,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             targetMethod -> {
               MethodSignature targetSig = targetMethod.getSignature();
               ClassType targetClassType = targetSig.getDeclClassType();
+
               if (clinitCallTable.get(targetClassType, currentBlock) == null
                   || clinitCallTable.get(targetClassType, currentBlock) == Boolean.FALSE) {
                 clinitCallTable.put(targetClassType, currentBlock, Boolean.TRUE);
@@ -544,14 +550,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   System.out.println("Successors2: " + currentBlock.getSuccessors());
                 }
                 potentialClinitCalls.put(targetMethod.getDeclaringClassType(), callToAdd);
-                visitedBlocks.add(currentBlock);
+                // visitedBlocks.add(currentBlock);
               }
             });
     return potentialClinitCalls;
   }
 
   // TODO: description; helper method to find first visited predBlock
-  protected BasicBlock<?> findFirstVisitedPredBlock(List<?> preBlocks, Set<BasicBlock<?>> visitedBlocks) {
+  private BasicBlock<?> findFirstVisitedPredBlock(List<?> preBlocks, Set<BasicBlock<?>> visitedBlocks) {
     BasicBlock<?> firstPreBlock;
     for (Object preBlock : preBlocks) {
       firstPreBlock = (BasicBlock<?>) preBlock;
@@ -604,7 +610,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   // TODO: add description
-  public void addStaticInitializerCalls(Stream<Call> staticInitializerCalls, MutableCallGraph cg, Deque<MethodSignature> workList) {
+  private void addStaticInitializerCalls(Stream<Call> staticInitializerCalls, MutableCallGraph cg, Deque<MethodSignature> workList) {
     staticInitializerCalls.forEach(call -> addCallToCG(call, cg, workList));
   }
 
