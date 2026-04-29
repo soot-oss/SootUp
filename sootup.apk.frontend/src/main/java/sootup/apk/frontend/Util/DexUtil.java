@@ -32,6 +32,7 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 
 public class DexUtil {
@@ -142,13 +143,8 @@ public class DexUtil {
       name = dottedClassName(name);
     }
     JavaClassType javaClassType;
-    int lastIndex = name.lastIndexOf(".");
-    lastIndex = (lastIndex == -1) ? 0 : lastIndex;
     try {
-      javaClassType =
-          new JavaClassType(
-              name.substring(name.lastIndexOf(".") + 1),
-              new PackageName(name.substring(0, lastIndex)));
+      javaClassType = JavaIdentifierFactory.getInstance().getClassType(name);
     } catch (Exception exception) {
       System.out.println("Exception when substring with className " + name);
       throw new RuntimeException();
