@@ -395,7 +395,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   Set<ClassType> clinitFlagsInFirstPred = new HashSet<>();
                   Map<ClassType, Boolean> firstPreClasses = table.column(firstPre);
                   for (Map.Entry<ClassType, Boolean> entry : firstPreClasses.entrySet()) {
-                    if (Boolean.TRUE.equals(entry.getValue())) {
+                    if (entry.getValue()) {
                       clinitFlagsInFirstPred.add(entry.getKey());
                     }
                   }
