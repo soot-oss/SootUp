@@ -1022,13 +1022,13 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             virtualMethod,
             getInvokableStmt(mainMethodSignature, virtualMethod, 1)));
 
-    checkClinit(cg, "multi.Instantiated", 0, false, null);
+    checkClinit(cg, "multi.Instantiated", false, null);
 
-    checkClinit(cg, "multi.FieldLeft", 0, true, null);
+    checkClinit(cg, "multi.FieldLeft", true, null);
 
-    checkClinit(cg, "multi.FieldRight", 0, false, null);
+    checkClinit(cg, "multi.FieldRight", false, null);
 
-    checkClinit(cg, "multi.MultiCalls", 0, false, staticMethod);
+    checkClinit(cg, "multi.MultiCalls", false, staticMethod);
 
     assertEquals(11, cg.callsFrom(mainMethodSignature).size());
 
@@ -1043,15 +1043,14 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
     assertEquals(0, cg.callsFrom(virtualMethod).size());
   }
 
-  private void checkClinit(
-      CallGraph cg, String clinitClassName, int index, boolean left, MethodSignature ms) {
+  private void checkClinit(CallGraph cg, String clinitClassName, boolean left, MethodSignature ms) {
     ClassType clinitClass = identifierFactory.getClassType(clinitClassName);
     MethodSignature clinitMethod = identifierFactory.getStaticInitializerSignature(clinitClass);
     InvokableStmt invokeStmt;
     if (ms == null) {
-      invokeStmt = getInvokableStmtNonInvokeExpr(mainMethodSignature, clinitClass, left, index);
+      invokeStmt = getInvokableStmtNonInvokeExpr(mainMethodSignature, clinitClass, left, 0);
     } else {
-      invokeStmt = getInvokableStmt(mainMethodSignature, ms, index);
+      invokeStmt = getInvokableStmt(mainMethodSignature, ms, 0);
     }
     assertTrue(cg.containsCall(mainMethodSignature, clinitMethod, invokeStmt));
   }
