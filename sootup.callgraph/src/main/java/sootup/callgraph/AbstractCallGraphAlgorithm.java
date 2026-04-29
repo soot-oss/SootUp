@@ -359,12 +359,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /**
    * Resolves all potential static initializer calls caused by the given source method. This method
    * iterates over the sorted blocks of the source method, tracking whether each block contains a
-   * static initializer (<clinit>) call for a specific class type. If all visited predecessor blocks
-   * (meaning all statements in those blocks have been fully processed) already contain a static
-   * initializer call for a given class type, the current block inherits this state. Consequently,
-   * if a static initializer call is guaranteed to have occurred on all incoming control flow paths,
-   * subsequent calls to the same initializer in the current block are pruned to avoid creating
-   * duplicate edges.
+   * static initializer ({@code <clinit>}) call for a specific class type. If all visited
+   * predecessor blocks (meaning all statements in those blocks have been fully processed) already
+   * contain a static initializer call for a given class type, the current block inherits this
+   * state. Consequently, if a static initializer call is guaranteed to have occurred on all
+   * incoming control flow paths, subsequent calls to the same initializer in the current block are
+   * pruned to avoid creating duplicate edges.
    *
    * @param sourceMethod the inspected source method
    * @return a multimap containing the resolved potential static initializer calls
