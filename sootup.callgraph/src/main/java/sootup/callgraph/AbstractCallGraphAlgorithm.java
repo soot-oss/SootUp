@@ -485,7 +485,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *                        call within or prior to that block
    * @return a multimap of newly discovered potential static initializer calls
    */
-  // TODO: eliminate duplicate code snippet
   protected ArrayListMultimap<ClassType, Call> findStaticInitializerCalls(
       SootMethod sourceMethod,
       ClassType targetClass,
@@ -497,41 +496,24 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     MethodSignature sourceSig = sourceMethod.getSignature();
     ArrayListMultimap<ClassType, Call> potentialClinitCalls = ArrayListMultimap.create();
 
-    // static initializer call of class
-    view.getMethod(view.getIdentifierFactory().getStaticInitializerSignature(targetClass))
-        .ifPresent(
-            targetMethod -> {
-              MethodSignature targetSig = targetMethod.getSignature();
-              ClassType targetClassType = targetSig.getDeclClassType();
-
-              if (clinitCallTable.get(targetClassType, currentBlock) == null
-                  || clinitCallTable.get(targetClassType, currentBlock) == Boolean.FALSE) {
-                clinitCallTable.put(targetClassType, currentBlock, Boolean.TRUE);
-                Call callToAdd = new Call(sourceSig, targetSig, invokableStmt);
-                potentialClinitCalls.put(targetMethod.getDeclaringClassType(), callToAdd);
-              }
-            });
-    // static initializer calls of all superclasses
-    typeHierarchy
-        .superClassesOf(targetClass)
-        .map(
-            classType ->
-                view.getMethod(
-                    view.getIdentifierFactory().getStaticInitializerSignature(classType)))
+    // static initializer call of class + all superclasses
+    Stream.concat(Stream.of(targetClass), typeHierarchy.superClassesOf(targetClass))
+        .map(classType -> view.getMethod(view.getIdentifierFactory().getStaticInitializerSignature(classType)))
         .filter(Optional::isPresent)
         .map(Optional::get)
-        .forEach(
-            targetMethod -> {
-              MethodSignature targetSig = targetMethod.getSignature();
-              ClassType targetClassType = targetSig.getDeclClassType();
+        // eliminates self-calls caused by superClasses
+        .filter(targetMethod -> !targetMethod.getSignature().equals(sourceSig))
+        .forEach(targetMethod -> {
+            MethodSignature targetSig = targetMethod.getSignature();
+            ClassType targetClassType = targetSig.getDeclClassType();
 
-              if (clinitCallTable.get(targetClassType, currentBlock) == null
-                  || clinitCallTable.get(targetClassType, currentBlock) == Boolean.FALSE) {
-                clinitCallTable.put(targetClassType, currentBlock, Boolean.TRUE);
-                Call callToAdd = new Call(sourceSig, targetSig, invokableStmt);
-                potentialClinitCalls.put(targetMethod.getDeclaringClassType(), callToAdd);
-              }
-            });
+            if (clinitCallTable.get(targetClassType, currentBlock) == null
+                    || clinitCallTable.get(targetClassType, currentBlock) == Boolean.FALSE) {
+              clinitCallTable.put(targetClassType, currentBlock, Boolean.TRUE);
+              Call callToAdd = new Call(sourceSig, targetSig, invokableStmt);
+              potentialClinitCalls.put(targetMethod.getDeclaringClassType(), callToAdd);
+            }
+        });
     return potentialClinitCalls;
   }
 
@@ -553,17 +535,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * This method processes the potential static initializer call edges and prunes any unnecessary ones.
+   * This method enables optional post-processing of potential static initializer call edges.
    *
    * @param potentialStaticInitializerCalls all potential static initializer calls
    * @return a stream of valid static initializer calls
    */
-  // TODO: create example which needs the self-call check + maybe directly in the findStaticInitialzerCalls method
   protected Stream<Call> postProcessingStaticInitializerCalls(
       @NonNull ArrayListMultimap<ClassType, Call> potentialStaticInitializerCalls) {
-    // prune unnecessary self-calls
-    return potentialStaticInitializerCalls.asMap().values().stream().flatMap(Collection::stream);
-    // return potentialStaticInitializerCalls.asMap().values().stream().flatMap(callCollection -> callCollection.stream().filter(call -> !call.targetMethodSignature().equals(call.sourceMethodSignature())));
+    return potentialStaticInitializerCalls.values().stream();
   }
 
   /**

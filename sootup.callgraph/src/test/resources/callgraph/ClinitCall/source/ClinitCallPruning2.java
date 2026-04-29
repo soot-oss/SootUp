@@ -2,6 +2,9 @@ package ccp2;
 
 // testClinitCallPruningChild
 class ClinitCallPruningParent{
+    static {
+        int z = ClinitCallPruningChild.y;
+    }
     public static int x = 4;
 }
 
@@ -49,11 +52,14 @@ class ClinitCallPruningBranch4 {
 
 class ClinitCallPruning2{
     public static void main(String[] args) {
-        // testClinitPruningChild
+        // testClinitCallSelfCall (triggered by SuperClass)
+        int num = ClinitCallPruningParent.x;
+
+        // testClinitCallPruningChild
         ClinitCallPruningParent.x=2;
         ClinitCallPruningChild.y=3;
 
-        // testClinitPruningChild2
+        // testClinitCallPruningChild2
         ClinitCallPruningChild2.y=3;
         ClinitCallPruningParent2.x=2;
 

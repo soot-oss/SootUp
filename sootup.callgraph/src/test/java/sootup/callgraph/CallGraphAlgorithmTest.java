@@ -1225,6 +1225,11 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   @Test
   public void testClinitCallPruning2() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccp2.ClinitCallPruning2");
+
+    for (CallGraph.Call call : cg.getCalls()) {
+        System.out.println(call);
+    }
+
     IdentifierFactory id = view.getIdentifierFactory();
 
     // testClinitCallPruningChild
