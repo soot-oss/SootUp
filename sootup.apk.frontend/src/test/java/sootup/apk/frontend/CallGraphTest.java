@@ -24,9 +24,11 @@ public class CallGraphTest {
 
   public static JavaView view;
   public static JavaView locationLeakView;
+  public static JavaView cryptoView;
 
   String flowSensitivityClassName = "de.ecspride.MainActivity";
   String locationLeakClassName = "de.ecspride.LocationLeak1";
+  String cryptoClassName = "com.example.MainActivity";
   String methodName = "onCreate";
   List<String> methodParameters = List.of("android.os.Bundle");
   String methodReturnType = "void";
@@ -35,6 +37,7 @@ public class CallGraphTest {
   public static void createView() {
     view = createViewForApk("resources/FlowSensitivity1.apk");
     locationLeakView = createViewForApk("resources/LocationLeak1.apk");
+    cryptoView = createViewForApk("resources/Crypto.apk");
   }
 
   private static JavaView createViewForApk(String apkPathString) {
@@ -129,5 +132,39 @@ public class CallGraphTest {
 
     assertTrue(cg.containsMethod(onCreateMethodSignature));
     assertEquals(5, cg.callsFrom(onCreateMethodSignature).size());
+  }
+
+  @Test
+  public void testCryptoCHACallGraphAlgorithm() {
+
+    MethodSignature onCreateMethodSignature =
+        cryptoView
+            .getIdentifierFactory()
+            .getMethodSignature(cryptoClassName, methodName, methodReturnType, methodParameters);
+
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(cryptoView);
+    CallGraph cg = cha.initialize(List.of(onCreateMethodSignature));
+
+    assertTrue(cg.containsMethod(onCreateMethodSignature));
+    assertEquals(3, cg.callsFrom(onCreateMethodSignature).size());
+  }
+
+  @Test
+  public void testCryptoRTACallGraphAlgorithm() {
+
+    MethodSignature onCreateMethodSignature =
+        cryptoView
+            .getIdentifierFactory()
+            .getMethodSignature(cryptoClassName, methodName, methodReturnType, methodParameters);
+
+    CallGraphAlgorithm rta =
+        new RapidTypeAnalysisAlgorithm(
+            cryptoView,
+            cryptoView.getClasses().map(JavaSootClass::getType).collect(Collectors.toSet()));
+
+    CallGraph cg = rta.initialize(List.of(onCreateMethodSignature));
+
+    assertTrue(cg.containsMethod(onCreateMethodSignature));
+    assertEquals(3, cg.callsFrom(onCreateMethodSignature).size());
   }
 }
