@@ -338,32 +338,35 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * It resolves all implicit calls caused by the given source method
+   * Resolves all implicit calls caused by the given source method.
    *
    * @param sourceMethod the inspected source method
-   * @param cg new calls will be added to the call graph
-   * @param workList new target methods will be added to the work list
+   * @param cg the mutable call graph where new calls will be added
+   * @param workList the worklist in which the new target methods will be added
    */
   protected void resolveAllImplicitCallsFromSourceMethod(
       @NonNull SootMethod sourceMethod,
       @NonNull MutableCallGraph cg,
       @NonNull Deque<MethodSignature> workList) {
     implicitStartRunCall(sourceMethod, cg, workList);
-    // collect all possible static initializer calls
     ArrayListMultimap<ClassType, Call> potentialStaticInitializerCalls =
         resolveAllStaticInitializerCalls(sourceMethod);
-    // prune static initializer calls on different blocks
-    // if the static initializer call is contained in all different control flows to the next static initializer call
-    Stream <Call> staticInitializerCalls = postProcessingStaticInitializerCalls(
-        sourceMethod, cg, workList, potentialStaticInitializerCalls);
-    // add the remaining static initializer calls
+    Stream <Call> staticInitializerCalls = postProcessingStaticInitializerCalls(potentialStaticInitializerCalls);
     addStaticInitializerCalls(staticInitializerCalls, cg, workList);
   }
 
   /**
-   * It resolves all static initializer calls caused by the given source method
+   * Resolves all potential static initializer calls caused by the given source method. This method iterates
+   * over the sorted blocks of the source method, tracking whether each block contains a static
+   * initializer (<clinit>) call for a specific class type.
+   * If all visited predecessor blocks (meaning all statements in those blocks have been fully processed)
+   * already contain a static initializer call for a given class type, the current block inherits this state.
+   * Consequently, if a static initializer call is guaranteed to have occurred on all incoming control flow
+   * paths, subsequent calls to the same initializer in the current block are pruned to avoid creating
+   * duplicate edges.
    *
    * @param sourceMethod the inspected source method
+   * @return a multimap containing the resolved potential static initializer calls
    */
   protected ArrayListMultimap<ClassType, Call> resolveAllStaticInitializerCalls(
       @NonNull SootMethod sourceMethod) {
@@ -372,29 +375,25 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     MethodSubSignature sourceMethodSubSignature = sourceMethodSignature.getSubSignature();
     ArrayListMultimap<ClassType, Call> potentialClinitCalls = ArrayListMultimap.create();
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
-    // row: classType of potential <clinit> call
+    // row: classType of potential static initializer call
     // column: block of the invokeStmt
     // value: true, if the classType has a static initializer call in the block
     Table<ClassType, BasicBlock<?>, Boolean> table = HashBasedTable.create();
     Set<BasicBlock<?>> visitedBlocks = new HashSet<>();
     sourceMethod.getBody().getControlFlowGraph().getBlocksSorted()
         .forEach(basicBlock -> {
-
-          // --- NEW: Block-level State Propagation ---
-          // Propagate the clinit flags from predecessors BEFORE evaluating statements
+          // propagate the clinit flags from predecessors BEFORE evaluating statements
           List<?> preBlocks = basicBlock.getPredecessors();
           if (!preBlocks.isEmpty()) {
             BasicBlock<?> firstPre = findFirstVisitedPredBlock(preBlocks, visitedBlocks);
             if (firstPre != null) {
               Set<ClassType> clinitFlagsInFirstPred = new HashSet<>();
               Map<ClassType, Boolean> firstPreClasses = table.column(firstPre);
-
               for (Map.Entry<ClassType, Boolean> entry : firstPreClasses.entrySet()) {
                 if (Boolean.TRUE.equals(entry.getValue())) {
                   clinitFlagsInFirstPred.add(entry.getKey());
                 }
               }
-
               for (Object preObj : preBlocks) {
                 BasicBlock<?> preBlock = (BasicBlock<?>) preObj;
                 if (!preBlock.equals(basicBlock) && visitedBlocks.contains(preBlock)) {
@@ -402,15 +401,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                           !Boolean.TRUE.equals(table.get(classType, preBlock)));
                 }
               }
-
-              // Apply inherited state to the current block
+              // apply inherited state to the current block
               for (ClassType type : clinitFlagsInFirstPred) {
                 table.put(type, basicBlock, Boolean.TRUE);
               }
             }
           }
-          // ------------------------------------------
-
+          // iterate over stmts
           for (Stmt stmt : basicBlock.getStmts()) {
             if (!stmt.isInvokableStmt()) {
               continue;
@@ -427,7 +424,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                       && id.isStaticInitializerSubSignature(sourceMethodSubSignature))) {
                 potentialClinitCalls.putAll(
                         findStaticInitializerCalls(
-                                sourceMethod, targetClass, invokableStmt, table, visitedBlocks));
+                                sourceMethod, targetClass, invokableStmt, table));
               }
             }
             // static method
@@ -445,7 +442,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                           && id.isStaticInitializerSubSignature(sourceMethodSubSignature))) {
                     potentialClinitCalls.putAll(
                             findStaticInitializerCalls(
-                                    sourceMethod, newTargetClass, invokableStmt, table, visitedBlocks));
+                                    sourceMethod, newTargetClass, invokableStmt, table));
                   }
                 }
               }
@@ -465,33 +462,35 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                           && id.isStaticInitializerSubSignature(sourceMethodSubSignature))) {
                     potentialClinitCalls.putAll(
                             findStaticInitializerCalls(
-                                    sourceMethod, newTargetClass, invokableStmt, table, visitedBlocks));
+                                    sourceMethod, newTargetClass, invokableStmt, table));
                   }
                 }
               }
             }
           }
           visitedBlocks.add(basicBlock);
-          System.out.println("Current VisitedBlocksSet: " + visitedBlocks);
         });
     return potentialClinitCalls;
   }
 
   /**
-   * Adds all static initializer calls of the given targetClass. An edge from the sourceSig to all
-   * clinit methods of the targetClass and Superclasses will be added to the call graph. If new
-   * target methods will be found, the worklist will be updated.
+   * Collects all potential static initializer calls of the given targetClass. An edge from the sourceSig to all
+   * clinit methods of the targetClass and Superclasses will be added to the MultiMap of potential static initializer calls.
    *
-   * @param sourceMethod the source method causing the static initilzer call
+   * @param sourceMethod the source method causing the static initializer call
    * @param targetClass the class that is statically initialized
    * @param invokableStmt the statement causing the call
+   * @param clinitCallTable a table tracking initialized classes per block. Rows represent class types,
+   *                        columns represent blocks, and a true value indicates the class has a static initializer
+   *                        call within or prior to that block
+   * @return a multimap of newly discovered potential static initializer calls
    */
+  // TODO: eliminate duplicate code snippet
   protected ArrayListMultimap<ClassType, Call> findStaticInitializerCalls(
       SootMethod sourceMethod,
       ClassType targetClass,
       InvokableStmt invokableStmt,
-      Table<ClassType, BasicBlock<?>, Boolean> clinitCallTable,
-      Set<BasicBlock<?>> visitedBlocks) {
+      Table<ClassType, BasicBlock<?>, Boolean> clinitCallTable) {
 
     ControlFlowGraph<?> cfg = sourceMethod.getBody().getControlFlowGraph();
     BasicBlock<?> currentBlock = cfg.getBlockOf(invokableStmt);
@@ -509,17 +508,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   || clinitCallTable.get(targetClassType, currentBlock) == Boolean.FALSE) {
                 clinitCallTable.put(targetClassType, currentBlock, Boolean.TRUE);
                 Call callToAdd = new Call(sourceSig, targetSig, invokableStmt);
-                if (callToAdd
-                    .targetMethodSignature()
-                    .getDeclClassType()
-                    .getFullyQualifiedName()
-                    .contains("ccp2.ClinitCallPruningBranch")) {
-                  System.out.println("Add " + callToAdd + " on Block: " + currentBlock + " 1");
-                  System.out.println("Predecessors1: " + currentBlock.getPredecessors());
-                  System.out.println("Successors1: " + currentBlock.getSuccessors());
-                }
                 potentialClinitCalls.put(targetMethod.getDeclaringClassType(), callToAdd);
-                // visitedBlocks.add(currentBlock);
               }
             });
     // static initializer calls of all superclasses
@@ -540,23 +529,18 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   || clinitCallTable.get(targetClassType, currentBlock) == Boolean.FALSE) {
                 clinitCallTable.put(targetClassType, currentBlock, Boolean.TRUE);
                 Call callToAdd = new Call(sourceSig, targetSig, invokableStmt);
-                if (callToAdd
-                    .targetMethodSignature()
-                    .getDeclClassType()
-                    .getFullyQualifiedName()
-                    .contains("ccp2.ClinitCallPruningBranch")) {
-                  System.out.println("Add " + callToAdd + " on Block: " + currentBlock + " 2");
-                  System.out.println("Predecessors2: " + currentBlock.getPredecessors());
-                  System.out.println("Successors2: " + currentBlock.getSuccessors());
-                }
                 potentialClinitCalls.put(targetMethod.getDeclaringClassType(), callToAdd);
-                // visitedBlocks.add(currentBlock);
               }
             });
     return potentialClinitCalls;
   }
 
-  // TODO: description; helper method to find first visited predBlock
+  /**
+   * Returns the first visited block from a list of predecessor blocks or null if none are found.
+   *
+   * @param preBlocks list of all predecessor blocks
+   * @param visitedBlocks set of fully processed blocks (all stmts have been iterated)
+   */
   private BasicBlock<?> findFirstVisitedPredBlock(List<?> preBlocks, Set<BasicBlock<?>> visitedBlocks) {
     BasicBlock<?> firstPreBlock;
     for (Object preBlock : preBlocks) {
@@ -569,47 +553,27 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * This method post-processing the <code><clinit></></code> call edges of a method and if
-   * applicable prune <code><clinit></></code> calls.
+   * This method processes the potential static initializer call edges and prunes any unnecessary ones.
    *
-   * @param sourceMethod the processed method
-   * @param potentialStaticInitializerCalls all potential static initializer calls (corresponding to
-   *     the <code>sourceMethod</code>)
+   * @param potentialStaticInitializerCalls all potential static initializer calls
+   * @return a stream of valid static initializer calls
    */
+  // TODO: create example which needs the self-call check + maybe directly in the findStaticInitialzerCalls method
   protected Stream<Call> postProcessingStaticInitializerCalls(
-      @NonNull SootMethod sourceMethod,
-      MutableCallGraph cg,
-      Deque<MethodSignature> workList,
       @NonNull ArrayListMultimap<ClassType, Call> potentialStaticInitializerCalls) {
-    // do the post-processing of the clinit method calls based on the MultiMap
-    return potentialStaticInitializerCalls
-        .asMap()
-        .values().stream().flatMap(callCollection -> callCollection.stream().filter(call -> !call.targetMethodSignature().equals(call.sourceMethodSignature())));
-//        .forEach(
-//            (classType, callCollection) -> {
-//              // set of seen calls
-//              Set<List<MethodSignature>> seenCalls = new HashSet<>();
-//              // use explicit iterator instead of a for-each loop
-//              java.util.Iterator<Call> callIterator = callCollection.iterator();
-//              while (callIterator.hasNext()) {
-//                Call call = callIterator.next();
-//                MethodSignature sourceSig = call.sourceMethodSignature();
-//                MethodSignature targetSig = call.targetMethodSignature();
-//                List<MethodSignature> key = Arrays.asList(targetSig, sourceSig);
-//                // remove clinit self-calls
-//                if (targetSig.equals(sourceSig)) {
-//                  callIterator.remove();
-//                  continue;
-//                }
-//                // remove all duplicates TODO: scope required
-//                if (!seenCalls.add(key)) {
-//                  callIterator.remove();
-//                }
-//              }
-//            });
+    // prune unnecessary self-calls
+    return potentialStaticInitializerCalls.asMap().values().stream().flatMap(Collection::stream);
+    // return potentialStaticInitializerCalls.asMap().values().stream().flatMap(callCollection -> callCollection.stream().filter(call -> !call.targetMethodSignature().equals(call.sourceMethodSignature())));
   }
 
-  // TODO: add description
+  /**
+   * After pruning unnecessary static initializer calls from the potential candidates, this method adds all
+   * remaining calls to the call graph.
+   *
+   * @param staticInitializerCalls stream of pruned, valid static initializer calls
+   * @param cg mutable call graph where calls will be added
+   * @param workList the work list in which the method signature of newly static initializer calls will be added
+   */
   private void addStaticInitializerCalls(Stream<Call> staticInitializerCalls, MutableCallGraph cg, Deque<MethodSignature> workList) {
     staticInitializerCalls.forEach(call -> addCallToCG(call, cg, workList));
   }
