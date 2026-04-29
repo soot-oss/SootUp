@@ -3,11 +3,9 @@ package sootup.apk.frontend;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.signatures.MethodSignature;
@@ -25,9 +23,7 @@ public class StaticInvokeArgsTest {
     String androidPlatformsPath = "";
     ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation(
-            apkPath,
-            androidPlatformsPath,
-            DexBodyInterceptors.Default.bodyInterceptors());
+            apkPath, androidPlatformsPath, DexBodyInterceptors.Default.bodyInterceptors());
     view = new JavaView(sootClassApkAnalysisInputLocation);
   }
 
@@ -38,20 +34,25 @@ public class StaticInvokeArgsTest {
             .getMethodSignature(
                 cryptoClassName, "generateKeyWithWeakRandom", "javax.crypto.SecretKey", List.of());
 
-    int argCount = view.getMethod(generateKeyWithWeakRandomSignature).get().getBody().getStmts().stream()
+    int argCount =
+        view.getMethod(generateKeyWithWeakRandomSignature).get().getBody().getStmts().stream()
             .filter(Stmt::isInvokableStmt)
             .map(Stmt::asInvokableStmt)
             .filter(invokableStmt -> invokableStmt.getInvokeExpr().isPresent())
             .filter(
-                    invokableStmt ->
-                            invokableStmt
-                                    .getInvokeExpr()
-                                    .get()
-                                    .getMethodSignature()
-                                    .toString()
-                                    .contains("getInstance"))
-            .findFirst().flatMap(InvokableStmt::getInvokeExpr).get().getArgs().size();
+                invokableStmt ->
+                    invokableStmt
+                        .getInvokeExpr()
+                        .get()
+                        .getMethodSignature()
+                        .toString()
+                        .contains("getInstance"))
+            .findFirst()
+            .flatMap(InvokableStmt::getInvokeExpr)
+            .get()
+            .getArgs()
+            .size();
     // There should be at least one static invoke with arguments present in the APK
-      Assertions.assertEquals(1, argCount);
+    Assertions.assertEquals(1, argCount);
   }
 }
