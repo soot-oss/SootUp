@@ -28,7 +28,6 @@ import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.value.EncodedValue;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.main.AndroidVersionInfo;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
