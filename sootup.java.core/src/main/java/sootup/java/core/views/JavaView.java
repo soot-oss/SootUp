@@ -22,9 +22,8 @@ package sootup.java.core.views;
  * #L%
  */
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.cache.ClassCache;
@@ -137,15 +136,18 @@ public class JavaView extends AbstractView {
 
   @NonNull
   protected Optional<JavaSootClassSource> getClassSource(@NonNull ClassType type) {
-    return inputLocations.parallelStream()
-        .map(location -> location.getClassSource(type, this))
-        .filter(Optional::isPresent)
-        // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
-        // classpath the first is returned (see splitpackage)
-        .limit(1)
-        .map(Optional::get)
-        .map(classSource -> (JavaSootClassSource) classSource)
-        .findAny();
+    // Process inputLocations in parallel but preserve the "first-in-list" semantics by
+    // attaching indices and selecting the smallest index whose location produced a present
+    // Optional. This keeps full parallelism while returning the earliest-match by input order.
+    // Which actually matches the JVM behavior and is deterministic so nicer anyway.
+    return IntStream.range(0, inputLocations.size())
+        .parallel()
+        .mapToObj(
+            i -> new AbstractMap.SimpleEntry<>(i, inputLocations.get(i).getClassSource(type, this)))
+        .filter(e -> e.getValue().isPresent())
+        // pick the entry with the smallest original index
+        .min(Comparator.comparingInt(e -> e.getKey()))
+        .map(e -> (JavaSootClassSource) e.getValue().get());
   }
 
   @NonNull
