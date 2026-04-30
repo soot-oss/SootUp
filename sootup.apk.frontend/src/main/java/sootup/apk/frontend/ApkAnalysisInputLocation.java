@@ -61,8 +61,6 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
    * <p>The Android platforms directory can be obtained from: <a
    * href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a>
    */
-  String androidPlatformsPath;
-
   private final AndroidVersionInfo androidSDKVersionInfo;
 
   private final List<BodyInterceptor> bodyInterceptors;
@@ -73,7 +71,6 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
    * Creates a new ApkAnalysisInputLocation.
    *
    * @param apkPath the path to the APK file to analyze
-   * @param androidPlatformsPath the path to the Android platforms directory containing Android
    *     system libraries (android.jar files) for different API levels. This directory is required
    *     to resolve method calls and class references that are not defined in the APK itself, but
    *     are part of the Android system libraries. The Android platforms directory can be obtained
@@ -83,12 +80,10 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
    */
   public ApkAnalysisInputLocation(
       Path apkPath,
-      String androidPlatformsPath,
       AndroidVersionInfo androidSDKVersionInfo,
       List<BodyInterceptor> bodyInterceptors) {
     this.apk_path = apkPath;
     this.androidSDKVersionInfo = androidSDKVersionInfo;
-    this.androidPlatformsPath = androidPlatformsPath;
     this.bodyInterceptors = bodyInterceptors;
     this.classNamesList = extractDexFilesFromPath();
   }

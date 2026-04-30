@@ -35,7 +35,6 @@ public class ApkToDexTest {
     ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation(
             apkPath,
-            androidPlatformsPath,
             new AndroidVersionInfo(apkPath, androidPlatformsPath),
             DexBodyInterceptors.Default.bodyInterceptors());
     view = new JavaView(sootClassApkAnalysisInputLocation);
