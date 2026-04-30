@@ -117,7 +117,8 @@ public class DexNullTransformer extends AbstractNullTransformer {
             }
             // check for base
 
-            if (!MethodModifier.isStatic(builder.getModifiers())) {
+            if (!MethodModifier.isStatic(builder.getModifiers())
+                && e instanceof AbstractInstanceInvokeExpr) {
               AbstractInstanceInvokeExpr aiiexpr = (AbstractInstanceInvokeExpr) e;
               Value b = aiiexpr.getBase();
               return b == l;
