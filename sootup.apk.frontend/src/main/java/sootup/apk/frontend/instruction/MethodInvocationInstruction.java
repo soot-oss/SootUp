@@ -89,13 +89,13 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
   protected void jimplifyStatic(DexBody body) {
     MethodReference item = (MethodReference) ((ReferenceInstruction) instruction).getReference();
     List<Local> parameters = buildParameters(body, item.getParameterTypes(), true);
-    invocation =
-        Jimple.newStaticInvokeExpr(
-            new MethodSignature(
-                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
-                item.getName(),
-                convertParameterTypes(item.getParameterTypes()),
-                DexUtil.toSootType(item.getReturnType(), 0)));
+    MethodSignature methodSignature =
+        new MethodSignature(
+            DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
+            item.getName(),
+            convertParameterTypes(item.getParameterTypes()),
+            DexUtil.toSootType(item.getReturnType(), 0));
+    invocation = Jimple.newStaticInvokeExpr(methodSignature, buildArgs(parameters));
     body.setDanglingInstruction(this);
   }
 
