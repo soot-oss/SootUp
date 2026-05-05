@@ -8,16 +8,20 @@ import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.jgrapht.Graph;
 import org.jgrapht.nio.dot.DOTExporter;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
+import sootup.core.types.VoidType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.spark.PAGEdge;
 import sootup.spark.Solver;
 import sootup.spark.SparkOptions;
 import sootup.spark.node.AllocationNode;
+import sootup.spark.node.InstanceFieldRefNode;
 import sootup.spark.node.Node;
 import sootup.spark.node.VariableNode;
 
@@ -27,6 +31,12 @@ public class SparkTestUtil {
   public static final JavaIdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
   public static final JavaView view =
       new JavaView(new JavaClassPathAnalysisInputLocation("src/test/resources/pta/binary"));
+  public static final MethodSignature GLOBAL_SCOPE =
+      new MethodSignature(
+          new JavaClassType("GLOBAL", new PackageName("sootup.spark")),
+          "GLOBAL_SCOPE",
+          Collections.emptyList(),
+          VoidType.getInstance());
 
   public static ClassType simpleType(String name) {
     return new ClassType() {
@@ -79,6 +89,16 @@ public class SparkTestUtil {
 
   public static VariableNode var(ClassType type, String name, MethodSignature sig) {
     return VariableNode.builder().type(type).name(name).containingMethodSig(sig).build();
+  }
+
+  public static InstanceFieldRefNode fieldRef(
+      VariableNode base, FieldSignature field, ClassType fieldType, MethodSignature sig) {
+    return InstanceFieldRefNode.builder()
+        .base(base)
+        .field(field)
+        .type(fieldType)
+        .containingMethodSig(sig)
+        .build();
   }
 
   public static void vizualizeMehodPAG(Graph<Node, PAGEdge> pag) {
