@@ -1183,4 +1183,40 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
       assertNotEquals(call.sourceMethodSignature(), call.targetMethodSignature());
     }
   }
+
+  @Test
+  public void testPolymorphicSignatureExamples() {
+    CallGraph cg = loadCallGraph("Polymorphic", "PolymorphicSignatureExamples");
+    // TODO: delete later
+    for (CallGraph.Call call : cg.getCalls()) {
+      System.out.println(call);
+    }
+
+    MethodSignature invokeExactMethodSig =
+            identifierFactory.getMethodSignature(
+                    identifierFactory.getClassType("java.lang.invoke.MethodHandle"),
+                    "invokeExact",
+                    "java.lang.Object",
+                    Collections.singletonList("java.lang.Object[]"));
+    Set<MethodSignature> callSourcesInvokeExact = cg.callSourcesTo(invokeExactMethodSig);
+    assertTrue(callSourcesInvokeExact.contains(mainMethodSignature));
+
+    MethodSignature invokeMethodSig =
+            identifierFactory.getMethodSignature(
+                    identifierFactory.getClassType("java.lang.invoke.MethodHandle"),
+                    "invoke",
+                    "java.lang.Object",
+                    Collections.singletonList("java.lang.Object[]"));
+    Set<MethodSignature> callSourcesInvoke = cg.callSourcesTo(invokeMethodSig);
+    assertTrue(callSourcesInvoke.contains(mainMethodSignature));
+
+    MethodSignature getMethodSig =
+            identifierFactory.getMethodSignature(
+                    identifierFactory.getClassType("java.lang.invoke.VarHandle"),
+                    "get",
+                    "java.lang.Object",
+                    Collections.singletonList("java.lang.Object[]"));
+    Set<MethodSignature> callSourcesGet = cg.callSourcesTo(getMethodSig);
+    assertTrue(callSourcesGet.contains(mainMethodSignature));
+  }
 }
