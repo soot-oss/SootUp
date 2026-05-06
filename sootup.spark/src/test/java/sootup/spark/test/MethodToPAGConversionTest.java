@@ -200,34 +200,41 @@ public class MethodToPAGConversionTest {
     Graph<Node, PAGEdge> delegate = SparkTestUtil.solveMain(mainSig);
 
     assertTrue(delegate.edgeSet().size() > 0, "PAG should contain edges");
-    
-    boolean hasReceiverToThisEdges = delegate.edgeSet().stream()
-        .anyMatch(edge -> {
-          Node source = delegate.getEdgeSource(edge);
-          Node target = delegate.getEdgeTarget(edge);
-          return source.toString().contains("main{InstanceMethodCall$Container $stack5}") && 
-                 target.toString().contains("this}");
-        });
-    assertTrue(hasReceiverToThisEdges, "Should have receiver -> @this edges for instance method calls");
-    
+
+    boolean hasReceiverToThisEdges =
+        delegate.edgeSet().stream()
+            .anyMatch(
+                edge -> {
+                  Node source = delegate.getEdgeSource(edge);
+                  Node target = delegate.getEdgeTarget(edge);
+                  return source.toString().contains("main{InstanceMethodCall$Container $stack5}")
+                      && target.toString().contains("this}");
+                });
+    assertTrue(
+        hasReceiverToThisEdges, "Should have receiver -> @this edges for instance method calls");
+
     // Verify parameter passing edges exist
-    boolean hasParameterEdges = delegate.edgeSet().stream()
-        .anyMatch(edge -> {
-          Node source = delegate.getEdgeSource(edge);
-          Node target = delegate.getEdgeTarget(edge);
-          return source.toString().contains("main{InstanceMethodCall$Value") && 
-                 target.toString().contains("getValue{InstanceMethodCall$Value l1}");
-        });
+    boolean hasParameterEdges =
+        delegate.edgeSet().stream()
+            .anyMatch(
+                edge -> {
+                  Node source = delegate.getEdgeSource(edge);
+                  Node target = delegate.getEdgeTarget(edge);
+                  return source.toString().contains("main{InstanceMethodCall$Value")
+                      && target.toString().contains("getValue{InstanceMethodCall$Value l1}");
+                });
     assertTrue(hasParameterEdges, "Should have parameter passing edges for instance method calls");
-    
+
     // Verify return value edges exist
-    boolean hasReturnEdges = delegate.edgeSet().stream()
-        .anyMatch(edge -> {
-          Node source = delegate.getEdgeSource(edge);
-          Node target = delegate.getEdgeTarget(edge);
-          return source.toString().contains("getValue{InstanceMethodCall$Value l1}") && 
-                 target.toString().contains("main{InstanceMethodCall$Value l3}");
-        });
+    boolean hasReturnEdges =
+        delegate.edgeSet().stream()
+            .anyMatch(
+                edge -> {
+                  Node source = delegate.getEdgeSource(edge);
+                  Node target = delegate.getEdgeTarget(edge);
+                  return source.toString().contains("getValue{InstanceMethodCall$Value l1}")
+                      && target.toString().contains("main{InstanceMethodCall$Value l3}");
+                });
     assertTrue(hasReturnEdges, "Should have return value edges for instance method calls");
   }
 }
