@@ -22,6 +22,7 @@ package sootup.spark.node;
  * #L%
  */
 
+import java.util.Collections;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -39,8 +40,11 @@ import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.visitor.AbstractValueVisitor;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.types.VoidType;
+import sootup.java.core.types.JavaClassType;
 import sootup.spark.Engine;
 import sootup.spark.SparkOptions;
 
@@ -56,6 +60,13 @@ import sootup.spark.SparkOptions;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
+
+  private static final MethodSignature GLOBAL_SCOPE =
+      new MethodSignature(
+          new JavaClassType("GLOBAL", new PackageName("sootup.global")),
+          "GLOBAL_SCOPE",
+          Collections.emptyList(),
+          VoidType.getInstance());
 
   final MethodSignature containingMethodSig;
   final SparkOptions sparkOptions;
@@ -116,18 +127,21 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseInstanceFieldRef(@NonNull JInstanceFieldRef ref) {
+    val fieldBasedScope = sparkOptions.isIgnoreBaseObjects();
+    val baseMethodSig = fieldBasedScope ? GLOBAL_SCOPE : containingMethodSig;
+    val baseName = fieldBasedScope ? ref.getBase().getType().toString() : ref.getBase().getName();
     val base =
         VariableNode.builder()
-            .name(ref.getBase().getName())
+            .name(baseName)
             .type(ref.getBase().getType())
-            .containingMethodSig(containingMethodSig)
+            .containingMethodSig(baseMethodSig)
             .build();
     this.node =
         InstanceFieldRefNode.builder()
             .base(base)
             .field(ref.getFieldSignature())
             .type(ref.getType())
-            .containingMethodSig(containingMethodSig)
+            .containingMethodSig(baseMethodSig)
             .build();
   }
 
@@ -139,18 +153,22 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
       if (baseType instanceof ClassType declaringClassType) {
         val field =
             new FieldSignature(declaringClassType, String.valueOf(ref.getIndex()), ref.getType());
+        val fieldBasedScope = sparkOptions.isIgnoreBaseObjects();
+        val baseMethodSig = fieldBasedScope ? GLOBAL_SCOPE : containingMethodSig;
+        val baseName =
+            fieldBasedScope ? ref.getBase().getType().toString() : ref.getBase().getName();
         val base =
             VariableNode.builder()
-                .name(ref.getBase().getName())
+                .name(baseName)
                 .type(ref.getBase().getType())
-                .containingMethodSig(containingMethodSig)
+                .containingMethodSig(baseMethodSig)
                 .build();
         this.node =
             InstanceFieldRefNode.builder()
                 .base(base)
                 .field(field)
                 .type(ref.getType())
-                .containingMethodSig(containingMethodSig)
+                .containingMethodSig(baseMethodSig)
                 .build();
       }
     }
