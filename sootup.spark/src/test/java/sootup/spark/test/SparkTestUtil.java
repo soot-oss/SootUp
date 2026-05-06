@@ -33,7 +33,7 @@ public class SparkTestUtil {
       new JavaView(new JavaClassPathAnalysisInputLocation("src/test/resources/pta/binary"));
   public static final MethodSignature GLOBAL_SCOPE =
       new MethodSignature(
-          new JavaClassType("GLOBAL", new PackageName("sootup.spark")),
+          new JavaClassType("GLOBAL", new PackageName("sootup.global")),
           "GLOBAL_SCOPE",
           Collections.emptyList(),
           VoidType.getInstance());
