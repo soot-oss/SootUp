@@ -145,6 +145,7 @@ public class PointsToAnalysisTest {
     assertEquals(Collections.singleton(newO2), pta.reachingObjects(t));
 
     assertTrue(pta.aliases(p).contains(q), "p and q must alias (q = p)");
-    assertTrue(pta.aliases(t).contains(r), "t and r must alias (t holds the value of r via the field)");
+    assertTrue(
+        pta.aliases(t).contains(r), "t and r must alias (t holds the value of r via the field)");
   }
 }
