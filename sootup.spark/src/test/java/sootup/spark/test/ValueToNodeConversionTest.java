@@ -157,11 +157,12 @@ class ValueToNodeConversionTest {
     assertEquals("\"test{A @parameter1}\"", node.get().toString());
   }
 
-  /** TODO: how to handle this ref */
   @Test
   void testThisRefToNodeConversion() {
     val thisRef = JavaJimple.newThisRef(aType);
     val node = nodeFactory.createNode(thisRef, methodSig);
-    assertTrue(node.isEmpty());
+    assertTrue(node.isPresent());
+    assertTrue(node.get() instanceof VariableNode);
+    assertEquals("\"test{A @this}\"", node.get().toString());
   }
 }

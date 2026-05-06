@@ -31,11 +31,45 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.constant.BooleanConstant;
+import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.jimple.common.constant.DoubleConstant;
+import sootup.core.jimple.common.constant.EnumConstant;
+import sootup.core.jimple.common.constant.FloatConstant;
+import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.constant.LongConstant;
+import sootup.core.jimple.common.constant.MethodHandle;
+import sootup.core.jimple.common.constant.MethodType;
+import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.constant.StringConstant;
+import sootup.core.jimple.common.expr.JAddExpr;
+import sootup.core.jimple.common.expr.JAndExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
+import sootup.core.jimple.common.expr.JCmpExpr;
+import sootup.core.jimple.common.expr.JCmpgExpr;
+import sootup.core.jimple.common.expr.JCmplExpr;
+import sootup.core.jimple.common.expr.JDivExpr;
+import sootup.core.jimple.common.expr.JEqExpr;
+import sootup.core.jimple.common.expr.JGeExpr;
+import sootup.core.jimple.common.expr.JGtExpr;
+import sootup.core.jimple.common.expr.JInstanceOfExpr;
+import sootup.core.jimple.common.expr.JLeExpr;
+import sootup.core.jimple.common.expr.JLengthExpr;
+import sootup.core.jimple.common.expr.JLtExpr;
+import sootup.core.jimple.common.expr.JMulExpr;
+import sootup.core.jimple.common.expr.JNeExpr;
+import sootup.core.jimple.common.expr.JNegExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
+import sootup.core.jimple.common.expr.JOrExpr;
+import sootup.core.jimple.common.expr.JPhiExpr;
+import sootup.core.jimple.common.expr.JRemExpr;
+import sootup.core.jimple.common.expr.JShlExpr;
+import sootup.core.jimple.common.expr.JShrExpr;
+import sootup.core.jimple.common.expr.JSubExpr;
+import sootup.core.jimple.common.expr.JUshrExpr;
+import sootup.core.jimple.common.expr.JXorExpr;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.visitor.AbstractValueVisitor;
 import sootup.core.signatures.FieldSignature;
@@ -88,16 +122,115 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   }
 
   @Override
-  public void caseCastExpr(@NonNull JCastExpr expr) {
-    // TODO: wip
-    defaultCaseValue(expr);
-  }
+  public void caseCastExpr(@NonNull JCastExpr expr) {}
 
   @Override
-  public void caseNewArrayExpr(@NonNull JNewArrayExpr expr) {
-    // TODO: wip
-    defaultCaseValue(expr);
-  }
+  public void caseNewArrayExpr(@NonNull JNewArrayExpr expr) {}
+
+  @Override
+  public void caseBooleanConstant(@NonNull BooleanConstant constant) {}
+
+  @Override
+  public void caseClassConstant(@NonNull ClassConstant constant) {}
+
+  @Override
+  public void caseDoubleConstant(@NonNull DoubleConstant constant) {}
+
+  @Override
+  public void caseEnumConstant(@NonNull EnumConstant constant) {}
+
+  @Override
+  public void caseFloatConstant(@NonNull FloatConstant constant) {}
+
+  @Override
+  public void caseIntConstant(@NonNull IntConstant constant) {}
+
+  @Override
+  public void caseLongConstant(@NonNull LongConstant constant) {}
+
+  @Override
+  public void caseMethodHandle(@NonNull MethodHandle v) {}
+
+  @Override
+  public void caseMethodType(@NonNull MethodType v) {}
+
+  @Override
+  public void caseNullConstant(@NonNull NullConstant constant) {}
+
+  @Override
+  public void caseAddExpr(@NonNull JAddExpr expr) {}
+
+  @Override
+  public void caseAndExpr(@NonNull JAndExpr expr) {}
+
+  @Override
+  public void caseCmpExpr(@NonNull JCmpExpr expr) {}
+
+  @Override
+  public void caseCmpgExpr(@NonNull JCmpgExpr expr) {}
+
+  @Override
+  public void caseCmplExpr(@NonNull JCmplExpr expr) {}
+
+  @Override
+  public void caseDivExpr(@NonNull JDivExpr expr) {}
+
+  @Override
+  public void caseEqExpr(@NonNull JEqExpr expr) {}
+
+  @Override
+  public void caseGeExpr(@NonNull JGeExpr expr) {}
+
+  @Override
+  public void caseGtExpr(@NonNull JGtExpr expr) {}
+
+  @Override
+  public void caseInstanceOfExpr(@NonNull JInstanceOfExpr expr) {}
+
+  @Override
+  public void caseLeExpr(@NonNull JLeExpr expr) {}
+
+  @Override
+  public void caseLengthExpr(@NonNull JLengthExpr expr) {}
+
+  @Override
+  public void caseLtExpr(@NonNull JLtExpr expr) {}
+
+  @Override
+  public void caseMulExpr(@NonNull JMulExpr expr) {}
+
+  @Override
+  public void caseNeExpr(@NonNull JNeExpr expr) {}
+
+  @Override
+  public void caseNegExpr(@NonNull JNegExpr expr) {}
+
+  @Override
+  public void caseOrExpr(@NonNull JOrExpr expr) {}
+
+  @Override
+  public void caseRemExpr(@NonNull JRemExpr expr) {}
+
+  @Override
+  public void caseShlExpr(@NonNull JShlExpr expr) {}
+
+  @Override
+  public void caseShrExpr(@NonNull JShrExpr expr) {}
+
+  @Override
+  public void caseSubExpr(@NonNull JSubExpr expr) {}
+
+  @Override
+  public void caseUshrExpr(@NonNull JUshrExpr expr) {}
+
+  @Override
+  public void caseXorExpr(@NonNull JXorExpr expr) {}
+
+  @Override
+  public void casePhiExpr(JPhiExpr expr) {}
+
+  @Override
+  public void caseCaughtExceptionRef(@NonNull JCaughtExceptionRef ref) {}
 
   @Override
   public void caseNewMultiArrayExpr(@NonNull JNewMultiArrayExpr expr) {
@@ -186,8 +319,12 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseThisRef(@NonNull JThisRef ref) {
-    // TODO: wip
-    defaultCaseValue(ref);
+    this.node =
+        VariableNode.builder()
+            .name("@this")
+            .type(ref.getType())
+            .containingMethodSig(containingMethodSig)
+            .build();
   }
 
   @Override
