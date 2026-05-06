@@ -63,7 +63,7 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   private static final MethodSignature GLOBAL_SCOPE =
       new MethodSignature(
-          new JavaClassType("GLOBAL", new PackageName("sootup.spark")),
+          new JavaClassType("GLOBAL", new PackageName("sootup.global")),
           "GLOBAL_SCOPE",
           Collections.emptyList(),
           VoidType.getInstance());
