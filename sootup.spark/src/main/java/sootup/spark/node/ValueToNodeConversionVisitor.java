@@ -122,115 +122,189 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   }
 
   @Override
-  public void caseCastExpr(@NonNull JCastExpr expr) {}
+  public void caseCastExpr(@NonNull JCastExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseNewArrayExpr(@NonNull JNewArrayExpr expr) {}
+  public void caseNewArrayExpr(@NonNull JNewArrayExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseBooleanConstant(@NonNull BooleanConstant constant) {}
+  public void caseBooleanConstant(@NonNull BooleanConstant constant) {
+    ignore(constant);
+  }
 
   @Override
-  public void caseClassConstant(@NonNull ClassConstant constant) {}
+  public void caseClassConstant(@NonNull ClassConstant constant) {
+    ignore(constant);
+  }
 
   @Override
-  public void caseDoubleConstant(@NonNull DoubleConstant constant) {}
+  public void caseDoubleConstant(@NonNull DoubleConstant constant) {
+    ignore(constant);
+  }
 
   @Override
-  public void caseEnumConstant(@NonNull EnumConstant constant) {}
+  public void caseEnumConstant(@NonNull EnumConstant constant) {
+    ignore(constant);
+  }
 
   @Override
-  public void caseFloatConstant(@NonNull FloatConstant constant) {}
+  public void caseFloatConstant(@NonNull FloatConstant constant) {
+    ignore(constant);
+  }
 
   @Override
-  public void caseIntConstant(@NonNull IntConstant constant) {}
+  public void caseIntConstant(@NonNull IntConstant constant) {
+    ignore(constant);
+  }
 
   @Override
-  public void caseLongConstant(@NonNull LongConstant constant) {}
+  public void caseLongConstant(@NonNull LongConstant constant) {
+    ignore(constant);
+  }
 
   @Override
-  public void caseMethodHandle(@NonNull MethodHandle v) {}
+  public void caseMethodHandle(@NonNull MethodHandle v) {
+    ignore(v);
+  }
 
   @Override
-  public void caseMethodType(@NonNull MethodType v) {}
+  public void caseMethodType(@NonNull MethodType v) {
+    ignore(v);
+  }
 
   @Override
-  public void caseNullConstant(@NonNull NullConstant constant) {}
+  public void caseNullConstant(@NonNull NullConstant constant) {
+    ignore(constant);
+  }
 
   @Override
-  public void caseAddExpr(@NonNull JAddExpr expr) {}
+  public void caseAddExpr(@NonNull JAddExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseAndExpr(@NonNull JAndExpr expr) {}
+  public void caseAndExpr(@NonNull JAndExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseCmpExpr(@NonNull JCmpExpr expr) {}
+  public void caseCmpExpr(@NonNull JCmpExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseCmpgExpr(@NonNull JCmpgExpr expr) {}
+  public void caseCmpgExpr(@NonNull JCmpgExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseCmplExpr(@NonNull JCmplExpr expr) {}
+  public void caseCmplExpr(@NonNull JCmplExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseDivExpr(@NonNull JDivExpr expr) {}
+  public void caseDivExpr(@NonNull JDivExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseEqExpr(@NonNull JEqExpr expr) {}
+  public void caseEqExpr(@NonNull JEqExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseGeExpr(@NonNull JGeExpr expr) {}
+  public void caseGeExpr(@NonNull JGeExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseGtExpr(@NonNull JGtExpr expr) {}
+  public void caseGtExpr(@NonNull JGtExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseInstanceOfExpr(@NonNull JInstanceOfExpr expr) {}
+  public void caseInstanceOfExpr(@NonNull JInstanceOfExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseLeExpr(@NonNull JLeExpr expr) {}
+  public void caseLeExpr(@NonNull JLeExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseLengthExpr(@NonNull JLengthExpr expr) {}
+  public void caseLengthExpr(@NonNull JLengthExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseLtExpr(@NonNull JLtExpr expr) {}
+  public void caseLtExpr(@NonNull JLtExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseMulExpr(@NonNull JMulExpr expr) {}
+  public void caseMulExpr(@NonNull JMulExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseNeExpr(@NonNull JNeExpr expr) {}
+  public void caseNeExpr(@NonNull JNeExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseNegExpr(@NonNull JNegExpr expr) {}
+  public void caseNegExpr(@NonNull JNegExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseOrExpr(@NonNull JOrExpr expr) {}
+  public void caseOrExpr(@NonNull JOrExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseRemExpr(@NonNull JRemExpr expr) {}
+  public void caseRemExpr(@NonNull JRemExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseShlExpr(@NonNull JShlExpr expr) {}
+  public void caseShlExpr(@NonNull JShlExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseShrExpr(@NonNull JShrExpr expr) {}
+  public void caseShrExpr(@NonNull JShrExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseSubExpr(@NonNull JSubExpr expr) {}
+  public void caseSubExpr(@NonNull JSubExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseUshrExpr(@NonNull JUshrExpr expr) {}
+  public void caseUshrExpr(@NonNull JUshrExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseXorExpr(@NonNull JXorExpr expr) {}
+  public void caseXorExpr(@NonNull JXorExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void casePhiExpr(JPhiExpr expr) {}
+  public void casePhiExpr(JPhiExpr expr) {
+    ignore(expr);
+  }
 
   @Override
-  public void caseCaughtExceptionRef(@NonNull JCaughtExceptionRef ref) {}
+  public void caseCaughtExceptionRef(@NonNull JCaughtExceptionRef ref) {
+    ignore(ref);
+  }
 
   @Override
   public void caseNewMultiArrayExpr(@NonNull JNewMultiArrayExpr expr) {
@@ -351,4 +425,7 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   public void defaultCaseValue(@NonNull Value v) {
     log.warn("Unimplemented node conversion for value: {} of type: {}", v, v.getClass());
   }
+
+  // For the cases that should safely be ignored for PTA
+  public void ignore(@NonNull Value v) {}
 }

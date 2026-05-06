@@ -14,8 +14,10 @@ import sootup.core.jimple.common.constant.DoubleConstant;
 import sootup.core.jimple.common.constant.FloatConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.LongConstant;
+import sootup.core.jimple.common.constant.MethodHandle;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.JNewExpr;
+import sootup.core.jimple.common.expr.JPhiExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
@@ -23,6 +25,7 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.types.VoidType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.spark.Engine;
@@ -427,5 +430,56 @@ class ValueToNodeConversionTest {
     val caughtExceptionRef = JavaJimple.newCaughtExceptionRef();
     val node = nodeFactory.createNode(caughtExceptionRef, methodSig);
     assertTrue(node.isEmpty());
+  }
+
+  @Test
+  void testEnumConstantToNodeConversion() {
+    val enumConstant = JavaJimple.newEnumConstant("VALUE", "MyEnum");
+    val node = nodeFactory.createNode(enumConstant, methodSig);
+    assertTrue(node.isEmpty());
+  }
+
+  @Test
+  void testMethodHandleToNodeConversion() {
+    val methodHandle = JavaJimple.newMethodHandle(methodSig, MethodHandle.Kind.REF_INVOKE_VIRTUAL);
+    val node = nodeFactory.createNode(methodHandle, methodSig);
+    assertTrue(node.isEmpty());
+  }
+
+  @Test
+  void testMethodTypeToNodeConversion() {
+    val methodType = JavaJimple.newMethodType(Collections.emptyList(), VoidType.getInstance());
+    val node = nodeFactory.createNode(methodType, methodSig);
+    assertTrue(node.isEmpty());
+  }
+
+  @Test
+  void testPhiExprToNodeConversion() {
+    val local1 = new Local("a", aType);
+    val local2 = new Local("b", aType);
+    List<Local> locals = new java.util.ArrayList<>();
+    locals.add(local1);
+    locals.add(local2);
+    java.util.Map<Local, sootup.core.graph.BasicBlock<?>> blockMap = new java.util.HashMap<>();
+    val phiExpr = new JPhiExpr(locals, blockMap);
+    val node = nodeFactory.createNode(phiExpr, methodSig);
+    assertTrue(node.isEmpty());
+  }
+
+  @Test
+  void testStringConstantToNodeConversion() {
+    val stringConstant = JavaJimple.newStringConstant("hello");
+    val nodeOpt = nodeFactory.createNode(stringConstant, methodSig);
+    assertTrue(nodeOpt.isPresent());
+    val node = nodeOpt.get();
+    assertTrue(node instanceof AllocationNode);
+    assertEquals(stringConstant.getType(), node.getType());
+  }
+
+  @Test
+  void testGetResult() {
+    val local = new Local("a", aType);
+    val varNodeOpt = nodeFactory.createNode(local, methodSig);
+    assertTrue(varNodeOpt.isPresent());
   }
 }
