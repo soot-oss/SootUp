@@ -30,6 +30,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Value;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.PolymorphicMethodSignature;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -39,7 +40,7 @@ public abstract class AbstractInvokeExpr implements Expr {
   @NonNull private final Immediate[] args;
 
   protected AbstractInvokeExpr(@NonNull MethodSignature method, @NonNull Immediate[] args) {
-    this.methodSignature = method;
+    this.methodSignature = PolymorphicMethodSignature.resolve(method);
     for (Immediate arg : args) {
       if (arg == null) {
         throw new IllegalArgumentException("arg may not be null");

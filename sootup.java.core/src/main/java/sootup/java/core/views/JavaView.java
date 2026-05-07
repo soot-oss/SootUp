@@ -112,6 +112,7 @@ public class JavaView extends AbstractView {
   @Override
   @NonNull
   public Optional<JavaSootMethod> getMethod(@NonNull MethodSignature signature) {
+    System.out.println("(View) MethodSig: " + signature);
     return getClass(signature.getDeclClassType())
         .flatMap(c -> c.getMethod(signature.getSubSignature()));
   }
