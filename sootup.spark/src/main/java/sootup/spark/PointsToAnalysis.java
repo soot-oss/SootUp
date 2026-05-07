@@ -27,10 +27,13 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import lombok.NonNull;
 import org.jgrapht.Graph;
+import sootup.core.jimple.common.Value;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
@@ -42,47 +45,105 @@ import sootup.spark.node.Node;
  * <p>Construct via {@link #fromSolver(Solver)}. The factory triggers {@link Solver#solve()} (if the
  * PAG has not yet been built) and then runs an Andersen-style fixed-point propagation over the
  * allocation, assignment, store, and load edges of the PAG. After construction the following
- * queries are supported:
+ * queries are supported, all keyed by Jimple {@link Value} (a local, field ref, parameter ref,
+ * {@code this}, etc.) plus the {@link MethodSignature} of the method that contains the value:
  *
  * <ul>
- *   <li>{@link #reachingObjects(Node)} — the set of {@link AllocationNode}s a node may point to.
- *   <li>{@link #aliases(Node)} — the set of other PAG nodes whose points-to set intersects the
- *       query node's.
- *   <li>{@link #reachingTypes(Node)} — the set of run-time {@link Type}s induced by the points-to
- *       set.
+ *   <li>{@link #reachingObjects(Value, MethodSignature)} — the set of {@link AllocationNode}s the
+ *       value may point to.
+ *   <li>{@link #aliases(Value, MethodSignature)} — the set of PAG vertices whose points-to set
+ *       intersects the query value's.
+ *   <li>{@link #reachingTypes(Value, MethodSignature)} — the set of run-time {@link Type}s induced
+ *       by the points-to set.
  * </ul>
+ *
+ * <p>Values that the PAG does not model (numeric constants, arithmetic expressions, etc.) yield an
+ * empty result. The raw PAG-level points-to map is also exposed via {@link #getPointsToMap()} for
+ * diagnostic purposes.
  */
 public class PointsToAnalysis {
 
   private final Solver solver;
+  private final NodeFactory nodeFactory;
   private final Map<Node, Set<AllocationNode>> pointsTo = new HashMap<>();
   private final Map<HeapKey, Set<AllocationNode>> heap = new HashMap<>();
 
   private PointsToAnalysis(Solver solver) {
     this.solver = solver;
+    this.nodeFactory = new NodeFactory(solver.getSparkOptions());
   }
 
   /**
    * Builds a {@code PointsToAnalysis} over the PAG of {@code solver}. If the PAG has not yet been
    * built (i.e. has no vertices), {@link Solver#solve()} is invoked first.
+   *
+   * <p>In OTF mode the points-to and heap state has already been computed incrementally during
+   * solving, so we adopt it directly instead of re-running the batch fixed-point.
    */
-  public static PointsToAnalysis fromSolver(@NonNull Solver solver) {
+  static PointsToAnalysis fromSolver(@NonNull Solver solver) {
     if (solver.getPag().getDelegate().vertexSet().isEmpty()) {
       solver.solve();
     }
     PointsToAnalysis pta = new PointsToAnalysis(solver);
-    pta.propagate();
+    if (solver.getSparkOptions().isOnFlyCallGraph() && solver.getIncrementalAnalysis() != null) {
+      pta.adoptFrom(solver.getIncrementalAnalysis());
+    } else {
+      pta.propagate();
+    }
     return pta;
   }
 
+  private void adoptFrom(IncrementalPointsToAnalysis ipta) {
+    pointsTo.putAll(ipta.getPointsTo());
+    for (Map.Entry<IncrementalPointsToAnalysis.HeapKey, Set<AllocationNode>> e :
+        ipta.getHeap().entrySet()) {
+      heap.put(new HeapKey(e.getKey().obj(), e.getKey().field()), e.getValue());
+    }
+  }
+
   /**
-   * Returns the set of allocation sites that {@code node} may point to.
+   * Returns the set of allocation sites that {@code value} may point to within {@code
+   * containingMethodSig}.
    *
-   * <p>For an {@link AllocationNode} the result is the singleton containing that allocation. For an
-   * {@link InstanceFieldRefNode} {@code b.f} the result is the union of {@code heap[o, f]} over
-   * each {@code o} in {@code reachingObjects(b)}.
+   * <p>For an allocation expression the result is the singleton containing that allocation. For an
+   * instance field reference {@code b.f} the result is the union of {@code heap[o, f]} over each
+   * {@code o} in {@code reachingObjects(b)}. Values not modeled by the PAG yield an empty set.
    */
-  public Set<AllocationNode> reachingObjects(@NonNull Node node) {
+  public Set<AllocationNode> reachingObjects(
+      @NonNull Value value, @NonNull MethodSignature containingMethodSig) {
+    Optional<Node> node = nodeFactory.createNode(value, containingMethodSig);
+    return node.map(this::reachingObjectsOfNode).orElse(Collections.emptySet());
+  }
+
+  /**
+   * Returns the set of PAG vertices (other than the one for {@code value} itself) whose points-to
+   * set shares at least one allocation with {@code reachingObjects(value, containingMethodSig)} —
+   * i.e. nodes that may refer to a common run-time object.
+   */
+  public Set<Node> aliases(@NonNull Value value, @NonNull MethodSignature containingMethodSig) {
+    Optional<Node> node = nodeFactory.createNode(value, containingMethodSig);
+    return node.map(this::aliasesOfNode).orElse(Collections.emptySet());
+  }
+
+  /**
+   * Returns the set of run-time types that the points-to set of {@code value} may induce within
+   * {@code containingMethodSig}.
+   */
+  public Set<Type> reachingTypes(
+      @NonNull Value value, @NonNull MethodSignature containingMethodSig) {
+    Optional<Node> node = nodeFactory.createNode(value, containingMethodSig);
+    return node.map(this::reachingTypesOfNode).orElse(Collections.emptySet());
+  }
+
+  /**
+   * Read-only view of the raw PAG-level points-to map. Intended for diagnostics and debugging that
+   * needs to walk every PAG vertex; prefer the {@link Value}-based query methods for analysis.
+   */
+  public Map<Node, Set<AllocationNode>> getPointsToMap() {
+    return Collections.unmodifiableMap(pointsTo);
+  }
+
+  private Set<AllocationNode> reachingObjectsOfNode(Node node) {
     if (node instanceof AllocationNode a) {
       return Collections.singleton(a);
     }
@@ -99,18 +160,13 @@ public class PointsToAnalysis {
     return Collections.unmodifiableSet(ptsOf(node));
   }
 
-  /**
-   * Returns the set of nodes (other than {@code node} itself) whose points-to set shares at least
-   * one allocation with {@code reachingObjects(node)} — i.e. nodes that may refer to a common
-   * run-time object. Only PAG vertices are considered as candidates.
-   */
-  public Set<Node> aliases(@NonNull Node node) {
-    Set<AllocationNode> targets = reachingObjects(node);
+  private Set<Node> aliasesOfNode(Node node) {
+    Set<AllocationNode> targets = reachingObjectsOfNode(node);
     if (targets.isEmpty()) return Collections.emptySet();
     Set<Node> result = new LinkedHashSet<>();
     for (Node candidate : solver.getPag().getDelegate().vertexSet()) {
       if (candidate.equals(node)) continue;
-      Set<AllocationNode> candPts = reachingObjects(candidate);
+      Set<AllocationNode> candPts = reachingObjectsOfNode(candidate);
       if (candPts.isEmpty()) continue;
       if (!Collections.disjoint(targets, candPts)) {
         result.add(candidate);
@@ -119,9 +175,8 @@ public class PointsToAnalysis {
     return Collections.unmodifiableSet(result);
   }
 
-  /** Returns the set of run-time types that {@code node}'s points-to set may induce. */
-  public Set<Type> reachingTypes(@NonNull Node node) {
-    Set<AllocationNode> objects = reachingObjects(node);
+  private Set<Type> reachingTypesOfNode(Node node) {
+    Set<AllocationNode> objects = reachingObjectsOfNode(node);
     if (objects.isEmpty()) return Collections.emptySet();
     Set<Type> types = new LinkedHashSet<>();
     for (AllocationNode o : objects) types.add(o.getType());
