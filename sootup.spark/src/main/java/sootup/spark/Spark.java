@@ -32,8 +32,9 @@ import sootup.core.views.View;
 /**
  * Main access point to SPARK's functionality.
  *
- * <p>Exposes the call graph (CHA up-front, or built on-the-fly when {@link
- * SparkOptions#isOnFlyCallGraph()} is set) and a {@link PointsToAnalysis} over the resulting PAG.
+ * <p>Exposes the call graph (CHA up-front, or built on-the-fly when
+ * {@code SparkOptions#isOnFlyCallGraph()} is set) and a {@link PointsToAnalysis} over the resulting
+ * PAG.
  * Lower-level components such as the solver are package-private; clients should not bypass this
  * facade.
  *
@@ -72,7 +73,7 @@ public class Spark {
 
   /**
    * Returns the call graph. Built via class-hierarchy analysis at construction time, or grown
-   * on-the-fly during {@link #solve()} when {@link SparkOptions#isOnFlyCallGraph()} is set.
+   * on-the-fly during {@link #solve()} when {@code SparkOptions#isOnFlyCallGraph()} is set.
    */
   public CallGraph getCallGraph() {
     solve();
