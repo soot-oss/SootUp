@@ -300,8 +300,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // check for collisions with the same local names in other scopes
     // this can happen when different scopes use the same name for a
     // different variable (and having a different local idx, were we are able distinguish)
+    String baseName = nameCandidate;
     for (int i = 1; localNameExists(nameCandidate); i++) {
-      nameCandidate = nameCandidate + "_" + i;
+      nameCandidate = baseName + "_" + i;
     }
     return JavaJimple.newLocal(nameCandidate, type, Collections.emptyList());
   }
