@@ -58,12 +58,16 @@ public class SparkTestUtil {
   }
 
   public static Graph<Node, PAGEdge> solveMain(MethodSignature mainSig) {
+    return solveMainWithSolver(mainSig).getPag().getDelegate();
+  }
+
+  public static Solver solveMainWithSolver(MethodSignature mainSig) {
     assertTrue(view.getClass(mainSig.getDeclClassType()).isPresent());
     assertTrue(view.getMethod(mainSig).isPresent());
     Solver solver =
         Solver.builder().view(view).entryPoints(Collections.singletonList(mainSig)).build();
     solver.solve();
-    return solver.getPag().getDelegate();
+    return solver;
   }
 
   public static Graph<Node, PAGEdge> solveMain(MethodSignature mainSig, SparkOptions options) {

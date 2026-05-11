@@ -170,3 +170,4 @@ fabric.properties
 =======
 .vscode/
 .DS_Store
+sootup.spark/src/test/java/sootup/spark/test/PointsToAnalysisDemoTest.java
