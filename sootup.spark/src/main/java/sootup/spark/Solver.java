@@ -61,6 +61,7 @@ public class Solver {
   }
 
   private void buildMethodPAG(SootMethod method) {
+    if (!method.hasBody()) return;
     MethodPAGStmtVisitor stmtVisitor =
         MethodPAGStmtVisitor.builder()
             .methodSignature(method.getSignature())

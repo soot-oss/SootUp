@@ -31,13 +31,16 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import sootup.callgraph.CallGraph;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.ref.JParameterRef;
+import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
+import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
@@ -100,8 +103,26 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
         .forEach(
             targetMethodSig ->
                 view.getMethod(targetMethodSig)
+                    .filter(SootMethod::hasBody)
                     .ifPresent(
                         sootMethod -> {
+                          // add edge for receiver -> @this mapping (instance invokes only)
+                          if (expr instanceof AbstractInstanceInvokeExpr instanceExpr) {
+                            val baseNode =
+                                nodeFactory.createNode(instanceExpr.getBase(), methodSignature);
+                            val thisLocal =
+                                sootMethod.getBody().getStmts().stream()
+                                    .filter(stmt -> stmt instanceof JIdentityStmt)
+                                    .map(stmt -> (JIdentityStmt) stmt)
+                                    .filter(stmt -> stmt.getRightOp() instanceof JThisRef)
+                                    .map(JIdentityStmt::getLeftOp)
+                                    .findFirst();
+                            if (baseNode.isPresent() && thisLocal.isPresent()) {
+                              val thisNode =
+                                  nodeFactory.createNode(thisLocal.get(), targetMethodSig);
+                              thisNode.ifPresent(node -> PAG.addEdge(baseNode.get(), node));
+                            }
+                          }
                           // add edges for parameter mapping
                           for (int i = 0; i < expr.getArgCount(); i++) {
                             val argNode = nodeFactory.createNode(expr.getArg(i), methodSignature);
