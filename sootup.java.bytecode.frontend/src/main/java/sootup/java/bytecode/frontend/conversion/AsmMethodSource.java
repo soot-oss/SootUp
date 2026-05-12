@@ -269,29 +269,51 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @NonNull
-  private JavaLocal getOrCreateLocal(int idx) {
+  private JavaLocal getOrCreateLocal(int idx, @NonNull AbstractInsnNode atInsn) {
     if (idx >= maxLocals) {
       throw new IllegalArgumentException("Invalid local index: " + idx);
     }
     JavaLocal local = locals.get(idx);
     if (local == null) {
-      String nameCandidate = determineLocalName(idx);
+      String nameCandidate = determineLocalName(idx, atInsn);
       local = createUniqueLocal(nameCandidate, UnknownType.getInstance());
       locals.set(idx, local);
     }
     return local;
   }
 
+  /**
+   * Determines the name of the local variable at slot {@code idx} valid at the position of {@code
+   * atInsn} in the instruction list. When {@code atInsn} is {@code null} (e.g. for parameters /
+   * "this") the first matching entry in the LocalVariableTable is used without range checking.
+   */
   @NonNull
-  private String determineLocalName(int idx) {
+  private String determineLocalName(int idx, @Nullable AbstractInsnNode atInsn) {
     if (localVariables != null) {
+      int insnIdx = atInsn != null ? instructions.indexOf(atInsn) : -1;
+      String fallback = null;
       for (LocalVariableNode lvn : localVariables) {
-        if (lvn.index == idx) {
-          // TODO: take into consideration in which range this name is valid ->lvn.start/end
+        if (lvn.index != idx) {
+          continue;
+        }
+        if (atInsn == null) {
+          // no range check needed (parameters / this are always valid)
           return lvn.name;
         }
+        int startIdx = instructions.indexOf(lvn.start);
+        int endIdx = instructions.indexOf(lvn.end);
+        if (insnIdx >= startIdx && insnIdx < endIdx) {
+          return lvn.name;
+        }
+        // keep the first entry as fallback for instructions that fall outside all ranges
+        // (e.g. try-catch handler labels that precede the declared scope)
+        if (fallback == null) {
+          fallback = lvn.name;
+        }
       }
-      /* usually reached for try-catch blocks */
+      if (fallback != null) {
+        return fallback;
+      }
     }
     return "l" + idx;
   }
@@ -432,7 +454,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   private void convertIincInsn(@NonNull IincInsnNode insn) {
-    Local local = getOrCreateLocal(insn.var);
+    Local local = getOrCreateLocal(insn.var, insn);
     addReadOperandAssignments(local);
     if (!insnToStmt.containsKey(insn)) {
       JAddExpr add = Jimple.newAddExpr(local, IntConstant.getInstance(insn.incr));
@@ -1248,7 +1270,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int op = insn.getOpcode();
     boolean dword = op == LLOAD || op == DLOAD;
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
-    Operand opr = new Operand(insn, getOrCreateLocal(insn.var), this);
+    Operand opr = new Operand(insn, getOrCreateLocal(insn.var, insn), this);
     merging.mergeOutput(opr);
     if (dword) {
       operandStack.pushDual(opr);
@@ -1263,7 +1285,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     Operand opr = dword ? operandStack.popDual() : operandStack.pop();
     merging.mergeInputs(opr);
-    Local local = getOrCreateLocal(insn.var);
+    Local local = getOrCreateLocal(insn.var, insn);
     AbstractDefinitionStmt as;
     if (opr.stackLocal == null) {
       // Can skip creating a new stack local for the operand
@@ -1293,7 +1315,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else if (op == RET) {
       /* we handle it, even though it should be removed */
       if (!insnToStmt.containsKey(insn)) {
-        setStmt(insn, Jimple.newRetStmt(getOrCreateLocal(insn.var), getStmtPositionInfo()));
+        setStmt(insn, Jimple.newRetStmt(getOrCreateLocal(insn.var, insn), getStmtPositionInfo()));
       }
     } else {
       throw new UnsupportedOperationException("Unknown var op: " + op);
@@ -1611,7 +1633,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // [BH] parameterlocals do not exist yet -> create with annotation
       JavaLocal local =
           JavaJimple.newLocal(
-              determineLocalName(localIdx),
+              determineLocalName(localIdx, null),
               parameterType,
               AsmUtil.createAnnotationUsage(
                   invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));
