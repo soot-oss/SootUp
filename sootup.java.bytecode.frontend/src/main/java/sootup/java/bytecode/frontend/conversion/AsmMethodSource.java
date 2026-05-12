@@ -749,7 +749,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
        * We can ignore NOP instructions, but for completeness, we handle them
        */
       if (!insnToStmt.containsKey(insn)) {
-        insnToStmt.put(insn, Jimple.newNopStmt(getStmtPositionInfo()));
+        setStmt(insn, Jimple.newNopStmt(getStmtPositionInfo()));
       }
     } else if (op >= ACONST_NULL && op <= DCONST_1) {
       convertConstInsn(insn);
