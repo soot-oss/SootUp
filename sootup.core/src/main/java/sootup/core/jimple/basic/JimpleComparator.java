@@ -66,8 +66,6 @@ import sootup.core.jimple.javabytecode.stmt.*;
  *       false}.
  * </ul>
  *
- * <p>
- *
  * @author Markus Schmidt
  */
 public class JimpleComparator {

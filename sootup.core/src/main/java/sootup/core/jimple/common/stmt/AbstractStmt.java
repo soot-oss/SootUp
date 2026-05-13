@@ -22,8 +22,8 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.LValue;
@@ -40,15 +40,8 @@ public abstract class AbstractStmt implements Stmt {
     this.positionInfo = positionInfo;
   }
 
-  /**
-   * Returns a list of Values used in this Stmt. Note that they are returned in usual evaluation
-   * order.
-   */
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.empty();
-  }
+  public void collectUses(List<Value> collector) {}
 
   /**
    * Returns a list of Values defined in this Stmt. There are languages which allow multiple return
@@ -58,14 +51,6 @@ public abstract class AbstractStmt implements Stmt {
   @NonNull
   public Optional<LValue> getDef() {
     return Optional.empty();
-  }
-
-  /** Returns a list of Values, either used or defined or both in this Stmt. */
-  @Override
-  @NonNull
-  public Stream<Value> getUsesAndDefs() {
-    Optional<LValue> def = getDef();
-    return def.map(lValue -> Stream.concat(getUses(), Stream.of(lValue))).orElseGet(this::getUses);
   }
 
   /**
