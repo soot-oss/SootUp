@@ -65,10 +65,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractCallGraphAlgorithm.class);
 
+  /** The view providing access to all classes and type hierarchy. */
   @NonNull protected final View view;
+
+  /** The type hierarchy derived from the view. */
   @NonNull protected final TypeHierarchy typeHierarchy;
+
+  /** The class type for java.lang.Thread, used for thread start call edge handling. */
   @NonNull protected final ClassType threadType;
 
+  /** Creates a new call graph algorithm using the given view. */
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
@@ -82,6 +88,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *
    * @param method the source (caller) method
    * @param statement the invokable statement causing the call
+   * @return true if the call should be included in the call graph
    */
   protected boolean includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
     return true;
@@ -114,6 +121,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * This method creates the mutable call graph which is used in the call graph algorithm. Overwrite
    * it to change the used mutable call graph
    *
+   * @param entryPoints the initial entry point method signatures
+   * @param clinits the static initializer signatures to include as roots
    * @return the initialized call graph used in the call graph algorithm
    */
   protected MutableCallGraph initializeCallGraph(
@@ -128,6 +137,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * points
    *
    * @param entryPoints the entry points of the call graph algorithm
+   * @return the list of static initializer signatures for the entry point classes
    */
   protected List<MethodSignature> getClinitFromEntryPoints(List<MethodSignature> entryPoints) {
     return entryPoints.stream()
@@ -700,6 +710,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * Searches for the signature of the method that is the concrete implementation of <code>m</code>.
    * This is done by checking each superclass and the class itself for whether it contains the
    * concrete implementation.
+   *
+   * @param view the view providing access to all classes
+   * @param m the method signature to resolve
+   * @return the concrete implementing method signature, or empty if not found or abstract
    */
   @NonNull
   public static Optional<MethodSignature> resolveConcreteDispatch(View view, MethodSignature m) {
@@ -757,6 +771,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     return Optional.empty();
   }
 
+  /**
+   * Searches for a method matching the given sub-signature in the class hierarchy starting from the
+   * given class and traversing superclasses.
+   */
   protected static Optional<SootMethod> findMethodInHierarchy(
       @NonNull View view,
       @NonNull SootClass sootClass,
@@ -815,6 +833,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                     : currentLeastSubMethod);
   }
 
+  /** Returns true if the given class type represents an interface. */
   protected boolean isInterface(ClassType classType) {
     return typeHierarchy.isInterface(classType);
   }

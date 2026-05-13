@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Deploy SNAPSHOT version
-        uses: secure-software-engineering/actions/deployment/maven-deployment@450bba69b4928dfedda9ba3f41e1aec8ac55e059 # develop
+        uses: secure-software-engineering/actions/deployment/maven-deployment@0caaeef2e50a42448e00423a073c676aebead49f # develop
         with:
           java-distribution: adopt
           java-version: 17

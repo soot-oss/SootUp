@@ -234,7 +234,7 @@ public class LocalSplitter implements BodyInterceptor {
             continue;
           }
 
-          if (stmt.getUses().anyMatch(l -> l == local)) {
+          if (stmt.getUses().stream().anyMatch(l -> l == local)) {
             PartialStmt useStmt = new PartialStmt(stmt, false);
             disjointSet.add(useStmt);
             disjointSet.union(defStmt, useStmt);
@@ -276,7 +276,7 @@ public class LocalSplitter implements BodyInterceptor {
 
         Optional<LValue> stmtDef = stmt.getDef();
         boolean localIsDef = stmtDef.isPresent() && stmtDef.get() == local;
-        boolean localIsUse = stmt.getUses().anyMatch(l -> l == local);
+        boolean localIsUse = stmt.getUses().stream().anyMatch(l -> l == local);
 
         Stmt oldStmt = stmt;
 

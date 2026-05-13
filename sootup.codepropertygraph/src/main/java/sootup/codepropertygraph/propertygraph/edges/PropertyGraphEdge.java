@@ -42,6 +42,7 @@ public abstract class PropertyGraphEdge {
     return destination;
   }
 
+  /** Returns the label identifying this edge type. */
   public abstract String getLabel();
 
   @Override

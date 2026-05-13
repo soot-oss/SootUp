@@ -23,7 +23,6 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.List;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
@@ -46,13 +45,10 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(
-        Stream.concat(
-            Stream.concat(getArgs().stream(), getArgs().stream().flatMap(Value::getUses)),
-            base.getUses()),
-        Stream.of(base));
+  public void collectUses(List<Value> collector) {
+    super.collectUses(collector);
+    base.collectUses(collector);
+    collector.add(base);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
