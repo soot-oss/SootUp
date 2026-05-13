@@ -48,4 +48,4 @@ jobs:
         run: rm -rf docs/api; mkdir -p docs/api; mv target/reports/apidocs/* docs/api
 
       - name: Create Documentation Preview
-        uses: secure-software-engineering/actions/documentation/pr-preview@450bba69b4928dfedda9ba3f41e1aec8ac55e059 # develop
+        uses: secure-software-engineering/actions/documentation/pr-preview@0caaeef2e50a42448e00423a073c676aebead49f # develop

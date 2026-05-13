@@ -22,7 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.stream.Stream;
+import java.util.List;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Value;
@@ -41,8 +41,8 @@ public abstract class AbstractUnopExpr implements Expr {
   }
 
   @Override
-  @NonNull
-  public final Stream<Value> getUses() {
-    return Stream.concat(op.getUses(), Stream.of(op));
+  public final void collectUses(List<Value> collector) {
+    op.collectUses(collector);
+    collector.add(op);
   }
 }

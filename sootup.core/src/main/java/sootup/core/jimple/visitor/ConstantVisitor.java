@@ -25,29 +25,42 @@ package sootup.core.jimple.visitor;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.constant.*;
 
+/** Visitor interface for constant values in Jimple IR. */
 public interface ConstantVisitor extends Visitor {
 
+  /** Visits a boolean constant. */
   void caseBooleanConstant(@NonNull BooleanConstant constant);
 
+  /** Visits a double constant. */
   void caseDoubleConstant(@NonNull DoubleConstant constant);
 
+  /** Visits a float constant. */
   void caseFloatConstant(@NonNull FloatConstant constant);
 
+  /** Visits an int constant. */
   void caseIntConstant(@NonNull IntConstant constant);
 
+  /** Visits a long constant. */
   void caseLongConstant(@NonNull LongConstant constant);
 
+  /** Visits a null constant. */
   void caseNullConstant(@NonNull NullConstant constant);
 
+  /** Visits a string constant. */
   void caseStringConstant(@NonNull StringConstant constant);
 
+  /** Visits an enum constant. */
   void caseEnumConstant(@NonNull EnumConstant constant);
 
+  /** Visits a class constant. */
   void caseClassConstant(@NonNull ClassConstant constant);
 
+  /** Visits a method handle constant. */
   void caseMethodHandle(@NonNull MethodHandle handle);
 
+  /** Visits a method type constant. */
   void caseMethodType(@NonNull MethodType methodType);
 
+  /** Called for any constant not handled by a more specific case method. */
   void defaultCaseConstant(@NonNull Constant constant);
 }
