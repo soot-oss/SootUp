@@ -89,6 +89,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private List<JavaLocal> locals;
   private LinkedListMultimap<BranchingStmt, LabelNode> stmtsThatBranchToLabel;
   private Map<AbstractInsnNode, Stmt> insnToStmt;
+  private Map<Stmt, AbstractInsnNode> stmtToInsn;
 
   @NonNull private final Map<Stmt, Stmt> replacedStmt = new HashMap<>();
 
@@ -172,6 +173,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                 + Math.max((maxLocals / 2), 5)); // [ms] initial capacity is just roughly estimated.
     stmtsThatBranchToLabel = LinkedListMultimap.create();
     insnToStmt = new LinkedHashMap<>(instructions.size());
+    stmtToInsn = new HashMap<>(instructions.size());
     operandStack = new OperandStack(this, instructions.size());
     trapHandler = new LinkedHashMap<>(tryCatchBlocks.size());
 
@@ -232,6 +234,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     locals = null;
     stmtsThatBranchToLabel = null;
     insnToStmt = null;
+    stmtToInsn = null;
     operandStack = null;
 
     bodyBuilder.setMethodSignature(lazyMethodSignature.get());
@@ -336,7 +339,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   void setStmt(@NonNull AbstractInsnNode insn, @NonNull Stmt stmt) {
-    insnToStmt.put(insn, stmt);
+    Stmt previous = insnToStmt.put(insn, stmt);
+    if (previous != null) {
+      stmtToInsn.remove(previous);
+    }
+    stmtToInsn.put(stmt, insn);
   }
 
   @NonNull Local newStackLocal() {
@@ -1836,27 +1843,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       return;
     }
 
-    AbstractInsnNode key = null;
-
-    // TODO: [ms] bit expensive and called a lot? -> find better solution!
-    for (Entry<AbstractInsnNode, Stmt> entry : insnToStmt.entrySet()) {
-      if (Objects.equals(oldStmt, entry.getValue())) {
-        key = entry.getKey();
-      }
-    }
-
+    AbstractInsnNode key = stmtToInsn.get(oldStmt);
     if (key == null) {
-      // throw new IllegalStateException("Could not replace value in insn map because oldStmt " +
-      // oldStmt + " it is absent");
       return;
     }
 
     if (newStmt == null) {
       insnToStmt.remove(key);
+      stmtToInsn.remove(oldStmt);
       return;
     }
 
     insnToStmt.put(key, newStmt);
+    stmtToInsn.remove(oldStmt);
+    stmtToInsn.put(newStmt, key);
     replacedStmt.put(oldStmt, newStmt);
 
     if (oldStmt instanceof BranchingStmt) {
