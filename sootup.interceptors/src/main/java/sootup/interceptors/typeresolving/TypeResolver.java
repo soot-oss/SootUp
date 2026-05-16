@@ -28,20 +28,25 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.IdentifierFactory;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractBinopExpr;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JNegExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.JInvokeStmt;
+import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
 import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -56,6 +61,7 @@ import sootup.java.core.views.JavaView;
 public class TypeResolver {
   private final ArrayList<AbstractDefinitionStmt> assignments = new ArrayList<>();
   private final Map<Local, BitSet> depends = new HashMap<>();
+  private final Map<Local, Set<Type>> useConstraints = new HashMap<>();
   private final JavaView view;
 
   private final Type objectType;
@@ -71,28 +77,27 @@ public class TypeResolver {
     init(builder);
     BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
     AugEvalFunction evalFunction = new AugEvalFunction(view);
+    collectUseConstraints(builder);
     final Collection<Local> locals = Lists.newArrayList(builder.getLocals());
     Typing iniTyping = new Typing(locals);
-    Collection<Typing> typings =
+    Typing typing =
         applyAssignmentConstraint(
             builder.getControlFlowGraph(), iniTyping, evalFunction, hierarchy);
-    if (typings.isEmpty()) {
+    if (typing == null) {
       return false;
     }
 
     TypePromotionVisitor promotionVisitor =
         new TypePromotionVisitor(builder, evalFunction, hierarchy);
-    typings = typings.stream().map(promotionVisitor::getPromotedTyping).collect(Collectors.toSet());
+    typing = promotionVisitor.getPromotedTyping(typing);
 
     // Promote `null`/`BottomType`/'TopType' types to `Object`, and other types which have
     // UnsupportedOperation in TypePromotionVisitor.
-    for (Typing typing : typings) {
-      for (Local local : locals) {
-        typing.set(local, convertUnderspecifiedType(typing.getType(local)));
-      }
+    for (Local local : locals) {
+      typing.set(local, convertUnderspecifiedType(typing.getType(local)));
     }
 
-    CastCounter minCastsCounter = getMinCastsCounter(builder, typings, evalFunction, hierarchy);
+    CastCounter minCastsCounter = new CastCounter(builder, evalFunction, hierarchy, typing);
     minCastsCounter.insertCastStmts();
     Typing minCastsTyping = minCastsCounter.getTyping();
 
@@ -169,7 +174,7 @@ public class TypeResolver {
     bitSet.set(id);
   }
 
-  private Collection<Typing> applyAssignmentConstraint(
+  private Typing applyAssignmentConstraint(
       @NonNull ControlFlowGraph<?> graph,
       @NonNull Typing typing,
       @NonNull AugEvalFunction evalFunction,
@@ -177,29 +182,18 @@ public class TypeResolver {
 
     final int numOfAssignments = assignments.size();
     if (numOfAssignments == 0) {
-      return Collections.emptyList();
+      return null;
     }
 
-    Deque<Typing> workQueue = new ArrayDeque<>();
-    List<Typing> ret = new ArrayList<>();
+    BitSet pending = new BitSet(numOfAssignments);
+    pending.set(0, numOfAssignments);
+    typing.setStmtsIDList(pending);
 
-    BitSet stmtsList = new BitSet(numOfAssignments);
-    stmtsList.set(0, numOfAssignments);
-    typing.setStmtsIDList(stmtsList);
-    workQueue.add(typing);
+    while (true) {
+      int stmtId = pending.nextSetBit(0);
+      if (stmtId == -1) break;
+      pending.clear(stmtId);
 
-    while (!workQueue.isEmpty()) {
-      Typing actualTyping = workQueue.getFirst();
-      BitSet actualSL = actualTyping.getStmtsIDList();
-      int stmtId = actualSL.nextSetBit(0);
-      // all definition stmts are handled
-      if (stmtId == -1) {
-        ret.add(actualTyping);
-        workQueue.removeFirst();
-        continue;
-      }
-
-      actualSL.clear(stmtId);
       AbstractDefinitionStmt defStmt = this.assignments.get(stmtId);
       Value lhs = defStmt.getLeftOp();
       Local local;
@@ -208,33 +202,28 @@ public class TypeResolver {
       } else if (lhs instanceof JArrayRef) {
         local = ((JArrayRef) lhs).getBase();
       } else if (lhs instanceof JInstanceFieldRef) {
-        // local = ((JInstanceFieldRef) lhs).getBase();
-        continue; // assigment to a field is independent of the base type.
+        continue; // assignment to a field is independent of the base type
       } else {
-        // Only `Local`s and `JArrayRef`s as the left-hand side are relevant for type inference.
-        // The statements get filtered to only contain those assignments in the `init` method,
-        // so this branch shouldn't happen.
         throw new IllegalStateException("can not handle " + lhs.getClass());
       }
 
-      Type rhsType = evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
+      Type rhsType = evalFunction.evaluate(typing, defStmt.getRightOp(), defStmt, graph);
       if (rhsType == null) {
-        workQueue.removeFirst();
+        // RHS type not yet determinable; will be re-queued when dependencies resolve
         continue;
       }
 
-      Type oldType = actualTyping.getType(local);
+      Type oldType = typing.getType(local);
       if (oldType == null) {
-        // Body.getLocals() contains Locals that are not in Stmts (anymore?)
         logger.info("Body.locals do not match the Locals occurring in the Stmts.");
         continue;
       }
+
       Collection<Type> leastCommonAncestors;
       if (lhs instanceof JArrayRef) {
-        // `local[index] = rhs` -> `local` should have the type `[rhs][]`
+        // `local[index] = rhs` -> `local` should have the type `rhs[]`
         if (oldType instanceof ArrayType) {
           Type elementType = ((ArrayType) oldType).getElementType();
-
           if (elementType instanceof PrimitiveType) {
             // Can't always change the type of the array when it is a primitive array.
             // Take the following example: `l1 = newarray (byte)[1]; l1[0] = l0;`, with `l0` being
@@ -243,18 +232,12 @@ public class TypeResolver {
             // to an `int[]` because otherwise the first statement becomes invalid.
             continue;
           }
-
-          // when `local` has an array type, the type of `rhs` needs to be assignable as an element
-          // of that array
-          Collection<Type> leastCommonAncestorsElement =
-              hierarchy.getLeastCommonAncestors(elementType, rhsType);
+          Collection<Type> lcaElement = hierarchy.getLeastCommonAncestors(elementType, rhsType);
           leastCommonAncestors =
-              leastCommonAncestorsElement.stream()
+              lcaElement.stream()
                   .map(type -> Type.createArrayType(type, 1))
                   .collect(Collectors.toSet());
         } else {
-          // when `local` isn't an array type, but is used as an array, its type has to be
-          // compatible with `[rhs][]`
           leastCommonAncestors =
               hierarchy.getLeastCommonAncestors(oldType, Type.createArrayType(rhsType, 1));
         }
@@ -264,82 +247,107 @@ public class TypeResolver {
 
       assert !leastCommonAncestors.isEmpty();
 
-      boolean isFirstType = true;
-      for (Type type : leastCommonAncestors) {
-        if (!type.equals(oldType)) {
-          BitSet dependStmtList = this.depends.get(local);
-          // Up to now there's no ambiguity of types
-          if (isFirstType) {
-            isFirstType = false;
-          } else {
-            // Ambiguity handling: create new Typing and add it into workQueue
-            actualTyping = new Typing(actualTyping, (BitSet) actualSL.clone());
-            workQueue.add(actualTyping);
-            actualSL = actualTyping.getStmtsIDList();
-          }
-
-          actualTyping.set(local, type);
-
-          // Type is changed, the associated definition stmts are necessary handled again
-          if (dependStmtList != null) {
-            actualSL.or(dependStmtList);
-          }
+      // Pick the best single type — no branching
+      Type selectedType = selectType(leastCommonAncestors, local, hierarchy);
+      if (!selectedType.equals(oldType)) {
+        typing.set(local, selectedType);
+        BitSet dependStmtList = this.depends.get(local);
+        if (dependStmtList != null) {
+          pending.or(dependStmtList);
         }
       }
     }
-    minimize(ret, hierarchy);
-    return ret;
+
+    return typing;
   }
 
-  /** This method is used to remove the more general typings. */
-  private void minimize(@NonNull List<Typing> typings, @NonNull BytecodeHierarchy hierarchy) {
-    Set<Type> objectLikeTypes = new HashSet<>();
-    // FIXME: [ms] handle java modules as well!
-    IdentifierFactory identifierFactory = view.getIdentifierFactory();
-    objectLikeTypes.add(identifierFactory.getClassType("java.lang.Object"));
-    objectLikeTypes.add(identifierFactory.getClassType("java.io.Serializable"));
-    objectLikeTypes.add(identifierFactory.getClassType("java.lang.Cloneable"));
+  /**
+   * Selects the best type from LCA candidates using pre-collected use constraints.
+   *
+   * <p>Filters candidates to those that satisfy all use constraints (i.e., are subtypes of every
+   * required type at each use site). If multiple candidates survive, returns the first; if none
+   * survive, falls back to the first candidate.
+   */
+  private Type selectType(Collection<Type> candidates, Local local, BytecodeHierarchy hierarchy) {
+    if (candidates.size() == 1) {
+      return candidates.iterator().next();
+    }
 
-    // collect all locals whose types are object, serializable, cloneable
-    Set<Local> objectLikeLocals = new HashSet<>();
-    Map<Local, Set<Type>> local2Types = getLocal2Types(typings);
-    for (Map.Entry<Local, Set<Type>> local : local2Types.entrySet()) {
-      if (local.getValue().equals(objectLikeTypes)) {
-        objectLikeLocals.add(local.getKey());
+    Set<Type> constraints = useConstraints.getOrDefault(local, Collections.emptySet());
+    if (!constraints.isEmpty()) {
+      for (Type candidate : candidates) {
+        boolean satisfiesAll = true;
+        for (Type required : constraints) {
+          if (!hierarchy.isAncestor(required, candidate)) {
+            satisfiesAll = false;
+            break;
+          }
+        }
+        if (satisfiesAll) {
+          return candidate;
+        }
       }
     }
-    // if one typing is more general als another typing, it should be removed.
-    List<Typing> typings_clo = new ArrayList<>(typings);
-    for (Typing tpi : typings_clo) {
-      for (Typing tpj : typings_clo) {
-        if (tpi.compare(tpj, hierarchy, objectLikeLocals) == 1) {
-          typings.remove(tpi);
-          break;
+
+    return candidates.iterator().next();
+  }
+
+  /**
+   * Pre-collects use constraints: for each local, the set of types it must be a subtype of at its
+   * use sites. This avoids the exponential branching that would otherwise arise when the LCA of two
+   * types has multiple minimal candidates.
+   */
+  private void collectUseConstraints(Body.BodyBuilder builder) {
+    for (Stmt stmt : builder.getControlFlowGraph()) {
+      if (stmt instanceof JInvokeStmt) {
+        collectInvokeConstraints(((JInvokeStmt) stmt).getInvokeExpr().get());
+      } else if (stmt instanceof JAssignStmt) {
+        JAssignStmt assign = (JAssignStmt) stmt;
+        Value rhs = assign.getRightOp();
+        if (rhs instanceof AbstractInvokeExpr) {
+          collectInvokeConstraints((AbstractInvokeExpr) rhs);
+        }
+        collectFieldConstraint(assign.getLeftOp());
+        collectFieldConstraint(assign.getRightOp());
+      } else if (stmt instanceof JReturnStmt) {
+        Value op = ((JReturnStmt) stmt).getOp();
+        if (op instanceof Local) {
+          addUseConstraint((Local) op, builder.getMethodSignature().getType());
         }
       }
     }
   }
 
-  private Map<Local, Set<Type>> getLocal2Types(@NonNull List<Typing> typings) {
-    Map<Local, Set<Type>> map = new HashMap<>();
-    for (Typing typing : typings) {
-      for (Local local : typing.getLocals()) {
-        Set<Type> types = map.computeIfAbsent(local, k -> new HashSet<>());
-        types.add(typing.getType(local));
+  private void collectInvokeConstraints(AbstractInvokeExpr invoke) {
+    if (invoke instanceof AbstractInstanceInvokeExpr) {
+      Value base = ((AbstractInstanceInvokeExpr) invoke).getBase();
+      if (base instanceof Local) {
+        addUseConstraint((Local) base, invoke.getMethodSignature().getDeclClassType());
       }
     }
-    return map;
+    List<Type> paramTypes = invoke.getMethodSignature().getParameterTypes();
+    for (int i = 0; i < invoke.getArgCount(); i++) {
+      Value arg = invoke.getArg(i);
+      if (arg instanceof Local) {
+        addUseConstraint((Local) arg, paramTypes.get(i));
+      }
+    }
   }
 
-  private CastCounter getMinCastsCounter(
-      Body.@NonNull BodyBuilder builder,
-      @NonNull Collection<Typing> typings,
-      @NonNull AugEvalFunction evalFunction,
-      @NonNull BytecodeHierarchy hierarchy) {
-    return typings.stream()
-        .map(typing -> new CastCounter(builder, evalFunction, hierarchy, typing))
-        .min(Comparator.comparingInt(CastCounter::getCastCount))
-        .get();
+  private void collectFieldConstraint(Value value) {
+    if (value instanceof JInstanceFieldRef) {
+      Value base = ((JInstanceFieldRef) value).getBase();
+      if (base instanceof Local) {
+        addUseConstraint(
+            (Local) base, ((JInstanceFieldRef) value).getFieldSignature().getDeclClassType());
+      }
+    }
+  }
+
+  private void addUseConstraint(Local local, Type requiredType) {
+    if (requiredType instanceof ClassType || requiredType instanceof ArrayType) {
+      useConstraints.computeIfAbsent(local, k -> new HashSet<>()).add(requiredType);
+    }
   }
 
   private Type convertUnderspecifiedType(@NonNull Type type) {
