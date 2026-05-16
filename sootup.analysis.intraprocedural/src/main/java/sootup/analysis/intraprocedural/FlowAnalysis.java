@@ -26,6 +26,7 @@ import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.ImmutableBlockControlFlowGraph;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
@@ -65,6 +66,9 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
     F inFlow;
     F outFlow;
 
+    /** Position in the universe list, assigned by Orderer after reverse. */
+    int ordinal = -1;
+
     @SuppressWarnings("unchecked")
     Entry(Stmt u, Entry<F> pred) {
       in = new Entry[] {pred};
@@ -91,15 +95,15 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
      * @return
      */
     static <F> List<Entry<F>> newUniverse(
-        @NonNull ControlFlowGraph<? extends BasicBlock<?>> g,
+        @NonNull ImmutableBlockControlFlowGraph g,
         @NonNull AnalysisDirection direction,
         @NonNull F entryFlow) {
-      final int size = g.getNodes().size();
-      final int n = size;
+      final int n = g.getNodeCount();
 
       Deque<Entry<F>> s = new ArrayDeque<>(n);
       List<Entry<F>> universe = new ArrayList<>(n);
-      Map<Stmt, Entry<F>> visited = new HashMap<>(((n + 1) * 4) / 3);
+      @SuppressWarnings("unchecked")
+      Entry<F>[] visited = new Entry[n];
 
       // out of universe node
       Entry<F> superEntry = new Entry<F>(null, null);
@@ -158,13 +162,13 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
         }
       }
 
-      visitEntry(visited, superEntry, entries);
+      visitEntry(visited, superEntry, entries, g);
       superEntry.inFlow = entryFlow;
       superEntry.outFlow = entryFlow;
 
       @SuppressWarnings("unchecked")
-      Entry<F>[] sv = new Entry[size];
-      int[] si = new int[size];
+      Entry<F>[] sv = new Entry[n];
+      int[] si = new int[n];
       int index = 0;
 
       int i = 0;
@@ -179,7 +183,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
             w.number = s.size();
             s.add(w);
 
-            visitEntry(visited, w, direction.getOut(g, w.data));
+            visitEntry(visited, w, direction.getOut(g, w.data), g);
 
             // save old
             si[index] = i;
@@ -191,8 +195,12 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
           }
         } else {
           if (index == 0) {
-            assert universe.size() <= size;
+            assert universe.size() <= n;
             Collections.reverse(universe);
+            // assign ordinal positions after reversal
+            for (int k = 0; k < universe.size(); k++) {
+              universe.get(k).ordinal = k;
+            }
             return universe;
           }
 
@@ -209,7 +217,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
 
     @NonNull
     private static <D, F> Entry<F>[] visitEntry(
-        Map<Stmt, Entry<F>> visited, Entry<F> v, List<Stmt> out) {
+        Entry<F>[] visited, Entry<F> v, List<Stmt> out, ImmutableBlockControlFlowGraph g) {
       final int n = out.size();
       @SuppressWarnings("unchecked")
       Entry<F>[] a = new Entry[n];
@@ -217,7 +225,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
       assert (out instanceof RandomAccess);
 
       for (int i = 0; i < n; i++) {
-        a[i] = getEntryOf(visited, out.get(i), v);
+        a[i] = getEntryOf(visited, out.get(i), v, g);
       }
 
       return v.out = a;
@@ -225,16 +233,17 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
 
     @NonNull
     private static <F> Entry<F> getEntryOf(
-        @NonNull Map<Stmt, Entry<F>> visited, @NonNull Stmt stmt, @NonNull Entry<F> v) {
+        @NonNull Entry<F>[] visited,
+        @NonNull Stmt stmt,
+        @NonNull Entry<F> v,
+        @NonNull ImmutableBlockControlFlowGraph g) {
       // either we reach a new node or a merge node, the latter one is rare
-      // so put and restore should be better that a lookup
-
-      // add and restore if required
       Entry<F> newEntry = new Entry<>(stmt, v);
-      Entry<F> oldEntry = visited.putIfAbsent(stmt, newEntry);
 
-      // no restore required
+      int idx = g.indexOf(stmt);
+      Entry<F> oldEntry = visited[idx];
       if (oldEntry == null) {
+        visited[idx] = newEntry;
         return newEntry;
       }
 
@@ -315,17 +324,13 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
     abstract List<Stmt> getOut(ControlFlowGraph<? extends BasicBlock<?>> g, Stmt s);
   }
 
-  /** Maps graph nodes to OUT sets. */
-  @NonNull protected final Map<Stmt, A> stmtToAfterFlow;
-
-  /** Filtered: Maps graph nodes to OUT sets. */
-  @NonNull protected Map<Stmt, A> filterStmtToAfterFlow;
+  /** Flow values after each stmt, indexed by stmt position. */
+  @NonNull protected final Object[] flowAfter;
 
   /** Constructs a flow analysis on the given <code>DirectedGraph</code>. */
   public FlowAnalysis(@NonNull ControlFlowGraph<? extends BasicBlock<?>> graph) {
     super(graph);
-    this.stmtToAfterFlow = new IdentityHashMap<>(graph.getNodes().size() * 2 + 1);
-    this.filterStmtToAfterFlow = Collections.emptyMap();
+    this.flowAfter = new Object[this.graph.getNodeCount()];
   }
 
   /**
@@ -345,20 +350,24 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
   protected abstract void flowThrough(@NonNull A in, Stmt d, @NonNull A out);
 
   /** Accessor function returning value of OUT set for s. */
+  @SuppressWarnings("unchecked")
   public A getFlowAfter(@NonNull Stmt s) {
-    A a = stmtToAfterFlow.get(s);
+    A a = (A) flowAfter[graph.indexOf(s)];
     return a == null ? newInitialFlow() : a;
   }
 
   @NonNull
   @Override
+  @SuppressWarnings("unchecked")
   public A getFlowBefore(@NonNull Stmt s) {
-    A a = stmtToBeforeFlow.get(s);
+    A a = (A) flowBefore[graph.indexOf(s)];
     return a == null ? newInitialFlow() : a;
   }
 
   private void initFlow(
-      @NonNull Iterable<Entry<A>> universe, @NonNull Map<Stmt, A> in, @NonNull Map<Stmt, A> out) {
+      @NonNull Iterable<Entry<A>> universe,
+      @NonNull Object[] inArr,
+      @NonNull Object[] outArr) {
 
     // If a node has only a single in-flow, the in-flow is always equal
     // to the out-flow if its predecessor, so we use the same object.
@@ -390,9 +399,9 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
         n.outFlow = newInitialFlow();
       }
 
-      // for legacy api (ms: already a soot comment)
-      in.put(n.data, n.inFlow);
-      out.put(n.data, n.outFlow);
+      // store into flat arrays indexed by stmt position
+      inArr[graph.indexOf(n.data)] = n.inFlow;
+      outArr[graph.indexOf(n.data)] = n.outFlow;
     }
   }
 
@@ -442,7 +451,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
     }
   }
 
-  final int execute(@NonNull Map<Stmt, A> inFlow, @NonNull Map<Stmt, A> outFlow) {
+  final int execute(@NonNull Object[] inArr, @NonNull Object[] outArr) {
 
     final boolean isForward = isForward();
     final List<Entry<A>> universe =
@@ -450,9 +459,9 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
             graph,
             isForward ? AnalysisDirection.FORWARD : AnalysisDirection.BACKWARD,
             entryInitialFlow());
-    initFlow(universe, inFlow, outFlow);
+    initFlow(universe, inArr, outArr);
 
-    Queue<Entry<A>> q = UniverseSortedPriorityQueue.of(universe);
+    Queue<Entry<A>> q = UniverseSortedPriorityQueue.ofEntries(universe);
 
     // Perform fixed point flow analysis
     for (int numComputations = 0; ; numComputations++) {
