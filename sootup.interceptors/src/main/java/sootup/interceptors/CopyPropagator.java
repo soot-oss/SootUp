@@ -161,8 +161,7 @@ public class CopyPropagator implements BodyInterceptor {
     return stmt;
   }
 
-  private Stmt foldConstantExpression(
-      @NonNull MutableControlFlowGraph graph, @NonNull Stmt stmt) {
+  private Stmt foldConstantExpression(@NonNull MutableControlFlowGraph graph, @NonNull Stmt stmt) {
     if (stmt instanceof JAssignStmt) {
       Value rhs = ((JAssignStmt) stmt).getRightOp();
       Constant foldedRhs = Evaluator.getConstantValueOf(rhs);
