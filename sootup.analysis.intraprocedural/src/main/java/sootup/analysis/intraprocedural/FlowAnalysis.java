@@ -365,9 +365,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
   }
 
   private void initFlow(
-      @NonNull Iterable<Entry<A>> universe,
-      @NonNull Object[] inArr,
-      @NonNull Object[] outArr) {
+      @NonNull Iterable<Entry<A>> universe, @NonNull Object[] inArr, @NonNull Object[] outArr) {
 
     // If a node has only a single in-flow, the in-flow is always equal
     // to the out-flow if its predecessor, so we use the same object.
