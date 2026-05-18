@@ -74,19 +74,12 @@ public class CopyPropagator implements BodyInterceptor {
 
         AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
         Value rhs = defStmt.getRightOp();
-        // if rhs is a constant, then replace use, if it is possible
-        if (rhs instanceof Constant) {
-          newStmt = replaceUse(controlFlowGraph, newStmt, use, rhs);
+        // if rhs evaluates to a constant (including constant expressions like 3*10+7), replace use
+        Constant evaluatedRhs = Evaluator.getConstantValueOf(rhs);
+        if (evaluatedRhs != null) {
+          newStmt = replaceUse(controlFlowGraph, newStmt, use, evaluatedRhs);
           // Simplifying trivial binary expression further for copy propagation
-
-          if (newStmt instanceof JAssignStmt) {
-            Value newRhs = ((JAssignStmt) newStmt).getRightOp();
-            Constant foldedRhs = Evaluator.getConstantValueOf(newRhs);
-            if (foldedRhs != null) {
-              JAssignStmt modifiedStmt = ((JAssignStmt) newStmt).withRValue(foldedRhs);
-              controlFlowGraph.replaceNode(newStmt, modifiedStmt);
-            }
-          }
+          newStmt = foldConstantExpression(controlFlowGraph, newStmt);
         }
 
         // if rhs is a cast expr with a ref type and its op is 0 (IntConstant or LongConstant)
@@ -96,6 +89,8 @@ public class CopyPropagator implements BodyInterceptor {
 
           if (zeroIntConstInstance.equals(op) || zeroLongConstInstance.equals(op)) {
             newStmt = replaceUse(controlFlowGraph, newStmt, use, NullConstant.getInstance());
+            // Simplifying trivial binary expression further for copy propagation
+            newStmt = foldConstantExpression(controlFlowGraph, newStmt);
           }
         }
         // if rhs is a local, then replace use, if it is possible
@@ -107,6 +102,8 @@ public class CopyPropagator implements BodyInterceptor {
               throw new IllegalStateException("Local `" + m + "' is used without a definition!");
             } else if (defCount == 1) {
               newStmt = replaceUse(controlFlowGraph, newStmt, use, rhs);
+              // Simplifying trivial binary expression further for copy propagation
+              newStmt = foldConstantExpression(controlFlowGraph, newStmt);
               continue;
             }
 
@@ -141,6 +138,8 @@ public class CopyPropagator implements BodyInterceptor {
               }
             }
             newStmt = replaceUse(controlFlowGraph, newStmt, use, rhs);
+            // Simplifying trivial binary expression further for copy propagation
+            newStmt = foldConstantExpression(controlFlowGraph, newStmt);
           }
         }
       }
@@ -162,6 +161,20 @@ public class CopyPropagator implements BodyInterceptor {
     return stmt;
   }
 
+  private Stmt foldConstantExpression(
+      @NonNull MutableControlFlowGraph graph, @NonNull Stmt stmt) {
+    if (stmt instanceof JAssignStmt) {
+      Value rhs = ((JAssignStmt) stmt).getRightOp();
+      Constant foldedRhs = Evaluator.getConstantValueOf(rhs);
+      if (foldedRhs != null) {
+        JAssignStmt modifiedStmt = ((JAssignStmt) stmt).withRValue(foldedRhs);
+        graph.replaceNode(stmt, modifiedStmt);
+        return modifiedStmt;
+      }
+    }
+    return stmt;
+  }
+
   private boolean isPropatabable(@NonNull List<Stmt> defsOfUse) {
     // If local is defined just one time, then the propagation of this local available.
     boolean isPropagateable = false;
@@ -175,9 +188,12 @@ public class CopyPropagator implements BodyInterceptor {
     } else if (defsOfUse.size() > 1) {
       Constant con = null;
       for (Stmt defStmt : defsOfUse) {
-        if (defStmt instanceof JAssignStmt
-            && ((JAssignStmt) defStmt).getRightOp() instanceof Constant) {
-          Constant rhs = (Constant) ((JAssignStmt) defStmt).getRightOp();
+        if (defStmt instanceof JAssignStmt) {
+          Constant rhs = Evaluator.getConstantValueOf(((JAssignStmt) defStmt).getRightOp());
+          if (rhs == null) {
+            isPropagateable = false;
+            break;
+          }
           if (con == null) {
             con = rhs;
           } else if (rhs.equals(con)) {
