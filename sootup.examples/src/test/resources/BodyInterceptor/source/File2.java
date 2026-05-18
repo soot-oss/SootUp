@@ -18,6 +18,6 @@ public class File2 {
                 d = -100;
         }
         System.out.println(d);
-        return a;
+        return c;
     }
 }

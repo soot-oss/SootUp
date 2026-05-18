@@ -90,8 +90,8 @@ public class BodyInterceptorTest {
 
     System.out.println(method.getBody());
 
-    // After copy propagation: a=3*10+7 is evaluated to 37, b=a+5 is propagated and folded to 42.
-    // The return statement 'return a' becomes 'return 37'.
-    assertTrue(method.getBody().toString().contains("return 37"));
+    // After copy propagation: a=37, b=42, c=(37*42)-(37*42)=0.
+    // The return statement 'return c' becomes 'return 0'.
+    assertTrue(method.getBody().toString().contains("return 0"));
   }
 }
