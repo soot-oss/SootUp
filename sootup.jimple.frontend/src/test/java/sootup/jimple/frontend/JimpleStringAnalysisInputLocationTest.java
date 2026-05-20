@@ -94,4 +94,52 @@ public class JimpleStringAnalysisInputLocationTest {
     ClassType nonExistientClassType = view.getIdentifierFactory().getClassType("NotDummyClass");
     assertTrue(view.getClass(nonExistientClassType).isEmpty());
   }
+
+  @Test
+  public void testCachingSameView() {
+    String methodStr =
+        "class DummyClass extends java.lang.Object {\n\t"
+            + "void banana(){\n\t\t"
+            + "params = new java.security.AlgorithmParameters;\n\t\t"
+            + "return;\n\t"
+            + "}\n"
+            + "}";
+
+    JimpleStringAnalysisInputLocation analysisInputLocation =
+        new JimpleStringAnalysisInputLocation(methodStr);
+    JavaView view = new JavaView(analysisInputLocation);
+
+    ClassType dummyClassType = view.getIdentifierFactory().getClassType("DummyClass");
+    var firstAccess = analysisInputLocation.getClassSource(dummyClassType, view);
+    assertTrue(firstAccess.isPresent());
+
+    var secondAccess = analysisInputLocation.getClassSource(dummyClassType, view);
+    assertTrue(secondAccess.isPresent());
+    assertSame(firstAccess.get(), secondAccess.get());
+  }
+
+  @Test
+  public void testCachingDifferentViews() {
+    String methodStr =
+        "class DummyClass extends java.lang.Object {\n\t"
+            + "void banana(){\n\t\t"
+            + "params = new java.security.AlgorithmParameters;\n\t\t"
+            + "return;\n\t"
+            + "}\n"
+            + "}";
+
+    JimpleStringAnalysisInputLocation analysisInputLocation =
+        new JimpleStringAnalysisInputLocation(methodStr);
+    JavaView view1 = new JavaView(analysisInputLocation);
+    JavaView view2 = new JavaView(analysisInputLocation);
+
+    ClassType dummyClassType1 = view1.getIdentifierFactory().getClassType("DummyClass");
+    var firstViewAccess = analysisInputLocation.getClassSource(dummyClassType1, view1);
+    assertTrue(firstViewAccess.isPresent());
+
+    ClassType dummyClassType2 = view2.getIdentifierFactory().getClassType("DummyClass");
+    var secondViewAccess = analysisInputLocation.getClassSource(dummyClassType2, view2);
+    assertTrue(secondViewAccess.isPresent());
+    assertNotSame(firstViewAccess.get(), secondViewAccess.get());
+  }
 }
