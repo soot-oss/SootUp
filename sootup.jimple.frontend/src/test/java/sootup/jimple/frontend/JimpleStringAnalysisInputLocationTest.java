@@ -28,6 +28,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.core.views.View;
 import sootup.interceptors.DeadAssignmentEliminator;
@@ -76,5 +77,20 @@ public class JimpleStringAnalysisInputLocationTest {
                 VoidType.getInstance(),
                 Collections.emptyList());
     assertTrue(view.getMethod(methodSig).isPresent());
+  }
+
+  @Test
+    public void testGetNonExistingClass(){
+
+      JimpleStringAnalysisInputLocation analysisInputLocation =
+          new JimpleStringAnalysisInputLocation("class DummyClass extends java.lang.Object {\n\t"
+              + "void banana(){\n\t\t"
+              + "params = new java.security.AlgorithmParameters;\n\t\t"
+              + "return;\n\t"
+              + "}\n"
+              + "}");
+      JavaView view = new JavaView(analysisInputLocation);
+      ClassType nonExistientClassType =  view.getIdentifierFactory().getClassType("NotDummyClass");
+      assertTrue(view.getClass(nonExistientClassType).isEmpty());
   }
 }
