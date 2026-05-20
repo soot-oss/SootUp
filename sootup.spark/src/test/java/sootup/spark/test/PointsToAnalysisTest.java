@@ -8,14 +8,16 @@ import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.ref.JInstanceFieldRef;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.spark.Engine;
 import sootup.spark.PointsToAnalysis;
-import sootup.spark.Solver;
+import sootup.spark.Spark;
 import sootup.spark.node.AllocationNode;
-import sootup.spark.node.InstanceFieldRefNode;
 import sootup.spark.node.Node;
 
 public class PointsToAnalysisTest {
@@ -31,8 +33,8 @@ public class PointsToAnalysisTest {
     MethodSignature mainSig =
         SparkTestUtil.idFactory.getMethodSignature(
             classSig, SparkTestUtil.idFactory.getMainSubSignature());
-    Solver solver = SparkTestUtil.solveMainWithSolver(mainSig);
-    PointsToAnalysis pta = PointsToAnalysis.fromSolver(solver);
+    Spark spark = SparkTestUtil.solveMainWithSpark(mainSig);
+    PointsToAnalysis pta = spark.getPointsToAnalysis();
 
     ClassType fieldType = SparkTestUtil.idFactory.getClassType("Basic$Field");
     ClassType containerType = SparkTestUtil.idFactory.getClassType("Basic$Container");
@@ -42,26 +44,25 @@ public class PointsToAnalysisTest {
 
     assertEquals(
         Collections.singleton(newField),
-        pta.reachingObjects(SparkTestUtil.var(fieldType, "$stack5", mainSig)));
+        pta.reachingObjects(new Local("$stack5", fieldType), mainSig));
     assertEquals(
-        Collections.singleton(newField),
-        pta.reachingObjects(SparkTestUtil.var(fieldType, "l2", mainSig)));
-    assertEquals(
-        Collections.singleton(newContainer),
-        pta.reachingObjects(SparkTestUtil.var(containerType, "$stack6", mainSig)));
+        Collections.singleton(newField), pta.reachingObjects(new Local("l2", fieldType), mainSig));
     assertEquals(
         Collections.singleton(newContainer),
-        pta.reachingObjects(SparkTestUtil.var(containerType, "l3", mainSig)));
+        pta.reachingObjects(new Local("$stack6", containerType), mainSig));
     assertEquals(
         Collections.singleton(newContainer),
-        pta.reachingObjects(SparkTestUtil.var(containerType, "l4", mainSig)));
+        pta.reachingObjects(new Local("l3", containerType), mainSig));
+    assertEquals(
+        Collections.singleton(newContainer),
+        pta.reachingObjects(new Local("l4", containerType), mainSig));
 
     assertEquals(
         Collections.singleton((Type) fieldType),
-        pta.reachingTypes(SparkTestUtil.var(fieldType, "l2", mainSig)));
+        pta.reachingTypes(new Local("l2", fieldType), mainSig));
     assertEquals(
         Collections.singleton((Type) containerType),
-        pta.reachingTypes(SparkTestUtil.var(containerType, "l3", mainSig)));
+        pta.reachingTypes(new Local("l3", containerType), mainSig));
   }
 
   @Test
@@ -70,27 +71,30 @@ public class PointsToAnalysisTest {
     MethodSignature mainSig =
         SparkTestUtil.idFactory.getMethodSignature(
             classSig, SparkTestUtil.idFactory.getMainSubSignature());
-    Solver solver = SparkTestUtil.solveMainWithSolver(mainSig);
-    PointsToAnalysis pta = PointsToAnalysis.fromSolver(solver);
+    Spark spark = SparkTestUtil.solveMainWithSpark(mainSig);
+    PointsToAnalysis pta = spark.getPointsToAnalysis();
 
     ClassType fieldType = SparkTestUtil.idFactory.getClassType("Basic$Field");
     ClassType containerType = SparkTestUtil.idFactory.getClassType("Basic$Container");
 
-    Node stack5 = SparkTestUtil.var(fieldType, "$stack5", mainSig);
-    Node l2 = SparkTestUtil.var(fieldType, "l2", mainSig);
-    Node stack6 = SparkTestUtil.var(containerType, "$stack6", mainSig);
-    Node l3 = SparkTestUtil.var(containerType, "l3", mainSig);
-    Node l4 = SparkTestUtil.var(containerType, "l4", mainSig);
+    Local l2 = new Local("l2", fieldType);
+    Local l3 = new Local("l3", containerType);
 
-    Set<Node> aliasesOfL2 = pta.aliases(l2);
-    assertTrue(aliasesOfL2.contains(stack5), "l2 and $stack5 share alloc(Field,1)");
-    assertFalse(aliasesOfL2.contains(l3), "Field local must not alias Container local");
-    assertFalse(aliasesOfL2.contains(l2), "aliases() must exclude the query node itself");
+    Node stack5Node = SparkTestUtil.var(fieldType, "$stack5", mainSig);
+    Node l2Node = SparkTestUtil.var(fieldType, "l2", mainSig);
+    Node stack6Node = SparkTestUtil.var(containerType, "$stack6", mainSig);
+    Node l3Node = SparkTestUtil.var(containerType, "l3", mainSig);
+    Node l4Node = SparkTestUtil.var(containerType, "l4", mainSig);
 
-    Set<Node> aliasesOfL3 = pta.aliases(l3);
-    assertTrue(aliasesOfL3.contains(l4), "l3 and l4 share alloc(Container,2)");
-    assertTrue(aliasesOfL3.contains(stack6), "l3 and $stack6 share alloc(Container,2)");
-    assertFalse(aliasesOfL3.contains(l2));
+    Set<Node> aliasesOfL2 = pta.aliases(l2, mainSig);
+    assertTrue(aliasesOfL2.contains(stack5Node), "l2 and $stack5 share alloc(Field,1)");
+    assertFalse(aliasesOfL2.contains(l3Node), "Field local must not alias Container local");
+    assertFalse(aliasesOfL2.contains(l2Node), "aliases() must exclude the query node itself");
+
+    Set<Node> aliasesOfL3 = pta.aliases(l3, mainSig);
+    assertTrue(aliasesOfL3.contains(l4Node), "l3 and l4 share alloc(Container,2)");
+    assertTrue(aliasesOfL3.contains(stack6Node), "l3 and $stack6 share alloc(Container,2)");
+    assertFalse(aliasesOfL3.contains(l2Node));
   }
 
   @Test
@@ -99,23 +103,21 @@ public class PointsToAnalysisTest {
     MethodSignature mainSig =
         SparkTestUtil.idFactory.getMethodSignature(
             classSig, SparkTestUtil.idFactory.getMainSubSignature());
-    Solver solver = SparkTestUtil.solveMainWithSolver(mainSig);
-    PointsToAnalysis pta = PointsToAnalysis.fromSolver(solver);
+    Spark spark = SparkTestUtil.solveMainWithSpark(mainSig);
+    PointsToAnalysis pta = spark.getPointsToAnalysis();
 
     ClassType fieldType = SparkTestUtil.idFactory.getClassType("Basic$Field");
     ClassType containerType = SparkTestUtil.idFactory.getClassType("Basic$Container");
 
-    // Build the IFR node for $stack6.field — same shape as the one inserted by the visitor in
-    // testMethodToPAGBasic. Its reaching objects should be alloc(Field, 1) via heap propagation.
-    InstanceFieldRefNode stack6FieldRef =
-        SparkTestUtil.fieldRef(
-            SparkTestUtil.var(containerType, "$stack6", mainSig),
-            SparkTestUtil.idFactory.getFieldSignature("field", containerType, fieldType),
-            fieldType,
-            mainSig);
+    // $stack6.field — same shape as the IFR inserted by the visitor in testMethodToPAGBasic.
+    // Its reaching objects should be alloc(Field, 1) via heap propagation.
+    FieldSignature fieldSig =
+        SparkTestUtil.idFactory.getFieldSignature("field", containerType, fieldType);
+    JInstanceFieldRef stack6FieldRef =
+        new JInstanceFieldRef(new Local("$stack6", containerType), fieldSig);
 
     AllocationNode newField = SparkTestUtil.alloc(fieldType, 1L, mainSig);
-    assertEquals(Collections.singleton(newField), pta.reachingObjects(stack6FieldRef));
+    assertEquals(Collections.singleton(newField), pta.reachingObjects(stack6FieldRef, mainSig));
   }
 
   @Test
@@ -126,26 +128,30 @@ public class PointsToAnalysisTest {
     MethodSignature mainSig =
         SparkTestUtil.idFactory.getMethodSignature(
             classSig, SparkTestUtil.idFactory.getMainSubSignature());
-    Solver solver = SparkTestUtil.solveMainWithSolver(mainSig);
-    PointsToAnalysis pta = PointsToAnalysis.fromSolver(solver);
+    Spark spark = SparkTestUtil.solveMainWithSpark(mainSig);
+    PointsToAnalysis pta = spark.getPointsToAnalysis();
 
     ClassType oType = SparkTestUtil.idFactory.getClassType("BasicInter$O");
     AllocationNode newO1 = SparkTestUtil.alloc(oType, 1L, mainSig);
     AllocationNode newO2 = SparkTestUtil.alloc(oType, 2L, mainSig);
 
-    Node p = SparkTestUtil.var(oType, "l1", mainSig);
-    Node q = SparkTestUtil.var(oType, "l2", mainSig);
-    Node r = SparkTestUtil.var(oType, "l3", mainSig);
-    Node t = SparkTestUtil.var(oType, "l4", mainSig);
+    Local p = new Local("l1", oType);
+    Local q = new Local("l2", oType);
+    Local r = new Local("l3", oType);
+    Local t = new Local("l4", oType);
 
-    assertEquals(Collections.singleton(newO1), pta.reachingObjects(p));
-    assertEquals(Collections.singleton(newO1), pta.reachingObjects(q));
-    assertEquals(Collections.singleton(newO2), pta.reachingObjects(r));
+    Node qNode = SparkTestUtil.var(oType, "l2", mainSig);
+    Node rNode = SparkTestUtil.var(oType, "l3", mainSig);
+
+    assertEquals(Collections.singleton(newO1), pta.reachingObjects(p, mainSig));
+    assertEquals(Collections.singleton(newO1), pta.reachingObjects(q, mainSig));
+    assertEquals(Collections.singleton(newO2), pta.reachingObjects(r, mainSig));
     // t = bar(q).f: bar returns s.f where s is aliased with p, so s.f contains alloc(O,2).
-    assertEquals(Collections.singleton(newO2), pta.reachingObjects(t));
+    assertEquals(Collections.singleton(newO2), pta.reachingObjects(t, mainSig));
 
-    assertTrue(pta.aliases(p).contains(q), "p and q must alias (q = p)");
+    assertTrue(pta.aliases(p, mainSig).contains(qNode), "p and q must alias (q = p)");
     assertTrue(
-        pta.aliases(t).contains(r), "t and r must alias (t holds the value of r via the field)");
+        pta.aliases(t, mainSig).contains(rNode),
+        "t and r must alias (t holds the value of r via the field)");
   }
 }
