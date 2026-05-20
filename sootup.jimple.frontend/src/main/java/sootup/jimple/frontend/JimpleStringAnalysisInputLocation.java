@@ -86,7 +86,7 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
   public Optional<? extends SootClassSource> getClassSource(
       @NonNull ClassType type, @NonNull View view) {
     OverridingJavaClassSource classSource =
-            getOverridingClassSource(jimpleFileContents, bodyInterceptors, view);
+        getOverridingClassSource(jimpleFileContents, bodyInterceptors, view);
     if (classSource == null) {
       return Optional.empty();
     }

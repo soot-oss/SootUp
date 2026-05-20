@@ -80,17 +80,18 @@ public class JimpleStringAnalysisInputLocationTest {
   }
 
   @Test
-    public void testGetNonExistingClass(){
+  public void testGetNonExistingClass() {
 
-      JimpleStringAnalysisInputLocation analysisInputLocation =
-          new JimpleStringAnalysisInputLocation("class DummyClass extends java.lang.Object {\n\t"
-              + "void banana(){\n\t\t"
-              + "params = new java.security.AlgorithmParameters;\n\t\t"
-              + "return;\n\t"
-              + "}\n"
-              + "}");
-      JavaView view = new JavaView(analysisInputLocation);
-      ClassType nonExistientClassType =  view.getIdentifierFactory().getClassType("NotDummyClass");
-      assertTrue(view.getClass(nonExistientClassType).isEmpty());
+    JimpleStringAnalysisInputLocation analysisInputLocation =
+        new JimpleStringAnalysisInputLocation(
+            "class DummyClass extends java.lang.Object {\n\t"
+                + "void banana(){\n\t\t"
+                + "params = new java.security.AlgorithmParameters;\n\t\t"
+                + "return;\n\t"
+                + "}\n"
+                + "}");
+    JavaView view = new JavaView(analysisInputLocation);
+    ClassType nonExistientClassType = view.getIdentifierFactory().getClassType("NotDummyClass");
+    assertTrue(view.getClass(nonExistientClassType).isEmpty());
   }
 }
