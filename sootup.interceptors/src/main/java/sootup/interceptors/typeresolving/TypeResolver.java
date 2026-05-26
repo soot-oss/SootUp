@@ -32,31 +32,20 @@ import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
-import sootup.core.jimple.common.expr.AbstractBinopExpr;
-import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JCastExpr;
-import sootup.core.jimple.common.expr.JNegExpr;
+import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
-import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
-import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.JInvokeStmt;
-import sootup.core.jimple.common.stmt.JReturnStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;
-import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
-import sootup.core.types.NullType;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.Type;
+import sootup.core.types.*;
 import sootup.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.interceptors.typeresolving.types.BottomType;
 import sootup.interceptors.typeresolving.types.TopType;
 import sootup.java.core.views.JavaView;
 
 /**
- * @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08
+ * @author Zun Wang
+ * Algorithm started on 'Efficient Local Type Inference' with later inspiration by 'Two Approaches to Fast Bytecode Frontend for Static Analysis'
  */
 public class TypeResolver {
   private final ArrayList<AbstractDefinitionStmt> assignments = new ArrayList<>();
@@ -128,10 +117,9 @@ public class TypeResolver {
   /** find all definition assignments, add all locals at right-hand-side into the map depends */
   private void init(Body.BodyBuilder builder) {
     for (Stmt stmt : builder.getControlFlowGraph()) {
-      if (!(stmt instanceof AbstractDefinitionStmt)) {
+      if (!(stmt instanceof AbstractDefinitionStmt defStmt)) {
         continue;
       }
-      AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
       Value lhs = defStmt.getLeftOp();
       if (lhs instanceof Local || lhs instanceof JArrayRef) {
         final int defStmtId = assignments.size();
@@ -301,14 +289,13 @@ public class TypeResolver {
     for (Stmt stmt : builder.getControlFlowGraph()) {
       if (stmt instanceof JInvokeStmt) {
         collectInvokeConstraints(((JInvokeStmt) stmt).getInvokeExpr().get());
-      } else if (stmt instanceof JAssignStmt) {
-        JAssignStmt assign = (JAssignStmt) stmt;
-        Value rhs = assign.getRightOp();
+      } else if (stmt instanceof JAssignStmt assignStmt) {
+        Value rhs = assignStmt.getRightOp();
         if (rhs instanceof AbstractInvokeExpr) {
           collectInvokeConstraints((AbstractInvokeExpr) rhs);
         }
-        collectFieldConstraint(assign.getLeftOp());
-        collectFieldConstraint(assign.getRightOp());
+        collectFieldConstraint(assignStmt.getLeftOp());
+        collectFieldConstraint(assignStmt.getRightOp());
       } else if (stmt instanceof JReturnStmt) {
         Value op = ((JReturnStmt) stmt).getOp();
         if (op instanceof Local) {
@@ -320,10 +307,8 @@ public class TypeResolver {
 
   private void collectInvokeConstraints(AbstractInvokeExpr invoke) {
     if (invoke instanceof AbstractInstanceInvokeExpr) {
-      Value base = ((AbstractInstanceInvokeExpr) invoke).getBase();
-      if (base instanceof Local) {
-        addUseConstraint((Local) base, invoke.getMethodSignature().getDeclClassType());
-      }
+      Local base = ((AbstractInstanceInvokeExpr) invoke).getBase();
+      addUseConstraint(base, invoke.getMethodSignature().getDeclClassType());
     }
     List<Type> paramTypes = invoke.getMethodSignature().getParameterTypes();
     for (int i = 0; i < invoke.getArgCount(); i++) {
@@ -335,12 +320,9 @@ public class TypeResolver {
   }
 
   private void collectFieldConstraint(Value value) {
-    if (value instanceof JInstanceFieldRef) {
-      Value base = ((JInstanceFieldRef) value).getBase();
-      if (base instanceof Local) {
-        addUseConstraint(
-            (Local) base, ((JInstanceFieldRef) value).getFieldSignature().getDeclClassType());
-      }
+    if (value instanceof JInstanceFieldRef instanceFieldRef) {
+      Local base = instanceFieldRef.getBase();
+      addUseConstraint(base, instanceFieldRef.getFieldSignature().getDeclClassType());
     }
   }
 
