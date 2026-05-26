@@ -26,7 +26,7 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction11x;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 
@@ -35,7 +35,7 @@ public class ReturnInstruction extends DexLibAbstractInstruction {
   public void jimplify(DexBody body) {
     Instruction11x returnInstruction = (Instruction11x) this.instruction;
     Local l = body.getRegisterLocal(returnInstruction.getRegisterA());
-    JReturnStmt jReturnStmt = Jimple.newReturnStmt(l, StmtPositionInfo.getNoStmtPositionInfo());
+    JReturnStmt jReturnStmt = Jimple.newReturnStmt(l, new SimpleStmtPositionInfo(lineNumber));
     setStmt(jReturnStmt);
     body.add(jReturnStmt);
   }
