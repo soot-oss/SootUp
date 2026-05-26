@@ -25,7 +25,7 @@ package sootup.apk.frontend.instruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 
 public class GotoInstruction extends JumpInstruction implements DeferableInstruction {
@@ -37,7 +37,7 @@ public class GotoInstruction extends JumpInstruction implements DeferableInstruc
       return;
     }
     body.addDeferredJimplification(this);
-    markerUnit = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    markerUnit = Jimple.newNopStmt(new SimpleStmtPositionInfo(lineNumber));
     setStmt(markerUnit);
     body.add(markerUnit);
   }
@@ -47,7 +47,7 @@ public class GotoInstruction extends JumpInstruction implements DeferableInstruc
   }
 
   private JGotoStmt gotoStatement() {
-    JGotoStmt go = Jimple.newGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JGotoStmt go = Jimple.newGotoStmt(new SimpleStmtPositionInfo(lineNumber));
     setStmt(go);
     return go;
   }
