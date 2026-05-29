@@ -28,7 +28,7 @@ import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 
@@ -40,7 +40,7 @@ public class SgetInstruction extends FieldInstruction {
     JStaticFieldRef r = Jimple.newStaticFieldRef(getStaticSootFieldRef(f).getFieldSignature());
     JAssignStmt assign =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), r, StmtPositionInfo.getNoStmtPositionInfo());
+            body.getRegisterLocal(dest), r, new SimpleStmtPositionInfo(lineNumber));
     body.add(assign);
     setStmt(assign);
   }
