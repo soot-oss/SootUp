@@ -103,6 +103,16 @@ public class SparkTestUtil {
         .build();
   }
 
+  public static boolean containsEdge(Graph<Node, PAGEdge> g, Node src, Node tgt) {
+    int s = g.findVertex(src);
+    int t = g.findVertex(tgt);
+    return s >= 0 && t >= 0 && g.containsEdge(s, t);
+  }
+
+  public static boolean containsVertex(Graph<Node, PAGEdge> g, Node node) {
+    return g.findVertex(node) >= 0;
+  }
+
   public static void vizualizeMehodPAG(Graph<Node, PAGEdge> pag) {
     System.out.println(PAGVisualizer.visualizeMethodPAG(pag, Node::toString));
   }

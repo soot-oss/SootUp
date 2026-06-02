@@ -32,7 +32,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import lombok.NonNull;
-import org.jgrapht.Graph;
+import org.graph4j.Digraph;
+import org.graph4j.PredecessorIterator;
+import org.graph4j.SuccessorIterator;
 import sootup.core.signatures.FieldSignature;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
@@ -72,8 +74,11 @@ public class IncrementalPointsToAnalysis {
    */
   public void addEdge(@NonNull Node src, @NonNull Node tgt) {
     pag.addEdge(src, tgt);
-    PAGEdge edge = pag.getDelegate().getEdge(src, tgt);
-    if (edge == null) return;
+    Digraph<Node, PAGEdge> d = pag.getDelegate();
+    int sIdx = d.findVertex(src);
+    int tIdx = d.findVertex(tgt);
+    if (sIdx < 0 || tIdx < 0 || !d.containsEdge(sIdx, tIdx)) return;
+    PAGEdge edge = d.getEdgeLabel(sIdx, tIdx);
     indexIFR(src);
     indexIFR(tgt);
     apply(src, tgt, edge.getEdgeType());
@@ -81,16 +86,20 @@ public class IncrementalPointsToAnalysis {
 
   /** Drains worklists; bringing points-to and heap state up to date with currently-known edges. */
   public void propagate() {
-    Graph<Node, PAGEdge> graph = pag.getDelegate();
+    Digraph<Node, PAGEdge> graph = pag.getDelegate();
     while (!dirty.isEmpty() || !dirtyHeap.isEmpty()) {
       while (!dirty.isEmpty()) {
         Node n = dirty.poll();
         dirtySet.remove(n);
-        if (!graph.containsVertex(n)) continue;
+        int nIdx = graph.findVertex(n);
+        if (nIdx < 0) continue;
         Set<AllocationNode> nPts = ptsOf(n);
 
-        for (PAGEdge e : graph.outgoingEdgesOf(n)) {
-          Node tgt = graph.getEdgeTarget(e);
+        SuccessorIterator<PAGEdge> succIt = graph.successorIterator(nIdx);
+        while (succIt.hasNext()) {
+          int tgtIdx = succIt.next();
+          PAGEdge e = succIt.getEdgeLabel();
+          Node tgt = graph.getVertexLabel(tgtIdx);
           switch (e.getEdgeType()) {
             case ASSIGNMENT -> {
               if (unionInto(pointsTo, tgt, nPts)) enqueue(tgt);
@@ -110,15 +119,22 @@ public class IncrementalPointsToAnalysis {
         Set<InstanceFieldRefNode> ifrs = baseToIFRs.get(n);
         if (ifrs != null) {
           for (InstanceFieldRefNode ifr : ifrs) {
-            if (!graph.containsVertex(ifr)) continue;
-            for (PAGEdge se : graph.incomingEdgesOf(ifr)) {
+            int ifrIdx = graph.findVertex(ifr);
+            if (ifrIdx < 0) continue;
+            PredecessorIterator<PAGEdge> predIt = graph.predecessorIterator(ifrIdx);
+            while (predIt.hasNext()) {
+              int srcIdx = predIt.next();
+              PAGEdge se = predIt.getEdgeLabel();
               if (se.getEdgeType() == PAGEdge.EdgeType.STORE) {
-                applyStore(graph.getEdgeSource(se), ifr);
+                applyStore(graph.getVertexLabel(srcIdx), ifr);
               }
             }
-            for (PAGEdge le : graph.outgoingEdgesOf(ifr)) {
+            SuccessorIterator<PAGEdge> outIt = graph.successorIterator(ifrIdx);
+            while (outIt.hasNext()) {
+              int tgtIdx = outIt.next();
+              PAGEdge le = outIt.getEdgeLabel();
               if (le.getEdgeType() == PAGEdge.EdgeType.LOAD) {
-                applyLoad(ifr, graph.getEdgeTarget(le));
+                applyLoad(ifr, graph.getVertexLabel(tgtIdx));
               }
             }
           }
@@ -134,10 +150,14 @@ public class IncrementalPointsToAnalysis {
           if (!ptsOf(entry.getKey()).contains(hk.obj())) continue;
           for (InstanceFieldRefNode ifr : entry.getValue()) {
             if (!ifr.getField().equals(hk.field())) continue;
-            if (!graph.containsVertex(ifr)) continue;
-            for (PAGEdge le : graph.outgoingEdgesOf(ifr)) {
+            int ifrIdx = graph.findVertex(ifr);
+            if (ifrIdx < 0) continue;
+            SuccessorIterator<PAGEdge> outIt = graph.successorIterator(ifrIdx);
+            while (outIt.hasNext()) {
+              int tgtIdx = outIt.next();
+              PAGEdge le = outIt.getEdgeLabel();
               if (le.getEdgeType() == PAGEdge.EdgeType.LOAD) {
-                Node tgt = graph.getEdgeTarget(le);
+                Node tgt = graph.getVertexLabel(tgtIdx);
                 if (unionInto(pointsTo, tgt, stored)) enqueue(tgt);
               }
             }

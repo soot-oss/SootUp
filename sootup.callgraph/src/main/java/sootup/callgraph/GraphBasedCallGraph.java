@@ -42,7 +42,8 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @SuppressWarnings("unchecked")
   public GraphBasedCallGraph(@NonNull List<MethodSignature> entryMethods) {
     this(
-        (DirectedPseudograph<MethodSignature, Call>) GraphBuilder.empty().buildDirectedPseudograph(),
+        (DirectedPseudograph<MethodSignature, Call>)
+            GraphBuilder.empty().buildDirectedPseudograph(),
         entryMethods);
   }
 

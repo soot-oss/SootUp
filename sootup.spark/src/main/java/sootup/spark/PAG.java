@@ -68,6 +68,9 @@ public class PAG {
     if (sIdx == -1) sIdx = delegate.addLabeledVertex(source);
     int tIdx = delegate.findVertex(target);
     if (tIdx == -1) tIdx = delegate.addLabeledVertex(target);
-    delegate.addLabeledEdge(sIdx, tIdx, edge);
+    if (!delegate.containsEdge(sIdx, tIdx)) delegate.addLabeledEdge(sIdx, tIdx, edge);
+    if (options.isSimpleEdgesBidirectional() && !delegate.containsEdge(tIdx, sIdx)) {
+      delegate.addLabeledEdge(tIdx, sIdx, edge);
+    }
   }
 }
