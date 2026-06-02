@@ -25,7 +25,7 @@ package sootup.apk.frontend.instruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 
 public class ReturnVoidInstruction extends DexLibAbstractInstruction {
@@ -35,7 +35,7 @@ public class ReturnVoidInstruction extends DexLibAbstractInstruction {
   }
 
   public void jimplify(DexBody body) {
-    JReturnVoidStmt returnStmt = Jimple.newReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JReturnVoidStmt returnStmt = Jimple.newReturnVoidStmt(new SimpleStmtPositionInfo(lineNumber));
     setStmt(returnStmt);
     body.add(returnStmt);
   }

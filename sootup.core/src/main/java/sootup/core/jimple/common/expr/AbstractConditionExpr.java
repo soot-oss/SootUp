@@ -25,6 +25,7 @@ package sootup.core.jimple.common.expr;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.Immediate;
 
+/** Abstract base class for condition (comparison) expressions. */
 public abstract class AbstractConditionExpr extends AbstractIntBinopExpr {
 
   AbstractConditionExpr(@NonNull Immediate op1, @NonNull Immediate op2) {
