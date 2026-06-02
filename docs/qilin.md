@@ -1,6 +1,6 @@
 # Incorporate Qilin Pointer Analysis
 
-# WIP! Experimantal!
+# WIP! Experimental!
 
 ### Dependencies
 
