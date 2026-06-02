@@ -23,14 +23,11 @@ package sootup.java.bytecode.frontend.conversion;
  */
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.TryCatchBlockNode;
 import sootup.core.jimple.Jimple;
-import sootup.core.types.Type;
-import sootup.core.types.UnknownType;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
@@ -41,6 +38,8 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
+import sootup.core.types.Type;
+import sootup.core.types.UnknownType;
 
 /**
  * Stack operand.
@@ -133,7 +132,7 @@ class Operand {
         methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
       }
     } else {
-        assert assignStmt.getLeftOp() == oldStackLocal || assignStmt.getLeftOp() == newStackLocal;
+      assert assignStmt.getLeftOp() == oldStackLocal || assignStmt.getLeftOp() == newStackLocal;
       // replace `$oldStackLocal = value` with `$newStackLocal = value`
       methodSource.replaceStmt(assignStmt, assignStmt.withVariable(newStackLocal));
     }
@@ -142,8 +141,7 @@ class Operand {
     if (oldStackLocal != null) {
       ReplaceUseStmtVisitor replaceStmtVisitor =
           new ReplaceUseStmtVisitor(oldStackLocal, newStackLocal);
-      for (Stmt oldUsage :
-          methodSource.getStmtsThatUse(oldStackLocal).toList()) {
+      for (Stmt oldUsage : methodSource.getStmtsThatUse(oldStackLocal).toList()) {
         oldUsage.accept(replaceStmtVisitor);
         Stmt newUsage = replaceStmtVisitor.getResult();
 

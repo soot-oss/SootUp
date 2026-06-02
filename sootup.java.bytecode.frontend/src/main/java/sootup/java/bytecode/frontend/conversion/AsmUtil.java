@@ -21,6 +21,8 @@ package sootup.java.bytecode.frontend.conversion;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import static org.objectweb.asm.Opcodes.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -35,7 +37,6 @@ import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
-import static org.objectweb.asm.Opcodes.*;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -431,8 +432,8 @@ public final class AsmUtil {
    * <p>Covers:
    *
    * <ul>
-   *   <li>var insns: ILOAD/ISTORE → int, LLOAD/LSTORE → long, FLOAD/FSTORE → float, DLOAD/DSTORE
-   *       → double
+   *   <li>var insns: ILOAD/ISTORE → int, LLOAD/LSTORE → long, FLOAD/FSTORE → float, DLOAD/DSTORE →
+   *       double
    *   <li>arithmetic + negate (IADD–DNEG, opcodes 96–119): I/L/F/D in groups-of-4
    *   <li>shift + bitwise (ISHL–LXOR, opcodes 120–131): even → int, odd → long
    *   <li>comparison results (LCMP, FCMPL/G, DCMPL/G) → int

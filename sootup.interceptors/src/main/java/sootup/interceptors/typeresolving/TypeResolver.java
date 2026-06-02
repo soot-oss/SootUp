@@ -44,8 +44,8 @@ import sootup.interceptors.typeresolving.types.TopType;
 import sootup.java.core.views.JavaView;
 
 /**
- * @author Zun Wang
- * Algorithm started on 'Efficient Local Type Inference' with later inspiration by 'Two Approaches to Fast Bytecode Frontend for Static Analysis'
+ * @author Zun Wang Algorithm started on 'Efficient Local Type Inference' with later inspiration by
+ *     'Two Approaches to Fast Bytecode Frontend for Static Analysis'
  */
 public class TypeResolver {
   private final ArrayList<AbstractDefinitionStmt> assignments = new ArrayList<>();
