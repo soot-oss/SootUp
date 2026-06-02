@@ -6,7 +6,7 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.LocalGenerator;
@@ -59,9 +59,9 @@ public class FieldModifiersValidatorTest {
     final JReturnVoidStmt returnVoidStmt =
         new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
-    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.setStartingStmt(firstStmt);
-    stmtGraph.putEdge(firstStmt, returnVoidStmt);
+    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(firstStmt);
+    controlFlowGraph.putEdge(firstStmt, returnVoidStmt);
 
     Body body =
         bodyBuilder.setMethodSignature(methodSignature).setLocals(generator.getLocals()).build();

@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
@@ -109,11 +109,11 @@ public class ConstantPropagatorAndFolderTest {
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    stmtGraph.setStartingStmt(assignA);
-    stmtGraph.putEdge(assignA, assignB);
-    stmtGraph.putEdge(assignB, assignC);
-    stmtGraph.putEdge(assignC, ret);
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(assignA);
+    controlFlowGraph.putEdge(assignA, assignB);
+    controlFlowGraph.putEdge(assignB, assignC);
+    controlFlowGraph.putEdge(assignC, ret);
 
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());

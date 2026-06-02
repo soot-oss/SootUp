@@ -8,8 +8,8 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.BlockGraphIterator;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.graph.MutableBasicBlockImpl;
-import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.JNopStmt;
@@ -53,8 +53,8 @@ class BlockGraphIteratorAndTrapAggregator extends BlockGraphIterator {
   /*
    * @param dummyBlock is just an empty instantiation of type V - as neither BasicBlock nor V instantiable we need a concrete object from the using subclass itclass.
    * */
-  public BlockGraphIteratorAndTrapAggregator(StmtGraph stmtGraph) {
-    super(stmtGraph);
+  public BlockGraphIteratorAndTrapAggregator(ControlFlowGraph controlFlowGraph) {
+    super(controlFlowGraph);
     lastIteratedBlock = new MutableBasicBlockImpl();
   }
 

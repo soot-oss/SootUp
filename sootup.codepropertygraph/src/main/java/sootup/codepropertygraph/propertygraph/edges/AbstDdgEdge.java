@@ -24,10 +24,13 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 
 import sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode;
 
+/** Abstract base class for DDG (Data Dependence Graph) edges in a property graph. */
 public abstract class AbstDdgEdge extends PropertyGraphEdge {
+  /** Creates a DDG edge between the given source and destination nodes. */
   public AbstDdgEdge(PropertyGraphNode source, PropertyGraphNode destination) {
     super(source, destination);
   }
 
+  /** Returns the label identifying this DDG edge type. */
   public abstract String getLabel();
 }

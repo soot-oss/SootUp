@@ -25,13 +25,13 @@ package sootup.apk.frontend.instruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.stmt.JNopStmt;
 
 public class NopInstruction extends DexLibAbstractInstruction {
   @Override
   public void jimplify(DexBody body) {
-    JNopStmt jNopStmt = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt jNopStmt = Jimple.newNopStmt(new SimpleStmtPositionInfo(lineNumber));
     setStmt(jNopStmt);
     body.add(jNopStmt);
   }

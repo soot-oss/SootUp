@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0                                  # mike needs full history to push to gh-pages
 
@@ -48,4 +48,4 @@ jobs:
         run: rm -rf docs/api; mkdir -p docs/api; mv target/reports/apidocs/* docs/api
 
       - name: Create Documentation Preview
-        uses: secure-software-engineering/actions/documentation/pr-preview@1586956654997710ed19fbc7953cd4336af63a87 # develop
+        uses: secure-software-engineering/actions/documentation/pr-preview@0caaeef2e50a42448e00423a073c676aebead49f # develop

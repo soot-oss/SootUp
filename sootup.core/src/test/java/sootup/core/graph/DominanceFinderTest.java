@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.common.stmt.*;
 
 public class DominanceFinderTest {
 
@@ -13,7 +12,7 @@ public class DominanceFinderTest {
 
   @Test
   public void testDominanceFinder() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph();
     DominanceFinder dominanceFinder = new DominanceFinder(graph);
 
     int[] domsArr = dominanceFinder.getImmediateDominators();
@@ -25,7 +24,7 @@ public class DominanceFinderTest {
 
   @Test
   public void testDominanceFrontiers() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph();
     DominanceFinder dominanceFinder = new DominanceFinder(graph);
 
     List<BasicBlock<?>> blocks = dominanceFinder.getIdxToBlock();
@@ -49,7 +48,7 @@ public class DominanceFinderTest {
 
   @Test
   public void testBlockToIdxInverse() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph();
     DominanceFinder dom = new DominanceFinder(graph);
 
     // check that getBlockToIdx and getIdxToBlock are inverses
@@ -62,7 +61,7 @@ public class DominanceFinderTest {
 
   @Test
   public void testDominanceFinder2() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph2();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph2();
     DominanceFinder dominanceFinder = new DominanceFinder(graph);
 
     int[] domsArr = dominanceFinder.getImmediateDominators();
@@ -75,7 +74,7 @@ public class DominanceFinderTest {
 
   @Test
   public void testDominanceFrontiers2() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph2();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph2();
     DominanceFinder dominanceFinder = new DominanceFinder(graph);
 
     List<BasicBlock<?>> blocks = dominanceFinder.getIdxToBlock();

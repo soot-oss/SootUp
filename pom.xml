@@ -82,15 +82,16 @@
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-        <maven-central-publishing-plugin.version>0.9.0</maven-central-publishing-plugin.version>
+        <maven-central-publishing-plugin.version>0.10.0</maven-central-publishing-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
         <reactorRootsTarget>${basedir}/target</reactorRootsTarget>
-        <junit.version>6.0.1</junit.version>
+        <junit.version>6.0.3</junit.version>
+        <lombok.version>1.18.46</lombok.version>
     </properties>
 
     <profiles>
@@ -135,7 +136,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>versions-maven-plugin</artifactId>
-                        <version>2.19.1</version>
+                        <version>2.21.0</version>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -143,7 +144,6 @@
                         <version>${maven-gpg-plugin.version}</version>
                         <configuration>
                             <bestPractices>true</bestPractices>
-                            <passphraseEnvName>GPG_PRIVATE_KEY_PASSPHRASE</passphraseEnvName>
                         </configuration>
                         <executions>
                             <execution>
@@ -166,7 +166,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.3.1</version>
+                        <version>3.4.0</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -203,7 +203,7 @@
 		    <plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-release-plugin</artifactId>
-			<version>3.2.0</version>
+			<version>3.3.1</version>
 			<configuration>
 				<tagNameFormat>@{project.version}</tagNameFormat>
 			</configuration>
@@ -232,7 +232,7 @@
                 <!-- just define the Java version to be used for compiling and plugins -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.1</version>
+                <version>3.15.0</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.source}</target>
@@ -240,6 +240,13 @@
                         <!-- Prevents recompilation due to missing package-info.class, see MCOMPILER-205 -->
                         <arg>-Xpkginfo:always</arg>
                     </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
@@ -315,7 +322,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>3.5.4</version>
+                <version>3.5.5</version>
                 <configuration>
                     <showSuccess>false</showSuccess>
                 </configuration>
@@ -335,7 +342,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>2.7.0</version>
+                <version>2.7.1</version>
                 <configuration>
                     <failOnMissingHeader>${licence-check.failOnMissingHeader}</failOnMissingHeader>
                     <failOnNotUptodateHeader>${licence-check.failOnMissingHeader}</failOnNotUptodateHeader>
@@ -375,7 +382,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.17</version>
+            <version>2.0.18</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -385,17 +392,17 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>1.14.0</version>
+            <version>1.15.0</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.21.0</version>
+            <version>2.22.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>33.5.0-jre</version>
+            <version>33.6.0-jre</version>
         </dependency>
         <dependency>
             <groupId>org.graph4j</groupId>
@@ -405,12 +412,12 @@
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-core</artifactId>
-            <version>1.5.2</version>
+            <version>1.5.3</version>
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-io</artifactId>
-            <version>1.5.2</version>
+            <version>1.5.3</version>
         </dependency>
         <dependency>
             <groupId>de.upb.cs.swt</groupId>
@@ -420,12 +427,12 @@
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-util</artifactId>
-            <version>9.9</version>
+            <version>9.10</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
-            <version>9.9</version>
+            <version>9.10</version>
         </dependency>
         <dependency>
             <groupId>org.smali</groupId>
@@ -452,17 +459,17 @@
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>6.9.1</version>
+            <version>7.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.13.2</version>
+            <version>2.14.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.42</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -488,19 +495,19 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>2.0.17</version>
+            <version>2.0.18</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.20.0</version>
+            <version>5.23.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.20.0</version>
+            <version>5.23.0</version>
             <scope>test</scope>
         </dependency>
         <!-- adds `@Nullable` and `@NonNull ` annotations -->

@@ -73,7 +73,7 @@ public class AsmMethodSourceTest {
             + "virtualinvoke this.<NestedMethodCall: void decode(char,char)>($stack5, $stack4);\n"
             + "\n"
             + "return;",
-        method.getBody().getStmtGraph().toString().trim());
+        method.getBody().getControlFlowGraph().toString().trim());
   }
 
   @Test

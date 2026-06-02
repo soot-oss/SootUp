@@ -36,7 +36,7 @@ import qilin.util.PTAUtils;
 import qilin.util.Triple;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.LValue;
@@ -618,10 +618,10 @@ public class PAG {
       }
     }
 
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     for (Stmt unit : newUnits.keySet()) {
       for (JAssignStmt succ : newUnits.get(unit)) {
-        stmtGraph.insertBefore(unit, succ);
+        controlFlowGraph.insertBefore(unit, succ);
       }
     }
     PTAUtils.updateMethodBody(method, builder.build());

@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
@@ -136,8 +136,7 @@ public class StaticSingleAssignmentFormerTest {
   public void testSSA2() {
     ClassType clazzType = factory.getClassType("TrapSSA");
     MethodSignature methodSignature =
-        factory.getMethodSignature(
-            clazzType, "main", "void", Collections.singletonList("java.lang.String[]"));
+        factory.getMethodSignature(clazzType, factory.getMainSubSignature());
     final Path path = Paths.get(location + "TrapSSA.class");
     PathBasedAnalysisInputLocation inputLocationWithSSA =
         new ClassFileBasedAnalysisInputLocation(
@@ -243,8 +242,7 @@ public class StaticSingleAssignmentFormerTest {
   public void testSSA3() {
     ClassType clazzType = factory.getClassType("ForLoopSSA");
     MethodSignature methodSignature =
-        factory.getMethodSignature(
-            clazzType, "main", "void", Collections.singletonList("java.lang.String[]"));
+        factory.getMethodSignature(clazzType, factory.getMainSubSignature());
     final Path path = Paths.get(location + "ForLoopSSA.class");
     PathBasedAnalysisInputLocation inputLocationWithSSA =
         new ClassFileBasedAnalysisInputLocation(
@@ -375,7 +373,7 @@ public class StaticSingleAssignmentFormerTest {
    * </pre>
    */
   private Body.BodyBuilder createBody() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
@@ -440,7 +438,7 @@ public class StaticSingleAssignmentFormerTest {
    * </pre>
    */
   private Body.BodyBuilder createTrapBody() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 

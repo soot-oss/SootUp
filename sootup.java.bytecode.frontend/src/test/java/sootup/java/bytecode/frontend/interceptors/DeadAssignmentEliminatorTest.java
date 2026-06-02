@@ -8,8 +8,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -82,12 +82,12 @@ public class DeadAssignmentEliminatorTest {
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     builder.setLocals(locals);
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
-    stmtGraph.setStartingStmt(conditional);
-    stmtGraph.putEdge(conditional, JIfStmt.FALSE_BRANCH_IDX, intToA);
-    stmtGraph.putEdge(conditional, JIfStmt.TRUE_BRANCH_IDX, ret);
-    stmtGraph.putEdge(intToA, ret);
+    controlFlowGraph.setStartingStmt(conditional);
+    controlFlowGraph.putEdge(conditional, JIfStmt.FALSE_BRANCH_IDX, intToA);
+    controlFlowGraph.putEdge(conditional, JIfStmt.TRUE_BRANCH_IDX, ret);
+    controlFlowGraph.putEdge(intToA, ret);
 
     Body beforeBody = builder.build();
     builder = Body.builder(beforeBody, Collections.emptySet());
@@ -95,8 +95,8 @@ public class DeadAssignmentEliminatorTest {
     Body afterBody = builder.build();
 
     assertEquals(
-        beforeBody.getStmtGraph().getNodes().size() - 1,
-        afterBody.getStmtGraph().getNodes().size());
+        beforeBody.getControlFlowGraph().getNodes().size() - 1,
+        afterBody.getControlFlowGraph().getNodes().size());
   }
 
   @Test
@@ -108,8 +108,8 @@ public class DeadAssignmentEliminatorTest {
     new DeadAssignmentEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
-    StmtGraph<?> expectedGraph = testBody.getStmtGraph();
-    StmtGraph<?> actualGraph = processedBody.getStmtGraph();
+    ControlFlowGraph<?> expectedGraph = testBody.getControlFlowGraph();
+    ControlFlowGraph<?> actualGraph = processedBody.getControlFlowGraph();
 
     assertEquals(expectedGraph.getNodes().size() - 1, actualGraph.getNodes().size());
   }
@@ -121,8 +121,8 @@ public class DeadAssignmentEliminatorTest {
     new DeadAssignmentEliminator()
         .interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
-    StmtGraph<?> expectedGraph = testBody.getStmtGraph();
-    StmtGraph<?> actualGraph = processedBody.getStmtGraph();
+    ControlFlowGraph<?> expectedGraph = testBody.getControlFlowGraph();
+    ControlFlowGraph<?> actualGraph = processedBody.getControlFlowGraph();
 
     assertEquals(expectedGraph.getNodes().size(), actualGraph.getNodes().size());
   }
@@ -143,8 +143,8 @@ public class DeadAssignmentEliminatorTest {
     Set<Local> locals = new LinkedHashSet<>(Arrays.asList(a, b, c));
 
     Body.BodyBuilder builder = Body.builder();
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    stmtGraph.setStartingStmt(strToA);
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(strToA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
@@ -152,13 +152,13 @@ public class DeadAssignmentEliminatorTest {
     if (essentialOption) {
       FallsThroughStmt newToB =
           JavaJimple.newAssignStmt(b, JavaJimple.newNewExpr(objectType), noPositionInfo);
-      stmtGraph.putEdge(strToA, newToB);
-      stmtGraph.putEdge(newToB, ret);
+      controlFlowGraph.putEdge(strToA, newToB);
+      controlFlowGraph.putEdge(newToB, ret);
     } else {
       FallsThroughStmt intToC =
           JavaJimple.newAssignStmt(c, IntConstant.getInstance(42), noPositionInfo);
-      stmtGraph.putEdge(strToA, intToC);
-      stmtGraph.putEdge(intToC, ret);
+      controlFlowGraph.putEdge(strToA, intToC);
+      controlFlowGraph.putEdge(intToC, ret);
     }
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());

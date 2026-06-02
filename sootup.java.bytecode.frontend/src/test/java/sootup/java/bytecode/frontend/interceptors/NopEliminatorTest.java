@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
@@ -42,10 +42,10 @@ public class NopEliminatorTest {
     new NopEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
-    StmtGraph<?> inputStmtGraph = testBody.getStmtGraph();
-    StmtGraph<?> actualGraph = processedBody.getStmtGraph();
+    ControlFlowGraph<?> inputControlFlowGraph = testBody.getControlFlowGraph();
+    ControlFlowGraph<?> actualGraph = processedBody.getControlFlowGraph();
 
-    assertEquals(inputStmtGraph.getNodes().size() - 1, actualGraph.getNodes().size());
+    assertEquals(inputControlFlowGraph.getNodes().size() - 1, actualGraph.getNodes().size());
   }
 
   /**
@@ -62,7 +62,8 @@ public class NopEliminatorTest {
     new NopEliminator().interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
 
-    assertEquals(testBody.getStmtGraph().getNodes(), processedBody.getStmtGraph().getNodes());
+    assertEquals(
+        testBody.getControlFlowGraph().getNodes(), processedBody.getControlFlowGraph().getNodes());
   }
 
   /**
@@ -95,17 +96,17 @@ public class NopEliminatorTest {
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    stmtGraph.setStartingStmt(strToA);
-    stmtGraph.putEdge(strToA, jump);
-    stmtGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
-    stmtGraph.putEdge(bToA, ret);
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(strToA);
+    controlFlowGraph.putEdge(strToA, jump);
+    controlFlowGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
+    controlFlowGraph.putEdge(bToA, ret);
     if (withNop) {
       // strToA, jump, bToA, nop, ret;
       JNopStmt nop = new JNopStmt(noPositionInfo);
-      stmtGraph.removeEdge(bToA, ret);
-      stmtGraph.putEdge(bToA, nop);
-      stmtGraph.putEdge(nop, ret);
+      controlFlowGraph.removeEdge(bToA, ret);
+      controlFlowGraph.putEdge(bToA, nop);
+      controlFlowGraph.putEdge(nop, ret);
     }
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());

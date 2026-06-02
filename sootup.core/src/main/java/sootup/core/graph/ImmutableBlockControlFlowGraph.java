@@ -30,13 +30,13 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
 
 // FIXME: implement!
-public class ImmutableBlockStmtGraph
-    extends StmtGraph<ImmutableBlockStmtGraph.ImmutableBasicBlock> {
+public class ImmutableBlockControlFlowGraph
+    extends ControlFlowGraph<ImmutableBlockControlFlowGraph.ImmutableBasicBlock> {
 
   private final List<ImmutableBasicBlock> blocks;
   private final Map<Stmt, ImmutableBasicBlock> stmtToBlock = new HashMap<>();
 
-  public ImmutableBlockStmtGraph(@NonNull MutableStmtGraph graph) {
+  public ImmutableBlockControlFlowGraph(@NonNull MutableControlFlowGraph graph) {
 
     final List<? extends BasicBlock<?>> mblocks = graph.getBlocksSorted();
     blocks = Lists.newArrayListWithExpectedSize(mblocks.size());

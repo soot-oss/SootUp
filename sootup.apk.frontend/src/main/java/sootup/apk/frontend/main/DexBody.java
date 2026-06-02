@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.dexpler.DexMethodSource;
 import sootup.apk.frontend.instruction.*;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -326,7 +326,7 @@ public class DexBody {
       Method method, ClassType classType, List<BodyInterceptor> bodyInterceptors, View view) {
     jimplify();
     // All the statements are converted, it is time to create a mutable statement graph
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     // If the Nop Statements are not removed, graph.initializeWith throws a runtime exception
     // It is only for the case where there is a JNop Statement after the return statement. Crazy
     // android code :(

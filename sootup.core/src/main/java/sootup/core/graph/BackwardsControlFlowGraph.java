@@ -28,10 +28,11 @@ import sootup.core.jimple.common.stmt.Stmt;
 /**
  * @author Zun Wang
  */
-public class BackwardsStmtGraph<V extends BasicBlock<V>> extends ForwardingStmtGraph<V> {
+public class BackwardsControlFlowGraph<V extends BasicBlock<V>>
+    extends ForwardingControlFlowGraph<V> {
 
-  public BackwardsStmtGraph(@NonNull StmtGraph<V> stmtGraph) {
-    super(stmtGraph);
+  public BackwardsControlFlowGraph(@NonNull ControlFlowGraph<V> controlFlowGraph) {
+    super(controlFlowGraph);
   }
 
   @Override

@@ -41,21 +41,21 @@ import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.core.util.printer.JimplePrinter;
 
 /**
- * Interface for control flow graphs on Jimple Stmts. A StmtGraph is directed and connected (except
- * for traphandlers - those are not connected to the unexceptional flow via StmtGraph). Its directed
- * edges represent flows between Stmts. If the edge starts in a branching Stmt there is an edge for
- * each flow to the target Stmt. This can include duplicate flows to the same target e.g. for
- * JSwitchStmt, so that every label has its own flow to a target.
+ * Interface for control flow graphs on Jimple Stmts. A ControlFlowGraph is directed and connected
+ * (except for traphandlers - those are not connected to the unexceptional flow via
+ * ControlFlowGraph). Its directed edges represent flows between Stmts. If the edge starts in a
+ * branching Stmt there is an edge for each flow to the target Stmt. This can include duplicate
+ * flows to the same target e.g. for JSwitchStmt, so that every label has its own flow to a target.
  *
- * <p>THe StmtGraph structure keeps the edge insertion order of each node to store information about
- * successor stmts in its edges for Branching. Ordered edges are necessary because we want to
- * associate the i-th item with the i-th branch case of a {@link BranchingStmt}. In a valid
- * StmtGraph it is not allowed to have unconnected Nodes.
+ * <p>The ControlFlowGraph structure keeps the edge insertion order of each node to store
+ * information about successor stmts in its edges for Branching. Ordered edges are necessary because
+ * we want to associate the i-th item with the i-th branch case of a {@link BranchingStmt}. In a
+ * valid ControlFlowGraph it is not allowed to have unconnected Nodes.
  *
  * <pre>
  *  Stmt stmt1, stmt2;
  *  ...
- *  MutableStmtGraph graph = new MutableBlockStmtGraph();
+ *  MutableControlFlowGraph graph = new MutableBlockControlFlowGraph();
  *  graph.setEntryPoint(stmt1);
  *  graph.addNode(stmt1);
  *  graph.addNode(stmt2);
@@ -64,7 +64,7 @@ import sootup.core.util.printer.JimplePrinter;
  *
  * @author Markus Schmidt
  */
-public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stmt> {
+public abstract class ControlFlowGraph<V extends BasicBlock<V>> implements Iterable<Stmt> {
 
   public abstract Stmt getStartingStmt();
 
@@ -264,7 +264,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
     } catch (Exception e) {
       final String urlToWebeditor = DotExporter.createUrlToWebeditor(this);
-      throw new IllegalStateException("visualize invalid StmtGraph: " + urlToWebeditor, e);
+      throw new IllegalStateException("visualize invalid ControlFlowGraph: " + urlToWebeditor, e);
     }
   }
 
@@ -339,10 +339,10 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       return true;
     }
 
-    if (!(o instanceof StmtGraph)) {
+    if (!(o instanceof ControlFlowGraph)) {
       return false;
     }
-    StmtGraph<?> otherGraph = (StmtGraph<?>) o;
+    ControlFlowGraph<?> otherGraph = (ControlFlowGraph<?>) o;
 
     if (getStartingStmt() != otherGraph.getStartingStmt()) {
       return false;
@@ -377,7 +377,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   @Override
   @NonNull
   public Iterator<Stmt> iterator() {
-    return new BlockStmtGraphIterator();
+    return new BlockControlFlowGraphIterator();
   }
 
   public List<Stmt> getBranchTargetsOf(BranchingStmt fromStmt) {
@@ -412,22 +412,22 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   }
 
   /** Iterates the Stmts according to the jimple output order. */
-  private class BlockStmtGraphIterator implements Iterator<Stmt> {
+  private class BlockControlFlowGraphIterator implements Iterator<Stmt> {
 
     private final BlockGraphIterator blockIt;
     @NonNull private Iterator<Stmt> currentBlockIt = Collections.emptyIterator();
 
-    public BlockStmtGraphIterator() {
-      this(new BlockGraphIterator(StmtGraph.this));
+    public BlockControlFlowGraphIterator() {
+      this(new BlockGraphIterator(ControlFlowGraph.this));
     }
 
-    public BlockStmtGraphIterator(@NonNull BlockGraphIterator blockIterator) {
+    public BlockControlFlowGraphIterator(@NonNull BlockGraphIterator blockIterator) {
       blockIt = blockIterator;
     }
 
     @Override
     public boolean hasNext() {
-      // hint: a BasicBlock has at least 1 Stmt or should not be in a StmtGraph!
+      // hint: a BasicBlock has at least 1 Stmt or should not be in a ControlFlowGraph!
       return currentBlockIt.hasNext() || blockIt.hasNext();
     }
 

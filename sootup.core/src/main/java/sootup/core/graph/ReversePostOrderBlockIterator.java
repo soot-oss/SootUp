@@ -28,7 +28,9 @@ import java.util.stream.StreamSupport;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-/** A block iterator that iterates through the blocks of a StmtGraph in reverse post-order. */
+/**
+ * A block iterator that iterates through the blocks of a ControlFlowGraph in reverse post-order.
+ */
 public class ReversePostOrderBlockIterator implements BlockIterator {
   private List<BasicBlock<?>> blocks;
   private int i = 0;

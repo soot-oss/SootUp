@@ -49,7 +49,7 @@ public class JGotoStmt extends AbstractStmt implements BranchingStmt {
   public void toString(@NonNull StmtPrinter stmtPrinter) {
     stmtPrinter.literal(Jimple.GOTO);
     stmtPrinter.literal(" ");
-    // [ms] bounds are validated in Body if its a valid StmtGraph
+    // [ms] bounds are validated in Body if its a valid ControlFlowGraph
     stmtPrinter.stmtRef(stmtPrinter.getGraph().getBranchTargetsOf(this).get(0), true);
   }
 

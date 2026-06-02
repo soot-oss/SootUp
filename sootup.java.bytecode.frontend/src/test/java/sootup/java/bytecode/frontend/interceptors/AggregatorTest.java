@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -100,12 +100,12 @@ public class AggregatorTest {
             noPositionInfo);
     FallsThroughStmt assignB = JavaJimple.newAssignStmt(b, a, noPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noPositionInfo);
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
-    stmtGraph.setStartingStmt(assignA);
-    stmtGraph.putEdge(assignA, useA);
-    stmtGraph.putEdge(useA, assignB);
-    stmtGraph.putEdge(assignB, ret);
+    controlFlowGraph.setStartingStmt(assignA);
+    controlFlowGraph.putEdge(assignA, useA);
+    controlFlowGraph.putEdge(useA, assignB);
+    controlFlowGraph.putEdge(assignB, ret);
 
     builder.setMethodSignature(
         identifierFactory.getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
@@ -139,10 +139,10 @@ public class AggregatorTest {
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    stmtGraph.setStartingStmt(intToA);
-    stmtGraph.putEdge(intToA, intToB);
-    stmtGraph.putEdge(intToB, ret);
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(intToA);
+    controlFlowGraph.putEdge(intToA, intToB);
+    controlFlowGraph.putEdge(intToB, ret);
 
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());

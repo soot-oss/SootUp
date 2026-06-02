@@ -818,4 +818,25 @@ public class JavaModuleViewTest {
     // should we detect that in general? it doenst lead to errors.. just unnecessary overhead while
     // resolving..
   }
+
+  @Test
+  public void testMainMethod() {
+    // i.e. main is in non exported package
+    List<AnalysisInputLocation> inputLocations =
+        Collections.singletonList(
+            new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "hiddenmain/jar")));
+    List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
+        Collections.emptyList();
+    JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
+
+    ModuleJavaClassType targetClass =
+        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+    assertTrue(view.getClass(targetClass).isPresent());
+
+    long mainMethodCount =
+        view.getClass(targetClass).get().getMethods().stream()
+            .filter(m -> m.isMain(JavaModuleIdentifierFactory.getInstance()))
+            .count();
+    assertEquals(1, mainMethodCount);
+  }
 }

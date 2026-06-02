@@ -21,7 +21,7 @@ package qilin.core.natives;
 import java.util.Collections;
 import qilin.core.ArtificialMethod;
 import qilin.util.PTAUtils;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -44,10 +44,10 @@ public abstract class NativeMethod extends ArtificialMethod {
 
   public void simulate() {
     simulateImpl();
-    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.addBlock(stmtList);
+    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.addBlock(stmtList);
     Stmt curr = stmtList.get(0);
-    stmtGraph.setStartingStmt(curr);
+    controlFlowGraph.setStartingStmt(curr);
     PTAUtils.updateMethodBody(method, bodyBuilder.build());
   }
 }

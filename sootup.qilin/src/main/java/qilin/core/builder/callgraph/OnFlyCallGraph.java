@@ -22,15 +22,7 @@ package qilin.core.builder.callgraph;
  * #L%
  */
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import qilin.core.pag.ContextMethod;
@@ -39,6 +31,7 @@ import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphDifference;
+import sootup.callgraph.CallSequenceComparator;
 import sootup.callgraph.MutableCallGraph;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -467,6 +460,17 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   @Override
   public MutableCallGraph copy() {
     throw new UnsupportedOperationException();
+  }
+
+  @NonNull
+  @Override
+  public Set<Call> sortedCallsFrom(@NonNull MethodSignature sourceMethod) {
+    Set<Call> edges = callsFrom(sourceMethod);
+    if (edges.isEmpty()) return edges;
+
+    List<Call> sorted = new ArrayList<>(edges);
+    sorted.sort(new CallSequenceComparator());
+    return new LinkedHashSet<>(sorted);
   }
 
   @NonNull

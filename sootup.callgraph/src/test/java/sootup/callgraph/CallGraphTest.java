@@ -37,8 +37,6 @@ public abstract class CallGraphTest {
 
   protected abstract AbstractCallGraphAlgorithm createAlgorithm(JavaView view);
 
-  // private static Map<String, JavaView> viewToClassPath = new HashMap<>();
-
   protected JavaView createViewForClassPath(String classPath) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
@@ -59,7 +57,7 @@ public abstract class CallGraphTest {
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
         identifierFactory.getMethodSignature(
-            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, identifierFactory.getMainSubSignature());
 
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);

@@ -25,7 +25,7 @@ package sootup.interceptors;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -68,7 +68,7 @@ public class Aggregator implements BodyInterceptor {
    */
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
-    MutableStmtGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
     List<Stmt> stmts = builder.getStmts();
     Map<Value, List<Stmt>> usesMap = Body.collectUses(stmts);
 
@@ -232,7 +232,7 @@ public class Aggregator implements BodyInterceptor {
 
           graph.replaceNode(stmt, newStmt);
           if (graph.getStartingStmt() == relevantDef) {
-            Stmt newStartingStmt = builder.getStmtGraph().successors(relevantDef).get(0);
+            Stmt newStartingStmt = builder.getControlFlowGraph().successors(relevantDef).get(0);
             graph.setStartingStmt(newStartingStmt);
           }
           graph.removeNode(relevantDef);

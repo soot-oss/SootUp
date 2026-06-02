@@ -25,7 +25,7 @@ public class TryWithResourcesFinallyTests {
         view.getIdentifierFactory()
             .parseMethodSignature("<TryWithResourcesFinally: void test0(java.lang.AutoCloseable)>");
     BriefStmtPrinter stmtPrinter = new BriefStmtPrinter();
-    stmtPrinter.buildTraps(view.getMethod(methodSignature).get().getBody().getStmtGraph());
+    stmtPrinter.buildTraps(view.getMethod(methodSignature).get().getBody().getControlFlowGraph());
     stmtPrinter.getTraps();
   }
 }

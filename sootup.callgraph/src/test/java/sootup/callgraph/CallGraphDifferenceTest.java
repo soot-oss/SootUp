@@ -8,6 +8,7 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -22,11 +23,10 @@ public class CallGraphDifferenceTest {
     JavaView view = new JavaView(inputLocation);
 
     ClassHierarchyAnalysisAlgorithm chaAlgorithm = new ClassHierarchyAnalysisAlgorithm(view);
-    JavaClassType chaClassType = view.getIdentifierFactory().getClassType("Example");
+    JavaIdentifierFactory identifierFactory = view.getIdentifierFactory();
+    JavaClassType chaClassType = identifierFactory.getClassType("Example");
     MethodSignature chaMethodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature(
-                chaClassType, "main", "void", Collections.singletonList("java.lang.String[]"));
+        identifierFactory.getMethodSignature(chaClassType, identifierFactory.getMainSubSignature());
     CallGraph cg1 = chaAlgorithm.initialize(Collections.singletonList(chaMethodSignature));
 
     RapidTypeAnalysisAlgorithm rtaAlgorithm = new RapidTypeAnalysisAlgorithm(view);

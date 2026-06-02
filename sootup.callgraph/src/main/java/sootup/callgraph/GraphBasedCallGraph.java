@@ -124,6 +124,17 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @NonNull
   @Override
+  public Set<Call> sortedCallsFrom(@NonNull MethodSignature sourceMethod) {
+    Set<Call> edges = callsFrom(sourceMethod);
+    if (edges.isEmpty()) return edges;
+
+    List<Call> sorted = new ArrayList<>(edges);
+    sorted.sort(new CallSequenceComparator());
+    return new LinkedHashSet<>(sorted);
+  }
+
+  @NonNull
+  @Override
   public Set<Call> callsTo(@NonNull MethodSignature targetMethod) {
     return Arrays.stream(graph.incomingEdgesTo(vertexOf(targetMethod)))
         .map(e -> (Call) e.label())

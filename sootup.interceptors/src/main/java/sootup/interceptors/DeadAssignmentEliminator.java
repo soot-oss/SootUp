@@ -25,7 +25,7 @@ package sootup.interceptors;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.analysis.intraprocedural.reachingdefs.ReachingDefs;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
@@ -64,8 +64,8 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(stmtGraph)).getReachingDefs();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(controlFlowGraph)).getReachingDefs();
     // refactor.. why already here - getNodes as well
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
@@ -76,7 +76,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     boolean containsInvoke = false;
     Local thisLocal = null;
 
-    for (Stmt stmt : stmtGraph.getNodes()) {
+    for (Stmt stmt : controlFlowGraph.getNodes()) {
       boolean isEssential = true;
 
       if (stmt instanceof JAssignStmt assignStmt) {
@@ -121,7 +121,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
             if (rhs instanceof JInstanceFieldRef instanceFieldRef) {
               if (!isStatic && thisLocal == null) {
-                thisLocal = Body.getThisLocal(stmtGraph);
+                thisLocal = Body.getThisLocal(controlFlowGraph);
               }
 
               // Any JInstanceFieldRef may have side effects, unless the base is reading from 'this'
@@ -168,7 +168,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
     // Add all the statements which are used to compute values for the essential statements,
     // recursively
-    Map<LValue, Collection<Stmt>> allDefs = Body.collectDefs(stmtGraph.getNodes());
+    Map<LValue, Collection<Stmt>> allDefs = Body.collectDefs(controlFlowGraph.getNodes());
 
     Set<Stmt> essentialStmts = new HashSet<>(stmts.size());
     while (!deque.isEmpty()) {
@@ -186,11 +186,11 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       }
     }
 
-    // Remove the dead statements from the stmtGraph
+    // Remove the dead statements from the controlFlowGraph
     for (Stmt stmt : stmts) {
       if (!essentialStmts.contains(stmt)) {
-        if (stmtGraph.containsNode(stmt)) {
-          stmtGraph.removeNode(stmt);
+        if (controlFlowGraph.containsNode(stmt)) {
+          controlFlowGraph.removeNode(stmt);
           builder.removeDefLocalsOf(stmt);
         }
       }
@@ -234,7 +234,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       if (assignStmt.getInvokeExpr().isEmpty()) continue;
       Stmt newInvoke =
           Jimple.newInvokeStmt(assignStmt.getInvokeExpr().get(), assignStmt.getPositionInfo());
-      stmtGraph.replaceNode(assignStmt, newInvoke);
+      controlFlowGraph.replaceNode(assignStmt, newInvoke);
       builder.removeDefLocalsOf(assignStmt);
     }
   }

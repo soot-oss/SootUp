@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.BranchingStmt;
@@ -83,11 +83,11 @@ public class UnusedLocalEliminatorTest {
 
     final Body.BodyBuilder builder = Body.builder();
     locals.forEach(builder::addLocal);
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    stmtGraph.setStartingStmt(strToA);
-    stmtGraph.putEdge(strToA, jump);
-    stmtGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
-    stmtGraph.putEdge(bToA, ret);
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(strToA);
+    controlFlowGraph.putEdge(strToA, jump);
+    controlFlowGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
+    controlFlowGraph.putEdge(bToA, ret);
 
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()

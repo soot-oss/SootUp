@@ -35,18 +35,18 @@ import sootup.core.types.ClassType;
  *     top-&gt;down removeNode(s): bottom-&gt;up as then there is no need for copying inside the
  *     MutableBasicBlock
  */
-public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
+public abstract class MutableControlFlowGraph extends ControlFlowGraph<MutableBasicBlock> {
   @NonNull
-  public abstract StmtGraph<?> unmodifiableStmtGraph();
+  public abstract ControlFlowGraph<?> unmodifiableControlFlowGraph();
 
   public abstract void setStartingStmt(@NonNull Stmt firstStmt);
 
-  /** inserts a "stmt" into the StmtGraph */
+  /** inserts a "stmt" into the ControlFlowGraph */
   public void addNode(@NonNull Stmt stmt) {
     addNode(stmt, Collections.emptyMap());
   }
 
-  /** inserts a "stmt" with exceptional flows "traps" into the StmtGraph */
+  /** inserts a "stmt" with exceptional flows "traps" into the ControlFlowGraph */
   public abstract void addNode(@NonNull Stmt stmt, @NonNull Map<ClassType, Stmt> traps);
 
   /** creates a whole BasicBlock with the details from the parameters */
@@ -91,7 +91,7 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
     return insertAfter(afterStmt, Collections.singletonList(newStmt), Collections.emptyMap());
   }
 
-  /** removes "stmt" from the StmtGraph */
+  /** removes "stmt" from the ControlFlowGraph */
   public abstract void removeNode(@NonNull Stmt stmt);
 
   public abstract void removeNode(@NonNull Stmt stmt, boolean keepFlow);
@@ -100,8 +100,9 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
    * Modifications of unexceptional flows
    *
    * <p>Adds a flow "from" to "to". if at least one of the parameter Stmts is not already in the
-   * StmtGraph it will be added. if "to" needs to be added to the StmtGraph i.e. "to" is not already
-   * in the StmtGraph the method assumes "to" has the same exceptional flows as "from".
+   * ControlFlowGraph it will be added. if "to" needs to be added to the ControlFlowGraph i.e. "to"
+   * is not already in the ControlFlowGraph the method assumes "to" has the same exceptional flows
+   * as "from".
    */
   public abstract void putEdge(@NonNull FallsThroughStmt from, @NonNull Stmt to);
 
