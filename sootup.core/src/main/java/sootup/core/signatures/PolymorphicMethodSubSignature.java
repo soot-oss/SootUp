@@ -4,10 +4,10 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.types.Type;
 
 /**
- * Specialized @code{MethodSubSignature} class to treat methods with PolymorphicSignature Annotations.
+ * A marker subclass for {@code MethodSubSignature}. Used to identify the sub-signature
+ * of a polymorphic call site.
  */
 public class PolymorphicMethodSubSignature extends MethodSubSignature{
-
     public PolymorphicMethodSubSignature(@NonNull String name, @NonNull Iterable<? extends Type> parameterTypes, @NonNull Type type) {
         super(name, parameterTypes, type);
     }

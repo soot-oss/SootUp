@@ -89,7 +89,6 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       return Stream.empty();
     }
 
-    System.out.println("(CHA) Target Method Signature: " + targetMethodSignature);
     SootMethod actualTargetMethod = view.getMethod(targetMethodSignature).orElse(null);
     if (actualTargetMethod == null) {
       // method not implemented, search for implementation in super classes or ínterfaces
