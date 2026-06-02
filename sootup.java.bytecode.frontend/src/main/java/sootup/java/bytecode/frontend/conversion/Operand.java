@@ -29,6 +29,8 @@ import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.TryCatchBlockNode;
 import sootup.core.jimple.Jimple;
+import sootup.core.types.Type;
+import sootup.core.types.UnknownType;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
@@ -84,7 +86,11 @@ class Operand {
 
   Local getOrAssignValueToStackLocal() {
     if (stackLocal == null) {
-      changeStackLocal(methodSource.newStackLocal());
+      Type type = value.getType();
+      if (type instanceof UnknownType) {
+        type = AsmUtil.primitiveTypeFromOpcode(insn.getOpcode());
+      }
+      changeStackLocal(methodSource.newStackLocal(type));
     }
 
     return stackLocal;
@@ -117,7 +123,7 @@ class Operand {
     }
 
     Stmt stmt = methodSource.getStmt(insn);
-    if (!(stmt instanceof JAssignStmt)) {
+    if (!(stmt instanceof JAssignStmt assignStmt)) {
       // emit `$newStackLocal = value`
       if (value instanceof JCaughtExceptionRef) {
         JIdentityStmt identityStmt =
@@ -127,8 +133,7 @@ class Operand {
         methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
       }
     } else {
-      JAssignStmt assignStmt = (JAssignStmt) stmt;
-      assert assignStmt.getLeftOp() == oldStackLocal || assignStmt.getLeftOp() == newStackLocal;
+        assert assignStmt.getLeftOp() == oldStackLocal || assignStmt.getLeftOp() == newStackLocal;
       // replace `$oldStackLocal = value` with `$newStackLocal = value`
       methodSource.replaceStmt(assignStmt, assignStmt.withVariable(newStackLocal));
     }
@@ -138,7 +143,7 @@ class Operand {
       ReplaceUseStmtVisitor replaceStmtVisitor =
           new ReplaceUseStmtVisitor(oldStackLocal, newStackLocal);
       for (Stmt oldUsage :
-          methodSource.getStmtsThatUse(oldStackLocal).collect(Collectors.toList())) {
+          methodSource.getStmtsThatUse(oldStackLocal).toList()) {
         oldUsage.accept(replaceStmtVisitor);
         Stmt newUsage = replaceStmtVisitor.getResult();
 
