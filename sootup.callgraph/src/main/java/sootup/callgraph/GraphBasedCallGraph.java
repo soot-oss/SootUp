@@ -26,9 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.graph4j.DirectedPseudograph;
 import org.graph4j.Edge;
-import org.graph4j.Graph;
 import org.graph4j.GraphBuilder;
-import org.jgrapht.GraphType;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.signatures.MethodSignature;
@@ -41,8 +39,11 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @NonNull private final List<MethodSignature> entryMethods;
 
   /** The constructor of the graph based call graph. it initializes the call graph object. */
+  @SuppressWarnings("unchecked")
   public GraphBasedCallGraph(@NonNull List<MethodSignature> entryMethods) {
-    this(GraphBuilder.empty().buildDirectedPseudograph(), entryMethods);
+    this(
+        (DirectedPseudograph<MethodSignature, Call>) GraphBuilder.empty().buildDirectedPseudograph(),
+        entryMethods);
   }
 
   protected GraphBasedCallGraph(
@@ -52,6 +53,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     this.entryMethods = entryMethods;
   }
 
+  @Override
   public void addMethod(@NonNull MethodSignature calledMethod) {
     if (containsMethod(calledMethod)) {
       return;
@@ -147,8 +149,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public boolean containsCall(@NonNull Call call) {
     for (Edge edge : graph.edges()) {
-      Call label = (Call) edge.label();
-      if (label.equals(call)) {
+      if (call.equals(edge.label())) {
         return true;
       }
     }
@@ -160,7 +161,6 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     return graph.edges().length;
   }
 
-  @SuppressWarnings("unchecked") // (graph.clone() preserves generic properties)
   @NonNull
   @Override
   public MutableCallGraph copy() {
