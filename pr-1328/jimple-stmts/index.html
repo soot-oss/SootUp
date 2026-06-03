@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1117,7 +1117,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../pointer_analysis.md" class="md-nav__link">
+      <a href="../qilin/" class="md-nav__link">
         
   
   
@@ -1576,7 +1576,7 @@
 <h1 id="jimple-stmt-statement">Jimple Stmt ("Statement")</h1>
 <p><span class="tooltip hint--top" aria-label="formerly known as Units">Stmts</span> represent instructions of the JVM.
 Jimple is a 3-address form code so there are max 3 operands used in a ("manipulating") Stmt - i.e. this does not apply to invokes as this is just operand/parameter passing.</p>
-<p>Stmts can be roughly grouped by the amount of successors (in the <code>StmtGraph</code> of a <code>Body</code> of a <code>Method</code>).</p>
+<p>Stmts can be roughly grouped by the amount of successors (in the <code>ControlFlowGraph</code> of a <code>Body</code> of a <code>Method</code>).</p>
 <ul>
 <li>A <code>FallsThroughStmt</code> has always one successor - it basically represents <code>program counter++</code>.</li>
 <li>A <code>BranchingStmt</code> can have one, two or even n successors.</li>
@@ -2763,7 +2763,7 @@ public updateCounter()I
 </div>
 </div>
 <h3 id="jidentitystmt">JIdentityStmt</h3>
-<p>is similar to the <code>JAssignStmt</code> and but handles assignments of <code>IdentityRef</code>s to make implicit assignments explicit into the <code>StmtGraph</code>.</p>
+<p>is similar to the <code>JAssignStmt</code> and but handles assignments of <code>IdentityRef</code>s to make implicit assignments explicit into the <code>ControlFlowGraph</code>.</p>
 <ul>
 <li>Assigns parameters to a <code>Local</code> via <code>JParameterRef</code> like <code>@parameter0: int</code> refering to the first argument of the method (which is of Type int in this case).</li>
 <li>Assigns exceptions to a <code>Local</code> via <code>JCaughtExceptionRef</code> like <code>@caughtexception: java.lang.NullpointerException</code></li>
@@ -3819,10 +3819,10 @@ Just subclass the methods to the respective Stmts you need to handle. This is vi
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

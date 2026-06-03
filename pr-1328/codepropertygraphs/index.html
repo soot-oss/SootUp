@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1002,7 +1002,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../pointer_analysis.md" class="md-nav__link">
+      <a href="../qilin/" class="md-nav__link">
         
   
   
@@ -1605,8 +1605,8 @@ vulnerabilities by analyzing data flow dependencies.</p>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// Assuming `cpg` is the PropertyGraph created in the previous step</span>
 <span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">DdgEdge</span><span class="w"> </span><span class="n">edge</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">cpg</span><span class="p">.</span><span class="na">getEdges</span><span class="p">(</span><span class="n">DdgEdge</span><span class="p">.</span><span class="na">class</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">StmtGraphNode</span><span class="w"> </span><span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">StmtGraphNode</span><span class="p">)</span><span class="w"> </span><span class="n">edge</span><span class="p">.</span><span class="na">getSource</span><span class="p">();</span>
-<span class="w">            </span><span class="n">StmtGraphNode</span><span class="w"> </span><span class="n">destination</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">StmtGraphNode</span><span class="p">)</span><span class="w"> </span><span class="n">edge</span><span class="p">.</span><span class="na">getDestination</span><span class="p">();</span>
+<span class="w">            </span><span class="n">ControlFlowGraphNode</span><span class="w"> </span><span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">ControlFlowGraphNode</span><span class="p">)</span><span class="w"> </span><span class="n">edge</span><span class="p">.</span><span class="na">getSource</span><span class="p">();</span>
+<span class="w">            </span><span class="n">ControlFlowGraphNode</span><span class="w"> </span><span class="n">destination</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">ControlFlowGraphNode</span><span class="p">)</span><span class="w"> </span><span class="n">edge</span><span class="p">.</span><span class="na">getDestination</span><span class="p">();</span>
 
 <span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isPotentiallyVulnerable</span><span class="p">(</span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="n">destination</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Potential vulnerability found between: &quot;</span><span class="p">);</span>
@@ -1616,7 +1616,7 @@ vulnerabilities by analyzing data flow dependencies.</p>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isPotentiallyVulnerable</span><span class="p">(</span><span class="n">StmtGraphNode</span><span class="w"> </span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="n">StmtGraphNode</span><span class="w"> </span><span class="n">destination</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isPotentiallyVulnerable</span><span class="p">(</span><span class="n">ControlFlowGraphNode</span><span class="w"> </span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="n">ControlFlowGraphNode</span><span class="w"> </span><span class="n">destination</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// Implement your vulnerability detection logic here</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">source</span><span class="p">.</span><span class="na">getStmt</span><span class="p">().</span><span class="na">toString</span><span class="p">().</span><span class="na">contains</span><span class="p">(</span><span class="s">&quot;userInput&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>
 <span class="w">               </span><span class="n">destination</span><span class="p">.</span><span class="na">getStmt</span><span class="p">()</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">JInvokeStmt</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>
@@ -1718,10 +1718,10 @@ calls, which could indicate a potential injection vulnerability.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -422,10 +422,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#using-the-stmtgraph" class="md-nav__link">
+  <a href="#using-the-controlflowgraph" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using the StmtGraph
+        Using the ControlFlowGraph
       
     </span>
   </a>
@@ -989,7 +989,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../pointer_analysis.md" class="md-nav__link">
+      <a href="../qilin/" class="md-nav__link">
         
   
   
@@ -1287,10 +1287,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#using-the-stmtgraph" class="md-nav__link">
+  <a href="#using-the-controlflowgraph" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using the StmtGraph
+        Using the ControlFlowGraph
       
     </span>
   </a>
@@ -1334,7 +1334,7 @@ handles the representation of the code you configured it to analyze.</p>
 <li><code>SootMethod</code>: represents a method of a class - loaded from the View via a <code>MethodSignature</code> identifier.</li>
 <li><code>SootField</code>: represents a field of a class - loaded from the View via a <code>FieldSignature</code> identifier.</li>
 <li><code>Body</code>: represents a method body of a <code>SootMethod</code>.</li>
-<li><code>StmtGraph</code>: represents the control flow graph of a <code>Body</code>. <code>Stmt</code>'s represent actual Instructions.</li>
+<li><code>ControlFlowGraph</code>: represents the control flow graph of a <code>Body</code>. <code>Stmt</code>'s represent actual Instructions.</li>
 </ul>
 <h2 id="creating-a-view">Creating a View</h2>
 <p>You can use bytecode analysis typically when you do not have access to the source code of the target program. Following example shows how to create a view for analyzing Java bytecode.</p>
@@ -1520,14 +1520,14 @@ To for example use an <code>LRUCache</code> instead, which stores at most e.g. 5
 </code></pre></div></td></tr></table></div>
 </div>
 <h2 id="retrieving-the-control-flow-graph-of-a-method">Retrieving the Control-Flow Graph of a Method</h2>
-<p>Each <code>SootMethod</code> contains a Control-Flow Graph (CFG) which is represented via the <code>StmtGraph</code>. This structure is usually used for program analysis. You can retrieve the CFG of a <code>SootMethod</code> as follows:</p>
+<p>Each <code>SootMethod</code> contains a Control-Flow Graph (CFG) which is represented via the <code>ControlFlowGraph</code>. This structure is usually used for program analysis. You can retrieve the CFG of a <code>SootMethod</code> as follows:</p>
 <div class="admonition example">
 <p class="admonition-title">Retrieving the CFG of a SootMethod</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">StmtGraph</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sootMethod</span><span class="p">.</span><span class="na">getBody</span><span class="p">().</span><span class="na">getStmtGraph</span><span class="p">();</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ControlFlowGraph</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sootMethod</span><span class="p">.</span><span class="na">getBody</span><span class="p">().</span><span class="na">getControlFlowGraph</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 </div>
-<h2 id="using-the-stmtgraph">Using the StmtGraph</h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">StmtGraph Stmts</label><label for="__tabbed_2_2">StmtGraph Blocks</label><label for="__tabbed_2_3">StmtGraph DotExport</label></div>
+<h2 id="using-the-controlflowgraph">Using the ControlFlowGraph</h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">ControlFlowGraph Stmts</label><label for="__tabbed_2_2">ControlFlowGraph Blocks</label><label for="__tabbed_2_3">ControlFlowGraph DotExport</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
@@ -1683,10 +1683,10 @@ To for example use an <code>LRUCache</code> instead, which stores at most e.g. 5
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

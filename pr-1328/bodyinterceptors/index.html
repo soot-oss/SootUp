@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1022,7 +1022,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../pointer_analysis.md" class="md-nav__link">
+      <a href="../qilin/" class="md-nav__link">
         
   
   
@@ -1390,7 +1390,7 @@ The "raw" generated Jimple from the Bytecodefrontend needs a lot improvements - 
 <ul>
 <li>Java Variables with that are compiled to the same Local index, but from different scopes inside the method are mapped to the same Local. The Localsplitter takes care of splitting these Locals that are semantically different, into two seperate Local instances. </li>
 <li>The Conversion from a stack-machine to a register-machine creates leftover assignments - handled/inlined/removed by the Aggregator, CopyPropagator. They inline unnecessary Assignments.</li>
-<li>As the previous BodyTransformers could optimize code that leads to unused assignments etc - The DeadAssignmentEliminator keeps the StmtGraph clean from unused/dead Assignments.</li>
+<li>As the previous BodyTransformers could optimize code that leads to unused assignments etc - The DeadAssignmentEliminator keeps the ControlFlowGraph clean from unused/dead Assignments.</li>
 <li>The Locals we get from the Java bytecode are typically untyped. Therefore we have to augment the Local types which is done by the TypeAssigner.</li>
 <li>t.b.c.</li>
 </ul>
@@ -1632,10 +1632,10 @@ b = use(a); // a, b are local variables, const is a constant
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
