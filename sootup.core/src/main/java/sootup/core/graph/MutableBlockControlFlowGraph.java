@@ -495,7 +495,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
   @NonNull
   public List<? extends BasicBlock<?>> getBlocksSorted() {
-      return new ReversePostOrderBlockTraversal(this).getBlockTraversal();
+    return new ReversePostOrderBlockTraversal(this).getBlockTraversal();
   }
 
   /**

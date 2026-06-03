@@ -23,7 +23,6 @@ package sootup.core.graph;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -58,7 +57,7 @@ public class PostOrderBlockIterator implements BlockIterator {
       if (frame.succIterator.hasNext()) {
         BasicBlock<?> succ = frame.succIterator.next();
         if (visitNode(succ)) {
-            List<BasicBlock<?>> succs = new ArrayList<>(succ.getSuccessors());
+          List<BasicBlock<?>> succs = new ArrayList<>(succ.getSuccessors());
           succs.addAll(succ.getExceptionalSuccessors().values());
           stack.push(new Frame(succ, succs.iterator()));
         }

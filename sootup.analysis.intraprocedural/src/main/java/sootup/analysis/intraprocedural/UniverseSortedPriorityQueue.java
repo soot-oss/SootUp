@@ -49,9 +49,9 @@ public abstract class UniverseSortedPriorityQueue<E> extends AbstractQueue<E> {
   int min = Integer.MAX_VALUE;
 
   UniverseSortedPriorityQueue(List<? extends E> universe, Map<E, Integer> ordinalMap) {
-    // TODO: [ms] we should index the ordinalMap ourselves? Or for intended reuse just wrap it
+    // TODO: [ms] should we index the ordinalMap ourselves? Or for intended reuse just wrap it
     // together with the universe? and use an IdentityHashMap..
-    assert ordinalMap.size() == universe.size();
+    assert ordinalMap.isEmpty() || ordinalMap.size() == universe.size();
     this.universe = universe;
     this.ordinalMap = ordinalMap;
   }
