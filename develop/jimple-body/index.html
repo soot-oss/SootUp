@@ -1338,45 +1338,45 @@ In serialized(!) Jimple Labels are used to denote from,to and handler Stmts.</p>
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
-<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  public void &lt;init&gt;()
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="k">return</span>;
+    target.exercise1.DemoClass this;
+    this := @this: target.exercise1.DemoClass;
+    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+    return;
   }
 
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">divideExample</span>(<span class="nc">int</span>, <span class="nc">int</span>)
+  public void divideExample(int, int)
   {
-    <span class="nc">int</span> <span class="nv">x</span>, <span class="nv">y</span>, <span class="nv">$stack4</span>;
-    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack5</span>, <span class="nv">$stack7</span>;
-    <span class="nc">java.lang.Exception</span> <span class="nv">$stack6</span>;
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    int x, y, $stack4;
+    java.io.PrintStream $stack5, $stack7;
+    java.lang.Exception $stack6;
+    target.exercise1.DemoClass this;
 
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
-    <span class="nv">y</span> := <span class="k">@parameter1</span>: <span class="nc">int</span>;
+    this := @this: target.exercise1.DemoClass;
+    x := @parameter0: int;
+    y := @parameter1: int;
 
    label1:
-      <span class="nv">$stack5</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="nv">$stack4</span> = <span class="nv">x</span> <span class="o">/</span> <span class="nv">y</span>;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack5</span>.&lt;<span class="nv">java.io.PrintStream</span>: <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">$stack4</span>);
+      $stack5 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      $stack4 = x / y;
+      virtualinvoke $stack5.&lt;java.io.PrintStream: void println(int)&gt;($stack4);
 
    label2:
-      <span class="k">goto</span> label4;
+      goto label4;
 
    label3:
-      <span class="nv">$stack6</span> := <span class="k">@caughtexception</span>;
-      <span class="nv">$stack7</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack7</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Exception caught&quot;</span>);
+      $stack6 := @caughtexception;
+      $stack7 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      virtualinvoke $stack7.&lt;java.io.PrintStream: 
+        void println(java.lang.String)&gt;(&quot;Exception caught&quot;);
 
    label4:
-      <span class="k">return</span>;
+      return;
 
-<span class="hll">      <span class="k">catch</span> <span class="nc">java.lang.Exception</span> <span class="k">from</span> label1 <span class="k">to</span> label2 <span class="k">with</span> label3;
+<span class="hll">      catch java.lang.Exception from label1 to label2 with label3;
 </span>  }
 }
 /*

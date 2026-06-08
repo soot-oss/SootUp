@@ -1620,31 +1620,31 @@ Jimple is a 3-address form code so there are max 3 operands used in a ("manipula
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
-<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  public void &lt;init&gt;()
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="k">return</span>;
+    target.exercise1.DemoClass this;
+    this := @this: target.exercise1.DemoClass;
+    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+    return;
   }
-  <span class="k">public</span> <span class="k">static</span> <span class="nc">void</span> <span class="nf">sampleMethod</span>()
+  public static void sampleMethod()
   {
-    <span class="nc">int</span> <span class="nv">i</span>;
-    <span class="nv">i</span> = <span class="m">0</span>;
+    int i;
+    i = 0;
 
     label1:
-      <span class="k">if</span> <span class="nv">i</span> <span class="o">&gt;=</span> <span class="m">5</span> <span class="k">goto</span> label3;
-      <span class="k">if</span> <span class="nv">i</span> <span class="o">!=</span> <span class="m">3</span> <span class="k">goto</span> label2;
-<span class="hll">      <span class="k">goto</span> label3;
+      if i &gt;= 5 goto label3;
+      if i != 3 goto label2;
+<span class="hll">      goto label3;
 </span>
     label2:
-      <span class="nv">i</span> = <span class="nv">i</span> <span class="o">+</span> <span class="m">1</span>;
-<span class="hll">      <span class="k">goto</span> label1;
+      i = i + 1;
+<span class="hll">      goto label1;
 </span>
     label3:
-      <span class="k">return</span>;
+      return;
   }
 }
 /*
@@ -1830,38 +1830,38 @@ Therefore, the JIfStmt has two successor Stmt's.</p>
 <span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
-<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-   <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+   public void &lt;init&gt;()
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="k">return</span>;
+    target.exercise1.DemoClass this;
+    this := @this: target.exercise1.DemoClass;
+    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+    return;
   }
 
-  <span class="k">public</span> <span class="k">static</span> <span class="nc">void</span> <span class="nf">sampleMethod</span>(<span class="nc">int</span>)
+  public static void sampleMethod(int)
   {
-    <span class="nc">int</span> <span class="nv">x</span>, <span class="nv">$stack1</span>;
-    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack2</span>, <span class="nv">$stack3</span>;
+    int x, $stack1;
+    java.io.PrintStream $stack2, $stack3;
 
-    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+    x := @parameter0: int;
 
-    <span class="nv">$stack1</span> = <span class="nv">x</span> <span class="o">%</span> <span class="m">2</span>;
-<span class="hll">    <span class="k">if</span> <span class="nv">$stack1</span> <span class="o">!=</span> <span class="m">0</span> <span class="k">goto</span> label1;
+    $stack1 = x % 2;
+<span class="hll">    if $stack1 != 0 goto label1;
 </span>
-    <span class="nv">$stack3</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-    <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Even&quot;</span>);
-    <span class="k">goto</span> label2;
+    $stack3 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+    virtualinvoke $stack3.&lt;java.io.PrintStream: 
+      void println(java.lang.String)&gt;(&quot;Even&quot;);
+    goto label2;
 
     label1:
-      <span class="nv">$stack2</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack2</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Odd&quot;</span>);
+      $stack2 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      virtualinvoke $stack2.&lt;java.io.PrintStream: 
+        void println(java.lang.String)&gt;(&quot;Odd&quot;);
 
     label2:
-      <span class="k">return</span>;
+      return;
   }
 }
 /*
@@ -2065,51 +2065,51 @@ public static sampleMethod(I)V
 <span class="normal">64</span>
 <span class="normal">65</span>
 <span class="normal">66</span>
-<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  public void &lt;init&gt;()
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="k">return</span>;
+    target.exercise1.DemoClass this;
+    this := @this: target.exercise1.DemoClass;
+    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+    return;
   }
 
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">switchExample</span>(<span class="nc">int</span>)
+  public void switchExample(int)
   {
-    <span class="nc">int</span> <span class="nv">x</span>;
-    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack2</span>, <span class="nv">$stack3</span>, <span class="nv">$stack4</span>;
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    int x;
+    java.io.PrintStream $stack2, $stack3, $stack4;
+    target.exercise1.DemoClass this;
 
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+    this := @this: target.exercise1.DemoClass;
+    x := @parameter0: int;
 
-<span class="hll">    <span class="k">lookupswitch</span>(<span class="nv">x</span>)
+<span class="hll">    lookupswitch(x)
 </span><span class="hll">    {
-</span><span class="hll">      <span class="k">case</span> 1: <span class="k">goto</span> label1;
-</span><span class="hll">      <span class="k">case</span> 2: <span class="k">goto</span> label2;
-</span><span class="hll">      <span class="k">default</span>: <span class="k">goto</span> label3;
+</span><span class="hll">      case 1: goto label1;
+</span><span class="hll">      case 2: goto label2;
+</span><span class="hll">      default: goto label3;
 </span><span class="hll">    };
 </span>
     label1:
-      <span class="nv">$stack3</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Input 1&quot;</span>);
-      <span class="k">goto</span> label4;
+      $stack3 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      virtualinvoke $stack3.&lt;java.io.PrintStream: 
+        void println(java.lang.String)&gt;(&quot;Input 1&quot;);
+      goto label4;
 
     label2:
-      <span class="nv">$stack2</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack2</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Input 2&quot;</span>);
-      <span class="k">goto</span> label4;
+      $stack2 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      virtualinvoke $stack2.&lt;java.io.PrintStream: 
+        void println(java.lang.String)&gt;(&quot;Input 2&quot;);
+      goto label4;
 
     label3:
-      <span class="nv">$stack4</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Input more than 2&quot;</span>);
+      $stack4 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      virtualinvoke $stack4.&lt;java.io.PrintStream: 
+        void println(java.lang.String)&gt;(&quot;Input more than 2&quot;);
 
     label4:
-      <span class="k">return</span>;
+      return;
   }
 }
 /*
@@ -2356,46 +2356,46 @@ public switchExample(I)V
 <span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
-<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  public void &lt;init&gt;()
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-<span class="hll">    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-</span>    <span class="k">return</span>;
+    target.exercise1.DemoClass this;
+    this := @this: target.exercise1.DemoClass;
+<span class="hll">    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+</span>    return;
   }
 
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">print</span>(<span class="nc">int</span>)
+  public void print(int)
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nc">int</span> <span class="nv">x</span>, <span class="nv">a</span>;
-    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack4</span>, <span class="nv">$stack6</span>;
+    target.exercise1.DemoClass this;
+    int x, a;
+    java.io.PrintStream $stack4, $stack6;
 
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+    this := @this: target.exercise1.DemoClass;
+    x := @parameter0: int;
 
-<span class="hll">    <span class="nv">a</span> = <span class="k">virtualinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)&gt;(<span class="nv">x</span>);
-</span>    <span class="nv">$stack4</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-<span class="hll">    <span class="k">virtualinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.io.PrintStream</span>: <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">a</span>);
+<span class="hll">    a = virtualinvoke this.&lt;target.exercise1.DemoClass: int increment(int)&gt;(x);
+</span>    $stack4 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+<span class="hll">    virtualinvoke $stack4.&lt;java.io.PrintStream: void println(int)&gt;(a);
 </span>
-<span class="hll">    <span class="nv">a</span> = <span class="k">virtualinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)&gt;(<span class="nv">a</span>);
-</span>    <span class="nv">$stack6</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-<span class="hll">    <span class="k">virtualinvoke</span> <span class="nv">$stack6</span>.&lt;<span class="nv">java.io.PrintStream</span>: <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">a</span>);
+<span class="hll">    a = virtualinvoke this.&lt;target.exercise1.DemoClass: int increment(int)&gt;(a);
+</span>    $stack6 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+<span class="hll">    virtualinvoke $stack6.&lt;java.io.PrintStream: void println(int)&gt;(a);
 </span>
-    <span class="k">return</span>;
+    return;
   }
 
-  <span class="k">public</span> <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)
+  public int increment(int)
   {
-    <span class="nc">int</span> <span class="nv">x</span>, <span class="nv">$stack2</span>;
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    int x, $stack2;
+    target.exercise1.DemoClass this;
 
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+    this := @this: target.exercise1.DemoClass;
+    x := @parameter0: int;
 
-    <span class="nv">$stack2</span> = <span class="nv">x</span> <span class="o">+</span> <span class="m">1</span>;
-    <span class="k">return</span> <span class="nv">$stack2</span>;
+    $stack2 = x + 1;
+    return $stack2;
   }
 }
 /*
@@ -2610,30 +2610,30 @@ Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRe
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  public void &lt;init&gt;()
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-<span class="hll">    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="m">0</span>;
-</span>    <span class="k">return</span>;
+    target.exercise1.DemoClass this;
+    this := @this: target.exercise1.DemoClass;
+    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+<span class="hll">    this.&lt;target.exercise1.DemoClass: int counter&gt; = 0;
+</span>    return;
   }
 
-  <span class="k">public</span> <span class="nc">int</span> <span class="nf">updateCounter</span>()
+  public int updateCounter()
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nc">int</span> <span class="nv">$stack1</span>, <span class="nv">$stack2</span>, <span class="nv">$stack3</span>;
+    target.exercise1.DemoClass this;
+    int $stack1, $stack2, $stack3;
 
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    this := @this: target.exercise1.DemoClass;
 
-<span class="hll">    <span class="nv">$stack1</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
-</span><span class="hll">    <span class="nv">$stack2</span> = <span class="nv">$stack1</span> <span class="o">+</span> <span class="m">1</span>;
-</span><span class="hll">    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="nv">$stack2</span>;
-</span><span class="hll">    <span class="nv">$stack3</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
+<span class="hll">    $stack1 = this.&lt;target.exercise1.DemoClass: int counter&gt;;
+</span><span class="hll">    $stack2 = $stack1 + 1;
+</span><span class="hll">    this.&lt;target.exercise1.DemoClass: int counter&gt; = $stack2;
+</span><span class="hll">    $stack3 = this.&lt;target.exercise1.DemoClass: int counter&gt;;
 </span>
-    <span class="k">return</span> <span class="nv">$stack3</span>;
+    return $stack3;
   }
 }
 /*
@@ -2796,25 +2796,25 @@ public updateCounter()I
 <span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
-<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  public void &lt;init&gt;()
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="k">return</span>;
+    target.exercise1.DemoClass this;
+    this := @this: target.exercise1.DemoClass;
+    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+    return;
   }
 
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">DemoClass</span>(<span class="nc">int</span>)
+  public void DemoClass(int)
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nc">int</span> <span class="nv">counter</span>;
+    target.exercise1.DemoClass this;
+    int counter;
 
-<span class="hll">    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-</span><span class="hll">    <span class="nv">counter</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
-</span>    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="nv">counter</span>;
-    <span class="k">return</span>;
+<span class="hll">    this := @this: target.exercise1.DemoClass;
+</span><span class="hll">    counter := @parameter0: int;
+</span>    this.&lt;target.exercise1.DemoClass: int counter&gt; = counter;
+    return;
   }
 }
 /*
@@ -2974,51 +2974,51 @@ public DemoClass(I)V
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
-<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  public void &lt;init&gt;()
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="m">0</span>;
-    <span class="k">return</span>;
+    target.exercise1.DemoClass this;
+    this := @this: target.exercise1.DemoClass;
+    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+    this.&lt;target.exercise1.DemoClass: int counter&gt; = 0;
+    return;
   }
 
-  <span class="k">public</span> <span class="nc">int</span> <span class="nf">updateCounter</span>()
+  public int updateCounter()
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nc">int</span> <span class="nv">$stack4</span>, <span class="nv">$stack5</span>, <span class="nv">$stack7</span>;
-    <span class="nc">java.lang.Throwable</span> <span class="nv">$stack8</span>;
+    target.exercise1.DemoClass this;
+    int $stack4, $stack5, $stack7;
+    java.lang.Throwable $stack8;
 
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    this := @this: target.exercise1.DemoClass;
 
-<span class="hll">    <span class="k">entermonitor</span> <span class="nv">this</span>;
+<span class="hll">    entermonitor this;
 </span>
     label1:
-      <span class="nv">$stack4</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
-      <span class="nv">$stack5</span> = <span class="nv">$stack4</span> <span class="o">+</span> <span class="m">1</span>;
-      <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="nv">$stack5</span>;
+      $stack4 = this.&lt;target.exercise1.DemoClass: int counter&gt;;
+      $stack5 = $stack4 + 1;
+      this.&lt;target.exercise1.DemoClass: int counter&gt; = $stack5;
 
-<span class="hll">      <span class="k">exitmonitor</span> <span class="nv">this</span>;
+<span class="hll">      exitmonitor this;
 </span>
     label2:
-      <span class="k">goto</span> label5;
+      goto label5;
 
     label3:
-      <span class="nv">$stack8</span> := <span class="k">@caughtexception</span>;
+      $stack8 := @caughtexception;
 
-<span class="hll">      <span class="k">exitmonitor</span> <span class="nv">this</span>;
+<span class="hll">      exitmonitor this;
 </span>
     label4:
-      <span class="k">throw</span> <span class="nv">$stack8</span>;
+      throw $stack8;
 
     label5:
-      <span class="nv">$stack7</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
-      <span class="k">return</span> <span class="nv">$stack7</span>;
+      $stack7 = this.&lt;target.exercise1.DemoClass: int counter&gt;;
+      return $stack7;
 
-      <span class="k">catch</span> <span class="nc">java.lang.Throwable</span> <span class="k">from</span> label1 <span class="k">to</span> label2 <span class="k">with</span> label3;
-      <span class="k">catch</span> <span class="nc">java.lang.Throwable</span> <span class="k">from</span> label3 <span class="k">to</span> label4 <span class="k">with</span> label3;
+      catch java.lang.Throwable from label1 to label2 with label3;
+      catch java.lang.Throwable from label3 to label4 with label3;
   }
 }
 /*
@@ -3242,38 +3242,38 @@ public updateCounter()I
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  public void &lt;init&gt;()
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="k">return</span>;
+    target.exercise1.DemoClass this;
+    this := @this: target.exercise1.DemoClass;
+    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+    return;
   }
 
-  <span class="k">public</span> <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)
+  public int increment(int)
   {
-    <span class="nc">int</span> <span class="nv">x</span>, <span class="nv">$stack2</span>;
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    int x, $stack2;
+    target.exercise1.DemoClass this;
 
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+    this := @this: target.exercise1.DemoClass;
+    x := @parameter0: int;
 
-    <span class="nv">$stack2</span> = <span class="nv">x</span> <span class="o">+</span> <span class="m">1</span>;
-<span class="hll">    <span class="k">return</span> <span class="nv">$stack2</span>;
+    $stack2 = x + 1;
+<span class="hll">    return $stack2;
 </span>  }
 
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">print</span>()
+  public void print()
   {
-    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack1</span>;
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    java.io.PrintStream $stack1;
+    target.exercise1.DemoClass this;
 
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="nv">$stack1</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-    <span class="k">virtualinvoke</span> <span class="nv">$stack1</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Inside method print&quot;</span>);
-<span class="hll">    <span class="k">return</span>;
+    this := @this: target.exercise1.DemoClass;
+    $stack1 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+    virtualinvoke $stack1.&lt;java.io.PrintStream: 
+      void println(java.lang.String)&gt;(&quot;Inside method print&quot;);
+<span class="hll">    return;
 </span>  }
 }
 /*
@@ -3457,52 +3457,52 @@ public print()V
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
-<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  public void &lt;init&gt;()
   {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="k">return</span>;
+    target.exercise1.DemoClass this;
+    this := @this: target.exercise1.DemoClass;
+    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+    return;
   }
 
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">divideExample</span>(<span class="nc">int</span>, <span class="nc">int</span>)
+  public void divideExample(int, int)
   {
-    <span class="nc">int</span> <span class="nv">y</span>, <span class="nv">x</span>, <span class="nv">$stack6</span>;
-    <span class="nc">java.lang.StringBuilder</span> <span class="nv">$stack3</span>, <span class="nv">$stack5</span>, <span class="nv">$stack7</span>;
-    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack4</span>;
-    <span class="nc">java.lang.String</span> <span class="nv">$stack8</span>;
-    <span class="nc">java.lang.RuntimeException</span> <span class="nv">$stack9</span>;
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    int y, x, $stack6;
+    java.lang.StringBuilder $stack3, $stack5, $stack7;
+    java.io.PrintStream $stack4;
+    java.lang.String $stack8;
+    java.lang.RuntimeException $stack9;
+    target.exercise1.DemoClass this;
 
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
-    <span class="nv">y</span> := <span class="k">@parameter1</span>: <span class="nc">int</span>;
+    this := @this: target.exercise1.DemoClass;
+    x := @parameter0: int;
+    y := @parameter1: int;
 
-    <span class="k">if</span> <span class="nv">y</span> <span class="o">!=</span> <span class="m">0</span> <span class="k">goto</span> label1;
+    if y != 0 goto label1;
 
-    <span class="nv">$stack9</span> = <span class="k">new</span> <span class="nc">java.lang.RuntimeException</span>;
-    <span class="k">specialinvoke</span> <span class="nv">$stack9</span>.&lt;<span class="nv">java.lang.RuntimeException</span>: 
-      <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Divide by zero error&quot;</span>);
-<span class="hll">    <span class="k">throw</span> <span class="nv">$stack9</span>;
+    $stack9 = new java.lang.RuntimeException;
+    specialinvoke $stack9.&lt;java.lang.RuntimeException: 
+      void &lt;init&gt;(java.lang.String)&gt;(&quot;Divide by zero error&quot;);
+<span class="hll">    throw $stack9;
 </span>
     label1:
-      <span class="nv">$stack4</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="nv">$stack3</span> = <span class="k">new</span> <span class="nc">java.lang.StringBuilder</span>;
-      <span class="k">specialinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+      $stack4 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      $stack3 = new java.lang.StringBuilder;
+      specialinvoke $stack3.&lt;java.lang.StringBuilder: void &lt;init&gt;()&gt;();
 
-      <span class="nv">$stack5</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
-        <span class="nc">java.lang.StringBuilder</span> <span class="nf">append</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Divide result : &quot;</span>);
-      <span class="nv">$stack6</span> = <span class="nv">x</span> <span class="o">/</span> <span class="nv">y</span>;
-      <span class="nv">$stack7</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack5</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
-        <span class="nc">java.lang.StringBuilder</span> <span class="nf">append</span>(<span class="nc">int</span>)&gt;(<span class="nv">$stack6</span>);
-      <span class="nv">$stack8</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack7</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
-        <span class="nc">java.lang.String</span> <span class="nf">toString</span>()&gt;();
+      $stack5 = virtualinvoke $stack3.&lt;java.lang.StringBuilder: 
+        java.lang.StringBuilder append(java.lang.String)&gt;(&quot;Divide result : &quot;);
+      $stack6 = x / y;
+      $stack7 = virtualinvoke $stack5.&lt;java.lang.StringBuilder: 
+        java.lang.StringBuilder append(int)&gt;($stack6);
+      $stack8 = virtualinvoke $stack7.&lt;java.lang.StringBuilder: 
+        java.lang.String toString()&gt;();
 
-      <span class="k">virtualinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">$stack8</span>);
-      <span class="k">return</span>;
+      virtualinvoke $stack4.&lt;java.io.PrintStream: 
+        void println(java.lang.String)&gt;($stack8);
+      return;
   }
 }
 /*

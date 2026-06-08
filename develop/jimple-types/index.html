@@ -1363,75 +1363,75 @@
 <span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span>
-<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  public void &lt;init&gt;()
   {
-      <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-      <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-      <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-      <span class="k">return</span>;
+      target.exercise1.DemoClass this;
+      this := @this: target.exercise1.DemoClass;
+      specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+      return;
   }
 
 
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">display</span>()
+  public void display()
   {
-<span class="hll">      <span class="nc">java.io.PrintStream</span> <span class="nv">$stack11</span>, <span class="nv">$stack13</span>, <span class="nv">$stack15</span>, 
-</span><span class="hll">        <span class="nv">$stack17</span>, <span class="nv">$stack19</span>, <span class="nv">$stack21</span>, <span class="nv">$stack23</span>, <span class="nv">$stack25</span>;
-</span><span class="hll">      <span class="nc">int</span> <span class="nv">$stack12</span>, <span class="nv">$stack14</span>, <span class="nv">$stack16</span>, <span class="nv">$stack18</span>;
-</span><span class="hll">      <span class="nc">long</span> <span class="nv">$stack20</span>;
-</span><span class="hll">      <span class="nc">double</span> <span class="nv">$stack22</span>;
-</span><span class="hll">      <span class="nc">float</span> <span class="nv">$stack24</span>;
-</span><span class="hll">      <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-</span><span class="hll">      <span class="nc">boolean</span> <span class="nv">$stack26</span>;
+<span class="hll">      java.io.PrintStream $stack11, $stack13, $stack15, 
+</span><span class="hll">        $stack17, $stack19, $stack21, $stack23, $stack25;
+</span><span class="hll">      int $stack12, $stack14, $stack16, $stack18;
+</span><span class="hll">      long $stack20;
+</span><span class="hll">      double $stack22;
+</span><span class="hll">      float $stack24;
+</span><span class="hll">      target.exercise1.DemoClass this;
+</span><span class="hll">      boolean $stack26;
 </span>
-      <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+      this := @this: target.exercise1.DemoClass;
 
-      <span class="nv">$stack11</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+      $stack11 = &lt;java.lang.System: java.io.PrintStream out&gt;;
 
-      <span class="k">goto</span> label1;
+      goto label1;
 
    label1:
-      <span class="nv">$stack26</span> = <span class="m">0</span>;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack11</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">boolean</span>)&gt;(<span class="nv">$stack26</span>);
+      $stack26 = 0;
+      virtualinvoke $stack11.&lt;java.io.PrintStream: 
+        void println(boolean)&gt;($stack26);
 
-      <span class="nv">$stack13</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="nv">$stack12</span> = <span class="m">127</span> <span class="o">-</span> <span class="m">1</span>;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack13</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">$stack12</span>);
+      $stack13 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      $stack12 = 127 - 1;
+      virtualinvoke $stack13.&lt;java.io.PrintStream: 
+        void println(int)&gt;($stack12);
 
-      <span class="nv">$stack15</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="nv">$stack14</span> = <span class="m">97</span> <span class="o">+</span> <span class="m">1</span>;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack15</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">$stack14</span>);
+      $stack15 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      $stack14 = 97 + 1;
+      virtualinvoke $stack15.&lt;java.io.PrintStream: 
+        void println(int)&gt;($stack14);
 
-      <span class="nv">$stack17</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="nv">$stack16</span> = <span class="m">1123</span> <span class="o">+</span> <span class="m">1</span>;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack17</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">$stack16</span>);
+      $stack17 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      $stack16 = 1123 + 1;
+      virtualinvoke $stack17.&lt;java.io.PrintStream: 
+        void println(int)&gt;($stack16);
 
-      <span class="nv">$stack19</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="nv">$stack18</span> = <span class="m">123456</span> <span class="o">+</span> <span class="m">1</span>;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack19</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">$stack18</span>);
+      $stack19 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      $stack18 = 123456 + 1;
+      virtualinvoke $stack19.&lt;java.io.PrintStream: 
+        void println(int)&gt;($stack18);
 
-      <span class="nv">$stack21</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="nv">$stack20</span> = <span class="m">10L</span> <span class="o">+</span> <span class="m">1L</span>;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack21</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">long</span>)&gt;(<span class="nv">$stack20</span>);
+      $stack21 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      $stack20 = 10L + 1L;
+      virtualinvoke $stack21.&lt;java.io.PrintStream: 
+        void println(long)&gt;($stack20);
 
-      <span class="nv">$stack23</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="nv">$stack22</span> = <span class="m">10.1</span> <span class="o">+</span> <span class="m">1.0</span>;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack23</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">double</span>)&gt;(<span class="nv">$stack22</span>);
+      $stack23 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      $stack22 = 10.1 + 1.0;
+      virtualinvoke $stack23.&lt;java.io.PrintStream: 
+        void println(double)&gt;($stack22);
 
-      <span class="nv">$stack25</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="nv">$stack24</span> = <span class="m">10.1F</span> <span class="o">+</span> <span class="m">1.0F</span>;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack25</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">float</span>)&gt;(<span class="nv">$stack24</span>);
+      $stack25 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      $stack24 = 10.1F + 1.0F;
+      virtualinvoke $stack25.&lt;java.io.PrintStream: 
+        void println(float)&gt;($stack24);
 
-      <span class="k">return</span>;
+      return;
   }
 }
 /*
@@ -1827,61 +1827,61 @@ public display()V
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
-<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-<span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+public void &lt;init&gt;()
   {
-  <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-  <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-  <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-  <span class="k">return</span>;
+  target.exercise1.DemoClass this;
+  this := @this: target.exercise1.DemoClass;
+  specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+  return;
   }
 
-  <span class="k">public</span> <span class="nc">target.exercise1.DemoClass</span> <span class="nf">getObject</span>(<span class="nc">target.exercise1.DemoClass</span>)
+  public target.exercise1.DemoClass getObject(target.exercise1.DemoClass)
   {
-  <span class="nc">target.exercise1.DemoClass</span> <span class="nv">obj</span>, <span class="nv">this</span>;
-  <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-  <span class="nv">obj</span> := <span class="k">@parameter0</span>: <span class="nc">target.exercise1.DemoClass</span>;
-  <span class="k">return</span> <span class="nv">obj</span>;
+  target.exercise1.DemoClass obj, this;
+  this := @this: target.exercise1.DemoClass;
+  obj := @parameter0: target.exercise1.DemoClass;
+  return obj;
   }
 
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">compute</span>(<span class="nc">boolean</span>)
+  public void compute(boolean)
   {
-<span class="hll">  <span class="nc">int[]</span> <span class="nv">b</span>;
-</span>  <span class="nc">java.io.PrintStream</span> <span class="nv">$stack5</span>, <span class="nv">$stack6</span>;
-  <span class="nc">boolean</span> <span class="nv">check</span>;
-<span class="hll">  <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-</span>  <span class="nc">int</span> <span class="nv">i</span>;
-<span class="hll">  <span class="nc">null_type</span> <span class="nv">r0</span>;
-</span>  <span class="nc">java.lang.NullPointerException</span> <span class="nv">soot0</span>;
-  <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-  <span class="nv">check</span> := <span class="k">@parameter0</span>: <span class="nc">boolean</span>;
-  <span class="nv">b</span> = <span class="k">newarray</span> (<span class="nc">int</span>)[5];
-  <span class="nv">i</span> = <span class="m">0</span>;
+<span class="hll">  int[] b;
+</span>  java.io.PrintStream $stack5, $stack6;
+  boolean check;
+<span class="hll">  target.exercise1.DemoClass this;
+</span>  int i;
+<span class="hll">  null_type r0;
+</span>  java.lang.NullPointerException soot0;
+  this := @this: target.exercise1.DemoClass;
+  check := @parameter0: boolean;
+  b = newarray (int)[5];
+  i = 0;
 
   label1:
-    <span class="k">if</span> <span class="nv">i</span> <span class="o">&gt;=</span> <span class="m">5</span> <span class="k">goto</span> label3;
-      <span class="k">if</span> <span class="nv">check</span> <span class="o">==</span> <span class="m">0</span> <span class="k">goto</span> label2;
-      <span class="nv">r0</span> = (<span class="nc">null_type</span>) <span class="nv">i</span>;
-      <span class="nv">soot0</span> = <span class="k">new</span> <span class="nc">java.lang.NullPointerException</span>;
-      <span class="k">specialinvoke</span> <span class="nv">soot0</span>.&lt;<span class="nv">java.lang.NullPointerException</span>: 
-        <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>(<span class="nc">java.lang.String</span>)&gt;
-          (<span class="nv">&quot;This statement would have triggered an Exception: a[i#1] = r0&quot;</span>);
-      <span class="k">throw</span> <span class="nv">soot0</span>;
+    if i &gt;= 5 goto label3;
+      if check == 0 goto label2;
+      r0 = (null_type) i;
+      soot0 = new java.lang.NullPointerException;
+      specialinvoke soot0.&lt;java.lang.NullPointerException: 
+        void &lt;init&gt;(java.lang.String)&gt;
+          (&quot;This statement would have triggered an Exception: a[i#1] = r0&quot;);
+      throw soot0;
 
   label2:
-  <span class="nv">b</span>[<span class="nv">i</span>] = <span class="nv">i</span>;
-      <span class="nv">i</span> = <span class="nv">i</span> <span class="o">+</span> <span class="m">1</span>;
-      <span class="k">goto</span> label1;
+  b[i] = i;
+      i = i + 1;
+      goto label1;
 
   label3:
-      <span class="nv">$stack5</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack5</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.Object</span>)&gt;(<span class="nv">b</span>);
-      <span class="nv">$stack6</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack6</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.Object</span>)&gt;(<span class="nv">null</span>);
-      <span class="k">return</span>;
+      $stack5 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      virtualinvoke $stack5.&lt;java.io.PrintStream: 
+        void println(java.lang.Object)&gt;(b);
+      $stack6 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+      virtualinvoke $stack6.&lt;java.io.PrintStream: 
+        void println(java.lang.Object)&gt;(null);
+      return;
   }
 }
 /*
@@ -2155,25 +2155,25 @@ public compute(Z)V
 <span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
-<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  public void &lt;init&gt;()
   {
-  <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-  <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-  <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-  <span class="k">return</span>;
+  target.exercise1.DemoClass this;
+  this := @this: target.exercise1.DemoClass;
+  specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
+  return;
   }
 
-<span class="hll">  <span class="k">public</span> <span class="nc">void</span> <span class="nf">voidMethod</span>()
+<span class="hll">  public void voidMethod()
 </span>  {
-  <span class="nc">java.io.PrintStream</span> <span class="nv">$stack1</span>;
-  <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-  <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-  <span class="nv">$stack1</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-  <span class="k">virtualinvoke</span> <span class="nv">$stack1</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;In voidMethod().&quot;</span>);
-  <span class="k">return</span>;
+  java.io.PrintStream $stack1;
+  target.exercise1.DemoClass this;
+  this := @this: target.exercise1.DemoClass;
+  $stack1 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+  virtualinvoke $stack1.&lt;java.io.PrintStream: 
+      void println(java.lang.String)&gt;(&quot;In voidMethod().&quot;);
+  return;
   }
 }
 /*
