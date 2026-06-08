@@ -73,7 +73,7 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
         view,
         (v) -> {
           try {
-            JimpleConverter jimpleConverter = new JimpleConverter();
+            JimpleConverter jimpleConverter = new JimpleConverter(new LazyClassVisitorFactory());
             return jimpleConverter.run(
                 CharStreams.fromString(jimpleFileContents), this, path, bodyInterceptors, v);
           } catch (Exception e) {
