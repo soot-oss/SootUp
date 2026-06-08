@@ -30,11 +30,8 @@ import sootup.core.frontend.BodySource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.SimpleStmtPositionInfo;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.*;
-import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.basic.*;
+import sootup.core.jimple.common.*;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.stmt.BranchingStmt;
@@ -44,7 +41,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
-import sootup.java.core.language.JavaJimple;
 import sootup.jimple.JimpleParser;
 
 /**
