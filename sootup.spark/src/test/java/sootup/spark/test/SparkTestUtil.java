@@ -18,7 +18,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.spark.PAGEdge;
-import sootup.spark.Solver;
+import sootup.spark.Spark;
 import sootup.spark.SparkOptions;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
@@ -58,29 +58,29 @@ public class SparkTestUtil {
   }
 
   public static Graph<Node, PAGEdge> solveMain(MethodSignature mainSig) {
-    return solveMainWithSolver(mainSig).getPag().getDelegate();
+    return solveMainWithSpark(mainSig).getPag().getDelegate();
   }
 
-  public static Solver solveMainWithSolver(MethodSignature mainSig) {
+  public static Spark solveMainWithSpark(MethodSignature mainSig) {
     assertTrue(view.getClass(mainSig.getDeclClassType()).isPresent());
     assertTrue(view.getMethod(mainSig).isPresent());
-    Solver solver =
-        Solver.builder().view(view).entryPoints(Collections.singletonList(mainSig)).build();
-    solver.solve();
-    return solver;
+    Spark spark =
+        Spark.builder().view(view).entryPoints(Collections.singletonList(mainSig)).build();
+    spark.solve();
+    return spark;
   }
 
   public static Graph<Node, PAGEdge> solveMain(MethodSignature mainSig, SparkOptions options) {
     assertTrue(view.getClass(mainSig.getDeclClassType()).isPresent());
     assertTrue(view.getMethod(mainSig).isPresent());
-    Solver solver =
-        Solver.builder()
+    Spark spark =
+        Spark.builder()
             .view(view)
             .entryPoints(Collections.singletonList(mainSig))
             .sparkOptions(options)
             .build();
-    solver.solve();
-    return solver.getPag().getDelegate();
+    spark.solve();
+    return spark.getPag().getDelegate();
   }
 
   public static AllocationNode alloc(ClassType type, long site, MethodSignature sig) {

@@ -23,10 +23,10 @@ package sootup.interceptors;
  */
 
 import com.google.common.collect.Lists;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.Local;
@@ -64,7 +64,7 @@ public class CopyPropagator implements BodyInterceptor {
     MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     for (Stmt stmt : Lists.newArrayList(controlFlowGraph)) {
       Stmt newStmt = stmt;
-      Set<Value> valueList = newStmt.getUses().collect(Collectors.toSet());
+      Set<Value> valueList = new HashSet<>(newStmt.getUses());
       for (Value use : valueList) {
         if (!(use instanceof Local)) {
           continue;

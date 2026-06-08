@@ -29,7 +29,7 @@ import org.jf.dexlib2.iface.instruction.formats.Instruction31c;
 import org.jf.dexlib2.iface.reference.StringReference;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.java.core.JavaIdentifierFactory;
@@ -57,7 +57,7 @@ public class ConstStringInstruction extends DexLibAbstractInstruction {
         new StringConstant(s, JavaIdentifierFactory.getInstance().getType("java.lang.String"));
     JAssignStmt jAssignStmt =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), stringConstant, StmtPositionInfo.getNoStmtPositionInfo());
+            body.getRegisterLocal(dest), stringConstant, new SimpleStmtPositionInfo(lineNumber));
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }
