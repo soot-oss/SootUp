@@ -1364,26 +1364,26 @@ For this purpose Jimple was designed as a representation of JVM bytecode which i
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
-<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code>public class HelloWorld extends java.lang.Object
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">HelloWorld</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
 {
-  public void &lt;init&gt;()
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
   {
-    HelloWorld r0;
-    r0 := @this: HelloWorld;
-    specialinvoke r0.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
-    return;
+    <span class="nc">HelloWorld</span> <span class="nv">r0</span>;
+    <span class="nv">r0</span> := <span class="k">@this:</span> <span class="nc">HelloWorld</span>;
+    <span class="k">specialinvoke</span> <span class="nv">r0</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">return</span>;
   }
 
-  public static void main(java.lang.String[])
+  <span class="k">public</span> <span class="k">static</span> <span class="nc">void</span> <span class="nf">main</span>(<span class="nc">java.lang.String</span>[])
   {
-    java.lang.String[] r0;
-    java.io.PrintStream r1;
+    <span class="nc">java.lang.String[]</span> <span class="nv">r0</span>;
+    <span class="nc">java.io.PrintStream</span> <span class="nv">r1</span>;
 
-    r0 := @parameter0: java.lang.String[];
-    r1 = &lt;java.lang.System: java.io.PrintStream out&gt;;
-    virtualinvoke r1.&lt;java.io.PrintStream: 
-    void println(java.lang.String)&gt;(&quot;Hello world!&quot;);
-    return;
+    <span class="nv">r0</span> := <span class="k">@parameter0</span>: <span class="nc">java.lang.String</span>[];
+    <span class="nv">r1</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+    <span class="k">virtualinvoke</span> <span class="nv">r1</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+    <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Hello world!&quot;</span>);
+    <span class="k">return</span>;
   }
 }
 </code></pre></div></td></tr></table></div>
@@ -1550,45 +1550,45 @@ Sidenote: Locals, do not have a signature, since they are referenced within meth
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
-<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
+<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
 {
-  public void &lt;init&gt;()
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
   {
-    target.exercise1.DemoClass this;
-    this := @this: target.exercise1.DemoClass;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
 
-    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
-    this.&lt;target.exercise1.DemoClass: double pi&gt; = 3.14;
-    return;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">double</span> <span class="nv">pi</span>&gt; = <span class="m">3.14</span>;
+    <span class="k">return</span>;
   }
 
-  public void demoMethod()
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">demoMethod</span>()
   {
-    java.io.PrintStream $stack3, $stack5;
-    java.lang.StringBuilder $stack4, $stack6, $stack7;
-    java.lang.String $stack8;
-    target.exercise1.DemoClass this;
+    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack3</span>, <span class="nv">$stack5</span>;
+    <span class="nc">java.lang.StringBuilder</span> <span class="nv">$stack4</span>, <span class="nv">$stack6</span>, <span class="nv">$stack7</span>;
+    <span class="nc">java.lang.String</span> <span class="nv">$stack8</span>;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
 
-    this := @this: target.exercise1.DemoClass;
-    $stack3 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">$stack3</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
 
-    virtualinvoke $stack3.&lt;java.io.PrintStream: 
-      void println(java.lang.String)&gt;(&quot;pi : 3.14&quot;);
-    $stack5 = &lt;java.lang.System: java.io.PrintStream out&gt;;
-    $stack4 = new java.lang.StringBuilder;
+    <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;pi : 3.14&quot;</span>);
+    <span class="nv">$stack5</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+    <span class="nv">$stack4</span> = <span class="k">new</span> <span class="nc">java.lang.StringBuilder</span>;
 
-    specialinvoke $stack4.&lt;java.lang.StringBuilder: void &lt;init&gt;()&gt;();
-    $stack6 = virtualinvoke $stack4.&lt;java.lang.StringBuilder: 
-      java.lang.StringBuilder append(java.lang.String)&gt;
-        (&quot;pi : &quot;);
-    $stack7 = virtualinvoke $stack6.&lt;java.lang.StringBuilder: 
-      java.lang.StringBuilder append(double)&gt;(3.1415);
-    $stack8 = virtualinvoke $stack7.&lt;java.lang.StringBuilder: 
-      java.lang.String toString()&gt;();
+    <span class="k">specialinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="nv">$stack6</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
+      <span class="nc">java.lang.StringBuilder</span> <span class="nf">append</span>(<span class="nc">java.lang.String</span>)&gt;
+        (<span class="nv">&quot;pi : &quot;</span>);
+    <span class="nv">$stack7</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack6</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
+      <span class="nc">java.lang.StringBuilder</span> <span class="nf">append</span>(<span class="nc">double</span>)&gt;(<span class="nv">3.1415</span>);
+    <span class="nv">$stack8</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack7</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
+      <span class="nc">java.lang.String</span> <span class="nf">toString</span>()&gt;();
 
-    virtualinvoke $stack5.&lt;java.io.PrintStream:     
-      void println(java.lang.String)&gt;($stack8);
-    return;
+    <span class="k">virtualinvoke</span> <span class="nv">$stack5</span>.&lt;<span class="nv">java.io.PrintStream</span>:     
+      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">$stack8</span>);
+    <span class="k">return</span>;
   }
 }
 /*
@@ -1762,14 +1762,14 @@ It is referenced by its global identifier the <code>ClassType</code> like <code>
 <span class="normal"> 7</span>
 <span class="normal"> 8</span>
 <span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
 {
-  public void &lt;init&gt;()
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
   {
-    target.exercise1.DemoClass this;
-    this := @this: target.exercise1.DemoClass;
-    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
-    return;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">return</span>;
   }
 }
 </code></pre></div></td></tr></table></div>
@@ -1841,15 +1841,15 @@ It is referenced by its FieldSignature like <code>&lt;java.lang.String: int hash
 <span class="normal">11</span>
 <span class="normal">12</span>
 <span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
 {
-  public void &lt;init&gt;()
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
   {
-    target.exercise1.DemoClass this;
-    this := @this: target.exercise1.DemoClass;
-    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
-    this.&lt;target.exercise1.DemoClass: double pi&gt; = 3.14;
-    return;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">double</span> <span class="nv">pi</span>&gt; = <span class="m">3.14</span>;
+    <span class="k">return</span>;
   }
 }
 /*
@@ -1960,29 +1960,29 @@ It is referenced by its MethodSignature like <code>&lt;java.lang.Object: java.la
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
-<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
 {
-  public void &lt;init&gt;()
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
   {
-    target.exercise1.DemoClass this;
-    this := @this: target.exercise1.DemoClass;
-    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
-    virtualinvoke this.&lt;target.exercise1.DemoClass: 
-    void demoMethod()&gt;();
-    return;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">virtualinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">target.exercise1.DemoClass</span>: 
+    <span class="nc">void</span> <span class="nf">demoMethod</span>()&gt;();
+    <span class="k">return</span>;
   }
 
-  public void demoMethod()
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">demoMethod</span>()
   {
-    java.io.PrintStream $stack1;
-    target.exercise1.DemoClass this;
+    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack1</span>;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
 
-    this := @this: target.exercise1.DemoClass;
-    $stack1 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">$stack1</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
 
-    virtualinvoke $stack1.&lt;java.io.PrintStream: 
-    void println(java.lang.String)&gt;(&quot;Inside method.&quot;);
-    return;
+    <span class="k">virtualinvoke</span> <span class="nv">$stack1</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+    <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Inside method.&quot;</span>);
+    <span class="k">return</span>;
   }
 }
 /*
