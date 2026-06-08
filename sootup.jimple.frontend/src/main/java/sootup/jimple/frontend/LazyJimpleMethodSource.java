@@ -27,9 +27,12 @@ import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.ResolveException;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.*;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
+import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.*;
+import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.*;
@@ -37,6 +40,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
+import sootup.java.core.language.JavaJimple;
 import sootup.jimple.JimpleParser;
 
 /**
@@ -252,7 +256,7 @@ public class LazyJimpleMethodSource implements BodySource {
 
       final Body build;
       try {
-        MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+        MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
         graph.initializeWith(blocks, successorMap, traps);
         Body.BodyBuilder builder = Body.builder(graph);
 
@@ -272,7 +276,7 @@ public class LazyJimpleMethodSource implements BodySource {
       for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
         try {
           bodyInterceptor.interceptBody(bodyBuilder, view);
-          bodyBuilder.getStmtGraph().validateStmtConnectionsInGraph();
+          bodyBuilder.getControlFlowGraph().validateStmtConnectionsInGraph();
         } catch (Exception e) {
           throw new IllegalStateException(
               "Failed to apply " + bodyInterceptor + " to " + methodSignature, e);
@@ -342,7 +346,7 @@ public class LazyJimpleMethodSource implements BodySource {
       }
 
       private Stmt handleSwitchStmt(JimpleParser.StmtContext ctx, StmtPositionInfo pos) {
-        sootup.core.jimple.basic.Immediate key = valueVisitor.visitImmediate(ctx.immediate());
+        Immediate key = valueVisitor.visitImmediate(ctx.immediate());
         List<sootup.core.jimple.common.constant.IntConstant> lookup = new ArrayList<>();
         List<String> targetLabels = new ArrayList<>();
         int min = Integer.MAX_VALUE;
@@ -407,13 +411,13 @@ public class LazyJimpleMethodSource implements BodySource {
           return Jimple.newIdentityStmt(left, ref, pos);
 
         } else if (assignments.EQUALS() != null) {
-          sootup.core.jimple.basic.LValue left =
+          LValue left =
               assignments.local != null
                   ? getLocal(assignments.local.getText())
-                  : (sootup.core.jimple.basic.LValue)
+                  : (LValue)
                       valueVisitor.visitReference(assignments.reference());
 
-          final sootup.core.jimple.basic.Value right = valueVisitor.visitValue(assignments.value());
+          final Value right = valueVisitor.visitValue(assignments.value());
           return Jimple.newAssignStmt(left, right, pos);
         } else {
           throw new ResolveException(
@@ -452,12 +456,12 @@ public class LazyJimpleMethodSource implements BodySource {
       // ValueVisitor inner class needs to be copied here as well
       // This is a simplified version - the full implementation from JimpleConverter would be needed
       private class ValueVisitor
-          extends sootup.jimple.JimpleBaseVisitor<sootup.core.jimple.basic.Value> {
+          extends sootup.jimple.JimpleBaseVisitor<Value> {
         // Full implementation would mirror JimpleConverter.MethodVisitor.StmtVisitor.ValueVisitor
         // For brevity, including key methods - full copy would be needed in production
 
         @Override
-        public sootup.core.jimple.basic.Value visitValue(JimpleParser.ValueContext ctx) {
+        public Value visitValue(JimpleParser.ValueContext ctx) {
           // Implementation copied from JimpleConverter
           if (ctx.NEW() != null && ctx.base_type != null) {
             final Type type = util.getType(ctx.base_type.getText());
@@ -477,7 +481,7 @@ public class LazyJimpleMethodSource implements BodySource {
                   JimpleConverterUtil.buildPositionFromCtx(ctx));
             }
 
-            sootup.core.jimple.basic.Immediate dim =
+            Immediate dim =
                 visitImmediate(ctx.array_descriptor().immediate());
             return sootup.java.core.language.JavaJimple.newNewArrayExpr(
                 type, dim, sootup.java.core.JavaIdentifierFactory.getInstance());
@@ -490,7 +494,7 @@ public class LazyJimpleMethodSource implements BodySource {
                   JimpleConverterUtil.buildPositionFromCtx(ctx));
             }
 
-            List<sootup.core.jimple.basic.Immediate> sizes =
+            List<Immediate> sizes =
                 ctx.immediate().stream()
                     .map(this::visitImmediate)
                     .collect(java.util.stream.Collectors.toList());
@@ -504,18 +508,18 @@ public class LazyJimpleMethodSource implements BodySource {
             return Jimple.newNewMultiArrayExpr(arrtype, sizes);
           } else if (ctx.nonvoid_cast != null && ctx.op != null) {
             final Type type = util.getType(ctx.nonvoid_cast.getText());
-            sootup.core.jimple.basic.Immediate val = visitImmediate(ctx.op);
+            Immediate val = visitImmediate(ctx.op);
             return Jimple.newCastExpr(val, type);
           } else if (ctx.INSTANCEOF() != null && ctx.op != null) {
             final Type type = util.getType(ctx.nonvoid_type.getText());
-            sootup.core.jimple.basic.Immediate val = visitImmediate(ctx.op);
+            Immediate val = visitImmediate(ctx.op);
             return Jimple.newInstanceOfExpr(val, type);
           }
           return super.visitValue(ctx);
         }
 
         @Override
-        public sootup.core.jimple.basic.Immediate visitImmediate(
+        public Immediate visitImmediate(
             JimpleParser.ImmediateContext ctx) {
           if (ctx.identifier() != null) {
             return getLocal(ctx.identifier().getText());
@@ -524,12 +528,12 @@ public class LazyJimpleMethodSource implements BodySource {
         }
 
         @Override
-        public sootup.core.jimple.basic.Value visitReference(JimpleParser.ReferenceContext ctx) {
+        public Value visitReference(JimpleParser.ReferenceContext ctx) {
           if (ctx.array_descriptor() != null) {
-            sootup.core.jimple.basic.Immediate idx =
+            Immediate idx =
                 visitImmediate(ctx.array_descriptor().immediate());
             Local type = getLocal(ctx.identifier().getText());
-            return sootup.java.core.language.JavaJimple.newArrayRef(type, idx);
+            return JavaJimple.newArrayRef(type, idx);
           } else if (ctx.DOT() != null) {
             String base = ctx.identifier().getText();
             sootup.core.signatures.FieldSignature fs =
@@ -543,9 +547,9 @@ public class LazyJimpleMethodSource implements BodySource {
         }
 
         @Override
-        public sootup.core.jimple.common.expr.Expr visitInvoke_expr(
+        public Expr visitInvoke_expr(
             JimpleParser.Invoke_exprContext ctx) {
-          List<sootup.core.jimple.basic.Immediate> arglist = getArgList(ctx.arg_list(0));
+          List<Immediate> arglist = getArgList(ctx.arg_list(0));
 
           if (ctx.nonstaticinvoke != null) {
             Local base = getLocal(ctx.local_name.getText());
@@ -581,7 +585,7 @@ public class LazyJimpleMethodSource implements BodySource {
                         bootstrapMethodRefParams);
 
             MethodSignature methodRef = util.getMethodSignature(ctx.bsm, ctx);
-            List<sootup.core.jimple.basic.Immediate> bootstrapArgs = getArgList(ctx.staticargs);
+            List<Immediate> bootstrapArgs = getArgList(ctx.staticargs);
 
             return Jimple.newDynamicInvokeExpr(
                 methodRef, bootstrapArgs, bootstrapMethodRef, getArgList(ctx.dyn_args));
@@ -654,8 +658,8 @@ public class LazyJimpleMethodSource implements BodySource {
         @Override
         public sootup.core.jimple.common.expr.AbstractBinopExpr visitBinop_expr(
             JimpleParser.Binop_exprContext ctx) {
-          sootup.core.jimple.basic.Immediate left = visitImmediate(ctx.left);
-          sootup.core.jimple.basic.Immediate right = visitImmediate(ctx.right);
+          Immediate left = visitImmediate(ctx.left);
+          Immediate right = visitImmediate(ctx.right);
 
           JimpleParser.BinopContext binopctx = ctx.binop();
 
@@ -707,9 +711,9 @@ public class LazyJimpleMethodSource implements BodySource {
         }
 
         @Override
-        public sootup.core.jimple.common.expr.Expr visitUnop_expr(
+        public Expr visitUnop_expr(
             JimpleParser.Unop_exprContext ctx) {
-          sootup.core.jimple.basic.Immediate value = visitImmediate(ctx.immediate());
+          Immediate value = visitImmediate(ctx.immediate());
           if (ctx.unop().NEG() != null) {
             return Jimple.newNegExpr(value);
           } else {
@@ -718,13 +722,13 @@ public class LazyJimpleMethodSource implements BodySource {
         }
 
         @NonNull
-        private List<sootup.core.jimple.basic.Immediate> getArgList(
+        private List<Immediate> getArgList(
             JimpleParser.Arg_listContext ctx) {
           if (ctx == null || ctx.immediate() == null) {
             return Collections.emptyList();
           }
           final List<JimpleParser.ImmediateContext> immediates = ctx.immediate();
-          List<sootup.core.jimple.basic.Immediate> arglist = new ArrayList<>(immediates.size());
+          List<Immediate> arglist = new ArrayList<>(immediates.size());
           for (JimpleParser.ImmediateContext immediate : immediates) {
             arglist.add(visitImmediate(immediate));
           }
