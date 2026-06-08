@@ -43,17 +43,24 @@ import org.objectweb.asm.tree.*;
 import sootup.core.frontend.BodySource;
 import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.*;
+import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
-import sootup.core.jimple.common.ref.*;
+import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.ref.JCaughtExceptionRef;
+import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.*;
+import sootup.core.model.Body;
+import sootup.core.model.FullPosition;
+import sootup.core.model.MethodModifier;
+import sootup.core.model.Position;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
@@ -273,13 +280,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @NonNull
   private JavaLocal getOrCreateLocal(int idx, @NonNull AbstractInsnNode atInsn) {
+    return getOrCreateLocal(idx, atInsn, UnknownType.getInstance());
+  }
+
+  @NonNull
+  private JavaLocal getOrCreateLocal(
+      int idx, @NonNull AbstractInsnNode atInsn, @NonNull Type typeHint) {
     if (idx >= maxLocals) {
       throw new IllegalArgumentException("Invalid local index: " + idx);
     }
     JavaLocal local = locals.get(idx);
     if (local == null) {
       String nameCandidate = determineLocalName(idx, atInsn);
-      local = createUniqueLocal(nameCandidate, UnknownType.getInstance());
+      Type type = typeHint instanceof UnknownType ? UnknownType.getInstance() : typeHint;
+      local = createUniqueLocal(nameCandidate, type);
       locals.set(idx, local);
     }
     return local;
@@ -347,8 +361,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @NonNull Local newStackLocal() {
+    return newStackLocal(UnknownType.getInstance());
+  }
+
+  @NonNull Local newStackLocal(@NonNull Type type) {
     int idx = nextLocal++;
-    JavaLocal l = createUniqueLocal("$stack" + idx, UnknownType.getInstance());
+    JavaLocal l = createUniqueLocal("$stack" + idx, type);
     locals.set(idx, l);
     return l;
   }
@@ -1277,7 +1295,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int op = insn.getOpcode();
     boolean dword = op == LLOAD || op == DLOAD;
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
-    Operand opr = new Operand(insn, getOrCreateLocal(insn.var, insn), this);
+    Operand opr =
+        new Operand(
+            insn, getOrCreateLocal(insn.var, insn, AsmUtil.primitiveTypeFromOpcode(op)), this);
     merging.mergeOutput(opr);
     if (dword) {
       operandStack.pushDual(opr);
@@ -1292,7 +1312,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     Operand opr = dword ? operandStack.popDual() : operandStack.pop();
     merging.mergeInputs(opr);
-    Local local = getOrCreateLocal(insn.var, insn);
+    Type valueType = opr.value.getType();
+    Type typeHint =
+        (valueType instanceof UnknownType) ? AsmUtil.primitiveTypeFromOpcode(op) : valueType;
+    Local local = getOrCreateLocal(insn.var, insn, typeHint);
     AbstractDefinitionStmt as;
     if (opr.stackLocal == null) {
       // Can skip creating a new stack local for the operand
