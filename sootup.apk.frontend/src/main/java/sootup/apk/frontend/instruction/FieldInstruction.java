@@ -26,7 +26,7 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.ConcreteRef;
 import sootup.core.jimple.common.ref.JFieldRef;
@@ -95,7 +95,7 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
   protected JAssignStmt getAssignStmt(Local sourceValue, ConcreteRef instanceField) {
     JAssignStmt assign;
     assign =
-        Jimple.newAssignStmt(sourceValue, instanceField, StmtPositionInfo.getNoStmtPositionInfo());
+        Jimple.newAssignStmt(sourceValue, instanceField, new SimpleStmtPositionInfo(lineNumber));
     return assign;
   }
 }
