@@ -154,8 +154,7 @@ public class CopyPropagatorTest {
     assertEquals(
         Stream.of(
                 "CopyPropagator this",
-                "int l1",
-                "unknown l2, l3, l4",
+                "int l1, l2, l3, l4",
                 "this := @this: CopyPropagator",
                 "l1 := @parameter0: int",
                 "l3 = 0",
