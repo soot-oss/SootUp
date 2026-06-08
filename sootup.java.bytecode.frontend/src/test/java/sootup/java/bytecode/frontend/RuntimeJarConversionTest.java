@@ -27,7 +27,7 @@ import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLo
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
-public class RuntimeJarConversionTests {
+public class RuntimeJarConversionTest {
 
   @Test
   public void testJarWithDefaultInterceptors() {
@@ -57,7 +57,6 @@ public class RuntimeJarConversionTests {
     assertEquals(0, failedConversions[0]);
   }
 
-  @Disabled
   @Test
   public void testJar() {
     AnalysisInputLocation inputLocation =
