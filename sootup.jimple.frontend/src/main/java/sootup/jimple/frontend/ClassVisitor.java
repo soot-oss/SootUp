@@ -27,11 +27,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.model.Body;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.FieldModifier;
 import sootup.core.model.MethodModifier;
@@ -46,14 +44,13 @@ import sootup.java.core.types.JavaClassType;
 import sootup.jimple.JimpleBaseVisitor;
 import sootup.jimple.JimpleParser;
 
-public class ClassVisitor extends JimpleBaseVisitor<Boolean> {
+public abstract class ClassVisitor extends JimpleBaseVisitor<Boolean> {
 
   @NonNull final IdentifierFactory identifierFactory;
   @NonNull final JimpleConverterUtil util;
   @NonNull final Path path;
   @NonNull final List<BodyInterceptor> bodyInterceptors;
   @NonNull final View view;
-  final boolean useLazyResolution;
 
   ClassType clazz = null;
   Set<JavaSootField> fields = new HashSet<>();
@@ -65,17 +62,17 @@ public class ClassVisitor extends JimpleBaseVisitor<Boolean> {
   EnumSet<ClassModifier> modifiers = null;
 
   public ClassVisitor(
-      @NonNull Path path,
-      @NonNull List<BodyInterceptor> bodyInterceptors,
-      @NonNull View view,
-      boolean useLazyResolution) {
+      @NonNull Path path, @NonNull List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
     this.path = path;
     util = new JimpleConverterUtil(path);
     this.bodyInterceptors = bodyInterceptors;
     this.view = view;
     this.identifierFactory = view.getIdentifierFactory();
-    this.useLazyResolution = useLazyResolution;
   }
+
+  protected abstract MethodVisitor createMethodVisitor();
+
+  protected abstract JavaSootMethod processMethod(JavaSootMethod m);
 
   @Override
   @NonNull
@@ -130,8 +127,7 @@ public class ClassVisitor extends JimpleBaseVisitor<Boolean> {
     // member
     for (int i = 0; i < ctx.member().size(); i++) {
       if (ctx.member(i).method() != null) {
-        final JavaSootMethod m =
-            (JavaSootMethod) new MethodVisitor(this).visitMember(ctx.member(i));
+        final JavaSootMethod m = (JavaSootMethod) createMethodVisitor().visitMember(ctx.member(i));
         if (methods.stream()
             .anyMatch(
                 meth -> {
@@ -141,37 +137,7 @@ public class ClassVisitor extends JimpleBaseVisitor<Boolean> {
           throw new ResolveException(
               "Method with the same Signature does already exist.", path, m.getPosition());
         }
-        if (useLazyResolution) {
-          // For lazy resolution, just add the method as-is without eagerly resolving the body
-          methods.add(m);
-        } else {
-          // Eager resolution: apply body interceptors immediately
-          if (m.isConcrete()) {
-            Body.BodyBuilder bodyBuilder = Body.builder(m.getBody(), m.getModifiers());
-            for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
-              try {
-                bodyInterceptor.interceptBody(bodyBuilder, view);
-                bodyBuilder
-                    .getControlFlowGraph()
-                    .validateStmtConnectionsInGraph(); // TODO: remove in the future ;-)
-              } catch (Exception e) {
-                throw new IllegalStateException(
-                    "Failed to apply " + bodyInterceptor + " to " + m.getSignature(), e);
-              }
-            }
-            Body modifiedBody = bodyBuilder.build();
-            JavaSootMethod sm =
-                new JavaSootMethod(
-                    new OverridingBodySource(m.getBodySource()).withBody(modifiedBody),
-                    m.getSignature(),
-                    m.getModifiers(),
-                    m.getExceptionSignatures(),
-                    m.getPosition());
-            methods.add(sm);
-          } else {
-            methods.add(m);
-          }
-        }
+        methods.add(processMethod(m));
       } else {
         final JimpleParser.FieldContext fieldCtx = ctx.member(i).field();
         EnumSet<FieldModifier> modifier = getFieldModifiers(fieldCtx.field_modifier());

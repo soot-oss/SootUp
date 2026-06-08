@@ -42,12 +42,14 @@ import sootup.jimple.JimpleParser;
 
 public class JimpleConverter {
 
-  private boolean useLazyResolution = false;
+  private final ClassVisitorFactory visitorFactory;
 
-  public JimpleConverter() {}
+  public JimpleConverter() {
+    visitorFactory = new EagerClassVisitorFactory();
+  }
 
-  public JimpleConverter(boolean useLazyResolution) {
-    this.useLazyResolution = useLazyResolution;
+  public JimpleConverter(ClassVisitorFactory visitorFactory) {
+    this.visitorFactory = visitorFactory;
   }
 
   public OverridingJavaClassSource run(
@@ -73,7 +75,7 @@ public class JimpleConverter {
 
     ClassVisitor classVisitor;
     try {
-      classVisitor = new ClassVisitor(sourcePath, bodyInterceptors, view, useLazyResolution);
+      classVisitor = visitorFactory.create(sourcePath, bodyInterceptors, view);
       classVisitor.visit(parser.file());
     } catch (ParseCancellationException ex) {
       throw new ResolveException("Syntax Error", sourcePath, ex);

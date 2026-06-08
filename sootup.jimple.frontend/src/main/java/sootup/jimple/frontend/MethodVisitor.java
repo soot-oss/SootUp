@@ -24,9 +24,7 @@ package sootup.jimple.frontend;
 
 import java.util.*;
 import org.jspecify.annotations.NonNull;
-import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
-import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.*;
@@ -34,22 +32,20 @@ import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.Position;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.*;
-import sootup.java.core.JavaSootMethod;
 import sootup.jimple.JimpleBaseVisitor;
 import sootup.jimple.JimpleParser;
 
-public class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
+public abstract class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
 
-  @NonNull private final ClassVisitor classVisitor;
-  private final HashMap<BranchingStmt, List<String>> unresolvedBranches = new HashMap<>();
-  private final HashMap<String, Stmt> labeledStmts = new HashMap<>();
-  private final HashMap<String, Local> locals = new HashMap<>();
+  @NonNull protected final ClassVisitor classVisitor;
+  protected final HashMap<BranchingStmt, List<String>> unresolvedBranches = new HashMap<>();
+  protected final HashMap<String, Stmt> labeledStmts = new HashMap<>();
+  protected final HashMap<String, Local> locals = new HashMap<>();
 
   public MethodVisitor(@NonNull ClassVisitor classVisitor) {
     this.classVisitor = classVisitor;
@@ -102,28 +98,22 @@ public class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
 
     Position methodPosition = JimpleConverterUtil.buildPositionFromCtx(ctx);
 
-    // If lazy resolution is enabled, create a LazyJimpleMethodSource
-    if (classVisitor.useLazyResolution) {
-      LazyJimpleMethodSource lazySource =
-          new LazyJimpleMethodSource(
-              methodSignature,
-              ctx,
-              classVisitor.path,
-              classVisitor.bodyInterceptors,
-              classVisitor.view,
-              classVisitor.util,
-              classVisitor.clazz,
-              modifier,
-              exceptions,
-              methodPosition);
-      return new JavaSootMethod(lazySource, methodSignature, modifier, exceptions, methodPosition);
-    }
+    return resolveMethod(ctx, methodSignature, modifier, exceptions, methodPosition);
+  }
 
-    // Otherwise, proceed with eager resolution (existing logic)
+  protected abstract SootMethod resolveMethod(
+      JimpleParser.MethodContext ctx,
+      MethodSignature methodSignature,
+      EnumSet<MethodModifier> modifier,
+      List<ClassType> exceptions,
+      Position methodPosition);
 
-    List<Trap> traps = new ArrayList<>();
-    List<List<Stmt>> blocks = new ArrayList<>();
-    Map<BranchingStmt, List<Stmt>> successorMap = new HashMap<>();
+  // Common utility for eager parsing used by EagerMethodVisitor
+  protected void parseMethodBody(
+      JimpleParser.MethodContext ctx,
+      List<Trap> traps,
+      List<List<Stmt>> blocks,
+      Map<BranchingStmt, List<Stmt>> successorMap) {
 
     if (ctx.method_body() == null) {
       throw new ResolveException(
@@ -230,10 +220,10 @@ public class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
         }
       }
     }
+  }
 
-    Position classPosition = JimpleConverterUtil.buildPositionFromCtx(ctx);
-
-    // associate labeled Stmts with Branching Stmts
+  protected Map<BranchingStmt, List<Stmt>> resolveSuccessors(JimpleParser.MethodContext ctx) {
+    Map<BranchingStmt, List<Stmt>> successorMap = new HashMap<>();
     for (Map.Entry<BranchingStmt, List<String>> item : unresolvedBranches.entrySet()) {
       final List<String> targetLabels = item.getValue();
       final List<Stmt> targets = new ArrayList<>(targetLabels.size());
@@ -252,25 +242,6 @@ public class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
       }
       successorMap.put(item.getKey(), targets);
     }
-    final Body build;
-    try {
-
-      MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
-      graph.initializeWith(blocks, successorMap, traps);
-      Body.BodyBuilder builder = Body.builder(graph);
-
-      builder.setModifiers(modifier);
-      builder.setMethodSignature(methodSignature);
-      builder.setLocals(new HashSet<>(locals.values()));
-      builder.setPosition(classPosition);
-
-      build = builder.build();
-    } catch (Exception e) {
-      throw new ResolveException(
-          methodname + " " + e.getMessage(), classVisitor.path, methodPosition, e);
-    }
-
-    OverridingBodySource oms = new OverridingBodySource(methodSignature, build);
-    return new JavaSootMethod(oms, methodSignature, modifier, exceptions, methodPosition);
+    return successorMap;
   }
 }
