@@ -62,6 +62,14 @@ import sootup.jimple.JimpleParser;
 
 public class JimpleConverter {
 
+  private boolean useLazyResolution = false;
+
+  public JimpleConverter() {}
+
+  public JimpleConverter(boolean useLazyResolution) {
+    this.useLazyResolution = useLazyResolution;
+  }
+
   public OverridingJavaClassSource run(
       @NonNull CharStream charStream,
       @NonNull AnalysisInputLocation inputlocation,
@@ -85,7 +93,7 @@ public class JimpleConverter {
 
     ClassVisitor classVisitor;
     try {
-      classVisitor = new ClassVisitor(sourcePath, bodyInterceptors, view);
+      classVisitor = new ClassVisitor(sourcePath, bodyInterceptors, view, useLazyResolution);
       classVisitor.visit(parser.file());
     } catch (ParseCancellationException ex) {
       throw new ResolveException("Syntax Error", sourcePath, ex);
@@ -112,14 +120,19 @@ public class JimpleConverter {
     @NonNull private final Path path;
     @NonNull private final List<BodyInterceptor> bodyInterceptors;
     @NonNull private final View view;
+    private final boolean useLazyResolution;
 
     public ClassVisitor(
-        @NonNull Path path, @NonNull List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
+        @NonNull Path path,
+        @NonNull List<BodyInterceptor> bodyInterceptors,
+        @NonNull View view,
+        boolean useLazyResolution) {
       this.path = path;
       util = new JimpleConverterUtil(path);
       this.bodyInterceptors = bodyInterceptors;
       this.view = view;
       this.identifierFactory = view.getIdentifierFactory();
+      this.useLazyResolution = useLazyResolution;
     }
 
     private ClassType clazz = null;
@@ -195,30 +208,36 @@ public class JimpleConverter {
             throw new ResolveException(
                 "Method with the same Signature does already exist.", path, m.getPosition());
           }
-          if (m.isConcrete()) {
-            Body.BodyBuilder bodyBuilder = Body.builder(m.getBody(), m.getModifiers());
-            for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
-              try {
-                bodyInterceptor.interceptBody(bodyBuilder, view);
-                bodyBuilder
-                    .getControlFlowGraph()
-                    .validateStmtConnectionsInGraph(); // TODO: remove in the future ;-)
-              } catch (Exception e) {
-                throw new IllegalStateException(
-                    "Failed to apply " + bodyInterceptor + " to " + m.getSignature(), e);
-              }
-            }
-            Body modifiedBody = bodyBuilder.build();
-            JavaSootMethod sm =
-                new JavaSootMethod(
-                    new OverridingBodySource(m.getBodySource()).withBody(modifiedBody),
-                    m.getSignature(),
-                    m.getModifiers(),
-                    m.getExceptionSignatures(),
-                    m.getPosition());
-            methods.add(sm);
-          } else {
+          if (useLazyResolution) {
+            // For lazy resolution, just add the method as-is without eagerly resolving the body
             methods.add(m);
+          } else {
+            // Eager resolution: apply body interceptors immediately
+            if (m.isConcrete()) {
+              Body.BodyBuilder bodyBuilder = Body.builder(m.getBody(), m.getModifiers());
+              for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
+                try {
+                  bodyInterceptor.interceptBody(bodyBuilder, view);
+                  bodyBuilder
+                      .getControlFlowGraph()
+                      .validateStmtConnectionsInGraph(); // TODO: remove in the future ;-)
+                } catch (Exception e) {
+                  throw new IllegalStateException(
+                      "Failed to apply " + bodyInterceptor + " to " + m.getSignature(), e);
+                }
+              }
+              Body modifiedBody = bodyBuilder.build();
+              JavaSootMethod sm =
+                  new JavaSootMethod(
+                      new OverridingBodySource(m.getBodySource()).withBody(modifiedBody),
+                      m.getSignature(),
+                      m.getModifiers(),
+                      m.getExceptionSignatures(),
+                      m.getPosition());
+              methods.add(sm);
+            } else {
+              methods.add(m);
+            }
           }
         } else {
           final JimpleParser.FieldContext fieldCtx = ctx.member(i).field();
@@ -319,6 +338,28 @@ public class JimpleConverter {
             ctx.throws_clause() == null
                 ? Collections.emptyList()
                 : util.getClassTypeList(ctx.throws_clause().type_list());
+
+        Position methodPosition = JimpleConverterUtil.buildPositionFromCtx(ctx);
+
+        // If lazy resolution is enabled, create a LazyJimpleMethodSource
+        if (useLazyResolution) {
+          LazyJimpleMethodSource lazySource =
+              new LazyJimpleMethodSource(
+                  methodSignature,
+                  ctx,
+                  path,
+                  bodyInterceptors,
+                  view,
+                  util,
+                  clazz,
+                  modifier,
+                  exceptions,
+                  methodPosition);
+          return new JavaSootMethod(
+              lazySource, methodSignature, modifier, exceptions, methodPosition);
+        }
+
+        // Otherwise, proceed with eager resolution (existing logic)
 
         List<Trap> traps = new ArrayList<>();
         List<List<Stmt>> blocks = new ArrayList<>();
@@ -442,8 +483,6 @@ public class JimpleConverter {
           }
           successorMap.put(item.getKey(), targets);
         }
-
-        Position methodPosition = JimpleConverterUtil.buildPositionFromCtx(ctx);
         final Body build;
         try {
 
