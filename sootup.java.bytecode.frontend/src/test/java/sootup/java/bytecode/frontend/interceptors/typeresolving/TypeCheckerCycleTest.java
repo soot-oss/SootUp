@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -18,36 +17,41 @@ import sootup.interceptors.typeresolving.*;
 import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleStringAnalysisInputLocation;
 
-
 public class TypeCheckerCycleTest {
 
-    @Test
-    @Timeout(value = 500, unit = TimeUnit.MILLISECONDS, threadMode =  Timeout.ThreadMode.SEPARATE_THREAD)
-    public void testWorklistLoopExplicitly() {
-        JavaView view = getCycleView();
-        MethodSignature signature = view.getIdentifierFactory()
-                .getMethodSignature("Cycle", "test", "void", List.of());
-        assertTrue(view.getMethod(signature).isPresent(), "Method should be present");
-        Body.BodyBuilder builder = Body.builder(view.getMethod(signature).get().getBody(), EnumSet.noneOf(sootup.core.model.MethodModifier.class));
+  @Test
+  @Timeout(
+      value = 500,
+      unit = TimeUnit.MILLISECONDS,
+      threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
+  public void testWorklistLoopExplicitly() {
+    JavaView view = getCycleView();
+    MethodSignature signature =
+        view.getIdentifierFactory().getMethodSignature("Cycle", "test", "void", List.of());
+    assertTrue(view.getMethod(signature).isPresent(), "Method should be present");
+    Body.BodyBuilder builder =
+        Body.builder(
+            view.getMethod(signature).get().getBody(),
+            EnumSet.noneOf(sootup.core.model.MethodModifier.class));
 
-        AugEvalFunction evalFunction = new AugEvalFunction(view);
-        BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
-        Typing typing = new Typing(builder.getLocals());
+    AugEvalFunction evalFunction = new AugEvalFunction(view);
+    BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
+    Typing typing = new Typing(builder.getLocals());
 
-        for (Local local : builder.getLocals()) {
-            if (local.getName().equals("$u1")) {
-                typing.set(local, NullType.getInstance());
-            }
-        }
-
-        new CastCounter(builder, evalFunction, hierarchy, typing);
-
-        assertNotNull(builder.build());
+    for (Local local : builder.getLocals()) {
+      if (local.getName().equals("$u1")) {
+        typing.set(local, NullType.getInstance());
+      }
     }
 
-    private static @NonNull JavaView getCycleView() {
-        String jimple =
-                """
+    new CastCounter(builder, evalFunction, hierarchy, typing);
+
+    assertNotNull(builder.build());
+  }
+
+  private static @NonNull JavaView getCycleView() {
+    String jimple =
+        """
                 public class Cycle {
                     public void test() {
                         $u1 = newarray (java.lang.Object)[1];
@@ -59,7 +63,9 @@ public class TypeCheckerCycleTest {
                     }
                 }
                 """;
-        JimpleStringAnalysisInputLocation location = new JimpleStringAnalysisInputLocation(jimple, SourceType.Application, List.of(new TypeAssigner()));
-        return new JavaView(List.of(location));
-    }
+    JimpleStringAnalysisInputLocation location =
+        new JimpleStringAnalysisInputLocation(
+            jimple, SourceType.Application, List.of(new TypeAssigner()));
+    return new JavaView(List.of(location));
+  }
 }
