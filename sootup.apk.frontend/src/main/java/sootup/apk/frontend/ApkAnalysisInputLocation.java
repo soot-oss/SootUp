@@ -117,13 +117,7 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
   @Override
   public Optional<? extends SootClassSource> getClassSource(
       @NonNull ClassType type, @NonNull View view) {
-    return Objects.requireNonNull(getClassSourceInternal(type, new DexClassProvider(view)));
-  }
-
-  private Optional<? extends SootClassSource> getClassSourceInternal(
-      ClassType type, DexClassProvider dexClassProvider) {
-
-    return dexClassProvider.createClassSource(this, apk_path, type);
+    return new DexClassProvider(view).createClassSource(this, apk_path, type);
   }
 
   @NonNull
