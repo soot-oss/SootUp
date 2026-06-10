@@ -47,9 +47,7 @@ public class CallGraphTest {
 
     ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation(
-            apkPath,
-            androidVersionInfo,
-            DexBodyInterceptors.Default.bodyInterceptors());
+            apkPath, androidVersionInfo, DexBodyInterceptors.Default.bodyInterceptors());
     JavaClassPathAnalysisInputLocation classPathAnalysisInputLocation =
         new JavaClassPathAnalysisInputLocation(
             "resources"

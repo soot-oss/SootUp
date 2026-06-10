@@ -70,11 +70,10 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
   /**
    * Creates a new ApkAnalysisInputLocation.
    *
-   * @param apkPath the path to the APK file to analyze
-   *     system libraries (android.jar files) for different API levels. This directory is required
-   *     to resolve method calls and class references that are not defined in the APK itself, but
-   *     are part of the Android system libraries. The Android platforms directory can be obtained
-   *     from <a
+   * @param apkPath the path to the APK file to analyze system libraries (android.jar files) for
+   *     different API levels. This directory is required to resolve method calls and class
+   *     references that are not defined in the APK itself, but are part of the Android system
+   *     libraries. The Android platforms directory can be obtained from <a
    *     href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a>
    * @param bodyInterceptors the list of body interceptors to apply during analysis
    */
