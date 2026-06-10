@@ -43,7 +43,7 @@ public class ApkToDexTest {
   @Test
   public void testDexClassSource() {
     String className = "android.support.v7.widget.PopupMenu";
-    String classNameToTestAnnotations = "android/support/v4/app/FragmentState$1";
+    String classNameToTestAnnotations = "android.support.v4.app.FragmentState$1";
     ClassType classType = view.getIdentifierFactory().getClassType(className);
     ClassType annotationClassType =
         view.getIdentifierFactory().getClassType(classNameToTestAnnotations);
