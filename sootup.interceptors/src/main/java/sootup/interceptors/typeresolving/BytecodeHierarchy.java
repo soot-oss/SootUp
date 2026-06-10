@@ -42,6 +42,8 @@ public class BytecodeHierarchy {
   private final ClassType serializableClassType;
   private final ClassType cloneableClassType;
 
+  private final Map<Type, Map<Type, Collection<Type>>> lcaCache = new HashMap<>();
+
   public BytecodeHierarchy(View view) {
     this.typeHierarchy = view.getTypeHierarchy();
     IdentifierFactory factory = view.getIdentifierFactory();
@@ -118,6 +120,12 @@ public class BytecodeHierarchy {
   }
 
   public Collection<Type> getLeastCommonAncestors(Type a, Type b) {
+    return lcaCache
+        .computeIfAbsent(a, k -> new HashMap<>())
+        .computeIfAbsent(b, k -> computeLeastCommonAncestors(a, b));
+  }
+
+  private Collection<Type> computeLeastCommonAncestors(Type a, Type b) {
     Set<Type> ret = new HashSet<>();
     if (a instanceof TopType || b instanceof TopType) {
       return Collections.singleton(TopType.getInstance());
