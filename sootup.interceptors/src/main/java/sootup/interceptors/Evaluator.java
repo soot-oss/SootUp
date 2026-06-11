@@ -216,6 +216,8 @@ public class Evaluator {
 
       if (castType == PrimitiveType.getByte()) {
         return IntConstant.getInstance(number.byteValue());
+      } else if (castType == PrimitiveType.getChar())  {
+        return IntConstant.getInstance((char)number.longValue());
       } else if (castType == PrimitiveType.getShort()) {
         return IntConstant.getInstance(number.shortValue());
       } else if (castType == PrimitiveType.getInt()) {

@@ -68,6 +68,18 @@ public class EvaluatorTest {
                 Evaluator.getConstantValueOf(new JCastExpr(IntConstant.getInstance(65792), PrimitiveType.getShort()))
         );
 
+        // 0000 0000 0000 0001 1000 0000 0000 0000 (98304) -> 1000 0000 0000 0000 (signed -32768)
+        assertEquals(
+                IntConstant.getInstance(-32768),
+                Evaluator.getConstantValueOf(new JCastExpr(IntConstant.getInstance(98304), PrimitiveType.getShort()))
+        );
+
+        // 0000 0000 0000 0001 1000 0000 0000 0000 (98304) -> 1000 0000 0000 0000 (unsigned 32768)
+        assertEquals(
+                IntConstant.getInstance(32768),
+                Evaluator.getConstantValueOf(new JCastExpr(IntConstant.getInstance(98304), PrimitiveType.getChar()))
+        );
+
         // NaN is converted to 0 or 0L
         assertEquals(
                 IntConstant.getInstance(0),
