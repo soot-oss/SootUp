@@ -27,8 +27,8 @@ import org.jf.dexlib2.iface.reference.FieldReference;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
-import sootup.core.jimple.common.Local;
-import sootup.core.jimple.common.ref.ConcreteRef;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
@@ -92,8 +92,7 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
    * @param instanceField the reference (right value) to be used in the assign statement
    * @return assignment statement which hold a cast or not depending on the types of the operation
    */
-  protected JAssignStmt getAssignStmt(
-      sootup.core.jimple.basic.LValue left, sootup.core.jimple.basic.Value right) {
+  protected JAssignStmt getAssignStmt(LValue left, Value right) {
     JAssignStmt assign;
     assign = Jimple.newAssignStmt(left, right, new SimpleStmtPositionInfo(lineNumber));
     return assign;
