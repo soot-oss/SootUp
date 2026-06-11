@@ -92,10 +92,10 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
    * @param instanceField the reference (right value) to be used in the assign statement
    * @return assignment statement which hold a cast or not depending on the types of the operation
    */
-  protected JAssignStmt getAssignStmt(Local sourceValue, ConcreteRef instanceField) {
+  protected JAssignStmt getAssignStmt(
+      sootup.core.jimple.basic.LValue left, sootup.core.jimple.basic.Value right) {
     JAssignStmt assign;
-    assign =
-        Jimple.newAssignStmt(sourceValue, instanceField, new SimpleStmtPositionInfo(lineNumber));
+    assign = Jimple.newAssignStmt(left, right, new SimpleStmtPositionInfo(lineNumber));
     return assign;
   }
 }
