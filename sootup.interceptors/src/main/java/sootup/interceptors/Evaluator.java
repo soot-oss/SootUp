@@ -201,8 +201,7 @@ public class Evaluator {
 
       Number number;
       if (cst instanceof BooleanConstant) {
-        if (((BooleanConstant) cst).getValue())
-          number = 1;
+        if (((BooleanConstant) cst).getValue()) number = 1;
         else number = 0;
       } else if (cst instanceof IntConstant) {
         number = ((IntConstant) cst).getValue();
@@ -216,8 +215,8 @@ public class Evaluator {
 
       if (castType == PrimitiveType.getByte()) {
         return IntConstant.getInstance(number.byteValue());
-      } else if (castType == PrimitiveType.getChar())  {
-        return IntConstant.getInstance((char)number.longValue());
+      } else if (castType == PrimitiveType.getChar()) {
+        return IntConstant.getInstance((char) number.longValue());
       } else if (castType == PrimitiveType.getShort()) {
         return IntConstant.getInstance(number.shortValue());
       } else if (castType == PrimitiveType.getInt()) {
