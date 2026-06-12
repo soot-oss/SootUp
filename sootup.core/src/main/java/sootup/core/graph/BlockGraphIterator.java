@@ -34,20 +34,20 @@ import sootup.core.util.DotExporter;
 /** Iterates over the blocks */
 public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
 
-  private final StmtGraph<?> stmtGraph;
+  private final ControlFlowGraph<?> controlFlowGraph;
   @NonNull private final ArrayDeque<BasicBlock<?>> trapHandlerBlocks = new ArrayDeque<>();
 
   @NonNull private final ArrayDeque<BasicBlock<?>> nestedBlocks = new ArrayDeque<>();
   @NonNull private final ArrayDeque<BasicBlock<?>> otherBlocks = new ArrayDeque<>();
   @NonNull private final Set<BasicBlock<?>> iteratedBlocks;
 
-  public BlockGraphIterator(StmtGraph<?> stmtGraph) {
-    this.stmtGraph = stmtGraph;
-    final Collection<? extends BasicBlock<?>> blocks = stmtGraph.getBlocks();
+  public BlockGraphIterator(ControlFlowGraph<?> controlFlowGraph) {
+    this.controlFlowGraph = controlFlowGraph;
+    final Collection<? extends BasicBlock<?>> blocks = controlFlowGraph.getBlocks();
     iteratedBlocks = new LinkedHashSet<>(blocks.size(), 1);
-    Stmt startingStmt = stmtGraph.getStartingStmt();
+    Stmt startingStmt = controlFlowGraph.getStartingStmt();
     if (startingStmt != null) {
-      final BasicBlock<?> startingBlock = stmtGraph.getStartingStmtBlock();
+      final BasicBlock<?> startingBlock = controlFlowGraph.getStartingStmtBlock();
       updateFollowingBlocks(startingBlock);
       nestedBlocks.addFirst(startingBlock);
     }
@@ -64,7 +64,7 @@ public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
       } else if (!otherBlocks.isEmpty()) {
         nextBlock = otherBlocks.pollFirst();
       } else {
-        Collection<? extends BasicBlock<?>> blocks = stmtGraph.getBlocks();
+        Collection<? extends BasicBlock<?>> blocks = controlFlowGraph.getBlocks();
         if (iteratedBlocks.size() < blocks.size()) {
           // graph is not connected! iterate/append all not connected blocks at the end in no
           // particular order.
@@ -187,7 +187,7 @@ public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
     // "assertion" that all elements are iterated
     if (!hasIteratorMoreElements) {
       final int returnedSize = iteratedBlocks.size();
-      final Collection<? extends BasicBlock<?>> blocks = stmtGraph.getBlocks();
+      final Collection<? extends BasicBlock<?>> blocks = controlFlowGraph.getBlocks();
       final int actualSize = blocks.size();
       if (returnedSize != actualSize) {
         String info =
@@ -199,9 +199,9 @@ public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
         throw new IllegalStateException(
             "There are "
                 + (actualSize - returnedSize)
-                + " Blocks that are not iterated! i.e. the StmtGraph is not connected from its startingStmt!"
+                + " Blocks that are not iterated! i.e. the ControlFlowGraph is not connected from its startingStmt!"
                 + info
-                + DotExporter.createUrlToWebeditor(stmtGraph));
+                + DotExporter.createUrlToWebeditor(controlFlowGraph));
       }
     }
     return hasIteratorMoreElements;

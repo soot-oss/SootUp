@@ -40,7 +40,7 @@ public class ViewTypeHierarchyTest {
   @BeforeEach
   public void setup() {
 
-    String jarFile = "../shared-test-resources/java-miniapps/MiniApp.jar";
+    String jarFile = "src/test/resources/java-miniapps/MiniApp.jar";
     assertTrue(new File(jarFile).exists(), "File " + jarFile + " not found.");
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRuntimeAnalysisInputLocation());

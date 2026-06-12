@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import org.junit.jupiter.api.Test;
+import sootup.core.IdentifierFactory;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
@@ -33,13 +33,12 @@ public class BasicSetupTest {
     View view = new JavaView(inputLocation);
 
     // Create a signature for the class we want to analyze
-    ClassType classType = view.getIdentifierFactory().getClassType("HelloWorld");
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+    ClassType classType = identifierFactory.getClassType("HelloWorld");
 
     // Create a signature for the method we want to analyze
     MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature(
-                classType, "main", "void", Collections.singletonList("java.lang.String[]"));
+        identifierFactory.getMethodSignature(classType, identifierFactory.getMainSubSignature());
 
     // Assert that class is present
     assertTrue(view.getClass(classType).isPresent());

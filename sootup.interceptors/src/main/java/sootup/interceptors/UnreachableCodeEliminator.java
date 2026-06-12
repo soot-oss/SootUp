@@ -25,7 +25,7 @@ import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableBasicBlock;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.model.Body;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.views.View;
@@ -40,7 +40,7 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
-    MutableStmtGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
 
     // Because there is a case in android, where the statement graph will be empty
     if (graph.getStmts().isEmpty() && graph.getNodes().isEmpty()) {

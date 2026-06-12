@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.BranchingStmt;
@@ -67,11 +67,11 @@ public class CastAndReturnInlinerTest {
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
 
-    final MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.setStartingStmt(strToA);
-    stmtGraph.putEdge(strToA, jump);
-    stmtGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
-    stmtGraph.putEdge(bToA, ret);
+    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(strToA);
+    controlFlowGraph.putEdge(strToA, jump);
+    controlFlowGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
+    controlFlowGraph.putEdge(bToA, ret);
 
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
@@ -129,12 +129,12 @@ public class CastAndReturnInlinerTest {
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
-    final MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.setStartingStmt(strToA);
-    stmtGraph.putEdge(strToA, strToC);
-    stmtGraph.putEdge(strToC, jump);
-    stmtGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
-    stmtGraph.putEdge(bToA, ret);
+    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(strToA);
+    controlFlowGraph.putEdge(strToA, strToC);
+    controlFlowGraph.putEdge(strToC, jump);
+    controlFlowGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
+    controlFlowGraph.putEdge(bToA, ret);
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));

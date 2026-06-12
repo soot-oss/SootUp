@@ -23,12 +23,12 @@ package sootup.analysis.intraprocedural;
  */
 
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 
 public abstract class BackwardFlowAnalysis<A> extends FlowAnalysis<A> {
 
-  /** Construct the analysis from StmtGraph. */
-  public <B extends BasicBlock<B>> BackwardFlowAnalysis(StmtGraph<B> graph) {
+  /** Construct the analysis from ControlFlowGraph. */
+  public <B extends BasicBlock<B>> BackwardFlowAnalysis(ControlFlowGraph<B> graph) {
     super(graph);
   }
 
@@ -39,6 +39,6 @@ public abstract class BackwardFlowAnalysis<A> extends FlowAnalysis<A> {
 
   @Override
   protected void execute() {
-    int i = execute(stmtToAfterFlow, stmtToBeforeFlow);
+    int i = execute(flowAfter, flowBefore);
   }
 }

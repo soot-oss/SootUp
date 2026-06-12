@@ -12,7 +12,7 @@ public class ReversePostOrderTraversalTest {
 
   @Test
   void testReversePostOrderTraversal1() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph();
     Map<BasicBlock<?>, Integer> blockToId = new HashMap<>();
     // assign ids according to blocks sorted by BasicBlock::toString
     List<? extends BasicBlock<?>> blocks =
@@ -27,17 +27,17 @@ public class ReversePostOrderTraversalTest {
 
     ReversePostOrderBlockTraversal reversePostOrderBlockTraversal =
         new ReversePostOrderBlockTraversal(graph);
-    List<BasicBlock<?>> reversePostOrderBlocks = reversePostOrderBlockTraversal.getBlocksSorted();
+    List<BasicBlock<?>> reversePostOrderBlocks = reversePostOrderBlockTraversal.getBlockTraversal();
     List<Integer> RPO =
         reversePostOrderBlocks.stream().map(b -> blockToId.get(b)).collect(Collectors.toList());
 
-    List<Integer> expectedRPO = Arrays.asList(3, 2, 1, 4, 5, 0, 6);
+    List<Integer> expectedRPO = Arrays.asList(3, 2, 6, 1, 5, 4, 0);
     assertEquals(expectedRPO, RPO);
   }
 
   @Test
   void testReversePostOrderTraversal2() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph2();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph2();
     Map<BasicBlock<?>, Integer> blocksToId = new HashMap<>();
     Map<BasicBlock<?>, Integer> blockToRPOId = new HashMap<>();
     // assign ids according to blocks sorted by BasicBlock::toString
@@ -53,11 +53,11 @@ public class ReversePostOrderTraversalTest {
 
     ReversePostOrderBlockTraversal reversePostOrderBlockTraversal =
         new ReversePostOrderBlockTraversal(graph);
-    List<BasicBlock<?>> reversePostOrderBlocks = reversePostOrderBlockTraversal.getBlocksSorted();
+    List<BasicBlock<?>> reversePostOrderBlocks = reversePostOrderBlockTraversal.getBlockTraversal();
     List<Integer> RPO =
         reversePostOrderBlocks.stream().map(b -> blocksToId.get(b)).collect(Collectors.toList());
 
-    List<Integer> expectedRPO = Arrays.asList(1, 4, 0, 3, 5, 2);
+    List<Integer> expectedRPO = Arrays.asList(1, 0, 3, 5, 2, 4);
 
     assertEquals(expectedRPO, RPO);
   }

@@ -11,7 +11,7 @@ public class PostOrderTraversalTest {
 
   @Test
   void testPostOrderTraversal1() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph();
     Map<BasicBlock<?>, Integer> blockToId = new HashMap<>();
     // assign ids according to blocks sorted by BasicBlock::toString
     List<? extends BasicBlock<?>> blocks =
@@ -25,7 +25,7 @@ public class PostOrderTraversalTest {
     }
 
     PostOrderBlockTraversal traversal = new PostOrderBlockTraversal(graph);
-    List<BasicBlock<?>> postOrderBlocks = traversal.getBlocksSorted();
+    List<BasicBlock<?>> postOrderBlocks = traversal.getBlockTraversal();
     List<Integer> PO =
         postOrderBlocks.stream().map(b -> blockToId.get(b)).collect(Collectors.toList());
 
@@ -35,7 +35,7 @@ public class PostOrderTraversalTest {
 
   @Test
   void testPostOrderTraversal2() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph2();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph2();
     Map<BasicBlock<?>, Integer> blockToId = new HashMap<>();
     Map<BasicBlock<?>, Integer> blockToPOId = new HashMap<>();
     // assign ids according to blocks sorted by BasicBlock::toString
@@ -50,7 +50,7 @@ public class PostOrderTraversalTest {
     }
 
     PostOrderBlockTraversal traversal = new PostOrderBlockTraversal(graph);
-    List<BasicBlock<?>> postOrderBlocks = traversal.getBlocksSorted();
+    List<BasicBlock<?>> postOrderBlocks = traversal.getBlockTraversal();
     List<Integer> PO =
         postOrderBlocks.stream().map(b -> blockToId.get(b)).collect(Collectors.toList());
 

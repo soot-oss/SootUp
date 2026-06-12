@@ -837,7 +837,7 @@ public class JimpleConverterTest {
     SootMethod method = methods.iterator().next();
 
     BriefStmtPrinter stmtPrinter = new BriefStmtPrinter();
-    stmtPrinter.buildTraps(method.getBody().getStmtGraph());
+    stmtPrinter.buildTraps(method.getBody().getControlFlowGraph());
     List<Trap> traps = stmtPrinter.getTraps();
     assertEquals(0, traps.size());
   }

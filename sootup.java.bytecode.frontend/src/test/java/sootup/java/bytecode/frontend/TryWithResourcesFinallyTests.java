@@ -13,7 +13,7 @@ import sootup.java.core.views.JavaView;
 
 public class TryWithResourcesFinallyTests {
 
-  Path classFilePath = Paths.get("../shared-test-resources/bugfixes/TryWithResourcesFinally.class");
+  Path classFilePath = Paths.get("src/test/resources/bugfixes/TryWithResourcesFinally.class");
 
   @Test
   public void test() {
@@ -25,7 +25,7 @@ public class TryWithResourcesFinallyTests {
         view.getIdentifierFactory()
             .parseMethodSignature("<TryWithResourcesFinally: void test0(java.lang.AutoCloseable)>");
     BriefStmtPrinter stmtPrinter = new BriefStmtPrinter();
-    stmtPrinter.buildTraps(view.getMethod(methodSignature).get().getBody().getStmtGraph());
+    stmtPrinter.buildTraps(view.getMethod(methodSignature).get().getBody().getControlFlowGraph());
     stmtPrinter.getTraps();
   }
 }

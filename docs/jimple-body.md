@@ -1,6 +1,6 @@
 # Jimple Body
-A SootMethod `Body` consists of the `Modifiers` and its `StmtGraph` - SootUps Control Flow Graph Structure.
-The StmtGraph models the flow of [Stmts](jimple-stmts.md).
+A SootMethod `Body` consists of the `Modifiers` and its `ControlFlowGraph` - SootUps Control Flow Graph Structure.
+The ControlFlowGraph models the flow of [Stmts](jimple-stmts.md).
 
 ### Control Flow Graph
 - unexceptional flow -> like FallsThroughStmts and BranchingStmts for if,goto etc.

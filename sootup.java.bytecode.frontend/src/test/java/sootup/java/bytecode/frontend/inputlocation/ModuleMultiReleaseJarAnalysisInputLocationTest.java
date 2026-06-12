@@ -41,7 +41,7 @@ import sootup.java.core.views.JavaModuleView;
 import sootup.java.core.views.JavaView;
 
 public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocationTest {
-  final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
+  final Path mmrj = Paths.get("src/test/resources/multi-release-jar-modular/mrjar.jar");
 
   @Test
   @Disabled("// FIXME")

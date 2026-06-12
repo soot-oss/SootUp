@@ -23,12 +23,12 @@ package sootup.interceptors;
  */
 
 import com.google.common.collect.Lists;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.Constant;
@@ -61,16 +61,16 @@ public class CopyPropagator implements BodyInterceptor {
 
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    for (Stmt stmt : Lists.newArrayList(controlFlowGraph)) {
       Stmt newStmt = stmt;
-      Set<Value> valueList = newStmt.getUses().collect(Collectors.toSet());
+      Set<Value> valueList = new HashSet<>(newStmt.getUses());
       for (Value use : valueList) {
         if (!(use instanceof Local)) {
           continue;
         }
 
-        List<Stmt> defsOfUse = ((Local) use).getDefsForLocalUse(stmtGraph, newStmt);
+        List<Stmt> defsOfUse = ((Local) use).getDefsForLocalUse(controlFlowGraph, newStmt);
         if (!isPropatabable(defsOfUse)) {
           continue;
         }
@@ -79,7 +79,7 @@ public class CopyPropagator implements BodyInterceptor {
         Value rhs = defStmt.getRightOp();
         // if rhs is a constant, then replace use, if it is possible
         if (rhs instanceof Constant) {
-          newStmt = replaceUse(stmtGraph, newStmt, use, rhs);
+          newStmt = replaceUse(controlFlowGraph, newStmt, use, rhs);
         }
 
         // if rhs is a cast expr with a ref type and its op is 0 (IntConstant or LongConstant)
@@ -88,22 +88,22 @@ public class CopyPropagator implements BodyInterceptor {
           Value op = ((JCastExpr) rhs).getOp();
 
           if (zeroIntConstInstance.equals(op) || zeroLongConstInstance.equals(op)) {
-            newStmt = replaceUse(stmtGraph, newStmt, use, NullConstant.getInstance());
+            newStmt = replaceUse(controlFlowGraph, newStmt, use, NullConstant.getInstance());
           }
         }
         // if rhs is a local, then replace use, if it is possible
         else if (rhs instanceof Local && !rhs.equivTo(use)) {
           Local m = (Local) rhs;
           if (use != m) {
-            Integer defCount = m.getDefs(stmtGraph.getStmts()).size();
+            Integer defCount = m.getDefs(controlFlowGraph.getStmts()).size();
             if (defCount == 0) {
               throw new IllegalStateException("Local `" + m + "' is used without a definition!");
             } else if (defCount == 1) {
-              newStmt = replaceUse(stmtGraph, newStmt, use, rhs);
+              newStmt = replaceUse(controlFlowGraph, newStmt, use, rhs);
               continue;
             }
 
-            List<Stmt> path = stmtGraph.getExtendedBasicBlockPathBetween(defStmt, newStmt);
+            List<Stmt> path = controlFlowGraph.getExtendedBasicBlockPathBetween(defStmt, newStmt);
             if (path == null) {
               // no path in the extended basic block
               continue;
@@ -133,7 +133,7 @@ public class CopyPropagator implements BodyInterceptor {
                 continue;
               }
             }
-            newStmt = replaceUse(stmtGraph, newStmt, use, rhs);
+            newStmt = replaceUse(controlFlowGraph, newStmt, use, rhs);
           }
         }
       }
@@ -141,7 +141,10 @@ public class CopyPropagator implements BodyInterceptor {
   }
 
   private Stmt replaceUse(
-      @NonNull MutableStmtGraph graph, @NonNull Stmt stmt, @NonNull Value use, @NonNull Value rhs) {
+      @NonNull MutableControlFlowGraph graph,
+      @NonNull Stmt stmt,
+      @NonNull Value use,
+      @NonNull Value rhs) {
     if (rhs != use) {
       Stmt newStmt = stmt.withNewUse(use, rhs);
       if (newStmt != stmt) {

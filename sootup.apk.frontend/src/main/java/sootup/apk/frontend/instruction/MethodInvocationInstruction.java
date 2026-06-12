@@ -34,7 +34,7 @@ import org.jf.dexlib2.iface.reference.MethodReference;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -55,12 +55,12 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     if (successor instanceof MoveResultInstruction) {
       assignStmt =
           Jimple.newAssignStmt(
-              body.getStoreResultLocal(), invocation, StmtPositionInfo.getNoStmtPositionInfo());
+              body.getStoreResultLocal(), invocation, new SimpleStmtPositionInfo(lineNumber));
       setStmt(assignStmt);
       body.add(assignStmt);
     } else {
       JInvokeStmt jInvokeStmt =
-          Jimple.newInvokeStmt(invocation, StmtPositionInfo.getNoStmtPositionInfo());
+          Jimple.newInvokeStmt(invocation, new SimpleStmtPositionInfo(lineNumber));
       setStmt(jInvokeStmt);
       body.add(jInvokeStmt);
     }
@@ -89,13 +89,13 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
   protected void jimplifyStatic(DexBody body) {
     MethodReference item = (MethodReference) ((ReferenceInstruction) instruction).getReference();
     List<Local> parameters = buildParameters(body, item.getParameterTypes(), true);
-    invocation =
-        Jimple.newStaticInvokeExpr(
-            new MethodSignature(
-                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
-                item.getName(),
-                convertParameterTypes(item.getParameterTypes()),
-                DexUtil.toSootType(item.getReturnType(), 0)));
+    MethodSignature methodSignature =
+        new MethodSignature(
+            DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
+            item.getName(),
+            convertParameterTypes(item.getParameterTypes()),
+            DexUtil.toSootType(item.getReturnType(), 0));
+    invocation = Jimple.newStaticInvokeExpr(methodSignature, buildArgs(parameters));
     body.setDanglingInstruction(this);
   }
 

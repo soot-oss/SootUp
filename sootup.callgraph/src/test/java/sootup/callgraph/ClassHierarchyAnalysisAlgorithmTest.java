@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
+import sootup.callgraph.CallGraph.Call;
+import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.views.JavaView;
 
@@ -12,8 +14,7 @@ import sootup.java.core.views.JavaView;
  *
  * @author Markus Schmidt
  */
-public class ClassHierarchyAnalysisAlgorithmTest
-    extends CallGraphTestBase<ClassHierarchyAnalysisAlgorithm> {
+public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest {
 
   // TODO: StaticInitializers, Lambdas ?
 
@@ -213,5 +214,30 @@ public class ClassHierarchyAnalysisAlgorithmTest
     assertEquals(0, cg.callsFrom(virtualMethodB).size());
     assertEquals(0, cg.callsFrom(virtualMethodD).size());
     assertEquals(0, cg.callsFrom(virtualMethodE).size());
+
+    SootMethod methodData = view.getMethod(mainMethodSignature).orElse(null);
+    assertNotNull(methodData);
+    int prevLine =
+        methodData
+            .getBody()
+            .getFirstNonIdentityStmt()
+            .getPositionInfo()
+            .getStmtPosition()
+            .getFirstLine();
+
+    for (Call call : cg.sortedCallsFrom(mainMethodSignature)) {
+      assertTrue(call.getLineNumber() >= prevLine);
+      prevLine = call.getLineNumber();
+    }
+
+    GraphBasedCallGraph g = new GraphBasedCallGraph(List.of(mainMethodSignature));
+    g.addMethod(mainMethodSignature);
+
+    g.addCall(
+        mainMethodSignature, virtualMethodA, getInvokableStmt(mainMethodSignature, virtualMethodA));
+    g.addCall(
+        mainMethodSignature, staticMethodB, getInvokableStmt(mainMethodSignature, staticMethodB));
+
+    assertEquals(2, g.callsFrom(mainMethodSignature).size());
   }
 }

@@ -25,7 +25,7 @@ package sootup.interceptors;
 import java.util.*;
 import java.util.function.Function;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
@@ -189,7 +189,7 @@ public class LocalSplitter implements BodyInterceptor {
 
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
-    MutableStmtGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
 
     // Cache the stmts to not have to retrieve them for every local
     List<Stmt> stmts = graph.getStmts();
@@ -234,7 +234,7 @@ public class LocalSplitter implements BodyInterceptor {
             continue;
           }
 
-          if (stmt.getUses().anyMatch(l -> l == local)) {
+          if (stmt.getUses().stream().anyMatch(l -> l == local)) {
             PartialStmt useStmt = new PartialStmt(stmt, false);
             disjointSet.add(useStmt);
             disjointSet.union(defStmt, useStmt);
@@ -276,7 +276,7 @@ public class LocalSplitter implements BodyInterceptor {
 
         Optional<LValue> stmtDef = stmt.getDef();
         boolean localIsDef = stmtDef.isPresent() && stmtDef.get() == local;
-        boolean localIsUse = stmt.getUses().anyMatch(l -> l == local);
+        boolean localIsUse = stmt.getUses().stream().anyMatch(l -> l == local);
 
         Stmt oldStmt = stmt;
 

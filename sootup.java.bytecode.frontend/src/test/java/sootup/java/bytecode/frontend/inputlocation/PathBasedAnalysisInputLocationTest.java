@@ -95,7 +95,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   public void testSingleClassWPackageName() {
     AnalysisInputLocation pathBasedNamespace =
         new ClassFileBasedAnalysisInputLocation(
-            Paths.get("../shared-test-resources/ClassWithPackageName.class"),
+            Paths.get("src/test/resources/single-file/ClassWithPackageName.class"),
             "ClassesPackageName",
             SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();
@@ -124,7 +124,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testClassInWar() {
 
-    String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
+    String warFile = "src/test/resources/java-warApp/dummyWarApp.war";
 
     assertTrue(new File(warFile).exists(), "File " + warFile + " not found.");
 

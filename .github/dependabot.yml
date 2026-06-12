@@ -5,9 +5,20 @@
 
 version: 2
 updates:
-- package-ecosystem: maven
-  directory: "/"
-  schedule:
-    interval: weekly
-    time: "04:00"
-  open-pull-requests-limit: 10
+  - package-ecosystem: maven
+    target-branch: develop
+    directory: /
+    schedule:
+      interval: cron
+      cronjob: "0 6 * * 1-5"
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 14
+      semver-patch-days: 10
+      default-days: 10
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily

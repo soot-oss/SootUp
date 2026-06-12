@@ -23,7 +23,7 @@ package sootup.interceptors;
  */
 import java.util.ArrayList;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -44,15 +44,15 @@ public class EmptySwitchEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     // Iterate all stmts in the body
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    for (Stmt stmt : new ArrayList<>(stmtGraph.getNodes())) {
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    for (Stmt stmt : new ArrayList<>(controlFlowGraph.getNodes())) {
       // If the observed stmt an instance of JSwitchStmt
       if (stmt instanceof JSwitchStmt) {
         JSwitchStmt sw = (JSwitchStmt) stmt;
         // if there's only default case
         if (sw.getValueCount() == 1) {
           JGotoStmt gotoStmt = Jimple.newGotoStmt(sw.getPositionInfo());
-          stmtGraph.replaceNode(sw, gotoStmt);
+          controlFlowGraph.replaceNode(sw, gotoStmt);
         }
       }
     }

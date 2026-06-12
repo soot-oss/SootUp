@@ -1,6 +1,5 @@
 package sootup.tests;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -9,7 +8,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -27,10 +26,7 @@ import sootup.java.core.views.JavaView;
 
 public class NestedTryCatchFlowTest {
 
-  String location =
-      Paths.get(System.getProperty("user.dir")).getParent()
-          + File.separator
-          + "shared-test-resources/bugfixes/";
+  String location = "src/test/resources/bugs/bugfixes/";
   final Path path = Paths.get(location + "NestedTryCatchFlow.class");
   PathBasedAnalysisInputLocation inputLocation =
       new ClassFileBasedAnalysisInputLocation(
@@ -45,7 +41,8 @@ public class NestedTryCatchFlowTest {
 
   @Test
   public void testNestedTryCatchFlow1() {
-    MutableBlockStmtGraph graph = new MutableBlockStmtGraph(body.getStmtGraph());
+    MutableBlockControlFlowGraph graph =
+        new MutableBlockControlFlowGraph(body.getControlFlowGraph());
     Map<Integer, BasicBlock<?>> returnValToBlockMap = new HashMap<>();
     for (BasicBlock<?> block : graph.getBlocks()) {
       for (Stmt stmt : block.getStmts()) {

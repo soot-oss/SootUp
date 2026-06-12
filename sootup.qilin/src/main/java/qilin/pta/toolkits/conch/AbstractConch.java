@@ -29,20 +29,35 @@ import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
 
+/** Base class for Conch-based context-sensitivity analyses over a pointer analysis result. */
 public class AbstractConch {
+  /** The pointer analysis result being analyzed. */
   public final PTA pta;
+
+  /** The pointer assignment graph derived from the pointer analysis. */
   public final PAG pag;
 
+  /** Maps each allocation node to the set of methods invoked on it. */
   protected final Map<AllocNode, Set<SootMethod>> invokedMethods = new HashMap<>();
-  // field |--> <store_base, from>
+
+  /** Maps each method to its this-pointer field stores: field → (store_base, source). */
   protected final Map<SootMethod, Map<SparkField, Set<Pair<VarNode, VarNode>>>> m2thisFStores =
       new HashMap<>();
+
+  /** Maps each allocation node to non-this field stores: field → (store_base, source). */
   protected final Map<AllocNode, Map<SparkField, Set<Pair<VarNode, VarNode>>>> o2nonThisFStores =
       new HashMap<>();
+
+  /** Maps each method to its this-pointer field loads: field → load_base nodes. */
   protected final Map<SootMethod, Map<SparkField, Set<VarNode>>> m2thisFLoads = new HashMap<>();
+
+  /** Maps each allocation node to non-this field loads: field → load_base nodes. */
   protected final Map<AllocNode, Map<SparkField, Set<VarNode>>> o2nonThisFLoads = new HashMap<>();
+
+  /** Maps each allocation node to the set of fields accessed on it. */
   protected final Map<AllocNode, Set<SparkField>> o2fs = new HashMap<>();
 
+  /** Creates a new Conch analysis over the given pointer analysis result. */
   public AbstractConch(PTA pta) {
     this.pta = pta;
     this.pag = pta.getPag();
@@ -109,6 +124,7 @@ public class AbstractConch {
 
   private final Map<MethodPAG, SMPAG> methodSMPAGMap = new HashMap<>();
 
+  /** Returns the simplified method PAG (SMPAG) for the given method PAG, creating it if absent. */
   public SMPAG getSMAPG(MethodPAG mpag) {
     return methodSMPAGMap.computeIfAbsent(mpag, k -> new SMPAG(mpag));
   }
@@ -187,6 +203,7 @@ public class AbstractConch {
     } else return f.getType().toString().equals(s);
   }
 
+  /** Returns true if the points-to set for the given field on the given heap node is empty. */
   protected boolean emptyFieldPts(AllocNode heap, SparkField field) {
     PointsToSet pts = pta.reachingObjectsInternal(heap, field);
     Set<AllocNode> tmp = new HashSet<>();
@@ -200,6 +217,7 @@ public class AbstractConch {
     return tmp.isEmpty();
   }
 
+  /** Returns true if the given field of the given heap node has at least one load operation. */
   protected boolean hasLoadOn(AllocNode heap, SparkField field) {
     Map<SparkField, Set<VarNode>> f2bs = o2nonThisFLoads.getOrDefault(heap, Collections.emptyMap());
     Set<VarNode> loadBases = f2bs.getOrDefault(field, Collections.emptySet());
@@ -217,6 +235,7 @@ public class AbstractConch {
     return false;
   }
 
+  /** Returns true if the given field of the given heap node has at least one store operation. */
   protected boolean hasStoreOn(AllocNode heap, SparkField field) {
     Map<SparkField, Set<Pair<VarNode, VarNode>>> f2bs =
         o2nonThisFStores.getOrDefault(heap, Collections.emptyMap());

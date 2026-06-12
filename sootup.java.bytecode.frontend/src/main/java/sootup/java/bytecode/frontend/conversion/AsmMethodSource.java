@@ -41,19 +41,26 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.*;
 import sootup.core.frontend.BodySource;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.*;
+import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
-import sootup.core.jimple.common.ref.*;
+import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.ref.JCaughtExceptionRef;
+import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.*;
+import sootup.core.model.Body;
+import sootup.core.model.FullPosition;
+import sootup.core.model.MethodModifier;
+import sootup.core.model.Position;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.interceptor.BodyInterceptor;
@@ -89,6 +96,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private List<JavaLocal> locals;
   private LinkedListMultimap<BranchingStmt, LabelNode> stmtsThatBranchToLabel;
   private Map<AbstractInsnNode, Stmt> insnToStmt;
+  private Map<Stmt, AbstractInsnNode> stmtToInsn;
 
   @NonNull private final Map<Stmt, Stmt> replacedStmt = new HashMap<>();
 
@@ -172,6 +180,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                 + Math.max((maxLocals / 2), 5)); // [ms] initial capacity is just roughly estimated.
     stmtsThatBranchToLabel = LinkedListMultimap.create();
     insnToStmt = new LinkedHashMap<>(instructions.size());
+    stmtToInsn = new HashMap<>(instructions.size());
     operandStack = new OperandStack(this, instructions.size());
     trapHandler = new LinkedHashMap<>(tryCatchBlocks.size());
 
@@ -185,7 +194,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     /* build body (add stmts, locals, traps, etc.) */
-    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    final MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder bodyBuilder = Body.builder(graph);
     bodyBuilder.setModifiers(Modifiers.getMethodModifiers(access));
 
@@ -232,6 +241,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     locals = null;
     stmtsThatBranchToLabel = null;
     insnToStmt = null;
+    stmtToInsn = null;
     operandStack = null;
 
     bodyBuilder.setMethodSignature(lazyMethodSignature.get());
@@ -240,7 +250,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       try {
         bodyInterceptor.interceptBody(bodyBuilder, view);
         bodyBuilder
-            .getStmtGraph()
+            .getControlFlowGraph()
             .validateStmtConnectionsInGraph(); // TODO: remove in the future ;-)
       } catch (Exception e) {
         throw new IllegalStateException(
@@ -269,29 +279,58 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @NonNull
-  private JavaLocal getOrCreateLocal(int idx) {
+  private JavaLocal getOrCreateLocal(int idx, @NonNull AbstractInsnNode atInsn) {
+    return getOrCreateLocal(idx, atInsn, UnknownType.getInstance());
+  }
+
+  @NonNull
+  private JavaLocal getOrCreateLocal(
+      int idx, @NonNull AbstractInsnNode atInsn, @NonNull Type typeHint) {
     if (idx >= maxLocals) {
       throw new IllegalArgumentException("Invalid local index: " + idx);
     }
     JavaLocal local = locals.get(idx);
     if (local == null) {
-      String nameCandidate = determineLocalName(idx);
-      local = createUniqueLocal(nameCandidate, UnknownType.getInstance());
+      String nameCandidate = determineLocalName(idx, atInsn);
+      Type type = typeHint instanceof UnknownType ? UnknownType.getInstance() : typeHint;
+      local = createUniqueLocal(nameCandidate, type);
       locals.set(idx, local);
     }
     return local;
   }
 
+  /**
+   * Determines the name of the local variable at slot {@code idx} valid at the position of {@code
+   * atInsn} in the instruction list. When {@code atInsn} is {@code null} (e.g. for parameters /
+   * "this") the first matching entry in the LocalVariableTable is used without range checking.
+   */
   @NonNull
-  private String determineLocalName(int idx) {
+  private String determineLocalName(int idx, @Nullable AbstractInsnNode atInsn) {
     if (localVariables != null) {
+      int insnIdx = atInsn != null ? instructions.indexOf(atInsn) : -1;
+      String fallback = null;
       for (LocalVariableNode lvn : localVariables) {
-        if (lvn.index == idx) {
-          // TODO: take into consideration in which range this name is valid ->lvn.start/end
+        if (lvn.index != idx) {
+          continue;
+        }
+        if (atInsn == null) {
+          // no range check needed (parameters / this are always valid)
           return lvn.name;
         }
+        int startIdx = instructions.indexOf(lvn.start);
+        int endIdx = instructions.indexOf(lvn.end);
+        if (insnIdx >= startIdx && insnIdx < endIdx) {
+          return lvn.name;
+        }
+        // keep the first entry as fallback for instructions that fall outside all ranges
+        // (e.g. try-catch handler labels that precede the declared scope)
+        if (fallback == null) {
+          fallback = lvn.name;
+        }
       }
-      /* usually reached for try-catch blocks */
+      if (fallback != null) {
+        return fallback;
+      }
     }
     return "l" + idx;
   }
@@ -300,8 +339,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // check for collisions with the same local names in other scopes
     // this can happen when different scopes use the same name for a
     // different variable (and having a different local idx, were we are able distinguish)
+    String baseName = nameCandidate;
     for (int i = 1; localNameExists(nameCandidate); i++) {
-      nameCandidate = nameCandidate + "_" + i;
+      nameCandidate = baseName + "_" + i;
     }
     return JavaJimple.newLocal(nameCandidate, type, Collections.emptyList());
   }
@@ -313,12 +353,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   void setStmt(@NonNull AbstractInsnNode insn, @NonNull Stmt stmt) {
-    insnToStmt.put(insn, stmt);
+    Stmt previous = insnToStmt.put(insn, stmt);
+    if (previous != null) {
+      stmtToInsn.remove(previous);
+    }
+    stmtToInsn.put(stmt, insn);
   }
 
   @NonNull Local newStackLocal() {
+    return newStackLocal(UnknownType.getInstance());
+  }
+
+  @NonNull Local newStackLocal(@NonNull Type type) {
     int idx = nextLocal++;
-    JavaLocal l = createUniqueLocal("$stack" + idx, UnknownType.getInstance());
+    JavaLocal l = createUniqueLocal("$stack" + idx, type);
     locals.set(idx, l);
     return l;
   }
@@ -431,7 +479,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   private void convertIincInsn(@NonNull IincInsnNode insn) {
-    Local local = getOrCreateLocal(insn.var);
+    Local local = getOrCreateLocal(insn.var, insn);
     addReadOperandAssignments(local);
     if (!insnToStmt.containsKey(insn)) {
       JAddExpr add = Jimple.newAddExpr(local, IntConstant.getInstance(insn.incr));
@@ -726,7 +774,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
        * We can ignore NOP instructions, but for completeness, we handle them
        */
       if (!insnToStmt.containsKey(insn)) {
-        insnToStmt.put(insn, Jimple.newNopStmt(getStmtPositionInfo()));
+        setStmt(insn, Jimple.newNopStmt(getStmtPositionInfo()));
       }
     } else if (op >= ACONST_NULL && op <= DCONST_1) {
       convertConstInsn(insn);
@@ -1247,7 +1295,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int op = insn.getOpcode();
     boolean dword = op == LLOAD || op == DLOAD;
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
-    Operand opr = new Operand(insn, getOrCreateLocal(insn.var), this);
+    Operand opr =
+        new Operand(
+            insn, getOrCreateLocal(insn.var, insn, AsmUtil.primitiveTypeFromOpcode(op)), this);
     merging.mergeOutput(opr);
     if (dword) {
       operandStack.pushDual(opr);
@@ -1262,7 +1312,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     Operand opr = dword ? operandStack.popDual() : operandStack.pop();
     merging.mergeInputs(opr);
-    Local local = getOrCreateLocal(insn.var);
+    Type valueType = opr.value.getType();
+    Type typeHint =
+        (valueType instanceof UnknownType) ? AsmUtil.primitiveTypeFromOpcode(op) : valueType;
+    Local local = getOrCreateLocal(insn.var, insn, typeHint);
     AbstractDefinitionStmt as;
     if (opr.stackLocal == null) {
       // Can skip creating a new stack local for the operand
@@ -1292,7 +1345,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else if (op == RET) {
       /* we handle it, even though it should be removed */
       if (!insnToStmt.containsKey(insn)) {
-        setStmt(insn, Jimple.newRetStmt(getOrCreateLocal(insn.var), getStmtPositionInfo()));
+        setStmt(insn, Jimple.newRetStmt(getOrCreateLocal(insn.var, insn), getStmtPositionInfo()));
       }
     } else {
       throw new UnsupportedOperationException("Unknown var op: " + op);
@@ -1610,7 +1663,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // [BH] parameterlocals do not exist yet -> create with annotation
       JavaLocal local =
           JavaJimple.newLocal(
-              determineLocalName(localIdx),
+              determineLocalName(localIdx, null),
               parameterType,
               AsmUtil.createAnnotationUsage(
                   invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));
@@ -1660,9 +1713,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return traps;
   }
 
-  /** all Instructions are converted. Now they can be arranged into the StmtGraph. */
+  /** all Instructions are converted. Now they can be arranged into the ControlFlowGraph. */
   private void arrangeStmts(
-      MutableBlockStmtGraph graph, Body.BodyBuilder bodyBuilder, List<Stmt> preambleStmts) {
+      MutableBlockControlFlowGraph graph, Body.BodyBuilder bodyBuilder, List<Stmt> preambleStmts) {
 
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
@@ -1813,27 +1866,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       return;
     }
 
-    AbstractInsnNode key = null;
-
-    // TODO: [ms] bit expensive and called a lot? -> find better solution!
-    for (Entry<AbstractInsnNode, Stmt> entry : insnToStmt.entrySet()) {
-      if (Objects.equals(oldStmt, entry.getValue())) {
-        key = entry.getKey();
-      }
-    }
-
+    AbstractInsnNode key = stmtToInsn.get(oldStmt);
     if (key == null) {
-      // throw new IllegalStateException("Could not replace value in insn map because oldStmt " +
-      // oldStmt + " it is absent");
       return;
     }
 
     if (newStmt == null) {
       insnToStmt.remove(key);
+      stmtToInsn.remove(oldStmt);
       return;
     }
 
     insnToStmt.put(key, newStmt);
+    stmtToInsn.remove(oldStmt);
+    stmtToInsn.put(newStmt, key);
     replacedStmt.put(oldStmt, newStmt);
 
     if (oldStmt instanceof BranchingStmt) {
@@ -1851,11 +1897,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    */
   public Stream<Stmt> getStmtsThatUse(@NonNull Value value) {
     Stream<Stmt> currentUses =
-        insnToStmt.values().stream().filter(stmt -> stmt.getUses().anyMatch(v -> v == value));
+        insnToStmt.values().stream()
+            .filter(stmt -> stmt.getUses().stream().anyMatch(v -> v == value));
 
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()
-            .filter(stmt -> stmt.getKey().getUses().anyMatch(v -> v == value))
+            .filter(stmt -> stmt.getKey().getUses().stream().anyMatch(v -> v == value))
             .map(stmt -> getLatestVersionOfStmt(stmt.getValue()));
 
     return Stream.concat(currentUses, oldMappedUses);

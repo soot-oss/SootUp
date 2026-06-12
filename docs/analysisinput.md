@@ -100,7 +100,7 @@ File-Extensions: `.jimple`
 The `JimpleAnalysisInputLocation` needs a Path to a .jimple file or a directory.
 
 ```java
-Path path = Paths.get("Banana.java");
+Path path = Paths.get("Banana.jimple");
 AnalysisInputLocation jimpleLocation = new JimpleAnalysisInputLocation(path);
 JavaView view = new JavaView(jimpleLocation);
 ```

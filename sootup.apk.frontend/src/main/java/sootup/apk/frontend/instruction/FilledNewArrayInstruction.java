@@ -28,7 +28,7 @@ import org.jf.dexlib2.iface.reference.TypeReference;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
@@ -61,13 +61,13 @@ public class FilledNewArrayInstruction extends FilledArrayInstruction {
     // new local generated intentional, will be moved to real register by MoveResult
     Local arrayLocal = body.getStoreResultLocal();
     JAssignStmt assign =
-        Jimple.newAssignStmt(arrayLocal, arrayExpr, StmtPositionInfo.getNoStmtPositionInfo());
+        Jimple.newAssignStmt(arrayLocal, arrayExpr, new SimpleStmtPositionInfo(lineNumber));
     body.add(assign);
     for (int i = 0; i < usedRegister; i++) {
       JArrayRef arrayRef = JavaJimple.newArrayRef(arrayLocal, IntConstant.getInstance(i));
       JAssignStmt assign2 =
           Jimple.newAssignStmt(
-              arrayRef, body.getRegisterLocal(regs[i]), StmtPositionInfo.getNoStmtPositionInfo());
+              arrayRef, body.getRegisterLocal(regs[i]), new SimpleStmtPositionInfo(lineNumber));
       body.add(assign2);
     }
     setStmt(assign);

@@ -1,0 +1,51 @@
+name: Documentation Preview
+
+on:
+  pull_request:
+    types:
+      - opened
+      - closed
+      - synchronize
+      - reopened
+    paths:
+      - mkdocs.yml                                        # static site generator config
+      - .github/workflows/documentation-pr-preview.yml    # refers to this workflow file
+      - docs/**                                           # actual documentation
+      - sootup.examples/**                                # where example code that is included in the documentation is stored
+
+concurrency:
+  group: gh-pages
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-preview:
+    name: Preview documentation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write                                # for posting a comment
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0                                  # mike needs full history to push to gh-pages
+
+      - name: Grab latest release url of the JimpleLSP jar and download it - for use in Pygments+LspLexer4Pygments
+        shell: bash
+        run: |
+          URL=$(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | jq -r '[.assets[] | select(.name | endswith(".jar"))][0].browser_download_url')
+          curl -s -L -o ./jimplelsp.jar $URL
+
+      - name: Generate Javadoc
+        shell: bash
+        run: mvn clean install -DskipTests -B -ntp && mvn javadoc:aggregate         # generates javadoc in "target/reports/apidocs"
+
+      - name: Move generated Javadoc into docs directory
+        shell: bash
+        run: rm -rf docs/api; mkdir -p docs/api; mv target/reports/apidocs/* docs/api
+
+      - name: Create Documentation Preview
+        uses: secure-software-engineering/actions/documentation/pr-preview@0caaeef2e50a42448e00423a073c676aebead49f # develop

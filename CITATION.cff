@@ -5,8 +5,8 @@ type: software
 authors:
   - given-names: Soot-oss
 repository-code: 'https://github.com/soot-oss/SootUp'
-version: 1.3.0
-date-released: '2024-06-12'
+version: 2.0.0
+date-released: '2025-02-19'
 preferred-citation:
   type: conference-paper
   authors:
@@ -24,8 +24,8 @@ preferred-citation:
     given-names: "Linghui"
   - family-names: "He"
     given-names: "Dongjie"
-  doi: "110.1007/978-3-031-57246-3_13"
-  booktitle="Tools and Algorithms for the Construction and Analysis of Systems",
+  doi: "10.1007/978-3-031-57246-3_13"
+  booktitle: "Tools and Algorithms for the Construction and Analysis of Systems"
   start: 229 # First page number
   end: 247 # Last page number
   title: "SootUp: A Redesign of the Soot Static Analysis Framework"

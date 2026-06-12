@@ -22,9 +22,8 @@ package sootup.java.core.views;
  * #L%
  */
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.cache.ClassCache;
@@ -33,7 +32,6 @@ import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -115,11 +113,6 @@ public class JavaView extends AbstractView {
     return abstractClass.map(this::buildClassFrom);
   }
 
-  @NonNull
-  public Optional<JavaAnnotationSootClass> getAnnotationClass(@NonNull ClassType type) {
-    return getClass(type).filter(SootClass::isAnnotation).map(sc -> (JavaAnnotationSootClass) sc);
-  }
-
   @Override
   @NonNull
   public Optional<JavaSootMethod> getMethod(@NonNull MethodSignature signature) {
@@ -147,23 +140,25 @@ public class JavaView extends AbstractView {
 
   @NonNull
   protected Optional<JavaSootClassSource> getClassSource(@NonNull ClassType type) {
-    return inputLocations.parallelStream()
-        .map(location -> location.getClassSource(type, this))
-        .filter(Optional::isPresent)
-        // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
-        // classpath the first is returned (see splitpackage)
-        .limit(1)
-        .map(Optional::get)
-        .map(classSource -> (JavaSootClassSource) classSource)
-        .findAny();
+    // Process inputLocations in parallel but preserve the "first-in-list" semantics by
+    // attaching indices and selecting the smallest index whose location produced a present
+    // Optional. This keeps full parallelism while returning the earliest-match by input order.
+    // Which actually matches the JVM behavior and is deterministic so nicer anyway.
+    return IntStream.range(0, inputLocations.size())
+        .parallel()
+        .mapToObj(
+            i -> new AbstractMap.SimpleEntry<>(i, inputLocations.get(i).getClassSource(type, this)))
+        .filter(e -> e.getValue().isPresent())
+        // pick the entry with the smallest original index
+        .min(Comparator.comparingInt(e -> e.getKey()))
+        .map(e -> (JavaSootClassSource) e.getValue().get());
   }
 
   @NonNull
   protected synchronized JavaSootClass buildClassFrom(JavaSootClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
-    JavaSootClass theClass;
-    theClass = (JavaSootClass) cache.getClass(classType);
+    JavaSootClass theClass = (JavaSootClass) cache.getClass(classType);
     if (theClass == null) {
       theClass = classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
       cache.putClass(classType, theClass);

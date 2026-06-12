@@ -32,7 +32,7 @@ import qilin.core.ArtificialMethod;
 import qilin.util.PTAUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -88,11 +88,11 @@ public class FakeMainFactory extends ArtificialMethod {
     final JNopStmt jNop = new JNopStmt(noPosInfo);
     this.bodyBuilder = Body.builder();
     makeFakeMain(currentThread);
-    final MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.addBlock(stmtList);
-    stmtGraph.setStartingStmt(jNop);
-    stmtGraph.putEdge(jNop, stmtList.get(0));
-    stmtGraph.putEdge((FallsThroughStmt) stmtList.get(stmtList.size() - 1), returnVoidStmt);
+    final MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.addBlock(stmtList);
+    controlFlowGraph.setStartingStmt(jNop);
+    controlFlowGraph.putEdge(jNop, stmtList.get(0));
+    controlFlowGraph.putEdge((FallsThroughStmt) stmtList.get(stmtList.size() - 1), returnVoidStmt);
 
     bodyBuilder
         .setMethodSignature(methodSignatureOne)

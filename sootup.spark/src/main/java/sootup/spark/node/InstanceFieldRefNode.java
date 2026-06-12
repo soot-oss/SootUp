@@ -4,7 +4,7 @@ package sootup.spark.node;
  * #%L
  * SootUp
  * %%
- * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya, Palaniappan Muthuraman
+ * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,6 +23,7 @@ package sootup.spark.node;
  */
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
@@ -33,6 +34,7 @@ import sootup.core.signatures.FieldSignature;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class InstanceFieldRefNode extends Node {
 
   VariableNode base;
@@ -41,6 +43,11 @@ public class InstanceFieldRefNode extends Node {
   @Override
   public String toString() {
     return String.format(
-        "\"%s (%s %s).%s\"", field.getType(), base.getType(), base.getName(), field.getName());
+        "\"%s{%s (%s %s).%s}\"",
+        getContainingMethodSig().getName(),
+        field.getType(),
+        base.getType(),
+        base.getName(),
+        field.getName());
   }
 }

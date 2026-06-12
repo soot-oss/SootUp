@@ -23,7 +23,7 @@ package sootup.interceptors;
  */
 import java.util.*;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
@@ -41,7 +41,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
-    MutableStmtGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
     // Get the order of all Locals' occurrences and store them into a map
     Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
     int defsCount = 0;

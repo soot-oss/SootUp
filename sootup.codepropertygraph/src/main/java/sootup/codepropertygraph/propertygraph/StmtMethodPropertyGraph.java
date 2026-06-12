@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import sootup.codepropertygraph.propertygraph.edges.PropertyGraphEdge;
+import sootup.codepropertygraph.propertygraph.nodes.ControlFlowGraphNode;
 import sootup.codepropertygraph.propertygraph.nodes.MethodGraphNode;
 import sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode;
-import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
 import sootup.codepropertygraph.propertygraph.util.PropertyGraphToDotConverter;
 
 public final class StmtMethodPropertyGraph implements PropertyGraph {
@@ -74,7 +74,7 @@ public final class StmtMethodPropertyGraph implements PropertyGraph {
 
     @Override
     public Builder addNode(PropertyGraphNode node) {
-      if (!(node instanceof StmtGraphNode || node instanceof MethodGraphNode)) {
+      if (!(node instanceof ControlFlowGraphNode || node instanceof MethodGraphNode)) {
         throw new IllegalArgumentException("Graph can only contain statement or method nodes");
       }
       if (!nodes.contains(node)) {

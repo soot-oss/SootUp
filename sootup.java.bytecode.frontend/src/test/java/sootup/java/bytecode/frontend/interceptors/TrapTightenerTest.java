@@ -3,8 +3,8 @@ package sootup.java.bytecode.frontend.interceptors;
 import java.util.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableBlockStmtGraph;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
@@ -31,7 +31,7 @@ import sootup.java.core.views.JavaView;
 /**
  * @author Zun Wang
  */
-@Disabled("FIXME: needs .setTraps() adapted to MutableBlockStmtGraph")
+@Disabled("FIXME: needs .setTraps() adapted to MutableBlockControlFlowGraph")
 public class TrapTightenerTest {
   public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();
 
@@ -122,17 +122,17 @@ public class TrapTightenerTest {
     Body body = createSimpleBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    // modify exceptionalStmtGraph
-    stmtGraph.clearExceptionalEdges(stmt1);
-    stmtGraph.clearExceptionalEdges(stmt10);
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    // modify exceptionalControlFlowGraph
+    controlFlowGraph.clearExceptionalEdges(stmt1);
+    controlFlowGraph.clearExceptionalEdges(stmt10);
 
     TrapTightener trapTightener = new TrapTightener();
     trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap3);
-    briefStmtPrinter.buildTraps(stmtGraph);
+    briefStmtPrinter.buildTraps(controlFlowGraph);
     List<Trap> actual = briefStmtPrinter.getTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
@@ -164,24 +164,24 @@ public class TrapTightenerTest {
 
     Body.BodyBuilder builder = Body.builder(creatBodyWithMonitor(), Collections.emptySet());
 
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    // modify exceptionalStmtGraph
-    stmtGraph.clearExceptionalEdges(stmt2);
-    stmtGraph.clearExceptionalEdges(stmt4);
-    //  stmtGraph.putEdge(, stmt6);
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    // modify exceptionalControlFlowGraph
+    controlFlowGraph.clearExceptionalEdges(stmt2);
+    controlFlowGraph.clearExceptionalEdges(stmt4);
+    //  controlFlowGraph.putEdge(, stmt6);
 
     TrapTightener trapTightener = new TrapTightener();
     trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap1);
-    briefStmtPrinter.buildTraps(stmtGraph);
+    briefStmtPrinter.buildTraps(controlFlowGraph);
     List<Trap> actual = briefStmtPrinter.getTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
 
   private Body createSimpleBody() {
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    MutableControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
@@ -204,7 +204,7 @@ public class TrapTightenerTest {
   }
 
   private Body creatBodyWithMonitor() {
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    MutableControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 

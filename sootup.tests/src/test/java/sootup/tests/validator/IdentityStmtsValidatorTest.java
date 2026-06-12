@@ -9,13 +9,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
-import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.core.validation.IdentityStmtsValidator;
 import sootup.core.validation.ValidationException;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
 
@@ -119,7 +119,7 @@ public class IdentityStmtsValidatorTest {
   */
 
   Body getBody(String methodSignature) {
-    Optional<? extends SootMethod> optionalSootMethod =
+    Optional<JavaSootMethod> optionalSootMethod =
         jimpleView.getMethod(
             jimpleView.getIdentifierFactory().parseMethodSignature(methodSignature));
     assertTrue(optionalSootMethod.isPresent());

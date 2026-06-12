@@ -24,7 +24,7 @@ package sootup.interceptors;
 import com.google.common.collect.Lists;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.JCastExpr;
@@ -68,7 +68,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
-    MutableStmtGraph graph = builder.getStmtGraph();
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
     Set<Local> locals = builder.getLocals();
 
     for (Stmt stmt : Lists.newArrayList(graph.getNodes())) {

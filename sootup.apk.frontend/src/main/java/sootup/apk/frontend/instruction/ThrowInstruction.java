@@ -26,7 +26,7 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction11x;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 
 public class ThrowInstruction extends DexLibAbstractInstruction {
@@ -36,7 +36,7 @@ public class ThrowInstruction extends DexLibAbstractInstruction {
     JThrowStmt jThrowStmt =
         Jimple.newThrowStmt(
             body.getRegisterLocal(throwInstruction.getRegisterA()),
-            StmtPositionInfo.getNoStmtPositionInfo());
+            new SimpleStmtPositionInfo(lineNumber));
     setStmt(jThrowStmt);
     body.add(jThrowStmt);
   }
