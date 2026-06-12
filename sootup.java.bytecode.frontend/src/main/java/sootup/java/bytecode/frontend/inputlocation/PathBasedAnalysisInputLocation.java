@@ -95,6 +95,9 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     return bodyInterceptors;
   }
 
+  @Override
+  public void close() {}
+
   @NonNull
   public static PathBasedAnalysisInputLocation create(
       @NonNull Path path, @NonNull SourceType sourceType) {

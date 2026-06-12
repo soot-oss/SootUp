@@ -46,7 +46,7 @@ import sootup.core.views.View;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public interface AnalysisInputLocation {
+public interface AnalysisInputLocation extends AutoCloseable {
   /**
    * Create or find a class source for a given type.
    *
@@ -73,4 +73,7 @@ public interface AnalysisInputLocation {
   @NonNull SourceType getSourceType();
 
   @NonNull List<BodyInterceptor> getBodyInterceptors();
+
+  /** Release any file-system resources held by this input location (e.g. open ZipFileSystems). */
+  default void close() throws Exception {}
 }

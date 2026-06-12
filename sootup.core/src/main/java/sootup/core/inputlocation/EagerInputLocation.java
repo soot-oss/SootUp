@@ -94,6 +94,9 @@ public class EagerInputLocation implements AnalysisInputLocation {
   }
 
   @Override
+  public void close() {}
+
+  @Override
   public boolean equals(Object o) {
     if (!(o instanceof EagerInputLocation)) {
       return false;

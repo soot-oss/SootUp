@@ -217,7 +217,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
    * lists all versions from the version directories inside the META-INF/ directory - excluding the
    * default implemention version
    */
-  protected static List<Integer> getLanguageVersions(@NonNull Path path) {
+  protected List<Integer> getLanguageVersions(@NonNull Path path) {
     FileSystem fs;
     try {
       fs = fileSystemCache.get(path);

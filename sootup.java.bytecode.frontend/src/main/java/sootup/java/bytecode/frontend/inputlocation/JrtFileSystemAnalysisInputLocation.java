@@ -54,7 +54,8 @@ import sootup.java.core.types.JavaClassType;
  */
 public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInputLocation {
 
-  // FIXME: handle closing the filesystem resource
+  // jrt:/ is the JVM's built-in module filesystem; getFileSystem() returns the existing instance
+  // (does not open a new one) so it must not be closed — it is owned and managed by the JVM.
   private static final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
   private final Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
   boolean isResolved = false;

@@ -74,4 +74,9 @@ abstract class ScopedAnalysisInputLocation implements AnalysisInputLocation {
   public List<BodyInterceptor> getBodyInterceptors() {
     return inputLocation.getBodyInterceptors();
   }
+
+  @Override
+  public void close() throws Exception {
+    inputLocation.close();
+  }
 }

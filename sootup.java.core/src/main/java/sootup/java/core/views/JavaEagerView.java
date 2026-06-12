@@ -66,5 +66,14 @@ public class JavaEagerView extends JavaView {
                           }
                         });
               }); // forces loading
+
+    // All class data is now in the FullCache — release file-system resources.
+    for (AnalysisInputLocation loc : inputLocations) {
+      try {
+        loc.close();
+      } catch (Exception e) {
+        throw new RuntimeException("Failed to close input location after eager load", e);
+      }
+    }
   }
 }

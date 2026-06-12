@@ -31,6 +31,7 @@ import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
@@ -83,10 +84,16 @@ public class JavaView extends AbstractView {
   public synchronized Stream<JavaSootClass> getClasses() {
     if (isFullyResolved && cache instanceof FullCache) {
       return cache.getClasses().map(clazz -> (JavaSootClass) clazz);
-    }// TODO: [ms] find a way to not stream().collect().stream()
+    }
     List<JavaSootClass> resolvedClasses =
         inputLocations.stream()
-            .flatMap(location -> location.getClassSources(this).toList().stream())
+            .flatMap(
+                location -> {
+                  try (Stream<? extends SootClassSource> sources =
+                      location.getClassSources(this)) {
+                    return sources.toList().stream();
+                  }
+                })
             .map(sootClassSource -> (JavaSootClassSource) sootClassSource)
             .map(this::buildClassFrom)
             .toList();

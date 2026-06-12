@@ -47,9 +47,8 @@ import sootup.java.core.types.JavaClassType;
 public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
   // We cache the FileSystem instances as their creation is expensive.
-  // The Guava Cache is thread-safe (see JavaDoc of LoadingCache) hence this
-  // cache can be safely shared in a static variable.
-  protected static final LoadingCache<Path, FileSystem> fileSystemCache =
+  // The Guava Cache is thread-safe (see JavaDoc of LoadingCache).
+  protected final LoadingCache<Path, FileSystem> fileSystemCache =
       CacheBuilder.newBuilder()
           .weakValues()
           .removalListener(
@@ -122,5 +121,11 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
     } catch (ExecutionException e) {
       throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
     }
+  }
+
+  @Override
+  public void close() {
+    // Evicting all entries triggers the removalListener which calls fileSystem.close() on each.
+    fileSystemCache.invalidateAll();
   }
 }
