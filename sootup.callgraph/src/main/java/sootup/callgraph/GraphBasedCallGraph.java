@@ -26,7 +26,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.graph4j.DirectedPseudograph;
 import org.graph4j.Edge;
+import org.graph4j.EdgeIterator;
 import org.graph4j.GraphBuilder;
+import org.graph4j.PredecessorIterator;
+import org.graph4j.SuccessorIterator;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.signatures.MethodSignature;
@@ -94,9 +97,13 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @NonNull
   @Override
   public Set<Call> getCalls() {
-    return Arrays.stream(graph.edges())
-        .map(edge -> (Call) edge.label())
-        .collect(Collectors.toSet());
+    Set<Call> result = new HashSet<>();
+    EdgeIterator<Call> it = graph.edgeIterator();
+    while (it.hasNext()) {
+      it.next();
+      result.add(it.getLabel());
+    }
+    return result;
   }
 
   @NonNull
@@ -118,9 +125,13 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @NonNull
   @Override
   public Set<Call> callsFrom(@NonNull MethodSignature sourceMethod) {
-    return Arrays.stream(graph.outgoingEdgesFrom(vertexOf(sourceMethod)))
-        .map(e -> (Call) e.label())
-        .collect(Collectors.toSet());
+    Set<Call> result = new HashSet<>();
+    SuccessorIterator<Call> it = graph.successorIterator(vertexOf(sourceMethod));
+    while (it.hasNext()) {
+      it.next();
+      result.add(it.getEdgeLabel());
+    }
+    return result;
   }
 
   @NonNull
@@ -137,9 +148,13 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @NonNull
   @Override
   public Set<Call> callsTo(@NonNull MethodSignature targetMethod) {
-    return Arrays.stream(graph.incomingEdgesTo(vertexOf(targetMethod)))
-        .map(e -> (Call) e.label())
-        .collect(Collectors.toSet());
+    int targetVertex = vertexOf(targetMethod);
+    Set<Call> result = new HashSet<>();
+    for (PredecessorIterator<Call> it = graph.predecessorIterator(targetVertex); it.hasNext(); ) {
+      it.next();
+      result.add(it.getEdgeLabel());
+    }
+    return result;
   }
 
   @Override
@@ -160,8 +175,10 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @Override
   public boolean containsCall(@NonNull Call call) {
-    for (Edge edge : graph.edges()) {
-      if (call.equals(edge.label())) {
+    EdgeIterator<Call> it = graph.edgeIterator();
+    while (it.hasNext()) {
+      it.next();
+      if (call.equals(it.getLabel())) {
         return true;
       }
     }
@@ -170,7 +187,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @Override
   public int callCount() {
-    return graph.edges().length;
+    return (int) graph.numEdges();
   }
 
   @NonNull
@@ -220,7 +237,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
     // Iterate through outgoing edges from source to target
     for (Edge edge : graph.outgoingEdgesFrom(sourceVertexOpt)) {
-      if (edge.target() == targetVertexOpt) {
+      if (edge != null && edge.target() == targetVertexOpt) {
         Call call = (Call) edge.label();
         if (call.invokableStmt() == invokableStmt) {
           return call;
