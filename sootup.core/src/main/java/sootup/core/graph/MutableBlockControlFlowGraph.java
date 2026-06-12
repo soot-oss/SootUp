@@ -495,9 +495,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
   @NonNull
   public List<? extends BasicBlock<?>> getBlocksSorted() {
-    ReversePostOrderBlockTraversal reversePostOrderBlockTraversal =
-        new ReversePostOrderBlockTraversal(this);
-    return reversePostOrderBlockTraversal.getBlocksSorted();
+    return new ReversePostOrderBlockTraversal(this).getBlockTraversal();
   }
 
   /**
@@ -1158,9 +1156,6 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       if (!tryMergeBlocks(newBlock, oldBlock)) {
         // all inserted stmts are FallingThrough: so successorIdx = 0
         newBlock.linkSuccessor(0, oldBlock);
-        if (existingStmt == getStartingStmt()) {
-          setStartingStmt(stmts.get(0));
-        }
       }
       if (existingStmt == getStartingStmt()) {
         setStartingStmt(stmts.get(0));
@@ -1551,7 +1546,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   }
 
   @Override
-  @Nullable
+  @NonNull
   public BasicBlock<?> getBlockOf(@NonNull Stmt stmt) {
     final Pair<Integer, MutableBasicBlock> mutableBasicBlock = stmtToBlock.get(stmt);
     if (mutableBasicBlock == null) {
@@ -1569,11 +1564,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
   public void setStartingStmt(@NonNull Stmt startingStmt) {
     if (stmtToBlock.get(startingStmt) == null) {
-      Pair<Integer, MutableBasicBlock> block = stmtToBlock.get(startingStmt);
-      if (block == null) {
-        // Stmt does not exist in the graph
-        createStmtsBlock(startingStmt);
-      }
+      createStmtsBlock(startingStmt);
     }
     this.startingStmt = startingStmt;
   }
@@ -1643,7 +1634,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
     List<Stmt> exceptionalPred = new ArrayList<>();
     for (BasicBlock<?> pBlock : block.getPredecessors()) {
-      if (pBlock.getExceptionalSuccessors().containsValue(pBlock)) {
+      if (pBlock.getExceptionalSuccessors().containsValue(block)) {
         exceptionalPred.addAll(pBlock.getStmts());
       }
     }

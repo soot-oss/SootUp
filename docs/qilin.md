@@ -1,5 +1,7 @@
 # Incorporate Qilin Pointer Analysis
 
+# WIP! Experimental!
+
 ### Dependencies
 
 === "Maven"
@@ -87,3 +89,17 @@ Note that the symbol **k** used in the table should be replaced with a concrete 
 | **k**o -cd -cda=DEBLOATERX | The context debloated version of **k**OBJ using DebloaterX.   | [Paper](https://dl.acm.org/doi/10.1145/3622832)                           |
 | s-**k**c                   | SELECTX-guided **k**CFA.                                      | [Paper](https://doi.org/10.1007/978-3-030-88806-0_13)                     |
 
+## Qilin Pointer Analysis
+
+Qilin builds a call graph on the fly with the pointer analysis.
+You can construct a call graph with Qilin as follows:
+
+=== "SootUp"
+
+    ```java
+    String MAINCLASS = "dacapo.antlr.Main"; // just an example
+    PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern("insens"); // "2o"=>2OBJ, "1c"=>1CFA, etc.
+    PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern, view, MAINCLASS);
+    pta.run();
+    CallGraph cg = pta.getCallGraph();
+    ```

@@ -27,9 +27,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultUndirectedGraph;
+import org.graph4j.Digraph;
+import org.graph4j.GraphBuilder;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
 import sootup.spark.node.Node;
@@ -42,14 +41,10 @@ import sootup.spark.node.VariableNode;
 public class PAG {
 
   SparkOptions options;
-  Graph<Node, PAGEdge> delegate;
+  @NonNull Digraph<Node, PAGEdge> delegate = GraphBuilder.empty().buildDigraph();
 
   public PAG(@NonNull SparkOptions options) {
     this.options = options;
-    this.delegate =
-        options.isSimpleEdgesBidirectional()
-            ? new DefaultUndirectedGraph<>(PAGEdge.class)
-            : new DefaultDirectedGraph<>(PAGEdge.class);
   }
 
   public void addEdge(Node source, Node target) {
@@ -69,8 +64,13 @@ public class PAG {
   }
 
   private void addEdge(Node source, Node target, PAGEdge edge) {
-    delegate.addVertex(source);
-    delegate.addVertex(target);
-    delegate.addEdge(source, target, edge);
+    int sIdx = delegate.findVertex(source);
+    if (sIdx == -1) sIdx = delegate.addLabeledVertex(source);
+    int tIdx = delegate.findVertex(target);
+    if (tIdx == -1) tIdx = delegate.addLabeledVertex(target);
+    if (!delegate.containsEdge(sIdx, tIdx)) delegate.addLabeledEdge(sIdx, tIdx, edge);
+    if (options.isSimpleEdgesBidirectional() && !delegate.containsEdge(tIdx, sIdx)) {
+      delegate.addLabeledEdge(tIdx, sIdx, edge);
+    }
   }
 }
