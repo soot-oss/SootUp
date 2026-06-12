@@ -83,20 +83,16 @@ public class JavaView extends AbstractView {
   public synchronized Stream<JavaSootClass> getClasses() {
     if (isFullyResolved && cache instanceof FullCache) {
       return cache.getClasses().map(clazz -> (JavaSootClass) clazz);
-    }
-
-    Stream<JavaSootClass> resolvedClasses =
+    }// TODO: [ms] find a way to not stream().collect().stream()
+    List<JavaSootClass> resolvedClasses =
         inputLocations.stream()
-            .flatMap(
-                location -> {
-                  // TODO: [ms] find a way to not stream().collect().stream()
-                  return location.getClassSources(this).toList().stream();
-                })
+            .flatMap(location -> location.getClassSources(this).toList().stream())
             .map(sootClassSource -> (JavaSootClassSource) sootClassSource)
-            .map(this::buildClassFrom);
+            .map(this::buildClassFrom)
+            .toList();
 
     isFullyResolved = true;
-    return resolvedClasses;
+    return resolvedClasses.stream();
   }
 
   /** Resolves the class matching the provided {@link ClassType ClassType}. */
@@ -166,11 +162,5 @@ public class JavaView extends AbstractView {
       cache.putClass(classType, theClass);
     }
     return theClass;
-  }
-
-  private JavaSootClass buildAndCache(JavaSootClassSource classSource) {
-    JavaSootClass sootClass = classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
-    cache.putClass(classSource.getClassType(), sootClass);
-    return sootClass;
   }
 }

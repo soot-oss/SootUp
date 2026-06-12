@@ -22,7 +22,6 @@ package sootup.core.cache;
  * #L%
  */
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -44,7 +43,7 @@ public class FullCache implements ClassCache {
   @NonNull
   @Override
   public Stream<SootClass> getClasses() {
-    return cache.values().parallelStream();
+    return cache.values().stream();
   }
 
   @Override

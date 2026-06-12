@@ -54,7 +54,7 @@ public class LRUCache implements ClassCache {
   @NonNull
   @Override
   public Stream<SootClass> getClasses() {
-    return cache.values().parallelStream();
+    return cache.values().stream();
   }
 
   @Override

@@ -22,7 +22,6 @@ package sootup.core.cache;
  * #L%
  */
 
-import java.util.Collection;
 import java.util.stream.Stream;
 
 import org.jspecify.annotations.NonNull;
