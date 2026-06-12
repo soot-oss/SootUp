@@ -896,24 +896,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Incorporate Pointer Analysis
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -930,69 +912,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#dependencies" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dependencies
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-create-a-pointer-analysis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to create a pointer analysis
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-use-pointer-analysis-results" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to use pointer analysis results
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#a-full-list-of-pointer-analyses" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        A Full list of Pointer Analyses
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -1225,58 +1144,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#dependencies" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dependencies
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-create-a-pointer-analysis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to create a pointer analysis
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-use-pointer-analysis-results" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to use pointer analysis results
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#a-full-list-of-pointer-analyses" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        A Full list of Pointer Analyses
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1296,6 +1163,7 @@
 
 
 <h1 id="incorporate-qilin-pointer-analysis">Incorporate Qilin Pointer Analysis</h1>
+<h1 id="wip-experimental">WIP! Experimental!</h1>
 <h3 id="dependencies">Dependencies</h3>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Maven</label><label for="__tabbed_1_2">Gradle</label></div>
 <div class="tabbed-content">
@@ -1463,6 +1331,25 @@ This method allows to check for potential aliasing between two values given a PT
 </tr>
 </tbody>
 </table>
+<h2 id="qilin-pointer-analysis">Qilin Pointer Analysis</h2>
+<p>Qilin builds a call graph on the fly with the pointer analysis.
+You can construct a call graph with Qilin as follows:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">SootUp</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dacapo.antlr.Main&quot;</span><span class="p">;</span><span class="w"> </span><span class="c1">// just an example</span>
+<span class="n">PTAConfig</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getPtaConfig</span><span class="p">().</span><span class="na">ptaPattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PTAPattern</span><span class="p">(</span><span class="s">&quot;insens&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// &quot;2o&quot;=&gt;2OBJ, &quot;1c&quot;=&gt;1CFA, etc.</span>
+<span class="n">PTA</span><span class="w"> </span><span class="n">pta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PTAFactory</span><span class="p">.</span><span class="na">createPTA</span><span class="p">(</span><span class="n">PTAConfig</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getPtaConfig</span><span class="p">().</span><span class="na">ptaPattern</span><span class="p">,</span><span class="w"> </span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="p">);</span>
+<span class="n">pta</span><span class="p">.</span><span class="na">run</span><span class="p">();</span>
+<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">getCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
 
 
 
