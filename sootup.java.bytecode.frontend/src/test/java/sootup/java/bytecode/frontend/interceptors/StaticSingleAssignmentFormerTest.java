@@ -148,8 +148,14 @@ public class StaticSingleAssignmentFormerTest {
     Body bodyAfterSSA = viewSSA.getMethod(methodSignature).get().getBody();
     String expectedBodyString =
         "{\n"
+            + "    byte[] $stack9, $stack9#5, l1, l1#6;\n"
+            + "    java.io.ByteArrayOutputStream $stack7, $stack7#1, l2, l2#2;\n"
+            + "    java.io.PrintStream $stack11, $stack11#16;\n"
+            + "    java.lang.String $stack10, $stack10#17, $stack8, $stack8#4;\n"
             + "    java.lang.String[] l0, l0#0;\n"
-            + "    unknown $stack10, $stack10#10, $stack11, $stack11#9, $stack12, $stack12#16, $stack13, $stack13#14, $stack14, $stack14#11, $stack15, $stack15#7, $stack7, $stack7#1, $stack8, $stack8#4, $stack9, $stack9#5, l1, l1#6, l2, l2#2, l3, l3#13, l3#3, l4, l4#12, l4#8, l5, l5#15, l6, l6#17;\n"
+            + "    java.lang.Throwable l4, l4#15, l4#8, l6, l6#13;\n"
+            + "    \"null\" l3, l3#3, l3#9;\n"
+            + "    unknown $stack12, $stack12#12, $stack13, $stack13#10, $stack14, $stack14#7, $stack15, $stack15#14, l5, l5#11;\n"
             + "\n"
             + "\n"
             + "    l0#0 := @parameter0: java.lang.String[];\n"
@@ -255,8 +261,11 @@ public class StaticSingleAssignmentFormerTest {
 
     String expectedBodyString =
         "{\n"
+            + "    int $stack3, $stack3#5, l2, l2#12, l2#2, l2#4;\n"
+            + "    java.io.PrintStream $stack4, $stack4#6;\n"
+            + "    java.lang.String $stack6, $stack6#9, l1, l1#1, l1#11, l1#3;\n"
+            + "    java.lang.StringBuilder $stack5, $stack5#7, $stack7, $stack7#8, $stack8, $stack8#10;\n"
             + "    java.lang.String[] l0, l0#0;\n"
-            + "    unknown $stack3, $stack3#5, $stack4, $stack4#12, $stack5, $stack5#6, $stack6, $stack6#8, $stack7, $stack7#7, $stack8, $stack8#9, l1, l1#1, l1#10, l1#3, l2, l2#11, l2#2, l2#4;\n"
             + "\n"
             + "\n"
             + "    l0#0 := @parameter0: java.lang.String[];\n"
