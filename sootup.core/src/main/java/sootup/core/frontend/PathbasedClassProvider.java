@@ -23,10 +23,7 @@ package sootup.core.frontend;
  */
 
 import java.nio.file.Path;
-import java.util.Optional;
-import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
-import sootup.core.types.ClassType;
 
 /**
  * Responsible for creating {@link SootClassSource}es based on the handled file type (.class,
@@ -34,7 +31,7 @@ import sootup.core.types.ClassType;
  *
  * @author Manuel Benz
  */
-public interface PathbasedClassProvider extends ClassProvider<Path>{
+public interface PathbasedClassProvider extends ClassProvider<Path> {
 
   /** Returns the file type that is handled by this provider, e.g. class, jimple, java */
   FileType getHandledFileType();

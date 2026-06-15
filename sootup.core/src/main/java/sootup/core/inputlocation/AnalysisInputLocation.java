@@ -27,9 +27,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
-import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 

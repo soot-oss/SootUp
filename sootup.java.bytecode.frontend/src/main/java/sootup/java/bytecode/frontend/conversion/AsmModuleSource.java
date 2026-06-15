@@ -50,17 +50,17 @@ public class AsmModuleSource extends JavaModuleInfo {
     this.sourcePath = sourcePath;
   }
 
-    public static EnumSet<ModuleModifier> getModuleModifiers(int access) {
-      EnumSet<ModuleModifier> modifierEnumSet = EnumSet.noneOf(ModuleModifier.class);
+  public static EnumSet<ModuleModifier> getModuleModifiers(int access) {
+    EnumSet<ModuleModifier> modifierEnumSet = EnumSet.noneOf(ModuleModifier.class);
 
-      // add all modifiers for which (access & ABSTRACT) =! 0
-      for (ModuleModifier modifier : ModuleModifier.values()) {
-        if ((access & modifier.getBytecode()) != 0) {
-          modifierEnumSet.add(modifier);
-        }
+    // add all modifiers for which (access & ABSTRACT) =! 0
+    for (ModuleModifier modifier : ModuleModifier.values()) {
+      if ((access & modifier.getBytecode()) != 0) {
+        modifierEnumSet.add(modifier);
       }
-      return modifierEnumSet;
     }
+    return modifierEnumSet;
+  }
 
   @NonNull
   public static ClassNode getModuleDescriptor(Path moduleInfoFile) {

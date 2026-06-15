@@ -87,8 +87,7 @@ public class JavaView extends AbstractView {
         inputLocations.stream()
             .flatMap(
                 location -> {
-                  try (Stream<? extends SootClassSource> sources =
-                      location.getClassSources(this)) {
+                  try (Stream<? extends SootClassSource> sources = location.getClassSources(this)) {
                     return sources.toList().stream();
                   }
                 })

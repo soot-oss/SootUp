@@ -26,8 +26,8 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableBasicBlock;
 import sootup.core.graph.MutableControlFlowGraph;
-import sootup.core.model.Body;
 import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.model.Body;
 import sootup.core.views.View;
 
 /**

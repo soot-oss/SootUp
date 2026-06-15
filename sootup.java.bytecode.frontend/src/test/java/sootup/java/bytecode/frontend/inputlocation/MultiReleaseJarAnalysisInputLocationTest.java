@@ -163,7 +163,9 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
 
   @Test
   public void testVersions() {
-    List<Integer> languageVersions = new MultiReleaseJarAnalysisInputLocation(mrj, SourceType.Application, 8).getLanguageVersions(mrj);
+    List<Integer> languageVersions =
+        new MultiReleaseJarAnalysisInputLocation(mrj, SourceType.Application, 8)
+            .getLanguageVersions(mrj);
     assertTrue(languageVersions.contains(9));
     assertTrue(languageVersions.contains(10));
   }

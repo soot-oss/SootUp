@@ -25,8 +25,8 @@ package sootup.java.bytecode.frontend.inputlocation;
 import java.nio.file.Paths;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
-import sootup.core.model.SourceType;
 import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.model.SourceType;
 
 /**
  * Refers to the rt.jar from &lt;=Java8 as an AnalysisInputLocation requires: JAVA_HOME to be set

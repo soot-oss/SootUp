@@ -41,7 +41,9 @@ public class DexClassProvider implements PathbasedClassProvider {
 
   @Override
   public Optional<SootClassSource> createClassSource(
-          @NonNull AnalysisInputLocation inputLocation, @NonNull Path sourcePath, @NonNull ClassType classSignature) {
+      @NonNull AnalysisInputLocation inputLocation,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classSignature) {
     return Optional.of(new DexClassSource(view, inputLocation, classSignature, sourcePath));
   }
 

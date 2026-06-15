@@ -50,8 +50,8 @@ public abstract class JavaSootClassSource implements SootClassSource {
    *
    * @param inputLocation The {@link AnalysisInputLocation} that holds the given file
    * @param sourcePath Path to the source file of the to-be-created {@link SootClassSource}. The
-   *     given path has to exist and requires to be handled by this {@link
-   *     PathbasedClassProvider}. Implementations might double check this if wanted.
+   *     given path has to exist and requires to be handled by this {@link PathbasedClassProvider}.
+   *     Implementations might double check this if wanted.
    * @param classSignature the signature that has been used to resolve this class
    */
   public JavaSootClassSource(

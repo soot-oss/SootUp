@@ -12,8 +12,8 @@ import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
-import sootup.core.model.SourceType;
 import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.model.SourceType;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.java.core.*;
@@ -186,7 +186,9 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
   @NonNull
   protected Optional<JavaSootClassSource> getClassSourceInternal(
-      @NonNull JavaClassType signature, @NonNull Path path, @NonNull PathbasedClassProvider classProvider) {
+      @NonNull JavaClassType signature,
+      @NonNull Path path,
+      @NonNull PathbasedClassProvider classProvider) {
 
     Path pathToClass =
         path.resolve(
@@ -206,7 +208,9 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
   }
 
   protected Optional<JavaSootClassSource> getSingleClass(
-      @NonNull JavaClassType signature, @NonNull Path path, @NonNull PathbasedClassProvider classProvider) {
+      @NonNull JavaClassType signature,
+      @NonNull Path path,
+      @NonNull PathbasedClassProvider classProvider) {
 
     Path pathToClass = Paths.get(path.toString());
 

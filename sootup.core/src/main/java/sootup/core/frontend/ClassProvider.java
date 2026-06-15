@@ -22,13 +22,10 @@ package sootup.core.frontend;
  * #L%
  */
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.FileType;
 import sootup.core.types.ClassType;
-
-import java.nio.file.Path;
-import java.util.Optional;
 
 /**
  * Responsible for creating {@link SootClassSource}es
@@ -38,6 +35,7 @@ import java.util.Optional;
 public interface ClassProvider<E> {
 
   Optional<? extends SootClassSource> createClassSource(
-          @NonNull AnalysisInputLocation inputLocation, @NonNull E item, @NonNull ClassType classSignature);
-
+      @NonNull AnalysisInputLocation inputLocation,
+      @NonNull E item,
+      @NonNull ClassType classSignature);
 }

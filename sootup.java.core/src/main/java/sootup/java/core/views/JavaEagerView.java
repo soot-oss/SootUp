@@ -48,24 +48,24 @@ public class JavaEagerView extends JavaView {
   }
 
   protected void eagerLoadClasses() {
-      getClasses()
-          .forEach(
-              c -> {
-                c.getModifiers();
-                c.getFields();
-                c.getInterfaces();
-                c.getAnnotations();
-                c.getSuperclass();
-                c.getOuterClass();
-                c.getPosition();
-                c.getMethods()
-                    .forEach(
-                        m -> {
-                          if (m.hasBody()) {
-                            m.getBody();
-                          }
-                        });
-              }); // forces loading
+    getClasses()
+        .forEach(
+            c -> {
+              c.getModifiers();
+              c.getFields();
+              c.getInterfaces();
+              c.getAnnotations();
+              c.getSuperclass();
+              c.getOuterClass();
+              c.getPosition();
+              c.getMethods()
+                  .forEach(
+                      m -> {
+                        if (m.hasBody()) {
+                          m.getBody();
+                        }
+                      });
+            }); // forces loading
 
     // All class data is now in the FullCache — release file-system resources.
     for (AnalysisInputLocation loc : inputLocations) {

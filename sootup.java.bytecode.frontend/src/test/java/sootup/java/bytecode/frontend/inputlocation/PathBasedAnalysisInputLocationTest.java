@@ -30,9 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -58,19 +56,24 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   @Test
   void testResourceLeaks() throws IOException {
-    Path path = Paths.get("./target/sootup.java.bytecode.frontend-2.0.0-SNAPSHOT.jar");
-      try (FileSystem fileSystem = FileSystems.newFileSystem(Objects.requireNonNull(path), (ClassLoader) null)) {
+    Path path = Paths.get("src/test/resources/multi-release-jar/mrjar.jar");
+    try (FileSystem fileSystem =
+        FileSystems.newFileSystem(Objects.requireNonNull(path), (ClassLoader) null)) {
 
-          assertTrue(fileSystem.isOpen());
+      assertTrue(fileSystem.isOpen());
 
-          try (Stream<Path> stream = Files.walk(fileSystem.getPath("."))) {
-              stream.filter(p -> Files.isRegularFile(p) && Files.isReadable(p) && p.toString().endsWith(".jar")).map(p -> p).forEach(p -> {
+      try (Stream<Path> stream = Files.walk(fileSystem.getPath("."))) {
+        stream
+            .filter(
+                p -> Files.isRegularFile(p) && Files.isReadable(p) && p.toString().endsWith(".jar"))
+            .map(p -> p)
+            .forEach(
+                p -> {
                   System.out.println(p);
-              });
-          }
-          assertTrue(fileSystem.isOpen());
+                });
       }
-
+      assertTrue(fileSystem.isOpen());
+    }
   }
 
   @Test

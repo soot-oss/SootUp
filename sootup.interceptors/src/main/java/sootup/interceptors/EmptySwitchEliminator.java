@@ -24,12 +24,12 @@ package sootup.interceptors;
 import java.util.ArrayList;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.Body;
-import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.views.View;
 
 /**

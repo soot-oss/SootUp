@@ -104,65 +104,55 @@ class AsmClassSource extends JavaSootClassSource {
   public Set<JavaSootMethod> resolveMethods() throws ResolveException {
     // FIXME: [ms] don't create a new instance of the identifierfactory!
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    int arr[] = new int[1];
-    arr[0] = 0;
 
-      return classNode.methods.parallelStream()
-              .map(
-                      methodSource -> {
+    return classNode.methods.parallelStream()
+        .map(
+            methodSource -> {
+              AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
+              asmClassClassSourceContent.setDeclaringClass(classSignature);
 
+              List<ClassType> exceptions =
+                  new ArrayList<>(AsmUtil.asmIdToSignatures(methodSource.exceptions));
 
-                          AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
-                          asmClassClassSourceContent.setDeclaringClass(classSignature);
+              String methodName = methodSource.name;
+              EnumSet<MethodModifier> modifiers = Modifiers.getMethodModifiers(methodSource.access);
+              List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc);
+              Type retType = sigTypes.remove(sigTypes.size() - 1);
 
-                          List<ClassType> exceptions =
-                                  new ArrayList<>(AsmUtil.asmIdToSignatures(methodSource.exceptions));
+              MethodSignature methodSignature =
+                  identifierFactory.getMethodSignature(
+                      classSignature, methodName, retType, sigTypes);
 
-                          String methodName = methodSource.name;
-                          EnumSet<MethodModifier> modifiers = Modifiers.getMethodModifiers(methodSource.access);
-                          List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc);
-                          Type retType = sigTypes.remove(sigTypes.size() - 1);
+              // eagerly load the method body to release ASM library memory after class loading
+              Body body;
+              if (MethodModifier.isAbstract(modifiers) || MethodModifier.isNative(modifiers)) {
+                body =
+                    Body.builder()
+                        .setMethodSignature(methodSignature)
+                        .setModifiers(modifiers)
+                        .build();
+              } else {
+                body = asmClassClassSourceContent.resolveBody(modifiers);
+              }
+              OverridingBodySource bs = new OverridingBodySource(methodSignature, body);
 
-                          MethodSignature methodSignature =
-                                  identifierFactory.getMethodSignature(
-                                          classSignature, methodName, retType, sigTypes);
+              // TODO: position/line numbers if possible.. e.g. get min/max line entry in
+              // LineNumberTable of each method to at least specify a region..
+              List<AnnotationUsage> annotations =
+                  Streams.concat(
+                          convertAnnotation(methodSource.visibleAnnotations),
+                          convertAnnotation(methodSource.invisibleAnnotations))
+                      .collect(Collectors.toList());
 
-                          arr[0]++;
-                          System.out.println("> "+ arr[0] +" ->" + methodSignature + " on " + Thread.currentThread().getName());
-
-                          // copy to eager load the method and release the asm library memory
-                          Body body;
-                          if (MethodModifier.isAbstract(modifiers) || MethodModifier.isNative(modifiers)) {
-                              // empty body as method is e.g. abstract or native.
-                              body =
-                                      Body.builder()
-                                              .setMethodSignature(methodSignature)
-                                              .setModifiers(modifiers)
-                                              .build();
-                          } else {
-                              body = asmClassClassSourceContent.resolveBody(modifiers);
-                          }
-                          OverridingBodySource bs = new OverridingBodySource(methodSignature, body);
-
-                          // TODO: position/line numbers if possible.. e.g. get min/max line entry in
-                          // LineNumberTable of each method to at least specify a region..
-                          List<AnnotationUsage> annotations = Streams.concat(
-                                          convertAnnotation(methodSource.visibleAnnotations),
-                                          convertAnnotation(methodSource.invisibleAnnotations))
-                                  .collect(Collectors.toList());
-
-                          System.out.println("fin " + methodSignature + " on " + Thread.currentThread().getName());
-                          arr[0]--;
-
-                          return new JavaSootMethod(
-                                  bs,
-                                  methodSignature,
-                                  modifiers,
-                                  exceptions,
-                                  annotations,
-                                  NoPositionInformation.getInstance());
-                      })
-              .collect(Collectors.toSet());
+              return new JavaSootMethod(
+                  bs,
+                  methodSignature,
+                  modifiers,
+                  exceptions,
+                  annotations,
+                  NoPositionInformation.getInstance());
+            })
+        .collect(Collectors.toSet());
   }
 
   @Override

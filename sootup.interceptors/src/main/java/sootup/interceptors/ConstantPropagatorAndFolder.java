@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -42,7 +43,6 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.views.View;
 
 /**

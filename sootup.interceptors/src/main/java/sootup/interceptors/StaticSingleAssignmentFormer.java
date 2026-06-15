@@ -28,6 +28,7 @@ import sootup.core.graph.BasicBlock;
 import sootup.core.graph.DominanceFinder;
 import sootup.core.graph.DominanceTree;
 import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
@@ -38,7 +39,6 @@ import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.views.View;
 
 /**

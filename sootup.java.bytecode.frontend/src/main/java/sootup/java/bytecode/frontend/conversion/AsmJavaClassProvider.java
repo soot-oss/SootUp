@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.ClassReader;
@@ -42,7 +41,6 @@ import sootup.core.inputlocation.FileType;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.types.ModuleJavaClassType;
 
 /** A {@link PathbasedClassProvider} capable of handling Java bytecode */
@@ -116,8 +114,7 @@ public class AsmJavaClassProvider implements PathbasedClassProvider {
       return Optional.empty();
     }
 
-    return Optional.of(
-        createClassSource(analysisInputLocation, sourcePath, classType, classNode));
+    return Optional.of(createClassSource(analysisInputLocation, sourcePath, classType, classNode));
   }
 
   @Override
@@ -142,7 +139,8 @@ public class AsmJavaClassProvider implements PathbasedClassProvider {
      * @return the actual class signature found in the compilation unit
      */
     protected Optional<String> readClassName(@NonNull final Path classSource) {
-      try (InputStream sourceFileInputStream = Files.newInputStream(classSource); BufferedInputStream bis = new BufferedInputStream(sourceFileInputStream)) {
+      try (InputStream sourceFileInputStream = Files.newInputStream(classSource);
+          BufferedInputStream bis = new BufferedInputStream(sourceFileInputStream)) {
         ClassReader classReader = new ClassReader(bis);
         classReader.accept(this, ClassReader.SKIP_FRAMES);
         return Optional.of(classReader.getClassName().replace('/', '.'));

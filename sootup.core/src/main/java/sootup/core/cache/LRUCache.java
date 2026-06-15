@@ -24,7 +24,6 @@ package sootup.core.cache;
 
 import java.util.*;
 import java.util.stream.Stream;
-
 import org.jspecify.annotations.NonNull;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;

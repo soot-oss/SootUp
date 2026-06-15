@@ -56,7 +56,9 @@ public class JimpleClassProvider implements PathbasedClassProvider {
 
   @Override
   public Optional<SootClassSource> createClassSource(
-          @NonNull AnalysisInputLocation inputlocation, @NonNull Path sourcePath, @NonNull ClassType classSignature) {
+      @NonNull AnalysisInputLocation inputlocation,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classSignature) {
 
     try {
       final JimpleConverter jimpleConverter = new JimpleConverter();

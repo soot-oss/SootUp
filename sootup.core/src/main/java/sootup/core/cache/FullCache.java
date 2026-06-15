@@ -25,7 +25,6 @@ package sootup.core.cache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
-
 import org.jspecify.annotations.NonNull;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
