@@ -293,14 +293,20 @@ public class MethodToPAGConversionTest {
     var src = SparkTestUtil.var(oType, "l1", copyValueSig);
 
     // inter-procedural param-passing edges produced by caseInvokeStmt (void call)
-    assertTrue(delegate.containsEdge(stack7, dst), "main:$stack7 (t) -> copyValue:l0 (dst)");
-    assertTrue(delegate.containsEdge(stack5, src), "main:$stack5 (q) -> copyValue:l1 (src)");
+    assertTrue(
+        SparkTestUtil.containsEdge(delegate, stack7, dst),
+        "main:$stack7 (t) -> copyValue:l0 (dst)");
+    assertTrue(
+        SparkTestUtil.containsEdge(delegate, stack5, src),
+        "main:$stack5 (q) -> copyValue:l1 (src)");
 
     // callee body: dst.f = src.f — load edge src.f->$stack2, store edge $stack2->dst.f
     var srcF = SparkTestUtil.fieldRef(src, fSig, oType, copyValueSig);
     var stack2 = SparkTestUtil.var(oType, "$stack2", copyValueSig);
     var dstF = SparkTestUtil.fieldRef(dst, fSig, oType, copyValueSig);
-    assertTrue(delegate.containsEdge(srcF, stack2), "copyValue: src.f -> $stack2 (load)");
-    assertTrue(delegate.containsEdge(stack2, dstF), "copyValue: $stack2 -> dst.f (store)");
+    assertTrue(
+        SparkTestUtil.containsEdge(delegate, srcF, stack2), "copyValue: src.f -> $stack2 (load)");
+    assertTrue(
+        SparkTestUtil.containsEdge(delegate, stack2, dstF), "copyValue: $stack2 -> dst.f (store)");
   }
 }
