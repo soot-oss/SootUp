@@ -106,7 +106,8 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
    */
   @Override
   public void caseInvokeStmt(JInvokeStmt stmt) {
-    // handleInvokeExpr(stmt);
+    handleInvokeExpr(
+        stmt.asInvokableStmt().getInvokeExpr().get(), Optional.empty(), stmt.asInvokableStmt());
   }
 
   /** Routes a PAG edge through the propagator when running OTF, plain PAG otherwise. */

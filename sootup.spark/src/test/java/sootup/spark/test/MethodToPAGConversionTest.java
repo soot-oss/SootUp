@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
+import sootup.core.types.VoidType;
 import sootup.spark.Engine;
 import sootup.spark.PAGEdge;
 import sootup.spark.node.InstanceFieldRefNode;
@@ -265,5 +266,41 @@ public class MethodToPAGConversionTest {
                       && target.toString().contains("main{InstanceMethodCall$Value l3}");
                 });
     assertTrue(hasReturnEdges, "Should have return value edges for instance method calls");
+  }
+
+  /**
+   * Verifies PAG edges for a static void inter-procedural call {@code copyValue(t, q)}, which is
+   * a {@link sootup.core.jimple.common.stmt.JInvokeStmt} — the case fixed by
+   * {@code caseInvokeStmt}. Before the fix, {@code caseInvokeStmt} was a no-op, so no
+   * parameter-passing or callee-body edges were created for void calls.
+   */
+  @Test
+  public void testVoidInterProcCallEdges() {
+    ClassType classSig = SparkTestUtil.idFactory.getClassType("VoidCallInter");
+    MethodSignature mainSig =
+        SparkTestUtil.idFactory.getMethodSignature(
+            classSig, SparkTestUtil.idFactory.getMainSubSignature());
+    ClassType oType = SparkTestUtil.idFactory.getClassType("VoidCallInter$O");
+    MethodSignature copyValueSig =
+        SparkTestUtil.idFactory.getMethodSignature(
+            classSig, "copyValue", VoidType.getInstance(), Arrays.asList(oType, oType));
+    Graph<Node, PAGEdge> delegate = SparkTestUtil.solveMain(mainSig);
+
+    var fSig   = SparkTestUtil.idFactory.getFieldSignature("f", oType, oType);
+    var stack5 = SparkTestUtil.var(oType, "$stack5", mainSig);
+    var stack7 = SparkTestUtil.var(oType, "$stack7", mainSig);
+    var dst    = SparkTestUtil.var(oType, "l0", copyValueSig);
+    var src    = SparkTestUtil.var(oType, "l1", copyValueSig);
+
+    // inter-procedural param-passing edges produced by caseInvokeStmt (void call)
+    assertTrue(delegate.containsEdge(stack7, dst), "main:$stack7 (t) -> copyValue:l0 (dst)");
+    assertTrue(delegate.containsEdge(stack5, src), "main:$stack5 (q) -> copyValue:l1 (src)");
+
+    // callee body: dst.f = src.f — load edge src.f->$stack2, store edge $stack2->dst.f
+    var srcF   = SparkTestUtil.fieldRef(src, fSig, oType, copyValueSig);
+    var stack2 = SparkTestUtil.var(oType, "$stack2", copyValueSig);
+    var dstF   = SparkTestUtil.fieldRef(dst, fSig, oType, copyValueSig);
+    assertTrue(delegate.containsEdge(srcF, stack2), "copyValue: src.f -> $stack2 (load)");
+    assertTrue(delegate.containsEdge(stack2, dstF), "copyValue: $stack2 -> dst.f (store)");
   }
 }
