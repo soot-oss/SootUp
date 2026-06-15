@@ -19,9 +19,9 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.*;
 import sootup.core.validation.TypesValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.InMemoryOverridingJavaClassSource;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 import sootup.java.core.views.MutableJavaView;
 
@@ -66,7 +66,7 @@ public class TypesValidatorTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new OverridingJavaClassSource(
+            new InMemoryOverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),

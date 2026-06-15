@@ -19,9 +19,9 @@ import sootup.core.model.FieldModifier;
 import sootup.core.model.SootField;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.FieldSignature;
+import sootup.java.core.InMemoryOverridingJavaClassSource;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -49,7 +49,7 @@ public class JFieldRefTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new OverridingJavaClassSource(
+            new InMemoryOverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
                 declaringClassSignature,
@@ -86,7 +86,7 @@ public class JFieldRefTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new OverridingJavaClassSource(
+            new InMemoryOverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
                 declaringClassSignature,

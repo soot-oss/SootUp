@@ -68,8 +68,8 @@ public class ClassModifiersValidatorTest {
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
-    OverridingJavaClassSource overridingJavaClassSource =
-        new OverridingJavaClassSource(
+    InMemoryOverridingJavaClassSource overridingJavaClassSource =
+        new InMemoryOverridingJavaClassSource(
             new EagerInputLocation(),
             null,
             view.getIdentifierFactory().getClassType("dummyMain"),

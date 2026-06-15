@@ -101,7 +101,7 @@ public final class AsmUtil {
         new AsmClassSource(analysisInputLocation, sourcePath, classType, classNode);
     // copy and load the complete class at once into memory so the newly created asmClassSource can
     // release the memory and structures from the asm library
-    return new OverridingJavaClassSource(
+    return new InMemoryOverridingJavaClassSource(
         asmClassSource.getAnalysisInputLocation(),
         asmClassSource.getSourcePath(),
         asmClassSource.getClassType(),

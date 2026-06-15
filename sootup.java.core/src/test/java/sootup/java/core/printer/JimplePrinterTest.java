@@ -193,21 +193,19 @@ public class JimplePrinterTest {
               NoPositionInformation.getInstance());
     }
 
-    OverridingJavaClassSource overridingClassSource =
-        OverridingJavaClassSource.OverridingJavaClassSourceBuilder.builder()
-            .withMethods(new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)))
-            .withField(sootField)
-            .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
-            .withInterfaces(
-                Collections.singleton(
-                    (JavaClassType) identifierFactory.getClassType("some.great.Interface")))
-            .withSuperclass(
-                Optional.of(
-                    (JavaClassType) identifierFactory.getClassType("some.great.Superclass")))
-            .withPosition(NoPositionInformation.getInstance())
-            .withClassType(identifierFactory.getClassType(className))
-            .withAnalysisInputLocation(new EagerInputLocation())
-            .build();
+    InMemoryOverridingJavaClassSource overridingClassSource =
+        new InMemoryOverridingJavaClassSource(
+            new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
+            Collections.singleton(sootField),
+            EnumSet.of(ClassModifier.PUBLIC),
+            Collections.singleton(
+                (JavaClassType) identifierFactory.getClassType("some.great.Interface")),
+            (JavaClassType) identifierFactory.getClassType("some.great.Superclass"),
+            null,
+            NoPositionInformation.getInstance(),
+            null,
+            identifierFactory.getClassType(className),
+            new EagerInputLocation());
 
     if (buildWithClassMembers) {
       return JavaSootClass.JavaSootClassBuilder.builder()
@@ -239,8 +237,8 @@ public class JimplePrinterTest {
                 "counter", identifierFactory.getClassType(className), PrimitiveType.getInt()),
             EnumSet.of(FieldModifier.PRIVATE),
             NoPositionInformation.getInstance());
-    OverridingJavaClassSource overridingClassSource =
-        new OverridingJavaClassSource(
+    InMemoryOverridingJavaClassSource overridingClassSource =
+        new InMemoryOverridingJavaClassSource(
             new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
             Collections.singleton(sootField),
             EnumSet.of(ClassModifier.PUBLIC),

@@ -22,9 +22,9 @@ import sootup.core.util.EscapedWriter;
 import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
+import sootup.java.core.InMemoryOverridingJavaClassSource;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 
 public class LegacyJimplePrinterTest {
@@ -53,7 +53,7 @@ public class LegacyJimplePrinterTest {
             NoPositionInformation.getInstance());
 
     return new JavaSootClass(
-        new OverridingJavaClassSource(
+        new InMemoryOverridingJavaClassSource(
             Collections.singleton(dummyMainMethod),
             Collections.emptySet(),
             EnumSet.of(ClassModifier.PUBLIC),
