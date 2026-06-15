@@ -178,11 +178,9 @@ public class PointsToAnalysisTest {
 
     // dst(l0) receives t (alloc3); src(l1) receives q which aliases p (alloc1)
     assertEquals(
-        Collections.singleton(newO3),
-        pta.reachingObjects(new Local("l0", oType), copyValueSig));
+        Collections.singleton(newO3), pta.reachingObjects(new Local("l0", oType), copyValueSig));
     assertEquals(
-        Collections.singleton(newO1),
-        pta.reachingObjects(new Local("l1", oType), copyValueSig));
+        Collections.singleton(newO1), pta.reachingObjects(new Local("l1", oType), copyValueSig));
   }
 
   /**
@@ -214,9 +212,9 @@ public class PointsToAnalysisTest {
   }
 
   /**
-   * {@code t.f} must reach alloc2 (r) after {@code copyValue(t, q)}: inside copyValue
-   * {@code dst.f = src.f} propagates {@code heap[alloc1,f]={alloc2}} into
-   * {@code heap[alloc3,f]} — an inter-procedural heap mutation invisible without the fix.
+   * {@code t.f} must reach alloc2 (r) after {@code copyValue(t, q)}: inside copyValue {@code dst.f
+   * = src.f} propagates {@code heap[alloc1,f]={alloc2}} into {@code heap[alloc3,f]} — an
+   * inter-procedural heap mutation invisible without the fix.
    */
   @Test
   public void voidCallInterHeapPropagationAfterCopy() {
