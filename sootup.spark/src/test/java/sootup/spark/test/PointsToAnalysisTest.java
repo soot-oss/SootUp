@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.core.types.VoidType;
 import sootup.spark.Engine;
 import sootup.spark.PointsToAnalysis;
 import sootup.spark.Spark;
@@ -153,5 +155,82 @@ public class PointsToAnalysisTest {
     assertTrue(
         pta.aliases(t, mainSig).contains(rNode),
         "t and r must alias (t holds the value of r via the field)");
+  }
+
+  /**
+   * Callee parameter nodes must receive points-to sets via the inter-procedural edges produced by
+   * the {@code caseInvokeStmt} fix. Before the fix, {@code copyValue}'s formals had empty pts.
+   */
+  @Test
+  public void voidCallInterParamReachingObjects() {
+    ClassType classSig = SparkTestUtil.idFactory.getClassType("VoidCallInter");
+    MethodSignature mainSig =
+        SparkTestUtil.idFactory.getMethodSignature(
+            classSig, SparkTestUtil.idFactory.getMainSubSignature());
+    ClassType oType = SparkTestUtil.idFactory.getClassType("VoidCallInter$O");
+    MethodSignature copyValueSig =
+        SparkTestUtil.idFactory.getMethodSignature(
+            classSig, "copyValue", VoidType.getInstance(), Arrays.asList(oType, oType));
+
+    PointsToAnalysis pta = SparkTestUtil.solveMainWithSpark(mainSig).getPointsToAnalysis();
+    AllocationNode newO1 = SparkTestUtil.alloc(oType, 1L, mainSig);
+    AllocationNode newO3 = SparkTestUtil.alloc(oType, 3L, mainSig);
+
+    // dst(l0) receives t (alloc3); src(l1) receives q which aliases p (alloc1)
+    assertEquals(
+        Collections.singleton(newO3), pta.reachingObjects(new Local("l0", oType), copyValueSig));
+    assertEquals(
+        Collections.singleton(newO1), pta.reachingObjects(new Local("l1", oType), copyValueSig));
+  }
+
+  /**
+   * Caller args and their matching callee params must alias across the call boundary — uniquely
+   * exercised by the {@code JInvokeStmt} (void-call) param-passing edges.
+   */
+  @Test
+  public void voidCallInterCrossMethodAliases() {
+    ClassType classSig = SparkTestUtil.idFactory.getClassType("VoidCallInter");
+    MethodSignature mainSig =
+        SparkTestUtil.idFactory.getMethodSignature(
+            classSig, SparkTestUtil.idFactory.getMainSubSignature());
+    ClassType oType = SparkTestUtil.idFactory.getClassType("VoidCallInter$O");
+    MethodSignature copyValueSig =
+        SparkTestUtil.idFactory.getMethodSignature(
+            classSig, "copyValue", VoidType.getInstance(), Arrays.asList(oType, oType));
+
+    PointsToAnalysis pta = SparkTestUtil.solveMainWithSpark(mainSig).getPointsToAnalysis();
+    Node dstNode = SparkTestUtil.var(oType, "l0", copyValueSig);
+    Node srcNode = SparkTestUtil.var(oType, "l1", copyValueSig);
+
+    // q (passed as src) aliases copyValue:src; t (passed as dst) aliases copyValue:dst
+    assertTrue(
+        pta.aliases(new Local("l2", oType), mainSig).contains(srcNode),
+        "q aliases copyValue:src across call boundary");
+    assertTrue(
+        pta.aliases(new Local("l4", oType), mainSig).contains(dstNode),
+        "t aliases copyValue:dst across call boundary");
+  }
+
+  /**
+   * {@code t.f} must reach alloc2 (r) after {@code copyValue(t, q)}: inside copyValue {@code dst.f
+   * = src.f} propagates {@code heap[alloc1,f]={alloc2}} into {@code heap[alloc3,f]} — an
+   * inter-procedural heap mutation invisible without the fix.
+   */
+  @Test
+  public void voidCallInterHeapPropagationAfterCopy() {
+    ClassType classSig = SparkTestUtil.idFactory.getClassType("VoidCallInter");
+    MethodSignature mainSig =
+        SparkTestUtil.idFactory.getMethodSignature(
+            classSig, SparkTestUtil.idFactory.getMainSubSignature());
+    ClassType oType = SparkTestUtil.idFactory.getClassType("VoidCallInter$O");
+
+    PointsToAnalysis pta = SparkTestUtil.solveMainWithSpark(mainSig).getPointsToAnalysis();
+    AllocationNode newO2 = SparkTestUtil.alloc(oType, 2L, mainSig);
+    FieldSignature fSig = SparkTestUtil.idFactory.getFieldSignature("f", oType, oType);
+
+    // t.f must reach alloc2 via the inter-proc store chain: dst.f = src.f where src aliases p
+    assertEquals(
+        Collections.singleton(newO2),
+        pta.reachingObjects(new JInstanceFieldRef(new Local("l4", oType), fSig), mainSig));
   }
 }
