@@ -83,7 +83,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
-        <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-central-publishing-plugin.version>0.10.0</maven-central-publishing-plugin.version>
@@ -403,6 +403,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>33.6.0-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graph4j</groupId>
+            <artifactId>graph4j</artifactId>
+            <version>1.0.8</version>
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>
