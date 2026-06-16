@@ -2,12 +2,9 @@ package sootup.spark.test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.StringWriter;
 import java.util.Collections;
 import lombok.experimental.UtilityClass;
-import lombok.val;
-import org.jgrapht.Graph;
-import org.jgrapht.nio.dot.DOTExporter;
+import org.graph4j.Graph;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
@@ -18,6 +15,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.spark.PAGEdge;
+import sootup.spark.PAGVisualizer;
 import sootup.spark.Spark;
 import sootup.spark.SparkOptions;
 import sootup.spark.node.AllocationNode;
@@ -105,10 +103,17 @@ public class SparkTestUtil {
         .build();
   }
 
+  public static boolean containsEdge(Graph<Node, PAGEdge> g, Node src, Node tgt) {
+    int s = g.findVertex(src);
+    int t = g.findVertex(tgt);
+    return s >= 0 && t >= 0 && g.containsEdge(s, t);
+  }
+
+  public static boolean containsVertex(Graph<Node, PAGEdge> g, Node node) {
+    return g.findVertex(node) >= 0;
+  }
+
   public static void vizualizeMehodPAG(Graph<Node, PAGEdge> pag) {
-    val exporter = new DOTExporter<Node, PAGEdge>(Node::toString);
-    StringWriter writer = new StringWriter();
-    exporter.exportGraph(pag, writer);
-    System.out.println(writer);
+    System.out.println(PAGVisualizer.visualizeMethodPAG(pag, Node::toString));
   }
 }

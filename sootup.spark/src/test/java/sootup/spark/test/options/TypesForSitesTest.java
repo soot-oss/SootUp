@@ -2,7 +2,7 @@ package sootup.spark.test.options;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.jgrapht.Graph;
+import org.graph4j.Graph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
@@ -37,26 +37,32 @@ public class TypesForSitesTest {
 
     // All three stack variables point to the single allocation node
     assertTrue(
-        delegate.containsEdge(newO, SparkTestUtil.var(oType, "$stack4", mainSig)),
+        SparkTestUtil.containsEdge(delegate, newO, SparkTestUtil.var(oType, "$stack4", mainSig)),
         "Edge new O -> $stack4 not found");
     assertTrue(
-        delegate.containsEdge(newO, SparkTestUtil.var(oType, "$stack5", mainSig)),
+        SparkTestUtil.containsEdge(delegate, newO, SparkTestUtil.var(oType, "$stack5", mainSig)),
         "Edge new O -> $stack5 not found");
     assertTrue(
-        delegate.containsEdge(newO, SparkTestUtil.var(oType, "$stack6", mainSig)),
+        SparkTestUtil.containsEdge(delegate, newO, SparkTestUtil.var(oType, "$stack6", mainSig)),
         "Edge new O -> $stack6 not found");
 
     assertTrue(
-        delegate.containsEdge(
-            SparkTestUtil.var(oType, "$stack4", mainSig), SparkTestUtil.var(oType, "l1", mainSig)),
+        SparkTestUtil.containsEdge(
+            delegate,
+            SparkTestUtil.var(oType, "$stack4", mainSig),
+            SparkTestUtil.var(oType, "l1", mainSig)),
         "Edge $stack4 -> l1 not found");
     assertTrue(
-        delegate.containsEdge(
-            SparkTestUtil.var(oType, "$stack5", mainSig), SparkTestUtil.var(oType, "l2", mainSig)),
+        SparkTestUtil.containsEdge(
+            delegate,
+            SparkTestUtil.var(oType, "$stack5", mainSig),
+            SparkTestUtil.var(oType, "l2", mainSig)),
         "Edge $stack5 -> l2 not found");
     assertTrue(
-        delegate.containsEdge(
-            SparkTestUtil.var(oType, "$stack6", mainSig), SparkTestUtil.var(oType, "l3", mainSig)),
+        SparkTestUtil.containsEdge(
+            delegate,
+            SparkTestUtil.var(oType, "$stack6", mainSig),
+            SparkTestUtil.var(oType, "l3", mainSig)),
         "Edge $stack6 -> l3 not found");
   }
 
@@ -83,9 +89,9 @@ public class TypesForSitesTest {
     var stack4 = SparkTestUtil.var(stringType, "$stack4", mainSig);
     var l3 = SparkTestUtil.var(stringType, "l3", mainSig);
 
-    assertTrue(delegate.containsEdge(typeNode, l1), "typeNode -> l1");
-    assertTrue(delegate.containsEdge(typeNode, l2), "typeNode -> l2");
-    assertTrue(delegate.containsEdge(typeNode, stack4), "typeNode -> $stack4");
-    assertTrue(delegate.containsEdge(stack4, l3), "$stack4 -> l3");
+    assertTrue(SparkTestUtil.containsEdge(delegate, typeNode, l1), "typeNode -> l1");
+    assertTrue(SparkTestUtil.containsEdge(delegate, typeNode, l2), "typeNode -> l2");
+    assertTrue(SparkTestUtil.containsEdge(delegate, typeNode, stack4), "typeNode -> $stack4");
+    assertTrue(SparkTestUtil.containsEdge(delegate, stack4, l3), "$stack4 -> l3");
   }
 }
