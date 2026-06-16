@@ -2,7 +2,7 @@ package sootup.spark.test.options;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.jgrapht.Graph;
+import org.graph4j.Graph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.FieldSignature;
@@ -45,23 +45,29 @@ public class IgnoreBaseObjectsTest {
             SparkTestUtil.var(containerType, "$stack10", mainSig), valueField, valueType, mainSig);
 
     assertNotEquals(fieldRefStack9, fieldRefStack10, "Field ref nodes must be distinct");
-    assertTrue(delegate.containsVertex(fieldRefStack9), "$stack9.value node missing");
-    assertTrue(delegate.containsVertex(fieldRefStack10), "$stack10.value node missing");
+    assertTrue(
+        SparkTestUtil.containsVertex(delegate, fieldRefStack9), "$stack9.value node missing");
+    assertTrue(
+        SparkTestUtil.containsVertex(delegate, fieldRefStack10), "$stack10.value node missing");
 
     // Each store goes to its own field ref node
     assertTrue(
-        delegate.containsEdge(SparkTestUtil.var(valueType, "$stack7", mainSig), fieldRefStack9),
+        SparkTestUtil.containsEdge(
+            delegate, SparkTestUtil.var(valueType, "$stack7", mainSig), fieldRefStack9),
         "$stack7 -> $stack9.value missing");
     assertTrue(
-        delegate.containsEdge(SparkTestUtil.var(valueType, "$stack8", mainSig), fieldRefStack10),
+        SparkTestUtil.containsEdge(
+            delegate, SparkTestUtil.var(valueType, "$stack8", mainSig), fieldRefStack10),
         "$stack8 -> $stack10.value missing");
 
     // Each load comes from its own field ref node
     assertTrue(
-        delegate.containsEdge(fieldRefStack9, SparkTestUtil.var(valueType, "l5", mainSig)),
+        SparkTestUtil.containsEdge(
+            delegate, fieldRefStack9, SparkTestUtil.var(valueType, "l5", mainSig)),
         "$stack9.value -> l5 missing");
     assertTrue(
-        delegate.containsEdge(fieldRefStack10, SparkTestUtil.var(valueType, "l6", mainSig)),
+        SparkTestUtil.containsEdge(
+            delegate, fieldRefStack10, SparkTestUtil.var(valueType, "l6", mainSig)),
         "$stack10.value -> l6 missing");
   }
 
@@ -78,22 +84,27 @@ public class IgnoreBaseObjectsTest {
             valueType,
             SparkTestUtil.GLOBAL_SCOPE);
 
-    assertTrue(delegate.containsVertex(mergedFieldRef), "Merged field ref node missing");
+    assertTrue(
+        SparkTestUtil.containsVertex(delegate, mergedFieldRef), "Merged field ref node missing");
 
     // Both stores converge on the single merged node
     assertTrue(
-        delegate.containsEdge(SparkTestUtil.var(valueType, "$stack7", mainSig), mergedFieldRef),
+        SparkTestUtil.containsEdge(
+            delegate, SparkTestUtil.var(valueType, "$stack7", mainSig), mergedFieldRef),
         "$stack7 -> merged.value missing");
     assertTrue(
-        delegate.containsEdge(SparkTestUtil.var(valueType, "$stack8", mainSig), mergedFieldRef),
+        SparkTestUtil.containsEdge(
+            delegate, SparkTestUtil.var(valueType, "$stack8", mainSig), mergedFieldRef),
         "$stack8 -> merged.value missing");
 
     // Both loads come from the same merged node
     assertTrue(
-        delegate.containsEdge(mergedFieldRef, SparkTestUtil.var(valueType, "l5", mainSig)),
+        SparkTestUtil.containsEdge(
+            delegate, mergedFieldRef, SparkTestUtil.var(valueType, "l5", mainSig)),
         "merged.value -> l5 missing");
     assertTrue(
-        delegate.containsEdge(mergedFieldRef, SparkTestUtil.var(valueType, "l6", mainSig)),
+        SparkTestUtil.containsEdge(
+            delegate, mergedFieldRef, SparkTestUtil.var(valueType, "l6", mainSig)),
         "merged.value -> l6 missing");
   }
 }
