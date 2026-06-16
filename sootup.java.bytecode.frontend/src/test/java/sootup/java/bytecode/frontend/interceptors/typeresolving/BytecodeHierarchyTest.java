@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.types.*;
@@ -21,9 +22,9 @@ import sootup.java.core.views.JavaView;
  */
 public class BytecodeHierarchyTest {
 
-  private JavaView view;
+  protected static BytecodeHierarchy hierarchy = null;
 
-  private ClassType rootInterface1,
+  private static ClassType rootInterface1,
       rootInterface2,
       class1,
       class2,
@@ -37,7 +38,7 @@ public class BytecodeHierarchyTest {
       cloneable,
       number,
       comparable;
-  private ArrayType objArr,
+  private static ArrayType objArr,
       seriArr,
       doubleArr,
       class1AArr,
@@ -50,12 +51,13 @@ public class BytecodeHierarchyTest {
       shortArr,
       byteArr;
 
-  public void setUp() {
+  @BeforeAll
+  public static void setUp() {
     String jarFile =
         "src/test/resources/TypeResolverTestSuite/ByteCodeHierarchyTest/MiniHierarchy.jar";
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile);
-    view =
+    JavaView view =
         new JavaView(
             Arrays.asList(new DefaultRuntimeAnalysisInputLocation(), analysisInputLocation));
 
@@ -88,13 +90,14 @@ public class BytecodeHierarchyTest {
     class4Arr = factory.getArrayType(class4, 1);
     shortArr = factory.getArrayType(PrimitiveType.getShort(), 1);
     byteArr = factory.getArrayType(PrimitiveType.getByte(), 1);
+
+    // setup view and ViewTypeHierarchy
+    hierarchy = new BytecodeHierarchy(view);
   }
 
   @Test
   public void testIsAncestor() {
     // setup view and ViewTypeHierarchy
-    setUp();
-    BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
 
     // tests
     assertTrue(hierarchy.isAncestor(double_class1, double_class2));
@@ -126,9 +129,6 @@ public class BytecodeHierarchyTest {
 
   @Test
   public void testLCA() {
-    // setup view and ViewTypeHierarchy
-    setUp();
-    BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
 
     // tests
     Collection<Type> actualSet;
