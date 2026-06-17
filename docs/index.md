@@ -1,37 +1,58 @@
-# What's SootUp?
-SootUp is a complete overhaul of the good, old static analysis framework [Soot](https://github.com/soot-oss/soot).
+# What is SootUp?
 
-- Transforms JVM bytecode to the intermediate representation Jimple.
-- Provides ClassHierarchy generation
-- CallGraph generation with different algorithms/precisions
-- Inter-procedural data-flow analysis with the IDE/IFDS framework enabled by [Heros](https://github.com/Sable/heros)
-- Applies simple transformations on retrieving a methods Body (see BodyInterceptor)
-- Provides serialization of the Jimple IR.
+Have you ever wondered how a linter catches a bug before you run your code?
+How a security scanner finds a vulnerability in a compiled library you don't have source for?
+How an IDE tells you that a variable might be null three call-levels deep?
 
-!!! important
+The answer is **static analysis** — reasoning about a program's behaviour by reading its
+structure, without executing it. SootUp is a Java library that gives you the building
+blocks to write such analyses yourself.
 
-    SootUp is *not a version update* to Soot, it is a *completely new implementation* written from scratch that aims to be a leaner, modernized and developer friendly successor of Soot.
-    It is not a Drop-In Replacement! The new architecture and API, renders it not trivial to update existing projects that were built on soot.
-    Therefore we recommend using SootUp for greenfield projects. We hope improved type safety and streamlined mechanisms will aide you implementing and debugging your analysis tool.
-    Unfortunately not every feature has been ported - If you miss something feel free to [contribute](https://github.com/soot-oss/SootUp/pulls) a feature you miss from good old Soot.
+You point SootUp at a Java `.jar`, Android `.apk`, or source tree, and it gives you back
+a clean, structured, traversable representation of every class, method, and instruction
+inside it. You then walk that representation and compute whatever you need to know.
 
+## What SootUp provides
 
-## Why SootUp?
-Over the 20+ years, SootUps predecessor Soot has evolved into a powerful framework, which is one of the most widely used tools in the static analysis community. 
-This evolution was guided by the needs of the community and carried out with ad-hoc improvements.
-As a result, Soot has become a tool that can do a multitude of things, but it is heavy and hard to maintain and comprehend.
-So there was the need to clean up the codebase e.g. improve the software architecture,
-remove legacy datastructures that weren't in the Java Runtime at the time of Soots creation,
-enforce validation to have a sane state,
-removing the necessity of arcane knowledge, document it more and more - to make Soot future prove.
-So we introduced [Design changes in SootUp](whatsnew.md), which aim to address Soot's shortcomings.
-The goal is a lighter library that can easily be understood and maintained to be included in other projects.
+| Capability | What it means for you |
+|---|---|
+| **Jimple IR** | Bytecode translated into a simple, flat, human-readable form that is easy to traverse in Java code |
+| **Class Hierarchy** | Answers "which classes implement this interface?" or "what is the supertype chain?" |
+| **Call Graph** | Answers "which methods can be called at this call site?" — essential for inter-procedural analysis |
+| **Dataflow framework (IFDS/IDE)** | A principled engine for tracking facts (e.g. tainted values, null pointers) across method boundaries |
+| **Body Interceptors** | Optional pre-processing passes that simplify the IR before you analyse it (e.g. constant folding, SSA conversion) |
+| **Jimple serialization** | Write the IR back to `.jimple` files for debugging or round-trip processing |
+
+!!! tip "New to static analysis?"
+    Before diving into the API, read [Core Concepts](concepts.md) — it explains what a
+    Control Flow Graph is, what an IR is, and what "analysis" actually means in concrete
+    terms. Five minutes there will make everything else click faster.
+
+## Quick orientation
+
+```
+your code (.jar / .apk / .java)
+        ↓
+  AnalysisInputLocation   ← tells SootUp where to look
+        ↓
+       View               ← your in-memory handle to the loaded program
+        ↓
+  SootClass → SootMethod → Body → ControlFlowGraph
+                                        ↓
+                                 your analysis logic
+```
+
+Start with [Getting Started](getting-started.md) to see this in code within minutes.
 
 ## Publications & Citations
-[The SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) provides additional details and discusses the design decisions behind SootUp. <br />
-[Here](https://scholar.google.de/scholar?cites=7580240720760424326&as_sdt=2005&sciodt=0,5&hl=de) you can find the list of works that cite the paper.
+
+[The SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) describes the design
+decisions in detail.
+[Works citing the paper](https://scholar.google.de/scholar?cites=7580240720760424326&as_sdt=2005&sciodt=0,5&hl=de)
+show how the community is using SootUp.
 
 ## Supporters
+
 The development of SootUp is financed by generous support from the German Research Foundation (DFG) and
 the Heinz Nixdorf Institute (HNI).
 
@@ -45,3 +66,10 @@ the Heinz Nixdorf Institute (HNI).
 
 [Become a sponsor!](https://github.com/sponsors/soot-oss)
 
+---
+
+!!! important "Coming from Soot?"
+    SootUp is *not a version update* to Soot — it is a completely new implementation
+    written from scratch. It is not a drop-in replacement. See [What's New](whatsnew.md)
+    for the design changes and [Migrating from Soot](migrating.md) for a side-by-side
+    API comparison.

@@ -6,6 +6,7 @@ edit_uri: edit/develop/docs/
 nav:
   - Getting Started:
       - Installation: installation.md
+      - Core Concepts: concepts.md
       - First Steps: getting-started.md
       - Analysis Input: analysisinput.md
       - Examples: examples.md
