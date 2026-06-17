@@ -24,8 +24,7 @@ package sootup.jimple.frontend;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 import org.antlr.v4.runtime.CharStreams;
 import org.jspecify.annotations.NonNull;
@@ -49,7 +48,8 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
   @NonNull final Path path = Paths.get("only-in-memory.jimple");
   @NonNull final List<BodyInterceptor> bodyInterceptors;
   @NonNull final SourceType sourceType;
-  private String jimpleFileContents;
+  @NonNull private final Map<View, OverridingJavaClassSource> cache;
+  private final String jimpleFileContents;
 
   public JimpleStringAnalysisInputLocation(@NonNull String jimpleFileContents) {
     this(
@@ -65,33 +65,38 @@ public class JimpleStringAnalysisInputLocation implements AnalysisInputLocation 
     this.jimpleFileContents = jimpleFileContents;
     this.bodyInterceptors = bodyInterceptors;
     this.sourceType = sourceType;
+    this.cache = new IdentityHashMap<>();
   }
 
-  private OverridingJavaClassSource getOverridingClassSource(
-      String jimpleFileContents, List<BodyInterceptor> bodyInterceptors, View view) {
-    final OverridingJavaClassSource classSource;
-    try {
-      JimpleConverter jimpleConverter = new JimpleConverter();
-      classSource =
-          jimpleConverter.run(
-              CharStreams.fromString(jimpleFileContents), this, path, bodyInterceptors, view);
-    } catch (Exception e) {
-      throw new IllegalArgumentException("No valid Jimple given.", e);
-    }
-    return classSource;
+  private synchronized OverridingJavaClassSource getOverridingClassSource(@NonNull View view) {
+    return cache.computeIfAbsent(
+        view,
+        (v) -> {
+          try {
+            JimpleConverter jimpleConverter = new JimpleConverter();
+            return jimpleConverter.run(
+                CharStreams.fromString(jimpleFileContents), this, path, bodyInterceptors, v);
+          } catch (Exception e) {
+            throw new IllegalArgumentException("No valid Jimple given.", e);
+          }
+        });
   }
 
   @NonNull
   @Override
   public Optional<? extends SootClassSource> getClassSource(
       @NonNull ClassType type, @NonNull View view) {
-    return Optional.of(getOverridingClassSource(jimpleFileContents, bodyInterceptors, view));
+    OverridingJavaClassSource classSource = getOverridingClassSource(view);
+    if (!type.equals(classSource.getClassType())) {
+      return Optional.empty();
+    }
+    return Optional.of(classSource);
   }
 
   @NonNull
   @Override
   public Stream<? extends SootClassSource> getClassSources(@NonNull View view) {
-    return Stream.of(getOverridingClassSource(jimpleFileContents, bodyInterceptors, view));
+    return Stream.of(getOverridingClassSource(view));
   }
 
   @NonNull
