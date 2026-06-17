@@ -30,12 +30,12 @@ nav:
       - Write a Dataflow Analysis: write_analyses.md
       - "Example: Live Variables (backward)": analysis-liveness.md
       - "Example: Constant Propagation (forward)": analysis-constprop.md
+      - "From Prototype to Tool": tool_setup.md
       - Incorporate Pointer Analysis: qilin.md
   #  - Modify a ControlFlowGraph: mutable_controlflowgraph.md
   #  - Modify a View: mutable_view.md
   #  - Implement a BodyInterceptor: body_interceptor.md
   #  - Implement an AnalysisTool: write_analysis_tool.md
-  #  - From Prototype to Tool: tool_setup.md
 
   - Misc & More:
       - Announcements: announcement.md
