@@ -873,7 +873,7 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
     JavaClassType mainClassSignature = identifierFactory.getClassType("example2.Example");
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(
-            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, identifierFactory.getMainSubSignature());
 
     CallGraphAlgorithm algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize();
@@ -940,7 +940,8 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(
-            "app.Application", "main", "void", Collections.singletonList("java.lang.String[]"));
+            identifierFactory.getClassType("app.Application"),
+            identifierFactory.getMainSubSignature());
     CallGraphAlgorithm algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
@@ -967,18 +968,21 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             "<init>",
             "void",
             Collections.emptyList());
+
     MethodSignature virtualMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("multi.Instantiated"),
             "method",
             "int",
             Collections.emptyList());
+
     MethodSignature staticMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("multi.MultiCalls"),
             "method",
             "int",
             Collections.emptyList());
+
     MethodSignature staticMethodField =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("multi.FieldLeft"),
@@ -996,6 +1000,7 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             mainMethodSignature,
             constructorMethod,
             getInvokableStmt(mainMethodSignature, constructorMethod, 1)));
+
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
@@ -1006,16 +1011,19 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             mainMethodSignature,
             staticMethod,
             getInvokableStmt(mainMethodSignature, staticMethod, 1)));
+
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
             staticMethodField,
             getInvokableStmt(mainMethodSignature, staticMethodField, 0)));
+
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
             virtualMethod,
             getInvokableStmt(mainMethodSignature, virtualMethod, 0)));
+
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
@@ -1193,10 +1201,6 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   @Test
   public void testClinitCallPruning2() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccp2.ClinitCallPruning2");
-
-    for (CallGraph.Call call : cg.getCalls()) {
-      System.out.println(call);
-    }
 
     IdentifierFactory id = view.getIdentifierFactory();
 

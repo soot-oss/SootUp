@@ -25,6 +25,7 @@
 !sootup.java.bytecode.frontend/src/test/resources/java-warApp/dummyWarApp.war
 !sootup.java.bytecode.frontend/src/test/resources/multi-release-jar/mrjar.jar
 !sootup.java.bytecode.frontend/src/test/resources/multi-release-jar-modular/mrjar.jar
+!sootup.apk.frontend/resources/platforms/**/*.jar
 *.ear
 *.zip
 *.tar.gz
