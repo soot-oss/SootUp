@@ -1,0 +1,2221 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://soot-oss.github.io/SootUp/pr-1629/analysis-liveness/">
+      
+      
+        <link rel="prev" href="../write_analyses/">
+      
+      
+        <link rel="next" href="../analysis-constprop/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../img/icon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Example: Live Variables (backward) - </title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/customizetheme.css">
+    
+      <link rel="stylesheet" href="../css/hint.min.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#example-live-variable-analysis" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="" class="md-header__button md-logo" aria-label="" data-md-component="logo">
+      
+  <img src="../img/SootUpLogo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Example: Live Variables (backward)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/soot-oss/SootUp/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="" class="md-nav__button md-logo" aria-label="" data-md-component="logo">
+      
+  <img src="../img/SootUpLogo.svg" alt="logo">
+
+    </a>
+    
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/soot-oss/SootUp/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysisinput/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Basics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple IR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-body/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple Body
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-stmts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple Statements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-values/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jimple Values
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bodyinterceptors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BodyInterceptors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../typehierarchy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TypeHierarchy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../callgraphs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Callgraphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../builtin-analyses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BuiltIn Analyses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../codepropertygraphs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Property Graphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to..
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    How to..
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../write_analyses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Write a Dataflow Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Live Variables (backward)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Live Variables (backward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-the-target-program" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — The target program
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-the-five-elements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — The five elements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-the-framework-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — The framework interface
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-building-the-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Building the analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4 — Building the analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fact-type-and-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fact type and boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meet-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Meet operator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transfer-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transfer function
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-the-worklist-solver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — The worklist solver
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-setting-up-and-running-the-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Setting up and running the analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-verifying-the-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Verifying the result
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-try-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to try next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-constprop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Constant Propagation (forward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From Prototype to Tool
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../qilin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incorporate Pointer Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Misc & More
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Misc & More
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../announcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Announcements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whatsnew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migrating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Javadoc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting & FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-the-target-program" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — The target program
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-the-five-elements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — The five elements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-the-framework-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — The framework interface
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-building-the-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Building the analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4 — Building the analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fact-type-and-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fact type and boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meet-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Meet operator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transfer-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transfer function
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-the-worklist-solver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — The worklist solver
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-setting-up-and-running-the-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Setting up and running the analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-verifying-the-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Verifying the result
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-try-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to try next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="example-live-variable-analysis">Example: Live Variable Analysis</h1>
+<h2 id="the-problem">The problem</h2>
+<p>A variable is <strong>live</strong> at a program point if its current value might still be read before
+it is overwritten on at least one subsequent execution path. If a variable is <em>dead</em> —
+never read before being overwritten — then any register holding it can be safely reused.</p>
+<p>Compilers use this to allocate registers efficiently. Static analysis tools use it to
+detect dead assignments (a write to a variable that is never subsequently read is
+suspicious: either the write is dead code, or the variable was meant to be used and
+wasn't). Both uses require knowing which variables are live at each point.</p>
+<p>This page builds a complete live variable analysis from scratch, introducing each piece
+of the <a href="../glossary/#dataflow-analysis">dataflow analysis</a> framework before the code that
+implements it.</p>
+<hr />
+<h2 id="step-1-the-target-program">Step 1 — The target program</h2>
+<p>Here is the program we will analyse:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Example</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * A simple method used to illustrate live variable analysis.</span>
+<span class="cm">     *</span>
+<span class="cm">     * &lt;p&gt;At the join point after the if/else, both the true branch (y = c)</span>
+<span class="cm">     * and the false branch (y = x) have assigned y, but they use different variables.</span>
+<span class="cm">     * This makes the join point non-trivial: the set of live variables is the union</span>
+<span class="cm">     * of what is live on each incoming path.</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w">   </span><span class="c1">// stmt: x = a + b  (uses a, b; defines x)</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="p">;</span><span class="w">       </span><span class="c1">// stmt: y = c       (uses c; defines y)</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">;</span><span class="w">       </span><span class="c1">// stmt: y = x       (uses x; defines y)</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w">        </span><span class="c1">// stmt: return y    (uses y)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>The interesting point is the <code>if/else</code>: the true branch uses <code>c</code> and defines <code>y</code>;
+the false branch uses <code>x</code> and defines <code>y</code>. At the <a href="../glossary/#join-point">join point</a>
+after the two branches, facts from both paths must be combined.</p>
+<hr />
+<h2 id="step-2-the-five-elements">Step 2 — The five elements</h2>
+<p>Every <a href="../glossary/#dataflow-analysis">dataflow analysis</a> is fully described by five choices:</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>This analysis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Direction</strong></td>
+<td><a href="../glossary/#backward-analysis">Backward</a> — liveness is about the <em>future</em>: will this value be read later?</td>
+</tr>
+<tr>
+<td><strong>Fact domain</strong></td>
+<td><code>Set&lt;Local&gt;</code> — the set of locals that are live at this point</td>
+</tr>
+<tr>
+<td><strong><a href="../glossary/#boundary-condition">Boundary condition</a></strong></td>
+<td><code>∅</code> — nothing is live after the method returns</td>
+</tr>
+<tr>
+<td><strong><a href="../glossary/#initial-fact">Initial fact</a></strong></td>
+<td><code>∅</code> — start with the conservative assumption that nothing is live</td>
+</tr>
+<tr>
+<td><strong><a href="../glossary/#meet-operator">Meet</a></strong></td>
+<td>Union (∪) — this is a <a href="../glossary/#may-analysis">may analysis</a>: a variable is live if it is live on <em>at least one</em> path</td>
+</tr>
+<tr>
+<td><strong><a href="../glossary/#transfer-function">Transfer function</a></strong></td>
+<td><code>IN[S] = use(S) ∪ (OUT[S] − def(S))</code> — <a href="../glossary/#gen-kill">gen/kill</a> style</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why backward?</strong> Because liveness is a property of the future. To know whether <code>x</code> is
+live <em>before</em> statement S, you need to know whether <code>x</code> is used <em>after</em> S — which means
+looking at what comes after. Facts therefore travel backward, from exit toward entry.</p>
+<p><strong>Why union at join points?</strong> Because we want soundness: if <code>x</code> might be used on <em>any</em>
+path after a join, we must report it as live. Union ensures nothing is missed.</p>
+<hr />
+<h2 id="step-3-the-framework-interface">Step 3 — The framework interface</h2>
+<p>The <code>DataflowAnalysis&lt;F&gt;</code> interface captures the five elements above as method signatures.
+Any analysis that implements it can be driven by the generic <code>DataflowSolver</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">DataflowAnalysis</span><span class="o">&lt;</span><span class="n">F</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="cm">/** True for a forward analysis (entry → exit); false for backward (exit → entry). */</span>
+<span class="w">  </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isForward</span><span class="p">();</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * The fact at the boundary node: the method entry for forward analyses, the method exit for</span>
+<span class="cm">   * backward analyses. Represents what the analysis knows before examining any code.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">F</span><span class="w"> </span><span class="nf">newBoundaryFact</span><span class="p">(</span><span class="n">Body</span><span class="w"> </span><span class="n">body</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * The fact used to initialise every non-boundary node at the start of the analysis. Typically the</span>
+<span class="cm">   * &quot;bottom&quot; element of the lattice (e.g. empty set, empty map).</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">F</span><span class="w"> </span><span class="nf">newInitialFact</span><span class="p">();</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Meet {@code fact} into {@code target} (i.e. {@code target = target ⊓ fact}). Mutates {@code</span>
+<span class="cm">   * target} in place so the solver can reuse the same object across iterations at a join point,</span>
+<span class="cm">   * avoiding repeated allocation.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">meetInto</span><span class="p">(</span><span class="n">F</span><span class="w"> </span><span class="n">fact</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="n">target</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Apply the transfer function for {@code stmt}: read {@code in}, write {@code out}.</span>
+<span class="cm">   *</span>
+<span class="cm">   * @return true if {@code out} changed (so the solver knows whether to propagate further)</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">transferNode</span><span class="p">(</span><span class="n">Stmt</span><span class="w"> </span><span class="n">stmt</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="n">out</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="step-4-building-the-analysis">Step 4 — Building the analysis</h2>
+<h3 id="fact-type-and-boundary">Fact type and boundary</h3>
+<p>The <a href="../glossary/#analysis-fact">analysis fact</a> is <code>Set&lt;Local&gt;</code>. The
+<a href="../glossary/#boundary-condition">boundary condition</a> is the empty set (nothing is live
+past the return), and the <a href="../glossary/#initial-fact">initial fact</a> is also empty:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nd">@Override</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">newBoundaryFact</span><span class="p">(</span><span class="n">Body</span><span class="w"> </span><span class="n">body</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Nothing is live after the method returns.</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashSet</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nd">@Override</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">newInitialFact</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Conservative start: assume nothing is live (we add facts as we discover uses).</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashSet</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="meet-operator">Meet operator</h3>
+<p>The <a href="../glossary/#meet-operator">meet</a> is union: if <code>x</code> is live on either incoming path,
+it is live at the join point. <code>meetInto</code> mutates <code>target</code> in place so the solver can
+reuse the same set object across iterations at each <a href="../glossary/#join-point">join point</a>,
+avoiding repeated allocation:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nd">@Override</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">meetInto</span><span class="p">(</span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fact</span><span class="p">,</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">target</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// May analysis: a variable is live if it is live on at least one path → union.</span>
+<span class="w">    </span><span class="n">target</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">fact</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="transfer-function">Transfer function</h3>
+<p>The <a href="../glossary/#transfer-function">transfer function</a> reads <code>OUT[S]</code> and writes <code>IN[S]</code>
+(backward direction). It first <em>kills</em> the variable defined by S (if any), then <em>gens</em>
+the variables used by S:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nd">@Override</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">transferNode</span><span class="p">(</span><span class="n">Stmt</span><span class="w"> </span><span class="n">stmt</span><span class="p">,</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// We compute IN from OUT (backward direction).</span>
+<span class="w">    </span><span class="c1">// IN[S] = use(S) ∪ (OUT[S] − def(S))</span>
+<span class="w">    </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">newIn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashSet</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">out</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">stmt</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">JAssignStmt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">JAssignStmt</span><span class="w"> </span><span class="n">assign</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">JAssignStmt</span><span class="p">)</span><span class="w"> </span><span class="n">stmt</span><span class="p">;</span>
+<span class="w">      </span><span class="c1">// Kill: remove the defined variable (it is no longer &quot;needed&quot; upstream).</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">assign</span><span class="p">.</span><span class="na">getLeftOp</span><span class="p">()</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Local</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">newIn</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">assign</span><span class="p">.</span><span class="na">getLeftOp</span><span class="p">());</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="c1">// Gen: add any locals used on the right-hand side.</span>
+<span class="w">      </span><span class="n">addLocals</span><span class="p">(</span><span class="n">assign</span><span class="p">.</span><span class="na">getRightOp</span><span class="p">(),</span><span class="w"> </span><span class="n">newIn</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// For all other statements, gen the locals they use.</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Value</span><span class="w"> </span><span class="n">use</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">stmt</span><span class="p">.</span><span class="na">getUses</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">use</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Local</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">newIn</span><span class="p">.</span><span class="na">add</span><span class="p">((</span><span class="n">Local</span><span class="p">)</span><span class="w"> </span><span class="n">use</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">newIn</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">in</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w"> </span><span class="c1">// unchanged — solver can stop propagating backward from here</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">in</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span>
+<span class="w">    </span><span class="n">in</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">newIn</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="step-5-the-worklist-solver">Step 5 — The worklist solver</h2>
+<p>The generic <code>DataflowSolver</code> drives the iteration. In the backward case it meets all
+successor <code>IN</code> facts into <code>OUT</code>, applies the transfer, and re-schedules predecessors
+whenever <code>IN</code> changed:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="c1">// Seed the worklist with all nodes (conservative: assume every fact may change).</span>
+<span class="w">    </span><span class="n">Deque</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">worklist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayDeque</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">nodes</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">worklist</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">Stmt</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">worklist</span><span class="p">.</span><span class="na">poll</span><span class="p">();</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">analysis</span><span class="p">.</span><span class="na">isForward</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Forward: meet all predecessor OUT facts into this node&#39;s IN fact.</span>
+<span class="w">        </span><span class="n">F</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">inFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Stmt</span><span class="w"> </span><span class="n">pred</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">predecessors</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">analysis</span><span class="p">.</span><span class="na">meetInto</span><span class="p">(</span><span class="n">outFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">pred</span><span class="p">),</span><span class="w"> </span><span class="n">in</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="c1">// Apply the transfer function; if OUT changed, schedule successors.</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">analysis</span><span class="p">.</span><span class="na">transferNode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">outFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">worklist</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="na">successors</span><span class="p">(</span><span class="n">node</span><span class="p">));</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Backward: meet all successor IN facts into this node&#39;s OUT fact.</span>
+<span class="w">        </span><span class="n">F</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">outFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+<span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">succs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">successors</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+<span class="w">        </span><span class="n">succs</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="na">exceptionalSuccessors</span><span class="p">(</span><span class="n">node</span><span class="p">).</span><span class="na">values</span><span class="p">());</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Stmt</span><span class="w"> </span><span class="n">succ</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">succs</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">analysis</span><span class="p">.</span><span class="na">meetInto</span><span class="p">(</span><span class="n">inFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">succ</span><span class="p">),</span><span class="w"> </span><span class="n">out</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="c1">// Apply the transfer function; if IN changed, schedule predecessors.</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">analysis</span><span class="p">.</span><span class="na">transferNode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">inFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">),</span><span class="w"> </span><span class="n">out</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">worklist</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="na">predecessors</span><span class="p">(</span><span class="n">node</span><span class="p">));</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>The solver terminates at the <a href="../glossary/#fixed-point">fixed point</a> — when the
+<a href="../glossary/#worklist">worklist</a> is empty because no fact changed in the last iteration.</p>
+<p><strong>Hand trace on <code>Example.compute</code></strong> (simplified Jimple, abbreviated local names):</p>
+<table>
+<thead>
+<tr>
+<th>Statement</th>
+<th>IN (live <em>before</em>)</th>
+<th>OUT (live <em>after</em>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>return y</code></td>
+<td><code>{y}</code></td>
+<td><code>{}</code> (boundary)</td>
+</tr>
+<tr>
+<td><code>y = x</code> (else branch)</td>
+<td><code>{x}</code></td>
+<td><code>{y}</code></td>
+</tr>
+<tr>
+<td><code>y = c</code> (if branch)</td>
+<td><code>{c}</code></td>
+<td><code>{y}</code></td>
+</tr>
+<tr>
+<td><code>if a &gt; 0</code></td>
+<td><code>{a, b, c, x}</code></td>
+<td><code>{c, x}</code> (union of both branches)</td>
+</tr>
+<tr>
+<td><code>x = a + b</code></td>
+<td><code>{a, b, c}</code></td>
+<td><code>{a, b, c, x}</code></td>
+</tr>
+<tr>
+<td><code>(entry)</code></td>
+<td><code>{a, b, c}</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>At the <code>if</code> join (looking backward), the two branches bring <code>{c}</code> and <code>{x}</code>, so their
+union is <code>{c, x}</code>. Then the <code>if</code> condition itself uses <code>a</code>, adding it.</p>
+<hr />
+<h2 id="step-6-setting-up-and-running-the-analysis">Step 6 — Setting up and running the analysis</h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">PathBasedAnalysisInputLocation</span><span class="p">.</span><span class="na">create</span><span class="p">(</span>
+<span class="w">            </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;src/test/resources/Liveness/binary&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">SourceType</span><span class="p">.</span><span class="na">Application</span><span class="p">);</span>
+<span class="w">    </span><span class="n">View</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">ClassType</span><span class="w"> </span><span class="n">classType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;Example&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">SootClass</span><span class="w"> </span><span class="n">sootClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getClass</span><span class="p">(</span><span class="n">classType</span><span class="p">).</span><span class="na">get</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">MethodSignature</span><span class="w"> </span><span class="n">methodSignature</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">parseMethodSignature</span><span class="p">(</span><span class="s">&quot;&lt;Example: int compute(int,int,int)&gt;&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">SootMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sootClass</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="n">methodSignature</span><span class="p">.</span><span class="na">getSubSignature</span><span class="p">()).</span><span class="na">get</span><span class="p">();</span>
+<span class="w">    </span><span class="n">Body</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">getBody</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Run live variable analysis and retrieve the solver for querying results.</span>
+<span class="w">    </span><span class="n">DataflowSolver</span><span class="o">&lt;</span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LiveVariableAnalysis</span><span class="p">.</span><span class="na">analyze</span><span class="p">(</span><span class="n">body</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="step-7-verifying-the-result">Step 7 — Verifying the result</h2>
+<p>These assertions are what CI checks on every pull request. If the SootUp API changes
+in a way that breaks the analysis, this test fails and the documentation-code gap is
+caught before it reaches the docs site:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Stmt</span><span class="w"> </span><span class="n">stmt</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">getNodes</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">liveIn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solver</span><span class="p">.</span><span class="na">getInFact</span><span class="p">(</span><span class="n">stmt</span><span class="p">);</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">stmt</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">JReturnStmt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">JReturnStmt</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">JReturnStmt</span><span class="p">)</span><span class="w"> </span><span class="n">stmt</span><span class="p">;</span>
+<span class="w">        </span><span class="n">Immediate</span><span class="w"> </span><span class="n">returnedValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ret</span><span class="p">.</span><span class="na">getOp</span><span class="p">();</span>
+
+<span class="w">        </span><span class="c1">// The variable being returned must be live just before the return.</span>
+<span class="w">        </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">returnedValue</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;return operand should be a Local&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">assertTrue</span><span class="p">(</span>
+<span class="w">            </span><span class="n">liveIn</span><span class="p">.</span><span class="na">contains</span><span class="p">((</span><span class="n">Local</span><span class="p">)</span><span class="w"> </span><span class="n">returnedValue</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;returned variable must be live before return&quot;</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// No other locals should be live at the return point (nothing else is used after).</span>
+<span class="w">        </span><span class="n">assertFalse</span><span class="p">(</span>
+<span class="w">            </span><span class="n">liveIn</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">anyMatch</span><span class="p">(</span><span class="n">l</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">returnedValue</span><span class="p">),</span>
+<span class="w">            </span><span class="s">&quot;no other variable should be live before return&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">stmt</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">JAssignStmt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">JAssignStmt</span><span class="w"> </span><span class="n">assign</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">JAssignStmt</span><span class="p">)</span><span class="w"> </span><span class="n">stmt</span><span class="p">;</span>
+<span class="w">        </span><span class="c1">// A variable that is defined and then immediately never used should NOT be live</span>
+<span class="w">        </span><span class="c1">// in its own OUT set (it was just killed).</span>
+<span class="w">        </span><span class="c1">// We spot-check: nothing defined here should appear in OUT (post-transfer).</span>
+<span class="w">        </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">liveOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solver</span><span class="p">.</span><span class="na">getOutFact</span><span class="p">(</span><span class="n">stmt</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">assign</span><span class="p">.</span><span class="na">getLeftOp</span><span class="p">()</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Local</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">Local</span><span class="w"> </span><span class="n">defined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Local</span><span class="p">)</span><span class="w"> </span><span class="n">assign</span><span class="p">.</span><span class="na">getLeftOp</span><span class="p">();</span>
+<span class="w">          </span><span class="c1">// If this definition is the last use of the variable (i.e. it is dead code),</span>
+<span class="w">          </span><span class="c1">// the defined variable will not appear in liveOut. We cannot assert this</span>
+<span class="w">          </span><span class="c1">// universally because the variable might be used later. We just verify the</span>
+<span class="w">          </span><span class="c1">// result is non-null (the solver ran).</span>
+<span class="w">          </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">liveOut</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;solver must produce a result for every stmt&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="what-to-try-next">What to try next</h2>
+<ul>
+<li><a href="../analysis-constprop/">Constant Propagation</a> — the natural complement: a <em>forward</em>
+  analysis with a richer <a href="../glossary/#lattice">lattice</a> instead of a plain set.</li>
+<li><a href="../write_analyses/">Write your own interprocedural analysis</a> — extend analysis across
+  method boundaries using the IFDS/IDE framework.</li>
+<li><a href="../concepts/">Core Concepts</a> — a non-code overview of CFG, IR, and analysis.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <!--
+  Copyright (c) 2016-2024 Martin Donath <martin.donath@squidfunk.com>
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+-->
+
+<!-- Footer -->
+<footer class="md-footer">
+
+    <!-- Link to previous and/or next page -->
+    
+
+    <div class="md-footer-meta md-typeset">
+        <div class="md-footer-meta__inner md-grid">
+            <span id="developedBy">
+            Developed & Maintained by <a href="https://www.hni.uni-paderborn.de/sse">Secure Software Engineering Group </a>, Paderborn University
+            </span>
+        </div>
+    </div>
+
+
+    <!-- Further information -->
+    <div class="md-footer-meta md-typeset">
+        <div class="md-footer-meta__inner md-grid">
+            <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+
+            <!-- Social links -->
+            
+        </div>
+    </div>
+
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
