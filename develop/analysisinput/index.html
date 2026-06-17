@@ -486,6 +486,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Android Bytecode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-android-platforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With Android Platforms
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1395,6 +1423,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Android Bytecode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-android-platforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With Android Platforms
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1577,11 +1633,99 @@ The AnalysisInputLocation delegates the data to the <code>JavaCompiler</code> an
 <h3 id="android-bytecode">Android Bytecode</h3>
 <p>File-Extensions: <code>.apk</code></p>
 <p>The <code>ApkAnalysisInputLocation</code> is the APK frontend written for Sootup</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;Banana.apk&quot;</span><span class="p">);</span>
-<span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ApkAnalysisInputLocation</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">DexBodyInterceptors</span><span class="p">.</span><span class="na">Default</span><span class="p">.</span><span class="na">bodyInterceptors</span><span class="p">());</span>
+<h4 id="basic-usage">Basic Usage</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Path</span><span class="w"> </span><span class="n">apkPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;Banana.apk&quot;</span><span class="p">);</span>
+<span class="n">String</span><span class="w"> </span><span class="n">androidPlatformsPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;path/to/android-platforms&quot;</span><span class="p">;</span>
+
+<span class="c1">// First, create AndroidVersionInfo instance to detect the APK&#39;s target API level</span>
+<span class="n">AndroidVersionInfo</span><span class="w"> </span><span class="n">androidVersionInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AndroidVersionInfo</span><span class="p">(</span><span class="n">apkPath</span><span class="p">,</span><span class="w"> </span><span class="n">androidPlatformsPath</span><span class="p">);</span>
+
+<span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ApkAnalysisInputLocation</span><span class="p">(</span>
+<span class="w">    </span><span class="n">apkPath</span><span class="p">,</span>
+<span class="w">    </span><span class="n">androidPlatformsPath</span><span class="p">,</span>
+<span class="w">    </span><span class="n">androidVersionInfo</span><span class="p">,</span>
+<span class="w">    </span><span class="n">DexBodyInterceptors</span><span class="p">.</span><span class="na">Default</span><span class="p">.</span><span class="na">bodyInterceptors</span><span class="p">());</span>
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<h4 id="with-android-platforms">With Android Platforms</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// The androidPlatformsPath parameter points to the Android platforms directory</span>
+<span class="c1">// containing Android system libraries (android.jar files) for different API levels.</span>
+<span class="c1">// This directory is required to resolve method calls and class references that are not defined</span>
+<span class="c1">// in the APK itself, but are part of the Android system libraries.</span>
+<span class="c1">// </span>
+<span class="c1">// The Android platforms directory can be obtained from:</span>
+<span class="c1">// https://github.com/Sable/android-platforms</span>
+
+<span class="n">String</span><span class="w"> </span><span class="n">apkPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;path/to/app.apk&quot;</span><span class="p">;</span>
+<span class="n">String</span><span class="w"> </span><span class="n">androidPlatformsPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;path/to/android-platforms&quot;</span><span class="p">;</span>
+
+<span class="c1">// Create AndroidVersionInfo instance to detect the APK&#39;s target API level</span>
+<span class="n">AndroidVersionInfo</span><span class="w"> </span><span class="n">androidVersionInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AndroidVersionInfo</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">apkPath</span><span class="p">),</span><span class="w"> </span>
+<span class="w">    </span><span class="n">androidPlatformsPath</span><span class="p">);</span>
+
+<span class="n">ApkAnalysisInputLocation</span><span class="w"> </span><span class="n">apkInputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ApkAnalysisInputLocation</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">apkPath</span><span class="p">),</span>
+<span class="w">    </span><span class="n">androidPlatformsPath</span><span class="p">,</span>
+<span class="w">    </span><span class="n">androidVersionInfo</span><span class="p">,</span>
+<span class="w">    </span><span class="n">DexBodyInterceptors</span><span class="p">.</span><span class="na">Default</span><span class="p">.</span><span class="na">bodyInterceptors</span><span class="p">());</span>
+
+<span class="c1">// Additionally, include the specific android.jar for the APK&#39;s target SDK version</span>
+<span class="c1">// to ensure all Android framework classes are available during analysis</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">apiVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">androidVersionInfo</span><span class="p">.</span><span class="na">getApi_version</span><span class="p">();</span>
+<span class="n">String</span><span class="w"> </span><span class="n">androidJarPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">androidPlatformsPath</span><span class="w"> </span>
+<span class="w">    </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;android-&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">apiVersion</span><span class="w"> </span>
+<span class="w">    </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;android.jar&quot;</span><span class="p">;</span>
+
+<span class="n">JavaClassPathAnalysisInputLocation</span><span class="w"> </span><span class="n">androidJarInputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span><span class="n">androidJarPath</span><span class="p">);</span>
+
+<span class="c1">// Combine both input locations for complete analysis</span>
+<span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">apkInputLocation</span><span class="p">,</span><span class="w"> </span><span class="n">androidJarInputLocation</span><span class="p">));</span>
 </code></pre></div></td></tr></table></div>
 <h3 id="android-bytecode-with-dex2jar">Android Bytecode with Dex2Jar</h3>
 <p>File-Extensions: <code>.apk</code></p>
