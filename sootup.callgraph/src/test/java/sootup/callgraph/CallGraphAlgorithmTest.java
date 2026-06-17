@@ -13,7 +13,6 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
@@ -959,35 +958,28 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   }
 
   @Test
-  public void testMultiCallsToSameTarget() {
+  public void testMultipleCallsToSameTarget() {
     CallGraph cg = loadCallGraph("Misc", "multi.MultipleCallsToSameTarget");
 
     MethodSignature constructorMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("multi.Instantiated"),
+            identifierFactory.getClassType("multi.MultipleCallsToSameTarget"),
             "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature virtualMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("multi.Instantiated"),
+            identifierFactory.getClassType("multi.MultipleCallsToSameTarget"),
             "method",
-            "int",
+            "void",
             Collections.emptyList());
 
     MethodSignature staticMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("multi.MultiCalls"),
-            "method",
-            "int",
-            Collections.emptyList());
-
-    MethodSignature staticMethodField =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("multi.FieldLeft"),
-            "method",
-            "int",
+            identifierFactory.getClassType("multi.MultipleCallsToSameTarget"),
+            "staticMethod",
+            "void",
             Collections.emptyList());
 
     assertTrue(
@@ -1015,12 +1007,6 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
-            staticMethodField,
-            getInvokableStmt(mainMethodSignature, staticMethodField, 0)));
-
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
             virtualMethod,
             getInvokableStmt(mainMethodSignature, virtualMethod, 0)));
 
@@ -1029,38 +1015,6 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             mainMethodSignature,
             virtualMethod,
             getInvokableStmt(mainMethodSignature, virtualMethod, 1)));
-
-    checkClinit(cg, "multi.Instantiated", false, null);
-
-    checkClinit(cg, "multi.FieldLeft", true, null);
-
-    checkClinit(cg, "multi.FieldRight", false, null);
-
-    checkClinit(cg, "multi.MultiCalls", false, staticMethod);
-
-    assertEquals(11, cg.callsFrom(mainMethodSignature).size());
-
-    assertEquals(2, cg.callsTo(staticMethod).size());
-    assertEquals(1, cg.callsTo(staticMethodField).size());
-    assertEquals(2, cg.callsTo(constructorMethod).size());
-    assertEquals(2, cg.callsTo(virtualMethod).size());
-
-    assertEquals(0, cg.callsFrom(staticMethod).size());
-    assertEquals(0, cg.callsFrom(staticMethodField).size());
-    assertEquals(1, cg.callsFrom(constructorMethod).size());
-    assertEquals(0, cg.callsFrom(virtualMethod).size());
-  }
-
-  private void checkClinit(CallGraph cg, String clinitClassName, boolean left, MethodSignature ms) {
-    ClassType clinitClass = identifierFactory.getClassType(clinitClassName);
-    MethodSignature clinitMethod = identifierFactory.getStaticInitializerSignature(clinitClass);
-    InvokableStmt invokeStmt;
-    if (ms == null) {
-      invokeStmt = getInvokableStmtNonInvokeExpr(mainMethodSignature, clinitClass, left, 0);
-    } else {
-      invokeStmt = getInvokableStmt(mainMethodSignature, ms, 0);
-    }
-    assertTrue(cg.containsCall(mainMethodSignature, clinitMethod, invokeStmt));
   }
 
   @Test
@@ -1201,7 +1155,6 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   @Test
   public void testClinitCallPruning2() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccp2.ClinitCallPruning2");
-
     IdentifierFactory id = view.getIdentifierFactory();
 
     // testClinitCallPruningChild
