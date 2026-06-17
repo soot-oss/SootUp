@@ -18,8 +18,8 @@
 			<artifactId>sootup.core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jgrapht</groupId>
-			<artifactId>jgrapht-core</artifactId>
+			<groupId>org.graph4j</groupId>
+			<artifactId>graph4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jspecify</groupId>
