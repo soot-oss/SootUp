@@ -110,10 +110,58 @@ File-Extensions: `.apk`
 
 The `ApkAnalysisInputLocation` is the APK frontend written for Sootup
 
+#### Basic Usage
 ```java
-Path path = Paths.get("Banana.apk");
-AnalysisInputLocation inputLocation = new ApkAnalysisInputLocation(path, "", DexBodyInterceptors.Default.bodyInterceptors());
+Path apkPath = Paths.get("Banana.apk");
+String androidPlatformsPath = "path/to/android-platforms";
+
+// First, create AndroidVersionInfo instance to detect the APK's target API level
+AndroidVersionInfo androidVersionInfo = new AndroidVersionInfo(apkPath, androidPlatformsPath);
+
+AnalysisInputLocation inputLocation = new ApkAnalysisInputLocation(
+    apkPath,
+    androidPlatformsPath,
+    androidVersionInfo,
+    DexBodyInterceptors.Default.bodyInterceptors());
 JavaView view = new JavaView(inputLocation);
+```
+
+#### With Android Platforms
+```java
+// The androidPlatformsPath parameter points to the Android platforms directory
+// containing Android system libraries (android.jar files) for different API levels.
+// This directory is required to resolve method calls and class references that are not defined
+// in the APK itself, but are part of the Android system libraries.
+// 
+// The Android platforms directory can be obtained from:
+// https://github.com/Sable/android-platforms
+
+String apkPath = "path/to/app.apk";
+String androidPlatformsPath = "path/to/android-platforms";
+
+// Create AndroidVersionInfo instance to detect the APK's target API level
+AndroidVersionInfo androidVersionInfo = new AndroidVersionInfo(
+    Paths.get(apkPath), 
+    androidPlatformsPath);
+
+ApkAnalysisInputLocation apkInputLocation = new ApkAnalysisInputLocation(
+    Paths.get(apkPath),
+    androidPlatformsPath,
+    androidVersionInfo,
+    DexBodyInterceptors.Default.bodyInterceptors());
+
+// Additionally, include the specific android.jar for the APK's target SDK version
+// to ensure all Android framework classes are available during analysis
+int apiVersion = androidVersionInfo.getApi_version();
+String androidJarPath = androidPlatformsPath 
+    + File.separator + "android-" + apiVersion 
+    + File.separator + "android.jar";
+
+JavaClassPathAnalysisInputLocation androidJarInputLocation = 
+    new JavaClassPathAnalysisInputLocation(androidJarPath);
+
+// Combine both input locations for complete analysis
+JavaView view = new JavaView(List.of(apkInputLocation, androidJarInputLocation));
 ```
 ### Android Bytecode with Dex2Jar
 File-Extensions: `.apk`

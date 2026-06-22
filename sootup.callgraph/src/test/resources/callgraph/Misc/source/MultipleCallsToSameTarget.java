@@ -1,17 +1,17 @@
 package multi;
 
-class MultiCalls {
+class MultipleCallsToSameTarget {
 
     public static void staticMethod(){}
 
     public void method(){}
 
     public static void main(String[] args){
-      MultiCalls.staticMethod();
-      MultiCalls.staticMethod();
+      MultipleCallsToSameTarget.staticMethod();
+      MultipleCallsToSameTarget.staticMethod();
 
-      MultiCalls in1 = new MultiCalls();
-      MultiCalls in2 = new MultiCalls();
+      MultipleCallsToSameTarget in1 = new MultipleCallsToSameTarget();
+      MultipleCallsToSameTarget in2 = new MultipleCallsToSameTarget();
 
       in1.method();
       in2.method();
