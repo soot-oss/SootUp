@@ -19,9 +19,8 @@
 package qilin.core.pag;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.CallGraphBuilder;
@@ -55,6 +54,7 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.java.core.language.JavaJimple;
@@ -79,7 +79,11 @@ public class PAG {
   protected ArrayNumberer<AllocNode> allocNodeNumberer = new ArrayNumberer<>();
   protected ArrayNumberer<ValNode> valNodeNumberer = new ArrayNumberer<>();
   protected ArrayNumberer<FieldRefNode> fieldRefNodeNumberer = new ArrayNumberer<>();
-  private static final AtomicInteger maxFinishNumber = new AtomicInteger(0);
+
+  // the array-element pseudo-field is per-PAG (not a JVM-wide singleton) so that multiple PTA
+  // instances can run independently/concurrently without sharing mutable state.
+  private final ArrayElement arrayElement = new ArrayElement();
+  private final Map<ReferenceType, MergedNewExpr> mergedNewExprs = new ConcurrentHashMap<>();
 
   // ========================= ir to Node ==============================================
   protected final Map<Object, AllocNode> valToAllocNode;
@@ -265,8 +269,12 @@ public class PAG {
     return lookup(storeInv, key);
   }
 
-  public static int nextFinishNumber() {
-    return maxFinishNumber.incrementAndGet();
+  public ArrayElement getArrayElement() {
+    return arrayElement;
+  }
+
+  public MergedNewExpr getMergedNewExpr(ReferenceType type) {
+    return mergedNewExprs.computeIfAbsent(type, MergedNewExpr::new);
   }
 
   public ArrayNumberer<AllocNode> getAllocNodeNumberer() {
@@ -318,7 +326,7 @@ public class PAG {
       View view = pta.getView();
       Optional<? extends SootClass> osc = view.getClass(rt);
       if (osc.isPresent() && osc.get().isAbstract()) {
-        boolean usesReflectionLog = CoreConfig.v().getAppConfig().REFLECTION_LOG != null;
+        boolean usesReflectionLog = pta.getConfig().getReflectionLogPath() != null;
         if (!usesReflectionLog) {
           throw new RuntimeException("Attempt to create allocnode with abstract type " + rt);
         }
@@ -337,7 +345,7 @@ public class PAG {
 
   public AllocNode makeStringConstantNode(StringConstant sc) {
     StringConstant stringConstant = sc;
-    if (!CoreConfig.v().getPtaConfig().stringConstants) {
+    if (!pta.getConfig().isStringConstants()) {
       stringConstant = JavaJimple.newStringConstant(PointsToAnalysis.STRING_NODE);
     }
     AllocNode ret = valToAllocNode.get(stringConstant);
@@ -482,7 +490,8 @@ public class PAG {
         contextFieldMap.computeIfAbsent(context, k -> DataFactory.createMap());
     ContextField ret = field2odotf.get(field);
     if (ret == null) {
-      field2odotf.put(field, ret = new ContextField(context, field));
+      field2odotf.put(
+          field, ret = new ContextField(context, field, pta.getConfig().isPreciseArrayElement()));
       valNodeNumberer.add(ret);
     }
     return ret;
@@ -528,8 +537,8 @@ public class PAG {
 
   protected ReflectionModel createReflectionModel() {
     ReflectionModel model;
-    if (CoreConfig.v().getAppConfig().REFLECTION_LOG != null
-        && CoreConfig.v().getAppConfig().REFLECTION_LOG.length() > 0) {
+    String reflectionLogPath = pta.getConfig().getReflectionLogPath();
+    if (reflectionLogPath != null && reflectionLogPath.length() > 0) {
       model = new TamiflexModel(pta.getScene());
     } else {
       model = new NopReflectionModel(pta.getScene());

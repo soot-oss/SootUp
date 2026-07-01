@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
@@ -95,7 +94,7 @@ public class YummyStat implements AbstractStat {
     exporter.collectMetric("#Single-Receiver Methods:", String.valueOf(singleReceiverCnt));
     exporter.collectMetric(
         "#Single-Call-Single-Receiver Methods:", String.valueOf(singleCallSingleReceiverCnt));
-    if (CoreConfig.v().getOutConfig().dumpStats) {
+    if (pta.getConfig().isDumpStats()) {
       exporter.dumpSingleCallMethods(singleCalls);
       exporter.dumpSingleReceiverMethods(singleReceivers);
       exporter.dumpSingleCallSingleReceiverMethods(singleCallSingleReceivers);

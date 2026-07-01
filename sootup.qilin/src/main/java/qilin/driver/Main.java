@@ -20,7 +20,7 @@ package qilin.driver;
 
 import java.lang.management.ManagementFactory;
 import qilin.core.PTA;
-import qilin.pta.PTAConfig;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.util.MemoryWatcher;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
@@ -29,16 +29,19 @@ import sootup.core.views.View;
 public class Main {
 
   public static PTA run(String[] args) {
-    new PTAOption().parseCommandLine(args);
-    PTAConfig.ApplicationConfiguration appConfig = PTAConfig.v().getAppConfig();
-    if (appConfig.MAIN_CLASS == null) {
-      appConfig.MAIN_CLASS = PTAUtils.findMainFromMetaInfo(appConfig.APP_PATH);
+    PTAOption ptaOption = new PTAOption();
+    ptaOption.parseCommandLine(args);
+    String appPath = ptaOption.getAppPath();
+    String mainClass = ptaOption.getMainClass();
+    if (mainClass == null) {
+      mainClass = PTAUtils.findMainFromMetaInfo(appPath);
     }
-    View view = PTAUtils.createView();
-    PTAPattern ptaPattern = PTAConfig.v().getPtaConfig().ptaPattern;
-    PTA pta = PTAFactory.createPTA(ptaPattern, view, appConfig.MAIN_CLASS);
-    if (PTAConfig.v().getOutConfig().dumpJimple) {
-      String jimplePath = PTAConfig.v().getAppConfig().APP_PATH.replace(".jar", "");
+    View view = PTAUtils.createView(appPath, ptaOption.getLibPath(), ptaOption.getJrePath());
+    PTAPattern ptaPattern = ptaOption.getPtaPattern();
+    PointerAnalysisConfig config = ptaOption.getPointerAnalysisConfig();
+    PTA pta = PTAFactory.createPTA(ptaPattern, view, mainClass, config);
+    if (ptaOption.isDumpJimple()) {
+      String jimplePath = appPath.replace(".jar", "");
       PTAUtils.dumpJimple(pta.getScene(), jimplePath);
       System.out.println("Jimple files have been dumped to: " + jimplePath);
     }

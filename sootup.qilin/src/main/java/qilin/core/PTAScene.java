@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.common.Value;
@@ -39,6 +40,8 @@ import sootup.core.views.View;
 
 public class PTAScene {
   private final View view;
+  private final String mainClassSig;
+  private final PointerAnalysisConfig config;
   private OnFlyCallGraph callgraph;
   private final FakeMainFactory fakeMainFactory;
 
@@ -46,14 +49,28 @@ public class PTAScene {
   public final Set<SootMethod> reflectionBuilt;
   public final Set<SootMethod> arraycopyBuilt;
 
-  public PTAScene(View view, String mainClassSig) {
+  public PTAScene(View view, String mainClassSig, PointerAnalysisConfig config) {
     this.nativeBuilt = DataFactory.createSet();
     this.reflectionBuilt = DataFactory.createSet();
     this.arraycopyBuilt = DataFactory.createSet();
     this.view = view;
+    this.mainClassSig = mainClassSig;
+    this.config = config;
     SootClass mainClass = getSootClass(mainClassSig);
     // setup fakemain
-    this.fakeMainFactory = new FakeMainFactory(view, mainClass);
+    this.fakeMainFactory = new FakeMainFactory(view, mainClass, config);
+  }
+
+  public PointerAnalysisConfig getConfig() {
+    return config;
+  }
+
+  public String getMainClassSignature() {
+    return mainClassSig;
+  }
+
+  public FakeMainFactory getFakeMainFactory() {
+    return fakeMainFactory;
   }
 
   /*

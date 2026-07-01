@@ -21,9 +21,9 @@ package qilin.pta.toolkits.turner;
 import java.util.*;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
-import qilin.pta.PTAConfig;
 import qilin.util.PTAUtils;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
@@ -180,10 +180,10 @@ public class OCG {
 
   public void run() {
     int[] a = new int[2];
-    System.out.println(PTAConfig.v().turnerConfig);
+    System.out.println(pta.getConfig().getTurnerConfig());
     for (OCGNode node : nodes.values()) {
-      PTAConfig.TurnerConfig hgConfig = PTAConfig.v().turnerConfig;
-      if (hgConfig == PTAConfig.TurnerConfig.PHASE_TWO) {
+      PointerAnalysisConfig.TurnerConfig hgConfig = pta.getConfig().getTurnerConfig();
+      if (hgConfig == PointerAnalysisConfig.TurnerConfig.PHASE_TWO) {
         node.cslikely = true;
       } else {
         node.cslikely = isNotTopAndBottom(node);

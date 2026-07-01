@@ -21,7 +21,6 @@ package qilin.stat;
 import com.google.common.collect.Sets;
 import java.util.*;
 import qilin.core.PTA;
-import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
@@ -64,7 +63,9 @@ public class SimplifiedEvaluator implements IEvaluator {
         "#Reachable Method (CI):", String.valueOf(pta.getNakedReachableMethods().size() - 1));
     OnFlyCallGraph ciCallGraph = pta.getCallGraph();
     exporter.collectMetric(
-        "#Call Edge(CI):", String.valueOf(ciCallGraph.size() - FakeMainFactory.implicitCallEdges));
+        "#Call Edge(CI):",
+        String.valueOf(
+            ciCallGraph.size() - pta.getScene().getFakeMainFactory().getImplicitCallEdges()));
 
     OnFlyCallGraph callGraph = pta.getCallGraph();
 

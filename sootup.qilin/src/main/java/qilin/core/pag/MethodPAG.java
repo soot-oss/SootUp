@@ -19,9 +19,9 @@
 package qilin.core.pag;
 
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import qilin.util.queue.ChunkedQueue;
@@ -56,6 +56,7 @@ public class MethodPAG {
 
   protected MethodNodeFactory nodeFactory;
   protected final PTAScene ptaScene;
+  protected final PointerAnalysisConfig config;
   SootMethod method;
   /*
    * List[i-1] is wrappered in List[i].
@@ -68,6 +69,7 @@ public class MethodPAG {
 
   public MethodPAG(PAG pag, SootMethod m, Body body) {
     this.ptaScene = pag.getPta().getScene();
+    this.config = pag.getPta().getConfig();
     this.method = m;
     this.nodeFactory = new MethodNodeFactory(pag, this);
     this.body = body;
@@ -122,7 +124,7 @@ public class MethodPAG {
 
   protected void buildException() {
     // we use the same logic as doop (library/exceptions/precise.logic).
-    if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
+    if (!config.isPreciseExceptions()) {
       return;
     }
     // List<Trap> traps = body.getTraps();

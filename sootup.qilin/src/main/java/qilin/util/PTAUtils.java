@@ -36,7 +36,6 @@ import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
-import qilin.pta.PTAConfig;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -402,23 +401,22 @@ public final class PTAUtils {
     }
   }
 
-  public static View createView() {
+  public static View createView(String appPath, String libPath, String jrePath) {
     /**
      * Set the soot class path to point to the default class path appended with the app path (the
      * classes dir or the application jar) and jar files in the library dir of the application.
      */
     List<String> classPaths = new ArrayList<>();
     List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
-    PTAConfig.ApplicationConfiguration appConfig = PTAConfig.v().getAppConfig();
     // note that the order is important!
-    classPaths.add(appConfig.APP_PATH);
-    analysisInputLocations.add(new JavaClassPathAnalysisInputLocation(appConfig.APP_PATH));
-    classPaths.addAll(getLibJars(appConfig.LIB_PATH));
-    for (String clazzPath : getLibJars(appConfig.LIB_PATH)) {
+    classPaths.add(appPath);
+    analysisInputLocations.add(new JavaClassPathAnalysisInputLocation(appPath));
+    classPaths.addAll(getLibJars(libPath));
+    for (String clazzPath : getLibJars(libPath)) {
       analysisInputLocations.add(new JavaClassPathAnalysisInputLocation(clazzPath));
     }
-    classPaths.addAll(getJreJars(appConfig.JRE));
-    for (String clazzPath : getJreJars(appConfig.JRE)) {
+    classPaths.addAll(getJreJars(jrePath));
+    for (String clazzPath : getJreJars(jrePath)) {
       analysisInputLocations.add(
           new JavaClassPathAnalysisInputLocation(clazzPath, SourceType.Library));
     }

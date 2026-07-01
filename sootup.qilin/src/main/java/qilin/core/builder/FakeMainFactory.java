@@ -27,8 +27,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import qilin.CoreConfig;
 import qilin.core.ArtificialMethod;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.util.PTAUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
@@ -54,16 +54,17 @@ import sootup.java.core.*;
 import sootup.java.core.types.JavaClassType;
 
 public class FakeMainFactory extends ArtificialMethod {
-  public static FakeMainFactory instance;
 
-  public static int implicitCallEdges;
+  private int implicitCallEdges;
   private final SootClass fakeClass;
   private final SootClass mainClass;
+  private final PointerAnalysisConfig config;
   private final EntryPoints entryPoints;
 
-  public FakeMainFactory(View view, SootClass mainClazz) {
+  public FakeMainFactory(View view, SootClass mainClazz, PointerAnalysisConfig config) {
     super(view);
     this.mainClass = mainClazz;
+    this.config = config;
     this.entryPoints = new EntryPoints();
     this.localStart = 0;
     String className = "qilin.pta.FakeMain";
@@ -127,16 +128,20 @@ public class FakeMainFactory extends ArtificialMethod {
     return this.method;
   }
 
+  public int getImplicitCallEdges() {
+    return implicitCallEdges;
+  }
+
   private List<SootMethod> getEntryPoints() {
     List<SootMethod> ret = new ArrayList<>();
-    if (CoreConfig.v().getPtaConfig().clinitMode == CoreConfig.ClinitMode.FULL) {
+    if (config.getClinitMode() == PointerAnalysisConfig.ClinitMode.FULL) {
       ret.addAll(entryPoints.clinits());
     } else {
       // on the fly mode, resolve the clinit methods on the fly.
       ret.addAll(Collections.emptySet());
     }
 
-    if (CoreConfig.v().getPtaConfig().singleentry) {
+    if (config.isSingleEntry()) {
       List<SootMethod> entries = entryPoints.application();
       if (entries.isEmpty()) {
         throw new RuntimeException("Must specify MAINCLASS when appmode enabled!!!");
@@ -175,7 +180,7 @@ public class FakeMainFactory extends ArtificialMethod {
           addAssign(getArrayRef(strArray), mockStr);
           addInvoke(entry.getSignature().toString(), strArray);
           implicitCallEdges++;
-        } else if (CoreConfig.v().getPtaConfig().clinitMode != CoreConfig.ClinitMode.ONFLY
+        } else if (config.getClinitMode() != PointerAnalysisConfig.ClinitMode.ONFLY
             || !PTAUtils.isStaticInitializer(entry)) {
           // in the on fly mode, we won't add a call directly for <clinit> methods.
           addInvoke(entry.getSignature().toString());
@@ -183,7 +188,7 @@ public class FakeMainFactory extends ArtificialMethod {
         }
       }
     }
-    if (CoreConfig.v().getPtaConfig().singleentry) {
+    if (config.isSingleEntry()) {
       return;
     }
     Local sv = getNextLocal(PTAUtils.getClassType("java.lang.String"));

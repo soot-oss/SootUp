@@ -18,7 +18,6 @@
 
 package qilin.core.pag;
 
-import qilin.CoreConfig;
 import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
@@ -30,14 +29,14 @@ public class ContextField extends ValNode {
   protected Context context;
   protected SparkField field;
 
-  public ContextField(Context context, SparkField field) {
-    super(refineFieldType(context, field));
+  public ContextField(Context context, SparkField field, boolean preciseArrayElement) {
+    super(refineFieldType(context, field, preciseArrayElement));
     this.context = context;
     this.field = field;
   }
 
-  private static Type refineFieldType(Context context, SparkField field) {
-    if (!CoreConfig.v().getPtaConfig().preciseArrayElement) {
+  private static Type refineFieldType(Context context, SparkField field, boolean preciseArrayElement) {
+    if (!preciseArrayElement) {
       return PTAUtils.getClassType("java.lang.Object");
     }
     if (field instanceof ArrayElement) {

@@ -20,14 +20,16 @@ package qilin.driver;
 
 import qilin.core.PTA;
 import qilin.core.PTAScene;
+import qilin.core.config.ContextSensitivity;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.parm.ctxcons.*;
-import qilin.pta.PTAConfig;
 import qilin.pta.tools.*;
 import sootup.core.views.View;
 
 public class PTAFactory {
-  public static PTA createPTA(PTAPattern ptaPattern, View view, String mainClassSig) {
-    PTAScene scene = new PTAScene(view, mainClassSig);
+  public static PTA createPTA(
+      PTAPattern ptaPattern, View view, String mainClassSig, PointerAnalysisConfig config) {
+    PTAScene scene = new PTAScene(view, mainClassSig, config);
     switch (ptaPattern.getContextKind()) {
       case HYBOBJ:
         {
@@ -47,8 +49,10 @@ public class PTAFactory {
             default:
               {
                 // static method using callsite as context, Yannis pldi'13
-                return new HybridObjectSensPTA(
-                    scene, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
+                return new CoreVariantPTA(
+                    scene,
+                    ContextSensitivity.hybridObjectSensitive(
+                        ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth()));
               }
           }
         }
@@ -60,8 +64,8 @@ public class PTAFactory {
                 // k-obj pointer analysis with Eagle pre-analysis, Jingbo OOPSLA'19
                 assert ptaPattern.getContextDepth() == ptaPattern.getHeapContextDepth() + 1;
                 BasePTA eagle = new EaglePTA(scene, ptaPattern.getContextDepth());
-                if (PTAConfig.v().getPtaConfig().ctxDebloating) {
-                  return new DebloatedPTA(eagle, PTAConfig.v().getPtaConfig().debloatApproach);
+                if (config.isCtxDebloating()) {
+                  return new DebloatedPTA(eagle, config.getDebloatApproach());
                 } else {
                   return eagle;
                 }
@@ -84,8 +88,8 @@ public class PTAFactory {
                         ptaPattern.getContextDepth(),
                         ptaPattern.getHeapContextDepth(),
                         ctxCons);
-                if (PTAConfig.v().getPtaConfig().ctxDebloating) {
-                  return new DebloatedPTA(zipperPTA, PTAConfig.v().getPtaConfig().debloatApproach);
+                if (config.isCtxDebloating()) {
+                  return new DebloatedPTA(zipperPTA, config.getDebloatApproach());
                 } else {
                   return zipperPTA;
                 }
@@ -99,8 +103,8 @@ public class PTAFactory {
                         ptaPattern.getContextDepth(),
                         ptaPattern.getHeapContextDepth(),
                         ctxCons);
-                if (PTAConfig.v().getPtaConfig().ctxDebloating) {
-                  return new DebloatedPTA(mahjongPTA, PTAConfig.v().getPtaConfig().debloatApproach);
+                if (config.isCtxDebloating()) {
+                  return new DebloatedPTA(mahjongPTA, config.getDebloatApproach());
                 } else {
                   return mahjongPTA;
                 }
@@ -119,11 +123,13 @@ public class PTAFactory {
             default:
               {
                 BasePTA kobj =
-                    new ObjectSensPTA(
-                        scene, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
+                    new CoreVariantPTA(
+                        scene,
+                        ContextSensitivity.objectSensitive(
+                            ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth()));
 
-                if (PTAConfig.v().getPtaConfig().ctxDebloating) {
-                  return new DebloatedPTA(kobj, PTAConfig.v().getPtaConfig().debloatApproach);
+                if (config.isCtxDebloating()) {
+                  return new DebloatedPTA(kobj, config.getDebloatApproach());
                 } else {
                   // normal object-sensitive pointer analysis, Milanova TOSEM'05
                   return kobj;
@@ -148,8 +154,10 @@ public class PTAFactory {
             default:
               {
                 // normal type-sensitive pointer analysis, Yannis popl'11
-                return new TypeSensPTA(
-                    scene, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
+                return new CoreVariantPTA(
+                    scene,
+                    ContextSensitivity.typeSensitive(
+                        ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth()));
               }
           }
         }
@@ -186,14 +194,16 @@ public class PTAFactory {
             default:
               {
                 // CallSite Sensitive
-                return new CallSiteSensPTA(
-                    scene, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
+                return new CoreVariantPTA(
+                    scene,
+                    ContextSensitivity.callSite(
+                        ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth()));
               }
           }
         }
       case INSENS:
       default:
-        return new Spark(scene);
+        return new CoreVariantPTA(scene, ContextSensitivity.insensitive());
     }
   }
 }

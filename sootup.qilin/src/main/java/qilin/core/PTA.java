@@ -24,6 +24,7 @@ import java.util.Set;
 import qilin.core.builder.CallGraphBuilder;
 import qilin.core.builder.ExceptionHandler;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.*;
@@ -76,6 +77,10 @@ public abstract class PTA implements PointsToAnalysis {
 
   public PTAScene getScene() {
     return scene;
+  }
+
+  public PointerAnalysisConfig getConfig() {
+    return scene.getConfig();
   }
 
   public CallGraphBuilder getCgb() {
@@ -171,7 +176,7 @@ public abstract class PTA implements PointsToAnalysis {
   /** Returns the set of objects pointed to by elements of the arrays in the PointsToSet s. */
   @Override
   public PointsToSet reachingObjectsOfArrayElement(PointsToSet s) {
-    return reachingObjectsInternal(s, ArrayElement.v());
+    return reachingObjectsInternal(s, pag.getArrayElement());
   }
 
   /** Returns the set of objects pointed to by variable l in context c. */
@@ -180,7 +185,7 @@ public abstract class PTA implements PointsToAnalysis {
     VarNode n = pag.findContextVarNode(m, l, c);
     PointsToSetInternal pts;
     if (n == null) {
-      pts = HybridPointsToSet.getEmptySet();
+      pts = new HybridPointsToSet();
     } else {
       pts = n.getP2Set();
     }
@@ -219,7 +224,7 @@ public abstract class PTA implements PointsToAnalysis {
     if (f.isStatic()) {
       VarNode n = pag.findGlobalVarNode(f);
       if (n == null) {
-        ret = HybridPointsToSet.getEmptySet();
+        ret = new HybridPointsToSet();
       } else {
         ret = n.getP2Set();
       }

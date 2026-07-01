@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
-import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.core.PointsToAnalysis;
 import qilin.core.pag.*;
@@ -242,7 +241,7 @@ public class MethodNodeFactory {
 
           @Override
           public void caseThrowStmt(@NonNull JThrowStmt stmt) {
-            if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
+            if (!pag.getPta().getConfig().isPreciseExceptions()) {
               mpag.addInternalEdge(getNode(stmt.getOp()), getNode(scene.getFieldGlobalThrow()));
             }
           }
@@ -313,7 +312,7 @@ public class MethodNodeFactory {
               method);
       VarNode vn = pag.makeLocalVarNode(an.getNewExpr(), an.getType(), method);
       mpag.addInternalEdge(an, vn); // new
-      mpag.addInternalEdge(vn, pag.makeFieldRefNode(prevVn, ArrayElement.v())); // store
+      mpag.addInternalEdge(vn, pag.makeFieldRefNode(prevVn, pag.getArrayElement())); // store
       prevVn = vn;
     }
     return ret;
@@ -362,11 +361,11 @@ public class MethodNodeFactory {
   }
 
   public final FieldRefNode caseArray(VarNode base) {
-    return pag.makeFieldRefNode(base, ArrayElement.v());
+    return pag.makeFieldRefNode(base, pag.getArrayElement());
   }
 
   private Node caseCaughtExceptionRef(JCaughtExceptionRef cer) {
-    if (CoreConfig.v().getPtaConfig().preciseExceptions) {
+    if (pag.getPta().getConfig().isPreciseExceptions()) {
       // we model caughtException expression as an local assignment.
       return pag.makeLocalVarNode(cer, cer.getType(), method);
     } else {

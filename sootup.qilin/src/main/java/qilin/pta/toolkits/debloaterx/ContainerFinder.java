@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import qilin.core.PTA;
 import qilin.core.pag.AllocNode;
-import qilin.core.pag.ArrayElement;
 import qilin.core.pag.PAG;
 import qilin.core.pag.SparkField;
 import qilin.util.Stopwatch;
@@ -47,7 +46,7 @@ public class ContainerFinder {
         Value vl = nae.getSize();
         if (utility.isCoarseType(at)
             && (!(vl instanceof IntConstant) || ((IntConstant) vl).getValue() != 0)) {
-          containers.computeIfAbsent(heap, k -> new HashSet<>()).add(ArrayElement.v());
+          containers.computeIfAbsent(heap, k -> new HashSet<>()).add(pag.getArrayElement());
         } else {
           notcontainers.add(heap);
         }

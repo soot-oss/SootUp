@@ -25,16 +25,17 @@ import java.io.IOException;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import qilin.core.PTA;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.driver.PTAFactory;
 import qilin.driver.PTAOption;
 import qilin.driver.PTAPattern;
-import qilin.pta.PTAConfig;
 import qilin.util.PTAUtils;
 import sootup.core.views.View;
 
 public abstract class JunitTests {
   protected static String appPath, jrePath, refLogPath;
   protected static boolean isSetUp = false;
+  protected static PTAOption ptaOption;
 
   @BeforeAll
   public static void setUp() throws IOException {
@@ -81,7 +82,7 @@ public abstract class JunitTests {
             );
     jrePath = jreFile.getCanonicalPath();
     String[] args = generateArgumentsx();
-    PTAOption ptaOption = new PTAOption();
+    ptaOption = new PTAOption();
     ptaOption.parseCommandLine(args);
     isSetUp = true;
   }
@@ -91,12 +92,24 @@ public abstract class JunitTests {
   }
 
   public PTA run(String mainClass, String ptaPattern) {
-    PTAConfig.v().getAppConfig().MAIN_CLASS = mainClass;
-    PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern(ptaPattern);
-    PTAConfig.v().getPtaConfig().ptaName = PTAConfig.v().getPtaConfig().ptaPattern.toString();
-    System.out.println(PTAConfig.v().getAppConfig().APP_PATH);
-    View view = PTAUtils.createView();
-    PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern, view, mainClass);
+    PTAPattern pattern = new PTAPattern(ptaPattern);
+    PointerAnalysisConfig config =
+        PointerAnalysisConfig.builder()
+            .contextSensitivity(ptaOption.getPointerAnalysisConfig().getContextSensitivity())
+            .heapAbstractionPolicy(ptaOption.getPointerAnalysisConfig().getHeapAbstractionPolicy())
+            .singleEntry(ptaOption.getPointerAnalysisConfig().isSingleEntry())
+            .clinitMode(ptaOption.getPointerAnalysisConfig().getClinitMode())
+            .preciseArrayElement(ptaOption.getPointerAnalysisConfig().isPreciseArrayElement())
+            .stringConstants(ptaOption.getPointerAnalysisConfig().isStringConstants())
+            .preciseExceptions(ptaOption.getPointerAnalysisConfig().isPreciseExceptions())
+            .enforceEmptyCtxForIgnoreTypes(
+                ptaOption.getPointerAnalysisConfig().isEnforceEmptyCtxForIgnoreTypes())
+            .reflectionLogPath(ptaOption.getPointerAnalysisConfig().getReflectionLogPath())
+            .analysisName(pattern.toString())
+            .build();
+    System.out.println(appPath);
+    View view = PTAUtils.createView(appPath, ptaOption.getLibPath(), ptaOption.getJrePath());
+    PTA pta = PTAFactory.createPTA(pattern, view, mainClass, config);
     pta.pureRun();
     return pta;
   }

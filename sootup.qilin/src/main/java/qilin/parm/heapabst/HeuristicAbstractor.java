@@ -20,7 +20,6 @@ package qilin.parm.heapabst;
 
 import java.util.Set;
 import qilin.core.pag.AllocNode;
-import qilin.core.pag.MergedNewExpr;
 import qilin.core.pag.PAG;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
@@ -44,7 +43,7 @@ public class HeuristicAbstractor implements HeapAbstractor {
   public AllocNode abstractHeap(AllocNode heap) {
     Type type = heap.getType();
     if (mergedTypes.contains(type) || (PTAUtils.isThrowable(view, type) && mergedTypes.add(type))) {
-      return pag.makeAllocNode(MergedNewExpr.v((ReferenceType) type), type, null);
+      return pag.makeAllocNode(pag.getMergedNewExpr((ReferenceType) type), type, null);
     } else {
       return heap;
     }

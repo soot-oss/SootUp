@@ -19,6 +19,7 @@
 package qilin.pta.tools;
 
 import qilin.core.PTAScene;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.AllocSiteAbstractor;
 import qilin.parm.heapabst.HeuristicAbstractor;
@@ -26,7 +27,6 @@ import qilin.parm.select.CtxSelector;
 import qilin.parm.select.HeuristicSelector;
 import qilin.parm.select.PipelineSelector;
 import qilin.parm.select.UniformSelector;
-import qilin.pta.PTAConfig;
 import qilin.pta.toolkits.dd.TunnelingConstructor;
 
 /*
@@ -39,12 +39,13 @@ public class TunnelingPTA extends BasePTA {
     super(scene);
     this.ctxCons = new TunnelingConstructor(getView(), ctxCons);
     CtxSelector us = new UniformSelector(k, hk);
-    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
+    if (getConfig().isEnforceEmptyCtxForIgnoreTypes()) {
       this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
     } else {
       this.ctxSel = us;
     }
-    if (PTAConfig.v().getPtaConfig().mergeHeap) {
+    if (getConfig().getHeapAbstractionPolicy()
+        == PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE) {
       this.heapAbst = new HeuristicAbstractor(pag);
     } else {
       this.heapAbst = new AllocSiteAbstractor();

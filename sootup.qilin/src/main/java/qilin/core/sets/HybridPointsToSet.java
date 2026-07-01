@@ -30,15 +30,6 @@ import qilin.util.BitVector;
  * @author Ondrej Lhotak
  */
 public final class HybridPointsToSet extends PointsToSetInternal {
-  private static HybridPointsToSet emptySet = null;
-
-  public static HybridPointsToSet getEmptySet() {
-    if (emptySet == null) {
-      emptySet = new HybridPointsToSet();
-    }
-    return emptySet;
-  }
-
   private final int[] nodeIdxs = new int[16];
   private BitVector bits = null;
   private int size = 0;

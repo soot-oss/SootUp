@@ -27,19 +27,7 @@ import sootup.core.types.Type;
  * @author Ondrej Lhotak
  */
 public class ArrayElement implements SparkField {
-  private static ArrayElement instance = null;
   private int number = 0;
-
-  public static ArrayElement v() {
-    if (instance == null) {
-      synchronized (ArrayElement.class) {
-        if (instance == null) {
-          instance = new ArrayElement();
-        }
-      }
-    }
-    return instance;
-  }
 
   public final int getNumber() {
     return number;

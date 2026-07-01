@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
-import qilin.CoreConfig;
 import qilin.core.CorePTA;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
@@ -85,14 +84,14 @@ public abstract class BasePTA extends CorePTA {
   }
 
   protected void dumpStats() {
-    if (CoreConfig.v().getOutConfig().dumppts) {
-      dumpPts(this, !CoreConfig.v().getOutConfig().dumplibpts);
+    if (getConfig().isDumpPointsToSet()) {
+      dumpPts(this, !getConfig().isDumpLibraryPointsToSet());
     }
   }
 
   /** dump pts to sootoutput/pts */
   private void dumpPts(PTA pta, boolean appOnly) {
-    final String output_dir = CoreConfig.v().getOutConfig().outDir;
+    final String output_dir = getConfig().getOutputDirectory();
     Map<String, Node> nodes = new TreeMap<>();
     try {
       PrintWriter file = new PrintWriter(new File(output_dir, "pts.txt"));

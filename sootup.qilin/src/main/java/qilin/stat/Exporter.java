@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
@@ -72,13 +71,13 @@ public class Exporter {
   }
 
   private String getFilePath(String fileName) {
-    String finalPath = CoreConfig.v().getOutConfig().outDir;
+    String finalPath = pta.getConfig().getOutputDirectory();
     finalPath =
         finalPath
             + File.separator
-            + CoreConfig.v().getAppConfig().MAIN_CLASS
+            + pta.getScene().getMainClassSignature()
             + File.separator
-            + CoreConfig.v().getPtaConfig().ptaName
+            + pta.getConfig().getAnalysisName()
             + File.separator;
     File file = new File(finalPath);
     if (!file.exists()) {
@@ -303,7 +302,7 @@ public class Exporter {
 
   public String report() {
     String tmp = report.toString();
-    if (CoreConfig.v().getOutConfig().dumpStats) {
+    if (pta.getConfig().isDumpStats()) {
       String statistics = "Statistics.txt";
       String finalPath = getFilePath(statistics);
       Util.writeToFile(finalPath, tmp);

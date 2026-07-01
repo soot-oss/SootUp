@@ -19,6 +19,8 @@
 package qilin.pta.tools;
 
 import java.util.*;
+import qilin.core.config.ContextSensitivity;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
@@ -26,7 +28,6 @@ import qilin.core.solver.Propagator;
 import qilin.parm.select.CtxSelector;
 import qilin.parm.select.DebloatingSelector;
 import qilin.parm.select.PipelineSelector;
-import qilin.pta.PTAConfig;
 import qilin.pta.toolkits.common.DebloatedOAG;
 import qilin.pta.toolkits.common.OAG;
 import qilin.pta.toolkits.conch.Conch;
@@ -42,22 +43,17 @@ import sootup.core.model.SootMethod;
  * refer to "Context Debloating for Object-Sensitive Pointer Analysis" (ASE'21)
  * */
 public class DebloatedPTA extends StagedPTA {
-  public enum DebloatApproach {
-    CONCH,
-    DEBLOATERX,
-    COLLECTION
-  }
 
   protected BasePTA basePTA;
   protected Set<Object> ctxDepHeaps = new HashSet<>();
-  protected DebloatApproach debloatApproach;
+  protected PointerAnalysisConfig.DebloatApproach debloatApproach;
 
   /*
    * The debloating approach is currently for object-sensitive PTA only.
    * Thus the base PTA should be k-OBJ, Zipper-OBJ or Eagle-OBJ.
    * */
   /* this constructor is used to specify the debloating approach. */
-  public DebloatedPTA(BasePTA basePTA, DebloatApproach approach) {
+  public DebloatedPTA(BasePTA basePTA, PointerAnalysisConfig.DebloatApproach approach) {
     super(basePTA.getScene());
     this.basePTA = basePTA;
     CtxSelector debloatingSelector = new DebloatingSelector(ctxDepHeaps);
@@ -66,7 +62,7 @@ public class DebloatedPTA extends StagedPTA {
       StagedPTA stagedPTA = (StagedPTA) basePTA;
       this.prePTA = stagedPTA.getPrePTA();
     } else {
-      this.prePTA = new Spark(basePTA.getScene());
+      this.prePTA = new CoreVariantPTA(basePTA.getScene(), ContextSensitivity.insensitive());
     }
     System.out.println("debloating ....");
     this.debloatApproach = approach;
@@ -78,7 +74,7 @@ public class DebloatedPTA extends StagedPTA {
     prePTA.pureRun();
     sparkTimer.stop();
     System.out.println(sparkTimer);
-    if (debloatApproach == DebloatApproach.CONCH) {
+    if (debloatApproach == PointerAnalysisConfig.DebloatApproach.CONCH) {
       Stopwatch conchTimer = Stopwatch.newAndStart("Conch");
       Conch hc = new Conch(prePTA);
       hc.runClassifier();
@@ -86,7 +82,7 @@ public class DebloatedPTA extends StagedPTA {
       System.out.println();
       conchTimer.stop();
       System.out.println(conchTimer);
-    } else if (debloatApproach == DebloatApproach.DEBLOATERX) {
+    } else if (debloatApproach == PointerAnalysisConfig.DebloatApproach.DEBLOATERX) {
       Stopwatch debloaterXTimer = Stopwatch.newAndStart("DebloaterX");
       DebloaterX debloaterX = new DebloaterX(prePTA);
       debloaterX.run();
@@ -106,7 +102,7 @@ public class DebloatedPTA extends StagedPTA {
       System.out.println(
           "DebloaterX OAG #node:" + doag1.nodeSize() + "; #edge:" + doag1.edgeSize());
     } else {
-      assert (debloatApproach == DebloatApproach.COLLECTION);
+      assert (debloatApproach == PointerAnalysisConfig.DebloatApproach.COLLECTION);
       Stopwatch collectionHeuristic = Stopwatch.newAndStart("COLLECTION");
       CollectionHeuristic ch = new CollectionHeuristic(prePTA);
       ch.run();
@@ -120,7 +116,7 @@ public class DebloatedPTA extends StagedPTA {
 
   @Override
   protected void mainAnalysis() {
-    if (!PTAConfig.v().getPtaConfig().preAnalysisOnly) {
+    if (!getConfig().isPreAnalysisOnly()) {
       System.out.println("selective pta starts!");
       basePTA.run();
     }

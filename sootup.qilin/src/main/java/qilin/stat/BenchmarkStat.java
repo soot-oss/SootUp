@@ -21,7 +21,6 @@ package qilin.stat;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import sootup.core.model.SootClass;
@@ -76,7 +75,7 @@ public class BenchmarkStat implements AbstractStat {
     exporter.collectMetric("#Appclass(reachable):", String.valueOf(reachableAppClasses.size()));
     exporter.collectMetric("#Libclass(reachable):", String.valueOf(libReachableClasses));
 
-    if (CoreConfig.v().getOutConfig().dumpStats) {
+    if (pta.getConfig().isDumpStats()) {
       exporter.dumpClassTypes(pta.getScene().getClasses());
     }
   }

@@ -18,16 +18,27 @@
 
 package qilin.driver;
 
-import java.util.*;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import qilin.pta.PTAConfig;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.pta.toolkits.turner.Turner;
-import qilin.pta.tools.DebloatedPTA;
 
+/**
+ * Thin CLI translation layer: parses command-line arguments and builds a {@link PTAPattern} (to
+ * drive {@link PTAFactory}) plus a type-safe {@link PointerAnalysisConfig} - it no longer mutates
+ * any global/singleton configuration object.
+ */
 public class PTAOption extends Options {
   private static final Logger logger = LoggerFactory.getLogger(PTAOption.class);
+
+  private String appPath = ".";
+  private String libPath = null;
+  private String jrePath = null;
+  private String mainClass = null;
+  private PTAPattern ptaPattern = new PTAPattern("insens");
+  private final PointerAnalysisConfig.Builder configBuilder = PointerAnalysisConfig.builder();
+  private boolean dumpJimpleFlag = false;
 
   /** add option "-brief -option" with description */
   protected void addOption(String brief, String option, String description) {
@@ -56,15 +67,6 @@ public class PTAOption extends Options {
         "libpath",
         "dir or jar",
         "The directory containing the library jar files for the application or the library jar file");
-    addOption(
-        null,
-        "includeall",
-        "Include packages which are not analyzed by default. (default value: false)");
-    addOption(
-        null,
-        "exclude",
-        "packages",
-        "Exclude selected packages. (delimiting symbol: semicolon ';')");
     addOption(
         null,
         "jre",
@@ -129,13 +131,6 @@ public class PTAOption extends Options {
         "Specify debloating approach (default value: CONCH)");
     addOption("tmd", "modular", "Enable Turner to run modularly (default value: false)");
 
-    // callgraph algorithm configurations
-    addOption(
-        "cga",
-        "callgraphalg",
-        "[CHA, VTA, RTA, SPARK, GEOM, QILIN]",
-        "Specify callgraph construction algorithm (default value: QILIN)");
-
     // others
     addOption("h", "help", "print this message");
     addOption("pre", "preonly", "Run only pre-analysis (default value: false)");
@@ -163,89 +158,105 @@ public class PTAOption extends Options {
   protected void parseCommandLineOptions(CommandLine cmd) {
     // pointer analysis configuration
     if (cmd.hasOption("apppath")) {
-      PTAConfig.v().getAppConfig().APP_PATH = cmd.getOptionValue("apppath");
+      appPath = cmd.getOptionValue("apppath");
     }
     String ptacmd = cmd.hasOption("pta") ? cmd.getOptionValue("pta") : "insens";
-    PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern(ptacmd);
-    PTAConfig.v().getPtaConfig().ptaName = PTAConfig.v().getPtaConfig().ptaPattern.toString();
+    ptaPattern = new PTAPattern(ptacmd);
+    configBuilder.analysisName(ptaPattern.toString());
     if (cmd.hasOption("singleentry")) {
-      PTAConfig.v().getPtaConfig().singleentry = true;
+      configBuilder.singleEntry(true);
     }
     if (cmd.hasOption("mergeheap")) {
-      PTAConfig.v().getPtaConfig().mergeHeap = true;
+      configBuilder.heapAbstractionPolicy(PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE);
     }
     if (cmd.hasOption("stringconstants")) {
-      PTAConfig.v().getPtaConfig().stringConstants = true;
+      configBuilder.stringConstants(true);
     }
     if (cmd.hasOption("emptycontextforignoretypes")) {
-      PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes = true;
+      configBuilder.enforceEmptyCtxForIgnoreTypes(true);
     }
     if (cmd.hasOption("clinitmode")) {
-      PTAConfig.v().getPtaConfig().clinitMode =
-          PTAConfig.ClinitMode.valueOf(cmd.getOptionValue("clinitmode"));
+      configBuilder.clinitMode(
+          PointerAnalysisConfig.ClinitMode.valueOf(cmd.getOptionValue("clinitmode")));
     }
     if (cmd.hasOption("preonly")) {
-      PTAConfig.v().getPtaConfig().preAnalysisOnly = true;
+      configBuilder.preAnalysisOnly(true);
     }
     if (cmd.hasOption("ctxdebloat")) {
-      PTAConfig.v().getPtaConfig().ctxDebloating = true;
+      configBuilder.ctxDebloating(true);
       if (cmd.hasOption("debloatapproach")) {
-        PTAConfig.v().getPtaConfig().debloatApproach =
-            DebloatedPTA.DebloatApproach.valueOf(cmd.getOptionValue("debloatapproach"));
+        configBuilder.debloatApproach(
+            PointerAnalysisConfig.DebloatApproach.valueOf(cmd.getOptionValue("debloatapproach")));
       }
     }
     if (cmd.hasOption("preciseexceptions")) {
-      PTAConfig.v().getPtaConfig().preciseExceptions = true;
+      configBuilder.preciseExceptions(true);
     }
     if (cmd.hasOption("modular")) {
       Turner.isModular = true;
     }
     if (cmd.hasOption("precisearray")) {
-      PTAConfig.v().getPtaConfig().preciseArrayElement = true;
+      configBuilder.preciseArrayElement(true);
     }
     // application configuration
     if (cmd.hasOption("mainclass")) {
-      PTAConfig.v().getAppConfig().MAIN_CLASS = cmd.getOptionValue("mainclass");
+      mainClass = cmd.getOptionValue("mainclass");
     }
     if (cmd.hasOption("jre")) {
-      PTAConfig.v().getAppConfig().JRE = cmd.getOptionValue("jre");
+      jrePath = cmd.getOptionValue("jre");
     }
     if (cmd.hasOption("libpath")) {
-      PTAConfig.v().getAppConfig().LIB_PATH = cmd.getOptionValue("libpath");
-    }
-    if (cmd.hasOption("exclude")) {
-      PTAConfig.v().getAppConfig().EXCLUDE = parsePackages(cmd.getOptionValue("exclude"));
+      libPath = cmd.getOptionValue("libpath");
     }
     if (cmd.hasOption("reflectionlog")) {
-      PTAConfig.v().getAppConfig().REFLECTION_LOG = cmd.getOptionValue("reflectionlog");
-    }
-    if (cmd.hasOption("inlcudeall")) {
-      PTAConfig.v().getAppConfig().INCLUDE_ALL = true;
+      configBuilder.reflectionLogPath(cmd.getOptionValue("reflectionlog"));
     }
     if (cmd.hasOption("turnerconfig")) {
-      PTAConfig.v().turnerConfig =
-          PTAConfig.TurnerConfig.valueOf(cmd.getOptionValue("turnerconfig"));
+      configBuilder.turnerConfig(
+          PointerAnalysisConfig.TurnerConfig.valueOf(cmd.getOptionValue("turnerconfig")));
     }
     // output
     if (cmd.hasOption("dumpjimple")) {
-      PTAConfig.v().getOutConfig().dumpJimple = true;
+      dumpJimpleFlag = true;
+      configBuilder.dumpJimple(true);
     }
     if (cmd.hasOption("dumppts")) {
-      PTAConfig.v().getOutConfig().dumppts = true;
+      configBuilder.dumpPointsToSet(true);
     }
     if (cmd.hasOption("dumpallpts")) {
-      PTAConfig.v().getOutConfig().dumppts = true;
-      PTAConfig.v().getOutConfig().dumplibpts = true;
+      configBuilder.dumpPointsToSet(true);
+      configBuilder.dumpLibraryPointsToSet(true);
     }
     if (cmd.hasOption("dumpstats")) {
-      PTAConfig.v().getOutConfig().dumpStats = true;
+      configBuilder.dumpStats(true);
     }
   }
 
-  static List<String> parsePackages(String packagesString) {
-    ArrayList<String> pkgList = new ArrayList<>();
-    String[] pkgs = packagesString.split(";");
-    Collections.addAll(pkgList, pkgs);
-    return pkgList;
+  public String getAppPath() {
+    return appPath;
+  }
+
+  public String getLibPath() {
+    return libPath;
+  }
+
+  public String getJrePath() {
+    return jrePath;
+  }
+
+  public String getMainClass() {
+    return mainClass;
+  }
+
+  public boolean isDumpJimple() {
+    return dumpJimpleFlag;
+  }
+
+  public PTAPattern getPtaPattern() {
+    return ptaPattern;
+  }
+
+  public PointerAnalysisConfig getPointerAnalysisConfig() {
+    return configBuilder.build();
   }
 }

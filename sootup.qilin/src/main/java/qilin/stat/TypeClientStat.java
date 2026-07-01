@@ -19,9 +19,7 @@
 package qilin.stat;
 
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTA;
-import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.AllocNode;
@@ -155,7 +153,8 @@ public class TypeClientStat implements AbstractStat {
     exporter.collectMetric("#May Fail Cast (AppOnly):", String.valueOf(appCastsMayFail));
     exporter.collectMetric(
         "#Static Call Site(Total):",
-        String.valueOf(totalStaticCalls - FakeMainFactory.implicitCallEdges));
+        String.valueOf(
+            totalStaticCalls - pta.getScene().getFakeMainFactory().getImplicitCallEdges()));
     exporter.collectMetric("#Virtual Call Site(Total):", String.valueOf(totalVirtualCalls));
     exporter.collectMetric("#Virtual Call Site(AppOnly):", String.valueOf(appVirtualCalls));
     exporter.collectMetric("#Virtual Call Site(Polymorphic):", String.valueOf(totalPolyCalls));
@@ -165,7 +164,7 @@ public class TypeClientStat implements AbstractStat {
     exporter.collectMetric(
         "#Avg Poly Call Targets:", String.valueOf(1.0 * totalPolyCallTargets / totalPolyCalls));
 
-    if (CoreConfig.v().getOutConfig().dumpStats) {
+    if (pta.getConfig().isDumpStats()) {
       exporter.dumpPolyCalls(polyCalls);
       exporter.dumpMayFailCasts(mayFailCasts);
     }

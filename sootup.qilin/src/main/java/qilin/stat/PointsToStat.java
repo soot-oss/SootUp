@@ -20,7 +20,6 @@ package qilin.stat;
 
 import com.google.common.collect.Sets;
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.context.Context;
@@ -325,7 +324,7 @@ public class PointsToStat implements AbstractStat {
     exporter.collectMetric(
         "#App Context Local Avg Points-To Target(CS):",
         String.valueOf(((double) appLocalCsToCs) / ((double) appLocalPointersCs)));
-    if (CoreConfig.v().getOutConfig().dumpStats) {
+    if (pta.getConfig().isDumpStats()) {
       exporter.dumpMethodThrowPointsto(methodThrowPts);
       exporter.dumpReachableLocalVars(mLocalVarNodes);
       exporter.dumpReachableLocalVarsNoNative(mLocalVarNodesNoNative);

@@ -22,7 +22,6 @@ import java.util.Objects;
 import qilin.core.PTA;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.sets.PointsToSet;
-import qilin.pta.PTAConfig;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -86,7 +85,7 @@ public class AliasAssertion implements IAssertion {
     } else if (va instanceof StringConstant) {
       StringConstant strConst = (StringConstant) va;
       String s = strConst.getValue();
-      if (!PTAConfig.v().getPtaConfig().stringConstants) {
+      if (!pta.getConfig().isStringConstants()) {
         s = "STRING_NODE";
       }
       PointsToSet pts = pta.reachingObjects(sm, (Local) vb).toCIPointsToSet();
@@ -94,7 +93,7 @@ public class AliasAssertion implements IAssertion {
     } else if (vb instanceof StringConstant) {
       StringConstant strConst = (StringConstant) vb;
       String s = strConst.getValue();
-      if (!PTAConfig.v().getPtaConfig().stringConstants) {
+      if (!pta.getConfig().isStringConstants()) {
         s = "STRING_NODE";
       }
       PointsToSet pts = pta.reachingObjects(sm, (Local) va).toCIPointsToSet();

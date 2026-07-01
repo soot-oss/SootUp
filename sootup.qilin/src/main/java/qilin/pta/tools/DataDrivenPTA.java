@@ -19,13 +19,13 @@
 package qilin.pta.tools;
 
 import qilin.core.PTAScene;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.AllocSiteAbstractor;
 import qilin.parm.heapabst.HeuristicAbstractor;
 import qilin.parm.select.CtxSelector;
 import qilin.parm.select.HeuristicSelector;
 import qilin.parm.select.PipelineSelector;
-import qilin.pta.PTAConfig;
 import qilin.pta.toolkits.dd.DataDrivenSelector;
 
 /*
@@ -44,12 +44,13 @@ public class DataDrivenPTA extends BasePTA {
     super(scene);
     this.ctxCons = ctxCons;
     CtxSelector us = new DataDrivenSelector(ctxCons.getClass());
-    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
+    if (getConfig().isEnforceEmptyCtxForIgnoreTypes()) {
       this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
     } else {
       this.ctxSel = us;
     }
-    if (PTAConfig.v().getPtaConfig().mergeHeap) {
+    if (getConfig().getHeapAbstractionPolicy()
+        == PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE) {
       this.heapAbst = new HeuristicAbstractor(pag);
     } else {
       this.heapAbst = new AllocSiteAbstractor();

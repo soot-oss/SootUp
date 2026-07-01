@@ -19,7 +19,6 @@
 package qilin.core.solver;
 
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.CallGraphBuilder;
 import qilin.core.builder.ExceptionHandler;
@@ -27,6 +26,7 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.Kind;
 import qilin.core.context.Context;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.pag.*;
 import qilin.core.sets.DoublePointsToSet;
 import qilin.core.sets.P2SetVisitor;
@@ -119,7 +119,7 @@ public class Solver extends Propagator {
       addToPAG(mpag, momc.context());
       // !FIXME in a context-sensitive pointer analysis, clinits in a method maybe added multiple
       // times.
-      if (CoreConfig.v().getPtaConfig().clinitMode == CoreConfig.ClinitMode.ONFLY) {
+      if (pta.getConfig().getClinitMode() == PointerAnalysisConfig.ClinitMode.ONFLY) {
         // add <clinit> find in the method to reachableMethods.
         Iterator<SootMethod> it = mpag.triggeredClinits();
         while (it.hasNext()) {

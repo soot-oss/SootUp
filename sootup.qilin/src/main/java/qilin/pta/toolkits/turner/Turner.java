@@ -21,10 +21,10 @@ package qilin.pta.toolkits.turner;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import qilin.core.PTA;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.PAG;
 import qilin.core.pag.SparkField;
-import qilin.pta.PTAConfig;
 import qilin.util.PTAUtils;
 import qilin.util.graph.MergedNode;
 import qilin.util.graph.SCCMergedGraph;
@@ -123,7 +123,7 @@ public class Turner {
       ret1.put(f, x);
     }
     Map<Object, Integer> ret = new HashMap<>(ret1);
-    if (PTAConfig.v().turnerConfig == PTAConfig.TurnerConfig.PHASE_ONE) {
+    if (prePTA.getConfig().getTurnerConfig() == PointerAnalysisConfig.TurnerConfig.PHASE_ONE) {
       Map<Object, Integer> ret2 = new HashMap<>();
       ret1.forEach(
           (w, v) -> {

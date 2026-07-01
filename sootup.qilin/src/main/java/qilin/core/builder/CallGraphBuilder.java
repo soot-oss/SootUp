@@ -19,7 +19,6 @@
 package qilin.core.builder;
 
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.VirtualCalls;
@@ -286,7 +285,7 @@ public class CallGraphBuilder {
       }
     }
     // add throw return edge
-    if (CoreConfig.v().getPtaConfig().preciseExceptions) {
+    if (pta.getConfig().isPreciseExceptions()) {
       Node throwNode = tgtnf.caseMethodThrow();
       /*
        * If an invocation statement may throw exceptions, we create a special local variables

@@ -22,7 +22,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
@@ -68,7 +67,7 @@ public class TamiflexModel extends ReflectionModel {
   public TamiflexModel(PTAScene ptaScene) {
     super(ptaScene);
     this.reflectionMap = DataFactory.createMap();
-    parseTamiflexLog(CoreConfig.v().getAppConfig().REFLECTION_LOG, false);
+    parseTamiflexLog(ptaScene.getConfig().getReflectionLogPath(), false);
   }
 
   @Override
