@@ -86,7 +86,7 @@
         <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-        <maven-central-publishing-plugin.version>0.10.0</maven-central-publishing-plugin.version>
+        <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
         <reactorRootsTarget>${basedir}/target</reactorRootsTarget>
