@@ -73,20 +73,17 @@ public class Aggregator implements BodyInterceptor {
     Map<Value, List<Stmt>> usesMap = Body.collectUses(stmts);
 
     for (Stmt stmt : stmts) {
-      if (!(stmt instanceof JAssignStmt)) {
+      if (!(stmt instanceof JAssignStmt assignStmt)) {
         continue;
       }
-      final JAssignStmt assignStmt = (JAssignStmt) stmt;
       Value lhs = assignStmt.getLeftOp();
-      if (!(lhs instanceof Local)) {
+      if (!(lhs instanceof Local lhsLocal)) {
         continue;
       }
-      Local lhsLocal = (Local) lhs;
       if (dontAggregateFieldLocals && !lhsLocal.getName().startsWith("$")) {
         continue;
       }
-      for (Iterator<Value> iterator = assignStmt.getUses().iterator(); iterator.hasNext(); ) {
-        Value val = iterator.next();
+      for (Value val : assignStmt.getUses()) {
         if (!(val instanceof Local)) {
           continue;
         }
@@ -99,7 +96,7 @@ public class Aggregator implements BodyInterceptor {
         if (defs.size() != 1) {
           continue;
         }
-        Stmt relevantDef = defs.get(0);
+        AbstractDefinitionStmt relevantDef = defs.get(0);
         if (!graph.containsNode(relevantDef) || !graph.containsNode(stmt)) {
           continue;
         }
@@ -156,7 +153,7 @@ public class Aggregator implements BodyInterceptor {
                     // Can't aggregate a field access if passing a definition of a field
                     // with the same name, because they might be aliased
                     for (JFieldRef fieldRef : fieldRefList) {
-                      if (fieldRef.equals((JFieldRef) stmtDef)) {
+                      if (fieldRef.equals(stmtDef)) {
                         cantAggr = true;
                         break;
                       }
@@ -205,7 +202,7 @@ public class Aggregator implements BodyInterceptor {
           continue;
         }
 
-        Value aggregatee = ((AbstractDefinitionStmt) relevantDef).getRightOp();
+        Value aggregatee = relevantDef.getRightOp();
         Stmt newStmt;
 
         // if the use statement was merely a trivial "local = local" copy, its own position
