@@ -129,8 +129,17 @@ public class Aggregator implements BodyInterceptor {
           }
         }
 
+        // Walk the path between the definition and the use, looking for anything
+        // that would make it unsafe to move the aggregatee to the use site: a
+        // redefinition of one of its operands, or - if the aggregatee itself has
+        // side effects (invoke expr/field ref/array ref) - any intervening
+        // statement with side effects of its own, since that would change the
+        // relative execution order of those side effects.
         for (Stmt pathStmt : path) {
-          if (pathStmt != stmt && pathStmt != relevantDef) {
+          if (pathStmt == relevantDef) {
+            continue;
+          }
+          if (pathStmt != stmt) {
             Optional<LValue> stmtDefOpt = pathStmt.getDef();
             if (stmtDefOpt.isPresent()) {
               LValue stmtDef = stmtDefOpt.get();
@@ -164,20 +173,26 @@ public class Aggregator implements BodyInterceptor {
               }
             }
           }
+          if (cantAggr) {
+            break;
+          }
           // Check for intervening side effects due to method calls
           if (propagatingInvokeExpr || propagatingFieldRef || propagatingArrayRef) {
-            for (Iterator<Value> iter = stmt.getUses().iterator(); iter.hasNext(); ) {
-              Value value = iter.next();
-              if (pathStmt == stmt && value == lhs) {
+            for (Value value : pathStmt.getUses()) {
+              if (pathStmt == stmt && value == val) {
+                // reached the use point itself, stop looking for side effects
                 break;
               }
-              if (value instanceof AbstractInstanceInvokeExpr
+              if (value instanceof AbstractInvokeExpr
                   || (propagatingInvokeExpr
                       && (value instanceof JFieldRef || value instanceof JArrayRef))) {
                 cantAggr = true;
                 break;
               }
             }
+          }
+          if (cantAggr) {
+            break;
           }
         }
 
@@ -193,6 +208,11 @@ public class Aggregator implements BodyInterceptor {
         Value aggregatee = ((AbstractDefinitionStmt) relevantDef).getRightOp();
         Stmt newStmt;
 
+        // if the use statement was merely a trivial "local = local" copy, its own position
+        // info is not meaningful; the merged statement should carry the position of the
+        // actual computation (the definition) instead.
+        boolean wasSimpleCopy = assignStmt.getRightOp() instanceof Local;
+
         final ReplaceUseStmtVisitor replaceVisitor = new ReplaceUseStmtVisitor(val, aggregatee);
         // TODO: this try-catch is an awful way for the former/legacy "ValueBox.canContainValue" ->
         // try to determine
@@ -206,6 +226,9 @@ public class Aggregator implements BodyInterceptor {
 
         // have we been able to inline the value into the newStmt?
         if (stmt != newStmt) {
+          if (wasSimpleCopy && newStmt instanceof JAssignStmt) {
+            newStmt = ((JAssignStmt) newStmt).withPositionInfo(relevantDef.getPositionInfo());
+          }
 
           // respect trapranges - check if at least the same exceptional flows exist in the block
           // where we will assign the value now.
