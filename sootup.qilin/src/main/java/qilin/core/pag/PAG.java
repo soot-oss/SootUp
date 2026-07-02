@@ -107,6 +107,7 @@ public class PAG {
 
   public PAG(PTA pta) {
     this.pta = pta;
+    PTAUtils.resetMethodBodyCache();
     this.simple = DataFactory.createMap();
     this.simpleInv = DataFactory.createMap();
     this.load = DataFactory.createMap();
