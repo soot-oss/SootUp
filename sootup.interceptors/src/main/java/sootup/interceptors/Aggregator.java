@@ -29,7 +29,7 @@ import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
-import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
@@ -113,20 +113,19 @@ public class Aggregator implements BodyInterceptor {
         boolean propagatingArrayRef = false;
         List<JFieldRef> fieldRefList = new ArrayList<>();
 
+        // Determine what kind of value is being propagated by looking only at the
+        // definition's own uses (i.e. the aggregatee itself), not at the whole path.
         Set<Value> localsUsed = new HashSet<>();
-        for (Stmt pathStmt : path) {
-          for (Iterator<Value> iter = pathStmt.getUses().iterator(); iter.hasNext(); ) {
-            Value use = iter.next();
-            if (use instanceof Local) {
-              localsUsed.add(use);
-            } else if (use instanceof AbstractInstanceInvokeExpr) {
-              propagatingInvokeExpr = true;
-            } else if (use instanceof JArrayRef) {
-              propagatingArrayRef = true;
-            } else if (use instanceof JFieldRef) {
-              propagatingFieldRef = true;
-              fieldRefList.add((JFieldRef) use);
-            }
+        for (Value use : relevantDef.getUses()) {
+          if (use instanceof Local) {
+            localsUsed.add(use);
+          } else if (use instanceof AbstractInvokeExpr) {
+            propagatingInvokeExpr = true;
+          } else if (use instanceof JArrayRef) {
+            propagatingArrayRef = true;
+          } else if (use instanceof JFieldRef) {
+            propagatingFieldRef = true;
+            fieldRefList.add((JFieldRef) use);
           }
         }
 
