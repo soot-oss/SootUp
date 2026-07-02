@@ -42,7 +42,12 @@ public class DexClassProvider implements ClassProvider {
   @Override
   public Optional<SootClassSource> createClassSource(
       AnalysisInputLocation inputLocation, Path sourcePath, ClassType classSignature) {
-    return Optional.of(new DexClassSource(view, inputLocation, classSignature, sourcePath));
+    DexClassSource dexClassSource =
+        new DexClassSource(view, inputLocation, classSignature, sourcePath);
+    if (dexClassSource.classInformation != null) {
+      return Optional.of(dexClassSource);
+    }
+    return Optional.empty();
   }
 
   @Override

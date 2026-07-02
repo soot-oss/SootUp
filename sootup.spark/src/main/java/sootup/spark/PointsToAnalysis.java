@@ -30,7 +30,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import lombok.NonNull;
-import org.jgrapht.Graph;
+import org.graph4j.Digraph;
+import org.graph4j.Edge;
+import org.graph4j.EdgeIterator;
 import sootup.core.jimple.common.Value;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
@@ -81,7 +83,7 @@ public class PointsToAnalysis {
    * solving, so we adopt it directly instead of re-running the batch fixed-point.
    */
   static PointsToAnalysis fromSolver(@NonNull Solver solver) {
-    if (solver.getPag().getDelegate().vertexSet().isEmpty()) {
+    if (solver.getPag().getDelegate().numVertices() == 0) {
       solver.solve();
     }
     PointsToAnalysis pta = new PointsToAnalysis(solver);
@@ -164,7 +166,9 @@ public class PointsToAnalysis {
     Set<AllocationNode> targets = reachingObjectsOfNode(node);
     if (targets.isEmpty()) return Collections.emptySet();
     Set<Node> result = new LinkedHashSet<>();
-    for (Node candidate : solver.getPag().getDelegate().vertexSet()) {
+    Digraph<Node, PAGEdge> pagGraph = solver.getPag().getDelegate();
+    for (int vIdx : pagGraph.vertices()) {
+      Node candidate = pagGraph.getVertexLabel(vIdx);
       if (candidate.equals(node)) continue;
       Set<AllocationNode> candPts = reachingObjectsOfNode(candidate);
       if (candPts.isEmpty()) continue;
@@ -184,26 +188,31 @@ public class PointsToAnalysis {
   }
 
   private void propagate() {
-    Graph<Node, PAGEdge> g = solver.getPag().getDelegate();
+    Digraph<Node, PAGEdge> g = solver.getPag().getDelegate();
 
     // Seed via ALLOCATION edges: pts(target) |= {source}
-    for (PAGEdge e : g.edgeSet()) {
+    EdgeIterator<PAGEdge> seedIt = g.edgeIterator();
+    while (seedIt.hasNext()) {
+      Edge<PAGEdge> edge = seedIt.next();
+      PAGEdge e = edge.label();
       if (e.getEdgeType() == PAGEdge.EdgeType.ALLOCATION
-          && g.getEdgeSource(e) instanceof AllocationNode a) {
-        addPts(g.getEdgeTarget(e), a);
+          && g.getVertexLabel(edge.source()) instanceof AllocationNode a) {
+        addPts(g.getVertexLabel(edge.target()), a);
       }
     }
 
     boolean changed = true;
     while (changed) {
       changed = false;
-      for (PAGEdge e : g.edgeSet()) {
-        Node src = g.getEdgeSource(e);
-        Node tgt = g.getEdgeTarget(e);
+      EdgeIterator<PAGEdge> it = g.edgeIterator();
+      while (it.hasNext()) {
+        Edge<PAGEdge> edge = it.next();
+        PAGEdge e = edge.label();
+        Node src = g.getVertexLabel(edge.source());
+        Node tgt = g.getVertexLabel(edge.target());
         switch (e.getEdgeType()) {
           case ASSIGNMENT -> changed |= unionInto(pointsTo, tgt, ptsOf(src));
           case STORE -> {
-            // src -> ifr : for each o in pts(ifr.base), heap[o, ifr.field] |= pts(src)
             if (tgt instanceof InstanceFieldRefNode ifr) {
               Set<AllocationNode> srcPts = ptsOf(src);
               if (!srcPts.isEmpty()) {
@@ -214,7 +223,6 @@ public class PointsToAnalysis {
             }
           }
           case LOAD -> {
-            // ifr -> tgt : for each o in pts(ifr.base), pts(tgt) |= heap[o, ifr.field]
             if (src instanceof InstanceFieldRefNode ifr) {
               for (AllocationNode o : ptsOf(ifr.getBase())) {
                 Set<AllocationNode> stored = heap.get(new HeapKey(o, ifr.getField()));

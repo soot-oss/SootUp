@@ -2,7 +2,7 @@ package sootup.spark.test.options;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.jgrapht.Graph;
+import org.graph4j.Graph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
@@ -48,31 +48,42 @@ public class SimpleEdgesBidirectionalTest {
             .containingMethodSig(mainSig)
             .build();
 
-    assertTrue(delegate.containsEdge(newField, fieldStack5), "Edge new Field -> $stack5 not found");
     assertTrue(
-        delegate.containsEdge(newContainer, containerStack6),
+        SparkTestUtil.containsEdge(delegate, newField, fieldStack5),
+        "Edge new Field -> $stack5 not found");
+    assertTrue(
+        SparkTestUtil.containsEdge(delegate, newContainer, containerStack6),
         "Edge new Container -> $stack6 not found");
-    assertTrue(delegate.containsEdge(fieldStack5, fieldL2), "Edge $stack5 -> l2 not found");
-    assertTrue(delegate.containsEdge(containerStack6, containerL3), "Edge $stack6 -> l3 not found");
-    assertTrue(delegate.containsEdge(fieldStack5, fieldRef), "Edge $stack5 -> field ref not found");
-    assertTrue(delegate.containsEdge(containerStack6, containerL4), "Edge $stack6 -> l4 not found");
+    assertTrue(
+        SparkTestUtil.containsEdge(delegate, fieldStack5, fieldL2), "Edge $stack5 -> l2 not found");
+    assertTrue(
+        SparkTestUtil.containsEdge(delegate, containerStack6, containerL3),
+        "Edge $stack6 -> l3 not found");
+    assertTrue(
+        SparkTestUtil.containsEdge(delegate, fieldStack5, fieldRef),
+        "Edge $stack5 -> field ref not found");
+    assertTrue(
+        SparkTestUtil.containsEdge(delegate, containerStack6, containerL4),
+        "Edge $stack6 -> l4 not found");
 
     // Reverse edges due to simpleEdgesBidirectional
     assertTrue(
-        delegate.containsEdge(fieldStack5, newField),
+        SparkTestUtil.containsEdge(delegate, fieldStack5, newField),
         "Reverse edge $stack5 -> new Field not found");
     assertTrue(
-        delegate.containsEdge(containerStack6, newContainer),
+        SparkTestUtil.containsEdge(delegate, containerStack6, newContainer),
         "Reverse edge $stack6 -> new Container not found");
-    assertTrue(delegate.containsEdge(fieldL2, fieldStack5), "Reverse edge l2 -> $stack5 not found");
     assertTrue(
-        delegate.containsEdge(containerL3, containerStack6),
+        SparkTestUtil.containsEdge(delegate, fieldL2, fieldStack5),
+        "Reverse edge l2 -> $stack5 not found");
+    assertTrue(
+        SparkTestUtil.containsEdge(delegate, containerL3, containerStack6),
         "Reverse edge l3 -> $stack6 not found");
     assertTrue(
-        delegate.containsEdge(fieldRef, fieldStack5),
+        SparkTestUtil.containsEdge(delegate, fieldRef, fieldStack5),
         "Reverse edge field ref -> $stack5 not found");
     assertTrue(
-        delegate.containsEdge(containerL4, containerStack6),
+        SparkTestUtil.containsEdge(delegate, containerL4, containerStack6),
         "Reverse edge l4 -> $stack6 not found");
   }
 }

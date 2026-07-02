@@ -185,7 +185,8 @@ public class DeadAssignmentEliminatorTest {
     assertEquals(
         Stream.of(
                 "DeadAssignmentEliminatorTest this",
-                "unknown $stack3, $stack4, $stack5, l1, l2",
+                "int l1, l2",
+                "java.io.PrintStream $stack3, $stack4, $stack5",
                 "this := @this: DeadAssignmentEliminatorTest",
                 "l1 = 30",
                 "l2 = l1",
@@ -212,7 +213,9 @@ public class DeadAssignmentEliminatorTest {
     assertEquals(
         Stream.of(
                 "DeadAssignmentEliminatorTest this",
-                "unknown $stack2, $stack3, l1",
+                "int $stack2",
+                "java.io.PrintStream $stack3",
+                "java.lang.String l1",
                 "this := @this: DeadAssignmentEliminatorTest",
                 "l1 = \"cde\"",
                 "$stack2 = virtualinvoke l1.<java.lang.String: int length()>()",
@@ -244,31 +247,34 @@ public class DeadAssignmentEliminatorTest {
                 Collections.singletonList(PrimitiveType.getInt().getName()));
 
     Body body = view.getMethod(methodSignature).get().getBody();
-    assertTrue(body.getLocals().size() == 5);
+    assertTrue(body.getLocals().size() == 8);
     assertFalse(body.getStmts().isEmpty());
     assertEquals(
         Stream.of(
                 "DeadAssignmentEliminatorTest this0",
-                "int l1",
-                "unknown $stack2, l3, l4",
+                "boolean l7",
+                "int l1, l4",
+                "java.lang.String $stack2, $stack3",
+                "\"null\" $stack6",
+                "unknown $stack5",
                 "this0 := @this: DeadAssignmentEliminatorTest",
                 "l1 := @parameter0: int",
                 "label1:",
                 "$stack2 = \"true\"",
-                "l3 = staticinvoke <java.lang.System: java.lang.String getProperty(java.lang.String)>(\"com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers\")",
-                "l4 = virtualinvoke $stack2.<java.lang.String: boolean equals(java.lang.Object)>(l3)",
+                "$stack3 = staticinvoke <java.lang.System: java.lang.String getProperty(java.lang.String)>(\"com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers\")",
+                "l4 = virtualinvoke $stack2.<java.lang.String: boolean equals(java.lang.Object)>($stack3)",
                 "label2:",
                 "goto label4",
                 "label3:",
-                "l3 := @caughtexception",
+                "$stack5 := @caughtexception",
                 "label4:",
                 "if l4 == 0 goto label5",
-                "l3 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(1)",
+                "$stack6 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(1)",
                 "goto label6",
                 "label5:",
-                "l3 = null",
+                "$stack6 = null",
                 "label6:",
-                "l3 = virtualinvoke l3.<java.lang.Boolean: boolean booleanValue()>()",
+                "l7 = virtualinvoke $stack6.<java.lang.Boolean: boolean booleanValue()>()",
                 "return",
                 "catch java.lang.SecurityException from label1 to label2 with label3")
             .collect(Collectors.toList()),
