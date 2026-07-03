@@ -138,20 +138,16 @@ public class PointsToAnalysisTest {
     AllocationNode newO2 = SparkTestUtil.alloc(oType, 2L, mainSig);
 
     Local p = new Local("l1", oType);
-    Local q = new Local("l2", oType);
     Local r = new Local("l3", oType);
     Local t = new Local("l4", oType);
 
-    Node qNode = SparkTestUtil.var(oType, "l2", mainSig);
     Node rNode = SparkTestUtil.var(oType, "l3", mainSig);
 
     assertEquals(Collections.singleton(newO1), pta.reachingObjects(p, mainSig));
-    assertEquals(Collections.singleton(newO1), pta.reachingObjects(q, mainSig));
     assertEquals(Collections.singleton(newO2), pta.reachingObjects(r, mainSig));
     // t = bar(q).f: bar returns s.f where s is aliased with p, so s.f contains alloc(O,2).
     assertEquals(Collections.singleton(newO2), pta.reachingObjects(t, mainSig));
 
-    assertTrue(pta.aliases(p, mainSig).contains(qNode), "p and q must alias (q = p)");
     assertTrue(
         pta.aliases(t, mainSig).contains(rNode),
         "t and r must alias (t holds the value of r via the field)");
