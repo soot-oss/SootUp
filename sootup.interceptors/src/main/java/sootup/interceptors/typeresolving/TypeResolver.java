@@ -101,7 +101,7 @@ public class TypeResolver {
       }
     }
 
-    locals.stream()
+    locals
         .forEach(
             local -> {
               Type oldType = local.getType();
