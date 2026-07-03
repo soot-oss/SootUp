@@ -38,10 +38,10 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;
 import sootup.core.types.*;
+import sootup.core.views.View;
 import sootup.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.interceptors.typeresolving.types.BottomType;
 import sootup.interceptors.typeresolving.types.TopType;
-import sootup.java.core.views.JavaView;
 
 /**
  * @author Zun Wang Algorithm started on 'Efficient Local Type Inference' with later inspiration by
@@ -51,13 +51,13 @@ public class TypeResolver {
   private final ArrayList<AbstractDefinitionStmt> assignments = new ArrayList<>();
   private final Map<Local, BitSet> depends = new HashMap<>();
   private final Map<Local, Set<Type>> useConstraints = new HashMap<>();
-  private final JavaView view;
+  private final View view;
 
   private final Type objectType;
 
   private static final Logger logger = LoggerFactory.getLogger(TypeResolver.class);
 
-  public TypeResolver(@NonNull JavaView view) {
+  public TypeResolver(@NonNull View view) {
     this.view = view;
     objectType = view.getIdentifierFactory().getClassType("java.lang.Object");
   }
