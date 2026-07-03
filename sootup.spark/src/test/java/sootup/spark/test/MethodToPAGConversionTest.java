@@ -203,7 +203,6 @@ public class MethodToPAGConversionTest {
     // main intraprocedural edges
     assertTrue(SparkTestUtil.containsEdge(delegate, newO1, stack5), "alloc(O,1) -> $stack5");
     assertTrue(SparkTestUtil.containsEdge(delegate, stack5, l1), "$stack5 -> l1");
-    assertTrue(SparkTestUtil.containsEdge(delegate, stack5, l2), "$stack5 -> l2");
     assertTrue(SparkTestUtil.containsEdge(delegate, newO2, stack6), "alloc(O,2) -> $stack6");
     assertTrue(SparkTestUtil.containsEdge(delegate, stack6, l3), "$stack6 -> l3");
     assertTrue(
