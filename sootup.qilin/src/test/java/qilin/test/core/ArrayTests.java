@@ -18,11 +18,9 @@
 
 package qilin.test.core;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import qilin.test.util.JunitTests;
 
-@Disabled
 public class ArrayTests extends JunitTests {
   @Test
   public void testArrayIndex() {

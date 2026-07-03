@@ -22,6 +22,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import qilin.test.util.JunitTests;
 
+// pre-existing, unrelated to this redesign: MethodPAG.buildException() body is a no-op
+// (dead/commented-out code) even when preciseExceptions is enabled, so precise exception
+// flow was never actually implemented. Needs a real fix, not just re-enabling.
 @Disabled
 public class ExceptionTests extends JunitTests {
   @Test

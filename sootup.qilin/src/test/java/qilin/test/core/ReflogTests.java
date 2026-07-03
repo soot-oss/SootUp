@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import qilin.core.PTA;
 import qilin.test.util.JunitTests;
 
+// WP2 follow-up: reflection resolution is out of scope for this redesign (WP1).
 @Disabled
 public class ReflogTests extends JunitTests {
   @Test

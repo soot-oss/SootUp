@@ -18,11 +18,9 @@
 
 package qilin.test.context;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import qilin.test.util.JunitTests;
 
-@Disabled
 public class OBJTests extends JunitTests {
   @Test
   public void testOBJ1k0() {

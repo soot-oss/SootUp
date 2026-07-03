@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import qilin.test.util.JunitTests;
 
-@Disabled
 public class FlowSensTests extends JunitTests {
   @Test
   public void testLoops() {
