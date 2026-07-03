@@ -43,6 +43,11 @@ public class InstanceFieldRefNode extends Node {
   @Override
   public String toString() {
     return String.format(
-        "\"%s (%s %s).%s\"", field.getType(), base.getType(), base.getName(), field.getName());
+        "\"%s{%s (%s %s).%s}\"",
+        getContainingMethodSig().getName(),
+        field.getType(),
+        base.getType(),
+        base.getName(),
+        field.getName());
   }
 }

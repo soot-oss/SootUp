@@ -108,6 +108,10 @@ public class BooleanConstant
     return BooleanConstant.getInstance(value ^ c.value);
   }
 
+  public boolean getValue() {
+    return value;
+  }
+
   @Override
   public String toString() {
     return value ? "1" : "0";

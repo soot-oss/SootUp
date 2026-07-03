@@ -22,21 +22,44 @@ package sootup.spark.node;
  * #L%
  */
 
+import java.util.Objects;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 /** Models PAG node object allocation */
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true)
+@Getter
 public class AllocationNode extends Node {
 
-  // TODO: we might have to distinguish different allocation sites
+  Object allocationSite;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof AllocationNode other)) return false;
+    if (allocationSite == null && other.allocationSite == null) {
+      return Objects.equals(getType(), other.getType());
+    }
+    return super.equals(o) && Objects.equals(allocationSite, other.allocationSite);
+  }
+
+  @Override
+  public int hashCode() {
+    if (allocationSite == null) {
+      return Objects.hash(getType());
+    }
+    return Objects.hash(super.hashCode(), allocationSite);
+  }
 
   @Override
   public String toString() {
-    return String.format("\"new %s\"", getType());
+    if (allocationSite == null) {
+      return String.format("\"%s{%s}\"", getContainingMethodSig().getName(), getType());
+    }
+    return String.format(
+        "\"%s{%s:new %s}\"", getContainingMethodSig().getName(), allocationSite, getType());
   }
 }

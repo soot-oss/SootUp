@@ -40,6 +40,6 @@ public class VariableNode extends Node {
 
   @Override
   public String toString() {
-    return String.format("\"%s %s\"", getType(), getName());
+    return String.format("\"%s{%s %s}\"", getContainingMethodSig().getName(), getType(), getName());
   }
 }

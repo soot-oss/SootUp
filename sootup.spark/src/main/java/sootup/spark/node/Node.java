@@ -28,6 +28,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
 
 /** Models a PAG node */
@@ -37,4 +38,5 @@ import sootup.core.types.Type;
 @EqualsAndHashCode
 public class Node {
   @NonNull Type type;
+  @NonNull MethodSignature containingMethodSig;
 }

@@ -21,8 +21,9 @@ package sootup.core.jimple.common.stmt;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.EquivTo;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -36,21 +37,40 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
-  @NonNull Stream<Value> getUses();
+  /** Collects all values used by this statement into the given list. */
+  void collectUses(List<Value> collector);
 
+  @NonNull
+  default List<Value> getUses() {
+    ArrayList<Value> collector = new ArrayList<>();
+    collectUses(collector);
+    return collector;
+  }
+
+  /** Returns the value defined (written) by this statement, if any. */
   @NonNull Optional<LValue> getDef();
 
-  @NonNull Stream<Value> getUsesAndDefs();
+  @NonNull
+  default List<Value> getUsesAndDefs() {
+    ArrayList<Value> collector = new ArrayList<>();
+    collectUses(collector);
+    getDef().ifPresent(collector::add);
+    return collector;
+  }
 
   /**
    * Returns true if execution after this statement may continue at the following statement. (e.g.
    * GotoStmt will return false and e.g. IfStmt will return true).
+   *
+   * @return true if control may fall through to the next statement
    */
   boolean fallsThrough();
 
   /**
    * Returns true if execution after this statement does not necessarily continue at the following
    * statement. The {@link BranchingStmt}'s GotoStmt, JSwitchStmt and IfStmt will return true.
+   *
+   * @return true if this statement may branch to a non-sequential successor
    */
   boolean branches();
 

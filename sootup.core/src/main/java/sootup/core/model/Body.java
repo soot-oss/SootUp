@@ -261,7 +261,7 @@ public class Body implements HasPosition {
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
   public Stream<Value> getUses() {
-    return graph.getNodes().stream().flatMap(Stmt::getUses);
+    return graph.getNodes().stream().flatMap(stmt -> stmt.getUses().stream());
   }
 
   /**
@@ -361,13 +361,13 @@ public class Body implements HasPosition {
 
       for (Stmt currStmt : Lists.newArrayList(getControlFlowGraph().getNodes())) {
         final Stmt stmt = currStmt;
-        if (currStmt.getUses().anyMatch(v -> v == existingLocal)) {
+        if (currStmt.getUses().stream().anyMatch(v -> v == existingLocal)) {
           currStmt = currStmt.withNewUse(existingLocal, newLocal);
         }
         Optional<LValue> defOpt = currStmt.getDef();
         if (defOpt.isPresent()) {
           LValue def = defOpt.get();
-          if (def == existingLocal || def.getUses().anyMatch(v -> v == existingLocal)) {
+          if (def == existingLocal || def.getUses().stream().anyMatch(v -> v == existingLocal)) {
             if (currStmt instanceof AbstractDefinitionStmt) {
               currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
             }
@@ -499,7 +499,7 @@ public class Body implements HasPosition {
    */
   public static Map<Value, List<Stmt>> collectUses(Collection<Stmt> stmts) {
     return stmts.stream()
-        .flatMap(stmt -> stmt.getUses().map(value -> (Pair.of(value, stmt))))
+        .flatMap(stmt -> stmt.getUses().stream().map(value -> (Pair.of(value, stmt))))
         .collect(
             Collectors.groupingBy(
                 Pair::getLeft, Collectors.mapping(Pair::getRight, Collectors.toList())));
