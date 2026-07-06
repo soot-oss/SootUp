@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeAll;
 import qilin.core.PTA;
 import qilin.core.config.PointerAnalysisConfig;
 import qilin.driver.PTAFactory;
-import qilin.driver.PTAOption;
 import qilin.driver.PTAPattern;
 import qilin.util.PTAUtils;
 import sootup.core.views.View;
@@ -35,7 +34,6 @@ import sootup.core.views.View;
 public abstract class JunitTests {
   protected static String appPath, jrePath, refLogPath;
   protected static boolean isSetUp = false;
-  protected static PTAOption ptaOption;
 
   @BeforeAll
   public static void setUp() throws IOException {
@@ -81,9 +79,6 @@ public abstract class JunitTests {
             //    + "jre1.8.0_121_debug"
             );
     jrePath = jreFile.getCanonicalPath();
-    String[] args = generateArgumentsx();
-    ptaOption = new PTAOption();
-    ptaOption.parseCommandLine(args);
     isSetUp = true;
   }
 
@@ -95,42 +90,19 @@ public abstract class JunitTests {
     PTAPattern pattern = new PTAPattern(ptaPattern);
     PointerAnalysisConfig config =
         PointerAnalysisConfig.builder()
-            .contextSensitivity(ptaOption.getPointerAnalysisConfig().getContextSensitivity())
-            .heapAbstractionPolicy(ptaOption.getPointerAnalysisConfig().getHeapAbstractionPolicy())
-            .singleEntry(ptaOption.getPointerAnalysisConfig().isSingleEntry())
-            .clinitMode(ptaOption.getPointerAnalysisConfig().getClinitMode())
-            .preciseArrayElement(ptaOption.getPointerAnalysisConfig().isPreciseArrayElement())
-            .stringConstants(ptaOption.getPointerAnalysisConfig().isStringConstants())
-            .preciseExceptions(ptaOption.getPointerAnalysisConfig().isPreciseExceptions())
-            .enforceEmptyCtxForIgnoreTypes(
-                ptaOption.getPointerAnalysisConfig().isEnforceEmptyCtxForIgnoreTypes())
-            .reflectionLogPath(ptaOption.getPointerAnalysisConfig().getReflectionLogPath())
+            .singleEntry(true)
+            .clinitMode(PointerAnalysisConfig.ClinitMode.ONFLY)
+            .enforceEmptyCtxForIgnoreTypes(true)
+            .heapAbstractionPolicy(PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE)
+            .preciseArrayElement(true)
+            .preciseExceptions(true)
+            .reflectionLogPath(refLogPath + File.separator + "Reflection.log")
             .analysisName(pattern.toString())
             .build();
-    System.out.println(appPath);
-    View view = PTAUtils.createView(appPath, ptaOption.getLibPath(), ptaOption.getJrePath());
+    View view = PTAUtils.createView(appPath, null, jrePath);
     PTA pta = PTAFactory.createPTA(pattern, view, mainClass, config);
     pta.pureRun();
     return pta;
-  }
-
-  public static String[] generateArgumentsx() {
-    return new String[] {
-      "-singleentry",
-      "-apppath",
-      appPath,
-      "-mainclass",
-      "qilin.microben.core.exception.SimpleException",
-      "-se",
-      "-jre=" + jrePath,
-      "-clinit=ONFLY",
-      "-lcs",
-      "-mh",
-      "-pae",
-      "-pe",
-      "-reflectionlog",
-      refLogPath + File.separator + "Reflection.log"
-    };
   }
 
   protected void checkAssertions(PTA pta) {
