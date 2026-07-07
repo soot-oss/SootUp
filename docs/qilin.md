@@ -21,22 +21,29 @@
 
 ### How to create a pointer analysis
 
-!!! note "WIP: Beware most likely the API will change so you only need to specify SootUp objects!"
-
-One can create an Andersen's context-insensitive analysis with following code:
+For the core context-sensitivity variants (insensitive, call-site, object, type, and their
+hybrid variants), use the type-safe `PointerAnalysisFactory` - no singletons, no string patterns,
+and independent `View`s (or repeated calls against the same `View`) can be analyzed concurrently
+since nothing is cached on `View` or held in JVM-global state:
 
 === "Java"
 
     ```Java
     String entrypoint = "dacapo.antlr.Main";
-    PTAPattern ptaPattern = new PTAPattern("insens");
-    PTA pta = PTAFactory.createPTA(ptaPattern, view, entrypoint);
+    PointerAnalysisConfig config = PointerAnalysisConfig.builder()
+        .contextSensitivity(ContextSensitivity.objectSensitive(2, 1)) // 2-object-sensitive, 1-level heap ctx
+        .build();
+    PTA pta = PointerAnalysisFactory.create(view, entrypoint, config);
     pta.run();
     ```
 
-Users must specify the program's `View`, select a `PTAPattern`
-(indicating the desired types of pointer analyses to perform),
-and designate the `entrypoint` - which is serving as the entry point for the analysis.
+Other `ContextSensitivity` factory methods: `insensitive()`, `callSite(k[, hk])`,
+`objectSensitive(k[, hk])`, `typeSensitive(k, hk)`, `hybridObjectSensitive(k, hk)`,
+`hybridTypeSensitive(k, hk)`.
+
+The research-toolkit variants (bean, zipper, eagle, turner, mahjong, selectx, data-driven,
+tunneling, context debloating) are not yet migrated to this factory - they're still reached
+through the legacy `PTAPattern`/`PTAFactory` string-pattern dispatch, see the table below.
 
 ### How to use pointer analysis results
 
@@ -92,14 +99,17 @@ Note that the symbol **k** used in the table should be replaced with a concrete 
 ## Qilin Pointer Analysis
 
 Qilin builds a call graph on the fly with the pointer analysis.
-You can construct a call graph with Qilin as follows:
+For a core variant, prefer `PointerAnalysisFactory` (see above). To reach a toolkit variant
+(anything in the table above beyond plain **k**c/**k**o/**k**t/**k**h/**k**ht), use the legacy
+string-pattern factory:
 
 === "SootUp"
 
     ```java
     String MAINCLASS = "dacapo.antlr.Main"; // just an example
-    PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern("insens"); // "2o"=>2OBJ, "1c"=>1CFA, etc.
-    PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern, view, MAINCLASS);
+    PTAPattern ptaPattern = new PTAPattern("Z-2o"); // ZIPPER-guided 2OBJ, e.g.
+    PointerAnalysisConfig config = PointerAnalysisConfig.builder().build();
+    PTA pta = PTAFactory.createPTA(ptaPattern, view, MAINCLASS, config);
     pta.run();
-    CallGraph cg = pta.getCallGraph();
+    OnFlyCallGraph cg = pta.getCallGraph();
     ```
