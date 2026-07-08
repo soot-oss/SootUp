@@ -120,16 +120,24 @@ class AsmClassSource extends JavaSootClassSource {
                   identifierFactory.getMethodSignature(
                       classSignature, methodName, retType, sigTypes);
 
+              // Method annotations: declaration annotations (RuntimeVisible/InvisibleAnnotations,
+              // e.g. @Pure) plus JSR 308 return-type annotations (TYPE_USE on the return type,
+              // e.g. @Nat int foo()). Parameter type annotations are attached to the parameter
+              // Locals instead (see AsmMethodSource#buildPreambleLocals).
+              List<AnnotationUsage> methodAnnotations =
+                  Streams.concat(
+                          convertAnnotation(methodSource.visibleAnnotations),
+                          convertAnnotation(methodSource.invisibleAnnotations))
+                      .collect(Collectors.toList());
+              methodAnnotations.addAll(asmClassClassSourceContent.resolveReturnTypeAnnotations());
+
               // TODO: position/line numbers if possible
               return new JavaSootMethod(
                   asmClassClassSourceContent,
                   methodSignature,
                   modifiers,
                   exceptions,
-                  Streams.concat(
-                          convertAnnotation(methodSource.visibleAnnotations),
-                          convertAnnotation(methodSource.invisibleAnnotations))
-                      .collect(Collectors.toList()),
+                  methodAnnotations,
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());

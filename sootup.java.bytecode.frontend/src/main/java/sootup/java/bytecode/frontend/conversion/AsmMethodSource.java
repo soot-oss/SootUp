@@ -38,6 +38,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
+import org.objectweb.asm.TypeReference;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.*;
 import sootup.core.frontend.BodySource;
@@ -67,6 +68,7 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
+import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.jimple.basic.JavaLocal;
 import sootup.java.core.language.JavaJimple;
@@ -1639,6 +1641,57 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return StmtPositionInfo.getNoStmtPositionInfo();
   }
 
+  /**
+   * Collects the JSR 308 type annotations (TYPE_USE) declared on this method's return type, i.e.
+   * the entries of {@code visible/invisibleTypeAnnotations} whose target is {@link
+   * TypeReference#METHOD_RETURN}. Examples: {@code @Nat int foo()}.
+   */
+  @NonNull List<AnnotationUsage> resolveReturnTypeAnnotations() {
+    return collectMethodTypeAnnotations(TypeReference.METHOD_RETURN, -1);
+  }
+
+  /**
+   * Collects the JSR 308 type annotations (TYPE_USE) declared on the type of the formal parameter
+   * with the given (zero-based) index, i.e. the entries of {@code visible/invisibleTypeAnnotations}
+   * whose target is {@link TypeReference#METHOD_FORMAL_PARAMETER} for that index. Examples: {@code
+   * void foo(@Nat int n)}.
+   */
+  @NonNull List<AnnotationUsage> resolveFormalParameterTypeAnnotations(int formalParameterIndex) {
+    return collectMethodTypeAnnotations(
+        TypeReference.METHOD_FORMAL_PARAMETER, formalParameterIndex);
+  }
+
+  @NonNull
+  private List<AnnotationUsage> collectMethodTypeAnnotations(int sort, int formalParameterIndex) {
+    List<AnnotationUsage> result = new ArrayList<>();
+    collectMethodTypeAnnotations(result, visibleTypeAnnotations, sort, formalParameterIndex);
+    collectMethodTypeAnnotations(result, invisibleTypeAnnotations, sort, formalParameterIndex);
+    return result;
+  }
+
+  private static void collectMethodTypeAnnotations(
+      @NonNull List<AnnotationUsage> out,
+      List<TypeAnnotationNode> nodes,
+      int sort,
+      int formalParameterIndex) {
+    if (nodes == null) {
+      return;
+    }
+    for (TypeAnnotationNode node : nodes) {
+      TypeReference typeReference = new TypeReference(node.typeRef);
+      if (typeReference.getSort() != sort) {
+        continue;
+      }
+      if (sort == TypeReference.METHOD_FORMAL_PARAMETER
+          && typeReference.getFormalParameterIndex() != formalParameterIndex) {
+        continue;
+      }
+      // Note: node.typePath (the position of the annotation within a nested/generic type) is not
+      // represented by AnnotationUsage; the annotation is attached to the parameter/return target.
+      out.add(AsmUtil.createAnnotationUsage(node));
+    }
+  }
+
   @NonNull
   private List<Stmt> buildPreambleLocals(Body.BodyBuilder bodyBuilder) {
 
@@ -1661,12 +1714,23 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     for (int i = 0; i < methodSignature.getParameterTypes().size(); i++) {
       Type parameterType = methodSignature.getParameterTypes().get(i);
       // [BH] parameterlocals do not exist yet -> create with annotation
+      // Collect both parameter *declaration* annotations (RuntimeVisible/InvisibleParameter-
+      // Annotations, e.g. @Param) and parameter *type* annotations (JSR 308 TYPE_USE, e.g.
+      // @Nat/@Nullable, stored in RuntimeVisible/InvisibleTypeAnnotations with a
+      // METHOD_FORMAL_PARAMETER target) and attach all of them to the parameter Local.
+      List<AnnotationUsage> parameterAnnotations = new ArrayList<>();
+      if (visibleParameterAnnotations != null) {
+        AsmUtil.createAnnotationUsage(visibleParameterAnnotations[i])
+            .forEach(parameterAnnotations::add);
+      }
+      if (invisibleParameterAnnotations != null) {
+        AsmUtil.createAnnotationUsage(invisibleParameterAnnotations[i])
+            .forEach(parameterAnnotations::add);
+      }
+      parameterAnnotations.addAll(resolveFormalParameterTypeAnnotations(i));
       JavaLocal local =
           JavaJimple.newLocal(
-              determineLocalName(localIdx, null),
-              parameterType,
-              AsmUtil.createAnnotationUsage(
-                  invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));
+              determineLocalName(localIdx, null), parameterType, parameterAnnotations);
       locals.set(localIdx, local);
 
       final JIdentityStmt stmt =
