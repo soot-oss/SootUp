@@ -1,7 +1,5 @@
 # Incorporate Qilin Pointer Analysis
 
-# WIP! Experimental!
-
 ### Dependencies
 
 === "Maven"
