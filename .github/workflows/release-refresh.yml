@@ -77,16 +77,24 @@ jobs:
       - name: Rebase release branch onto develop
         id: rebase
         if: steps.check.outputs.proceed == 'true'
+        env:
+          GIT_ACTOR: ${{ github.actor }}
+          HEAD_REF: ${{ steps.check.outputs.head_ref }}
         run: |
           set -euo pipefail
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${GIT_ACTOR}@users.noreply.github.com"
+          git config --global user.name "${GIT_ACTOR}"
+
+          if [[ ! "$HEAD_REF" =~ ^release/prep-[a-zA-Z0-9._/-]+$ ]]; then
+            echo "Invalid head ref: $HEAD_REF"
+            exit 1
+          fi
 
           git fetch origin develop
           # release branch holds exactly one commit (the version bump, possibly amended by
           # release-title-sync) - rebasing replays it on top of develop so it's the last commit again.
           git rebase origin/develop
-          git push --force origin HEAD:"${{ steps.check.outputs.head_ref }}"
+          git push --force origin HEAD:"$HEAD_REF"
 
       - name: Report rebase conflict
         if: steps.check.outputs.proceed == 'true' && failure()
