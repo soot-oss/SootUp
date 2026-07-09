@@ -3,11 +3,13 @@ package sootup.java.bytecode.frontend.minimaltestsuite.java8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.AnnotationUsage;
@@ -116,5 +118,24 @@ public class TypeUseAnnotationTest extends MinimalBytecodeTestSuiteBase {
 
     JavaLocal plainParam = (JavaLocal) body.getParameterLocal(1);
     assertEquals(Collections.emptyList(), plainParam.getAnnotations());
+  }
+
+  /**
+   * TYPE_USE annotation on a local variable type (JSR 308 LOCAL_VARIABLE target): the annotation
+   * must be attached to the corresponding Jimple local. Exactly one local carries it.
+   */
+  @Test
+  public void testLocalVariableTypeAnnotation() {
+    JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
+    Body body = method(sootClass, "localTypeCls").getBody();
+    List<AnnotationUsage> annotationsOnLocals = new ArrayList<>();
+    for (Local l : body.getLocals()) {
+      if (l instanceof JavaLocal jl) {
+        for (AnnotationUsage a : jl.getAnnotations()) {
+          annotationsOnLocals.add(a);
+        }
+      }
+    }
+    assertEquals(Collections.singletonList(annotation("TypeUseCls")), annotationsOnLocals);
   }
 }

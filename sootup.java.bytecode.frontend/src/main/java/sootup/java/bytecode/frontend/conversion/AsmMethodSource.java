@@ -295,7 +295,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     if (local == null) {
       String nameCandidate = determineLocalName(idx, atInsn);
       Type type = typeHint instanceof UnknownType ? UnknownType.getInstance() : typeHint;
-      local = createUniqueLocal(nameCandidate, type);
+      local = createUniqueLocal(nameCandidate, type, resolveLocalVariableAnnotations(idx, atInsn));
       locals.set(idx, local);
     }
     return local;
@@ -338,6 +338,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   private JavaLocal createUniqueLocal(@NonNull String nameCandidate, @NonNull Type type) {
+    return createUniqueLocal(nameCandidate, type, Collections.emptyList());
+  }
+
+  private JavaLocal createUniqueLocal(
+      @NonNull String nameCandidate,
+      @NonNull Type type,
+      @NonNull List<AnnotationUsage> annotations) {
     // check for collisions with the same local names in other scopes
     // this can happen when different scopes use the same name for a
     // different variable (and having a different local idx, were we are able distinguish)
@@ -345,7 +352,56 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     for (int i = 1; localNameExists(nameCandidate); i++) {
       nameCandidate = baseName + "_" + i;
     }
-    return JavaJimple.newLocal(nameCandidate, type, Collections.emptyList());
+    return JavaJimple.newLocal(nameCandidate, type, annotations);
+  }
+
+  /**
+   * Collects the JSR 308 type annotations (TYPE_USE) declared on the local variable in slot {@code
+   * idx} whose scope covers {@code atInsn}, i.e. the {@code LOCAL_VARIABLE}-targeted entries of
+   * {@code visible/invisibleLocalVariableAnnotations}. Examples: {@code @Nat int x = ...}.
+   */
+  @NonNull
+  private List<AnnotationUsage> resolveLocalVariableAnnotations(
+      int idx, @NonNull AbstractInsnNode atInsn) {
+    List<AnnotationUsage> result = new ArrayList<>();
+    collectLocalVariableTypeAnnotations(result, visibleLocalVariableAnnotations, idx, atInsn);
+    collectLocalVariableTypeAnnotations(result, invisibleLocalVariableAnnotations, idx, atInsn);
+    return result;
+  }
+
+  private void collectLocalVariableTypeAnnotations(
+      @NonNull List<AnnotationUsage> out,
+      List<LocalVariableAnnotationNode> nodes,
+      int idx,
+      @NonNull AbstractInsnNode atInsn) {
+    if (nodes == null) {
+      return;
+    }
+    int insnIdx = instructions.indexOf(atInsn);
+    for (LocalVariableAnnotationNode node : nodes) {
+      // index/start/end are parallel lists: entry k is one scope range for the annotation.
+      // Prefer a range covering atInsn, but fall back to a slot (index) match: the per-slot local
+      // is often created at its defining store, just before its declared scope begins (mirrors the
+      // fallback in determineLocalName).
+      boolean slotMatch = false;
+      boolean rangeMatch = false;
+      for (int k = 0; k < node.index.size(); k++) {
+        if (node.index.get(k) != idx) {
+          continue;
+        }
+        slotMatch = true;
+        int startIdx = instructions.indexOf(node.start.get(k));
+        int endIdx = instructions.indexOf(node.end.get(k));
+        if (insnIdx >= startIdx && insnIdx < endIdx) {
+          rangeMatch = true;
+          break;
+        }
+      }
+      if (rangeMatch || slotMatch) {
+        // Note: node.typePath (nested-type position) is not represented by AnnotationUsage.
+        out.add(AsmUtil.createAnnotationUsage(node));
+      }
+    }
   }
 
   private boolean localNameExists(String nameCandidate) {

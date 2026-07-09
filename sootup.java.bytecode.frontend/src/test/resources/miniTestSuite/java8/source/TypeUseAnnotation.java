@@ -58,4 +58,11 @@ public class TypeUseAnnotation {
   public int paramDeclAndType(@ParamDecl @TypeUseCls int p, int q) {
     return p + q;
   }
+
+  // TYPE_USE annotation on a LOCAL VARIABLE type (CLASS retention); the local is used (returned)
+  // so it is not eliminated before the model is built.
+  public int localTypeCls() {
+    @TypeUseCls int local = 0;
+    return local;
+  }
 }
