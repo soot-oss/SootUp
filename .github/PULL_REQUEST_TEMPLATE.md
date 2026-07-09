@@ -3,6 +3,10 @@
 
 ---
 
+Tag the title with `[major]`, `[minor]`, or `[patch]` to control the version bump. Defaults to `[patch]` if untagged.
+
+---
+
 ## Linked issue (if any)
 - Fixes #<issue-number>
   <!-- If this PR does not fully fix the issue, use "Refs #<issue-number>" -->

@@ -1,0 +1,96 @@
+name: Refresh release branch from develop
+
+on:
+  issue_comment:
+    types:
+      - created
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-refresh-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    name: Rebase release branch onto develop
+    if: github.event.issue.pull_request != null
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: write
+    steps:
+      - name: Check command, target branch and commenter permission
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENTER: ${{ github.event.comment.user.login }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          BODY_TRIMMED=$(echo "$COMMENT_BODY" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
+
+          case "$BODY_TRIMMED" in
+            /refresh|/rebase|/update) ;;
+            *)
+              echo "Comment is not a refresh command, ignoring."
+              echo "proceed=false" >> "$GITHUB_OUTPUT"
+              exit 0
+              ;;
+          esac
+
+          HEAD_REF=$(gh pr view "$PR_NUMBER" --json headRefName -q .headRefName)
+          if [[ "$HEAD_REF" != release/prep-* ]]; then
+            echo "Not a release PR (head ref '$HEAD_REF'), ignoring."
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          PERMISSION=$(gh api "repos/${{ github.repository }}/collaborators/$COMMENTER/permission" -q .permission)
+          if [[ "$PERMISSION" != "admin" && "$PERMISSION" != "write" ]]; then
+            echo "$COMMENTER lacks write access ($PERMISSION), ignoring command."
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "proceed=true" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$HEAD_REF" >> "$GITHUB_OUTPUT"
+
+      - name: React to comment
+        if: steps.check.outputs.proceed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content='+1'
+
+      - name: Checkout release branch
+        if: steps.check.outputs.proceed == 'true'
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          token: ${{ secrets.AUTO_MERGE_PAT }} # default GITHUB_TOKEN is blocked by branch protection
+          ref: ${{ steps.check.outputs.head_ref }}
+          fetch-depth: 0
+
+      - name: Rebase release branch onto develop
+        id: rebase
+        if: steps.check.outputs.proceed == 'true'
+        run: |
+          set -euo pipefail
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+
+          git fetch origin develop
+          # release branch holds exactly one commit (the version bump, possibly amended by
+          # release-title-sync) - rebasing replays it on top of develop so it's the last commit again.
+          git rebase origin/develop
+          git push --force origin HEAD:"${{ steps.check.outputs.head_ref }}"
+
+      - name: Report rebase conflict
+        if: steps.check.outputs.proceed == 'true' && failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment "${{ github.event.issue.number }}" --body "Rebase onto \`develop\` hit conflicts and needs manual resolution."
