@@ -49,6 +49,15 @@ jobs:
             exit 0
           fi
 
+          # Reject fork PRs pretending to be our own release branches - legitimate
+          # release/prep-* branches are always pushed by our own automation into this repo.
+          IS_CROSS_REPO=$(gh pr view "$PR_NUMBER" --json isCrossRepository -q .isCrossRepository)
+          if [[ "$IS_CROSS_REPO" == "true" ]]; then
+            echo "PR is from a fork, refusing to touch it with a privileged token."
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           PERMISSION=$(gh api "repos/${{ github.repository }}/collaborators/$COMMENTER/permission" -q .permission)
           if [[ "$PERMISSION" != "admin" && "$PERMISSION" != "write" ]]; then
             echo "$COMMENTER lacks write access ($PERMISSION), ignoring command."

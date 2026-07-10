@@ -16,7 +16,11 @@ concurrency:
 jobs:
   sync:
     name: Recompute release version from title tag
-    if: startsWith(github.head_ref, 'release/prep-')
+    # head.repo check rejects fork PRs pretending to be our own release branches -
+    # legitimate release/prep-* branches are always pushed by our own automation into this repo.
+    if: >
+      startsWith(github.head_ref, 'release/prep-') &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: read
