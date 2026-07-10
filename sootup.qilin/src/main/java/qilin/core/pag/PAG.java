@@ -25,6 +25,10 @@ import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.CallGraphBuilder;
 import qilin.core.context.Context;
+import qilin.core.effect.MethodEffectModel;
+import qilin.core.effect.NativeEffectModel;
+import qilin.core.effect.ReflectionEffectModel;
+import qilin.core.invokedynamic.LambdaMetafactoryModel;
 import qilin.core.natives.NativeMethodDriver;
 import qilin.core.reflection.NopReflectionModel;
 import qilin.core.reflection.ReflectionModel;
@@ -43,6 +47,7 @@ import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.constant.MethodHandle;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
@@ -52,6 +57,7 @@ import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
@@ -65,8 +71,7 @@ import sootup.java.core.language.JavaJimple;
  * @author Ondrej Lhotak
  */
 public class PAG {
-  protected final NativeMethodDriver nativeDriver;
-  protected final ReflectionModel reflectionModel;
+  protected final List<MethodEffectModel> effectModels;
 
   // ========================= context-sensitive nodes =================================
   protected final Map<VarNode, Map<Context, ContextVarNode>> contextVarNodeMap;
@@ -84,6 +89,7 @@ public class PAG {
   // instances can run independently/concurrently without sharing mutable state.
   private final ArrayElement arrayElement = new ArrayElement();
   private final Map<ReferenceType, MergedNewExpr> mergedNewExprs = new ConcurrentHashMap<>();
+  private final Map<Object, LambdaAllocNode.Target> lambdaTargets = new ConcurrentHashMap<>();
 
   // ========================= ir to Node ==============================================
   protected final Map<Object, AllocNode> valToAllocNode;
@@ -116,8 +122,13 @@ public class PAG {
     this.allocInv = DataFactory.createMap();
     this.store = DataFactory.createMap();
     this.storeInv = DataFactory.createMap();
-    this.nativeDriver = new NativeMethodDriver(pta.getScene());
-    this.reflectionModel = createReflectionModel();
+    List<MethodEffectModel> effectModels = new ArrayList<>();
+    effectModels.add(new ReflectionEffectModel(createReflectionModel()));
+    effectModels.add(new NativeEffectModel(new NativeMethodDriver(pta.getScene())));
+    if (pta.getConfig().isResolveDynamicInvoke()) {
+      effectModels.add(new LambdaMetafactoryModel(pta.getScene(), this));
+    }
+    this.effectModels = List.copyOf(effectModels);
     this.contextVarNodeMap = DataFactory.createMap(16000);
     this.contextAllocNodeMap = DataFactory.createMap(6000);
     this.contextMethodMap = DataFactory.createMap(6000);
@@ -322,8 +333,21 @@ public class PAG {
   }
 
   // ==========================create nodes==================================
+  /**
+   * Registers {@code newExpr} (a synthetic {@link sootup.core.jimple.common.expr.JNewExpr} spliced
+   * in by {@link qilin.core.invokedynamic.LambdaMetafactoryModel}) so that the next {@link
+   * #makeAllocNode(Object, Type, SootMethod)} call for it produces a {@link LambdaAllocNode}
+   * instead of a plain one, bypassing the abstract-type guard - the type is deliberately the
+   * functional interface, not a concrete class, and the target is already statically known.
+   */
+  public void registerLambdaTarget(
+      Object newExpr, MethodSignature targetMethod, MethodHandle.Kind targetKind) {
+    lambdaTargets.put(newExpr, new LambdaAllocNode.Target(targetMethod, targetKind));
+  }
+
   public AllocNode makeAllocNode(Object newExpr, Type type, SootMethod m) {
-    if (type instanceof ClassType rt) {
+    LambdaAllocNode.Target lambdaTarget = lambdaTargets.get(newExpr);
+    if (lambdaTarget == null && type instanceof ClassType rt) {
       View view = pta.getView();
       Optional<? extends SootClass> osc = view.getClass(rt);
       if (osc.isPresent() && osc.get().isAbstract()) {
@@ -335,7 +359,11 @@ public class PAG {
     }
     AllocNode ret = valToAllocNode.get(newExpr);
     if (ret == null) {
-      valToAllocNode.put(newExpr, ret = new AllocNode(newExpr, type, m));
+      ret =
+          lambdaTarget != null
+              ? new LambdaAllocNode(newExpr, type, m, lambdaTarget.method(), lambdaTarget.kind())
+              : new AllocNode(newExpr, type, m);
+      valToAllocNode.put(newExpr, ret);
       allocNodeNumberer.add(ret);
     } else if (!(ret.getType().equals(type))) {
       throw new RuntimeException(
@@ -551,12 +579,12 @@ public class PAG {
     if (methodToPag.containsKey(m)) {
       return methodToPag.get(m);
     }
-    if (m.isConcrete()) {
-      reflectionModel.buildReflection(m);
+    for (MethodEffectModel model : effectModels) {
+      if (model.appliesTo(m)) {
+        model.apply(m);
+      }
     }
-    if (m.isNative()) {
-      nativeDriver.buildNative(m);
-    } else {
+    if (!m.isNative()) {
       // we will revert these back in the future.
       /*
        * To keep same with Doop, we move the simulation of

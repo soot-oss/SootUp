@@ -162,6 +162,17 @@ public class CallGraphBuilder {
   }
 
   protected void dispatch(AllocNode receiverNode, VirtualCallSite site) {
+    // context-sensitive variants wrap alloc nodes in ContextAllocNode; base() unwraps to the
+    // original (a no-op under context-insensitive analysis, where base() just returns itself).
+    if (receiverNode.base() instanceof LambdaAllocNode lambdaNode) {
+      // Only static targets reach here (see LambdaMetafactoryModel) - a plain static edge, no
+      // receiver/this binding needed.
+      pta.getView()
+          .getMethod(lambdaNode.getTargetMethod())
+          .ifPresent(
+              target -> addStaticEdge(site.container(), site.getUnit(), target, site.kind()));
+      return;
+    }
     Type type = receiverNode.getType();
     final QueueReader<SootMethod> targets = dispatch(type, site);
     while (targets.hasNext()) {

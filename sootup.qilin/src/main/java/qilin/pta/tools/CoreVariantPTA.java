@@ -28,15 +28,16 @@ import qilin.core.config.PointerAnalysisComponents;
  * hybrid-object/hybrid-type counterparts). Replaces the former {@code Spark}, {@code
  * CallSiteSensPTA}, {@code ObjectSensPTA}, {@code TypeSensPTA}, {@code HybridObjectSensPTA} and
  * {@code HybridTypeSensPTA} classes, which differed only in which {@link ContextSensitivity} they
- * were parameterized with - the cross-cutting heap-abstraction/context-selector wiring that used
- * to be copy-pasted across all six now lives once in {@link PointerAnalysisComponents}.
+ * were parameterized with - the cross-cutting heap-abstraction/context-selector wiring that used to
+ * be copy-pasted across all six now lives once in {@link PointerAnalysisComponents}.
  */
 public final class CoreVariantPTA extends BasePTA {
 
   public CoreVariantPTA(PTAScene scene, ContextSensitivity contextSensitivity) {
     super(scene);
     this.ctxCons = contextSensitivity.createCtxConstructor();
-    this.ctxSel = PointerAnalysisComponents.createCtxSelector(getConfig(), getView(), contextSensitivity);
+    this.ctxSel =
+        PointerAnalysisComponents.createCtxSelector(getConfig(), getView(), contextSensitivity);
     this.heapAbst = PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
   }
 }

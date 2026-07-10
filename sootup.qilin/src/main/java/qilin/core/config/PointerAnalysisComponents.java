@@ -39,7 +39,8 @@ public final class PointerAnalysisComponents {
   private PointerAnalysisComponents() {}
 
   public static HeapAbstractor createHeapAbstractor(PointerAnalysisConfig config, PAG pag) {
-    return config.getHeapAbstractionPolicy() == PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE
+    return config.getHeapAbstractionPolicy()
+            == PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE
         ? new HeuristicAbstractor(pag)
         : new AllocSiteAbstractor();
   }

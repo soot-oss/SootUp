@@ -43,6 +43,22 @@ The research-toolkit variants (bean, zipper, eagle, turner, mahjong, selectx, da
 tunneling, context debloating) are not yet migrated to this factory - they're still reached
 through the legacy `PTAPattern`/`PTAFactory` string-pattern dispatch, see the table below.
 
+### Resolving reflection, native methods, and invokedynamic
+
+Some call targets can't be derived from a method's own bytecode. Qilin resolves these through a
+shared `qilin.core.effect.MethodEffectModel` hook, applied once per method just before its body is
+turned into constraints:
+
+- **Reflection** (`Class.forName`, `Method.invoke`, ...) - off by default; set
+  `PointerAnalysisConfig.builder().reflectionLogPath(path)` to a Tamiflex trace log to resolve it.
+- **Native methods** - a fixed table of simulated JDK natives (`Object.clone`, `Thread.start0`,
+  ...); unrecognized natives are left unmodeled.
+- **invokedynamic (lambdas/method references)** - on by default
+  (`PointerAnalysisConfig.isResolveDynamicInvoke()`). Resolves the common case - a lambda body or
+  method reference whose target is a plain static method - directly from the bootstrap's
+  `MethodHandle` constant, no log needed. Captured (closure) lambdas, constructor references
+  (`Foo::new`), and unbound instance method references are not yet resolved.
+
 ### How to use pointer analysis results
 
 First, we can use Qilin's pointer analysis to get a On-the-Fly constructed callgraph:

@@ -1,0 +1,99 @@
+/* Qilin - a Java Pointer Analysis Framework
+ * Copyright (C) 2021-2030 Qilin developers
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3.0 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
+ */
+
+package qilin.test.core;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import qilin.core.PTA;
+import qilin.core.PointerAnalysisFactory;
+import qilin.core.config.ContextSensitivity;
+import qilin.core.config.PointerAnalysisConfig;
+import qilin.test.util.AssertionsParser;
+import qilin.test.util.IAssertion;
+import qilin.util.PTAUtils;
+import sootup.core.views.View;
+
+/**
+ * Covers {@link qilin.core.invokedynamic.LambdaMetafactoryModel}: a lambda/method-reference whose
+ * target is a plain static method must resolve to a direct call edge instead of silently vanishing.
+ * Deliberately does not extend {@link qilin.test.util.JunitTests} - it shares static app/jre-path
+ * fields across every subclass in the JVM, and this suite needs a Java 8+ library classpath (for
+ * {@code java.lang.invoke.LambdaMetafactory}/{@code java.util.function.Supplier}), unlike the rest
+ * of qilin's tests which run against the legacy JRE 6 fixture.
+ */
+public class InvokeDynamicTests {
+  private static String appPath;
+  private static String jre8Path;
+
+  @BeforeAll
+  public static void setUp() throws IOException {
+    File rootDir = new File("../");
+    File testDir =
+        new File(
+            rootDir, "sootup.qilin" + File.separator + "target" + File.separator + "test-classes");
+    appPath = testDir.getCanonicalPath();
+    File jreFile =
+        new File(
+            rootDir,
+            "artifact"
+                + File.separator
+                + "benchmarks"
+                + File.separator
+                + "JREs"
+                + File.separator
+                + "jre1.8.0_121_debug");
+    jre8Path = jreFile.getCanonicalPath();
+  }
+
+  private PTA run(String mainClass, ContextSensitivity contextSensitivity) {
+    PointerAnalysisConfig config =
+        PointerAnalysisConfig.builder().contextSensitivity(contextSensitivity).build();
+    View view = PTAUtils.createView(appPath, null, jre8Path);
+    PTA pta = PointerAnalysisFactory.create(view, mainClass, config);
+    pta.pureRun();
+    return pta;
+  }
+
+  private void checkAssertions(PTA pta) {
+    Set<IAssertion> aliasAssertionSet = AssertionsParser.retrieveQueryInfo(pta);
+    assertFalse(
+        aliasAssertionSet.isEmpty(), "expected the Assert.mayAlias call site to be reached");
+    for (IAssertion assertion : aliasAssertionSet) {
+      assertTrue(assertion.check());
+    }
+  }
+
+  @Test
+  public void testLambda() {
+    checkAssertions(
+        run("qilin.microben.core.invokedynamic.Lambda", ContextSensitivity.insensitive()));
+  }
+
+  @Test
+  public void testStaticMethodRef() {
+    checkAssertions(
+        run("qilin.microben.core.invokedynamic.StaticMethodRef", ContextSensitivity.insensitive()));
+  }
+}

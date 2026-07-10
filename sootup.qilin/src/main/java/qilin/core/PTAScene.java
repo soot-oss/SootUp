@@ -48,11 +48,13 @@ public class PTAScene {
   public final Set<SootMethod> nativeBuilt;
   public final Set<SootMethod> reflectionBuilt;
   public final Set<SootMethod> arraycopyBuilt;
+  public final Set<SootMethod> dynamicInvokeBuilt;
 
   public PTAScene(View view, String mainClassSig, PointerAnalysisConfig config) {
     this.nativeBuilt = DataFactory.createSet();
     this.reflectionBuilt = DataFactory.createSet();
     this.arraycopyBuilt = DataFactory.createSet();
+    this.dynamicInvokeBuilt = DataFactory.createSet();
     this.view = view;
     this.mainClassSig = mainClassSig;
     this.config = config;

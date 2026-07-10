@@ -35,7 +35,8 @@ public class ContextField extends ValNode {
     this.field = field;
   }
 
-  private static Type refineFieldType(Context context, SparkField field, boolean preciseArrayElement) {
+  private static Type refineFieldType(
+      Context context, SparkField field, boolean preciseArrayElement) {
     if (!preciseArrayElement) {
       return PTAUtils.getClassType("java.lang.Object");
     }

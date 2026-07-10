@@ -155,7 +155,11 @@ public abstract class ContextSensitivity {
       requireNonNegative(hk, "hk");
       if (hk > k || hk < k - 1) {
         throw new IllegalArgumentException(
-            "heap context depth must be k or k-1 for object-sensitivity (k=" + k + ", hk=" + hk + ")");
+            "heap context depth must be k or k-1 for object-sensitivity (k="
+                + k
+                + ", hk="
+                + hk
+                + ")");
       }
       this.k = k;
       this.hk = hk;
@@ -191,7 +195,11 @@ public abstract class ContextSensitivity {
       requireNonNegative(hk, "hk");
       if (hk > k || hk < k - 1) {
         throw new IllegalArgumentException(
-            "heap context depth must be k or k-1 for type-sensitivity (k=" + k + ", hk=" + hk + ")");
+            "heap context depth must be k or k-1 for type-sensitivity (k="
+                + k
+                + ", hk="
+                + hk
+                + ")");
       }
       this.k = k;
       this.hk = hk;

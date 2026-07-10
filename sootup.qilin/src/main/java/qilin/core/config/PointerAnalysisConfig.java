@@ -19,8 +19,8 @@
 package qilin.core.config;
 
 /**
- * Immutable, type-safe replacement for the old {@code CoreConfig}/{@code PTAConfig} singletons.
- * An instance is threaded explicitly through {@code PTAScene} (and from there reachable via {@code
+ * Immutable, type-safe replacement for the old {@code CoreConfig}/{@code PTAConfig} singletons. An
+ * instance is threaded explicitly through {@code PTAScene} (and from there reachable via {@code
  * PTA#getConfig()}) so that multiple independent analysis runs - each with their own config - can
  * coexist in the same JVM.
  */
@@ -58,6 +58,7 @@ public final class PointerAnalysisConfig {
   private final boolean preciseExceptions;
   private final boolean enforceEmptyCtxForIgnoreTypes;
   private final String reflectionLogPath;
+  private final boolean resolveDynamicInvoke;
   private final boolean preAnalysisOnly;
   private final boolean ctxDebloating;
   private final DebloatApproach debloatApproach;
@@ -79,6 +80,7 @@ public final class PointerAnalysisConfig {
     this.preciseExceptions = b.preciseExceptions;
     this.enforceEmptyCtxForIgnoreTypes = b.enforceEmptyCtxForIgnoreTypes;
     this.reflectionLogPath = b.reflectionLogPath;
+    this.resolveDynamicInvoke = b.resolveDynamicInvoke;
     this.preAnalysisOnly = b.preAnalysisOnly;
     this.ctxDebloating = b.ctxDebloating;
     this.debloatApproach = b.debloatApproach;
@@ -132,6 +134,15 @@ public final class PointerAnalysisConfig {
     return reflectionLogPath;
   }
 
+  /**
+   * Whether to resolve invokedynamic call sites bootstrapped by {@code LambdaMetafactory} (lambdas
+   * and method references) to their target method. Unlike reflection resolution this needs no
+   * external log - the target is a constant in the bootstrap args - so it defaults to enabled.
+   */
+  public boolean isResolveDynamicInvoke() {
+    return resolveDynamicInvoke;
+  }
+
   public boolean isPreAnalysisOnly() {
     return preAnalysisOnly;
   }
@@ -183,6 +194,7 @@ public final class PointerAnalysisConfig {
     private boolean preciseExceptions = false;
     private boolean enforceEmptyCtxForIgnoreTypes = false;
     private String reflectionLogPath = null;
+    private boolean resolveDynamicInvoke = true;
     private boolean preAnalysisOnly = false;
     private boolean ctxDebloating = false;
     private DebloatApproach debloatApproach = DebloatApproach.CONCH;
@@ -238,6 +250,11 @@ public final class PointerAnalysisConfig {
 
     public Builder reflectionLogPath(String reflectionLogPath) {
       this.reflectionLogPath = reflectionLogPath;
+      return this;
+    }
+
+    public Builder resolveDynamicInvoke(boolean resolveDynamicInvoke) {
+      this.resolveDynamicInvoke = resolveDynamicInvoke;
       return this;
     }
 
