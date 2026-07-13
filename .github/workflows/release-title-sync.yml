@@ -1,0 +1,111 @@
+name: Sync release version with PR title
+
+on:
+  pull_request:
+    types:
+      - edited
+      - synchronize
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-title-sync-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    name: Recompute release version from title tag
+    # head.repo check rejects fork PRs pretending to be our own release branches -
+    # legitimate release/prep-* branches are always pushed by our own automation into this repo.
+    if: >
+      startsWith(github.head_ref, 'release/prep-') &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      TITLE: ${{ github.event.pull_request.title }}
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          token: ${{ secrets.AUTO_MERGE_PAT }} # default GITHUB_TOKEN is blocked by branch protection
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        with:
+          distribution: zulu
+          java-version: '17'
+          cache: 'maven'
+
+      - name: Parse release type tag from title
+        id: parsed
+        run: |
+          set -euo pipefail
+          FOUND=()
+          shopt -s nocasematch
+          [[ "$TITLE" == *"[major]"* ]] && FOUND+=("major")
+          [[ "$TITLE" == *"[minor]"* ]] && FOUND+=("minor")
+          [[ "$TITLE" == *"[patch]"* ]] && FOUND+=("patch")
+
+          if [[ ${#FOUND[@]} -gt 1 ]]; then
+            echo "PR title contains conflicting version tags: ${FOUND[*]}. Use only one of [major]/[minor]/[patch]." >&2
+            exit 1
+          elif [[ ${#FOUND[@]} -eq 1 ]]; then
+            echo "release_type=${FOUND[0]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "PR title must contain exactly one of [major]/[minor]/[patch]." >&2
+            exit 1
+          fi
+
+      - name: Recompute release version from latest tag
+        id: version
+        run: |
+          set -euo pipefail
+          git fetch --tags
+          LATEST_VERSION=$(git tag --list 'v*' | sed 's/^v//' | sort -V | tail -1)
+
+          if [[ -z "$LATEST_VERSION" ]]; then
+            echo "No existing vX.Y.Z tag found in repo" >&2
+            exit 1
+          fi
+
+          if [[ "$LATEST_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            MAJOR="${BASH_REMATCH[1]}"
+            MINOR="${BASH_REMATCH[2]}"
+            PATCH="${BASH_REMATCH[3]}"
+          else
+            echo "Could not parse latest tag version '$LATEST_VERSION' as semver" >&2
+            exit 1
+          fi
+
+          case "${{ steps.parsed.outputs.release_type }}" in
+            major) RELEASE_VERSION="$((MAJOR + 1)).0.0" ;;
+            minor) RELEASE_VERSION="$MAJOR.$((MINOR + 1)).0" ;;
+            patch) RELEASE_VERSION="$MAJOR.$MINOR.$((PATCH + 1))" ;;
+          esac
+
+          echo "release_version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Amend release branch if version changed
+        run: |
+          set -euo pipefail
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+
+          CURRENT_VERSION=$(mvn -q -ntp org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -DforceStdout)
+          RELEASE_VERSION="${{ steps.version.outputs.release_version }}"
+
+          if [[ "$CURRENT_VERSION" == "$RELEASE_VERSION" ]]; then
+            echo "Release version already up to date ($CURRENT_VERSION)."
+            exit 0
+          fi
+
+          echo "Updating release branch from $CURRENT_VERSION to $RELEASE_VERSION"
+          mvn -B -ntp build-helper:parse-version versions:set -DnewVersion="$RELEASE_VERSION" versions:commit
+          git ls-files | grep 'pom.xml$' | xargs git add
+          git commit --amend -am "release $RELEASE_VERSION"
+          git push --force origin HEAD:"${{ github.head_ref }}"
