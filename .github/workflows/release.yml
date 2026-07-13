@@ -17,11 +17,7 @@ on:
       release_type:
         description: 'Release type'
         required: true
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
+        type: string
 permissions:
   contents: read
 
