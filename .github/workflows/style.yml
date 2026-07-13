@@ -9,7 +9,6 @@ permissions:
 
 env:
   LATEST_BRANCH_NAME: develop
-  FINAL_BRANCH_NAME: master
 
 jobs:
   check-formatting:
@@ -20,7 +19,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Set up Java 17
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
         with:
           distribution: adopt
           java-package: jdk
@@ -45,17 +44,23 @@ jobs:
           echo "${{ env.PROPOSED_VERSION }}" | \
           grep -P '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9A-Za-z-][0-9A-Za-z-]*))*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$'
 
-      - name: Enfore -SNAPSHOT version suffix on every other branch than master
+      - name: Enforce -SNAPSHOT version suffix except on release branches
+        # i.e. release/prep-* branches are allowed to not have -SNAPSHOT
         run: |
-          HAS_SNAPSHOT_SUFFIX=$(echo "${{ env.PROPOSED_VERSION }}" | grep -q -- "-SNAPSHOT$")
-          if [ "${{ github.base_ref == env.FINAL_BRANCH_NAME }}" ]; then
-            if [ "$HAS_SNAPSHOT_SUFFIX" -eq 1 ]; then       # hint: command return values not boolean representation
-              echo "To merge into ${{ github.base_ref }} a -SNAPSHOT suffix is allowed!"
+          if echo "${{ env.PROPOSED_VERSION }}" | grep -q -- "-SNAPSHOT$"; then
+            HAS_SNAPSHOT_SUFFIX=true
+          else
+            HAS_SNAPSHOT_SUFFIX=false
+          fi
+
+          if [[ "${{ github.head_ref }}" == release/prep-* ]]; then
+            if [ "$HAS_SNAPSHOT_SUFFIX" == "true" ]; then
+              echo "Release branches (release/prep-*) must not carry a -SNAPSHOT version."
               exit 1
             fi
           else
-            if [ "$HAS_SNAPSHOT_SUFFIX" -eq 0 ]; then       # hint: command return values not boolean representation
-              echo "To merge into ${{ github.base_ref }} a -SNAPSHOT suffix is needed!"
+            if [ "$HAS_SNAPSHOT_SUFFIX" == "false" ]; then
+              echo "Non-release branches must keep a -SNAPSHOT version."
               exit 1
             fi
           fi
@@ -82,13 +87,13 @@ jobs:
           LATEST_VERSION=$(grep -m1 '<version>' $TMP_POM | sed -E 's/.*<version>(.+)<\/version>.*/\1/')
           rm "$TMP_POM"
 
-          # did the version not change? if not: master fails, other branches: ok      
+          # did the version not change? if not: release branches fail (they must bump), other branches: ok
           if [ "$LATEST_VERSION" == "${{ env.PROPOSED_VERSION }}" ]; then
-            if [ "${{ github.base_ref }}" != "${{ env.FINAL_BRANCH_NAME }}" ]; then
-              echo "No version change necessary on ${{ github.base_ref }}.";
+            if [[ "${{ github.head_ref }}" != release/prep-* ]]; then
+              echo "No version change necessary on ${{ github.head_ref }}.";
               exit 0
             else
-              echo "Version change necessary to merge into ${{ github.base_ref }}!";
+              echo "Version change necessary on a release branch (release/prep-*)!";
               exit 1
             fi
           fi

@@ -1,0 +1,140 @@
+name: Publish Release
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - closed
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup-abandoned:
+    name: Delete abandoned release branch
+    if: >
+      github.event.pull_request.merged == false &&
+      startsWith(github.event.pull_request.head.ref, 'release/prep-')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Delete release branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/${{ github.event.pull_request.head.ref }}" \
+            || echo "Branch already gone, nothing to do."
+
+  deploy:
+    name: Tag and deploy to Maven Central
+    if: >
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'develop' &&
+      startsWith(github.event.pull_request.head.ref, 'release/prep-')
+    runs-on: ubuntu-latest
+    environment: deployment
+    permissions:
+      contents: write
+    outputs:
+      tag_name: ${{ steps.tag.outputs.tag_name }}
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          token: ${{ secrets.AUTO_MERGE_PAT }}
+          ref: develop
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        with:
+          distribution: adopt
+          java-package: jdk
+          java-version: 17
+          server-id: central                              # must match the serverId configured for the nexus-staging-maven-plugin
+          server-username: MAVEN_USERNAME                 # Env var that holds the central publisher user name
+          server-password: MAVEN_CENTRAL_TOKEN            # Env var that holds the central publisher user token
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} # Substituted with the value stored in the referenced secret
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE            # Env var that holds the key's passphrase
+
+      - name: Tag the just-merged release version
+        id: tag
+        run: |
+          set -euo pipefail
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+
+          # develop's tip now holds whatever version the merged release PR brought in
+          CURRENT_VERSION=$(mvn -q -ntp org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -DforceStdout)
+          TAG_NAME="v$CURRENT_VERSION"
+
+          git tag -a "$TAG_NAME" -m "version $CURRENT_VERSION"
+          git push origin "$TAG_NAME"
+
+          echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy on Maven Central
+        run: |
+          # -U force updates just to make sure we are using latest dependencies
+          # -B Batch mode (do not ask for user input), just in case
+          # -D activate a profile via the release property (and disable defined submodules that should not be deployed)
+          mvn -U -B -ntp clean deploy -Drelease -DskipTests
+        env:
+          MAVEN_USERNAME: ${{ secrets.SONATYPE_USER }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PW }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+
+      - name: Create GitHub release
+        run: |
+          gh release create "${{ steps.tag.outputs.tag_name }}" --title "${{ steps.tag.outputs.tag_name }}" --generate-notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  bump-develop:
+    name: Advance develop to next SNAPSHOT
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          token: ${{ secrets.AUTO_MERGE_PAT }}
+          ref: develop
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        with:
+          distribution: zulu
+          java-version: '17'
+          cache: 'maven'
+
+      - name: Bump to next SNAPSHOT and open auto-merge PR
+        env:
+          GH_TOKEN: ${{ secrets.AUTO_MERGE_PAT }}
+        run: |
+          set -euo pipefail
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+
+          BRANCH="chore/next-snapshot-${{ github.run_id }}"
+          git checkout -b "$BRANCH"
+
+          # Bumps forward from the version that was just released (develop's current tip), e.g. 2.4.0 -> 2.4.1-SNAPSHOT
+          mvn -B -ntp versions:set versions:commit -DnextSnapshot
+          git ls-files | grep 'pom.xml$' | xargs git add
+          git commit --allow-empty -am "prepare next development iteration"
+          git push origin "$BRANCH"
+
+          gh pr create \
+            -B develop \
+            -H "$BRANCH" \
+            -t "Prepare next development iteration after ${{ needs.deploy.outputs.tag_name }}" \
+            -b "Advances develop's SNAPSHOT version following the ${{ needs.deploy.outputs.tag_name }} release."
+
+          PR_NUMBER=$(gh pr view "$BRANCH" --json number -q .number)
+          gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
