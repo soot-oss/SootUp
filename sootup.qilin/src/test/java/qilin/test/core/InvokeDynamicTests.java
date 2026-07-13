@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import qilin.core.PTA;
 import qilin.core.PointerAnalysisFactory;
@@ -95,5 +96,25 @@ public class InvokeDynamicTests {
   public void testStaticMethodRef() {
     checkAssertions(
         run("qilin.microben.core.invokedynamic.StaticMethodRef", ContextSensitivity.insensitive()));
+  }
+
+  // Object-sensitive analysis over the full JRE8 rt.jar is memory-hungry enough to OOM the shared
+  // surefire JVM (4GB, parallel=all) alongside the rest of the suite. Kept as documented,
+  // manually-runnable coverage for the ContextAllocNode.base() unwrap in CallGraphBuilder.dispatch
+  // rather than deleted outright.
+  @Disabled("memory-hungry: object-sensitive analysis over full JRE8 rt.jar OOMs the shared test JVM")
+  @Test
+  public void testLambdaObjectSensitive() {
+    checkAssertions(
+        run("qilin.microben.core.invokedynamic.Lambda", ContextSensitivity.objectSensitive(2, 1)));
+  }
+
+  @Disabled("memory-hungry: object-sensitive analysis over full JRE8 rt.jar OOMs the shared test JVM")
+  @Test
+  public void testStaticMethodRefObjectSensitive() {
+    checkAssertions(
+        run(
+            "qilin.microben.core.invokedynamic.StaticMethodRef",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 }
