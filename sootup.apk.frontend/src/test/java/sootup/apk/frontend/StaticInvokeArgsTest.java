@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.signatures.MethodSignature;
@@ -21,9 +22,10 @@ public class StaticInvokeArgsTest {
     String apk_path_string = "resources/Crypto.apk";
     Path apkPath = Paths.get(apk_path_string);
     String androidPlatformsPath = "";
+    AndroidVersionInfo androidVersionInfo = new AndroidVersionInfo(apkPath, androidPlatformsPath);
     ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation(
-            apkPath, androidPlatformsPath, DexBodyInterceptors.Default.bodyInterceptors());
+            apkPath, androidVersionInfo, DexBodyInterceptors.Default.bodyInterceptors());
     view = new JavaView(sootClassApkAnalysisInputLocation);
   }
 

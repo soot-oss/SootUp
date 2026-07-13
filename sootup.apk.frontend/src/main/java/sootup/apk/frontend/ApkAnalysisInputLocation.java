@@ -42,23 +42,47 @@ import sootup.core.util.Modifiers;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 
+/**
+ * Analysis input location for Android APK files.
+ *
+ * <p>This class provides an entry point for analyzing Android APK files by extracting and
+ * processing DEX (Dalvik Executable) files contained within the APK.
+ */
 public class ApkAnalysisInputLocation implements AnalysisInputLocation {
 
   Path apk_path;
 
-  String android_jar_path;
-
+  /**
+   * Path to the Android platforms directory containing Android system libraries (android.jar files)
+   * for different API levels. This directory is required to resolve method calls and class
+   * references that are not defined in the APK itself, but are part of the Android system
+   * libraries.
+   *
+   * <p>The Android platforms directory can be obtained from: <a
+   * href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a>
+   */
   private final AndroidVersionInfo androidSDKVersionInfo;
 
   private final List<BodyInterceptor> bodyInterceptors;
 
   final Map<String, EnumSet<ClassModifier>> classNamesList;
 
+  /**
+   * Creates a new ApkAnalysisInputLocation.
+   *
+   * @param apkPath the path to the APK file to analyze system libraries (android.jar files) for
+   *     different API levels. This directory is required to resolve method calls and class
+   *     references that are not defined in the APK itself, but are part of the Android system
+   *     libraries. The Android platforms directory can be obtained from <a
+   *     href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a>
+   * @param bodyInterceptors the list of body interceptors to apply during analysis
+   */
   public ApkAnalysisInputLocation(
-      Path apkPath, String android_jar_path, List<BodyInterceptor> bodyInterceptors) {
+      Path apkPath,
+      AndroidVersionInfo androidSDKVersionInfo,
+      List<BodyInterceptor> bodyInterceptors) {
     this.apk_path = apkPath;
-    androidSDKVersionInfo = new AndroidVersionInfo(apkPath, android_jar_path);
-    this.android_jar_path = android_jar_path;
+    this.androidSDKVersionInfo = androidSDKVersionInfo;
     this.bodyInterceptors = bodyInterceptors;
     this.classNamesList = extractDexFilesFromPath();
   }
@@ -92,13 +116,7 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
   @Override
   public Optional<? extends SootClassSource> getClassSource(
       @NonNull ClassType type, @NonNull View view) {
-    return Objects.requireNonNull(getClassSourceInternal(type, new DexClassProvider(view)));
-  }
-
-  private Optional<? extends SootClassSource> getClassSourceInternal(
-      ClassType type, DexClassProvider dexClassProvider) {
-
-    return dexClassProvider.createClassSource(this, apk_path, type);
+    return new DexClassProvider(view).createClassSource(this, apk_path, type);
   }
 
   @NonNull

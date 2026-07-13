@@ -21,6 +21,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.soot-oss</groupId>
             <artifactId>sootup.java.core</artifactId>
         </dependency>

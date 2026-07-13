@@ -44,7 +44,12 @@ public class DexClassProvider implements PathbasedClassProvider {
       @NonNull AnalysisInputLocation inputLocation,
       @NonNull Path sourcePath,
       @NonNull ClassType classSignature) {
-    return Optional.of(new DexClassSource(view, inputLocation, classSignature, sourcePath));
+    DexClassSource dexClassSource =
+        new DexClassSource(view, inputLocation, classSignature, sourcePath);
+    if (dexClassSource.classInformation != null) {
+      return Optional.of(dexClassSource);
+    }
+    return Optional.empty();
   }
 
   @Override

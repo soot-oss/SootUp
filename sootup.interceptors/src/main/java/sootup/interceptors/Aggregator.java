@@ -30,7 +30,7 @@ import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
-import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
@@ -73,20 +73,17 @@ public class Aggregator implements BodyInterceptor {
     Map<Value, List<Stmt>> usesMap = Body.collectUses(stmts);
 
     for (Stmt stmt : stmts) {
-      if (!(stmt instanceof JAssignStmt)) {
+      if (!(stmt instanceof JAssignStmt assignStmt)) {
         continue;
       }
-      final JAssignStmt assignStmt = (JAssignStmt) stmt;
       Value lhs = assignStmt.getLeftOp();
-      if (!(lhs instanceof Local)) {
+      if (!(lhs instanceof Local lhsLocal)) {
         continue;
       }
-      Local lhsLocal = (Local) lhs;
       if (dontAggregateFieldLocals && !lhsLocal.getName().startsWith("$")) {
         continue;
       }
-      for (Iterator<Value> iterator = assignStmt.getUses().iterator(); iterator.hasNext(); ) {
-        Value val = iterator.next();
+      for (Value val : assignStmt.getUses()) {
         if (!(val instanceof Local)) {
           continue;
         }
@@ -99,7 +96,7 @@ public class Aggregator implements BodyInterceptor {
         if (defs.size() != 1) {
           continue;
         }
-        Stmt relevantDef = defs.get(0);
+        AbstractDefinitionStmt relevantDef = defs.get(0);
         if (!graph.containsNode(relevantDef) || !graph.containsNode(stmt)) {
           continue;
         }
@@ -113,25 +110,33 @@ public class Aggregator implements BodyInterceptor {
         boolean propagatingArrayRef = false;
         List<JFieldRef> fieldRefList = new ArrayList<>();
 
+        // Determine what kind of value is being propagated by looking only at the
+        // definition's own uses (i.e. the aggregatee itself), not at the whole path.
         Set<Value> localsUsed = new HashSet<>();
-        for (Stmt pathStmt : path) {
-          for (Iterator<Value> iter = pathStmt.getUses().iterator(); iter.hasNext(); ) {
-            Value use = iter.next();
-            if (use instanceof Local) {
-              localsUsed.add(use);
-            } else if (use instanceof AbstractInstanceInvokeExpr) {
-              propagatingInvokeExpr = true;
-            } else if (use instanceof JArrayRef) {
-              propagatingArrayRef = true;
-            } else if (use instanceof JFieldRef) {
-              propagatingFieldRef = true;
-              fieldRefList.add((JFieldRef) use);
-            }
+        for (Value use : relevantDef.getUses()) {
+          if (use instanceof Local) {
+            localsUsed.add(use);
+          } else if (use instanceof AbstractInvokeExpr) {
+            propagatingInvokeExpr = true;
+          } else if (use instanceof JArrayRef) {
+            propagatingArrayRef = true;
+          } else if (use instanceof JFieldRef) {
+            propagatingFieldRef = true;
+            fieldRefList.add((JFieldRef) use);
           }
         }
 
+        // Walk the path between the definition and the use, looking for anything
+        // that would make it unsafe to move the aggregatee to the use site: a
+        // redefinition of one of its operands, or - if the aggregatee itself has
+        // side effects (invoke expr/field ref/array ref) - any intervening
+        // statement with side effects of its own, since that would change the
+        // relative execution order of those side effects.
         for (Stmt pathStmt : path) {
-          if (pathStmt != stmt && pathStmt != relevantDef) {
+          if (pathStmt == relevantDef) {
+            continue;
+          }
+          if (pathStmt != stmt) {
             Optional<LValue> stmtDefOpt = pathStmt.getDef();
             if (stmtDefOpt.isPresent()) {
               LValue stmtDef = stmtDefOpt.get();
@@ -148,7 +153,7 @@ public class Aggregator implements BodyInterceptor {
                     // Can't aggregate a field access if passing a definition of a field
                     // with the same name, because they might be aliased
                     for (JFieldRef fieldRef : fieldRefList) {
-                      if (fieldRef.equals((JFieldRef) stmtDef)) {
+                      if (fieldRef.equals(stmtDef)) {
                         cantAggr = true;
                         break;
                       }
@@ -165,20 +170,26 @@ public class Aggregator implements BodyInterceptor {
               }
             }
           }
+          if (cantAggr) {
+            break;
+          }
           // Check for intervening side effects due to method calls
           if (propagatingInvokeExpr || propagatingFieldRef || propagatingArrayRef) {
-            for (Iterator<Value> iter = stmt.getUses().iterator(); iter.hasNext(); ) {
-              Value value = iter.next();
-              if (pathStmt == stmt && value == lhs) {
+            for (Value value : pathStmt.getUses()) {
+              if (pathStmt == stmt && value == val) {
+                // reached the use point itself, stop looking for side effects
                 break;
               }
-              if (value instanceof AbstractInstanceInvokeExpr
+              if (value instanceof AbstractInvokeExpr
                   || (propagatingInvokeExpr
                       && (value instanceof JFieldRef || value instanceof JArrayRef))) {
                 cantAggr = true;
                 break;
               }
             }
+          }
+          if (cantAggr) {
+            break;
           }
         }
 
@@ -191,8 +202,13 @@ public class Aggregator implements BodyInterceptor {
           continue;
         }
 
-        Value aggregatee = ((AbstractDefinitionStmt) relevantDef).getRightOp();
+        Value aggregatee = relevantDef.getRightOp();
         Stmt newStmt;
+
+        // if the use statement was merely a trivial "local = local" copy, its own position
+        // info is not meaningful; the merged statement should carry the position of the
+        // actual computation (the definition) instead.
+        boolean wasSimpleCopy = assignStmt.getRightOp() instanceof Local;
 
         final ReplaceUseStmtVisitor replaceVisitor = new ReplaceUseStmtVisitor(val, aggregatee);
         // TODO: this try-catch is an awful way for the former/legacy "ValueBox.canContainValue" ->
@@ -207,6 +223,9 @@ public class Aggregator implements BodyInterceptor {
 
         // have we been able to inline the value into the newStmt?
         if (stmt != newStmt) {
+          if (wasSimpleCopy && newStmt instanceof JAssignStmt) {
+            newStmt = ((JAssignStmt) newStmt).withPositionInfo(relevantDef.getPositionInfo());
+          }
 
           // respect trapranges - check if at least the same exceptional flows exist in the block
           // where we will assign the value now.

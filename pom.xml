@@ -86,11 +86,11 @@
         <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-        <maven-central-publishing-plugin.version>0.10.0</maven-central-publishing-plugin.version>
+        <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
         <reactorRootsTarget>${basedir}/target</reactorRootsTarget>
-        <junit.version>6.1.0</junit.version>
+        <junit.version>6.1.1</junit.version>
         <lombok.version>1.18.46</lombok.version>
     </properties>
 
@@ -459,7 +459,7 @@
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>7.2.1</version>
+            <version>7.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
