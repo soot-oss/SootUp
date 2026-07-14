@@ -26,8 +26,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Comparator;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.IgnoreLocalNameComparator;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.IgnoreLocalNameComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
