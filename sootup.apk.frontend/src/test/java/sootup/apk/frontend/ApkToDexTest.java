@@ -29,7 +29,7 @@ public class ApkToDexTest {
 
   @BeforeAll
   public static void createView() {
-    String apk_path_string = "resources/FlowSensitivity1.apk";
+    String apk_path_string = "src/test/resources/FlowSensitivity1.apk";
     Path apkPath = Paths.get(apk_path_string);
     String androidPlatformsPath = "";
     ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =

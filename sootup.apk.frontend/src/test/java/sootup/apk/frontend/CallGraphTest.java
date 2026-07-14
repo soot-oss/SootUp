@@ -35,14 +35,14 @@ public class CallGraphTest {
 
   @BeforeAll
   public static void createView() {
-    view = createViewForApk("resources/FlowSensitivity1.apk");
-    locationLeakView = createViewForApk("resources/LocationLeak1.apk");
-    cryptoView = createViewForApk("resources/Crypto.apk");
+    view = createViewForApk("src/test/resources/FlowSensitivity1.apk");
+    locationLeakView = createViewForApk("src/test/resources/LocationLeak1.apk");
+    cryptoView = createViewForApk("src/test/resources/Crypto.apk");
   }
 
   private static JavaView createViewForApk(String apkPathString) {
     Path apkPath = Paths.get(apkPathString);
-    String androidPlatformsPath = "resources/platforms";
+    String androidPlatformsPath = "src/test/resources/platforms";
     AndroidVersionInfo androidVersionInfo = new AndroidVersionInfo(apkPath, androidPlatformsPath);
 
     ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
@@ -50,9 +50,7 @@ public class CallGraphTest {
             apkPath, androidVersionInfo, DexBodyInterceptors.Default.bodyInterceptors());
     JavaClassPathAnalysisInputLocation classPathAnalysisInputLocation =
         new JavaClassPathAnalysisInputLocation(
-            "resources"
-                + File.separator
-                + "platforms"
+            androidPlatformsPath
                 + File.separator
                 + "android-"
                 + androidVersionInfo.getApi_version()
