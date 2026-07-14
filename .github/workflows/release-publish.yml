@@ -67,7 +67,8 @@ jobs:
           git config --global user.name "${{ github.actor }}"
 
           # develop's tip now holds whatever version the merged release PR brought in
-          CURRENT_VERSION=$(mvn -q -ntp org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -DforceStdout)
+          # No -q: Maven 3.9.x swallows forceStdout plugin output under -q. Filter [INFO]/[WARNING] noise instead.
+          CURRENT_VERSION=$(mvn -ntp org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)
           TAG_NAME="v$CURRENT_VERSION"
 
           git tag -a "$TAG_NAME" -m "version $CURRENT_VERSION"

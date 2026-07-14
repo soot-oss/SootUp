@@ -1,10 +1,10 @@
-package sootup.jimple.frontend;
+package sootup.core.interceptor;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2018-2020 Linghui Luo, Jan Martin Persch, Christian Brüggemann and others
+ * Copyright (C) 2019-2020 Christian Brüggemann
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,16 +22,21 @@ package sootup.jimple.frontend;
  * #L%
  */
 
-import java.nio.file.Path;
-import java.util.List;
 import org.jspecify.annotations.NonNull;
-import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.model.Body;
 import sootup.core.views.View;
 
-public class EagerClassVisitorFactory implements ClassVisitorFactory {
-  @Override
-  public ClassVisitor create(
-      @NonNull Path path, @NonNull List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
-    return new EagerClassVisitor(path, bodyInterceptors, view);
-  }
+/**
+ * @see #interceptBody(Body.BodyBuilder, View)
+ */
+public interface BodyInterceptor {
+
+  /**
+   * Takes a BodyBuilder and may apply a transformation to it, for example removing unused local
+   * variables.
+   *
+   * @param builder
+   * @param view
+   */
+  void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view);
 }

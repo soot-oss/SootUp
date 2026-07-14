@@ -9,8 +9,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.List;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.java.bytecode.frontend.conversion.FileUtil;
 
 /*-
