@@ -4,7 +4,7 @@ package sootup.spark;
  * #%L
  * SootUp
  * %%
- * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya, Palaniappan Muthuraman
+ * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,9 +23,12 @@ package sootup.spark;
  */
 
 import java.util.Optional;
+import lombok.AccessLevel;
 import lombok.NonNull;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import sootup.core.jimple.common.Value;
+import sootup.core.signatures.MethodSignature;
 import sootup.spark.node.Node;
 import sootup.spark.node.ValueToNodeConversionVisitor;
 
@@ -33,8 +36,11 @@ import sootup.spark.node.ValueToNodeConversionVisitor;
  * It is responsible for creating a SPARK representative nodes (nodes present in SPARK, AllocNode,
  * FieldRef Node, and VarNode)
  */
-@UtilityClass
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class NodeFactory {
+
+  @NonNull SparkOptions sparkOptions;
 
   /**
    * creates a PAG node for a given Jimple value
@@ -43,8 +49,9 @@ public class NodeFactory {
    * @return a PAG node
    */
   @NonNull
-  public Optional<Node> createNode(@NonNull Value value) {
-    ValueToNodeConversionVisitor visitor = new ValueToNodeConversionVisitor();
+  public Optional<Node> createNode(@NonNull Value value, MethodSignature containingMethodSig) {
+    ValueToNodeConversionVisitor visitor =
+        new ValueToNodeConversionVisitor(containingMethodSig, sparkOptions);
     value.accept(visitor);
     return visitor.getResult();
   }

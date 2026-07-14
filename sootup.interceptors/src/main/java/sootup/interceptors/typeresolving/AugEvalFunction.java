@@ -28,7 +28,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.IdentifierFactory;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -84,7 +84,7 @@ public class AugEvalFunction {
       @NonNull Typing typing,
       @NonNull Value value,
       @NonNull Stmt stmt,
-      @NonNull StmtGraph<?> graph) {
+      @NonNull ControlFlowGraph<?> graph) {
 
     // TODO: [ms] make use of the ValueVisitor
 
@@ -238,7 +238,7 @@ public class AugEvalFunction {
    * statement in body.
    */
   private Set<ClassType> getExceptionTypeCandidates(
-      @NonNull Stmt handlerStmt, @NonNull StmtGraph<?> graph) {
+      @NonNull Stmt handlerStmt, @NonNull ControlFlowGraph<?> graph) {
     return graph.getBlockOf(handlerStmt).getExceptionalPredecessors().keySet();
   }
 

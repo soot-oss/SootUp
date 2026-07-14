@@ -26,9 +26,9 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.Local;
-import sootup.core.jimple.common.ref.ConcreteRef;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
@@ -88,14 +88,13 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
    * Check if the field type equals the type of the value that will be stored in the field. A cast
    * expression has to be introduced for the unequal case.
    *
-   * @param sourceValue the local (left value) to be used in the assign statement
-   * @param instanceField the reference (right value) to be used in the assign statement
-   * @return assignment statement which hold a cast or not depending on the types of the operation
+   * @param left the local (left value) to be used in the assign statement
+   * @param right the reference (right value) to be used in the assign statement
+   * @return assignment statement that holds a cast or not depending on the types of the operation
    */
-  protected JAssignStmt getAssignStmt(Local sourceValue, ConcreteRef instanceField) {
+  protected JAssignStmt getAssignStmt(LValue left, Value right) {
     JAssignStmt assign;
-    assign =
-        Jimple.newAssignStmt(sourceValue, instanceField, StmtPositionInfo.getNoStmtPositionInfo());
+    assign = Jimple.newAssignStmt(left, right, new SimpleStmtPositionInfo(lineNumber));
     return assign;
   }
 }

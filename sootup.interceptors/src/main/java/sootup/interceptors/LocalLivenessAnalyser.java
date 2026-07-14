@@ -24,7 +24,7 @@ package sootup.interceptors;
 
 import java.util.*;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -42,7 +42,7 @@ public class LocalLivenessAnalyser {
   // e.g: a = b + c; live-in={b,c}  live-out={a,b,c}
   private final Map<Stmt, Set<Local>> liveOut = new HashMap<>();
 
-  public LocalLivenessAnalyser(@NonNull StmtGraph<?> graph) {
+  public LocalLivenessAnalyser(@NonNull ControlFlowGraph<?> graph) {
     // initial liveIn and liveOut
     List<Stmt> startingStmts = new ArrayList<>();
     for (Stmt stmt : graph.getNodes()) {
@@ -111,7 +111,7 @@ public class LocalLivenessAnalyser {
   @NonNull
   public Set<Local> getLiveLocalsBeforeStmt(@NonNull Stmt stmt) {
     if (!liveIn.containsKey(stmt)) {
-      throw new RuntimeException("Stmt: " + stmt + " is not in StmtGraph!");
+      throw new RuntimeException("Stmt: " + stmt + " is not in ControlFlowGraph!");
     }
     return liveIn.get(stmt);
   }
@@ -120,7 +120,7 @@ public class LocalLivenessAnalyser {
   @NonNull
   public Set<Local> getLiveLocalsAfterStmt(@NonNull Stmt stmt) {
     if (!liveOut.containsKey(stmt)) {
-      throw new RuntimeException("Stmt: " + stmt + " is not in StmtGraph!");
+      throw new RuntimeException("Stmt: " + stmt + " is not in ControlFlowGraph!");
     }
     return liveOut.get(stmt);
   }

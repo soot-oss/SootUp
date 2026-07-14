@@ -71,7 +71,7 @@ public abstract class AbstractTypeVisitor implements TypeVisitor, Visitor {
   }
 
   @Override
-  public void caseArrayType() {
+  public void caseArrayType(@NonNull ArrayType arrayType) {
     defaultCaseType();
   }
 

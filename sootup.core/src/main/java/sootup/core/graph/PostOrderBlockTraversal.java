@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.jspecify.annotations.NonNull;
 
-/** A strategy to traverse a StmtGraph in post-order. */
+/** A strategy to traverse a ControlFlowGraph in post-order. */
 public class PostOrderBlockTraversal implements BlockTraversalStrategy {
 
-  private final StmtGraph<?> cfg;
+  private final ControlFlowGraph<?> cfg;
 
-  public PostOrderBlockTraversal(StmtGraph<?> cfg) {
+  public PostOrderBlockTraversal(ControlFlowGraph<?> cfg) {
     this.cfg = cfg;
   }
 
@@ -47,7 +47,7 @@ public class PostOrderBlockTraversal implements BlockTraversalStrategy {
 
   @Override
   @NonNull
-  public List<BasicBlock<?>> getBlocksSorted() {
+  public List<BasicBlock<?>> getBlockTraversal() {
     return StreamSupport.stream(
             Spliterators.spliteratorUnknownSize(this.iterator(), Spliterator.ORDERED), false)
         .collect(Collectors.toList());

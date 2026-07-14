@@ -2,10 +2,12 @@
 ### Java template
 # Compiled class file
 *.class
-!shared-test-resources/miniTestSuite/**/*.class
 !sootup.analysis/src/test/resources/taint/binary/*.class
 !sootup.callgraph/src/test/resources/callgraph/**/*.class
+!sootup.codepropertygraph/src/test/resources/**/*.class
 !sootup.tests/src/test/resources/**/*.class
+!sootup.java.bytecode.frontend/src/test/resources/**/*.class
+!sootup.spark/src/test/resources/pta/binary/**/*.class
 
 # Log file
 *.log
@@ -19,10 +21,11 @@
 # Package Files #
 *.jar
 *.war
-!shared-test-resources/java-miniapps/MiniApp.jar
-!shared-test-resources/java-warApp/dummyWarApp.war
-!shared-test-resources/multi-release-jar/mrjar.jar
-!shared-test-resources/multi-release-jar-modular/mrjar.jar
+!sootup.java.bytecode.frontend/src/test/resources/java-miniapps/MiniApp.jar
+!sootup.java.bytecode.frontend/src/test/resources/java-warApp/dummyWarApp.war
+!sootup.java.bytecode.frontend/src/test/resources/multi-release-jar/mrjar.jar
+!sootup.java.bytecode.frontend/src/test/resources/multi-release-jar-modular/mrjar.jar
+!sootup.apk.frontend/resources/platforms/**/*.jar
 *.ear
 *.zip
 *.tar.gz
@@ -167,3 +170,4 @@ fabric.properties
 =======
 .vscode/
 .DS_Store
+sootup.spark/src/test/java/sootup/spark/test/PointsToAnalysisDemoTest.java

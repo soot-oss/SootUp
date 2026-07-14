@@ -28,10 +28,12 @@ import com.google.common.collect.Iterables;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.frontend.ResolveException;
@@ -57,7 +59,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   private final Supplier<Optional<? extends ClassType>> lazyOuterClass;
   private final Supplier<Position> lazyPosition;
 
-  @NonNull private final Supplier<Set<? extends SootMethod>> _lazyMethods;
+  @NonNull private final Supplier<Set<JavaSootMethod>> _lazyMethods;
 
   @NonNull private final Supplier<Set<? extends SootField>> _lazyFields;
 
@@ -166,11 +168,12 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   @NonNull
-  private Set<SootMethod> lazyMethodInitializer() {
-    Set<SootMethod> methods;
+  private Set<JavaSootMethod> lazyMethodInitializer() {
+    Set<JavaSootMethod> methods;
 
     try {
-      methods = ImmutableUtils.immutableSetOf(this.classSource.resolveMethods());
+      methods =
+          (Set<JavaSootMethod>) ImmutableUtils.immutableSetOf(this.classSource.resolveMethods());
     } catch (ResolveException e) {
       // TODO: [JMP] Exception handling
       e.printStackTrace();
@@ -183,9 +186,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */
   @NonNull
   public Set<JavaSootMethod> getMethods() {
-    return this._lazyMethods.get().stream()
-        .map(method -> (JavaSootMethod) method)
-        .collect(Collectors.toSet());
+    return this._lazyMethods.get();
   }
 
   /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
@@ -447,6 +448,27 @@ public class JavaSootClass implements SootClass, HasAnnotation {
     return ((JavaSootClassSource) classSource).resolveAnnotations();
   }
 
+  /**
+   * Resturns the default values of methods in Annotations
+   *
+   * @return a Map mapping the method name to the default value if the SootClass is no Annotation,
+   *     it will return an empty map.
+   */
+  @NonNull
+  public Map<String, Object> getAnnotationDefaultValues() {
+    if (isAnnotation()) {
+      return getMethods().stream()
+          .<ImmutablePair<String, Object>>mapMulti(
+              (javaSootMethod, consumer) ->
+                  javaSootMethod
+                      .getDefaultValue()
+                      .ifPresent(
+                          o -> consumer.accept(new ImmutablePair<>(javaSootMethod.getName(), o))))
+          .collect(Collectors.toMap(ImmutablePair::getLeft, ImmutablePair::getRight));
+    }
+    return Map.of();
+  }
+
   /** Defines a {@link SootClass} builder. */
   public static class JavaSootClassBuilder {
     @Nullable private SootClassSource classSource;
@@ -627,7 +649,7 @@ public class JavaSootClass implements SootClass, HasAnnotation {
         assert instance.classSource != null;
         return new JavaSootClass(
             instance.classSource,
-            instance.sourceType,
+            null,
             instance.methods,
             instance.fields,
             instance.modifiers,

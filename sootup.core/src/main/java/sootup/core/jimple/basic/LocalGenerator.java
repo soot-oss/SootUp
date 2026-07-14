@@ -30,6 +30,7 @@ import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.visitor.AbstractTypeVisitor;
+import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 
@@ -142,7 +143,7 @@ public class LocalGenerator {
     }
 
     @Override
-    public void caseArrayType() {
+    public void caseArrayType(@NonNull ArrayType arrayType) {
       result.append("r").append(tempRefLikeType++);
     }
 

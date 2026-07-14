@@ -15,7 +15,7 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
 
   @BeforeEach
   public void setup() {
-    String baseDir = "../shared-test-resources/TypeResolverTestSuite/CastCounterTest/";
+    String baseDir = "src/test/resources/TypeResolverTestSuite/CastCounterTest/";
     String className = "CastCounterDemos";
     buildView(baseDir, className);
   }

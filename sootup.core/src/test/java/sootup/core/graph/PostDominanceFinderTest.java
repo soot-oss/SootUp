@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import sootup.core.jimple.common.stmt.*;
 
 public class PostDominanceFinderTest {
 
@@ -14,7 +13,7 @@ public class PostDominanceFinderTest {
 
   @Test
   public void testPostDominanceFinder() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph();
     PostDominanceFinder postDominanceFinder = new PostDominanceFinder(graph);
 
     int[] domsArr = postDominanceFinder.getImmediateDominators();
@@ -26,7 +25,7 @@ public class PostDominanceFinderTest {
 
   @Test
   public void testPostDominanceFrontiers() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph();
     PostDominanceFinder postDominanceFinder = new PostDominanceFinder(graph);
 
     List<BasicBlock<?>> blocks = postDominanceFinder.getIdxToBlock();
@@ -50,7 +49,7 @@ public class PostDominanceFinderTest {
   @Test
   @Disabled("PostDominanceFinder doesn't work, if blockgraph contains two end-blocks")
   public void testDominanceFinder2() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph3();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph3();
     PostDominanceFinder postDom = new PostDominanceFinder(graph);
 
     int[] domsArr = postDom.getImmediateDominators();
@@ -62,7 +61,7 @@ public class PostDominanceFinderTest {
 
   @Test
   public void testBlockToIdxInverse() {
-    MutableBlockStmtGraph graph = graphGenerator.createStmtGraph();
+    MutableBlockControlFlowGraph graph = graphGenerator.createControlFlowGraph();
     DominanceFinder dom = new PostDominanceFinder(graph);
 
     // check that getBlockToIdx and getIdxToBlock are inverses

@@ -50,12 +50,12 @@ import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.util.Modifiers;
 import sootup.java.core.AnnotationUsage;
-import sootup.java.core.JavaAnnotationSootClassSource;
-import sootup.java.core.JavaAnnotationSootMethod;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootField;
+import sootup.java.core.JavaSootMethod;
 
-public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
+public class AsmAnnotationClassSource extends JavaSootClassSource {
 
   @NonNull protected final ClassNode classNode;
 
@@ -90,13 +90,13 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
   }
 
   @NonNull
-  public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
+  public Collection<JavaSootMethod> resolveMethods() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveMethods(classNode.methods, identifierFactory, classSignature)
         .collect(Collectors.toSet());
   }
 
-  private static Stream<JavaAnnotationSootMethod> resolveMethods(
+  private static Stream<JavaSootMethod> resolveMethods(
       List<MethodNode> methodNodes, IdentifierFactory signatureFactory, ClassType cs) {
     return methodNodes.stream()
         .map(
@@ -104,8 +104,8 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
               AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
               asmClassClassSourceContent.setDeclaringClass(cs);
 
-              List<ClassType> exceptions = new ArrayList<>();
-              exceptions.addAll(AsmUtil.asmIdToSignatures(methodSource.exceptions));
+              List<ClassType> exceptions =
+                  new ArrayList<>(AsmUtil.asmIdToSignature(methodSource.exceptions));
 
               String methodName = methodSource.name;
               EnumSet<MethodModifier> modifiers = Modifiers.getMethodModifiers(methodSource.access);
@@ -125,7 +125,7 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
 
               // TODO: position/line numbers if possible
 
-              return new JavaAnnotationSootMethod(
+              return new JavaSootMethod(
                   asmClassClassSourceContent,
                   methodSignature,
                   modifiers,
@@ -189,7 +189,7 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
     if (classNode.superName == null) {
       return Optional.empty();
     }
-    return Optional.ofNullable(AsmUtil.toJimpleClassType(classNode.superName));
+    return Optional.of(AsmUtil.toJimpleClassType(classNode.superName));
   }
 
   @NonNull

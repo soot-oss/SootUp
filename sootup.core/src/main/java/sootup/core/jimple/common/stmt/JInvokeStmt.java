@@ -21,8 +21,8 @@ package sootup.core.jimple.common.stmt;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -79,10 +79,10 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
     return Optional.of(invokeExpr);
   }
 
-  @NonNull
   @Override
-  public Stream<Value> getUses() {
-    return Stream.concat(invokeExpr.getUses(), Stream.of(invokeExpr));
+  public void collectUses(List<Value> collector) {
+    invokeExpr.collectUses(collector);
+    collector.add(invokeExpr);
   }
 
   @Override

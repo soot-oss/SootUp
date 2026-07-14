@@ -21,6 +21,8 @@ package sootup.java.bytecode.frontend.conversion;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import static org.objectweb.asm.Opcodes.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -51,6 +53,7 @@ import sootup.core.model.FieldModifier;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.core.types.UnknownType;
 import sootup.core.types.VoidType;
 import sootup.java.core.*;
 import sootup.java.core.language.JavaJimple;
@@ -420,5 +423,56 @@ public final class AsmUtil {
       throw new ResolveException("Error loading the module-descriptor", moduleInfoFile, e);
     }
     return moduleDescriptor;
+  }
+
+  /**
+   * Returns the primitive result type implied by a bytecode opcode, or {@link UnknownType} when the
+   * opcode does not carry type information (e.g. ALOAD, AALOAD, ASTORE).
+   *
+   * <p>Covers:
+   *
+   * <ul>
+   *   <li>var insns: ILOAD/ISTORE → int, LLOAD/LSTORE → long, FLOAD/FSTORE → float, DLOAD/DSTORE →
+   *       double
+   *   <li>arithmetic + negate (IADD–DNEG, opcodes 96–119): I/L/F/D in groups-of-4
+   *   <li>shift + bitwise (ISHL–LXOR, opcodes 120–131): even → int, odd → long
+   *   <li>comparison results (LCMP, FCMPL/G, DCMPL/G) → int
+   *   <li>ARRAYLENGTH → int
+   *   <li>primitive array loads: IALOAD → int, LALOAD → long, FALOAD → float, DALOAD → double,
+   *       BALOAD → byte, CALOAD → char, SALOAD → short
+   * </ul>
+   */
+  public static Type primitiveTypeFromOpcode(int op) {
+    if (op == ILOAD || op == ISTORE) return PrimitiveType.getInt();
+    if (op == LLOAD || op == LSTORE) return PrimitiveType.getLong();
+    if (op == FLOAD || op == FSTORE) return PrimitiveType.getFloat();
+    if (op == DLOAD || op == DSTORE) return PrimitiveType.getDouble();
+    // arithmetic and negate: opcodes 96–119, repeating I/L/F/D pattern every 4
+    if (op >= IADD && op <= DNEG) {
+      return switch ((op - IADD) % 4) {
+        case 0 -> PrimitiveType.getInt();
+        case 1 -> PrimitiveType.getLong();
+        case 2 -> PrimitiveType.getFloat();
+        default -> PrimitiveType.getDouble();
+      };
+    }
+    // shift and bitwise: opcodes 120–131, even → int, odd → long
+    if (op >= ISHL && op <= LXOR) {
+      return (op % 2 == 0) ? PrimitiveType.getInt() : PrimitiveType.getLong();
+    }
+    if (op == LCMP || op == FCMPL || op == FCMPG || op == DCMPL || op == DCMPG) {
+      return PrimitiveType.getInt();
+    }
+    if (op == ARRAYLENGTH) return PrimitiveType.getInt();
+    return switch (op) {
+      case IALOAD -> PrimitiveType.getInt();
+      case LALOAD -> PrimitiveType.getLong();
+      case FALOAD -> PrimitiveType.getFloat();
+      case DALOAD -> PrimitiveType.getDouble();
+      case BALOAD -> PrimitiveType.getByte();
+      case CALOAD -> PrimitiveType.getChar();
+      case SALOAD -> PrimitiveType.getShort();
+      default -> UnknownType.getInstance();
+    };
   }
 }

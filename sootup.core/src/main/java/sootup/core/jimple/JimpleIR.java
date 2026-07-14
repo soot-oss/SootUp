@@ -4,7 +4,7 @@ package sootup.core.jimple;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1999-2025 Markus Schmidt
+ * Copyright (C) 2018-2026 Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

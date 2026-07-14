@@ -25,6 +25,7 @@ package sootup.core.jimple.visitor;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.expr.*;
 
+/** Default (no-op) implementation of {@link ExprVisitor} that delegates to defaultCaseExpr. */
 public abstract class AbstractExprVisitor implements ExprVisitor, Visitor {
 
   @Override

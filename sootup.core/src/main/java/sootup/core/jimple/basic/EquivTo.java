@@ -63,6 +63,9 @@ public interface EquivTo {
    * Returns true if this object is equivalent to o. The contract is defined in {@link
    * JimpleComparator} and is not necessarily compliant with the contract * defined by {@link
    * Object#equals(Object)}.
+   *
+   * @param o the object to compare with
+   * @return true if this object is structurally equivalent to o
    */
   default boolean equivTo(Object o) {
     return equivTo(o, JimpleComparator.getInstance());
@@ -72,9 +75,17 @@ public interface EquivTo {
    * Returns a (not necessarily fixed) hash code for this object. This hash code coincides with
    * equivTo; it is undefined in the presence of mutable objects. The contract is defined in {@link
    * JimpleComparator}.
+   *
+   * @return a structural hash code consistent with equivTo
    */
   int equivHashCode();
 
-  /** Returns true if this object is equivalent to o according to the given comparator. */
+  /**
+   * Returns true if this object is equivalent to o according to the given comparator.
+   *
+   * @param o the object to compare with
+   * @param comparator the comparator defining the equivalence relation
+   * @return true if this object is structurally equivalent to o under the given comparator
+   */
   boolean equivTo(Object o, @NonNull JimpleComparator comparator);
 }

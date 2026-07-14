@@ -43,7 +43,7 @@ public interface TypeVisitor extends Visitor {
 
   void caseFloatType();
 
-  void caseArrayType();
+  void caseArrayType(@NonNull ArrayType arrayType);
 
   void caseClassType(@NonNull ClassType classType);
 

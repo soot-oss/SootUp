@@ -121,7 +121,7 @@ public class PropertyGraphToDotConverter {
    * @return the color
    */
   private static String getNodeColor(PropertyGraphNode node) {
-    if (node instanceof StmtGraphNode) {
+    if (node instanceof ControlFlowGraphNode) {
       return "lightblue";
     } else if (node instanceof TypeGraphNode || node instanceof ModifierGraphNode) {
       return "lightgray";

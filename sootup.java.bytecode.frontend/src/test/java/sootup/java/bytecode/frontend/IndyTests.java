@@ -8,7 +8,7 @@ import sootup.java.core.views.JavaView;
 
 /** InvokeDynamics and the Operand stack.. */
 public class IndyTests {
-  final String directory = "../shared-test-resources/bugfixes/";
+  final String directory = "src/test/resources/bugfixes/";
 
   @Test
   public void test() {

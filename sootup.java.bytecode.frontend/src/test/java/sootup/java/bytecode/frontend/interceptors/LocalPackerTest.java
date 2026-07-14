@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
@@ -154,7 +154,7 @@ public class LocalPackerTest {
     Body expectedBody = createExpectedBody();
 
     AssertUtils.assertLocalsEquiv(expectedBody, body);
-    AssertUtils.assertStmtGraphEquiv(expectedBody, body);
+    AssertUtils.assertControlFlowGraphEquiv(expectedBody, body);
   }
 
   /**
@@ -219,7 +219,7 @@ public class LocalPackerTest {
   public void testLocalPackerWithTrap() {
     Body.BodyBuilder builder = createTrapBody();
 
-    System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
+    System.out.println(DotExporter.createUrlToWebeditor(builder.getControlFlowGraph()));
 
     LocalPacker localPacker = new LocalPacker();
     localPacker.interceptBody(builder, new JavaView(Collections.emptyList()));
@@ -228,12 +228,12 @@ public class LocalPackerTest {
     Body expectedBody = createExpectedTrapBody().build();
 
     AssertUtils.assertLocalsEquiv(expectedBody, body);
-    AssertUtils.assertStmtGraphEquiv(expectedBody, body);
+    AssertUtils.assertControlFlowGraphEquiv(expectedBody, body);
   }
 
   private Body.BodyBuilder createBodyBuilder() {
 
-    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    final MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder builder = Body.builder(graph);
 
     List<Type> parameters = new ArrayList<>();
@@ -248,7 +248,7 @@ public class LocalPackerTest {
         ImmutableUtils.immutableSet(l0, l1, l2, l3, l1hash1, l2hash2, l2hash3, l1hash4, l1hash5);
     builder.setLocals(locals);
 
-    // build stmtGraph
+    // build controlFlowGraph
     graph.putEdge(startingStmt, identityStmt0);
     graph.putEdge(identityStmt0, identityStmt1);
     graph.putEdge(identityStmt1, stmt1);
@@ -268,7 +268,7 @@ public class LocalPackerTest {
 
   private Body createExpectedBody() {
 
-    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    final MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder builder = Body.builder(graph);
 
     List<Type> parameters = new ArrayList<>();
@@ -282,7 +282,7 @@ public class LocalPackerTest {
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
     builder.setLocals(locals);
 
-    // build stmtGraph
+    // build controlFlowGraph
     graph.putEdge(startingStmt, eidentityStmt0);
     graph.putEdge(eidentityStmt0, eidentityStmt1);
     graph.putEdge(eidentityStmt1, estmt1);
@@ -306,7 +306,7 @@ public class LocalPackerTest {
 
   private Body.BodyBuilder createTrapBody() {
 
-    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    final MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder builder = Body.builder(graph);
 
     List<Type> parameters = new ArrayList<>();
@@ -322,7 +322,7 @@ public class LocalPackerTest {
             l0, l1, l2, l3, l4, l1hash1, l2hash2, l2hash3, l1hash4, l1hash5);
     builder.setLocals(locals);
 
-    // build stmtGraph
+    // build controlFlowGraph
     graph.addNode(stmt5, Collections.singletonMap(exception, etrapHandler));
 
     graph.putEdge(startingStmt, identityStmt0);
@@ -345,7 +345,7 @@ public class LocalPackerTest {
 
   private Body.BodyBuilder createExpectedTrapBody() {
 
-    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    final MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Body.BodyBuilder builder = Body.builder(graph);
 
     List<Type> parameters = new ArrayList<>();
@@ -359,7 +359,7 @@ public class LocalPackerTest {
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, el4);
     builder.setLocals(locals);
 
-    // build stmtGraph
+    // build controlFlowGraph
     graph.putEdge(startingStmt, eidentityStmt0);
     graph.putEdge(eidentityStmt0, eidentityStmt1);
     graph.putEdge(eidentityStmt1, estmt1);

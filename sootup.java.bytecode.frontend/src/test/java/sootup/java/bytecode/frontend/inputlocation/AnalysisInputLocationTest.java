@@ -42,9 +42,9 @@ import sootup.java.core.views.JavaView;
  */
 public abstract class AnalysisInputLocationTest {
 
-  final Path war = Paths.get("../shared-test-resources/java-warApp/dummyWarApp.war");
-  final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
-  final Path cls = Paths.get("../shared-test-resources/miniTestSuite/java6/binary/Employee.class");
+  final Path war = Paths.get("src/test/resources/java-warApp/dummyWarApp.war");
+  final Path jar = Paths.get("src/test/resources/java-miniapps/MiniApp.jar");
+  final Path cls = Paths.get("src/test/resources/miniTestSuite/java6/binary/Employee.class");
 
   protected IdentifierFactory getIdentifierFactory() {
     return JavaIdentifierFactory.getInstance();

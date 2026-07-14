@@ -183,7 +183,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
 
   @Override
   protected void postProcessingMethod(
-      MethodSignature sourceMethod,
+      @NonNull MethodSignature sourceMethod,
       @NonNull Deque<MethodSignature> workList,
       @NonNull MutableCallGraph cg) {
     // do nothing
@@ -191,7 +191,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
 
   @Override
   protected void preProcessingMethod(
-      MethodSignature sourceMethod,
+      @NonNull MethodSignature sourceMethod,
       @NonNull Deque<MethodSignature> workList,
       @NonNull MutableCallGraph cg) {
     // do nothing

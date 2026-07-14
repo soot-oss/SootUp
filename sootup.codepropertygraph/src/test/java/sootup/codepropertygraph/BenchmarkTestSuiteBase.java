@@ -19,7 +19,7 @@ public class BenchmarkTestSuiteBase {
   private final JavaView testResourcesView;
 
   public BenchmarkTestSuiteBase() {
-    String MINIMAL_TEST_SUITE_DIR = "../shared-test-resources/miniTestSuite/java6/binary";
+    String MINIMAL_TEST_SUITE_DIR = "src/test/resources/miniTestSuite/java6/binary";
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation(

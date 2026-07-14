@@ -22,6 +22,7 @@ package sootup.core;
  * #L%
  */
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
@@ -30,10 +31,7 @@ import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.Type;
+import sootup.core.types.*;
 
 /**
  * A factory used for creating language-specific objects representing entities of the language, for
@@ -242,11 +240,45 @@ public interface IdentifierFactory {
    */
   MethodSignature getStaticInitializerSignature(ClassType declaringClassSignature);
 
+  /**
+   * Checks whether the given method sub signature is a static initializer
+   *
+   * @param methodSubSignature
+   * @return
+   */
   boolean isStaticInitializerSubSignature(@NonNull MethodSubSignature methodSubSignature);
 
+  /**
+   * Checks whether the given method signature is a constructor
+   *
+   * @param methodSignature
+   * @return
+   */
   boolean isConstructorSignature(@NonNull MethodSignature methodSignature);
 
+  /**
+   * Checks whether the given method sub signature is a constructor
+   *
+   * @param methodSubSignature
+   * @return
+   */
   boolean isConstructorSubSignature(@NonNull MethodSubSignature methodSubSignature);
 
+  /**
+   * Checks whether the given method sub signature is the main method signature
+   *
+   * @param methodSubSignature
+   * @return
+   */
   boolean isMainSubSignature(@NonNull MethodSubSignature methodSubSignature);
+
+  /**
+   * Returns the main method sub signature
+   *
+   * @return
+   */
+  default MethodSubSignature getMainSubSignature() {
+    return getMethodSubSignature(
+        "main", VoidType.getInstance(), Collections.singletonList(getType("java.lang.String[]")));
+  }
 }

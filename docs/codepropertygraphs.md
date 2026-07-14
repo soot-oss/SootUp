@@ -168,8 +168,8 @@ vulnerabilities by analyzing data flow dependencies.
         public static void main(String[] args) {
             // Assuming `cpg` is the PropertyGraph created in the previous step
             for (DdgEdge edge : cpg.getEdges(DdgEdge.class)) {
-                StmtGraphNode source = (StmtGraphNode) edge.getSource();
-                StmtGraphNode destination = (StmtGraphNode) edge.getDestination();
+                ControlFlowGraphNode source = (ControlFlowGraphNode) edge.getSource();
+                ControlFlowGraphNode destination = (ControlFlowGraphNode) edge.getDestination();
                 
                 if (isPotentiallyVulnerable(source, destination)) {
                     System.out.println("Potential vulnerability found between: ");
@@ -179,7 +179,7 @@ vulnerabilities by analyzing data flow dependencies.
             }
         }
     
-        private static boolean isPotentiallyVulnerable(StmtGraphNode source, StmtGraphNode destination) {
+        private static boolean isPotentiallyVulnerable(ControlFlowGraphNode source, ControlFlowGraphNode destination) {
             // Implement your vulnerability detection logic here
             return source.getStmt().toString().contains("userInput") && 
                    destination.getStmt() instanceof JInvokeStmt && 

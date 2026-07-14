@@ -1,6 +1,5 @@
 package sootup.tests.exceptions;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -35,10 +34,7 @@ public class StmtExceptionAnalyzerTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   ClassType clazzType = factory.getClassType("StmtExceptions");
-  String location =
-      Paths.get(System.getProperty("user.dir")).getParent()
-          + File.separator
-          + "shared-test-resources/exceptions/";
+  String location = "src/test/resources/exceptions/";
   final Path path = Paths.get(location + "StmtExceptions.class");
   List<BodyInterceptor> interceptors =
       Arrays.asList(
@@ -297,7 +293,8 @@ public class StmtExceptionAnalyzerTest {
                             ExceptionInferResult.ExceptionType.ILLEGAL_MONITOR_STATE_EXCEPTION));
               } else if (stmt instanceof JThrowStmt) {
                 result =
-                    exceptionAnalyser.mightThrowExplicitly((JThrowStmt) stmt, body.getStmtGraph());
+                    exceptionAnalyser.mightThrowExplicitly(
+                        (JThrowStmt) stmt, body.getControlFlowGraph());
                 Assertions.assertEquals(1, result.getExceptions().size());
                 Assertions.assertTrue(
                     result.getExceptions().contains(ExceptionInferResult.ExceptionType.THROWABLE));

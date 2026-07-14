@@ -134,7 +134,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
 
   @Override
   public boolean removePredecessorBlock(@NonNull MutableBasicBlock b) {
-    return predecessorBlocks.remove(b);
+    return predecessorBlocks.removeIf(pred -> pred == b);
   }
 
   @Override

@@ -25,8 +25,8 @@ package sootup.interceptors;
 import com.google.common.collect.Lists;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
@@ -49,44 +49,43 @@ public class ConditionalBranchFolder implements BodyInterceptor {
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
 
-    for (Stmt stmt : Lists.newArrayList(stmtGraph.getNodes())) {
-      if (!(stmt instanceof JIfStmt)) {
+    for (Stmt stmt : Lists.newArrayList(controlFlowGraph.getNodes())) {
+      if (!(stmt instanceof JIfStmt ifStmt)) {
         continue;
       }
 
-      JIfStmt ifStmt = (JIfStmt) stmt;
       // check for constant-valued conditions
       Constant evaluatedCondition = Evaluator.getConstantValueOf(ifStmt.getCondition());
 
       boolean removeTrueBranch;
       if (evaluatedCondition instanceof BooleanConstant) {
-        removeTrueBranch = evaluatedCondition == BooleanConstant.getTrue();
+        removeTrueBranch = evaluatedCondition == BooleanConstant.getFalse();
       } else if (evaluatedCondition instanceof IntConstant) {
         removeTrueBranch =
             IntConstant.getInstance(0).equalEqual(((IntConstant) evaluatedCondition))
-                == BooleanConstant.getFalse();
+                == BooleanConstant.getTrue();
       }
       /* TODO: check if the following Constant types are even possible in valid Jimple */
       else if (evaluatedCondition instanceof DoubleConstant) {
         removeTrueBranch =
             DoubleConstant.getInstance(0).equalEqual((DoubleConstant) evaluatedCondition)
-                == BooleanConstant.getFalse();
+                == BooleanConstant.getTrue();
       } else if (evaluatedCondition instanceof FloatConstant) {
         removeTrueBranch =
             FloatConstant.getInstance(0).equalEqual((FloatConstant) evaluatedCondition)
-                == BooleanConstant.getFalse();
+                == BooleanConstant.getTrue();
       } else if (evaluatedCondition instanceof LongConstant) {
         removeTrueBranch =
             LongConstant.getInstance(0).equalEqual((LongConstant) evaluatedCondition)
-                == BooleanConstant.getFalse();
+                == BooleanConstant.getTrue();
       } else {
         // not or not "easy" evaluatable
         continue;
       }
 
-      final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
+      final List<Stmt> ifSuccessors = controlFlowGraph.successors(ifStmt);
       final Stmt tautologicSuccessor;
       final Stmt neverReachedSucessor;
 
@@ -104,24 +103,24 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       }
 
       // link previous stmt with always-reached successor of the if-Stmt
-      for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
-        List<Integer> successorIdxList = stmtGraph.removeEdge(predecessor, ifStmt);
+      for (Stmt predecessor : controlFlowGraph.predecessors(ifStmt)) {
+        List<Integer> successorIdxList = controlFlowGraph.removeEdge(predecessor, ifStmt);
 
         if (predecessor instanceof FallsThroughStmt) {
           FallsThroughStmt fallsThroughPred = (FallsThroughStmt) predecessor;
           for (Integer successorIdx : successorIdxList) {
-            stmtGraph.putEdge(fallsThroughPred, tautologicSuccessor);
+            controlFlowGraph.putEdge(fallsThroughPred, tautologicSuccessor);
           }
         } else {
           // should not be anything else than BranchingStmt.. just Stmt can have no successor
           BranchingStmt branchingPred = (BranchingStmt) predecessor;
           for (Integer successorIdx : successorIdxList) {
-            stmtGraph.putEdge(branchingPred, successorIdx, tautologicSuccessor);
+            controlFlowGraph.putEdge(branchingPred, successorIdx, tautologicSuccessor);
           }
         }
       }
 
-      stmtGraph.removeNode(ifStmt, false);
+      controlFlowGraph.removeNode(ifStmt, false);
 
       pruneExclusivelyReachableStmts(builder, neverReachedSucessor);
     }
@@ -130,7 +129,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
   private void pruneExclusivelyReachableStmts(
       Body.@NonNull BodyBuilder builder, @NonNull Stmt fallsThroughStmt) {
 
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     Set<Stmt> reachedBranchingStmts = new HashSet<>();
     Deque<Stmt> q = new ArrayDeque<>();
 
@@ -144,10 +143,10 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         // are actually interested in
         reachedBranchingStmts.add(itStmt);
       }
-      if (stmtGraph.containsNode(itStmt)) {
-        final List<Stmt> predecessors = stmtGraph.predecessors(itStmt);
+      if (controlFlowGraph.containsNode(itStmt)) {
+        final List<Stmt> predecessors = controlFlowGraph.predecessors(itStmt);
         if (predecessors.size() <= 1) {
-          q.addAll(stmtGraph.successors(itStmt));
+          q.addAll(controlFlowGraph.successors(itStmt));
         }
       }
     }
@@ -155,11 +154,11 @@ public class ConditionalBranchFolder implements BodyInterceptor {
     q.addFirst(fallsThroughStmt);
     while (!q.isEmpty()) {
       Stmt itStmt = q.pollFirst();
-      if (stmtGraph.containsNode(itStmt)) {
+      if (controlFlowGraph.containsNode(itStmt)) {
         // hint: predecessor could also be already removed
-        if (isExclusivelyReachable(stmtGraph, itStmt, reachedBranchingStmts)) {
-          q.addAll(stmtGraph.successors(itStmt));
-          stmtGraph.removeNode(itStmt, false);
+        if (isExclusivelyReachable(controlFlowGraph, itStmt, reachedBranchingStmts)) {
+          q.addAll(controlFlowGraph.successors(itStmt));
+          controlFlowGraph.removeNode(itStmt, false);
           builder.removeDefLocalsOf(itStmt);
         }
       }
@@ -168,7 +167,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
 
   /** reachedStmts contains all reached Stmts from entrypoint which ALSO do branch! */
   private boolean isExclusivelyReachable(
-      @NonNull StmtGraph<?> graph, @NonNull Stmt stmt, @NonNull Set<Stmt> reachedStmts) {
+      @NonNull ControlFlowGraph<?> graph, @NonNull Stmt stmt, @NonNull Set<Stmt> reachedStmts) {
     final List<Stmt> predecessors = graph.predecessors(stmt);
     final int predecessorSize = predecessors.size();
     int amount = predecessorSize;
@@ -182,7 +181,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       if (predecessor.fallsThrough()) {
         if (predecessor instanceof JIfStmt) {
           final List<Stmt> predsSuccessors = graph.successors(predecessor);
-          if (predsSuccessors.size() > 0 && predsSuccessors.get(0) == stmt) {
+          if (!predsSuccessors.isEmpty() && predsSuccessors.get(0) == stmt) {
             // TODO: hint: possible problem occurs with partial removed targets as they change the
             // idx positions..
             amount--;
