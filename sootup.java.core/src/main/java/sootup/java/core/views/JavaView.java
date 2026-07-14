@@ -30,6 +30,7 @@ import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
@@ -80,20 +81,22 @@ public class JavaView extends AbstractView {
   @NonNull
   public synchronized Stream<JavaSootClass> getClasses() {
     if (isFullyResolved && cache instanceof FullCache) {
-      return cache.getClasses().stream().map(clazz -> (JavaSootClass) clazz);
+      return cache.getClasses().map(clazz -> (JavaSootClass) clazz);
     }
-
-    Stream<JavaSootClass> resolvedClasses =
+    List<JavaSootClass> resolvedClasses =
         inputLocations.stream()
             .flatMap(
                 location -> {
-                  // TODO: [ms] find a way to not stream().collect().stream()
-                  return location.getClassSources(this).toList().stream();
+                  try (Stream<? extends SootClassSource> sources = location.getClassSources(this)) {
+                    return sources.toList().stream();
+                  }
                 })
             .map(sootClassSource -> (JavaSootClassSource) sootClassSource)
-            .map(this::buildClassFrom);
+            .map(this::buildClassFrom)
+            .toList();
+
     isFullyResolved = true;
-    return resolvedClasses;
+    return resolvedClasses.stream();
   }
 
   /** Resolves the class matching the provided {@link ClassType ClassType}. */
@@ -154,10 +157,8 @@ public class JavaView extends AbstractView {
   protected synchronized JavaSootClass buildClassFrom(JavaSootClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
-    JavaSootClass theClass;
-    if (cache.hasClass(classType)) {
-      theClass = (JavaSootClass) cache.getClass(classType);
-    } else {
+    JavaSootClass theClass = (JavaSootClass) cache.getClass(classType);
+    if (theClass == null) {
       theClass = classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
       cache.putClass(classType, theClass);
     }

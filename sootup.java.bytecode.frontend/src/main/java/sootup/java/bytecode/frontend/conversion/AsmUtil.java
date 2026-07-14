@@ -35,7 +35,6 @@ import java.util.stream.StreamSupport;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -46,11 +45,8 @@ import org.objectweb.asm.util.TraceMethodVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.frontend.ResolveException;
-import sootup.core.frontend.SootClassSource;
-import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.FieldModifier;
-import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
@@ -66,56 +62,6 @@ public final class AsmUtil {
   private AsmUtil() {}
 
   public static final int SUPPORTED_ASM_OPCODE = Opcodes.ASM9;
-
-  /**
-   * Initializes a class node.
-   *
-   * @param classSource The source.
-   * @param classNode The node to initialize
-   * @return the actual class signature found in the compilation unit
-   */
-  protected static Optional<String> readClassName(
-      @NonNull final Path classSource, @NonNull final ClassVisitor classNode) {
-    try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
-      ClassReader classReader = new ClassReader(sourceFileInputStream);
-      classReader.accept(classNode, ClassReader.SKIP_FRAMES);
-      return Optional.of(classReader.getClassName().replace('/', '.'));
-    } catch (IOException exception) {
-      logger.warn("Cannot create class source for {}", classSource, exception);
-    } catch (IllegalArgumentException exception) {
-      logger.warn("Cannot create class source for {}", classSource, exception);
-    }
-    return Optional.empty();
-  }
-
-  public static SootClassSource createClassSource(
-      @NonNull final AnalysisInputLocation analysisInputLocation,
-      @NonNull final Path sourcePath,
-      @NonNull final ClassType classType,
-      @NonNull final ClassNode classNode) {
-    if ((classNode.access & Opcodes.ACC_ANNOTATION) == Opcodes.ACC_ANNOTATION) {
-      return new AsmAnnotationClassSource(analysisInputLocation, sourcePath, classType, classNode);
-    }
-
-    AsmClassSource asmClassSource =
-        new AsmClassSource(analysisInputLocation, sourcePath, classType, classNode);
-    // copy and load the complete class at once into memory so the newly created asmClassSource can
-    // release the memory and structures from the asm library
-    return new OverridingJavaClassSource(
-        asmClassSource.getAnalysisInputLocation(),
-        asmClassSource.getSourcePath(),
-        asmClassSource.getClassType(),
-        asmClassSource.resolveSuperclass().orElse(null),
-        asmClassSource.resolveInterfaces(),
-        asmClassSource.resolveOuterClass().orElse(null),
-        asmClassSource.resolveFields(),
-        asmClassSource.resolveMethods(),
-        asmClassSource.resolvePosition(),
-        asmClassSource.resolveModifiers(),
-        asmClassSource.resolveAnnotations(),
-        Collections.emptyList(), // TODO! implement
-        Collections.emptyList());
-  }
 
   /**
    * Determines if a type is a dword type.
@@ -153,20 +99,8 @@ public final class AsmUtil {
     return modifierEnumSet;
   }
 
-  public static EnumSet<ModuleModifier> getModuleModifiers(int access) {
-    EnumSet<ModuleModifier> modifierEnumSet = EnumSet.noneOf(ModuleModifier.class);
-
-    // add all modifiers for which (access & ABSTRACT) =! 0
-    for (ModuleModifier modifier : ModuleModifier.values()) {
-      if ((access & modifier.getBytecode()) != 0) {
-        modifierEnumSet.add(modifier);
-      }
-    }
-    return modifierEnumSet;
-  }
-
   @NonNull
-  public static Collection<JavaClassType> asmIdToSignature(
+  public static Collection<JavaClassType> asmIdToSignatures(
       @Nullable Iterable<String> asmClassNames) {
     if (asmClassNames == null) {
       return Collections.emptyList();

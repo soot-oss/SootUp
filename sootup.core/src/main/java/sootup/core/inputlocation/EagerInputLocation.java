@@ -27,8 +27,8 @@ import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.frontend.SootClassSource;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -92,6 +92,9 @@ public class EagerInputLocation implements AnalysisInputLocation {
   public int hashCode() {
     return map.hashCode();
   }
+
+  @Override
+  public void close() {}
 
   @Override
   public boolean equals(Object o) {

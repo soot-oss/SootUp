@@ -1,4 +1,4 @@
-package sootup.core.transform;
+package sootup.core.interceptor;
 
 /*-
  * #%L
@@ -28,7 +28,7 @@ import sootup.core.views.View;
 
 public class RunTimeBodyInterceptor implements BodyInterceptor {
 
-  private BodyInterceptorMetric biMetric = new BodyInterceptorMetric(0L, 0L);
+  private final BodyInterceptorMetric biMetric = new BodyInterceptorMetric(0L, 0L);
 
   private final BodyInterceptor bodyInterceptor;
 
