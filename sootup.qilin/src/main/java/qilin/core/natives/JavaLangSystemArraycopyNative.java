@@ -18,6 +18,7 @@
 
 package qilin.core.natives;
 
+import qilin.core.pag.PAG;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
@@ -34,8 +35,8 @@ import sootup.core.views.View;
  * Thus it will make qilin.spark less precise than its counterpart in Doop.
  * */
 public class JavaLangSystemArraycopyNative extends NativeMethod {
-  public JavaLangSystemArraycopyNative(View view, SootMethod method) {
-    super(view, method);
+  public JavaLangSystemArraycopyNative(View view, SootMethod method, PAG pag) {
+    super(view, method, pag);
   }
 
   /**

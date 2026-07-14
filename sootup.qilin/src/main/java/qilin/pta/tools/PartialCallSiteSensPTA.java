@@ -120,10 +120,10 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
     for (ContextMethod momc : prePTA.getReachableMethods()) {
       SootMethod method = momc.method();
       Set<Object> nodes = new HashSet<>();
-      if (!PTAUtils.hasBody(method)) {
+      PAG prePAG = prePTA.getPag();
+      if (!prePAG.hasBody(method)) {
         return;
       }
-      PAG prePAG = prePTA.getPag();
       MethodPAG srcmpag = prePAG.getMethodPAG(method);
       QueueReader<Node> reader = srcmpag.getInternalReader().clone();
       while (reader.hasNext()) {

@@ -18,6 +18,7 @@
 
 package qilin.core.natives;
 
+import qilin.core.pag.PAG;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -27,8 +28,8 @@ import sootup.core.views.View;
 public class JavaLangThreadCurrentThread extends NativeMethod {
   private final Value currentThread;
 
-  JavaLangThreadCurrentThread(View view, SootMethod method, Value currentThread) {
-    super(view, method);
+  JavaLangThreadCurrentThread(View view, SootMethod method, Value currentThread, PAG pag) {
+    super(view, method, pag);
     this.currentThread = currentThread;
   }
 

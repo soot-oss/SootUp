@@ -24,6 +24,7 @@ import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
+import qilin.core.pag.PAG;
 import qilin.parm.ctxcons.CallsiteCtxConstructor;
 import qilin.parm.ctxcons.HybObjCtxConstructor;
 import qilin.parm.ctxcons.ObjCtxConstructor;
@@ -34,13 +35,15 @@ import sootup.core.model.SootMethod;
 public class DataDrivenSelector extends CtxSelector {
   private final Map<SootMethod, FeaturesTrueTable> m2ftt = new HashMap<>();
   private final Class mClass;
+  private final PAG pag;
 
-  public DataDrivenSelector(Class mClass) {
+  public DataDrivenSelector(Class mClass, PAG pag) {
     this.mClass = mClass;
+    this.pag = pag;
   }
 
   private FeaturesTrueTable findOrCreateFeaturesTrueTable(SootMethod sm) {
-    return m2ftt.computeIfAbsent(sm, k -> new FeaturesTrueTable(sm));
+    return m2ftt.computeIfAbsent(sm, k -> new FeaturesTrueTable(sm, pag));
   }
 
   @Override

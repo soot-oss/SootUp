@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import qilin.core.PTAScene;
+import qilin.core.pag.PAG;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.Jimple;
@@ -64,8 +65,8 @@ import sootup.java.core.language.JavaJimple;
 public class TamiflexModel extends ReflectionModel {
   protected Map<ReflectionKind, Map<Stmt, Set<String>>> reflectionMap;
 
-  public TamiflexModel(PTAScene ptaScene) {
-    super(ptaScene);
+  public TamiflexModel(PTAScene ptaScene, PAG pag) {
+    super(ptaScene, pag);
     this.reflectionMap = DataFactory.createMap();
     parseTamiflexLog(ptaScene.getConfig().getReflectionLogPath(), false);
   }
@@ -435,7 +436,7 @@ public class TamiflexModel extends ReflectionModel {
     Set<Stmt> potential = DataFactory.createSet();
     Collection<SootMethod> sourceMethods = inferSourceMethod(inClzDotMthd);
     for (SootMethod sm : sourceMethods) {
-      Body body = PTAUtils.getMethodBody(sm);
+      Body body = pag.getMethodBody(sm);
       for (Stmt stmt : body.getStmts()) {
         if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
           String methodSig =

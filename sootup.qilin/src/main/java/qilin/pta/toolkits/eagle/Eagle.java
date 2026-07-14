@@ -274,7 +274,7 @@ public class Eagle {
 
     OnFlyCallGraph callGraph = prePTA.getCallGraph();
     for (SootMethod method : prePTA.getNakedReachableMethods()) {
-      if (!PTAUtils.hasBody(method)) {
+      if (!prePAG.hasBody(method)) {
         continue;
       }
       MethodPAG srcmpag = prePAG.getMethodPAG(method);

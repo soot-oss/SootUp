@@ -18,6 +18,7 @@
 
 package qilin.core.natives;
 
+import qilin.core.pag.PAG;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -31,8 +32,8 @@ import sootup.core.views.View;
  * */
 
 public class JavaLangReflectArrayGet extends NativeMethod {
-  JavaLangReflectArrayGet(View view, SootMethod method) {
-    super(view, method);
+  JavaLangReflectArrayGet(View view, SootMethod method, PAG pag) {
+    super(view, method, pag);
   }
 
   @Override

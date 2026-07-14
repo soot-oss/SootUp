@@ -43,7 +43,7 @@ public class DataDrivenPTA extends BasePTA {
   public DataDrivenPTA(PTAScene scene, CtxConstructor ctxCons) {
     super(scene);
     this.ctxCons = ctxCons;
-    CtxSelector us = new DataDrivenSelector(ctxCons.getClass());
+    CtxSelector us = new DataDrivenSelector(ctxCons.getClass(), pag);
     if (getConfig().isEnforceEmptyCtxForIgnoreTypes()) {
       this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
     } else {

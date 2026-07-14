@@ -32,7 +32,6 @@ import qilin.parm.select.HeuristicSelector;
 import qilin.parm.select.PartialMethodLvSelector;
 import qilin.parm.select.PipelineSelector;
 import qilin.pta.toolkits.zipper.Main;
-import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.Local;
@@ -94,7 +93,7 @@ public class ZipperPTA extends StagedPTA {
       SootMethod method = momc.method();
       Set<Object> nodes = new HashSet<>();
 
-      if (!PTAUtils.hasBody(method)) {
+      if (!pag.hasBody(method)) {
         return;
       }
       MethodPAG srcmpag = pag.getMethodPAG(method);

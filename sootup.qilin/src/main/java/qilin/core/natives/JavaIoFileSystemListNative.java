@@ -18,6 +18,7 @@
 
 package qilin.core.natives;
 
+import qilin.core.pag.PAG;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Value;
@@ -25,8 +26,8 @@ import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
 public class JavaIoFileSystemListNative extends NativeMethod {
-  public JavaIoFileSystemListNative(View view, SootMethod method) {
-    super(view, method);
+  public JavaIoFileSystemListNative(View view, SootMethod method, PAG pag) {
+    super(view, method, pag);
   }
 
   /** ********************** java.io.FileSystem ********************** */

@@ -112,7 +112,7 @@ public class Solver extends Propagator {
     while (newRMs.hasNext()) {
       ContextMethod momc = newRMs.next();
       SootMethod method = momc.method();
-      if (!PTAUtils.hasBody(method)) {
+      if (!pag.hasBody(method)) {
         continue;
       }
       MethodPAG mpag = pag.getMethodPAG(method);

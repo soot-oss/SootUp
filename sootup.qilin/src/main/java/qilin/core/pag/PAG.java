@@ -95,6 +95,10 @@ public class PAG {
   protected final Map<Object, AllocNode> valToAllocNode;
   protected final Map<Object, ValNode> valToValNode;
   protected final Map<SootMethod, MethodPAG> methodToPag;
+  // Per-PAG, not JVM-global: each analysis (and each pre-analysis of a staged PTA) owns its
+  // own override table, so bodies simulated/rewritten by one analysis can't leak into another
+  // and the cache is reclaimed with the PAG instead of needing an explicit reset call.
+  private final Map<SootMethod, Body> methodToBody;
   protected final Set<FieldSignature> globals;
   protected final Set<Triple<SootMethod, Local, Type>> locals;
   // ==========================outer objects==============================
@@ -113,7 +117,7 @@ public class PAG {
 
   public PAG(PTA pta) {
     this.pta = pta;
-    PTAUtils.resetMethodBodyCache();
+    this.methodToBody = DataFactory.createMap();
     this.simple = DataFactory.createMap();
     this.simpleInv = DataFactory.createMap();
     this.load = DataFactory.createMap();
@@ -124,7 +128,7 @@ public class PAG {
     this.storeInv = DataFactory.createMap();
     List<MethodEffectModel> effectModels = new ArrayList<>();
     effectModels.add(new ReflectionEffectModel(createReflectionModel()));
-    effectModels.add(new NativeEffectModel(new NativeMethodDriver(pta.getScene())));
+    effectModels.add(new NativeEffectModel(new NativeMethodDriver(pta.getScene(), this)));
     if (pta.getConfig().isResolveDynamicInvoke()) {
       effectModels.add(new LambdaMetafactoryModel(pta.getScene(), this));
     }
@@ -568,9 +572,9 @@ public class PAG {
     ReflectionModel model;
     String reflectionLogPath = pta.getConfig().getReflectionLogPath();
     if (reflectionLogPath != null && reflectionLogPath.length() > 0) {
-      model = new TamiflexModel(pta.getScene());
+      model = new TamiflexModel(pta.getScene(), this);
     } else {
-      model = new NopReflectionModel(pta.getScene());
+      model = new NopReflectionModel(pta.getScene(), this);
     }
     return model;
   }
@@ -595,13 +599,33 @@ public class PAG {
         handleArrayCopy(m);
       }
     }
-    Body body = PTAUtils.getMethodBody(m);
+    Body body = getMethodBody(m);
     return methodToPag.computeIfAbsent(m, k -> new MethodPAG(this, m, body));
+  }
+
+  public Body getMethodBody(SootMethod m) {
+    Body body = methodToBody.get(m);
+    if (body == null) {
+      body =
+          m.isConcrete()
+              ? m.getBody()
+              : Body.builder().setMethodSignature(m.getSignature()).build();
+      methodToBody.putIfAbsent(m, body);
+    }
+    return body;
+  }
+
+  public void updateMethodBody(SootMethod m, Body body) {
+    methodToBody.put(m, body);
+  }
+
+  public boolean hasBody(SootMethod m) {
+    return methodToBody.containsKey(m);
   }
 
   private void handleArrayCopy(SootMethod method) {
     Map<Stmt, Collection<JAssignStmt>> newUnits = DataFactory.createMap();
-    Body body = PTAUtils.getMethodBody(method);
+    Body body = getMethodBody(method);
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     int localCount = body.getLocalCount();
     for (Stmt s : body.getStmts()) {
@@ -662,7 +686,7 @@ public class PAG {
         controlFlowGraph.insertBefore(unit, succ);
       }
     }
-    PTAUtils.updateMethodBody(method, builder.build());
+    updateMethodBody(method, builder.build());
   }
 
   public void resetPointsToSet() {

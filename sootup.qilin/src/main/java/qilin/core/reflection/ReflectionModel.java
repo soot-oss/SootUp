@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import qilin.core.PTAScene;
+import qilin.core.pag.PAG;
 import qilin.util.DataFactory;
-import qilin.util.PTAUtils;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
@@ -37,6 +37,7 @@ import sootup.core.model.SootMethod;
 
 public abstract class ReflectionModel {
   protected final PTAScene ptaScene;
+  protected final PAG pag;
   protected final String sigForName =
       "<java.lang.Class: java.lang.Class forName(java.lang.String)>";
   protected final String sigForName2 =
@@ -73,8 +74,9 @@ public abstract class ReflectionModel {
   protected final String sigReifiedDeclaredMethodArray =
       "<java.lang.Class: java.lang.reflect.Method[] getDeclaredMethods()>";
 
-  protected ReflectionModel(PTAScene ptaScene) {
+  protected ReflectionModel(PTAScene ptaScene, PAG pag) {
     this.ptaScene = ptaScene;
+    this.pag = pag;
   }
 
   private Collection<Stmt> transform(InvokableStmt s) {
@@ -100,7 +102,7 @@ public abstract class ReflectionModel {
       return;
     }
     Map<Stmt, Collection<Stmt>> newUnits = DataFactory.createMap();
-    Body body = PTAUtils.getMethodBody(m);
+    Body body = pag.getMethodBody(m);
     List<Stmt> units = body.getStmts();
     for (final Stmt u : units) {
       if (u.isInvokableStmt() && u.asInvokableStmt().getInvokeExpr().isPresent()) {
@@ -122,7 +124,7 @@ public abstract class ReflectionModel {
         }
       }
     }
-    PTAUtils.updateMethodBody(m, builder.build());
+    pag.updateMethodBody(m, builder.build());
   }
 
   abstract Collection<Stmt> transformClassForName(InvokableStmt s);

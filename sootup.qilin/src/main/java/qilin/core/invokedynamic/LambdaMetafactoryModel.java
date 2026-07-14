@@ -23,7 +23,6 @@ import java.util.Set;
 import qilin.core.PTAScene;
 import qilin.core.effect.MethodEffectModel;
 import qilin.core.pag.PAG;
-import qilin.util.PTAUtils;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.MethodHandle;
@@ -69,7 +68,7 @@ public class LambdaMetafactoryModel implements MethodEffectModel {
     if (!ptaScene.dynamicInvokeBuilt.add(m)) {
       return;
     }
-    Body body = PTAUtils.getMethodBody(m);
+    Body body = pag.getMethodBody(m);
     Body.BodyBuilder builder = null;
     for (Stmt u : body.getStmts()) {
       if (!(u instanceof JAssignStmt assign)) {
@@ -114,7 +113,7 @@ public class LambdaMetafactoryModel implements MethodEffectModel {
               assign.getLeftOp(), syntheticAlloc, StmtPositionInfo.getNoStmtPositionInfo()));
     }
     if (builder != null) {
-      PTAUtils.updateMethodBody(m, builder.build());
+      pag.updateMethodBody(m, builder.build());
     }
   }
 

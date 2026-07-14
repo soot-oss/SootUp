@@ -85,7 +85,7 @@ public class CollectionHeuristic {
 
   private void buildHeapFieldsMapping() {
     pta.getNakedReachableMethods().stream()
-        .filter(PTAUtils::hasBody)
+        .filter(pag::hasBody)
         .forEach(this::buildHeapFieldsMappingIn);
   }
 

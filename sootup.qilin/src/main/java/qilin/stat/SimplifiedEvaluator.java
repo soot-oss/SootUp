@@ -80,7 +80,7 @@ public class SimplifiedEvaluator implements IEvaluator {
     int totalCastsMayFail = 0;
     for (SootMethod sm : reachableMethods) {
       // All the statements in the method
-      for (Stmt st : PTAUtils.getMethodBody(sm).getStmts()) {
+      for (Stmt st : pta.getPag().getMethodBody(sm).getStmts()) {
         // virtual calls
         if (st.isInvokableStmt() && st.asInvokableStmt().getInvokeExpr().isPresent()) {
           AbstractInvokeExpr ie = st.asInvokableStmt().getInvokeExpr().get();

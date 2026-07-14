@@ -18,14 +18,15 @@
 
 package qilin.core.natives;
 
+import qilin.core.pag.PAG;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
 public class JavaIoFileSystemGetFileSystemNative extends NativeMethod {
-  public JavaIoFileSystemGetFileSystemNative(View view, SootMethod method) {
-    super(view, method);
+  public JavaIoFileSystemGetFileSystemNative(View view, SootMethod method, PAG pag) {
+    super(view, method, pag);
   }
 
   /** ********************** java.io.FileSystem ********************** */

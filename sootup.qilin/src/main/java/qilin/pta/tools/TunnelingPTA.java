@@ -37,7 +37,7 @@ import qilin.pta.toolkits.dd.TunnelingConstructor;
 public class TunnelingPTA extends BasePTA {
   public TunnelingPTA(PTAScene scene, CtxConstructor ctxCons, int k, int hk) {
     super(scene);
-    this.ctxCons = new TunnelingConstructor(getView(), ctxCons);
+    this.ctxCons = new TunnelingConstructor(getView(), pag, ctxCons);
     CtxSelector us = new UniformSelector(k, hk);
     if (getConfig().isEnforceEmptyCtxForIgnoreTypes()) {
       this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);

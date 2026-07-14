@@ -125,7 +125,7 @@ public abstract class PartialObjSensPTA extends StagedPTA {
     for (ContextMethod momc : prePTA.getReachableMethods()) {
       SootMethod method = momc.method();
       Set<Object> nodes = new HashSet<>();
-      if (!PTAUtils.hasBody(method)) {
+      if (!pag.hasBody(method)) {
         return;
       }
       MethodPAG srcmpag = pag.getMethodPAG(method);

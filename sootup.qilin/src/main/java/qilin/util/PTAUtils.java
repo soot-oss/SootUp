@@ -85,7 +85,7 @@ public final class PTAUtils {
     PAG pag = pta.getPag();
     // add all instance methods which potentially contain static call
     for (SootMethod method : pta.getNakedReachableMethods()) {
-      if (PTAUtils.isFakeMainMethod(method) || hasBody(method) && !method.isStatic()) {
+      if (PTAUtils.isFakeMainMethod(method) || pag.hasBody(method) && !method.isStatic()) {
         MethodPAG srcmpag = pag.getMethodPAG(method);
         LocalVarNode thisRef = (LocalVarNode) srcmpag.nodeFactory().caseThis();
         final PointsToSet other = pta.reachingObjects(thisRef).toCIPointsToSet();
@@ -326,40 +326,6 @@ public final class PTAUtils {
       System.out.println("cannot find meta info.");
     }
     return mainClass;
-  }
-
-  // Thread-scoped, not JVM-global: each analysis (constructed on its own thread, or
-  // sequentially reusing one) starts with a fresh cache via resetMethodBodyCache(), so bodies
-  // from unrelated/earlier analyses can't leak into a new one and don't accumulate unbounded
-  // across many sequential analyses sharing a thread (e.g. a test suite).
-  private static final ThreadLocal<Map<SootMethod, Body>> methodToBody =
-      ThreadLocal.withInitial(DataFactory::createMap);
-
-  /** Starts a fresh method-body cache for the calling thread. Called once per PAG construction. */
-  public static void resetMethodBodyCache() {
-    methodToBody.remove();
-  }
-
-  public static Body getMethodBody(SootMethod m) {
-    Map<SootMethod, Body> cache = methodToBody.get();
-    Body body = cache.get(m);
-    if (body == null) {
-      if (m.isConcrete()) {
-        body = m.getBody();
-      } else {
-        body = Body.builder().setMethodSignature(m.getSignature()).build();
-      }
-      cache.putIfAbsent(m, body);
-    }
-    return body;
-  }
-
-  public static void updateMethodBody(SootMethod m, Body body) {
-    methodToBody.get().put(m, body);
-  }
-
-  public static boolean hasBody(SootMethod m) {
-    return methodToBody.get().containsKey(m);
   }
 
   public static boolean isEmptyArray(AllocNode heap) {
