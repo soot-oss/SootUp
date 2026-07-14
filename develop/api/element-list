@@ -61,6 +61,7 @@ sootup.core.cache.provider
 sootup.core.frontend
 sootup.core.graph
 sootup.core.inputlocation
+sootup.core.interceptor
 sootup.core.jimple
 sootup.core.jimple.basic
 sootup.core.jimple.common
@@ -72,7 +73,6 @@ sootup.core.jimple.javabytecode.stmt
 sootup.core.jimple.visitor
 sootup.core.model
 sootup.core.signatures
-sootup.core.transform
 sootup.core.typehierarchy
 sootup.core.types
 sootup.core.util
