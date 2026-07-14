@@ -96,7 +96,7 @@ jobs:
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           git config --global user.name "${{ github.actor }}"
 
-          CURRENT_VERSION=$(mvn -q -ntp org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -DforceStdout)
+          CURRENT_VERSION=$(mvn -ntp org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)
           RELEASE_VERSION="${{ steps.version.outputs.release_version }}"
 
           if [[ "$CURRENT_VERSION" == "$RELEASE_VERSION" ]]; then
