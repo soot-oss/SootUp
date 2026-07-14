@@ -88,6 +88,12 @@ class AsmClassSource extends JavaSootClassSource {
     return StreamSupport.stream(AsmUtil.createAnnotationUsage(nodes).spliterator(), false);
   }
 
+  /** Appends the converted annotations of {@code nodes} to {@code out} (no intermediate Stream). */
+  protected static void convertAnnotation(
+      @NonNull List<AnnotationUsage> out, List<? extends AnnotationNode> nodes) {
+    AsmUtil.createAnnotationUsage(nodes).forEach(out::add);
+  }
+
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
     Stream<AnnotationUsage> annotations =
@@ -127,13 +133,12 @@ class AsmClassSource extends JavaSootClassSource {
               // Method annotations: declaration annotations (RuntimeVisible/InvisibleAnnotations,
               // e.g. @Pure) plus JSR 308 return-type annotations (TYPE_USE on the return type,
               // e.g. @Nat int foo()). Parameter type annotations are attached to the parameter
-              // Locals instead (see AsmMethodSource#buildPreambleLocals).
-              List<AnnotationUsage> annotations =
-                  Streams.concat(
-                          convertAnnotation(methodSource.visibleAnnotations),
-                          convertAnnotation(methodSource.invisibleAnnotations))
-                      .collect(Collectors.toList());
-              annotations.addAll(asmClassClassSourceContent.resolveReturnTypeAnnotations());
+              // Locals instead (see AsmMethodSource#buildPreambleLocals). Collected into one list
+              // (in/out) to avoid intermediate Stream allocation.
+              List<AnnotationUsage> annotations = new ArrayList<>();
+              convertAnnotation(annotations, methodSource.visibleAnnotations);
+              convertAnnotation(annotations, methodSource.invisibleAnnotations);
+              asmClassClassSourceContent.collectReturnTypeAnnotations(annotations);
 
               return new JavaSootMethod(
                   asmClassClassSourceContent,

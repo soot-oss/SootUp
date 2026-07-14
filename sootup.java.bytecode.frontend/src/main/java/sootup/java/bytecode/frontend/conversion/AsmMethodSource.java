@@ -100,6 +100,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private Map<AbstractInsnNode, Stmt> insnToStmt;
   private Map<Stmt, AbstractInsnNode> stmtToInsn;
 
+  /** Lazy caches (built once) for local-variable resolution, keyed instead of scanned per Local. */
+  private Map<AbstractInsnNode, Integer> insnIndexCache;
+
+  private Map<Integer, List<ScopedTypeAnnotation>> localVarTypeAnnotationIndex;
+
+  /**
+   * A JSR 308 LOCAL_VARIABLE type annotation together with the instruction range it is scoped to.
+   */
+  private record ScopedTypeAnnotation(int startIdx, int endIdx, AnnotationUsage annotation) {}
+
   @NonNull private final Map<Stmt, Stmt> replacedStmt = new HashMap<>();
 
   private OperandStack operandStack;
@@ -309,7 +319,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @NonNull
   private String determineLocalName(int idx, @Nullable AbstractInsnNode atInsn) {
     if (localVariables != null) {
-      int insnIdx = atInsn != null ? instructions.indexOf(atInsn) : -1;
+      int insnIdx = atInsn != null ? insnIndex(atInsn) : -1;
       String fallback = null;
       for (LocalVariableNode lvn : localVariables) {
         if (lvn.index != idx) {
@@ -319,8 +329,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           // no range check needed (parameters / this are always valid)
           return lvn.name;
         }
-        int startIdx = instructions.indexOf(lvn.start);
-        int endIdx = instructions.indexOf(lvn.end);
+        int startIdx = insnIndex(lvn.start);
+        int endIdx = insnIndex(lvn.end);
         if (insnIdx >= startIdx && insnIdx < endIdx) {
           return lvn.name;
         }
@@ -356,52 +366,84 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   /**
-   * Collects the JSR 308 type annotations (TYPE_USE) declared on the local variable in slot {@code
-   * idx} whose scope covers {@code atInsn}, i.e. the {@code LOCAL_VARIABLE}-targeted entries of
-   * {@code visible/invisibleLocalVariableAnnotations}. Examples: {@code @Nat int x = ...}.
+   * Returns the JSR 308 type annotations (TYPE_USE) declared on the local variable in slot {@code
+   * idx} that apply at {@code atInsn} (the {@code LOCAL_VARIABLE}-targeted entries of {@code
+   * visible/invisibleLocalVariableAnnotations}, e.g. {@code @Nat int x = ...}). Annotations whose
+   * declared scope covers {@code atInsn} are preferred; if none does, all annotations for the slot
+   * are returned, since the per-slot Local is often created at its defining store, just before its
+   * declared scope begins (mirrors the fallback in {@link #determineLocalName}).
+   *
+   * <p>The slot &rarr; scoped-annotation index and the instruction &rarr; position map are built
+   * once and reused, so this is not a linear scan of all annotation nodes per Local.
    */
   @NonNull
   private List<AnnotationUsage> resolveLocalVariableAnnotations(
       int idx, @NonNull AbstractInsnNode atInsn) {
-    List<AnnotationUsage> result = new ArrayList<>();
-    collectLocalVariableTypeAnnotations(result, visibleLocalVariableAnnotations, idx, atInsn);
-    collectLocalVariableTypeAnnotations(result, invisibleLocalVariableAnnotations, idx, atInsn);
-    return result;
+    List<ScopedTypeAnnotation> entries = localVarTypeAnnotationIndex().get(idx);
+    if (entries == null || entries.isEmpty()) {
+      return Collections.emptyList();
+    }
+    int insnIdx = insnIndex(atInsn);
+    List<AnnotationUsage> inScope = null;
+    for (ScopedTypeAnnotation e : entries) {
+      if (insnIdx >= e.startIdx() && insnIdx < e.endIdx()) {
+        if (inScope == null) {
+          inScope = new ArrayList<>(entries.size());
+        }
+        inScope.add(e.annotation());
+      }
+    }
+    if (inScope != null) {
+      return inScope;
+    }
+    // slot-match fallback (no declared scope covers atInsn)
+    List<AnnotationUsage> all = new ArrayList<>(entries.size());
+    for (ScopedTypeAnnotation e : entries) {
+      all.add(e.annotation());
+    }
+    return all;
   }
 
-  private void collectLocalVariableTypeAnnotations(
-      @NonNull List<AnnotationUsage> out,
-      List<LocalVariableAnnotationNode> nodes,
-      int idx,
-      @NonNull AbstractInsnNode atInsn) {
+  /** Builds (once) the slot &rarr; scoped LOCAL_VARIABLE type annotation index. */
+  @NonNull
+  private Map<Integer, List<ScopedTypeAnnotation>> localVarTypeAnnotationIndex() {
+    if (localVarTypeAnnotationIndex == null) {
+      localVarTypeAnnotationIndex = new HashMap<>();
+      indexLocalVariableAnnotations(visibleLocalVariableAnnotations);
+      indexLocalVariableAnnotations(invisibleLocalVariableAnnotations);
+    }
+    return localVarTypeAnnotationIndex;
+  }
+
+  private void indexLocalVariableAnnotations(@Nullable List<LocalVariableAnnotationNode> nodes) {
     if (nodes == null) {
       return;
     }
-    int insnIdx = instructions.indexOf(atInsn);
     for (LocalVariableAnnotationNode node : nodes) {
+      // Note: node.typePath (nested-type position) is not represented by AnnotationUsage.
+      AnnotationUsage usage = AsmUtil.createAnnotationUsage(node);
       // index/start/end are parallel lists: entry k is one scope range for the annotation.
-      // Prefer a range covering atInsn, but fall back to a slot (index) match: the per-slot local
-      // is often created at its defining store, just before its declared scope begins (mirrors the
-      // fallback in determineLocalName).
-      boolean slotMatch = false;
-      boolean rangeMatch = false;
       for (int k = 0; k < node.index.size(); k++) {
-        if (node.index.get(k) != idx) {
-          continue;
-        }
-        slotMatch = true;
-        int startIdx = instructions.indexOf(node.start.get(k));
-        int endIdx = instructions.indexOf(node.end.get(k));
-        if (insnIdx >= startIdx && insnIdx < endIdx) {
-          rangeMatch = true;
-          break;
-        }
-      }
-      if (rangeMatch || slotMatch) {
-        // Note: node.typePath (nested-type position) is not represented by AnnotationUsage.
-        out.add(AsmUtil.createAnnotationUsage(node));
+        int startIdx = insnIndex(node.start.get(k));
+        int endIdx = insnIndex(node.end.get(k));
+        localVarTypeAnnotationIndex
+            .computeIfAbsent(node.index.get(k), s -> new ArrayList<>())
+            .add(new ScopedTypeAnnotation(startIdx, endIdx, usage));
       }
     }
+  }
+
+  /** Position of {@code insn} in the instruction list, via a map built once (vs. O(n) indexOf). */
+  private int insnIndex(@Nullable AbstractInsnNode insn) {
+    if (insnIndexCache == null) {
+      insnIndexCache = new HashMap<>();
+      int i = 0;
+      for (AbstractInsnNode n = instructions.getFirst(); n != null; n = n.getNext()) {
+        insnIndexCache.put(n, i++);
+      }
+    }
+    Integer idx = insn == null ? null : insnIndexCache.get(insn);
+    return idx == null ? -1 : idx;
   }
 
   private boolean localNameExists(String nameCandidate) {
@@ -1702,27 +1744,23 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    * the entries of {@code visible/invisibleTypeAnnotations} whose target is {@link
    * TypeReference#METHOD_RETURN}. Examples: {@code @Nat int foo()}.
    */
-  @NonNull List<AnnotationUsage> resolveReturnTypeAnnotations() {
-    return collectMethodTypeAnnotations(TypeReference.METHOD_RETURN, -1);
+  void collectReturnTypeAnnotations(@NonNull List<AnnotationUsage> out) {
+    collectMethodTypeAnnotations(out, visibleTypeAnnotations, TypeReference.METHOD_RETURN, -1);
+    collectMethodTypeAnnotations(out, invisibleTypeAnnotations, TypeReference.METHOD_RETURN, -1);
   }
 
   /**
-   * Collects the JSR 308 type annotations (TYPE_USE) declared on the type of the formal parameter
-   * with the given (zero-based) index, i.e. the entries of {@code visible/invisibleTypeAnnotations}
-   * whose target is {@link TypeReference#METHOD_FORMAL_PARAMETER} for that index. Examples: {@code
-   * void foo(@Nat int n)}.
+   * Collects, into {@code out}, the JSR 308 type annotations (TYPE_USE) declared on the type of the
+   * formal parameter with the given (zero-based) index, i.e. the entries of {@code
+   * visible/invisibleTypeAnnotations} whose target is {@link TypeReference#METHOD_FORMAL_PARAMETER}
+   * for that index. Examples: {@code void foo(@Nat int n)}.
    */
-  @NonNull List<AnnotationUsage> resolveFormalParameterTypeAnnotations(int formalParameterIndex) {
-    return collectMethodTypeAnnotations(
-        TypeReference.METHOD_FORMAL_PARAMETER, formalParameterIndex);
-  }
-
-  @NonNull
-  private List<AnnotationUsage> collectMethodTypeAnnotations(int sort, int formalParameterIndex) {
-    List<AnnotationUsage> result = new ArrayList<>();
-    collectMethodTypeAnnotations(result, visibleTypeAnnotations, sort, formalParameterIndex);
-    collectMethodTypeAnnotations(result, invisibleTypeAnnotations, sort, formalParameterIndex);
-    return result;
+  private void collectFormalParameterTypeAnnotations(
+      @NonNull List<AnnotationUsage> out, int formalParameterIndex) {
+    collectMethodTypeAnnotations(
+        out, visibleTypeAnnotations, TypeReference.METHOD_FORMAL_PARAMETER, formalParameterIndex);
+    collectMethodTypeAnnotations(
+        out, invisibleTypeAnnotations, TypeReference.METHOD_FORMAL_PARAMETER, formalParameterIndex);
   }
 
   private static void collectMethodTypeAnnotations(
@@ -1783,7 +1821,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         AsmUtil.createAnnotationUsage(invisibleParameterAnnotations[i])
             .forEach(parameterAnnotations::add);
       }
-      parameterAnnotations.addAll(resolveFormalParameterTypeAnnotations(i));
+      collectFormalParameterTypeAnnotations(parameterAnnotations, i);
       JavaLocal local =
           JavaJimple.newLocal(
               determineLocalName(localIdx, null), parameterType, parameterAnnotations);
