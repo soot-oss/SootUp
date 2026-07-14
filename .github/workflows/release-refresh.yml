@@ -42,7 +42,7 @@ jobs:
               ;;
           esac
 
-          HEAD_REF=$(gh pr view "$PR_NUMBER" --json headRefName -q .headRefName)
+          HEAD_REF=$(gh pr view "$PR_NUMBER" --repo "${{ github.repository }}" --json headRefName -q .headRefName)
           if [[ "$HEAD_REF" != release/prep-* ]]; then
             echo "Not a release PR (head ref '$HEAD_REF'), ignoring."
             echo "proceed=false" >> "$GITHUB_OUTPUT"
@@ -51,7 +51,7 @@ jobs:
 
           # Reject fork PRs pretending to be our own release branches - legitimate
           # release/prep-* branches are always pushed by our own automation into this repo.
-          IS_CROSS_REPO=$(gh pr view "$PR_NUMBER" --json isCrossRepository -q .isCrossRepository)
+          IS_CROSS_REPO=$(gh pr view "$PR_NUMBER" --repo "${{ github.repository }}" --json isCrossRepository -q .isCrossRepository)
           if [[ "$IS_CROSS_REPO" == "true" ]]; then
             echo "PR is from a fork, refusing to touch it with a privileged token."
             echo "proceed=false" >> "$GITHUB_OUTPUT"
