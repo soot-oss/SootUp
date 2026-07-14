@@ -31,7 +31,6 @@ import java.util.stream.StreamSupport;
 import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.tree.*;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -105,7 +104,7 @@ class AsmClassSource extends JavaSootClassSource {
     // FIXME: [ms] don't create a new instance of the identifierfactory!
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
-    return classNode.methods.parallelStream()
+    return classNode.methods.stream()
         .map(
             methodSource -> {
               AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
@@ -123,31 +122,20 @@ class AsmClassSource extends JavaSootClassSource {
                   identifierFactory.getMethodSignature(
                       classSignature, methodName, retType, sigTypes);
 
-              // copy to eager load the method and release the asm library memory
-              Body body;
-              if (MethodModifier.isAbstract(modifiers) || MethodModifier.isNative(modifiers)) {
-                // empty body as method is e.g. abstract or native.
-                body =
-                    Body.builder()
-                        .setMethodSignature(methodSignature)
-                        .setModifiers(modifiers)
-                        .build();
-              } else {
-                body = asmClassClassSourceContent.resolveBody(modifiers);
-              }
-              OverridingBodySource bs = new OverridingBodySource(methodSignature, body);
-
               // TODO: position/line numbers if possible.. e.g. get min/max line entry in
               // LineNumberTable of each method to at least specify a region..
-              return new JavaSootMethod(
-                  bs,
-                  methodSignature,
-                  modifiers,
-                  exceptions,
+              List<AnnotationUsage> annotations =
                   Streams.concat(
                           convertAnnotation(methodSource.visibleAnnotations),
                           convertAnnotation(methodSource.invisibleAnnotations))
-                      .collect(Collectors.toList()),
+                      .collect(Collectors.toList());
+
+              return new JavaSootMethod(
+                  asmClassClassSourceContent,
+                  methodSignature,
+                  modifiers,
+                  exceptions,
+                  annotations,
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());

@@ -105,7 +105,7 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
               asmClassClassSourceContent.setDeclaringClass(cs);
 
               List<ClassType> exceptions =
-                  new ArrayList<>(AsmUtil.asmIdToSignature(methodSource.exceptions));
+                  new ArrayList<>(AsmUtil.asmIdToSignatures(methodSource.exceptions));
 
               String methodName = methodSource.name;
               EnumSet<MethodModifier> modifiers = Modifiers.getMethodModifiers(methodSource.access);

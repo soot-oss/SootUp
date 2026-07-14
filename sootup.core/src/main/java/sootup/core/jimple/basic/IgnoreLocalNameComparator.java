@@ -1,10 +1,10 @@
-package sootup.core;
+package sootup.core.jimple.basic;
 
 /*-
  * #%L
- * SootUp
+ * Soot
  * %%
- * Copyright (C) 1997 - 2024 Raja Vallée-Rai and others
+ * Copyright (C) 2018-2020 Markus Schmidt and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,19 +22,14 @@ package sootup.core;
  * #L%
  */
 
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
+import sootup.core.jimple.common.Local;
 
-public class BaseViewChangeListener implements ViewChangeListener {
-  @Override
-  public void classAdded(SootClass sc) {}
+public class IgnoreLocalNameComparator extends JimpleComparator {
 
-  @Override
-  public void classRemoved(SootClass sc) {}
-
-  @Override
-  public void methodAdded(SootMethod m) {}
-
-  @Override
-  public void methodRemoved(SootMethod m) {}
+  public boolean caseLocal(Local obj, Object o) {
+    if (!(o instanceof Local)) {
+      return false;
+    }
+    return obj.getType().equals(((Local) o).getType());
+  }
 }

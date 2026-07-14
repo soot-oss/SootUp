@@ -27,13 +27,13 @@ import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
 /**

@@ -1,10 +1,10 @@
-package sootup.core.cache;
+package sootup.core.interceptor;
 
 /*-
  * #%L
- * SootUp
+ * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997 - 2024 Raja Vallée-Rai and others
+ * Copyright (C) 2019-2020 Christian Brüggemann
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,23 +22,21 @@ package sootup.core.cache;
  * #L%
  */
 
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
-import sootup.core.model.SootClass;
-import sootup.core.types.ClassType;
+import sootup.core.model.Body;
+import sootup.core.views.View;
 
-/** Interface for different caching strategies of resolved classes. */
-public interface ClassCache {
+/**
+ * @see #interceptBody(Body.BodyBuilder, View)
+ */
+public interface BodyInterceptor {
+
   /**
-   * @return null if classType is not in the cache
+   * Takes a BodyBuilder and may apply a transformation to it, for example removing unused local
+   * variables.
+   *
+   * @param builder
+   * @param view
    */
-  SootClass getClass(ClassType classType);
-
-  @NonNull Stream<SootClass> getClasses();
-
-  void putClass(ClassType classType, SootClass sootClass);
-
-  boolean hasClass(ClassType classType);
-
-  int size();
+  void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view);
 }
