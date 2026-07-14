@@ -1,10 +1,10 @@
-package sootup.core.transform;
+package sootup.core.views;
 
 /*-
  * #%L
- * Soot - a J*va Optimization Framework
+ * SootUp
  * %%
- * Copyright (C) 2019-2020 Christian Brüggemann
+ * Copyright (C) 1997 - 2024 Raja Vallée-Rai and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,21 +22,16 @@ package sootup.core.transform;
  * #L%
  */
 
-import org.jspecify.annotations.NonNull;
-import sootup.core.model.Body;
-import sootup.core.views.View;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
 
-/**
- * @see #interceptBody(Body.BodyBuilder, View)
- */
-public interface BodyInterceptor {
+/** Interface that defines notifications that are triggered when a mutable view is modified. */
+public interface ViewChangeListener {
+  void classAdded(SootClass sc);
 
-  /**
-   * Takes a BodyBuilder and may apply a transformation to it, for example removing unused local
-   * variables.
-   *
-   * @param builder
-   * @param view
-   */
-  void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view);
+  void classRemoved(SootClass sc);
+
+  void methodAdded(SootMethod m);
+
+  void methodRemoved(SootMethod m);
 }

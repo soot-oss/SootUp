@@ -33,13 +33,11 @@ import sootup.java.core.JavaIdentifierFactory;
 public class JavaEagerView extends JavaView {
 
   public JavaEagerView(@NonNull AnalysisInputLocation inputLocation) {
-    super(Collections.singletonList(inputLocation));
-    eagerLoadClasses();
+    this(Collections.singletonList(inputLocation));
   }
 
   public JavaEagerView(@NonNull List<AnalysisInputLocation> inputLocations) {
-    super(inputLocations, new FullCacheProvider());
-    eagerLoadClasses();
+    this(inputLocations, new FullCacheProvider());
   }
 
   public JavaEagerView(
@@ -50,25 +48,32 @@ public class JavaEagerView extends JavaView {
   }
 
   protected void eagerLoadClasses() {
-    if (!isFullyResolved) {
-      getClasses()
-          .forEach(
-              c -> {
-                c.getModifiers();
-                c.getFields();
-                c.getInterfaces();
-                c.getAnnotations();
-                c.getSuperclass();
-                c.getOuterClass();
-                c.getPosition();
-                c.getMethods()
-                    .forEach(
-                        m -> {
-                          if (m.hasBody()) {
-                            m.getBody().getStmts();
-                          }
-                        });
-              }); // forces loading
+    getClasses()
+        .forEach(
+            c -> {
+              c.getModifiers();
+              c.getFields();
+              c.getInterfaces();
+              c.getAnnotations();
+              c.getSuperclass();
+              c.getOuterClass();
+              c.getPosition();
+              c.getMethods()
+                  .forEach(
+                      m -> {
+                        if (m.hasBody()) {
+                          m.getBody();
+                        }
+                      });
+            }); // forces loading
+
+    // All class data is now in the FullCache — release file-system resources.
+    for (AnalysisInputLocation loc : inputLocations) {
+      try {
+        loc.close();
+      } catch (Exception e) {
+        throw new RuntimeException("Failed to close input location after eager load", e);
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-package sootup.core.transform;
+package sootup.core.interceptor;
 
 /*-
  * #%L

@@ -101,7 +101,9 @@ class AsmClassSource extends JavaSootClassSource {
 
   @NonNull
   public Set<JavaSootMethod> resolveMethods() throws ResolveException {
+    // FIXME: [ms] don't create a new instance of the identifierfactory!
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+
     return classNode.methods.stream()
         .map(
             methodSource -> {
@@ -109,7 +111,7 @@ class AsmClassSource extends JavaSootClassSource {
               asmClassClassSourceContent.setDeclaringClass(classSignature);
 
               List<ClassType> exceptions =
-                  new ArrayList<>(AsmUtil.asmIdToSignature(methodSource.exceptions));
+                  new ArrayList<>(AsmUtil.asmIdToSignatures(methodSource.exceptions));
 
               String methodName = methodSource.name;
               EnumSet<MethodModifier> modifiers = Modifiers.getMethodModifiers(methodSource.access);
@@ -120,16 +122,20 @@ class AsmClassSource extends JavaSootClassSource {
                   identifierFactory.getMethodSignature(
                       classSignature, methodName, retType, sigTypes);
 
-              // TODO: position/line numbers if possible
+              // TODO: position/line numbers if possible.. e.g. get min/max line entry in
+              // LineNumberTable of each method to at least specify a region..
+              List<AnnotationUsage> annotations =
+                  Streams.concat(
+                          convertAnnotation(methodSource.visibleAnnotations),
+                          convertAnnotation(methodSource.invisibleAnnotations))
+                      .collect(Collectors.toList());
+
               return new JavaSootMethod(
                   asmClassClassSourceContent,
                   methodSignature,
                   modifiers,
                   exceptions,
-                  Streams.concat(
-                          convertAnnotation(methodSource.visibleAnnotations),
-                          convertAnnotation(methodSource.invisibleAnnotations))
-                      .collect(Collectors.toList()),
+                  annotations,
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());
@@ -149,7 +155,7 @@ class AsmClassSource extends JavaSootClassSource {
 
   @NonNull
   public Set<JavaClassType> resolveInterfaces() {
-    return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
+    return new HashSet<>(AsmUtil.asmIdToSignatures(classNode.interfaces));
   }
 
   @NonNull
@@ -170,7 +176,7 @@ class AsmClassSource extends JavaSootClassSource {
 
   @NonNull
   public Position resolvePosition() {
-    // TODO [ms]: implement line numbers for bytecode
+    // TODO [ms]: augment line numbers from bytecode
     return NoPositionInformation.getInstance();
   }
 
