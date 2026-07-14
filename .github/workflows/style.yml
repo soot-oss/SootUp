@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 env:
   LATEST_BRANCH_NAME: develop
@@ -35,6 +36,26 @@ jobs:
       - name: Check Javadoc
         run: mvn -B javadoc:aggregate -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
+      - name: Resolve branch refs
+        # github.head_ref / github.base_ref are only populated for pull_request events.
+        # On merge_group events (merge queue) they are empty, so resolve them from the
+        # merge_group context (head_ref there is the temporary gh-readonly-queue branch,
+        # so the PR number embedded in it is used to look up the real head branch).
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            HEAD_REF="${{ github.head_ref }}"
+            BASE_REF="${{ github.base_ref }}"
+          else
+            BASE_REF="${{ github.event.merge_group.base_ref }}"
+            BASE_REF="${BASE_REF#refs/heads/}"
+            PR_NUMBER=$(echo "${{ github.event.merge_group.head_ref }}" | grep -oP 'pr-\K[0-9]+')
+            HEAD_REF=$(gh pr view "$PR_NUMBER" --repo "${{ github.repository }}" --json headRefName -q .headRefName)
+          fi
+          echo "HEAD_REF=$HEAD_REF" >> "$GITHUB_ENV"
+          echo "BASE_REF=$BASE_REF" >> "$GITHUB_ENV"
+
       - name: Get Proposed Version
         run: |
           echo "PROPOSED_VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)" >> $GITHUB_ENV
@@ -53,7 +74,7 @@ jobs:
             HAS_SNAPSHOT_SUFFIX=false
           fi
 
-          if [[ "${{ github.head_ref }}" == release/prep-* ]]; then
+          if [[ "${{ env.HEAD_REF }}" == release/prep-* ]]; then
             if [ "$HAS_SNAPSHOT_SUFFIX" == "true" ]; then
               echo "Release branches (release/prep-*) must not carry a -SNAPSHOT version."
               exit 1
@@ -72,10 +93,10 @@ jobs:
                         -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                         -H "Accept: application/vnd.github.v3.raw" \
                         -o "$TMP_POM" \
-                        "https://api.github.com/repos/${{ github.repository }}/contents/pom.xml?ref=${{ github.base_ref }}")
-          
+                        "https://api.github.com/repos/${{ github.repository }}/contents/pom.xml?ref=${{ env.BASE_REF }}")
+
           if [ "$HTTP_STATUS" -ne 200 ]; then
-            echo "Warning: pom.xml not found in ${{ github.base_ref }}. HTTP status: $HTTP_STATUS."
+            echo "Warning: pom.xml not found in ${{ env.BASE_REF }}. HTTP status: $HTTP_STATUS."
             echo "Information: We assume the base branch is new and does not contain a pom.xml yet."
             rm "$TMP_POM"
             exit 0
@@ -89,8 +110,8 @@ jobs:
 
           # did the version not change? if not: release branches fail (they must bump), other branches: ok
           if [ "$LATEST_VERSION" == "${{ env.PROPOSED_VERSION }}" ]; then
-            if [[ "${{ github.head_ref }}" != release/prep-* ]]; then
-              echo "No version change necessary on ${{ github.head_ref }}.";
+            if [[ "${{ env.HEAD_REF }}" != release/prep-* ]]; then
+              echo "No version change necessary on ${{ env.HEAD_REF }}.";
               exit 0
             else
               echo "Version change necessary on a release branch (release/prep-*)!";
