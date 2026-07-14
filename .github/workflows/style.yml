@@ -37,7 +37,7 @@ jobs:
 
       - name: Get Proposed Version
         run: |
-          echo "PROPOSED_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+          echo "PROPOSED_VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)" >> $GITHUB_ENV
 
       - name: Check Semantic Versioning Pattern
         run: |
