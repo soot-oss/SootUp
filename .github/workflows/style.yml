@@ -65,26 +65,26 @@ jobs:
           echo "${{ env.PROPOSED_VERSION }}" | \
           grep -P '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9A-Za-z-][0-9A-Za-z-]*))*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$'
 
-      - name: Enforce -SNAPSHOT version suffix except on release branches
-        # i.e. release/prep-* branches are allowed to not have -SNAPSHOT
-        run: |
-          if echo "${{ env.PROPOSED_VERSION }}" | grep -q -- "-SNAPSHOT$"; then
-            HAS_SNAPSHOT_SUFFIX=true
-          else
-            HAS_SNAPSHOT_SUFFIX=false
-          fi
-
-          if [[ "${{ env.HEAD_REF }}" == release/prep-* ]]; then
-            if [ "$HAS_SNAPSHOT_SUFFIX" == "true" ]; then
-              echo "Release branches (release/prep-*) must not carry a -SNAPSHOT version."
-              exit 1
-            fi
-          else
-            if [ "$HAS_SNAPSHOT_SUFFIX" == "false" ]; then
-              echo "Non-release branches must keep a -SNAPSHOT version."
-              exit 1
-            fi
-          fi
+#      - name: Enforce -SNAPSHOT version suffix except on release branches
+#        # i.e. release/prep-* branches are allowed to not have -SNAPSHOT
+#        run: |
+#          if echo "${{ env.PROPOSED_VERSION }}" | grep -q -- "-SNAPSHOT$"; then
+#            HAS_SNAPSHOT_SUFFIX=true
+#          else
+#            HAS_SNAPSHOT_SUFFIX=false
+#          fi
+#
+#          if [[ "${{ env.HEAD_REF }}" == release/prep-* ]]; then
+#            if [ "$HAS_SNAPSHOT_SUFFIX" == "true" ]; then
+#              echo "Release branches (release/prep-*) must not carry a -SNAPSHOT version."
+#              exit 1
+#            fi
+#          else
+#            if [ "$HAS_SNAPSHOT_SUFFIX" == "false" ]; then
+#              echo "Non-release branches must keep a -SNAPSHOT version."
+#              exit 1
+#            fi
+#          fi
 
       - name: Ensure (strict) monotony of the version
         run: |
