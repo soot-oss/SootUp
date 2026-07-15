@@ -24,8 +24,10 @@ jobs:
       - name: Delete release branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/${{ github.event.pull_request.head.ref }}" \
+          gh api -X DELETE "repos/${REPO}/git/refs/heads/${HEAD_REF}" \
             || echo "Branch already gone, nothing to do."
 
   deploy:
@@ -63,10 +65,12 @@ jobs:
 
       - name: Tag the just-merged release version
         id: tag
+        env:
+          ACTOR: ${{ github.actor }}
         run: |
           set -euo pipefail
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${ACTOR}@users.noreply.github.com"
+          git config --global user.name "$ACTOR"
 
           # develop's tip now holds whatever version the merged release PR brought in
           # No -q: Maven 3.9.x swallows forceStdout plugin output under -q. Filter [INFO]/[WARNING] noise instead.
@@ -91,9 +95,10 @@ jobs:
 
       - name: Create GitHub release
         run: |
-          gh release create "${{ steps.tag.outputs.tag_name }}" --title "${{ steps.tag.outputs.tag_name }}" --generate-notes
+          gh release create "$TAG_NAME" --title "$TAG_NAME" --generate-notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ steps.tag.outputs.tag_name }}
 
   bump-develop:
     name: Advance develop to next SNAPSHOT
@@ -119,12 +124,15 @@ jobs:
       - name: Bump to next SNAPSHOT and open auto-merge PR
         env:
           GH_TOKEN: ${{ secrets.AUTO_MERGE_PAT }}
+          ACTOR: ${{ github.actor }}
+          RUN_ID: ${{ github.run_id }}
+          DEPLOY_TAG_NAME: ${{ needs.deploy.outputs.tag_name }}
         run: |
           set -euo pipefail
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${ACTOR}@users.noreply.github.com"
+          git config --global user.name "$ACTOR"
 
-          BRANCH="chore/next-snapshot-${{ github.run_id }}"
+          BRANCH="chore/next-snapshot-${RUN_ID}"
           git checkout -b "$BRANCH"
 
           # Bumps forward from the version that was just released (develop's current tip), e.g. 2.4.0 -> 2.4.1-SNAPSHOT
@@ -136,8 +144,8 @@ jobs:
           gh pr create \
             -B develop \
             -H "$BRANCH" \
-            -t "Prepare next development iteration after ${{ needs.deploy.outputs.tag_name }}" \
-            -b "Advances develop's SNAPSHOT version following the ${{ needs.deploy.outputs.tag_name }} release."
+            -t "Prepare next development iteration after ${DEPLOY_TAG_NAME}" \
+            -b "Advances develop's SNAPSHOT version following the ${DEPLOY_TAG_NAME} release."
 
           PR_NUMBER=$(gh pr view "$BRANCH" --json number -q .number)
           gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
