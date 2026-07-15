@@ -22,11 +22,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.config.PointerAnalysisConfig;
-import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
@@ -45,16 +45,21 @@ public class PTAScene {
   private OnFlyCallGraph callgraph;
   private final FakeMainFactory fakeMainFactory;
 
+  // Thread-safe: guard the corresponding effect model's one-time-per-method work
+  // (PAG.getMethodPAG()'s effect-model dispatch and arraycopy handling), which is reached from
+  // toolkit parallelStream() passes run after the main solve (e.g.
+  // qilin.pta.toolkits.conch.AbstractPAG, qilin.pta.toolkits.debloaterx.XPAG), not just the
+  // single-threaded Solver. add()'s atomicity is what makes "build it once" hold under that.
   public final Set<SootMethod> nativeBuilt;
   public final Set<SootMethod> reflectionBuilt;
   public final Set<SootMethod> arraycopyBuilt;
   public final Set<SootMethod> dynamicInvokeBuilt;
 
   public PTAScene(View view, String mainClassSig, PointerAnalysisConfig config) {
-    this.nativeBuilt = DataFactory.createSet();
-    this.reflectionBuilt = DataFactory.createSet();
-    this.arraycopyBuilt = DataFactory.createSet();
-    this.dynamicInvokeBuilt = DataFactory.createSet();
+    this.nativeBuilt = ConcurrentHashMap.newKeySet();
+    this.reflectionBuilt = ConcurrentHashMap.newKeySet();
+    this.arraycopyBuilt = ConcurrentHashMap.newKeySet();
+    this.dynamicInvokeBuilt = ConcurrentHashMap.newKeySet();
     this.view = view;
     this.mainClassSig = mainClassSig;
     this.config = config;

@@ -94,10 +94,15 @@ public class PAG {
   // ========================= ir to Node ==============================================
   protected final Map<Object, AllocNode> valToAllocNode;
   protected final Map<Object, ValNode> valToValNode;
+  // Concurrent: getMethodPAG() is reached from toolkit parallelStream() passes
+  // (e.g. qilin.pta.toolkits.conch.AbstractPAG, qilin.pta.toolkits.debloaterx.XPAG) run after
+  // the main solve, not just the single-threaded Solver.
   protected final Map<SootMethod, MethodPAG> methodToPag;
   // Per-PAG, not JVM-global: each analysis (and each pre-analysis of a staged PTA) owns its
   // own override table, so bodies simulated/rewritten by one analysis can't leak into another
-  // and the cache is reclaimed with the PAG instead of needing an explicit reset call.
+  // and the cache is reclaimed with the PAG instead of needing an explicit reset call. Concurrent
+  // for the same reason as methodToPag above - getMethodBody()/updateMethodBody() are reached
+  // from the same parallel toolkit passes.
   private final Map<SootMethod, Body> methodToBody;
   protected final Set<FieldSignature> globals;
   protected final Set<Triple<SootMethod, Local, Type>> locals;
@@ -117,7 +122,7 @@ public class PAG {
 
   public PAG(PTA pta) {
     this.pta = pta;
-    this.methodToBody = DataFactory.createMap();
+    this.methodToBody = new ConcurrentHashMap<>();
     this.simple = DataFactory.createMap();
     this.simpleInv = DataFactory.createMap();
     this.load = DataFactory.createMap();
@@ -140,7 +145,7 @@ public class PAG {
     this.contextFieldMap = DataFactory.createMap(6000);
     this.valToAllocNode = DataFactory.createMap(10000);
     this.valToValNode = DataFactory.createMap(100000);
-    this.methodToPag = DataFactory.createMap();
+    this.methodToPag = new ConcurrentHashMap<>();
     this.globals = DataFactory.createSet(100000);
     this.locals = DataFactory.createSet(100000);
   }
