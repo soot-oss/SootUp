@@ -63,6 +63,8 @@ jobs:
 
       - name: Recompute release version from latest tag
         id: version
+        env:
+          RELEASE_TYPE: ${{ steps.parsed.outputs.release_type }}
         run: |
           set -euo pipefail
           git fetch --tags
@@ -82,7 +84,7 @@ jobs:
             exit 1
           fi
 
-          case "${{ steps.parsed.outputs.release_type }}" in
+          case "$RELEASE_TYPE" in
             major) RELEASE_VERSION="$((MAJOR + 1)).0.0" ;;
             minor) RELEASE_VERSION="$MAJOR.$((MINOR + 1)).0" ;;
             patch) RELEASE_VERSION="$MAJOR.$MINOR.$((PATCH + 1))" ;;
@@ -91,13 +93,16 @@ jobs:
           echo "release_version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Amend release branch if version changed
+        env:
+          ACTOR: ${{ github.actor }}
+          RELEASE_VERSION: ${{ steps.version.outputs.release_version }}
+          HEAD_REF: ${{ github.head_ref }}
         run: |
           set -euo pipefail
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${ACTOR}@users.noreply.github.com"
+          git config --global user.name "$ACTOR"
 
           CURRENT_VERSION=$(mvn -ntp org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)
-          RELEASE_VERSION="${{ steps.version.outputs.release_version }}"
 
           if [[ "$CURRENT_VERSION" == "$RELEASE_VERSION" ]]; then
             echo "Release version already up to date ($CURRENT_VERSION)."
@@ -108,4 +113,4 @@ jobs:
           mvn -B -ntp build-helper:parse-version versions:set -DnewVersion="$RELEASE_VERSION" versions:commit
           git ls-files | grep 'pom.xml$' | xargs git add
           git commit --amend -am "release $RELEASE_VERSION"
-          git push --force origin HEAD:"${{ github.head_ref }}"
+          git push --force origin HEAD:"$HEAD_REF"
