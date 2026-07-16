@@ -34,7 +34,8 @@ jobs:
           gh api -X DELETE "repos/${REPO}/git/refs/heads/${HEAD_REF}" \
             || echo "Branch already gone, nothing to do."
 
-  deploy:
+
+  release:
     name: Tag and deploy to Maven Central
     if: >
       github.event_name == 'push'
@@ -76,10 +77,10 @@ jobs:
 
           if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
             echo "is_release=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::develop is still on a SNAPSHOT version ($CURRENT_VERSION) after a release/prep merge; skipping deploy."
+            echo "::notice::develop is still on a SNAPSHOT version ($CURRENT_VERSION) after a release/prep merge; skipping release."
           elif git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" >/dev/null 2>&1; then
             echo "is_release=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Tag $TAG_NAME already exists; skipping deploy (version already released)."
+            echo "::notice::Tag $TAG_NAME already exists; skipping release (version already released)."
           else
             echo "is_release=true" >> "$GITHUB_OUTPUT"
           fi
@@ -98,12 +99,12 @@ jobs:
           git tag -a "$TAG_NAME" -m "version $CURRENT_VERSION"
           git push origin "$TAG_NAME"
 
-      - name: Deploy on Maven Central
+      - name: Release on Maven Central
         if: steps.version.outputs.is_release == 'true'
         run: |
           # -U force updates just to make sure we are using latest dependencies
           # -B Batch mode (do not ask for user input), just in case
-          # -D activate a profile via the release property (and disable defined submodules that should not be deployed)
+          # -D activate a profile via the release property (and disable defined submodules that should not be released)
           mvn -U -B -ntp clean deploy -Drelease -DskipTests
         env:
           MAVEN_USERNAME: ${{ secrets.SONATYPE_USER }}
@@ -122,10 +123,11 @@ jobs:
       tag_name: ${{ steps.version.outputs.tag_name }}
       is_release: ${{ steps.version.outputs.is_release }}
 
+
   bump-develop:
     name: Advance develop to next SNAPSHOT
-    needs: deploy
-    if: needs.deploy.outputs.is_release == 'true'
+    needs: release
+    if: success() && needs.release.outputs.is_release == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -149,7 +151,7 @@ jobs:
           GH_TOKEN: ${{ secrets.AUTO_MERGE_PAT }}
           ACTOR: ${{ github.actor }}
           RUN_ID: ${{ github.run_id }}
-          DEPLOY_TAG_NAME: ${{ needs.deploy.outputs.tag_name }}
+          RELEASE_TAG_NAME: ${{ needs.release.outputs.tag_name }}
         run: |
           set -euo pipefail
           git config --global user.email "${ACTOR}@users.noreply.github.com"
@@ -167,8 +169,8 @@ jobs:
           gh pr create \
             -B develop \
             -H "$BRANCH" \
-            -t "Prepare next development iteration after ${DEPLOY_TAG_NAME}" \
-            -b "Advances develop's SNAPSHOT version following the ${DEPLOY_TAG_NAME} release."
+            -t "Prepare next development iteration after ${RELEASE_TAG_NAME}" \
+            -b "Advances develop's SNAPSHOT version following the ${RELEASE_TAG_NAME} release."
 
           PR_NUMBER=$(gh pr view "$BRANCH" --json number -q .number)
           gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
