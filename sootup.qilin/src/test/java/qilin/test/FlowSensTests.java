@@ -20,9 +20,9 @@ package qilin.test;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-public class FlowSensTests extends JunitTests {
+public class FlowSensTests extends QilinFrameworkTests {
   @Test
   public void testLoops() {
     checkAssertions(run("qilin.microben.flowsens.Loops"));

@@ -154,21 +154,21 @@ public class AliasStat implements AbstractStat {
             reachableMethods.stream()
                 .filter(pta.getScene()::isApplicationMethod)
                 .collect(Collectors.toSet()));
-    this.intraAlias_app = r1.getFirst();
-    this.intraAlias_incstst_app = r1.getSecond();
+    this.intraAlias_app = r1.first();
+    this.intraAlias_incstst_app = r1.second();
     Pair<Integer, Integer> r2 = computeInterAliases();
-    this.globalAlias_app = r2.getFirst();
-    this.globalAlias_incstst_app = r2.getSecond();
+    this.globalAlias_app = r2.first();
+    this.globalAlias_incstst_app = r2.second();
     Pair<Integer, Integer> r3 =
         recordAndComputeIntraAliases(
             reachableMethods.stream()
                 .filter(m -> !pta.getScene().isApplicationMethod(m))
                 .collect(Collectors.toSet()));
-    this.intraAlias = this.intraAlias_app + r3.getFirst();
-    this.intraAlias_incstst = this.intraAlias_incstst_app + r3.getSecond();
+    this.intraAlias = this.intraAlias_app + r3.first();
+    this.intraAlias_incstst = this.intraAlias_incstst_app + r3.second();
     Pair<Integer, Integer> r4 = computeInterAliases();
-    this.globalAlias = r4.getFirst();
-    this.globalAlias_incstst = r4.getSecond();
+    this.globalAlias = r4.first();
+    this.globalAlias_incstst = r4.second();
   }
 
   public int getGlobalAliasesIncludingStSt() {

@@ -59,9 +59,9 @@ public class RepresentativeContextSelector extends ContextSelector {
     initialWorkList(worklist, oag, dest);
     while (!worklist.isEmpty()) {
       Triple<AllocNode, ContextElements, Boolean> triple = worklist.poll();
-      AllocNode heap = triple.getFirst();
-      ContextElements ctx = triple.getSecond();
-      boolean split = triple.getThird();
+      AllocNode heap = triple.first();
+      ContextElements ctx = triple.second();
+      boolean split = triple.third();
       if (!tempContextMap.containsKey(heap)) {
         tempContextMap.put(heap, new HashSet<>());
       }

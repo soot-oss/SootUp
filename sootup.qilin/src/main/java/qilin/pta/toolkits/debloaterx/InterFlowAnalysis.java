@@ -67,9 +67,9 @@ public class InterFlowAnalysis {
     queue.add(new Pair<>(xpag.getDummyThis(), State.THIS));
     while (!queue.isEmpty()) {
       Pair<Node, State> front = queue.poll();
-      if (front.getSecond() == State.End) {
-        if (front.getFirst() instanceof LocalVarNode) {
-          LocalVarNode lvn = (LocalVarNode) front.getFirst();
+      if (front.second() == State.End) {
+        if (front.first() instanceof LocalVarNode) {
+          LocalVarNode lvn = (LocalVarNode) front.first();
           ret.add(lvn);
         }
       }
@@ -87,8 +87,8 @@ public class InterFlowAnalysis {
 
   private Set<Pair<Node, State>> getNextNodeStates(
       Pair<Node, State> nodeState, SparkField field, boolean in) {
-    Node node = nodeState.getFirst();
-    State state = nodeState.getSecond();
+    Node node = nodeState.first();
+    State state = nodeState.second();
     Set<Pair<Node, State>> ret = new HashSet<>();
     for (Edge edge : xpag.getOutEdges(node)) {
       boolean mathched = edge.field != null && edge.field.equals(field);
@@ -161,14 +161,14 @@ public class InterFlowAnalysis {
   }
 
   private void visit(Pair<Node, State> nodeState, Map<State, Set<Node>> state2nodes) {
-    Node node = nodeState.getFirst();
-    State state = nodeState.getSecond();
+    Node node = nodeState.first();
+    State state = nodeState.second();
     state2nodes.computeIfAbsent(state, k -> new HashSet<>()).add(node);
   }
 
   private boolean isVisited(Pair<Node, State> nodeState, Map<State, Set<Node>> state2nodes) {
-    Node node = nodeState.getFirst();
-    State state = nodeState.getSecond();
+    Node node = nodeState.first();
+    State state = nodeState.second();
     Set<Node> nodes = state2nodes.getOrDefault(state, Collections.emptySet());
     return nodes.contains(node);
   }

@@ -28,7 +28,7 @@ package qilin.util;
  *
  * @author Marc Miltenberger
  */
-public interface Invalidable {
+public interface Invalidatable {
   /**
    * Return true if the object is invalid.
    *

@@ -239,8 +239,8 @@ public class Conch extends AbstractConch {
       Set<Pair<VarNode, VarNode>> pairs = f2sts.getOrDefault(field, Collections.emptySet());
       if (!pairs.isEmpty()) {
         for (Pair<VarNode, VarNode> pair : pairs) {
-          LocalVarNode storeBase = (LocalVarNode) pair.getFirst();
-          VarNode from = pair.getSecond();
+          LocalVarNode storeBase = (LocalVarNode) pair.first();
+          VarNode from = pair.second();
           if (storeBase.getMethod() != heap.getMethod()) {
             csorci = Trilean.TRUE;
           } else {
@@ -261,7 +261,7 @@ public class Conch extends AbstractConch {
             f2stsX.getOrDefault(field, Collections.emptySet());
         if (!thisFStores.isEmpty()) {
           for (Pair<VarNode, VarNode> pair : thisFStores) {
-            VarNode from = pair.getSecond();
+            VarNode from = pair.second();
             Trilean fromparam = isCommingFromParams((LocalVarNode) from, method, heap);
             csorci = Trilean.OR(csorci, fromparam);
           }

@@ -267,8 +267,8 @@ public class IntraFlowAnalysis {
    * */
   private Set<Pair<Node, State>> getNextNodeStates(
       Pair<Node, State> nodeState, Set<Node> thisAlias, Set<SparkField> stFields) {
-    Node node = nodeState.getFirst();
-    State state = nodeState.getSecond();
+    Node node = nodeState.first();
+    State state = nodeState.second();
     Set<Pair<Node, State>> ret = new HashSet<>();
     for (Edge edge : xpag.getOutEdges(node)) {
       State nextState = nextState(state, edge.kind);

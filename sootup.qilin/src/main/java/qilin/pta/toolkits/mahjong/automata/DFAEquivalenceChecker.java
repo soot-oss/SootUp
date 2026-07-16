@@ -35,8 +35,8 @@ public class DFAEquivalenceChecker {
     stack.push(new Pair<>(s1, s2));
     while (!stack.isEmpty()) {
       Pair<DFAState, DFAState> pair = stack.pop();
-      DFAState q1 = pair.getFirst();
-      DFAState q2 = pair.getSecond();
+      DFAState q1 = pair.first();
+      DFAState q2 = pair.second();
       Stream.concat(dfa.outEdgesOf(q1).stream(), dfa.outEdgesOf(q2).stream())
           .forEach(
               field -> {

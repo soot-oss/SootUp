@@ -278,8 +278,8 @@ public abstract class AbstractMVFG {
     // propagate
     while (!workList.isEmpty()) {
       Pair<Object, DFA.State> pair = workList.poll();
-      Object currNode = pair.getFirst();
-      DFA.State currState = pair.getSecond();
+      Object currNode = pair.first();
+      DFA.State currState = pair.second();
       for (TranEdge e : outEdges.getOrDefault(currNode, Collections.emptySet())) {
         Object target = e.getTarget();
         DFA.TranCond tranCond = e.getTranCond();

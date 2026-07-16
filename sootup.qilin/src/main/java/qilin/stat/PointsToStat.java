@@ -139,10 +139,10 @@ public class PointsToStat implements AbstractStat {
     // locals exclude Exceptions
     for (Triple<SootMethod, Local, Type> localTriple : pag.getLocalPointers()) {
       try {
-        SootMethod method = localTriple.getFirst();
-        Local local = localTriple.getSecond();
+        SootMethod method = localTriple.first();
+        Local local = localTriple.second();
         Collection<VarNode> varNodes = pag.getVarNodes(method, local);
-        LocalVarNode lvn = pag.findLocalVarNode(method, local, localTriple.getThird());
+        LocalVarNode lvn = pag.findLocalVarNode(method, local, localTriple.third());
         if (local.toString().contains("intermediate/")) {
           continue;
         }

@@ -135,9 +135,9 @@ public class SimplifiedEvaluator implements IEvaluator {
     // locals exclude Exceptions
     for (Triple<SootMethod, Local, Type> localTriple : pag.getLocalPointers()) {
       try {
-        SootMethod method = localTriple.getFirst();
-        Local local = localTriple.getSecond();
-        Type type = localTriple.getThird();
+        SootMethod method = localTriple.first();
+        Local local = localTriple.second();
+        Type type = localTriple.third();
         LocalVarNode lvn = pag.findLocalVarNode(method, local, type);
         if (local.toString().contains("intermediate/")) {
           continue;

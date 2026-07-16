@@ -135,7 +135,7 @@ public class AbstractConch {
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
     SMPAG smpag = getSMAPG(srcmpag);
     for (Pair<Node, Node> ld : smpag.getLoads()) {
-      FieldRefNode fr = (FieldRefNode) ld.getSecond();
+      FieldRefNode fr = (FieldRefNode) ld.second();
       LocalVarNode loadBase = (LocalVarNode) fr.getBase();
       SparkField field = fr.getField();
       if (primitiveField(field)) {
@@ -166,8 +166,8 @@ public class AbstractConch {
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
     SMPAG smpag = getSMAPG(srcmpag);
     for (Pair<Node, Node> st : smpag.getStores()) {
-      LocalVarNode from = (LocalVarNode) st.getSecond();
-      FieldRefNode fr = (FieldRefNode) st.getFirst();
+      LocalVarNode from = (LocalVarNode) st.second();
+      FieldRefNode fr = (FieldRefNode) st.first();
       LocalVarNode storeBase = (LocalVarNode) fr.getBase();
       SparkField field = fr.getField();
       if (primitiveField(field)) {

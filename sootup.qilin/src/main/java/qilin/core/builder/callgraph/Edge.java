@@ -2,7 +2,7 @@ package qilin.core.builder.callgraph;
 
 import qilin.core.context.Context;
 import qilin.core.pag.ContextMethod;
-import qilin.util.Invalidable;
+import qilin.util.Invalidatable;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -16,7 +16,7 @@ import sootup.core.model.SootMethod;
  *
  * @author Ondrej Lhotak
  */
-public final class Edge implements Invalidable {
+public final class Edge implements Invalidatable {
 
   /**
    * The method in which the call occurs; may be null for calls not occurring in a specific method

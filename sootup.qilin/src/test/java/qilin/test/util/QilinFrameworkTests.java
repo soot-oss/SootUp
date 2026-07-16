@@ -31,7 +31,7 @@ import qilin.driver.PTAPattern;
 import qilin.util.PTAUtils;
 import sootup.core.views.View;
 
-public abstract class JunitTests {
+public abstract class QilinFrameworkTests {
   protected static String appPath, jrePath, refLogPath;
   protected static boolean isSetUp = false;
 

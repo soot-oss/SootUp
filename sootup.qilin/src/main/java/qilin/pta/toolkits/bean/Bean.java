@@ -78,8 +78,8 @@ public class Bean {
                 if (csheaps != null) {
                   csheaps.forEach(
                       csheap -> {
-                        AllocNode newHctx = (AllocNode) csheap.getFirst().get(0);
-                        AllocNode heap = csheap.getSecond();
+                        AllocNode newHctx = (AllocNode) csheap.first().get(0);
+                        AllocNode heap = csheap.second();
                         beanNexCtxMap
                             .computeIfAbsent(heap.getNewExpr(), k -> new HashMap<>())
                             .computeIfAbsent(allocator.getNewExpr(), k -> new HashMap<>())
