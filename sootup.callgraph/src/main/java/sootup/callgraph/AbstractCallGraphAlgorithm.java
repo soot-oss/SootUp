@@ -34,6 +34,8 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.scope.CallGraphScope;
+import sootup.callgraph.scope.DefaultCallGraphScope;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
@@ -74,11 +76,23 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /** The class type for java.lang.Thread, used for thread start call edge handling. */
   @NonNull protected final ClassType threadType;
 
+  /** Controls which classes/methods are excluded from call graph expansion. */
+  @NonNull private final CallGraphScope scope;
+
   /** Creates a new call graph algorithm using the given view. */
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
+    this(view, new DefaultCallGraphScope());
+  }
+
+  /**
+   * Creates a new call graph algorithm using the given view and a custom {@link CallGraphScope} to
+   * control which classes/methods are excluded from call graph expansion.
+   */
+  protected AbstractCallGraphAlgorithm(@NonNull View view, @NonNull CallGraphScope scope) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
     this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
+    this.scope = scope;
   }
 
   /**
@@ -175,10 +189,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
 
-      // skip if library class
+      // skip if excluded by scope
       SootClass currentClass =
           view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
-      if (currentClass == null || currentClass.isLibraryClass()) {
+      if (currentClass == null || scope.filter(currentClass, currentMethodSignature)) {
         continue;
       }
 

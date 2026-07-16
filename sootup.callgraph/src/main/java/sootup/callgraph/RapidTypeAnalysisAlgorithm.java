@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.scope.CallGraphScope;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -74,6 +75,18 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       @NonNull View view, @NonNull Set<ClassType> preInstantiatedClasses) {
     super(view);
     this.instantiatedClasses = new HashSet<>(preInstantiatedClasses);
+  }
+
+  /**
+   * The constructor of the RTA algorithm that allows restricting which classes/methods are expanded
+   * during call graph construction.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param scope decides which classes/methods are excluded from the call graph
+   */
+  public RapidTypeAnalysisAlgorithm(@NonNull View view, @NonNull CallGraphScope scope) {
+    super(view, scope);
+    this.instantiatedClasses = new HashSet<>();
   }
 
   @NonNull
