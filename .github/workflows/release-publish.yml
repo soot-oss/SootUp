@@ -6,6 +6,9 @@ on:
       - develop
     types:
       - closed
+  push:
+    branches:
+      - develop
 
 permissions:
   contents: read
@@ -14,6 +17,7 @@ jobs:
   cleanup-abandoned:
     name: Delete abandoned release branch
     if: >
+      github.event_name == 'pull_request' &&
       github.event.pull_request.merged == false &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       startsWith(github.event.pull_request.head.ref, 'release/prep-')
@@ -33,22 +37,22 @@ jobs:
   deploy:
     name: Tag and deploy to Maven Central
     if: >
-      github.event.pull_request.merged == true &&
-      github.event.pull_request.base.ref == 'develop' &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      startsWith(github.event.pull_request.head.ref, 'release/prep-')
+      github.event_name == 'push'
+#      &&
+#      startsWith(github.event.head_commit.message, 'Merge pull request') &&
+#      contains(github.event.head_commit.message, '/release/prep-')
     runs-on: ubuntu-latest
     environment: deployment
     permissions:
       contents: write
     outputs:
       tag_name: ${{ steps.tag.outputs.tag_name }}
+      is_release: ${{ steps.version.outputs.is_release }}
     steps:
       - name: Checkout develop
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           token: ${{ secrets.AUTO_MERGE_PAT }}
-          ref: develop
           fetch-depth: 0
 
       - name: Setup Java
@@ -63,18 +67,32 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} # Substituted with the value stored in the referenced secret
           gpg-passphrase: MAVEN_GPG_PASSPHRASE            # Env var that holds the key's passphrase
 
+      - name: Determine version and check SNAPSHOT suffix
+        id: version
+        run: |
+          set -euo pipefail
+          # develop's tip now holds whatever version the merged release PR brought in
+          CURRENT_VERSION=$(mvn -ntp org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)
+          echo "version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+
+          if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
+            echo "is_release=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::develop is still on a SNAPSHOT version ($CURRENT_VERSION) after a release/prep merge; skipping deploy."
+          else
+            echo "is_release=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Tag the just-merged release version
         id: tag
+        if: steps.version.outputs.is_release == 'true'
         env:
           ACTOR: ${{ github.actor }}
+          CURRENT_VERSION: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
           git config --global user.email "${ACTOR}@users.noreply.github.com"
           git config --global user.name "$ACTOR"
 
-          # develop's tip now holds whatever version the merged release PR brought in
-          # No -q: Maven 3.9.x swallows forceStdout plugin output under -q. Filter [INFO]/[WARNING] noise instead.
-          CURRENT_VERSION=$(mvn -ntp org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)
           TAG_NAME="v$CURRENT_VERSION"
 
           git tag -a "$TAG_NAME" -m "version $CURRENT_VERSION"
@@ -83,6 +101,7 @@ jobs:
           echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Deploy on Maven Central
+        if: steps.version.outputs.is_release == 'true'
         run: |
           # -U force updates just to make sure we are using latest dependencies
           # -B Batch mode (do not ask for user input), just in case
@@ -94,6 +113,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
 
       - name: Create GitHub release
+        if: steps.version.outputs.is_release == 'true'
         run: |
           gh release create "$TAG_NAME" --title "$TAG_NAME" --generate-notes
         env:
@@ -103,6 +123,7 @@ jobs:
   bump-develop:
     name: Advance develop to next SNAPSHOT
     needs: deploy
+    if: needs.deploy.outputs.is_release == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
