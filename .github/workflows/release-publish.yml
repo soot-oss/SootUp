@@ -14,198 +14,21 @@ permissions:
   contents: read
 
 jobs:
-  cleanup-abandoned:
-    name: Delete abandoned automation branch
-    if: >
-      github.event_name == 'pull_request' &&
-      github.event.pull_request.merged == false &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      (startsWith(github.event.pull_request.head.ref, 'release/prep-') ||
-       startsWith(github.event.pull_request.head.ref, 'chore/next-snapshot-'))
-    runs-on: ubuntu-latest
+  publish:
+    name: Tag, deploy to Maven Central and advance develop
+    # Reusable workflow: secure-software-engineering/actions/release/README.md
+    uses: secure-software-engineering/actions/.github/workflows/maven-release-publish.yml@f457fd685aa454b41c84be6de48c805174af5457 # extract-sootup-release-workflows
     permissions:
       contents: write
-    steps:
-      - name: Delete abandoned release branch
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-          HEAD_REF: ${{ github.event.pull_request.head.ref }}
-        run: |
-          gh api -X DELETE "repos/${REPO}/git/refs/heads/${HEAD_REF}" \
-            || echo "Branch already gone, nothing to do."
-
-
-  release:
-    name: Tag and deploy to Maven Central
-    concurrency:
-      group: release-publish-deploy
-      cancel-in-progress: false
-    if: >
-      github.event_name == 'push'
-#      &&
-#      startsWith(github.event.head_commit.message, 'Merge pull request') &&
-#      contains(github.event.head_commit.message, '/release/prep-')
-    runs-on: ubuntu-latest
-    environment: deployment
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout develop
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          token: ${{ secrets.AUTO_MERGE_PAT }}
-          fetch-depth: 0
-
-      - name: Setup Java
-        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
-        with:
-          distribution: adopt
-          java-package: jdk
-          java-version: 17
-          server-id: central                              # must match the serverId configured for the nexus-staging-maven-plugin
-          server-username: MAVEN_USERNAME                 # Env var that holds the central publisher user name
-          server-password: MAVEN_CENTRAL_TOKEN            # Env var that holds the central publisher user token
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} # Substituted with the value stored in the referenced secret
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE            # Env var that holds the key's passphrase
-
-      - name: Determine version and check for existing tag
-        id: version
-        run: |
-          set -euo pipefail
-          # develop's tip now holds whatever version the merged release PR brought in
-          CURRENT_VERSION=$(mvn -ntp org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)
-          TAG_NAME="v$CURRENT_VERSION"
-          echo "version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
-
-          if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
-            echo "is_release=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::develop is still on a SNAPSHOT version ($CURRENT_VERSION) after a release/prep merge; skipping release."
-          elif git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" >/dev/null 2>&1; then
-            echo "is_release=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Tag $TAG_NAME already exists; skipping release (version already released)."
-          else
-            echo "is_release=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Release on Maven Central
-        if: steps.version.outputs.is_release == 'true'
-        run: |
-          set -uo pipefail
-          # -U force updates just to make sure we are using latest dependencies
-          # -B Batch mode (do not ask for user input), just in case
-          # -D activate a profile via the release property (and disable defined submodules that should not be released)
-          mvn -U -B -ntp clean deploy -Drelease -DskipTests
-          STATUS=$?
-
-          if [[ "$STATUS" -ne 0 ]]; then
-            # The tag-exists check in the previous step only catches a fully-successful
-            # prior run (the tag is only created after this step succeeds). It does NOT
-            # catch a prior run that failed partway through this multi-module deploy -
-            # some modules published, others not. Maven Central artifacts are immutable,
-            # so a retry can hit "already exists" for whichever modules got through.
-            echo "::error::mvn deploy failed (exit $STATUS)."
-            echo "If the error above mentions artifacts already existing, a previous run likely partially published this version before failing - Central artifacts are immutable, so a retry can't safely resume."
-            echo "In that case: bump to a new version and re-run the release process instead of retrying this one."
-            exit "$STATUS"
-          fi
-        env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Tag the release version
-        if: success() && steps.version.outputs.is_release == 'true'
-        env:
-          ACTOR: ${{ github.actor }}
-          CURRENT_VERSION: ${{ steps.version.outputs.version }}
-          TAG_NAME: ${{ steps.version.outputs.tag_name }}
-        run: |
-          set -euo pipefail
-          git config --global user.email "${ACTOR}@users.noreply.github.com"
-          git config --global user.name "$ACTOR"
-
-          git tag -a "$TAG_NAME" -m "version $CURRENT_VERSION"
-          git push origin "$TAG_NAME"
-
-      - name: Create GitHub release
-        if: success() && steps.version.outputs.is_release == 'true'
-        run: |
-          gh release create "$TAG_NAME" --title "$TAG_NAME" --generate-notes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG_NAME: ${{ steps.version.outputs.tag_name }}
-
-    outputs:
-      tag_name: ${{ steps.version.outputs.tag_name }}
-      is_release: ${{ steps.version.outputs.is_release }}
-
-
-  bump-develop:
-    name: Advance develop to next SNAPSHOT
-    needs: release
-    if: success() && needs.release.outputs.is_release == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout develop
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          token: ${{ secrets.AUTO_MERGE_PAT }}
-          ref: develop
-          fetch-depth: 0
-
-      - name: Setup Java
-        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
-        with:
-          distribution: zulu
-          java-version: '17'
-          cache: 'maven'
-
-      - name: Bump to next SNAPSHOT and open auto-merge PR
-        env:
-          GH_TOKEN: ${{ secrets.AUTO_MERGE_PAT }}
-          ACTOR: ${{ github.actor }}
-          RUN_ID: ${{ github.run_id }}
-          RELEASE_TAG_NAME: ${{ needs.release.outputs.tag_name }}
-        run: |
-          set -euo pipefail
-          git config --global user.email "${ACTOR}@users.noreply.github.com"
-          git config --global user.name "$ACTOR"
-
-          BRANCH="chore/next-snapshot-${RUN_ID}"
-          git checkout -b "$BRANCH"
-
-          # Bumps forward from the version that was just released (develop's current tip), e.g. 2.4.0 -> 2.4.1-SNAPSHOT
-          mvn -B -ntp versions:set versions:commit -DnextSnapshot
-          git ls-files | grep 'pom.xml$' | xargs git add
-          git commit --allow-empty -am "prepare next development iteration"
-          # --force: BRANCH is deterministic (tied to run_id) and owned exclusively
-          # by this workflow run. A retry after a later step failed recreates this
-          # commit with a new SHA - a plain push would be rejected as non-fast-forward
-          # against the branch left over from the earlier attempt.
-          git push --force origin "$BRANCH"
-
-          # A retry after a prior attempt already got as far as opening the PR (but
-          # failed before/at the auto-merge call below) must reuse that PR instead of
-          # trying to create a second one, which `gh pr create` would reject.
-          EXISTING_PR=$(gh pr list -B develop -H "$BRANCH" --state open --json number -q '.[0].number // empty')
-          if [[ -z "$EXISTING_PR" ]]; then
-            gh pr create \
-              -B develop \
-              -H "$BRANCH" \
-              -t "Prepare next development iteration after ${RELEASE_TAG_NAME}" \
-              -b "Advances develop's SNAPSHOT version following the ${RELEASE_TAG_NAME} release."
-            PR_NUMBER=$(gh pr view "$BRANCH" --json number -q .number)
-          else
-            PR_NUMBER="$EXISTING_PR"
-            echo "Reusing existing open PR #$PR_NUMBER for $BRANCH (retry)."
-          fi
-
-          # --delete-branch is rejected by `gh pr merge` when the base branch has a
-          # merge queue enabled (develop does): the merge queue - not this command -
-          # performs the actual merge, so branch cleanup must be left to the repo's
-          # "Automatically delete head branches" setting instead.
-          gh pr merge "$PR_NUMBER" --auto --merge
+    with:
+      head_branch: develop
+      release_java_distribution: adopt
+      prepare_java_distribution: zulu
+      maven_server_id: central
+      deployment_environment: deployment
+    secrets:
+      release_pat: ${{ secrets.AUTO_MERGE_PAT }}
+      gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+      gpg_passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+      maven_username: ${{ secrets.MAVEN_USERNAME }}
+      maven_central_token: ${{ secrets.MAVEN_CENTRAL_TOKEN }}

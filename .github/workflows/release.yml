@@ -12,107 +12,17 @@ on:
           - major
           - minor
           - patch
-  workflow_call:
-    inputs:
-      release_type:
-        description: 'Release type'
-        required: true
-        type: string
+
 permissions:
   contents: read
-
-concurrency:
-  group: release
-  cancel-in-progress: false
-
-env:
-  HEAD_BRANCH: develop
 
 jobs:
   prepare-release:
     name: Open release PR against develop
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout develop
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          token: ${{ secrets.AUTO_MERGE_PAT }} # default GITHUB_TOKEN is blocked by branch protection / can't trigger downstream workflows
-          ref: ${{ env.HEAD_BRANCH }}
-          fetch-depth: 0
-
-      - name: Setup Java
-        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
-        with:
-          distribution: zulu
-          java-version: '17'
-          cache: 'maven'
-
-      - name: Determine initial release version from latest tag
-        id: version
-        run: |
-          set -euo pipefail
-          LATEST_VERSION=$(git tag --list 'v*' | sed 's/^v//' | sort -V | tail -1)
-
-          if [[ -z "$LATEST_VERSION" ]]; then
-            echo "No existing vX.Y.Z tag found in repo" >&2
-            exit 1
-          fi
-
-          if [[ "$LATEST_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-            MAJOR="${BASH_REMATCH[1]}"
-            MINOR="${BASH_REMATCH[2]}"
-            PATCH="${BASH_REMATCH[3]}"
-          else
-            echo "Could not parse latest tag version '$LATEST_VERSION' as semver" >&2
-            exit 1
-          fi
-
-          case "${{ inputs.release_type }}" in
-            major) RELEASE_VERSION="$((MAJOR + 1)).0.0" ;;
-            minor) RELEASE_VERSION="$MAJOR.$((MINOR + 1)).0" ;;
-            patch) RELEASE_VERSION="$MAJOR.$MINOR.$((PATCH + 1))" ;;
-            *)
-              echo "Unknown release_type '${{ inputs.release_type }}'" >&2
-              exit 1
-              ;;
-          esac
-
-          echo "Latest released version: $LATEST_VERSION -> proposed $RELEASE_VERSION (${{ inputs.release_type }})"
-          echo "release_version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Create release branch and bump version
-        id: branch
-        run: |
-          set -euo pipefail
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git config --global user.name "${{ github.actor }}"
-
-          RELEASE_BRANCH="release/prep-${{ github.run_id }}"
-          git checkout -b "$RELEASE_BRANCH"
-          mvn -B -ntp build-helper:parse-version versions:set -DnewVersion="${{ steps.version.outputs.release_version }}" versions:commit
-          git ls-files | grep 'pom.xml$' | xargs git add
-          git commit -am "release ${{ steps.version.outputs.release_version }}"
-          # --force: RELEASE_BRANCH is deterministic (tied to run_id) and owned
-          # exclusively by this workflow run. A "re-run failed jobs" retry after a
-          # later step failed (e.g. PR creation) recreates this commit with a new
-          # SHA - a plain push would be rejected as non-fast-forward against the
-          # branch left over from the earlier attempt.
-          git push --force origin "$RELEASE_BRANCH"
-
-          echo "release_branch=$RELEASE_BRANCH" >> "$GITHUB_OUTPUT"
-
-      - name: Open PR against develop
-        env:
-          GH_TOKEN: ${{ secrets.AUTO_MERGE_PAT }}
-        run: |
-          gh pr create \
-            -B "${{ env.HEAD_BRANCH }}" \
-            -H "${{ steps.branch.outputs.release_branch }}" \
-            -t "[${{ inputs.release_type }}] Release ${{ steps.version.outputs.release_version }}" \
-            -b "Release candidate for \`${{ steps.version.outputs.release_version }}\`.
-
-          To change the release type, edit the title's \`[${{ inputs.release_type }}]\` tag to \`[major]\`, \`[minor]\` or \`[patch]\` - the version and this branch update automatically.
-
-          **This PR must be merged manually.** Merging it tags \`v${{ steps.version.outputs.release_version }}\` (adjusted if you edited the type tag), deploys to Maven Central, and opens a follow-up PR advancing \`develop\` to the next SNAPSHOT (that one auto-merges)."
+    # Reusable workflow: secure-software-engineering/actions/release/README.md
+    uses: secure-software-engineering/actions/.github/workflows/maven-release-prepare.yml@f457fd685aa454b41c84be6de48c805174af5457 # extract-sootup-release-workflows
+    with:
+      release_type: ${{ inputs.release_type }}
+      head_branch: develop
+    secrets:
+      release_pat: ${{ secrets.AUTO_MERGE_PAT }} # default GITHUB_TOKEN is blocked by branch protection / can't trigger downstream workflows
