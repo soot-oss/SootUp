@@ -45,9 +45,6 @@ jobs:
     environment: deployment
     permissions:
       contents: write
-    outputs:
-      tag_name: ${{ steps.tag.outputs.tag_name }}
-      is_release: ${{ steps.version.outputs.is_release }}
     steps:
       - name: Checkout develop
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -67,38 +64,39 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} # Substituted with the value stored in the referenced secret
           gpg-passphrase: MAVEN_GPG_PASSPHRASE            # Env var that holds the key's passphrase
 
-      - name: Determine version and check SNAPSHOT suffix
+      - name: Determine version and check for existing tag
         id: version
         run: |
           set -euo pipefail
           # develop's tip now holds whatever version the merged release PR brought in
           CURRENT_VERSION=$(mvn -ntp org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)
+          TAG_NAME="v$CURRENT_VERSION"
           echo "version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
 
           if [[ "$CURRENT_VERSION" == *-SNAPSHOT ]]; then
             echo "is_release=false" >> "$GITHUB_OUTPUT"
             echo "::notice::develop is still on a SNAPSHOT version ($CURRENT_VERSION) after a release/prep merge; skipping deploy."
+          elif git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" >/dev/null 2>&1; then
+            echo "is_release=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Tag $TAG_NAME already exists; skipping deploy (version already released)."
           else
             echo "is_release=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Tag the just-merged release version
-        id: tag
         if: steps.version.outputs.is_release == 'true'
         env:
           ACTOR: ${{ github.actor }}
           CURRENT_VERSION: ${{ steps.version.outputs.version }}
+          TAG_NAME: ${{ steps.version.outputs.tag_name }}
         run: |
           set -euo pipefail
           git config --global user.email "${ACTOR}@users.noreply.github.com"
           git config --global user.name "$ACTOR"
 
-          TAG_NAME="v$CURRENT_VERSION"
-
           git tag -a "$TAG_NAME" -m "version $CURRENT_VERSION"
           git push origin "$TAG_NAME"
-
-          echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Deploy on Maven Central
         if: steps.version.outputs.is_release == 'true'
@@ -118,7 +116,11 @@ jobs:
           gh release create "$TAG_NAME" --title "$TAG_NAME" --generate-notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG_NAME: ${{ steps.tag.outputs.tag_name }}
+          TAG_NAME: ${{ steps.version.outputs.tag_name }}
+
+    outputs:
+      tag_name: ${{ steps.version.outputs.tag_name }}
+      is_release: ${{ steps.version.outputs.is_release }}
 
   bump-develop:
     name: Advance develop to next SNAPSHOT
