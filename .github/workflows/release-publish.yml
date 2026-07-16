@@ -215,4 +215,8 @@ jobs:
             echo "Reusing existing open PR #$PR_NUMBER for $BRANCH (retry)."
           fi
 
-          gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
+          # --delete-branch is rejected by `gh pr merge` when the base branch has a
+          # merge queue enabled (develop does): the merge queue - not this command -
+          # performs the actual merge, so branch cleanup must be left to the repo's
+          # "Automatically delete head branches" setting instead.
+          gh pr merge "$PR_NUMBER" --auto --merge
