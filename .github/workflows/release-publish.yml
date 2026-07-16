@@ -89,38 +89,27 @@ jobs:
             echo "is_release=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Pre-flight check - is this version already on Maven Central?
-        # The tag-exists check above only catches a fully-successful prior run (the
-        # tag is only created after deploy succeeds). It does NOT catch a prior run
-        # whose `mvn deploy` failed partway through a multi-module reactor build -
-        # some modules published, others not. Maven Central artifacts are immutable,
-        # so retrying `mvn deploy` in that state fails module-by-module with a
-        # confusing "already exists" error instead of a clear signal. Check one
-        # representative module up front so a stuck version fails fast with a clear
-        # message. If this fires, the version is stuck: bump to a new version and
-        # re-run the release process rather than retrying this one.
-        if: steps.version.outputs.is_release == 'true'
-        env:
-          CURRENT_VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          set -euo pipefail
-          FOUND=$(curl -s "https://search.maven.org/solrsearch/select?q=g:org.soot-oss+AND+a:sootup.core+AND+v:${CURRENT_VERSION}&core=gav&rows=1&wt=json" \
-            | jq -r '.response.numFound')
-
-          if [[ "$FOUND" != "0" ]]; then
-            echo "::error::sootup.core:${CURRENT_VERSION} already exists on Maven Central, but no v${CURRENT_VERSION} tag exists yet."
-            echo "This means a previous deploy partially succeeded before failing (Central artifacts are immutable, so a retry can't safely resume)."
-            echo "Bump to a new version and re-run the release process instead of retrying this one."
-            exit 1
-          fi
-
       - name: Release on Maven Central
         if: steps.version.outputs.is_release == 'true'
         run: |
+          set -uo pipefail
           # -U force updates just to make sure we are using latest dependencies
           # -B Batch mode (do not ask for user input), just in case
           # -D activate a profile via the release property (and disable defined submodules that should not be released)
           mvn -U -B -ntp clean deploy -Drelease -DskipTests
+          STATUS=$?
+
+          if [[ "$STATUS" -ne 0 ]]; then
+            # The tag-exists check in the previous step only catches a fully-successful
+            # prior run (the tag is only created after this step succeeds). It does NOT
+            # catch a prior run that failed partway through this multi-module deploy -
+            # some modules published, others not. Maven Central artifacts are immutable,
+            # so a retry can hit "already exists" for whichever modules got through.
+            echo "::error::mvn deploy failed (exit $STATUS)."
+            echo "If the error above mentions artifacts already existing, a previous run likely partially published this version before failing - Central artifacts are immutable, so a retry can't safely resume."
+            echo "In that case: bump to a new version and re-run the release process instead of retrying this one."
+            exit "$STATUS"
+          fi
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
