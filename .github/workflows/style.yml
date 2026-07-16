@@ -99,6 +99,48 @@ jobs:
           LATEST_VERSION=$(grep -m1 '<version>' $TMP_POM | sed -E 's/.*<version>(.+)<\/version>.*/\1/')
           rm "$TMP_POM"
 
+          # develop must already be a SNAPSHOT version before any regular PR is allowed to
+          # target it. After a release/prep-* PR merges, develop briefly sits on the
+          # just-released (non-SNAPSHOT) version until the automated chore/next-snapshot-*
+          # PR (opened by release-publish.yml's bump-develop job) merges and restores
+          # -SNAPSHOT. Both automation branches are exempt: release/prep-* is the one
+          # that removes -SNAPSHOT on purpose, and chore/next-snapshot-* is the one
+          # whose job is to fix it (it opens while develop is still non-SNAPSHOT and
+          # auto-merges).
+          if [[ "$HEAD_REF" != release/prep-* && "$HEAD_REF" != chore/next-snapshot-* ]]; then
+            RETRIES=5
+            for ((i=1; i<=RETRIES; i++)); do
+              if echo "$LATEST_VERSION" | grep -q -- "-SNAPSHOT$"; then
+                break
+              fi
+
+              if [ "$i" -eq "$RETRIES" ]; then
+                echo "::error::$BASE_REF is at $LATEST_VERSION (missing -SNAPSHOT)."
+                echo "The automated post-release version-bump PR (chore/next-snapshot-*) must merge into $BASE_REF before other PRs can be checked."
+                exit 1
+              fi
+
+              echo "$BASE_REF is at $LATEST_VERSION (missing -SNAPSHOT). Waiting 5m for chore/next-snapshot-* to merge (attempt $i/$RETRIES)..."
+              sleep 300
+
+              TMP_POM=$(mktemp)
+              HTTP_STATUS=$(curl -s -w "%{http_code}" \
+                            -H "Authorization: token ${GH_TOKEN}" \
+                            -H "Accept: application/vnd.github.v3.raw" \
+                            -o "$TMP_POM" \
+                            "https://api.github.com/repos/${REPO}/contents/pom.xml?ref=${BASE_REF}")
+
+              if [ "$HTTP_STATUS" -ne 200 ]; then
+                echo "::error::Failed to re-fetch pom.xml from $BASE_REF. HTTP status: $HTTP_STATUS."
+                rm "$TMP_POM"
+                exit 1
+              fi
+
+              LATEST_VERSION=$(grep -m1 '<version>' $TMP_POM | sed -E 's/.*<version>(.+)<\/version>.*/\1/')
+              rm "$TMP_POM"
+            done
+          fi
+
           # did the version not change? if not: release branches fail (they must bump), other branches: ok
           if [ "$LATEST_VERSION" == "$PROPOSED_VERSION" ]; then
             if [[ "$HEAD_REF" != release/prep-* ]]; then
