@@ -1,4 +1,4 @@
-name: Release
+name: Prepare Release
 run-name: Release ${{ inputs.release_type }} triggered by ${{ github.actor }}
 
 on:
@@ -20,6 +20,10 @@ on:
         type: string
 permissions:
   contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 env:
   HEAD_BRANCH: develop
@@ -90,7 +94,12 @@ jobs:
           mvn -B -ntp build-helper:parse-version versions:set -DnewVersion="${{ steps.version.outputs.release_version }}" versions:commit
           git ls-files | grep 'pom.xml$' | xargs git add
           git commit -am "release ${{ steps.version.outputs.release_version }}"
-          git push origin "$RELEASE_BRANCH"
+          # --force: RELEASE_BRANCH is deterministic (tied to run_id) and owned
+          # exclusively by this workflow run. A "re-run failed jobs" retry after a
+          # later step failed (e.g. PR creation) recreates this commit with a new
+          # SHA - a plain push would be rejected as non-fast-forward against the
+          # branch left over from the earlier attempt.
+          git push --force origin "$RELEASE_BRANCH"
 
           echo "release_branch=$RELEASE_BRANCH" >> "$GITHUB_OUTPUT"
 

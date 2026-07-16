@@ -15,17 +15,18 @@ permissions:
 
 jobs:
   cleanup-abandoned:
-    name: Delete abandoned release branch
+    name: Delete abandoned automation branch
     if: >
       github.event_name == 'pull_request' &&
       github.event.pull_request.merged == false &&
       github.event.pull_request.head.repo.full_name == github.repository &&
-      startsWith(github.event.pull_request.head.ref, 'release/prep-')
+      (startsWith(github.event.pull_request.head.ref, 'release/prep-') ||
+       startsWith(github.event.pull_request.head.ref, 'chore/next-snapshot-'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Delete release branch
+      - name: Delete abandoned release branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -37,6 +38,9 @@ jobs:
 
   release:
     name: Tag and deploy to Maven Central
+    concurrency:
+      group: release-publish-deploy
+      cancel-in-progress: false
     if: >
       github.event_name == 'push'
 #      &&
@@ -85,19 +89,30 @@ jobs:
             echo "is_release=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Tag the just-merged release version
+      - name: Pre-flight check - is this version already on Maven Central?
+        # The tag-exists check above only catches a fully-successful prior run (the
+        # tag is only created after deploy succeeds). It does NOT catch a prior run
+        # whose `mvn deploy` failed partway through a multi-module reactor build -
+        # some modules published, others not. Maven Central artifacts are immutable,
+        # so retrying `mvn deploy` in that state fails module-by-module with a
+        # confusing "already exists" error instead of a clear signal. Check one
+        # representative module up front so a stuck version fails fast with a clear
+        # message. If this fires, the version is stuck: bump to a new version and
+        # re-run the release process rather than retrying this one.
         if: steps.version.outputs.is_release == 'true'
         env:
-          ACTOR: ${{ github.actor }}
           CURRENT_VERSION: ${{ steps.version.outputs.version }}
-          TAG_NAME: ${{ steps.version.outputs.tag_name }}
         run: |
           set -euo pipefail
-          git config --global user.email "${ACTOR}@users.noreply.github.com"
-          git config --global user.name "$ACTOR"
+          FOUND=$(curl -s "https://search.maven.org/solrsearch/select?q=g:org.soot-oss+AND+a:sootup.core+AND+v:${CURRENT_VERSION}&core=gav&rows=1&wt=json" \
+            | jq -r '.response.numFound')
 
-          git tag -a "$TAG_NAME" -m "version $CURRENT_VERSION"
-          git push origin "$TAG_NAME"
+          if [[ "$FOUND" != "0" ]]; then
+            echo "::error::sootup.core:${CURRENT_VERSION} already exists on Maven Central, but no v${CURRENT_VERSION} tag exists yet."
+            echo "This means a previous deploy partially succeeded before failing (Central artifacts are immutable, so a retry can't safely resume)."
+            echo "Bump to a new version and re-run the release process instead of retrying this one."
+            exit 1
+          fi
 
       - name: Release on Maven Central
         if: steps.version.outputs.is_release == 'true'
@@ -111,8 +126,22 @@ jobs:
           MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PW }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
 
+      - name: Tag the release version
+        if: success() && steps.version.outputs.is_release == 'true'
+        env:
+          ACTOR: ${{ github.actor }}
+          CURRENT_VERSION: ${{ steps.version.outputs.version }}
+          TAG_NAME: ${{ steps.version.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          git config --global user.email "${ACTOR}@users.noreply.github.com"
+          git config --global user.name "$ACTOR"
+
+          git tag -a "$TAG_NAME" -m "version $CURRENT_VERSION"
+          git push origin "$TAG_NAME"
+
       - name: Create GitHub release
-        if: steps.version.outputs.is_release == 'true'
+        if: success() && steps.version.outputs.is_release == 'true'
         run: |
           gh release create "$TAG_NAME" --title "$TAG_NAME" --generate-notes
         env:
@@ -164,13 +193,26 @@ jobs:
           mvn -B -ntp versions:set versions:commit -DnextSnapshot
           git ls-files | grep 'pom.xml$' | xargs git add
           git commit --allow-empty -am "prepare next development iteration"
-          git push origin "$BRANCH"
+          # --force: BRANCH is deterministic (tied to run_id) and owned exclusively
+          # by this workflow run. A retry after a later step failed recreates this
+          # commit with a new SHA - a plain push would be rejected as non-fast-forward
+          # against the branch left over from the earlier attempt.
+          git push --force origin "$BRANCH"
 
-          gh pr create \
-            -B develop \
-            -H "$BRANCH" \
-            -t "Prepare next development iteration after ${RELEASE_TAG_NAME}" \
-            -b "Advances develop's SNAPSHOT version following the ${RELEASE_TAG_NAME} release."
+          # A retry after a prior attempt already got as far as opening the PR (but
+          # failed before/at the auto-merge call below) must reuse that PR instead of
+          # trying to create a second one, which `gh pr create` would reject.
+          EXISTING_PR=$(gh pr list -B develop -H "$BRANCH" --state open --json number -q '.[0].number // empty')
+          if [[ -z "$EXISTING_PR" ]]; then
+            gh pr create \
+              -B develop \
+              -H "$BRANCH" \
+              -t "Prepare next development iteration after ${RELEASE_TAG_NAME}" \
+              -b "Advances develop's SNAPSHOT version following the ${RELEASE_TAG_NAME} release."
+            PR_NUMBER=$(gh pr view "$BRANCH" --json number -q .number)
+          else
+            PR_NUMBER="$EXISTING_PR"
+            echo "Reusing existing open PR #$PR_NUMBER for $BRANCH (retry)."
+          fi
 
-          PR_NUMBER=$(gh pr view "$BRANCH" --json number -q .number)
           gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
