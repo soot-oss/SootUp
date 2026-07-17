@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
-import sootup.callgraph.mock.ClassHierarchyAnalysisPruningAlgorithm;
+import sootup.callgraph.mock.PruningCallGraphScope;
 import sootup.core.IdentifierFactory;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -14,21 +14,20 @@ import sootup.java.core.views.JavaView;
 
 public class ClassHierarchyAnalysisPruningAlgorithmTest extends CallGraphTest {
 
-  protected ClassHierarchyAnalysisPruningAlgorithm createAlgorithm(JavaView view) {
-    return new ClassHierarchyAnalysisPruningAlgorithm(view);
+  protected ClassHierarchyAnalysisAlgorithm createAlgorithm(JavaView view) {
+    return new ClassHierarchyAnalysisAlgorithm(view, new PruningCallGraphScope(view));
   }
 
   /**
    * In this test case, the call graph of Pruning from the folder {@link
-   * callgraph.Misc.binary.prune} is created using the <code>ClassHierarchyAnalysisPruningAlgorithm
-   * </code>. It is expected that <code>methodB()</code> is not included as a caller in the call
-   * graph, because the class <code>ClassHierarchyAnalysisPruningAlgorithm</code> overrides the
-   * <code>includeCall</code> method and excludes <code>
-   * methodB</code>.
+   * callgraph.Misc.binary.prune} is created using the <code>ClassHierarchyAnalysisAlgorithm</code>
+   * with a {@link PruningCallGraphScope}. It is expected that <code>methodB()</code> is not
+   * included as a caller in the call graph, because the scope excludes calls originating from
+   * <code>methodB</code>.
    */
   @Test
   public void testFalsePruningCHA() {
-    // RTA with includeCall() excluding methodB() and all calls from methodB()
+    // CHA with a CallGraphScope excluding methodB() and all calls from methodB()
     JavaView view = createViewForClassPath("src/test/resources/callgraph/Misc/binary");
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     JavaClassType mainClassSignature =

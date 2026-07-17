@@ -23,26 +23,28 @@ package sootup.callgraph.scope;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.model.SootClass;
-import sootup.core.signatures.MethodSignature;
+import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.model.SootMethod;
 
 /**
- * Controls which classes/methods are expanded during call graph construction.
+ * Controls which calls (edges) are expanded during call graph construction.
  *
- * <p>{@link #filter(SootClass, MethodSignature)} is invoked once per method signature popped from
- * the work list, before its outgoing calls are resolved. Note that the method signature is added as
- * a vertex to the call graph beforehand regardless of the filter result, so an excluded method
- * still appears as a node in the resulting call graph -- it simply has no outgoing edges, since its
- * body is never analyzed.
+ * <p>{@link #includeCall(SootMethod, InvokableStmt)} is invoked once per invokable statement of a
+ * method that is expanded, before the call(s) caused by that statement are resolved. Excluding
+ * every call originating from a method has the effect of pruning that method's expansion
+ * entirely: the method still appears as a node in the resulting call graph if it is reached as a
+ * target, it simply ends up with no outgoing edges, since none of its calls are resolved.
  */
 public interface CallGraphScope {
   /**
-   * Decides whether the given method should be excluded from call graph expansion.
+   * Decides whether a call from {@code method} represented by {@code statement} shall be added to
+   * the call graph. Default: accept everything.
    *
-   * @param sc the declaring class of {@code ms}
-   * @param ms the method signature under consideration
-   * @return {@code true} if the method's calls should NOT be resolved/added to the call graph,
-   *     {@code false} if it should be processed normally
+   * @param method the source (caller) method
+   * @param statement the invokable statement causing the call
+   * @return {@code true} if the call should be included in the call graph
    */
-  boolean filter(@NonNull SootClass sc, @NonNull MethodSignature ms);
+  default boolean includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+    return true;
+  }
 }

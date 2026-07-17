@@ -81,7 +81,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /** Creates a new call graph algorithm using the given view. */
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
-    this(view, new DefaultCallGraphScope());
+    this(view, new DefaultCallGraphScope(view));
   }
 
   /**
@@ -93,19 +93,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     this.typeHierarchy = view.getTypeHierarchy();
     this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
     this.scope = scope;
-  }
-
-  /**
-   * Decide whether a call from <code>method</code> represented by <code>statement</code> shall be
-   * added to the call graph. Default: accept everything. Subclasses can override this method to
-   * implement pruning.
-   *
-   * @param method the source (caller) method
-   * @param statement the invokable statement causing the call
-   * @return true if the call should be included in the call graph
-   */
-  protected boolean includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
-    return true;
   }
 
   /**
@@ -189,10 +176,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
 
-      // skip if excluded by scope
       SootClass currentClass =
           view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
-      if (currentClass == null || scope.filter(currentClass, currentMethodSignature)) {
+      if (currentClass == null) {
         continue;
       }
 
@@ -296,7 +282,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .map(Stmt::asInvokableStmt)
         .forEach(
             stmt ->
-                (includeCall(sourceMethod, stmt)
+                (scope.includeCall(sourceMethod, stmt)
                         ? resolveCall(sourceMethod, stmt)
                         : Stream.<MethodSignature>empty())
                     .forEach(
@@ -320,8 +306,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       if (!stmt.isInvokableStmt()) {
         continue;
       }
-      AbstractInvokeExpr sourceMethodInvokeExpr =
-          stmt.asInvokableStmt().getInvokeExpr().orElse(null);
+      InvokableStmt invokableStmt = stmt.asInvokableStmt();
+      if (!scope.includeCall(sourceMethod, invokableStmt)) {
+        continue;
+      }
+      AbstractInvokeExpr sourceMethodInvokeExpr = invokableStmt.getInvokeExpr().orElse(null);
       if (sourceMethodInvokeExpr == null || !sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
         continue;
       }
@@ -521,10 +510,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       InvokableStmt invokableStmt,
       Table<ClassType, BasicBlock<?>, Boolean> clinitCallTable) {
 
+    ArrayListMultimap<ClassType, Call> potentialClinitCalls = ArrayListMultimap.create();
+    if (!scope.includeCall(sourceMethod, invokableStmt)) {
+      return potentialClinitCalls;
+    }
+
     ControlFlowGraph<?> cfg = sourceMethod.getBody().getControlFlowGraph();
     BasicBlock<?> currentBlock = cfg.getBlockOf(invokableStmt);
     MethodSignature sourceSig = sourceMethod.getSignature();
-    ArrayListMultimap<ClassType, Call> potentialClinitCalls = ArrayListMultimap.create();
 
     // static initializer call of class + all superclasses
     Stream.concat(Stream.of(targetClass), typeHierarchy.superClassesOf(targetClass))

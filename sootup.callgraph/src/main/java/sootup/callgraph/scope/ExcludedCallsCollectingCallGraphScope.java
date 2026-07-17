@@ -26,29 +26,37 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
-import sootup.core.model.SootClass;
+import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.views.View;
 
 /**
  * A {@link CallGraphScope} that applies the same filtering as {@link DefaultCallGraphScope}
- * (excluding library classes), while additionally recording every excluded method signature so
- * callers can inspect what was pruned after the call graph has been constructed, e.g. to diagnose
- * why an expected method is missing from the call graph.
+ * (excluding calls originating from library classes), while additionally recording the signature
+ * of every method whose calls were excluded, so callers can inspect what was pruned after the call
+ * graph has been constructed, e.g. to diagnose why an expected method is missing from the call
+ * graph.
  */
-public class ExcludedCallsCollectingCallGraphScope implements CallGraphScope {
+public class ExcludedCallsCollectingCallGraphScope extends DefaultCallGraphScope {
+
   private final Set<MethodSignature> visitedExcludedMethods = new HashSet<>();
 
+  public ExcludedCallsCollectingCallGraphScope(@NonNull View view) {
+    super(view);
+  }
+
   @Override
-  public boolean filter(@NonNull SootClass sc, @NonNull MethodSignature ms) {
-    boolean isExcluded = sc.isLibraryClass();
-    if (isExcluded) {
-      visitedExcludedMethods.add(ms);
+  public boolean includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+    boolean included = super.includeCall(method, statement);
+    if (!included) {
+      visitedExcludedMethods.add(method.getSignature());
     }
-    return isExcluded;
+    return included;
   }
 
   /**
-   * Returns the method signatures that were excluded from expansion so far.
+   * Returns the signatures of the methods whose calls were excluded from expansion so far.
    *
    * @return an unmodifiable view of the excluded method signatures
    */

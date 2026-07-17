@@ -53,7 +53,7 @@ public class CallGraphScopeTest {
         identifierFactory.getMethodSignature(
             libraryClassType, "a", "void", Collections.emptyList());
 
-    ExcludedCallsCollectingCallGraphScope scope = new ExcludedCallsCollectingCallGraphScope();
+    ExcludedCallsCollectingCallGraphScope scope = new ExcludedCallsCollectingCallGraphScope(view);
     ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, scope);
     CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
 

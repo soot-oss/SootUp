@@ -23,13 +23,23 @@ package sootup.callgraph.scope;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.model.SootClass;
-import sootup.core.signatures.MethodSignature;
+import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
-/** The default {@link CallGraphScope}: excludes library classes from expansion. */
+/** The default {@link CallGraphScope}: excludes calls originating from library classes. */
 public class DefaultCallGraphScope implements CallGraphScope {
+
+  @NonNull private final View view;
+
+  public DefaultCallGraphScope(@NonNull View view) {
+    this.view = view;
+  }
+
   @Override
-  public boolean filter(@NonNull SootClass sc, @NonNull MethodSignature ms) {
-    return sc.isLibraryClass();
+  public boolean includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+    return view.getClass(method.getDeclaringClassType())
+        .map(sc -> !sc.isLibraryClass())
+        .orElse(true);
   }
 }
