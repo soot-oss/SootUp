@@ -9,108 +9,17 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: release-title-sync-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
-
 jobs:
   sync:
     name: Recompute release version from title tag
     # head.repo check rejects fork PRs pretending to be our own release branches -
     # legitimate release/prep-* branches are always pushed by our own automation into this repo.
+    # (Fork check itself is enforced inside the reusable workflow too; this is just
+    # a cheap skip so we don't even spin up a job run for irrelevant PRs.)
     if: >
       startsWith(github.head_ref, 'release/prep-') &&
       github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    env:
-      TITLE: ${{ github.event.pull_request.title }}
-    steps:
-      - name: Checkout release branch
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          token: ${{ secrets.AUTO_MERGE_PAT }} # default GITHUB_TOKEN is blocked by branch protection
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
-
-      - name: Setup Java
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
-        with:
-          distribution: zulu
-          java-version: '17'
-          cache: 'maven'
-
-      - name: Parse release type tag from title
-        id: parsed
-        run: |
-          set -euo pipefail
-          FOUND=()
-          shopt -s nocasematch
-          [[ "$TITLE" == *"[major]"* ]] && FOUND+=("major")
-          [[ "$TITLE" == *"[minor]"* ]] && FOUND+=("minor")
-          [[ "$TITLE" == *"[patch]"* ]] && FOUND+=("patch")
-
-          if [[ ${#FOUND[@]} -gt 1 ]]; then
-            echo "PR title contains conflicting version tags: ${FOUND[*]}. Use only one of [major]/[minor]/[patch]." >&2
-            exit 1
-          elif [[ ${#FOUND[@]} -eq 1 ]]; then
-            echo "release_type=${FOUND[0]}" >> "$GITHUB_OUTPUT"
-          else
-            echo "PR title must contain exactly one of [major]/[minor]/[patch]." >&2
-            exit 1
-          fi
-
-      - name: Recompute release version from latest tag
-        id: version
-        env:
-          RELEASE_TYPE: ${{ steps.parsed.outputs.release_type }}
-        run: |
-          set -euo pipefail
-          git fetch --tags
-          LATEST_VERSION=$(git tag --list 'v*' | sed 's/^v//' | sort -V | tail -1)
-
-          if [[ -z "$LATEST_VERSION" ]]; then
-            echo "No existing vX.Y.Z tag found in repo" >&2
-            exit 1
-          fi
-
-          if [[ "$LATEST_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-            MAJOR="${BASH_REMATCH[1]}"
-            MINOR="${BASH_REMATCH[2]}"
-            PATCH="${BASH_REMATCH[3]}"
-          else
-            echo "Could not parse latest tag version '$LATEST_VERSION' as semver" >&2
-            exit 1
-          fi
-
-          case "$RELEASE_TYPE" in
-            major) RELEASE_VERSION="$((MAJOR + 1)).0.0" ;;
-            minor) RELEASE_VERSION="$MAJOR.$((MINOR + 1)).0" ;;
-            patch) RELEASE_VERSION="$MAJOR.$MINOR.$((PATCH + 1))" ;;
-          esac
-
-          echo "release_version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Amend release branch if version changed
-        env:
-          ACTOR: ${{ github.actor }}
-          RELEASE_VERSION: ${{ steps.version.outputs.release_version }}
-          HEAD_REF: ${{ github.head_ref }}
-        run: |
-          set -euo pipefail
-          git config --global user.email "${ACTOR}@users.noreply.github.com"
-          git config --global user.name "$ACTOR"
-
-          CURRENT_VERSION=$(mvn -ntp org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)
-
-          if [[ "$CURRENT_VERSION" == "$RELEASE_VERSION" ]]; then
-            echo "Release version already up to date ($CURRENT_VERSION)."
-            exit 0
-          fi
-
-          echo "Updating release branch from $CURRENT_VERSION to $RELEASE_VERSION"
-          mvn -B -ntp build-helper:parse-version versions:set -DnewVersion="$RELEASE_VERSION" versions:commit
-          git ls-files | grep 'pom.xml$' | xargs git add
-          git commit --amend -am "release $RELEASE_VERSION"
-          git push --force origin HEAD:"$HEAD_REF"
+    # Reusable workflow: secure-software-engineering/actions/release/README.md
+    uses: secure-software-engineering/actions/release/maven-release-title-sync/action.yml@d039e33678c4515ae4f9664e9fe9db33b84a6419 # develop
+    secrets:
+      release_pat: ${{ secrets.AUTO_MERGE_PAT }} # default GITHUB_TOKEN is blocked by branch protection
