@@ -1,0 +1,16 @@
+name: Release Schedule
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+
+jobs:
+  schedule:
+    uses: secure-software-engineering/actions/.github/workflows/maven-release-schedule.yml@develop
+    with:
+      head_branch: develop
+      java_version: '17'
+      release_ready_age_days: '28'
+      stale_pr_age_days: '7'
+    secrets:
+      release_pat: ${{ secrets.AUTO_MERGE_PAT }}
