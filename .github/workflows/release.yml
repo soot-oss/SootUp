@@ -20,7 +20,7 @@ jobs:
   prepare-release:
     name: Open release PR against develop
     # Reusable workflow: secure-software-engineering/actions/release/README.md
-    uses: secure-software-engineering/actions/release/maven-release-prepare/action.yml@d039e33678c4515ae4f9664e9fe9db33b84a6419 # develop
+    uses: secure-software-engineering/actions/.github/workflows/maven-release-prepare.yml@486fdf8b917ee6ad71eb393010bd8b3952c208e6 # develop
     with:
       release_type: ${{ inputs.release_type }}
       head_branch: develop
