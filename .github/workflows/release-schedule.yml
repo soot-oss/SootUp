@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '0 9 * * *'
 
+permissions:
+  contents: read
+
 jobs:
   schedule:
     uses: secure-software-engineering/actions/.github/workflows/maven-release-schedule.yml@develop
