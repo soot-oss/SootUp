@@ -19,7 +19,7 @@ public class StaticInvokeArgsTest {
 
   @BeforeAll
   public static void createView() {
-    String apk_path_string = "resources/Crypto.apk";
+    String apk_path_string = "src/test/resources/Crypto.apk";
     Path apkPath = Paths.get(apk_path_string);
     String androidPlatformsPath = "";
     AndroidVersionInfo androidVersionInfo = new AndroidVersionInfo(apkPath, androidPlatformsPath);

@@ -1,0 +1,28 @@
+name: Prepare Release
+run-name: Release ${{ inputs.release_type }} triggered by ${{ github.actor }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+permissions:
+  contents: read
+
+jobs:
+  prepare-release:
+    name: Open release PR against develop
+    # Reusable workflow: secure-software-engineering/actions/release/README.md
+    uses: secure-software-engineering/actions/.github/workflows/maven-release-prepare.yml@486fdf8b917ee6ad71eb393010bd8b3952c208e6 # develop
+    with:
+      release_type: ${{ inputs.release_type }}
+      head_branch: develop
+    secrets:
+      release_pat: ${{ secrets.AUTO_MERGE_PAT }} # default GITHUB_TOKEN is blocked by branch protection / can't trigger downstream workflows

@@ -1,10 +1,10 @@
-package sootup.core.jimple;
+package sootup.core.frontend;
 
 /*-
  * #%L
- * Soot
+ * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2018-2020 Markus Schmidt and others
+ * Copyright (C) 2004-2020 Ondrej Lhotak, Linghui Luo and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,15 +22,17 @@ package sootup.core.jimple;
  * #L%
  */
 
-import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.common.Local;
+import java.nio.file.Path;
+import sootup.core.inputlocation.FileType;
 
-public class IgnoreLocalNameComparator extends JimpleComparator {
+/**
+ * Responsible for creating {@link SootClassSource}es based on the handled file type (.class,
+ * .jimple, .java, .dex, etc).
+ *
+ * @author Manuel Benz
+ */
+public interface PathbasedClassProvider extends ClassProvider<Path> {
 
-  public boolean caseLocal(Local obj, Object o) {
-    if (!(o instanceof Local)) {
-      return false;
-    }
-    return obj.getType().equals(((Local) o).getType());
-  }
+  /** Returns the file type that is handled by this provider, e.g. class, jimple, java */
+  FileType getHandledFileType();
 }

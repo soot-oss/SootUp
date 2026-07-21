@@ -6,10 +6,10 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 env:
   LATEST_BRANCH_NAME: develop
-  FINAL_BRANCH_NAME: master
 
 jobs:
   check-formatting:
@@ -17,10 +17,10 @@ jobs:
     name: Check style
     steps:
       - name: Checkout source code
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Java 17
-        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: adopt
           java-package: jdk
@@ -36,66 +36,125 @@ jobs:
       - name: Check Javadoc
         run: mvn -B javadoc:aggregate -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
+      - name: Resolve branch refs
+        # github.head_ref / github.base_ref are only populated for pull_request events.
+        # On merge_group events (merge queue) they are empty, so resolve them from the
+        # merge_group context (head_ref there is the temporary gh-readonly-queue branch,
+        # so the PR number embedded in it is used to look up the real head branch).
+        #
+        # All untrusted context values (branch names are attacker-controlled on forked
+        # PRs) are passed in via `env:` rather than interpolated with ${{ }} into the
+        # script body, to avoid script injection.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_HEAD_REF: ${{ github.head_ref }}
+          PR_BASE_REF: ${{ github.base_ref }}
+          MERGE_GROUP_BASE_REF: ${{ github.event.merge_group.base_ref }}
+          MERGE_GROUP_HEAD_REF: ${{ github.event.merge_group.head_ref }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "$EVENT_NAME" == "pull_request" ]; then
+            HEAD_REF="$PR_HEAD_REF"
+            BASE_REF="$PR_BASE_REF"
+          else
+            BASE_REF="${MERGE_GROUP_BASE_REF#refs/heads/}"
+            PR_NUMBER=$(echo "$MERGE_GROUP_HEAD_REF" | grep -oP 'pr-\K[0-9]+')
+            HEAD_REF=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRefName -q .headRefName)
+          fi
+          echo "HEAD_REF=$HEAD_REF" >> "$GITHUB_ENV"
+          echo "BASE_REF=$BASE_REF" >> "$GITHUB_ENV"
+
       - name: Get Proposed Version
         run: |
-          echo "PROPOSED_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+          echo "PROPOSED_VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)" >> $GITHUB_ENV
 
       - name: Check Semantic Versioning Pattern
         run: |
-          echo "${{ env.PROPOSED_VERSION }}" | \
+          echo "$PROPOSED_VERSION" | \
           grep -P '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9A-Za-z-][0-9A-Za-z-]*))*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$'
 
-      - name: Enfore -SNAPSHOT version suffix on every other branch than master
-        run: |
-          HAS_SNAPSHOT_SUFFIX=$(echo "${{ env.PROPOSED_VERSION }}" | grep -q -- "-SNAPSHOT$")
-          if [ "${{ github.base_ref == env.FINAL_BRANCH_NAME }}" ]; then
-            if [ "$HAS_SNAPSHOT_SUFFIX" -eq 1 ]; then       # hint: command return values not boolean representation
-              echo "To merge into ${{ github.base_ref }} a -SNAPSHOT suffix is allowed!"
-              exit 1
-            fi
-          else
-            if [ "$HAS_SNAPSHOT_SUFFIX" -eq 0 ]; then       # hint: command return values not boolean representation
-              echo "To merge into ${{ github.base_ref }} a -SNAPSHOT suffix is needed!"
-              exit 1
-            fi
-          fi
-
       - name: Ensure (strict) monotony of the version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
           TMP_POM=$(mktemp)
           HTTP_STATUS=$(curl -s -w "%{http_code}" \
-                        -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                        -H "Authorization: token ${GH_TOKEN}" \
                         -H "Accept: application/vnd.github.v3.raw" \
                         -o "$TMP_POM" \
-                        "https://api.github.com/repos/${{ github.repository }}/contents/pom.xml?ref=${{ github.base_ref }}")
-          
+                        "https://api.github.com/repos/${REPO}/contents/pom.xml?ref=${BASE_REF}")
+
           if [ "$HTTP_STATUS" -ne 200 ]; then
-            echo "Warning: pom.xml not found in ${{ github.base_ref }}. HTTP status: $HTTP_STATUS."
+            echo "Warning: pom.xml not found in $BASE_REF. HTTP status: $HTTP_STATUS."
             echo "Information: We assume the base branch is new and does not contain a pom.xml yet."
             rm "$TMP_POM"
             exit 0
           fi
-          
+
           echo "Base branch pom.xml downloaded successfully."
-          
+
           # hint: unfortunately mvn (as used above) fails if the downloaded pom is an aggregator pom and needs child poms as well
           LATEST_VERSION=$(grep -m1 '<version>' $TMP_POM | sed -E 's/.*<version>(.+)<\/version>.*/\1/')
           rm "$TMP_POM"
 
-          # did the version not change? if not: master fails, other branches: ok      
-          if [ "$LATEST_VERSION" == "${{ env.PROPOSED_VERSION }}" ]; then
-            if [ "${{ github.base_ref }}" != "${{ env.FINAL_BRANCH_NAME }}" ]; then
-              echo "No version change necessary on ${{ github.base_ref }}.";
+          # develop must already be a SNAPSHOT version before any regular PR is allowed to
+          # target it. After a release/prep-* PR merges, develop briefly sits on the
+          # just-released (non-SNAPSHOT) version until the automated chore/next-snapshot-*
+          # PR (opened by release-publish.yml's bump-develop job) merges and restores
+          # -SNAPSHOT. Both automation branches are exempt: release/prep-* is the one
+          # that removes -SNAPSHOT on purpose, and chore/next-snapshot-* is the one
+          # whose job is to fix it (it opens while develop is still non-SNAPSHOT and
+          # auto-merges).
+          if [[ "$HEAD_REF" != release/prep-* && "$HEAD_REF" != chore/next-snapshot-* ]]; then
+            RETRIES=5
+            for ((i=1; i<=RETRIES; i++)); do
+              if echo "$LATEST_VERSION" | grep -q -- "-SNAPSHOT$"; then
+                break
+              fi
+
+              if [ "$i" -eq "$RETRIES" ]; then
+                echo "::error::$BASE_REF is at $LATEST_VERSION (missing -SNAPSHOT)."
+                echo "The automated post-release version-bump PR (chore/next-snapshot-*) must merge into $BASE_REF before other PRs can be checked."
+                exit 1
+              fi
+
+              echo "$BASE_REF is at $LATEST_VERSION (missing -SNAPSHOT). Waiting 5m for chore/next-snapshot-* to merge (attempt $i/$RETRIES)..."
+              sleep 300
+
+              TMP_POM=$(mktemp)
+              HTTP_STATUS=$(curl -s -w "%{http_code}" \
+                            -H "Authorization: token ${GH_TOKEN}" \
+                            -H "Accept: application/vnd.github.v3.raw" \
+                            -o "$TMP_POM" \
+                            "https://api.github.com/repos/${REPO}/contents/pom.xml?ref=${BASE_REF}")
+
+              if [ "$HTTP_STATUS" -ne 200 ]; then
+                echo "::error::Failed to re-fetch pom.xml from $BASE_REF. HTTP status: $HTTP_STATUS."
+                rm "$TMP_POM"
+                exit 1
+              fi
+
+              LATEST_VERSION=$(grep -m1 '<version>' $TMP_POM | sed -E 's/.*<version>(.+)<\/version>.*/\1/')
+              rm "$TMP_POM"
+            done
+          fi
+
+          # did the version not change? if not: release branches fail (they must bump), other branches: ok
+          if [ "$LATEST_VERSION" == "$PROPOSED_VERSION" ]; then
+            if [[ "$HEAD_REF" != release/prep-* ]]; then
+              echo "No version change necessary on $HEAD_REF.";
               exit 0
             else
-              echo "Version change necessary to merge into ${{ github.base_ref }}!";
+              echo "Version change necessary on a release branch (release/prep-*)!";
               exit 1
             fi
           fi
 
           # is the new version higher? hint: does not handle 0.1.3-alpha versions.. just numbers! (or both with the same suffix like -SNAPHSOT)
-          if [ "$(printf "%s\n%s" "${{ env.PROPOSED_VERSION }}" "$LATEST_VERSION" | sort -V | head -n1)" = "${{ env.PROPOSED_VERSION }}" ]; then
+          if [ "$(printf "%s\n%s" "$PROPOSED_VERSION" "$LATEST_VERSION" | sort -V | head -n1)" = "$PROPOSED_VERSION" ]; then
               echo "Proposed new version is lower than the latest version!"
-              echo "${{ env.PROPOSED_VERSION }} <= $LATEST_VERSION"
+              echo "$PROPOSED_VERSION <= $LATEST_VERSION"
               exit 1
           fi

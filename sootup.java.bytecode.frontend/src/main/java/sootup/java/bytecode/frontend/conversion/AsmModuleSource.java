@@ -26,10 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.ClassReader;
@@ -51,6 +48,31 @@ public class AsmModuleSource extends JavaModuleInfo {
     // if it would be an automatic module there would be no module-info.class
     super();
     this.sourcePath = sourcePath;
+  }
+
+  public static EnumSet<ModuleModifier> getModuleModifiers(int access) {
+    EnumSet<ModuleModifier> modifierEnumSet = EnumSet.noneOf(ModuleModifier.class);
+
+    // add all modifiers for which (access & ABSTRACT) =! 0
+    for (ModuleModifier modifier : ModuleModifier.values()) {
+      if ((access & modifier.getBytecode()) != 0) {
+        modifierEnumSet.add(modifier);
+      }
+    }
+    return modifierEnumSet;
+  }
+
+  @NonNull
+  public static ClassNode getModuleDescriptor(Path moduleInfoFile) {
+    ClassNode moduleDescriptor;
+    try (InputStream sourceFileInputStream = Files.newInputStream(moduleInfoFile)) {
+      ClassReader clsr = new ClassReader(sourceFileInputStream);
+      moduleDescriptor = new ClassNode(AsmUtil.SUPPORTED_ASM_OPCODE);
+      clsr.accept(moduleDescriptor, ClassReader.SKIP_FRAMES);
+    } catch (IOException e) {
+      throw new ResolveException("Error loading the module-descriptor", moduleInfoFile, e);
+    }
+    return moduleDescriptor;
   }
 
   // make loading lazy
@@ -86,7 +108,7 @@ public class AsmModuleSource extends JavaModuleInfo {
           JavaModuleIdentifierFactory.getModuleSignature(moduleRequireNode.module);
       JavaModuleInfo.ModuleReference reference =
           new JavaModuleInfo.ModuleReference(
-              moduleSignature, AsmUtil.getModuleModifiers(moduleRequireNode.access));
+              moduleSignature, getModuleModifiers(moduleRequireNode.access));
       requires.add(reference);
     }
     return requires;
@@ -109,7 +131,7 @@ public class AsmModuleSource extends JavaModuleInfo {
           new JavaModuleInfo.PackageReference(
               identifierFactory.getPackageName(
                   exportNode.packaze.replace('/', '.'), getModuleSignature().toString()),
-              AsmUtil.getModuleModifiers(exportNode.access),
+              getModuleModifiers(exportNode.access),
               modules);
       exports.add(reference);
     }
@@ -133,7 +155,7 @@ public class AsmModuleSource extends JavaModuleInfo {
           new JavaModuleInfo.PackageReference(
               identifierFactory.getPackageName(
                   openNode.packaze.replace('/', '.'), getModuleSignature().toString()),
-              AsmUtil.getModuleModifiers(openNode.access),
+              getModuleModifiers(openNode.access),
               modules);
       opens.add(reference);
     }
@@ -154,7 +176,7 @@ public class AsmModuleSource extends JavaModuleInfo {
         throw new IllegalStateException("provides entry without 'with' .");
       }
       Iterable<JavaClassType> providersSignatures =
-          AsmUtil.asmIdToSignature(moduleProvideNode.providers);
+          AsmUtil.asmIdToSignatures(moduleProvideNode.providers);
       for (JavaClassType sootClassSignature : providersSignatures) {
         providers.add(new InterfaceReference(sootClassSignature, serviceSignature));
       }
@@ -187,6 +209,6 @@ public class AsmModuleSource extends JavaModuleInfo {
   @Override
   public Set<ModuleModifier> getModifiers() {
     ModuleNode module = _lazyModule.get();
-    return AsmUtil.getModuleModifiers(module.access);
+    return getModuleModifiers(module.access);
   }
 }

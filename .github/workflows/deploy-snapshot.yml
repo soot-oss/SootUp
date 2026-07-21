@@ -15,9 +15,21 @@ jobs:
     environment: deployment
     steps:
       - name: Checkout source code
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Java 17
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: adopt
+          java-package: jdk
+          java-version: 17
+
+      - name: Get project version
+        run: |
+          echo "PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)" >> $GITHUB_ENV
 
       - name: Deploy SNAPSHOT version
+        if: endsWith(env.PROJECT_VERSION, '-SNAPSHOT')
         uses: secure-software-engineering/actions/deployment/maven-deployment@0caaeef2e50a42448e00423a073c676aebead49f # develop
         with:
           java-distribution: adopt
