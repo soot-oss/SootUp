@@ -31,11 +31,18 @@ import sootup.core.model.SootMethod;
  *
  * <p>{@link #includeCall(SootMethod, InvokableStmt)} is invoked once per invokable statement of a
  * method that is expanded, before the call(s) caused by that statement are resolved. Excluding
- * every call originating from a method has the effect of pruning that method's expansion
- * entirely: the method still appears as a node in the resulting call graph if it is reached as a
- * target, it simply ends up with no outgoing edges, since none of its calls are resolved.
+ * every call originating from a method has the effect of pruning that method's expansion entirely:
+ * the method still appears as a node in the resulting call graph if it is reached as a target, it
+ * simply ends up with no outgoing edges, since none of its calls are resolved.
  */
 public interface CallGraphScope {
+
+  enum Strategy {
+    EXPLORE_METHOD,
+    STOP_AFTER_CALL,
+    IGNORE
+  }
+
   /**
    * Decides whether a call from {@code method} represented by {@code statement} shall be added to
    * the call graph. Default: accept everything.
@@ -44,7 +51,7 @@ public interface CallGraphScope {
    * @param statement the invokable statement causing the call
    * @return {@code true} if the call should be included in the call graph
    */
-  default boolean includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
-    return true;
+  default Strategy includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+    return Strategy.EXPLORE_METHOD;
   }
 }

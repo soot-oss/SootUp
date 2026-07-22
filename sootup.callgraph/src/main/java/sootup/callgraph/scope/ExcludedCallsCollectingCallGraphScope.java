@@ -33,8 +33,8 @@ import sootup.core.views.View;
 
 /**
  * A {@link CallGraphScope} that applies the same filtering as {@link DefaultCallGraphScope}
- * (excluding calls originating from library classes), while additionally recording the signature
- * of every method whose calls were excluded, so callers can inspect what was pruned after the call
+ * (excluding calls originating from library classes), while additionally recording the signature of
+ * every method whose calls were excluded, so callers can inspect what was pruned after the call
  * graph has been constructed, e.g. to diagnose why an expected method is missing from the call
  * graph.
  */
@@ -47,12 +47,12 @@ public class ExcludedCallsCollectingCallGraphScope extends DefaultCallGraphScope
   }
 
   @Override
-  public boolean includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
-    boolean included = super.includeCall(method, statement);
-    if (!included) {
+  public Strategy includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+    Strategy startegy = super.includeCall(method, statement);
+    if (startegy == Strategy.IGNORE) {
       visitedExcludedMethods.add(method.getSignature());
     }
-    return included;
+    return startegy;
   }
 
   /**

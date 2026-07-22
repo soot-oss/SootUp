@@ -282,7 +282,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .map(Stmt::asInvokableStmt)
         .forEach(
             stmt ->
-                (scope.includeCall(sourceMethod, stmt)
+                (scope.includeCall(sourceMethod, stmt) == CallGraphScope.Strategy.EXPLORE_METHOD
                         ? resolveCall(sourceMethod, stmt)
                         : Stream.<MethodSignature>empty())
                     .forEach(
@@ -307,7 +307,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
       InvokableStmt invokableStmt = stmt.asInvokableStmt();
-      if (!scope.includeCall(sourceMethod, invokableStmt)) {
+      if (scope.includeCall(sourceMethod, invokableStmt) == CallGraphScope.Strategy.IGNORE) {
         continue;
       }
       AbstractInvokeExpr sourceMethodInvokeExpr = invokableStmt.getInvokeExpr().orElse(null);
@@ -511,7 +511,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       Table<ClassType, BasicBlock<?>, Boolean> clinitCallTable) {
 
     ArrayListMultimap<ClassType, Call> potentialClinitCalls = ArrayListMultimap.create();
-    if (!scope.includeCall(sourceMethod, invokableStmt)) {
+    if (scope.includeCall(sourceMethod, invokableStmt) == CallGraphScope.Strategy.IGNORE) {
       return potentialClinitCalls;
     }
 

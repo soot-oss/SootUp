@@ -78,8 +78,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   }
 
   /**
-   * The constructor of the RTA algorithm that allows restricting which calls are expanded
-   * during call graph construction.
+   * The constructor of the RTA algorithm that allows restricting which calls are expanded during
+   * call graph construction.
    *
    * @param view it contains the data of the classes and methods
    * @param scope decides which calls are excluded from the call graph

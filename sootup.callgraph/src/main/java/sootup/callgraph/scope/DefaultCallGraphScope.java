@@ -24,6 +24,7 @@ package sootup.callgraph.scope;
 
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
@@ -37,9 +38,10 @@ public class DefaultCallGraphScope implements CallGraphScope {
   }
 
   @Override
-  public boolean includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+  public Strategy includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
     return view.getClass(method.getDeclaringClassType())
-        .map(sc -> !sc.isLibraryClass())
-        .orElse(true);
+        .filter(SootClass::isLibraryClass)
+        .map(sc -> Strategy.STOP_AFTER_CALL)
+        .orElse(Strategy.EXPLORE_METHOD);
   }
 }
