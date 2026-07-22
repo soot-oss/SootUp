@@ -51,22 +51,53 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   private static final Logger logger = LoggerFactory.getLogger(ViewTypeHierarchy.class);
 
+  private final View view;
   private final Supplier<ScanResult> lazyScanResult;
   private final ClassType objectClassType;
   private final Map<SymmetricKey, Set<ClassType>> lcaCache = new HashMap<>();
 
+  private final Set<ClassType> reportedUnresolvableTypes =
+      Collections.synchronizedSet(new HashSet<>());
+
   /** to allow caching use Typehierarchy.fromView() to get/create the Typehierarchy. */
   public ViewTypeHierarchy(@NonNull View view) {
+    this.view = view;
     lazyScanResult = Suppliers.memoize(() -> scanView(view));
     objectClassType = view.getIdentifierFactory().getClassType("java.lang.Object");
+  }
+
+  /**
+   * Looks up the vertex for the given type. If the type was not reached during the initial scan
+   * (e.g. because it is only referenced from a method signature, cast, or catch clause rather than
+   * declared as a super type), this attempts to resolve and add it to the graph on demand via the
+   * {@link View}. Returns {@code null} only if the type cannot be resolved at all, e.g. because it
+   * is an optional/vendor-provided type that is absent from the classpath.
+   */
+  private @Nullable Vertex resolveVertex(@NonNull ClassType type) {
+    ScanResult scanResult = lazyScanResult.get();
+    Vertex vertex = scanResult.typeToVertex.get(type);
+    if (vertex != null) {
+      return vertex;
+    }
+    Optional<? extends SootClass> sootClass = view.getClass(type);
+    if (sootClass.isEmpty()) {
+      if (reportedUnresolvableTypes.add(type)) {
+        logger.warn(
+            "Could not find '{}' in the type hierarchy - add the jar/classpath entry defining it to analyze it.",
+            type);
+      }
+      return null;
+    }
+    addType(sootClass.get());
+    return scanResult.typeToVertex.get(type);
   }
 
   @NonNull
   @Override
   public Stream<ClassType> implementersOf(@NonNull ClassType interfaceType) {
-    Vertex vertex = lazyScanResult.get().typeToVertex.get(interfaceType);
+    Vertex vertex = resolveVertex(interfaceType);
     if (vertex == null) {
-      throw new IllegalArgumentException("Could not find '" + interfaceType + "' in hierarchy.");
+      return Stream.empty();
     }
     if (vertex instanceof ScanResult.ClassVertex) {
       throw new IllegalArgumentException("'" + interfaceType + "' is not an interface.");
@@ -77,9 +108,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @NonNull
   @Override
   public Stream<ClassType> subclassesOf(@NonNull ClassType classType) {
-    Vertex vertex = lazyScanResult.get().typeToVertex.get(classType);
+    Vertex vertex = resolveVertex(classType);
     if (vertex == null) {
-      throw new IllegalArgumentException("Could not find '" + classType + "' in hierarchy.");
+      return Stream.empty();
     }
     if (vertex instanceof ScanResult.InterfaceVertex) {
       throw new IllegalArgumentException("'" + classType + "' is not a class.");
@@ -91,10 +122,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Stream<ClassType> subinterfacesOf(@NonNull ClassType interfaceType) {
     ScanResult scanResult = lazyScanResult.get();
-    Vertex vertex = scanResult.typeToVertex.get(interfaceType);
+    Vertex vertex = resolveVertex(interfaceType);
     if (vertex == null) {
-      throw new IllegalArgumentException(
-          "Could not find interface '" + interfaceType + "' in hierarchy.");
+      return Stream.empty();
     }
     return visitInterfaceSubgraph(scanResult.graph, vertex, false);
   }
@@ -103,9 +133,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Stream<ClassType> subtypesOf(@NonNull ClassType type) {
     ScanResult scanResult = lazyScanResult.get();
-    Vertex vertex = scanResult.typeToVertex.get(type);
+    Vertex vertex = resolveVertex(type);
     if (vertex == null) {
-      throw new IllegalArgumentException("Could not find '" + type + "' in hierarchy.");
+      return Stream.empty();
     }
 
     // We now traverse the subgraph of the vertex to find all its subtypes
@@ -116,9 +146,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Stream<ClassType> directSubtypesOf(@NonNull ClassType type) {
     ScanResult scanResult = lazyScanResult.get();
-    Vertex vertex = scanResult.typeToVertex.get(type);
+    Vertex vertex = resolveVertex(type);
     if (vertex == null) {
-      throw new IllegalArgumentException("Could not find '" + type + "' in hierarchy.");
+      return Stream.empty();
     }
 
     Graph<Vertex, Edge> graph = scanResult.graph;
@@ -161,9 +191,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Override
   public Stream<ClassType> directlyImplementedInterfacesOf(@NonNull ClassType classType) {
-    Vertex vertex = lazyScanResult.get().typeToVertex.get(classType);
+    Vertex vertex = resolveVertex(classType);
     if (vertex == null) {
-      throw new IllegalArgumentException("Could not find '" + classType + "' in hierarchy.");
+      return Stream.empty();
     }
     if (vertex instanceof ScanResult.InterfaceVertex) {
       throw new IllegalArgumentException(classType + " is not a class.");
@@ -174,9 +204,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @NonNull
   @Override
   public Stream<ClassType> directlyExtendedInterfacesOf(@NonNull ClassType interfaceType) {
-    Vertex vertex = lazyScanResult.get().typeToVertex.get(interfaceType);
+    Vertex vertex = resolveVertex(interfaceType);
     if (vertex == null) {
-      throw new IllegalArgumentException("Could not find " + interfaceType + " in hierarchy.");
+      return Stream.empty();
     }
     if (vertex instanceof ScanResult.ClassVertex) {
       throw new IllegalArgumentException(interfaceType + " is not an interface.");
@@ -186,12 +216,12 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Override
   public boolean contains(ClassType type) {
-    return lazyScanResult.get().typeToVertex.get(type) != null;
+    return resolveVertex(type) != null;
   }
 
   protected Set<Vertex> findAncestors(ClassType type) {
     Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
-    Vertex vertex = lazyScanResult.get().typeToVertex.get(type);
+    Vertex vertex = resolveVertex(type);
     if (vertex == null) {
       logger.debug("Could not find {} in this hierarchy!", type.toString());
       return Collections.emptySet();
@@ -255,11 +285,10 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @NonNull
   @Override
   public Stream<ClassType> implementedInterfacesOf(@NonNull ClassType type) {
-    ScanResult scanResult = lazyScanResult.get();
-    Vertex vertex = scanResult.typeToVertex.get(type);
+    Vertex vertex = resolveVertex(type);
 
     if (vertex == null) {
-      throw new IllegalArgumentException("Could not find " + type + " in this hierarchy.");
+      return Stream.empty();
     }
 
     if (vertex instanceof ScanResult.ClassVertex) {
@@ -299,10 +328,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @NonNull
   @Override
   public Optional<ClassType> superClassOf(@NonNull ClassType classType) {
-    ScanResult scanResult = lazyScanResult.get();
-    Vertex classVertex = scanResult.typeToVertex.get(classType);
+    Vertex classVertex = resolveVertex(classType);
     if (classVertex == null) {
-      throw new IllegalArgumentException("Could not find '" + classType + "' in the view.");
+      return Optional.empty();
     }
     if (objectClassType.equals(classType)) {
       return Optional.empty();
@@ -322,17 +350,17 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Override
   public boolean isInterface(@NonNull ClassType type) {
-    Vertex vertex = lazyScanResult.get().typeToVertex.get(type);
+    Vertex vertex = resolveVertex(type);
     if (vertex == null) {
-      throw new IllegalArgumentException("Could not find '" + type + "' in hierarchy.");
+      return false;
     }
     return vertex instanceof ScanResult.InterfaceVertex;
   }
 
   public boolean isClass(@NonNull ClassType type) {
-    Vertex vertex = lazyScanResult.get().typeToVertex.get(type);
+    Vertex vertex = resolveVertex(type);
     if (vertex == null) {
-      throw new IllegalArgumentException("Could not find '" + type + "' in hierarchy.");
+      return false;
     }
     return vertex instanceof ScanResult.ClassVertex;
   }

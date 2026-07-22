@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sootup.core.types.*;
 import sootup.core.views.View;
 
@@ -41,8 +39,6 @@ import sootup.core.views.View;
  * @author Christian Brüggemann
  */
 public interface TypeHierarchy {
-
-  Logger logger = LoggerFactory.getLogger(TypeHierarchy.class);
 
   /**
    * Returns all classes that implement the specified interface. This is transitive: If class <code>
@@ -178,20 +174,11 @@ public interface TypeHierarchy {
   @NonNull
   default Stream<ClassType> superClassesOf(@NonNull ClassType classType) {
     List<ClassType> superClasses = new ArrayList<>();
-    Optional<ClassType> currentSuperClass = Optional.empty();
-    try {
-      currentSuperClass = superClassOf(classType);
-      while (currentSuperClass.isPresent()) {
-        ClassType superClassType = currentSuperClass.get();
-        superClasses.add(superClassType);
-        currentSuperClass = superClassOf(superClassType);
-      }
-    } catch (IllegalArgumentException ex) {
-      logger.warn(
-          "Could not find "
-              + (currentSuperClass.isPresent() ? currentSuperClass : classType)
-              + " and stopped there the resolve of superclasses of "
-              + classType);
+    Optional<ClassType> currentSuperClass = superClassOf(classType);
+    while (currentSuperClass.isPresent()) {
+      ClassType superClassType = currentSuperClass.get();
+      superClasses.add(superClassType);
+      currentSuperClass = superClassOf(superClassType);
     }
     return superClasses.stream();
   }

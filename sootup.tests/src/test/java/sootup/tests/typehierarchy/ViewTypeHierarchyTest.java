@@ -307,4 +307,37 @@ public class ViewTypeHierarchyTest {
         typeHierarchy.isSubtype(objectArrayDim1Type, collectionArrayDim1Type),
         "Collection[] should be a subtype of Object[]");
   }
+
+  /**
+   * Queries for a type that is referenced (e.g. in a method signature, cast, or catch clause) but
+   * is never actually resolvable in the classpath - e.g. an optional/vendor-provided type such as
+   * androidx.window.sidecar.SidecarDisplayFeature, which is only supplied by specific OEM devices
+   * at runtime and is commonly absent from an APK's classpath. Such types must be treated as a
+   * normal, expected outcome for a whole-program analysis over an incomplete classpath - hierarchy
+   * queries must degrade gracefully (empty stream / false / Optional.empty()) instead of throwing,
+   * since a single unresolvable type must not abort analysis of the whole app.
+   */
+  @Test
+  public void unresolvableTypeDegradesGracefully() {
+    IdentifierFactory factory = view.getIdentifierFactory();
+    ClassType unresolvableType = factory.getClassType("does.not.Exist");
+
+    assertFalse(typeHierarchy.contains(unresolvableType));
+    assertEquals(0, typeHierarchy.subtypesOf(unresolvableType).count());
+    assertEquals(0, typeHierarchy.subclassesOf(unresolvableType).count());
+    assertEquals(0, typeHierarchy.subinterfacesOf(unresolvableType).count());
+    assertEquals(0, typeHierarchy.implementersOf(unresolvableType).count());
+    assertEquals(0, typeHierarchy.directSubtypesOf(unresolvableType).count());
+    assertEquals(0, typeHierarchy.implementedInterfacesOf(unresolvableType).count());
+    assertEquals(0, typeHierarchy.directlyImplementedInterfacesOf(unresolvableType).count());
+    assertEquals(0, typeHierarchy.directlyExtendedInterfacesOf(unresolvableType).count());
+    assertFalse(typeHierarchy.isInterface(unresolvableType));
+    assertFalse(typeHierarchy.isClass(unresolvableType));
+    assertTrue(typeHierarchy.superClassOf(unresolvableType).isEmpty());
+    // findAncestors() returns an empty set for an unresolvable type, which
+    // getLowestCommonAncestors() conservatively falls back to java.lang.Object for.
+    assertEquals(
+        Collections.singleton(factory.getClassType("java.lang.Object")),
+        typeHierarchy.getLowestCommonAncestors(unresolvableType, unresolvableType));
+  }
 }
