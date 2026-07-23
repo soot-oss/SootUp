@@ -47,12 +47,12 @@ public class ExcludedCallsCollectingCallGraphScope extends DefaultCallGraphScope
   }
 
   @Override
-  public Strategy includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
-    Strategy startegy = super.includeCall(method, statement);
-    if (startegy == Strategy.IGNORE) {
+  public ExplorationVerdict tryAdvance(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+    ExplorationVerdict strategy = super.tryAdvance(method, statement);
+    if (strategy != ExplorationVerdict.EXPLORE_METHOD) {
       visitedExcludedMethods.add(method.getSignature());
     }
-    return startegy;
+    return strategy;
   }
 
   /**

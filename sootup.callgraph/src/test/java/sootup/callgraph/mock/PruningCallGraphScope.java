@@ -17,12 +17,11 @@ public class PruningCallGraphScope extends DefaultCallGraphScope {
   }
 
   @Override
-  public Strategy includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
-    if (super.includeCall(method, statement) != Strategy.IGNORE) {
-      if (!method.getName().equals("methodB")) {
-        return Strategy.EXPLORE_METHOD;
-      }
+  public ExplorationVerdict tryAdvance(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+    if (super.tryAdvance(method, statement) == ExplorationVerdict.EXPLORE_METHOD
+        && !method.getName().equals("methodB")) {
+      return ExplorationVerdict.EXPLORE_METHOD;
     }
-    return Strategy.IGNORE;
+    return ExplorationVerdict.STOP;
   }
 }

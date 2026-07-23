@@ -38,10 +38,10 @@ public class DefaultCallGraphScope implements CallGraphScope {
   }
 
   @Override
-  public Strategy includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+  public ExplorationVerdict tryAdvance(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
     return view.getClass(method.getDeclaringClassType())
         .filter(SootClass::isLibraryClass)
-        .map(sc -> Strategy.STOP_AFTER_CALL)
-        .orElse(Strategy.EXPLORE_METHOD);
+        .map(sc -> ExplorationVerdict.STOP_AFTER_CALL)
+        .orElse(ExplorationVerdict.EXPLORE_METHOD);
   }
 }
