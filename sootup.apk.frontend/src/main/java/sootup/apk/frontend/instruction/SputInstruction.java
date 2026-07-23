@@ -28,6 +28,7 @@ import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -40,7 +41,8 @@ public class SputInstruction extends FieldInstruction {
     JStaticFieldRef instanceField =
         Jimple.newStaticFieldRef(getStaticSootFieldRef(f).getFieldSignature());
     Local sourceValue = body.getRegisterLocal(source);
-    JAssignStmt assign = getAssignStmt(sourceValue, instanceField);
+    JAssignStmt assign =
+        Jimple.newAssignStmt(instanceField, sourceValue, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(assign);
     body.add(assign);
   }

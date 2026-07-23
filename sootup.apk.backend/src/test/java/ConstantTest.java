@@ -3,53 +3,59 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import org.jf.dexlib2.MethodHandleType;
 import org.jf.dexlib2.Opcode;
-import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.builder.BuilderInstruction;
+import org.jf.dexlib2.builder.MethodImplementationBuilder;
 import org.jf.dexlib2.builder.instruction.*;
 import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
 import org.jf.dexlib2.iface.reference.*;
-import org.jf.dexlib2.writer.builder.DexBuilder;
+import org.jf.dexlib2.immutable.reference.ImmutableStringReference;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sootup.apk.backend.DexConstantVisitor;
-import sootup.apk.backend.DexStmtVisitor;
-import sootup.apk.backend.Register;
-import sootup.apk.backend.RegisterAllocator;
+import sootup.apk.backend.*;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
+import sootup.core.types.NullType;
+import sootup.core.types.PrimitiveType;
 import sootup.java.core.JavaIdentifierFactory;
 
 public class ConstantTest {
-  static DexBuilder dexBuilder;
   static DexConstantVisitor dexConstantVisitor;
   static DexStmtVisitor dexStmtVisitor;
   static RegisterAllocator registerAllocator;
-  static Register targetRegister;
+  static DexMethodBuilder dexMethodBuilder;
+  static MethodImplementationBuilder methodImplementationBuilder;
+  static LabelAssigner labelAssigner;
 
   @BeforeAll
   static void initAll() {
-    dexBuilder = new DexBuilder(Opcodes.getDefault());
+    methodImplementationBuilder = new MethodImplementationBuilder(2);
+    labelAssigner = new LabelAssigner(methodImplementationBuilder);
   }
 
   @BeforeEach
   void init() {
-    dexStmtVisitor = new DexStmtVisitor();
+    dexMethodBuilder = new DexMethodBuilder(null);
+    dexConstantVisitor = new DexConstantVisitor(dexMethodBuilder);
     registerAllocator = new RegisterAllocator(dexConstantVisitor);
-    targetRegister = registerAllocator.getEmptyRegister();
-    dexConstantVisitor = new DexConstantVisitor(dexBuilder, dexStmtVisitor);
-    dexConstantVisitor.setTargetRegister(targetRegister);
+    dexMethodBuilder.setRegisterAllocator(registerAllocator);
+    dexStmtVisitor =
+        new DexStmtVisitor(null, registerAllocator, dexConstantVisitor, dexMethodBuilder, null);
   }
 
   @Test
   public void testSmallInt() {
+    Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
+    dexConstantVisitor.setTargetRegister(targetRegister);
     Constant numConst1 = IntConstant.getInstance(2);
     numConst1.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
+
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -63,10 +69,13 @@ public class ConstantTest {
 
   @Test
   public void testMediumInt() {
+    Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
+    dexConstantVisitor.setTargetRegister(targetRegister);
     Constant numConst1 = IntConstant.getInstance(42);
     numConst1.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -80,10 +89,13 @@ public class ConstantTest {
 
   @Test
   public void testLargeInt() {
+    Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
+    dexConstantVisitor.setTargetRegister(targetRegister);
     Constant numConst1 = IntConstant.getInstance(60000);
     numConst1.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -97,10 +109,13 @@ public class ConstantTest {
 
   @Test
   public void testLong() {
+    Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getLong());
+    dexConstantVisitor.setTargetRegister(targetRegister);
     Constant numConst1 = LongConstant.getInstance(8000000000L);
     numConst1.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -114,10 +129,13 @@ public class ConstantTest {
 
   @Test
   public void testBoolean() {
+    Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getBoolean());
+    dexConstantVisitor.setTargetRegister(targetRegister);
     Constant booleanTrue = BooleanConstant.getTrue();
     booleanTrue.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -131,7 +149,8 @@ public class ConstantTest {
     Constant booleanFalse = BooleanConstant.getFalse();
     booleanFalse.accept(dexConstantVisitor);
 
-    instructions = dexStmtVisitor.getInstructions();
+    instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(2, instructions.size());
 
     builderInstruction = instructions.get(1);
@@ -145,10 +164,13 @@ public class ConstantTest {
 
   @Test
   public void testDouble() {
+    Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getDouble());
+    dexConstantVisitor.setTargetRegister(targetRegister);
     Constant doubleConst = DoubleConstant.getInstance(3.141592653589793);
     doubleConst.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -163,10 +185,13 @@ public class ConstantTest {
 
   @Test
   public void testFloat() {
+    Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getFloat());
+    dexConstantVisitor.setTargetRegister(targetRegister);
     Constant floatConstant = FloatConstant.getInstance(19.99f);
     floatConstant.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -180,10 +205,13 @@ public class ConstantTest {
 
   @Test
   public void testNull() {
+    Register targetRegister = registerAllocator.getRegisterForType(NullType.getInstance());
+    dexConstantVisitor.setTargetRegister(targetRegister);
     Constant nullConstant = NullConstant.getInstance();
     nullConstant.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -199,10 +227,13 @@ public class ConstantTest {
   public void testString() {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     ClassType stringClass = identifierFactory.getClassType("java.lang.String");
+    Register targetRegister = registerAllocator.getRegisterForType(stringClass);
+    dexConstantVisitor.setTargetRegister(targetRegister);
     Constant stringConstant = new StringConstant("test", stringClass);
     stringConstant.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -211,17 +242,20 @@ public class ConstantTest {
 
     assertEquals(Opcode.CONST_STRING, builderInstruction21c.getOpcode());
     assertEquals(0, builderInstruction21c.getRegisterA());
-    assertEquals(dexBuilder.internStringReference("test"), builderInstruction21c.getReference());
+    assertEquals(new ImmutableStringReference("test"), builderInstruction21c.getReference());
   }
 
   @Test
   public void testEnum() {
+    Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
+    dexConstantVisitor.setTargetRegister(targetRegister);
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     ClassType myEnumType = identifierFactory.getClassType("com.example.MyEnum");
     EnumConstant enumConstant = new EnumConstant("VALUE", myEnumType);
     enumConstant.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -242,11 +276,14 @@ public class ConstantTest {
   @Test
   public void testClassConstant() {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    ClassType stringType = identifierFactory.getClassType("java.lang.String");
-    Constant classConstant = new ClassConstant("java/lang/String", stringType);
+    ClassType classType = identifierFactory.getClassType("java.lang.String");
+    Register targetRegister = registerAllocator.getRegisterForType(classType);
+    dexConstantVisitor.setTargetRegister(targetRegister);
+    Constant classConstant = new ClassConstant("java/lang/String", classType);
     classConstant.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -265,6 +302,8 @@ public class ConstantTest {
 
   @Test
   public void testMethodType() {
+    Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
+    dexConstantVisitor.setTargetRegister(targetRegister);
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     MethodSubSignature subSig =
         identifierFactory.getMethodSubSignature(
@@ -277,7 +316,8 @@ public class ConstantTest {
 
     methodTypeConstant.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -296,6 +336,8 @@ public class ConstantTest {
 
   @Test
   public void testMethodHandle() {
+    Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
+    dexConstantVisitor.setTargetRegister(targetRegister);
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
     ClassType owner = identifierFactory.getClassType("com.example.Foo");
@@ -311,7 +353,8 @@ public class ConstantTest {
 
     methodHandleConstant.accept(dexConstantVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);

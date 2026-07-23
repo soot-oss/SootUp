@@ -1,126 +1,122 @@
 package sootup.apk.backend;
 
 import org.jf.dexlib2.Opcode;
-import org.jf.dexlib2.builder.instruction.BuilderInstruction11x;
-import org.jf.dexlib2.builder.instruction.BuilderInstruction21c;
-import org.jf.dexlib2.builder.instruction.BuilderInstruction22c;
-import org.jf.dexlib2.builder.instruction.BuilderInstruction23x;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import org.jf.dexlib2.immutable.reference.ImmutableFieldReference;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sootup.apk.backend.instructions.Instruction11x;
+import sootup.apk.backend.instructions.Instruction21c;
+import sootup.apk.backend.instructions.Instruction22c;
+import sootup.apk.backend.instructions.Instruction23x;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.*;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.AbstractRefVisitor;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ArrayType;
+import sootup.core.types.Type;
 
 public class DexRefVisitor extends AbstractRefVisitor {
 
   private static final Logger log = LoggerFactory.getLogger(DexRefVisitor.class);
 
-  RegisterAllocator registerAllocator;
-  DexStmtVisitor dexStmtVisitor;
+  private final RegisterAllocator registerAllocator;
+  private final DexStmtVisitor dexStmtVisitor;
 
-  String operation;
-  Register register;
+  private Stmt currentStmt;
+  private String operation;
+  private Register targetRegister;
+  private Immediate immediate;
 
   public DexRefVisitor(DexStmtVisitor dexStmtVisitor, RegisterAllocator registerAllocator) {
     this.registerAllocator = registerAllocator;
     this.dexStmtVisitor = dexStmtVisitor;
   }
 
+  public void setCurrentStmt(Stmt stmt) {
+    this.currentStmt = stmt;
+  }
+
   public void setOperation(String operation) {
     this.operation = operation;
   }
 
-  public void setRegister(Register register) {
-    this.register = register;
+  public void setTargetRegister(Register targetRegister) {
+    this.targetRegister = targetRegister;
+  }
+
+  public void setImmediate(Immediate immediate) {
+    this.immediate = immediate;
   }
 
   @Override
   public void caseStaticFieldRef(@NonNull JStaticFieldRef ref) {
     String dexType = DexUtil.toDexType(ref.getType());
+    FieldSignature fieldSignature = ref.getFieldSignature();
     FieldReference fieldReference =
         new ImmutableFieldReference(
-            DexUtil.toDexClassName(ref.getClass().getName()), ref.toString(), dexType);
+            DexUtil.toDexClassName(fieldSignature.getDeclClassType().getFullyQualifiedName()),
+            fieldSignature.getName(),
+            dexType);
     Opcode opcode = getRefOpcode("S", operation, dexType);
-    log.info(
-        "{} v{}, {}->{}:{}",
-        opcode.toString().toLowerCase(),
-        register.getNumber(),
-        fieldReference.getDefiningClass(),
-        fieldReference.getName(),
-        fieldReference.getType());
+    fixObjectType(ref.getType());
     dexStmtVisitor.addInstruction(
-        new BuilderInstruction21c(opcode, register.getNumber(), fieldReference));
+        new Instruction21c(opcode, targetRegister, fieldReference), currentStmt);
   }
 
   @Override
   public void caseInstanceFieldRef(@NonNull JInstanceFieldRef ref) {
     String dexType = DexUtil.toDexType(ref.getType());
+    FieldSignature fieldSignature = ref.getFieldSignature();
     FieldReference fieldReference =
         new ImmutableFieldReference(
-            DexUtil.toDexClassName(ref.getClass().getName()), ref.toString(), dexType);
+            DexUtil.toDexClassName(fieldSignature.getDeclClassType().getFullyQualifiedName()),
+            fieldSignature.getName(),
+            dexType);
     Local instance = ref.getBase();
-    Register instanceRegister = registerAllocator.getRegisterForImmediate(instance);
+    Register instanceRegister = registerAllocator.getRegisterForImmediate(instance, false);
     Opcode opcode = getRefOpcode("I", operation, dexType);
-    log.info(
-        "{} v{}, v{}, {}->{}:{}",
-        opcode.toString().toLowerCase(),
-        register.getNumber(),
-        instanceRegister.getNumber(),
-        fieldReference.getDefiningClass(),
-        fieldReference.getName(),
-        fieldReference.getType());
+    fixObjectType(ref.getType());
     dexStmtVisitor.addInstruction(
-        new BuilderInstruction22c(
-            opcode, register.getNumber(), instanceRegister.getNumber(), fieldReference));
+        new Instruction22c(opcode, targetRegister, instanceRegister, fieldReference), currentStmt);
   }
 
   @Override
   public void caseArrayRef(@NonNull JArrayRef ref) {
     Local array = ref.getBase();
-    Register arrayRegister = registerAllocator.getRegisterForImmediate(array);
+    Register arrayRegister = registerAllocator.getRegisterForImmediate(array, false);
     Immediate index = ref.getIndex();
-    Register indexRegister = registerAllocator.getRegisterForImmediate(index);
+    Register indexRegister = registerAllocator.getRegisterForImmediate(index, false);
 
     ArrayType arrayType = (ArrayType) array.getType();
+    fixObjectType(arrayType);
     String dexType =
         arrayType.getDimension() > 1
             ? DexUtil.toDexType(ArrayType.createArrayType(arrayType.getBaseType(), 1))
             : DexUtil.toDexType(arrayType.getBaseType());
 
     Opcode opcode = getRefOpcode("A", operation, dexType);
-    log.info(
-        "{} v{}, v{}, v{}",
-        opcode.toString().toLowerCase(),
-        register.getNumber(),
-        arrayRegister.getNumber(),
-        indexRegister.getNumber());
     dexStmtVisitor.addInstruction(
-        new BuilderInstruction23x(
-            opcode, register.getNumber(), arrayRegister.getNumber(), indexRegister.getNumber()));
+        new Instruction23x(opcode, targetRegister, arrayRegister, indexRegister), currentStmt);
   }
 
   @Override
   public void caseParameterRef(@NonNull JParameterRef ref) {
-    // e.g. r1 := @parameter0
-    // TODO
+    registerAllocator.getRegisterForParameter(immediate);
   }
 
   @Override
   public void caseCaughtExceptionRef(@NonNull JCaughtExceptionRef ref) {
-    log.info("move-exception v{}", register.getNumber());
     dexStmtVisitor.addInstruction(
-        new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, register.getNumber()));
+        new Instruction11x(Opcode.MOVE_EXCEPTION, targetRegister), currentStmt);
   }
 
   @Override
   public void caseThisRef(@NonNull JThisRef ref) {
-    // e.g. p0 = "this"
-    // TODO
+    registerAllocator.getRegisterForParameter(immediate);
   }
 
   @Override
@@ -140,5 +136,26 @@ public class DexRefVisitor extends AbstractRefVisitor {
       case "L" -> Opcode.valueOf(scope + operation.toUpperCase() + "_OBJECT");
       default -> throw new IllegalArgumentException("Unknown dex type: " + dexType);
     };
+  }
+
+  private void fixObjectType(Type defaultType) {
+    if (targetRegister.getType().toString().equals("java.lang.Object")
+        || targetRegister.isTypeGuessed()) {
+
+      if (targetRegister.getType() != defaultType
+          && (targetRegister.getType().toString().equals("java.lang.Object")
+              || DexUtil.isWide(targetRegister.getType()) != DexUtil.isWide(defaultType))) {
+        if (currentStmt.isJAssignStmt()) {
+          targetRegister =
+              registerAllocator.getRegisterForValueWithNewType(
+                  currentStmt.asJAssignStmt().getLeftOp(), defaultType, false);
+        } else {
+          targetRegister.setType(defaultType);
+        }
+      } else {
+        targetRegister.setType(defaultType);
+      }
+      targetRegister.setIsTypeGuessed(true);
+    }
   }
 }

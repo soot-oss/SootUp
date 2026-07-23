@@ -3,10 +3,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
+import org.jf.dexlib2.builder.MethodImplementationBuilder;
 import org.jf.dexlib2.builder.instruction.*;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sootup.apk.backend.DexStmtVisitor;
+import sootup.apk.backend.*;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Immediate;
@@ -31,10 +33,24 @@ import sootup.java.core.JavaIdentifierFactory;
 public class StmtTest {
 
   DexStmtVisitor dexStmtVisitor;
+  static DexMethodBuilder dexMethodBuilder;
+  static MethodImplementationBuilder methodImplementationBuilder;
+  static LabelAssigner labelAssigner;
+
+  @BeforeAll
+  static void initAll() {
+    methodImplementationBuilder = new MethodImplementationBuilder(2);
+    labelAssigner = new LabelAssigner(methodImplementationBuilder);
+  }
 
   @BeforeEach
   void init() {
-    dexStmtVisitor = new DexStmtVisitor();
+    dexMethodBuilder = new DexMethodBuilder(null);
+    DexConstantVisitor dexConstantVisitor = new DexConstantVisitor(dexMethodBuilder);
+    RegisterAllocator registerAllocator = new RegisterAllocator(dexConstantVisitor);
+    dexMethodBuilder.setRegisterAllocator(registerAllocator);
+    dexStmtVisitor =
+        new DexStmtVisitor(null, registerAllocator, dexConstantVisitor, dexMethodBuilder, null);
   }
 
   @Test
@@ -45,7 +61,8 @@ public class StmtTest {
     Stmt lStmt = new JAssignStmt(local, numConst1, nop);
     lStmt.accept(dexStmtVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
     BuilderInstruction builderInstruction = instructions.get(0);
     assertInstanceOf(BuilderInstruction21s.class, builderInstruction);
@@ -73,7 +90,8 @@ public class StmtTest {
     lStmt2.accept(dexStmtVisitor);
     lStmt3.accept(dexStmtVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(3, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(2);
@@ -96,7 +114,8 @@ public class StmtTest {
 
     stmt.accept(dexStmtVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(2, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(1);
@@ -120,7 +139,8 @@ public class StmtTest {
 
     stmt.accept(dexStmtVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(3, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(2);
@@ -143,7 +163,8 @@ public class StmtTest {
 
     deepStmt.accept(dexStmtVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(3, instructions.size());
 
     BuilderInstruction builderInstruction1 = instructions.get(0);
@@ -205,7 +226,8 @@ public class StmtTest {
     JAssignStmt jAssignStmt2 =
         new JAssignStmt(target, invokeExpr, StmtPositionInfo.getNoStmtPositionInfo());
     jAssignStmt2.accept(dexStmtVisitor);
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(5, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(3);
@@ -246,7 +268,8 @@ public class StmtTest {
 
     jInvokeStmt.accept(dexStmtVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(3, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(2);
@@ -266,7 +289,8 @@ public class StmtTest {
 
     jNopStmt.accept(dexStmtVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -282,7 +306,8 @@ public class StmtTest {
 
     jReturnStmt.accept(dexStmtVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -298,7 +323,8 @@ public class StmtTest {
 
     jReturnVoidStmt.accept(dexStmtVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -316,7 +342,8 @@ public class StmtTest {
 
     throwStmt.accept(dexStmtVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -366,7 +393,8 @@ public class StmtTest {
 
     jExitMonitorStmt.accept(dexStmtVisitor);
 
-    List<BuilderInstruction> instructions = dexStmtVisitor.getInstructions();
+    List<BuilderInstruction> instructions =
+        dexMethodBuilder.addBuilderInstructions(methodImplementationBuilder, labelAssigner);
     assertEquals(5, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);

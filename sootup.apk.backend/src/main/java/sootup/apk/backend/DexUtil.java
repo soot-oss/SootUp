@@ -1,7 +1,9 @@
 package sootup.apk.backend;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import sootup.core.types.*;
 
@@ -60,6 +62,10 @@ public class DexUtil {
     return null;
   }
 
+  private boolean isDexTypePrimitive(String dexType) {
+    return Set.of("Z", "B", "C", "S", "I", "J", "D", "F").contains(dexType);
+  }
+
   protected static String toDexArrayType(int dimensions, ArrayType arrayType) {
     if (arrayType.getDimension() > 255) {
       throw new RuntimeException("Array " + arrayType + " has more than 255 dimensions");
@@ -108,6 +114,15 @@ public class DexUtil {
     return indexes.getLeft() <= indexes.getRight();
   }
 
+  protected static boolean isTypeBiggerOrEqual(Type sourceType, Type compareType) {
+    if (!(sourceType instanceof PrimitiveType sourceTypeP)
+        || !(compareType instanceof PrimitiveType compareTypeP)) {
+      return false;
+    }
+    Pair<Integer, Integer> indexes = getTypeIndexes(sourceTypeP, compareTypeP);
+    return indexes.getLeft() >= indexes.getRight();
+  }
+
   protected static boolean isTypeBigger(Type sourceType, Type compareType) {
     if (!(sourceType instanceof PrimitiveType sourceTypeP)
         || !(compareType instanceof PrimitiveType compareTypeP)) {
@@ -149,6 +164,10 @@ public class DexUtil {
     return first == 'L' || first == '[';
   }
 
+  protected static boolean isObject(Type sootType) {
+    return isObject(toDexType(sootType));
+  }
+
   protected static boolean isWide(String dexType) {
     return dexType != null && (dexType.equals("J") || dexType.equals("D"));
   }
@@ -160,6 +179,10 @@ public class DexUtil {
 
   public static int getRegisterSizeCount(Type sootType) {
     return isWide(sootType) ? 2 : 1;
+  }
+
+  public static int getRegisterSizeCount(Collection<Type> sootTypes) {
+    return sootTypes.stream().mapToInt(DexUtil::getRegisterSizeCount).sum();
   }
 
   public static int getRegisterSizeCount(List<Register> registers) {

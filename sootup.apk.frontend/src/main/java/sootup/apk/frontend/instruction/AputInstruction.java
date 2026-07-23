@@ -25,6 +25,8 @@ package sootup.apk.frontend.instruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction23x;
 import sootup.apk.frontend.main.DexBody;
+import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -46,7 +48,8 @@ public class AputInstruction extends FieldInstruction {
     JArrayRef jArrayRef = JavaJimple.newArrayRef(arrayBase, index);
 
     Local sourceValue = body.getRegisterLocal(source);
-    JAssignStmt assign = getAssignStmt(sourceValue, jArrayRef);
+    JAssignStmt assign =
+        Jimple.newAssignStmt(jArrayRef, sourceValue, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(assign);
     body.add(assign);
   }

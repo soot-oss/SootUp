@@ -1,18 +1,11 @@
 package sootup.apk.backend;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.jf.dexlib2.Opcode;
-import org.jf.dexlib2.Opcodes;
-import org.jf.dexlib2.builder.BuilderInstruction;
-import org.jf.dexlib2.builder.MethodImplementationBuilder;
-import org.jf.dexlib2.builder.instruction.BuilderInstruction10x;
-import org.jf.dexlib2.builder.instruction.BuilderInstruction11x;
-import org.jf.dexlib2.writer.builder.DexBuilder;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sootup.apk.backend.instructions.*;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
@@ -23,28 +16,35 @@ import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.*;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
+import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 public class DexStmtVisitor extends AbstractStmtVisitor {
 
   private static final Logger log = LoggerFactory.getLogger(DexStmtVisitor.class);
 
-  List<BuilderInstruction> instructions;
+  private final DexMethodBuilder dexMethodBuilder;
+  private final DexConstantVisitor dexConstantVisitor;
+  private final DexExprVisitor dexExprVisitor;
+  private final DexRefVisitor dexRefVisitor;
+  private final RegisterAllocator registerAllocator;
+  private final View view;
+  private final SootMethod sootMethod;
 
-  DexBuilder dexBuilder;
-  MethodImplementationBuilder methodImplementationBuilder = new MethodImplementationBuilder(10);
-  DexConstantVisitor dexConstantVisitor;
-  DexExprVisitor dexExprVisitor;
-  DexRefVisitor dexRefVisitor;
-  RegisterAllocator registerAllocator;
+  public DexStmtVisitor(
+      View view,
+      RegisterAllocator registerAllocator,
+      DexConstantVisitor dexConstantVisitor,
+      DexMethodBuilder dexMethodBuilder,
+      SootMethod sootMethod) {
 
-  public DexStmtVisitor() {
-    instructions = new ArrayList<>();
-    dexBuilder = new DexBuilder(Opcodes.getDefault());
-    dexConstantVisitor = new DexConstantVisitor(dexBuilder, this);
-    registerAllocator = new RegisterAllocator(dexConstantVisitor);
-    dexExprVisitor =
-        new DexExprVisitor(dexBuilder, methodImplementationBuilder, registerAllocator, this);
+    dexExprVisitor = new DexExprVisitor(registerAllocator, this);
     dexRefVisitor = new DexRefVisitor(this, registerAllocator);
+    this.view = view;
+    this.dexMethodBuilder = dexMethodBuilder;
+    this.registerAllocator = registerAllocator;
+    this.dexConstantVisitor = dexConstantVisitor;
+    this.sootMethod = sootMethod;
   }
 
   @Override
@@ -53,7 +53,12 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   @Override
   public void caseInvokeStmt(@NonNull JInvokeStmt stmt) {
     Optional<AbstractInvokeExpr> optionalExpr = stmt.getInvokeExpr();
-    optionalExpr.ifPresent(abstractInvokeExpr -> abstractInvokeExpr.accept(dexExprVisitor));
+    optionalExpr.ifPresent(
+        abstractInvokeExpr -> {
+          dexExprVisitor.setCurrentStmt(stmt);
+          dexExprVisitor.setTargetRegister(null);
+          abstractInvokeExpr.accept(dexExprVisitor);
+        });
   }
 
   @Override
@@ -72,30 +77,50 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
         throw new RuntimeException(
             "Right-side of AssignStmt is no Immediate: " + rightOp.getType());
       }
-      Register register = registerAllocator.getRegisterForImmediate(rightOpImmediate);
+      Register register = registerAllocator.getRegisterForImmediate(rightOpImmediate, false);
+      dexRefVisitor.setCurrentStmt(stmt);
       dexRefVisitor.setOperation("PUT");
-      dexRefVisitor.setRegister(register);
+      dexRefVisitor.setTargetRegister(register);
       ref.accept(dexRefVisitor);
 
     } else if (leftOp instanceof Local leftOpLocal) {
-      Register targetRegister = registerAllocator.getRegisterForImmediate(leftOpLocal);
+      Register targetRegister = registerAllocator.getRegisterForImmediate(leftOpLocal, false);
 
       if (rightOp instanceof Constant constant) {
+        if (targetRegister.getType().toString().equals("java.lang.Object")
+            || targetRegister.isTypeGuessed()) {
+          if (targetRegister.getType() != constant.getType()
+              && (targetRegister.getType().toString().equals("java.lang.Object")
+                  || DexUtil.isWide(targetRegister.getType())
+                      != DexUtil.isWide(constant.getType()))) {
+            targetRegister =
+                registerAllocator.getRegisterForValueWithNewType(
+                    leftOpLocal, constant.getType(), false);
+          } else {
+            targetRegister.setType(constant.getType());
+          }
+          targetRegister.setIsTypeGuessed(true);
+        }
         dexConstantVisitor.setTargetRegister(targetRegister);
+        dexConstantVisitor.setCurrentStmt(stmt);
         constant.accept(dexConstantVisitor);
 
       } else if (rightOp instanceof Expr expr) {
+        dexExprVisitor.setCurrentStmt(stmt);
         dexExprVisitor.setTargetRegister(targetRegister);
+        dexExprVisitor.setTargetStmt(stmt);
         expr.accept(dexExprVisitor);
 
       } else if (rightOp instanceof Ref ref) {
+        dexRefVisitor.setCurrentStmt(stmt);
         dexRefVisitor.setOperation("GET");
-        dexRefVisitor.setRegister(targetRegister);
+        dexRefVisitor.setTargetRegister(targetRegister);
         ref.accept(dexRefVisitor);
 
       } else if (rightOp instanceof Local sourceLocal) {
         if (leftOpLocal != sourceLocal) {
-          Register sourceRegister = registerAllocator.getRegisterForImmediate(sourceLocal);
+          Register sourceRegister = registerAllocator.getRegisterForImmediate(sourceLocal, false);
+          dexExprVisitor.setCurrentStmt(stmt);
           dexExprVisitor.generateMoveInstruction(
               targetRegister, sourceRegister, sourceLocal.getType());
         }
@@ -112,48 +137,55 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
 
   @Override
   public void caseIdentityStmt(@NonNull JIdentityStmt stmt) {
+    Immediate op1 = stmt.getLeftOp();
     IdentityRef op2 = stmt.getRightOp();
     if (op2 instanceof JCaughtExceptionRef) {
-      Register register = registerAllocator.getRegisterForImmediate(stmt.getLeftOp());
-      dexRefVisitor.setRegister(register);
+      Register register = registerAllocator.getRegisterForImmediate(stmt.getLeftOp(), false);
+      dexRefVisitor.setCurrentStmt(stmt);
+      dexRefVisitor.setTargetRegister(register);
     }
+    dexRefVisitor.setImmediate(op1);
     op2.accept(dexRefVisitor);
   }
 
   @Override
   public void caseEnterMonitorStmt(@NonNull JEnterMonitorStmt stmt) {
     Immediate op = stmt.getOp();
-    Register register = registerAllocator.getRegisterForImmediate(op);
-    log.info("monitor-enter v{}", register.getNumber());
-    this.addInstruction(new BuilderInstruction11x(Opcode.MONITOR_ENTER, register.getNumber()));
+    Register register = registerAllocator.getRegisterForImmediate(op, false);
+    dexMethodBuilder.addInstruction(new Instruction11x(Opcode.MONITOR_ENTER, register), stmt);
   }
 
   @Override
   public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
     Immediate op = stmt.getOp();
-    Register register = registerAllocator.getRegisterForImmediate(op);
-    log.info("monitor-exit v{}", register.getNumber());
-    this.addInstruction(new BuilderInstruction11x(Opcode.MONITOR_EXIT, register.getNumber()));
+    Register register = registerAllocator.getRegisterForImmediate(op, false);
+    dexMethodBuilder.addInstruction(new Instruction11x(Opcode.MONITOR_EXIT, register), stmt);
   }
 
   @Override
   public void caseGotoStmt(@NonNull JGotoStmt stmt) {
+    dexMethodBuilder.addInstruction(
+        new Instruction10t(Opcode.GOTO, stmt.getTargetStmts(sootMethod.getBody()).get(0)), stmt);
     // goto
     // goto/16
     // goto/32
-    // TODO
   }
 
   @Override
   public void caseIfStmt(@NonNull JIfStmt stmt) {
-    // if-*
-    // TODO
+    AbstractConditionExpr expr = stmt.getCondition();
+    List<Stmt> targetStmts = stmt.getTargetStmts(sootMethod.getBody());
+    if (!targetStmts.isEmpty()) {
+      Stmt trueStmt = targetStmts.get(0);
+      dexExprVisitor.setCurrentStmt(stmt);
+      dexExprVisitor.setTargetStmt(trueStmt);
+      expr.accept(dexExprVisitor);
+    }
   }
 
   @Override
   public void caseNopStmt(@NonNull JNopStmt stmt) {
-    log.info("nop");
-    this.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+    dexMethodBuilder.addInstruction(new Instruction10x(Opcode.NOP), stmt);
   }
 
   @Override
@@ -164,7 +196,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   @Override
   public void caseReturnStmt(@NonNull JReturnStmt stmt) {
     Immediate op = stmt.getOp();
-    Register register = registerAllocator.getRegisterForImmediate(op);
+    Register register = registerAllocator.getRegisterForImmediate(op, false);
     String dexType = DexUtil.toDexType(op.getType());
     Opcode opcode;
     if (DexUtil.isObject(dexType)) {
@@ -174,14 +206,12 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     } else {
       opcode = Opcode.RETURN;
     }
-    log.info("{} v{}", opcode.toString().toLowerCase().replace("_", "-"), register.getNumber());
-    this.addInstruction(new BuilderInstruction11x(opcode, register.getNumber()));
+    dexMethodBuilder.addInstruction(new Instruction11x(opcode, register), stmt);
   }
 
   @Override
   public void caseReturnVoidStmt(@NonNull JReturnVoidStmt stmt) {
-    log.info("return-void");
-    this.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+    dexMethodBuilder.addInstruction(new Instruction10x(Opcode.RETURN_VOID), stmt);
   }
 
   @Override
@@ -194,9 +224,8 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   @Override
   public void caseThrowStmt(@NonNull JThrowStmt stmt) {
     Immediate op = stmt.getOp();
-    Register register = registerAllocator.getRegisterForImmediate(op);
-    log.info("throw v{}", register.getNumber());
-    this.addInstruction(new BuilderInstruction11x(Opcode.THROW, register.getNumber()));
+    Register register = registerAllocator.getRegisterForImmediate(op, false);
+    this.addInstruction(new Instruction11x(Opcode.THROW, register), stmt);
   }
 
   @Override
@@ -204,11 +233,19 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     throw new RuntimeException("Unknown Statement " + stmt.getClass());
   }
 
-  protected void addInstruction(BuilderInstruction instruction) {
-    instructions.add(instruction);
+  public DexExprVisitor getDexExprVisitor() {
+    return dexExprVisitor;
   }
 
-  public List<BuilderInstruction> getInstructions() {
-    return instructions;
+  protected SootMethod getSootMethod() {
+    return sootMethod;
+  }
+
+  protected View getView() {
+    return view;
+  }
+
+  protected void addInstruction(AbstractInstruction instruction, Stmt stmt) {
+    dexMethodBuilder.addInstruction(instruction, stmt);
   }
 }

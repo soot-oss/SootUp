@@ -3,29 +3,34 @@ package sootup.apk.backend;
 import java.util.List;
 import org.jf.dexlib2.MethodHandleType;
 import org.jf.dexlib2.Opcode;
-import org.jf.dexlib2.builder.instruction.*;
 import org.jf.dexlib2.iface.reference.*;
 import org.jf.dexlib2.immutable.reference.*;
-import org.jf.dexlib2.writer.builder.DexBuilder;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sootup.apk.backend.instructions.*;
 import sootup.core.jimple.common.constant.*;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.AbstractConstantVisitor;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.*;
+import sootup.java.core.JavaIdentifierFactory;
 
 public class DexConstantVisitor extends AbstractConstantVisitor {
 
   private static final Logger log = LoggerFactory.getLogger(DexConstantVisitor.class);
 
-  DexBuilder dexBuilder;
-  DexStmtVisitor dexStmtVisitor;
-  Register targetRegister;
+  private Stmt currentStmt;
+  private Register targetRegister;
 
-  public DexConstantVisitor(DexBuilder dexBuilder, DexStmtVisitor dexStmtVisitor) {
-    this.dexBuilder = dexBuilder;
-    this.dexStmtVisitor = dexStmtVisitor;
+  private final DexMethodBuilder dexMethodBuilder;
+
+  public DexConstantVisitor(DexMethodBuilder dexMethodBuilder) {
+    this.dexMethodBuilder = dexMethodBuilder;
+  }
+
+  public void setCurrentStmt(Stmt stmt) {
+    this.currentStmt = stmt;
   }
 
   public void setTargetRegister(Register targetRegister) {
@@ -34,82 +39,79 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
 
   @Override
   public void caseBooleanConstant(@NonNull BooleanConstant constant) {
+    fixObjectType(PrimitiveType.getBoolean());
     int value = constant.getValue() ? 1 : 0;
-    logNewConst("const/4", targetRegister.getNumber(), Integer.toHexString(value), false);
-    dexStmtVisitor.addInstruction(
-        new BuilderInstruction11n(Opcode.CONST_4, targetRegister.getNumber(), value));
+    dexMethodBuilder.addInstruction(
+        new Instruction11n(Opcode.CONST_4, targetRegister, value), currentStmt);
   }
 
   @Override
   public void caseDoubleConstant(@NonNull DoubleConstant constant) {
+    fixObjectType(PrimitiveType.getDouble());
     double value = constant.getValue();
     long bits = Double.doubleToLongBits(value);
-    logNewConst("const-wide", targetRegister.getNumber(), Long.toHexString(bits), true);
-    dexStmtVisitor.addInstruction(
-        new BuilderInstruction51l(Opcode.CONST_WIDE, targetRegister.getNumber(), bits));
+    dexMethodBuilder.addInstruction(
+        new Instruction51l(Opcode.CONST_WIDE, targetRegister, bits), currentStmt);
   }
 
   @Override
   public void caseFloatConstant(@NonNull FloatConstant constant) {
+    fixObjectType(PrimitiveType.getFloat());
     float value = constant.getValue();
     int bits = Float.floatToIntBits(value);
-    logNewConst("const", targetRegister.getNumber(), Integer.toHexString(bits), false);
-    dexStmtVisitor.addInstruction(
-        new BuilderInstruction31i(Opcode.CONST, targetRegister.getNumber(), bits));
+    dexMethodBuilder.addInstruction(
+        new Instruction31i(Opcode.CONST, targetRegister, bits), currentStmt);
   }
 
   @Override
   public void caseIntConstant(@NonNull IntConstant constant) {
+    fixObjectType(PrimitiveType.getFloat());
     int value = constant.getValue();
     if (DexUtil.inSigned4Bit(value)) {
-      logNewConst("const/4", targetRegister.getNumber(), Integer.toHexString(value), false);
-      dexStmtVisitor.addInstruction(
-          new BuilderInstruction11n(Opcode.CONST_4, targetRegister.getNumber(), value));
+      dexMethodBuilder.addInstruction(
+          new Instruction11n(Opcode.CONST_4, targetRegister, value), currentStmt);
     } else if (DexUtil.inSigned16Bit(value)) {
-      logNewConst("const/16", targetRegister.getNumber(), Integer.toHexString(value), false);
-      dexStmtVisitor.addInstruction(
-          new BuilderInstruction21s(Opcode.CONST_16, targetRegister.getNumber(), value));
+      dexMethodBuilder.addInstruction(
+          new Instruction21s(Opcode.CONST_16, targetRegister, value), currentStmt);
     } else {
-      logNewConst("const", targetRegister.getNumber(), Integer.toHexString(value), false);
-      dexStmtVisitor.addInstruction(
-          new BuilderInstruction31i(Opcode.CONST, targetRegister.getNumber(), value));
+      dexMethodBuilder.addInstruction(
+          new Instruction31i(Opcode.CONST, targetRegister, value), currentStmt);
     }
   }
 
   @Override
   public void caseLongConstant(@NonNull LongConstant constant) {
+    fixObjectType(PrimitiveType.getLong());
+    log.info("Generate long constant {}", constant.getValue());
+    log.info("TargetRegister type {}", targetRegister.getType());
     long value = constant.getValue();
     if (DexUtil.inSigned16Bit(value)) {
-      logNewConst("const-wide/16", targetRegister.getNumber(), Long.toHexString(value), true);
-      dexStmtVisitor.addInstruction(
-          new BuilderInstruction21s(Opcode.CONST_WIDE_16, targetRegister.getNumber(), (int) value));
+      dexMethodBuilder.addInstruction(
+          new Instruction21s(Opcode.CONST_WIDE_16, targetRegister, (int) value), currentStmt);
     } else if (DexUtil.inSigned32Bit(value)) {
-      logNewConst("const-wide/32", targetRegister.getNumber(), Long.toHexString(value), true);
-      dexStmtVisitor.addInstruction(
-          new BuilderInstruction31i(Opcode.CONST_WIDE_32, targetRegister.getNumber(), (int) value));
+      dexMethodBuilder.addInstruction(
+          new Instruction31i(Opcode.CONST_WIDE_32, targetRegister, (int) value), currentStmt);
     } else {
-      logNewConst("const-wide", targetRegister.getNumber(), Long.toHexString(value), true);
-      dexStmtVisitor.addInstruction(
-          new BuilderInstruction51l(Opcode.CONST_WIDE, targetRegister.getNumber(), value));
+      dexMethodBuilder.addInstruction(
+          new Instruction51l(Opcode.CONST_WIDE, targetRegister, value), currentStmt);
     }
   }
 
   @Override
   public void caseNullConstant(@NonNull NullConstant constant) {
-    logNewConst("const/16", targetRegister.getNumber(), Integer.toHexString(0), false);
-    dexStmtVisitor.addInstruction(
-        new BuilderInstruction21s(Opcode.CONST_16, targetRegister.getNumber(), 0));
+    fixObjectType(NullType.getInstance());
+    dexMethodBuilder.addInstruction(
+        new Instruction21s(Opcode.CONST_16, targetRegister, 0), currentStmt);
   }
 
   @Override
   public void caseStringConstant(@NonNull StringConstant constant) {
-    log.info("const-string v{}, \"{}\"", targetRegister.getNumber(), constant.getValue());
-    dexStmtVisitor.addInstruction(
-        new BuilderInstruction21c(
-            Opcode.CONST_STRING,
-            targetRegister.getNumber(),
-            new ImmutableStringReference(constant.getValue())));
-    dexBuilder.internStringReference(constant.getValue());
+    fixObjectType(JavaIdentifierFactory.getInstance().getClassType("java.lang.String"));
+    dexMethodBuilder.addInstruction(
+        new Instruction21c(
+            Opcode.CONST_STRING, targetRegister, new ImmutableStringReference(constant.getValue())),
+        currentStmt);
+    new ImmutableStringReference(constant.getValue());
     // const-string/jumbo --> if application has > 65,535 strings total
   }
 
@@ -118,19 +120,19 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
     ClassType type = (ClassType) constant.getType();
     String name = DexUtil.toDexClassName(type.getFullyQualifiedName());
     String value = constant.getValue();
-    log.info("sget-object {}, {};->{}:{}", targetRegister, name, value, name);
     FieldReference enumRef = new ImmutableFieldReference(name, value, name);
-    dexStmtVisitor.addInstruction(
-        new BuilderInstruction21c(Opcode.SGET_OBJECT, targetRegister.getNumber(), enumRef));
+    dexMethodBuilder.addInstruction(
+        new Instruction21c(Opcode.SGET_OBJECT, targetRegister, enumRef), currentStmt);
   }
 
   @Override
   public void caseClassConstant(@NonNull ClassConstant constant) {
+    fixObjectType(JavaIdentifierFactory.getInstance().getClassType(constant.getValue()));
     TypeReference referencedClass =
         new ImmutableTypeReference(DexUtil.toDexClassName(constant.getValue()));
-    log.info("const-class v{}, 0x{}", targetRegister, referencedClass.getType());
-    dexStmtVisitor.addInstruction(
-        new BuilderInstruction21c(Opcode.CONST_CLASS, targetRegister.getNumber(), referencedClass));
+    log.info("CREATE CLASS {}", constant.getValue());
+    dexMethodBuilder.addInstruction(
+        new Instruction21c(Opcode.CONST_CLASS, targetRegister, referencedClass), currentStmt);
   }
 
   @Override
@@ -156,19 +158,12 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
       String returnType = DexUtil.toDexType(signature.getType());
       Reference reference =
           new ImmutableMethodReference(dexClassName, methodName, parameters, returnType);
-      log.info(
-          "const-method-handle {}, {}, {}->{}({}){}",
-          targetRegister.getNumber(),
-          MethodHandleType.toString(methodHandleType).toLowerCase(),
-          dexClassName,
-          methodName,
-          "(" + String.join("", parameters) + ")",
-          returnType);
-      dexStmtVisitor.addInstruction(
-          new BuilderInstruction21c(
+      dexMethodBuilder.addInstruction(
+          new Instruction21c(
               Opcode.CONST_METHOD_HANDLE,
-              targetRegister.getNumber(),
-              new ImmutableMethodHandleReference(methodHandleType, reference)));
+              targetRegister,
+              new ImmutableMethodHandleReference(methodHandleType, reference)),
+          currentStmt);
     } else {
       throw new IllegalArgumentException(
           "ReferenceSignature of methodHandle is no methodSignature "
@@ -182,16 +177,12 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
         methodType.getParameterTypes().stream().map(DexUtil::toDexType).toList();
     Type returnType = methodType.getReturnType();
     String dexReturnType = DexUtil.toDexType(returnType);
-    log.info(
-        "const-method-type {}, ({}){}",
-        targetRegister.getNumber(),
-        String.join("", parameters),
-        dexReturnType);
-    dexStmtVisitor.addInstruction(
-        new BuilderInstruction21c(
+    dexMethodBuilder.addInstruction(
+        new Instruction21c(
             Opcode.CONST_METHOD_TYPE,
-            targetRegister.getNumber(),
-            new ImmutableMethodProtoReference(parameters, dexReturnType)));
+            targetRegister,
+            new ImmutableMethodProtoReference(parameters, dexReturnType)),
+        currentStmt);
   }
 
   @Override
@@ -199,7 +190,12 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
     throw new IllegalArgumentException("Unknown Constant " + constant.getType());
   }
 
-  private void logNewConst(String range, int register, String value, boolean isWide) {
-    log.info("{}{} v{}, 0x{}", range, isWide ? "L" : "", register, value);
+  private void fixObjectType(Type defaultType) {
+    log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
+    if (targetRegister.getType().toString().equals("java.lang.Object")
+        || targetRegister.isTypeGuessed()) {
+      targetRegister.setType(defaultType);
+      targetRegister.setIsTypeGuessed(true);
+    }
   }
 }
