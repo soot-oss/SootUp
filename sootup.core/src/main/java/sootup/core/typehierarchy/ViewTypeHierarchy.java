@@ -25,6 +25,7 @@ package sootup.core.typehierarchy;
 import com.google.common.base.Suppliers;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -56,14 +57,41 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   private final ClassType objectClassType;
   private final Map<SymmetricKey, Set<ClassType>> lcaCache = new HashMap<>();
 
+  /**
+   * Caches the result of {@link #subtypesOf(ClassType)}, since CHA/RTA repeatedly query the same
+   * common interfaces/classes across many call sites and the underlying traversal is recursive.
+   * Invalidated wholesale by {@link #addType(SootClass)} whenever the graph is mutated after the
+   * initial scan, since a newly added type may be a subtype of anything already cached.
+   */
+  private final Map<ClassType, List<ClassType>> subtypesCache = new HashMap<>();
+
+  /**
+   * Caches the result of {@link #subtypeClassesOf(ClassType)}, i.e. {@link #subtypesOf(ClassType)}
+   * already resolved to {@link SootClass} via the {@link View}. Invalidated together with {@link
+   * #subtypesCache} in {@link #addType(SootClass)} for the same reason.
+   */
+  private final Map<ClassType, List<? extends SootClass>> subtypeClassesCache = new HashMap<>();
+
   private final Set<ClassType> reportedUnresolvableTypes =
       Collections.synchronizedSet(new HashSet<>());
+
+  /**
+   * Bumped every time {@link #addType(SootClass)} mutates the graph. Exposed via {@link
+   * #getModificationCount()} so external caches derived from hierarchy queries can detect
+   * staleness.
+   */
+  private long modificationCount = 0;
 
   /** to allow caching use Typehierarchy.fromView() to get/create the Typehierarchy. */
   public ViewTypeHierarchy(@NonNull View view) {
     this.view = view;
     lazyScanResult = Suppliers.memoize(() -> scanView(view));
     objectClassType = view.getIdentifierFactory().getClassType("java.lang.Object");
+  }
+
+  @Override
+  public long getModificationCount() {
+    return modificationCount;
   }
 
   /**
@@ -138,8 +166,36 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       return Stream.empty();
     }
 
+    List<ClassType> cached = subtypesCache.get(type);
+    if (cached != null) {
+      return cached.stream();
+    }
+
     // We now traverse the subgraph of the vertex to find all its subtypes
-    return visitSubgraph(scanResult.graph, vertex, false);
+    List<ClassType> computed =
+        visitSubgraph(scanResult.graph, vertex, false).collect(Collectors.toList());
+    subtypesCache.put(type, computed);
+    return computed.stream();
+  }
+
+  @NonNull
+  @Override
+  public Stream<? extends SootClass> subtypeClassesOf(@NonNull ClassType type) {
+    List<? extends SootClass> cached = subtypeClassesCache.get(type);
+    if (cached != null) {
+      return cached.stream();
+    }
+
+    List<ClassType> subtypes = subtypesOf(type).collect(Collectors.toList());
+    List<SootClass> computed = new ArrayList<>(subtypes.size());
+    for (ClassType classType : subtypes) {
+      SootClass sootClass = view.getClass(classType).orElse(null);
+      if (sootClass != null) {
+        computed.add(sootClass);
+      }
+    }
+    subtypeClassesCache.put(type, computed);
+    return computed.stream();
   }
 
   @NonNull
@@ -481,6 +537,13 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   public void addType(@NonNull SootClass sootClass) {
     ScanResult scanResult = lazyScanResult.get();
     addSootClassToGraph(sootClass, scanResult.typeToVertex, scanResult.graph);
+    // The newly added type may be a subtype of anything already cached, so both caches can no
+    // longer be trusted. Mutations are rare relative to subtypesOf()/subtypeClassesOf() reads, so
+    // a wholesale invalidation is cheap in practice and avoids the complexity (and risk) of
+    // precise invalidation.
+    subtypesCache.clear();
+    subtypeClassesCache.clear();
+    modificationCount++;
   }
 
   /** Holds a vertex for each {@link ClassType} encountered during the scan. */

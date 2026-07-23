@@ -18,6 +18,7 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
+import sootup.core.typehierarchy.MutableTypeHierarchy;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
@@ -195,6 +196,114 @@ public class ViewTypeHierarchyTest {
             .collect(Collectors.toSet())
             .contains(sootClass.getType()),
         "Newly added type must be detected as a subtype");
+  }
+
+  @Test
+  public void addTypeInvalidatesSubtypesOfCache() {
+    JavaIdentifierFactory factory = view.getIdentifierFactory();
+    ClassType baseType = factory.getClassType("ds.AbstractDataStrcture");
+
+    // Populate subtypesOf()'s cache with the result BEFORE the new type exists.
+    Set<ClassType> before = typeHierarchy.subclassesOf(baseType).collect(Collectors.toSet());
+
+    OverridingJavaClassSource classSource =
+        new OverridingJavaClassSource(
+            analysisInputLocation,
+            null,
+            factory.getClassType("adummytype.Type2"),
+            factory.getClassType("ds.Employee"),
+            Collections.emptySet(),
+            null,
+            Collections.emptySet(),
+            Collections.emptySet(),
+            null,
+            EnumSet.of(ClassModifier.FINAL),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList());
+    SootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
+
+    assertFalse(
+        before.contains(sootClass.getType()),
+        "Sanity check: type must not exist before it is added");
+
+    typeHierarchy.addType(sootClass);
+
+    assertTrue(
+        typeHierarchy
+            .subclassesOf(baseType)
+            .collect(Collectors.toSet())
+            .contains(sootClass.getType()),
+        "subclassesOf() must reflect the newly added type instead of returning a stale cached result");
+  }
+
+  /**
+   * {@link MutableTypeHierarchy#addType} can be called with a {@link SootClass} the hierarchy's own
+   * {@link sootup.core.views.View} cannot independently resolve (as this test's hand-built,
+   * never-registered-anywhere class demonstrates). {@link ViewTypeHierarchy#subtypeClassesOf}
+   * resolves each subtype via {@code view.getClass(...)}, so such a type is correctly picked up by
+   * the pure graph-level {@link ViewTypeHierarchy#subtypesOf}, but is - intentionally, for now -
+   * silently excluded from {@code subtypeClassesOf}'s result rather than included via some other
+   * resolution path. Whether {@code addType} should more formally support view-unresolvable classes
+   * is an open question tracked separately, not something this cache invalidation test should paper
+   * over.
+   */
+  @Test
+  public void addTypeInvalidatesSubtypesOfCacheEvenForClassesUnresolvableByView() {
+    JavaIdentifierFactory factory = view.getIdentifierFactory();
+    ClassType baseType = factory.getClassType("ds.AbstractDataStrcture");
+
+    // Populate both subtypesOf()'s and subtypeClassesOf()'s caches with the result BEFORE the new
+    // type exists.
+    Set<ClassType> subtypesBefore = typeHierarchy.subtypesOf(baseType).collect(Collectors.toSet());
+    Set<ClassType> subtypeClassesBefore =
+        typeHierarchy
+            .subtypeClassesOf(baseType)
+            .map(SootClass::getType)
+            .collect(Collectors.toSet());
+
+    OverridingJavaClassSource classSource =
+        new OverridingJavaClassSource(
+            analysisInputLocation,
+            null,
+            factory.getClassType("adummytype.Type3"),
+            factory.getClassType("ds.Employee"),
+            Collections.emptySet(),
+            null,
+            Collections.emptySet(),
+            Collections.emptySet(),
+            null,
+            EnumSet.of(ClassModifier.FINAL),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList());
+    SootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
+
+    assertFalse(
+        subtypesBefore.contains(sootClass.getType()),
+        "Sanity check: type must not exist before it is added");
+    assertFalse(
+        subtypeClassesBefore.contains(sootClass.getType()),
+        "Sanity check: type must not exist before it is added");
+
+    typeHierarchy.addType(sootClass);
+
+    assertTrue(
+        typeHierarchy
+            .subtypesOf(baseType)
+            .collect(Collectors.toSet())
+            .contains(sootClass.getType()),
+        "subtypesOf() must reflect the newly added type instead of returning a stale cached"
+            + " result - this is pure graph traversal and doesn't depend on the View being able to"
+            + " resolve the type");
+    assertFalse(
+        typeHierarchy
+            .subtypeClassesOf(baseType)
+            .map(SootClass::getType)
+            .collect(Collectors.toSet())
+            .contains(sootClass.getType()),
+        "subtypeClassesOf() is expected to NOT include a type the View cannot resolve on its own -"
+            + " this documents current, intentional behavior rather than a bug");
   }
 
   @Test
