@@ -175,14 +175,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @Override
   public boolean containsCall(@NonNull Call call) {
-    EdgeIterator<Call> it = graph.edgeIterator();
-    while (it.hasNext()) {
-      it.next();
-      if (call.equals(it.getLabel())) {
-        return true;
-      }
-    }
-    return false;
+    return graph.findEdge(call) != null;
   }
 
   @Override
