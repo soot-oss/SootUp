@@ -271,16 +271,16 @@ public class FakeMainFactory extends ArtificialMethod {
 
     private EntryPoints() {
       JavaIdentifierFactory identifierFactory = (JavaIdentifierFactory) view.getIdentifierFactory();
-      sigMain = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_MAIN);
-      sigFinalize = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_FINALIZE);
+      sigMain = identifierFactory.parseMethodSubSignature(JavaDefinitions.SIG_MAIN);
+      sigFinalize = identifierFactory.parseMethodSubSignature(JavaDefinitions.SIG_FINALIZE);
 
-      sigExit = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_EXIT);
-      sigClinit = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_CLINIT);
-      sigInit = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_INIT);
-      sigStart = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_START);
-      sigRun = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_RUN);
-      sigObjRun = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_OBJ_RUN);
-      sigForName = identifierFactory.parseMethodSubSignature(JavaMethods.SIG_FOR_NAME);
+      sigExit = identifierFactory.parseMethodSubSignature(JavaDefinitions.SIG_EXIT);
+      sigClinit = identifierFactory.parseMethodSubSignature(JavaDefinitions.SIG_CLINIT);
+      sigInit = identifierFactory.parseMethodSubSignature(JavaDefinitions.SIG_INIT);
+      sigStart = identifierFactory.parseMethodSubSignature(JavaDefinitions.SIG_START);
+      sigRun = identifierFactory.parseMethodSubSignature(JavaDefinitions.SIG_RUN);
+      sigObjRun = identifierFactory.parseMethodSubSignature(JavaDefinitions.SIG_OBJ_RUN);
+      sigForName = identifierFactory.parseMethodSubSignature(JavaDefinitions.SIG_FOR_NAME);
     }
 
     protected void addMethod(List<SootMethod> set, SootClass cls, MethodSubSignature methodSubSig) {
@@ -317,25 +317,25 @@ public class FakeMainFactory extends ArtificialMethod {
       //            return ret;
       //        }
 
-      addMethod(ret, JavaMethods.INITIALIZE_SYSTEM_CLASS);
-      addMethod(ret, JavaMethods.THREAD_GROUP_INIT);
+      addMethod(ret, JavaDefinitions.INITIALIZE_SYSTEM_CLASS);
+      addMethod(ret, JavaDefinitions.THREAD_GROUP_INIT);
       // addMethod( ret, "<java.lang.ThreadGroup: void
       // remove(java.lang.Thread)>");
-      addMethod(ret, JavaMethods.THREAD_EXIT);
-      addMethod(ret, JavaMethods.THREADGROUP_UNCAUGHT_EXCEPTION);
+      addMethod(ret, JavaDefinitions.THREAD_EXIT);
+      addMethod(ret, JavaDefinitions.THREADGROUP_UNCAUGHT_EXCEPTION);
       // addMethod( ret, "<java.lang.System: void
       // loadLibrary(java.lang.String)>");
-      addMethod(ret, JavaMethods.CLASSLOADER_INIT);
-      addMethod(ret, JavaMethods.CLASSLOADER_LOAD_CLASS_INTERNAL);
-      addMethod(ret, JavaMethods.CLASSLOADER_CHECK_PACKAGE_ACC);
-      addMethod(ret, JavaMethods.CLASSLOADER_ADD_CLASS);
-      addMethod(ret, JavaMethods.CLASSLOADER_FIND_NATIVE);
-      addMethod(ret, JavaMethods.PRIV_ACTION_EXC_INIT);
+      addMethod(ret, JavaDefinitions.CLASSLOADER_INIT);
+      addMethod(ret, JavaDefinitions.CLASSLOADER_LOAD_CLASS_INTERNAL);
+      addMethod(ret, JavaDefinitions.CLASSLOADER_CHECK_PACKAGE_ACC);
+      addMethod(ret, JavaDefinitions.CLASSLOADER_ADD_CLASS);
+      addMethod(ret, JavaDefinitions.CLASSLOADER_FIND_NATIVE);
+      addMethod(ret, JavaDefinitions.PRIV_ACTION_EXC_INIT);
       // addMethod( ret, "<java.lang.ref.Finalizer: void
       // register(java.lang.Object)>");
-      addMethod(ret, JavaMethods.RUN_FINALIZE);
-      addMethod(ret, JavaMethods.THREAD_INIT_RUNNABLE);
-      addMethod(ret, JavaMethods.THREAD_INIT_STRING);
+      addMethod(ret, JavaDefinitions.RUN_FINALIZE);
+      addMethod(ret, JavaDefinitions.THREAD_INIT_RUNNABLE);
+      addMethod(ret, JavaDefinitions.THREAD_INIT_STRING);
       return ret;
     }
 

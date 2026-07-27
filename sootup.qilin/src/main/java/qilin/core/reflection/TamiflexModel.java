@@ -406,7 +406,6 @@ public class TamiflexModel extends ReflectionModel {
               .add(mappedTarget);
         }
       }
-      reader.close();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -455,7 +454,7 @@ public class TamiflexModel extends ReflectionModel {
         ret.add(stmt);
       }
     }
-    if (ret.size() == 0 && potential.size() > 0) {
+    if (ret.isEmpty() && !potential.isEmpty()) {
       System.out.print("Warning: Mismatch between statement and reflection log entry - ");
       System.out.println(kind + ";" + inClzDotMthd + ";" + lineNumber + ";");
       return potential;
@@ -465,23 +464,15 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   private boolean matchReflectionKind(ReflectionKind kind, String methodSig) {
-    switch (kind) {
-      case ClassForName:
-        return methodSig.equals(sigForName) || methodSig.equals(sigForName2);
-      case ClassNewInstance:
-        return methodSig.equals(sigClassNewInstance);
-      case ConstructorNewInstance:
-        return methodSig.equals(sigConstructorNewInstance);
-      case MethodInvoke:
-        return methodSig.equals(sigMethodInvoke);
-      case FieldSet:
-        return methodSig.equals(sigFieldSet);
-      case FieldGet:
-        return methodSig.equals(sigFieldGet);
-      case ArrayNewInstance:
-        return methodSig.equals(sigArrayNewInstance);
-      default:
-        return false;
-    }
+      return switch (kind) {
+          case ClassForName -> methodSig.equals(sigForName) || methodSig.equals(sigForName2);
+          case ClassNewInstance -> methodSig.equals(sigClassNewInstance);
+          case ConstructorNewInstance -> methodSig.equals(sigConstructorNewInstance);
+          case MethodInvoke -> methodSig.equals(sigMethodInvoke);
+          case FieldSet -> methodSig.equals(sigFieldSet);
+          case FieldGet -> methodSig.equals(sigFieldGet);
+          case ArrayNewInstance -> methodSig.equals(sigArrayNewInstance);
+          default -> false;
+      };
   }
 }

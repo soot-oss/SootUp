@@ -86,47 +86,34 @@ public class MethodNodeFactory {
   }
 
   public Node getNode(Value v) {
-    if (v instanceof Local) {
-      Local l = (Local) v;
-      return caseLocal(l);
-    } else if (v instanceof JCastExpr) {
-      JCastExpr castExpr = (JCastExpr) v;
-      return caseCastExpr(castExpr);
-    } else if (v instanceof JNewExpr) {
-      JNewExpr ne = (JNewExpr) v;
-      return caseNewExpr(ne);
-    } else if (v instanceof JStaticFieldRef) {
-      JStaticFieldRef sfr = (JStaticFieldRef) v;
-      return caseStaticFieldRef(sfr);
-    } else if (v instanceof JNewArrayExpr) {
-      JNewArrayExpr nae = (JNewArrayExpr) v;
-      return caseNewArrayExpr(nae);
-    } else if (v instanceof JArrayRef) {
-      JArrayRef ar = (JArrayRef) v;
-      return caseArrayRef(ar);
-    } else if (v instanceof ClassConstant) {
-      ClassConstant cc = (ClassConstant) v;
-      return caseClassConstant(cc);
-    } else if (v instanceof StringConstant) {
-      StringConstant sc = (StringConstant) v;
-      return caseStringConstant(sc);
-    } else if (v instanceof JCaughtExceptionRef) {
-      JCaughtExceptionRef cef = (JCaughtExceptionRef) v;
-      return caseCaughtExceptionRef(cef);
-    } else if (v instanceof JParameterRef) {
-      JParameterRef pr = (JParameterRef) v;
-      return caseParameterRef(pr);
-    } else if (v instanceof NullConstant) {
-      NullConstant nc = (NullConstant) v;
-      return caseNullConstant(nc);
-    } else if (v instanceof JInstanceFieldRef) {
-      JInstanceFieldRef ifr = (JInstanceFieldRef) v;
-      return caseInstanceFieldRef(ifr);
+    if (v instanceof Local l) {
+        return caseLocal(l);
+    } else if (v instanceof JCastExpr castExpr) {
+        return caseCastExpr(castExpr);
+    } else if (v instanceof JNewExpr ne) {
+        return caseNewExpr(ne);
+    } else if (v instanceof JStaticFieldRef sfr) {
+        return caseStaticFieldRef(sfr);
+    } else if (v instanceof JNewArrayExpr nae) {
+        return caseNewArrayExpr(nae);
+    } else if (v instanceof JArrayRef ar) {
+        return caseArrayRef(ar);
+    } else if (v instanceof ClassConstant cc) {
+        return caseClassConstant(cc);
+    } else if (v instanceof StringConstant sc) {
+        return caseStringConstant(sc);
+    } else if (v instanceof JCaughtExceptionRef cef) {
+        return caseCaughtExceptionRef(cef);
+    } else if (v instanceof JParameterRef pr) {
+        return caseParameterRef(pr);
+    } else if (v instanceof NullConstant nc) {
+        return caseNullConstant(nc);
+    } else if (v instanceof JInstanceFieldRef ifr) {
+        return caseInstanceFieldRef(ifr);
     } else if (v instanceof JThisRef) {
       return caseThis();
-    } else if (v instanceof JNewMultiArrayExpr) {
-      JNewMultiArrayExpr nmae = (JNewMultiArrayExpr) v;
-      return caseNewMultiArrayExpr(nmae);
+    } else if (v instanceof JNewMultiArrayExpr nmae) {
+        return caseNewMultiArrayExpr(nmae);
     }
     System.out.println(v + ";;" + v.getClass());
     return null;
@@ -156,16 +143,14 @@ public class MethodNodeFactory {
       }
       getNode(arg);
     }
-    if (s instanceof JAssignStmt) {
-      JAssignStmt assignStmt = (JAssignStmt) s;
-      Value l = assignStmt.getLeftOp();
+    if (s instanceof JAssignStmt assignStmt) {
+        Value l = assignStmt.getLeftOp();
       if ((l.getType() instanceof ReferenceType)) {
         getNode(l);
       }
     }
-    if (ie instanceof AbstractInstanceInvokeExpr) {
-      AbstractInstanceInvokeExpr aie = (AbstractInstanceInvokeExpr) ie;
-      getNode(aie.getBase());
+    if (ie instanceof AbstractInstanceInvokeExpr aie) {
+        getNode(aie.getBase());
     }
   }
 
@@ -183,9 +168,8 @@ public class MethodNodeFactory {
   private void handleIntraStmt(Stmt s) {
     s.accept(
         new AbstractStmtVisitor() {
-          protected Object result = null;
-
-          protected void setResult(Object result) {
+          private Object result = null;
+          private void setResult(Object result) {
             this.result = result;
           }
 
@@ -228,11 +212,6 @@ public class MethodNodeFactory {
           }
 
           @Override
-          public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
-            defaultCaseStmt(stmt);
-          }
-
-          @Override
           public void caseReturnStmt(@NonNull JReturnStmt stmt) {
             if (!(stmt.getOp().getType() instanceof ReferenceType)) return;
             Node retNode = getNode(stmt.getOp());
@@ -266,7 +245,7 @@ public class MethodNodeFactory {
     FieldSignature fieldSig = ifr.getFieldSignature();
     Optional<? extends SootField> osf = scene.getView().getField(fieldSig);
     SootField sf;
-    if (!osf.isPresent()) {
+    if (osf.isEmpty()) {
       sf =
           new JavaSootField(
               fieldSig,

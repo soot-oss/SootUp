@@ -47,10 +47,6 @@ public class AllocNode extends Node implements ContextElement, Numberable {
     return "AllocNode " + getNumber() + " " + newExpr + " in method " + method;
   }
 
-  public String toString2() {
-    return newExpr + " in method " + method;
-  }
-
   public SootMethod getMethod() {
     return method;
   }

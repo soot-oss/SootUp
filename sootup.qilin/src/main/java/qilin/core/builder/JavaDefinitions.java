@@ -22,7 +22,11 @@ package qilin.core.builder;
  * #L%
  */
 
-public class JavaMethods {
+import qilin.util.PTAUtils;
+
+public class JavaDefinitions {
+
+  public static final String TYPE_JAVA_LANG_OBJECT = "java.lang.Object";
 
   public static final String SIG_MAIN = "void main(java.lang.String[])";
   public static final String SIG_FINALIZE = "void finalize()";

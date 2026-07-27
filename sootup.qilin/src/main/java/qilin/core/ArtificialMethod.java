@@ -162,8 +162,8 @@ public abstract class ArtificialMethod {
    */
   protected Local getInvoke(Local receiver, String sig, Immediate... args) {
     MethodSignature methodSig = identifierFactory.parseMethodSignature(sig);
-    SootMethod method = (SootMethod) view.getMethod(methodSig).get();
-    SootClass clazz = (SootClass) view.getClass(method.getDeclaringClassType()).get();
+    SootMethod method = view.getMethod(methodSig).get();
+    SootClass clazz = view.getClass(method.getDeclaringClassType()).get();
     List<Immediate> argsL = Arrays.asList(args);
     Value invoke =
         clazz.isInterface()
