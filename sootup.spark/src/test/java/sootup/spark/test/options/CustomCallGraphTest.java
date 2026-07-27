@@ -118,4 +118,16 @@ public class CustomCallGraphTest {
     assertThrows(
         IllegalArgumentException.class, () -> Spark.builder().view(SparkTestUtil.view).build());
   }
+
+  /**
+   * {@code entryPoints} being present but empty is a distinct failure mode from it being {@code
+   * null} entirely — both must be rejected since neither can drive CHA/OTF construction.
+   */
+  @Test
+  public void emptyEntryPointsWithoutCallGraphThrows() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            Spark.builder().view(SparkTestUtil.view).entryPoints(Collections.emptyList()).build());
+  }
 }
