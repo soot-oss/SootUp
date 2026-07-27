@@ -22,6 +22,7 @@ package sootup.spark;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -224,7 +225,10 @@ public class PointsToAnalysis {
           }
           case LOAD -> {
             if (src instanceof InstanceFieldRefNode ifr) {
-              for (AllocationNode o : ptsOf(ifr.getBase())) {
+              // Snapshot: pts(ifr.getBase()) and pts(tgt) can be the same live set (e.g.
+              // "x = x.f"), and unionInto below grows pts(tgt), so iterating the map-backed
+              // set directly would throw ConcurrentModificationException.
+              for (AllocationNode o : new ArrayList<>(ptsOf(ifr.getBase()))) {
                 Set<AllocationNode> stored = heap.get(new HeapKey(o, ifr.getField()));
                 if (stored != null && !stored.isEmpty()) {
                   changed |= unionInto(pointsTo, tgt, stored);
