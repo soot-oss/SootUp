@@ -23,25 +23,22 @@ import qilin.util.Numberable;
 import sootup.core.types.Type;
 
 /** Represents a simple of pointer node in the pointer assignment graph. */
-public class ValNode extends PagNode implements Comparable, Numberable {
+public class ValNode extends PagNode implements Comparable<ValNode>, Numberable {
 
   protected ValNode(Type t) {
     super(t);
   }
 
-  public int compareTo(Object o) {
-    ValNode other = (ValNode) o;
+  public int compareTo(ValNode other) {
     return other.getNumber() - this.getNumber();
   }
 
   /** Returns the points-to set for this node. */
   public DoublePointsToSet getP2Set() {
-    if (p2set != null) {
+      if (p2set == null) {
+        p2set = new DoublePointsToSet();
+      }
       return p2set;
-    } else {
-      p2set = new DoublePointsToSet();
-      return p2set;
-    }
   }
 
   /** Delete current points-to set and make a new one */

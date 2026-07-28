@@ -56,10 +56,11 @@ import sootup.java.core.types.JavaClassType;
 public class FakeMainFactory extends ArtificialMethod {
 
   private int implicitCallEdges;
-  private final SootClass fakeClass;
   private final SootClass mainClass;
   private final PointerAnalysisConfig config;
   private final EntryPoints entryPoints;
+  private final FieldSignature currentThreadSig;
+  private final FieldSignature globalThrowSig;
 
   public FakeMainFactory(View view, SootClass mainClazz, PointerAnalysisConfig config) {
     super(view);
@@ -70,16 +71,16 @@ public class FakeMainFactory extends ArtificialMethod {
     String className = "qilin.pta.FakeMain";
     IdentifierFactory fact = view.getIdentifierFactory();
     ClassType declaringClassSignature = fact.getClassType(className);
-    FieldSignature ctSig =
+    this.currentThreadSig =
         fact.getFieldSignature("currentThread", declaringClassSignature, "java.lang.Thread");
     JavaSootField currentThread =
         new JavaSootField(
-            ctSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
-    FieldSignature gtSig =
+            currentThreadSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
+    this.globalThrowSig =
         fact.getFieldSignature("globalThrow", declaringClassSignature, "java.lang.Exception");
     JavaSootField globalThrow =
         new JavaSootField(
-            gtSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
+            globalThrowSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
 
     MethodSignature methodSignatureOne =
         fact.getMethodSignature(className, "main", "void", Collections.emptyList());
@@ -108,20 +109,6 @@ public class FakeMainFactory extends ArtificialMethod {
             Collections.emptyList(),
             NoPositionInformation.getInstance());
     this.method = dummyMainMethod;
-    this.fakeClass =
-        new JavaSootClass(
-            new OverridingJavaClassSource(
-                Collections.singleton(dummyMainMethod),
-                new LinkedHashSet<>(Arrays.asList(currentThread, globalThrow)),
-                EnumSet.of(ClassModifier.PUBLIC),
-                null,
-                (JavaClassType) fact.getClassType("java.lang.Object"),
-                null,
-                NoPositionInformation.getInstance(),
-                null,
-                fact.getClassType(className),
-                new EagerInputLocation()),
-            SourceType.Application);
   }
 
   public SootMethod getFakeMain() {
@@ -157,13 +144,11 @@ public class FakeMainFactory extends ArtificialMethod {
   }
 
   public JStaticFieldRef getFieldCurrentThread() {
-    SootField field = fakeClass.getField("currentThread").get();
-    return Jimple.newStaticFieldRef(field.getSignature());
+    return Jimple.newStaticFieldRef(currentThreadSig);
   }
 
   public Value getFieldGlobalThrow() {
-    SootField field = fakeClass.getField("globalThrow").get();
-    return Jimple.newStaticFieldRef(field.getSignature());
+    return Jimple.newStaticFieldRef(globalThrowSig);
   }
 
   private void makeFakeMain(SootField currentThread) {
@@ -361,17 +346,17 @@ public class FakeMainFactory extends ArtificialMethod {
       Optional<? extends SootMethod> oinit = cl.getMethod(sigClinit);
       Optional<? extends ClassType> osuperClass = cl.getSuperclass();
       // check super classes until finds a constructor or no super class there anymore.
-      while (!oinit.isPresent() && osuperClass.isPresent()) {
+      while (oinit.isEmpty() && osuperClass.isPresent()) {
         ClassType superType = osuperClass.get();
         Optional<? extends SootClass> oSuperClass = view.getClass(superType);
-        if (!oSuperClass.isPresent()) {
+        if (oSuperClass.isEmpty()) {
           break;
         }
         SootClass superClass = oSuperClass.get();
         oinit = superClass.getMethod(sigClinit);
         osuperClass = superClass.getSuperclass();
       }
-      if (!oinit.isPresent()) {
+      if (oinit.isEmpty()) {
         return Collections.emptyList();
       }
       SootMethod initStart = oinit.get();
@@ -390,18 +375,18 @@ public class FakeMainFactory extends ArtificialMethod {
               current = null;
               Optional<? extends SootClass> oCurrentClass =
                   view.getClass(n.getDeclaringClassType());
-              if (!oCurrentClass.isPresent()) {
+              if (oCurrentClass.isEmpty()) {
                 return n;
               }
               SootClass currentClass = oCurrentClass.get();
               while (true) {
                 Optional<? extends ClassType> osuperType1 = currentClass.getSuperclass();
-                if (!osuperType1.isPresent()) {
+                if (osuperType1.isEmpty()) {
                   break;
                 }
                 ClassType classType = osuperType1.get();
                 Optional<? extends SootClass> osuperClass1 = view.getClass(classType);
-                if (!osuperClass1.isPresent()) {
+                if (osuperClass1.isEmpty()) {
                   break;
                 }
                 SootClass superClass = osuperClass1.get();

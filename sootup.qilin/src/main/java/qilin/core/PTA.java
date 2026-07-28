@@ -136,11 +136,7 @@ public abstract class PTA implements PointsToAnalysis {
   public PointsToSet reachingObjects(SootMethod m, Local l) {
     // find all context nodes, and collect their answers
     final PointsToSetInternal ret = new HybridPointsToSet();
-    pag.getVarNodes(m, l)
-        .forEach(
-            vn -> {
-              ret.addAll(vn.getP2Set(), null);
-            });
+    pag.getVarNodes(m, l).forEach(vn -> ret.addAll(vn.getP2Set(), null));
     return new UnmodifiablePointsToSet(this, ret);
   }
 
@@ -151,12 +147,10 @@ public abstract class PTA implements PointsToAnalysis {
    */
   public PointsToSet reachingObjects(PagNode n) {
     final PointsToSetInternal ret;
-    if (n instanceof ContextVarNode) {
-      ContextVarNode cvn = (ContextVarNode) n;
-      ret = cvn.getP2Set();
-    } else if (n instanceof ContextField) {
-      ContextField cf = (ContextField) n;
-      ret = cf.getP2Set();
+    if (n instanceof ContextVarNode cvn) {
+        ret = cvn.getP2Set();
+    } else if (n instanceof ContextField cf) {
+        ret = cf.getP2Set();
     } else {
       VarNode varNode = (VarNode) n;
       ret = new HybridPointsToSet();
@@ -165,9 +159,7 @@ public abstract class PTA implements PointsToAnalysis {
             .get(varNode)
             .values()
             .forEach(
-                vn -> {
-                  ret.addAll(vn.getP2Set(), null);
-                });
+                vn -> ret.addAll(vn.getP2Set(), null));
       }
     }
     return new UnmodifiablePointsToSet(this, ret);
