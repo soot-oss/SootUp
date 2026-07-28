@@ -28,7 +28,7 @@ import sootup.core.types.Type;
  *
  * @author Ondrej Lhotak
  */
-public class AllocNode extends Node implements ContextElement, Numberable {
+public class AllocNode extends PagNode implements ContextElement, Numberable {
   protected Object newExpr;
   private final SootMethod method;
 

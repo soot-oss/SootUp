@@ -27,13 +27,13 @@ import sootup.core.types.Type;
  *
  * @author Ondrej Lhotak
  */
-public class Node implements Numberable {
+public class PagNode implements Numberable {
   protected Type type;
   protected DoublePointsToSet p2set;
   private int number = 0;
 
   /** Creates a new node of pointer assignment graph pag, with type type. */
-  protected Node(Type type) {
+  protected PagNode(Type type) {
     this.type = type;
   }
 

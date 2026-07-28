@@ -254,7 +254,7 @@ public class OCG {
     }
     MethodPAG methodPAG = pta.getPag().getMethodPAG(method);
     MethodNodeFactory factory = methodPAG.nodeFactory();
-    Node retNode = factory.caseRet();
+    PagNode retNode = factory.caseRet();
     PointsToSet pts = pta.reachingObjects(retNode).toCIPointsToSet();
     return pts.contains(heap);
   }

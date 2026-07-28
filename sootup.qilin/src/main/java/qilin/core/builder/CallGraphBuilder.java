@@ -137,7 +137,7 @@ public class CallGraphBuilder {
   }
 
   public List<ContextMethod> getEntryPoints() {
-    Node thisRef = pag.getMethodPAG(ptaScene.getFakeMainMethod()).nodeFactory().caseThis();
+    PagNode thisRef = pag.getMethodPAG(ptaScene.getFakeMainMethod()).nodeFactory().caseThis();
     thisRef = pta.parameterize(thisRef, pta.emptyContext());
     pag.addEdge(pta.getRootNode(), thisRef);
     return Collections.singletonList(
@@ -196,7 +196,7 @@ public class CallGraphBuilder {
     Context tgtContext = pta.createCalleeCtx(caller, receiverNode, new CallSite(callStmt), callee);
     ContextMethod cstarget = pta.parameterize(callee, tgtContext);
     handleCallEdge(new Edge(caller, callStmt, cstarget, kind));
-    Node thisRef = pag.getMethodPAG(callee).nodeFactory().caseThis();
+    PagNode thisRef = pag.getMethodPAG(callee).nodeFactory().caseThis();
     thisRef = pta.parameterize(thisRef, cstarget.context());
     pag.addEdge(receiverNode, thisRef);
   }
@@ -244,7 +244,7 @@ public class CallGraphBuilder {
   public void virtualCallDispatch(PointsToSetInternal p2set, VirtualCallSite site) {
     p2set.forall(
         new P2SetVisitor(pta) {
-          public void visit(Node n) {
+          public void visit(PagNode n) {
             dispatch((AllocNode) n, site);
           }
         });
@@ -275,9 +275,9 @@ public class CallGraphBuilder {
       if (!(tgtType instanceof ReferenceType)) {
         continue;
       }
-      Node argNode = srcnf.getNode(arg);
+      PagNode argNode = srcnf.getNode(arg);
       argNode = pta.parameterize(argNode, srcContext);
-      Node parm = tgtnf.caseParm(i);
+      PagNode parm = tgtnf.caseParm(i);
       parm = pta.parameterize(parm, tgtContext);
       pag.addEdge(argNode, parm);
     }
@@ -286,10 +286,10 @@ public class CallGraphBuilder {
       Value dest = ((JAssignStmt) s).getLeftOp();
 
       if (dest.getType() instanceof ReferenceType) {
-        Node destNode = srcnf.getNode(dest);
+        PagNode destNode = srcnf.getNode(dest);
         destNode = pta.parameterize(destNode, srcContext);
         if (tgtmtd.getReturnType() instanceof ReferenceType) {
-          Node retNode = tgtnf.caseRet();
+          PagNode retNode = tgtnf.caseRet();
           retNode = pta.parameterize(retNode, tgtContext);
           pag.addEdge(retNode, destNode);
         }
@@ -297,7 +297,7 @@ public class CallGraphBuilder {
     }
     // add throw return edge
     if (pta.getConfig().isPreciseExceptions()) {
-      Node throwNode = tgtnf.caseMethodThrow();
+      PagNode throwNode = tgtnf.caseMethodThrow();
       /*
        * If an invocation statement may throw exceptions, we create a special local variables
        * to receive the exception objects.
@@ -306,7 +306,7 @@ public class CallGraphBuilder {
        * */
       throwNode = pta.parameterize(throwNode, tgtContext);
       MethodNodeFactory mnf = srcmpag.nodeFactory();
-      Node dst = mnf.makeInvokeStmtThrowVarNode(s, srcmpag.getMethod());
+      PagNode dst = mnf.makeInvokeStmtThrowVarNode(s, srcmpag.getMethod());
       dst = pta.parameterize(dst, srcContext);
       pag.addEdge(throwNode, dst);
     }

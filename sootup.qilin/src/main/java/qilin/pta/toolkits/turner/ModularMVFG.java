@@ -24,7 +24,7 @@ import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 import qilin.util.graph.MergedNode;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
@@ -57,7 +57,7 @@ public class ModularMVFG extends AbstractMVFG {
       AbstractMVFG tgtVfg = method2VFG.get(tgtmtd);
       assert tgtVfg != null;
       MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
-      Node ret = tgtnf.caseRet();
+      PagNode ret = tgtnf.caseRet();
       if (tgtVfg.getCSNodes().contains(ret)) {
         return true;
       }

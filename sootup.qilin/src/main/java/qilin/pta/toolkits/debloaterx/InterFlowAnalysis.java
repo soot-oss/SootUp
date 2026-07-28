@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import qilin.core.pag.LocalVarNode;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 import qilin.core.pag.SparkField;
 import qilin.util.Pair;
 import qilin.util.queue.UniqueQueue;
@@ -62,11 +62,11 @@ public class InterFlowAnalysis {
    * */
   private Set<LocalVarNode> runDFAandCollect(SparkField field, boolean isInflow) {
     Set<LocalVarNode> ret = new HashSet<>();
-    Map<State, Set<Node>> state2nodes = new HashMap<>();
-    Queue<Pair<Node, State>> queue = new UniqueQueue<>();
+    Map<State, Set<PagNode>> state2nodes = new HashMap<>();
+    Queue<Pair<PagNode, State>> queue = new UniqueQueue<>();
     queue.add(new Pair<>(xpag.getDummyThis(), State.THIS));
     while (!queue.isEmpty()) {
-      Pair<Node, State> front = queue.poll();
+      Pair<PagNode, State> front = queue.poll();
       if (front.second() == State.End) {
         if (front.first() instanceof LocalVarNode) {
           LocalVarNode lvn = (LocalVarNode) front.first();
@@ -75,8 +75,8 @@ public class InterFlowAnalysis {
       }
       // visit the node and state.
       visit(front, state2nodes);
-      Set<Pair<Node, State>> nexts = getNextNodeStates(front, field, isInflow);
-      for (Pair<Node, State> nodeState : nexts) {
+      Set<Pair<PagNode, State>> nexts = getNextNodeStates(front, field, isInflow);
+      for (Pair<PagNode, State> nodeState : nexts) {
         if (!isVisited(nodeState, state2nodes)) {
           queue.add(nodeState);
         }
@@ -85,11 +85,11 @@ public class InterFlowAnalysis {
     return ret;
   }
 
-  private Set<Pair<Node, State>> getNextNodeStates(
-      Pair<Node, State> nodeState, SparkField field, boolean in) {
-    Node node = nodeState.first();
+  private Set<Pair<PagNode, State>> getNextNodeStates(
+          Pair<PagNode, State> nodeState, SparkField field, boolean in) {
+    PagNode node = nodeState.first();
     State state = nodeState.second();
-    Set<Pair<Node, State>> ret = new HashSet<>();
+    Set<Pair<PagNode, State>> ret = new HashSet<>();
     for (Edge edge : xpag.getOutEdges(node)) {
       boolean mathched = edge.field != null && edge.field.equals(field);
       State nextState;
@@ -160,16 +160,16 @@ public class InterFlowAnalysis {
     return State.Error;
   }
 
-  private void visit(Pair<Node, State> nodeState, Map<State, Set<Node>> state2nodes) {
-    Node node = nodeState.first();
+  private void visit(Pair<PagNode, State> nodeState, Map<State, Set<PagNode>> state2nodes) {
+    PagNode node = nodeState.first();
     State state = nodeState.second();
     state2nodes.computeIfAbsent(state, k -> new HashSet<>()).add(node);
   }
 
-  private boolean isVisited(Pair<Node, State> nodeState, Map<State, Set<Node>> state2nodes) {
-    Node node = nodeState.first();
+  private boolean isVisited(Pair<PagNode, State> nodeState, Map<State, Set<PagNode>> state2nodes) {
+    PagNode node = nodeState.first();
     State state = nodeState.second();
-    Set<Node> nodes = state2nodes.getOrDefault(state, Collections.emptySet());
+    Set<PagNode> nodes = state2nodes.getOrDefault(state, Collections.emptySet());
     return nodes.contains(node);
   }
 

@@ -19,7 +19,7 @@
 package qilin.core;
 
 import qilin.core.context.Context;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 import qilin.core.sets.PointsToSet;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.SootField;
@@ -42,7 +42,7 @@ public interface PointsToAnalysis {
   /** Returns the set of objects pointed to by variable l. */
   PointsToSet reachingObjects(SootMethod m, Local l);
 
-  PointsToSet reachingObjects(Node n);
+  PointsToSet reachingObjects(PagNode n);
 
   /** Returns the set of objects pointed to by variable l in context c. */
   PointsToSet reachingObjects(Context c, SootMethod m, Local l);

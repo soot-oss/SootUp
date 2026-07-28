@@ -204,7 +204,7 @@ public class PointsToStat implements AbstractStat {
 
     // stat method throw points-to.
     for (SootMethod sm : pta.getNakedReachableMethods()) {
-      Node mThrow = pag.getMethodPAG(sm).nodeFactory().caseMethodThrow();
+      PagNode mThrow = pag.getMethodPAG(sm).nodeFactory().caseMethodThrow();
       PointsToSet pts = pta.reachingObjects(mThrow);
       if (!pts.isEmpty()) {
         methodThrowCnt++;

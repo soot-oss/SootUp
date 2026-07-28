@@ -25,7 +25,7 @@ import qilin.util.Numberable;
  *
  * @author Ondrej Lhotak
  */
-public class FieldRefNode extends Node implements Numberable {
+public class FieldRefNode extends PagNode implements Numberable {
   protected VarNode base;
   protected SparkField field;
 

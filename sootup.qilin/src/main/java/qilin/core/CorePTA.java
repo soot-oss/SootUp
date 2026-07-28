@@ -70,7 +70,7 @@ public abstract class CorePTA extends PTA {
   }
 
   @Override
-  public Node parameterize(Node n, Context context) {
+  public PagNode parameterize(PagNode n, Context context) {
     if (context == null) {
       throw new RuntimeException("null context!!!");
     }

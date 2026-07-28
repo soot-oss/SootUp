@@ -125,9 +125,9 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
         return;
       }
       MethodPAG srcmpag = prePAG.getMethodPAG(method);
-      QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+      QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
       while (reader.hasNext()) {
-        Node from = reader.next(), to = reader.next();
+        PagNode from = reader.next(), to = reader.next();
         if (from instanceof LocalVarNode) {
           nodes.add(((VarNode) from).getVariable());
         } else if (from instanceof AllocNode) {

@@ -114,7 +114,7 @@ public abstract class PTA implements PointsToAnalysis {
 
   protected abstract Propagator getPropagator();
 
-  public abstract Node parameterize(Node n, Context context);
+  public abstract PagNode parameterize(PagNode n, Context context);
 
   public abstract ContextMethod parameterize(SootMethod method, Context context);
 
@@ -149,7 +149,7 @@ public abstract class PTA implements PointsToAnalysis {
    * pointed by n under every possible context. case 2: n is a context-sensitive node, return
    * objects pointed by n under the given context.
    */
-  public PointsToSet reachingObjects(Node n) {
+  public PointsToSet reachingObjects(PagNode n) {
     final PointsToSetInternal ret;
     if (n instanceof ContextVarNode) {
       ContextVarNode cvn = (ContextVarNode) n;

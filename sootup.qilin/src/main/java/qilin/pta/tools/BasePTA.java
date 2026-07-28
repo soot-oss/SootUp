@@ -32,7 +32,7 @@ import qilin.core.pag.AllocNode;
 import qilin.core.pag.ContextVarNode;
 import qilin.core.pag.GlobalVarNode;
 import qilin.core.pag.LocalVarNode;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 import qilin.core.pag.PAG;
 import qilin.core.pag.ValNode;
 import qilin.core.pag.VarNode;
@@ -92,7 +92,7 @@ public abstract class BasePTA extends CorePTA {
   /** dump pts to sootoutput/pts */
   private void dumpPts(PTA pta, boolean appOnly) {
     final String output_dir = getConfig().getOutputDirectory();
-    Map<String, Node> nodes = new TreeMap<>();
+    Map<String, PagNode> nodes = new TreeMap<>();
     try {
       PrintWriter file = new PrintWriter(new File(output_dir, "pts.txt"));
       file.println("Points-to results:");
@@ -142,7 +142,7 @@ public abstract class BasePTA extends CorePTA {
           continue;
         }
         for (Iterator<AllocNode> it = p2set.iterator(); it.hasNext(); ) {
-          Node n = it.next();
+          PagNode n = it.next();
           label = PTAUtils.getNodeLabel(n);
           nodes.put("[" + label + "]", n);
           file.print(" ");

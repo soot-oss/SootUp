@@ -34,7 +34,7 @@ public class Zipper {
   private final AtomicInteger analyzedClasses = new AtomicInteger(0);
   private final AtomicInteger totalPFGNodes = new AtomicInteger(0);
   private final AtomicInteger totalPFGEdges = new AtomicInteger(0);
-  private final ConcurrentDirectedGraphImpl<Node> overallPFG = new ConcurrentDirectedGraphImpl<>();
+  private final ConcurrentDirectedGraphImpl<PagNode> overallPFG = new ConcurrentDirectedGraphImpl<>();
   private final Map<SootMethod, Integer> methodPts;
   private final Map<Type, Collection<SootMethod>> pcmMap = new ConcurrentHashMap<>(1024);
 
@@ -62,7 +62,7 @@ public class Zipper {
 
   public int numberOfOverallPFGEdges() {
     int nrEdges = 0;
-    for (Node node : overallPFG.allNodes()) {
+    for (PagNode node : overallPFG.allNodes()) {
       nrEdges += overallPFG.succsOf(node).size();
     }
     return nrEdges;
@@ -81,7 +81,7 @@ public class Zipper {
   public static void outputObjectFlowGraphSize(ObjectFlowGraph ofg) {
     int nrNodes = ofg.allNodes().size();
     int nrEdges = 0;
-    for (Node node : ofg.allNodes()) {
+    for (PagNode node : ofg.allNodes()) {
       nrEdges += ofg.outEdgesOf(node).size();
     }
 
@@ -224,7 +224,7 @@ public class Zipper {
 
     fa.initialize(type, inms, outms);
     inms.forEach(fa::analyze);
-    Set<Node> flowNodes = fa.getFlowNodes();
+    Set<PagNode> flowNodes = fa.getFlowNodes();
     Set<SootMethod> precisionCriticalMethods = getPrecisionCriticalMethods(type, flowNodes);
     if (Global.isDebug()) {
       if (!precisionCriticalMethods.isEmpty()) {
@@ -255,10 +255,10 @@ public class Zipper {
     return true;
   }
 
-  private void mergeSinglePFG(ConcurrentDirectedGraphImpl<Node> pfg) {
-    for (Node node : pfg.allNodes()) {
+  private void mergeSinglePFG(ConcurrentDirectedGraphImpl<PagNode> pfg) {
+    for (PagNode node : pfg.allNodes()) {
       this.overallPFG.addNode(node);
-      for (Node succ : pfg.succsOf(node)) {
+      for (PagNode succ : pfg.succsOf(node)) {
         this.overallPFG.addEdge(node, succ);
       }
     }
@@ -301,7 +301,7 @@ public class Zipper {
     return (int) (Global.getExpressThreshold() * totalPTSSize);
   }
 
-  private Set<SootMethod> getPrecisionCriticalMethods(Type type, Set<Node> nodes) {
+  private Set<SootMethod> getPrecisionCriticalMethods(Type type, Set<PagNode> nodes) {
     return nodes.stream()
         .map(this::node2ContainingMethod)
         .filter(Objects::nonNull)
@@ -309,7 +309,7 @@ public class Zipper {
         .collect(Collectors.toSet());
   }
 
-  private SootMethod node2ContainingMethod(Node node) {
+  private SootMethod node2ContainingMethod(PagNode node) {
     if (node instanceof LocalVarNode) {
       LocalVarNode lvn = (LocalVarNode) node;
       return lvn.getMethod();

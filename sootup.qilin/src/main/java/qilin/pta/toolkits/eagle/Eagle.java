@@ -285,9 +285,9 @@ public class Eagle {
         // special treatment for fake main
         this.addNewEdge(prePTA.getRootNode(), thisRef);
       }
-      QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+      QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
       while (reader.hasNext()) {
-        Node from = reader.next(), to = reader.next();
+        PagNode from = reader.next(), to = reader.next();
         if (from instanceof LocalVarNode) {
           if (to instanceof LocalVarNode)
             this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
@@ -310,7 +310,7 @@ public class Eagle {
           .getExceptionEdges()
           .forEach(
               (k, vs) -> {
-                for (Node v : vs) {
+                for (PagNode v : vs) {
                   this.addAssignEdge((LocalVarNode) k, (LocalVarNode) v);
                 }
               });

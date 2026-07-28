@@ -21,7 +21,7 @@ import sootup.core.types.ReferenceType;
 
 public class XPAG {
   /* record nodes and edges in the graph */
-  protected final Map<Node, Set<Edge>> outEdges = new ConcurrentHashMap<>();
+  protected final Map<PagNode, Set<Edge>> outEdges = new ConcurrentHashMap<>();
   protected final PTA pta;
   protected final PAG pag;
   private final LocalVarNode dummyThis;
@@ -54,9 +54,9 @@ public class XPAG {
     // add special ``this'' edge
     addThisEdge((LocalVarNode) thisNode);
     // add normal edges: NEW, ASSIGN, LOAD, STORE
-    QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+    QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
     while (reader.hasNext()) {
-      Node from = reader.next(), to = reader.next();
+      PagNode from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
         if (to instanceof LocalVarNode) {
           this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
@@ -283,7 +283,7 @@ public class XPAG {
     addNormalEdge(retEdge);
   }
 
-  public Set<Edge> getOutEdges(Node node) {
+  public Set<Edge> getOutEdges(PagNode node) {
     return this.outEdges.getOrDefault(node, Collections.emptySet());
   }
 

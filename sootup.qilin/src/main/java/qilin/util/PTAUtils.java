@@ -46,7 +46,6 @@ import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
@@ -173,7 +172,7 @@ public final class PTAUtils {
     System.out.print(ret);
   }
 
-  public static String getNodeLabel(Node node) {
+  public static String getNodeLabel(PagNode node) {
     int num = node.getNumber();
     if (node instanceof LocalVarNode) return "L" + num;
     else if (node instanceof ContextVarNode) {

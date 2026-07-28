@@ -56,7 +56,7 @@ public class Solver extends Propagator {
   private final ExceptionHandler eh;
   private final ChunkedQueue<ExceptionThrowSite> throwSiteQueue = new ChunkedQueue<>();
   private final ChunkedQueue<VirtualCallSite> virtualCallSiteQueue = new ChunkedQueue<>();
-  private final ChunkedQueue<Node> edgeQueue = new ChunkedQueue<>();
+  private final ChunkedQueue<PagNode> edgeQueue = new ChunkedQueue<>();
 
   private final ChunkedQueue<ContextMethod> rmQueue = new ChunkedQueue<>();
 
@@ -72,7 +72,7 @@ public class Solver extends Propagator {
   @Override
   public void propagate() {
     final QueueReader<ContextMethod> newRMs = rmQueue.reader();
-    final QueueReader<Node> newPAGEdges = edgeQueue.reader();
+    final QueueReader<PagNode> newPAGEdges = edgeQueue.reader();
     final QueueReader<ExceptionThrowSite> newThrows = throwSiteQueue.reader();
     final QueueReader<VirtualCallSite> newCalls = virtualCallSiteQueue.reader();
     cgb.initReachableMethods();
@@ -173,7 +173,7 @@ public class Solver extends Propagator {
       SootMethod sm = m.method();
       MethodPAG mpag = pag.getMethodPAG(sm);
       MethodNodeFactory nodeFactory = mpag.nodeFactory();
-      Node src;
+      PagNode src;
       if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
         src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, sm);
       } else {
@@ -195,9 +195,9 @@ public class Solver extends Propagator {
     if (!contexts.add(cxt)) {
       return;
     }
-    for (QueueReader<Node> reader = mpag.getInternalReader().clone(); reader.hasNext(); ) {
-      Node from = reader.next();
-      Node to = reader.next();
+    for (QueueReader<PagNode> reader = mpag.getInternalReader().clone(); reader.hasNext(); ) {
+      PagNode from = reader.next();
+      PagNode to = reader.next();
       if (from instanceof AllocNode) {
         AllocNode heap = (AllocNode) from;
         from = pta.heapAbstractor().abstractHeap(heap);
@@ -223,7 +223,7 @@ public class Solver extends Propagator {
           pta.getScene().getMethod("<java.lang.ref.Finalizer: void register(java.lang.Object)>");
       MethodPAG tgtmpag = pag.getMethodPAG(rm);
       MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
-      Node parm = tgtnf.caseParm(0);
+      PagNode parm = tgtnf.caseParm(0);
       Context calleeCtx = pta.emptyContext();
       AllocNode baseHeap = heap.base();
       parm = pta.parameterize(parm, calleeCtx);
@@ -262,7 +262,7 @@ public class Solver extends Propagator {
   private void handleStoreEdge(PointsToSetInternal baseHeaps, SparkField field, ValNode from) {
     baseHeaps.forall(
         new P2SetVisitor(pta) {
-          public void visit(Node n) {
+          public void visit(PagNode n) {
             if (disallowStoreOrLoadOn((AllocNode) n)) {
               return;
             }
@@ -277,7 +277,7 @@ public class Solver extends Propagator {
   private void handleLoadEdge(PointsToSetInternal baseHeaps, SparkField field, ValNode to) {
     baseHeaps.forall(
         new P2SetVisitor(pta) {
-          public void visit(Node n) {
+          public void visit(PagNode n) {
             if (disallowStoreOrLoadOn((AllocNode) n)) {
               return;
             }
@@ -293,7 +293,7 @@ public class Solver extends Propagator {
       QueueReader<VirtualCallSite> newCalls,
       QueueReader<ContextMethod> newRMs,
       QueueReader<ExceptionThrowSite> newThrows,
-      QueueReader<Node> addedEdges) {
+      QueueReader<PagNode> addedEdges) {
     while (newCalls.hasNext()) {
       while (newCalls.hasNext()) {
         final VirtualCallSite site = newCalls.next();
@@ -314,8 +314,8 @@ public class Solver extends Propagator {
      * target nodes into the worklist if nesseary.
      * */
     while (addedEdges.hasNext()) {
-      final Node addedSrc = addedEdges.next();
-      final Node addedTgt = addedEdges.next();
+      final PagNode addedSrc = addedEdges.next();
+      final PagNode addedTgt = addedEdges.next();
       if (addedSrc instanceof VarNode && addedTgt instanceof VarNode
           || addedSrc instanceof ContextField
           || addedTgt instanceof ContextField) { // x = y; x = o.f; o.f = y;
@@ -341,7 +341,7 @@ public class Solver extends Propagator {
     P2SetVisitor p2SetVisitor =
         new P2SetVisitor(pta) {
           @Override
-          public void visit(Node n) {
+          public void visit(PagNode n) {
             if (addWithTypeFiltering(addTo, pointer.getType(), n)) {
               returnValue = true;
             }
@@ -366,7 +366,7 @@ public class Solver extends Propagator {
     return PTAUtils.isEmptyArray(base);
   }
 
-  private boolean addWithTypeFiltering(PointsToSetInternal pts, Type type, Node node) {
+  private boolean addWithTypeFiltering(PointsToSetInternal pts, Type type, PagNode node) {
     if (PTAUtils.castNeverFails(pta.getView(), node.getType(), type)) {
       return pts.add(node.getNumber());
     }

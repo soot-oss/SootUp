@@ -124,9 +124,9 @@ public abstract class AbstractMVFG {
     MethodPAG srcmpag = pag.getMethodPAG(method);
     MethodNodeFactory srcnf = srcmpag.nodeFactory();
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
-    QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+    QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
     while (reader.hasNext()) {
-      Node from = reader.next(), to = reader.next();
+      PagNode from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
         if (to instanceof LocalVarNode) this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
         else if (to instanceof FieldRefNode) {
@@ -151,7 +151,7 @@ public abstract class AbstractMVFG {
         .getExceptionEdges()
         .forEach(
             (k, vs) -> {
-              for (Node v : vs) {
+              for (PagNode v : vs) {
                 this.addAssignEdge((LocalVarNode) k, (LocalVarNode) v);
               }
             });

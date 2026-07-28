@@ -19,10 +19,10 @@
 package qilin.pta.toolkits.selectx;
 
 import java.util.stream.Stream;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 
 public abstract class BNode {
-  public Node sparkNode;
+  public PagNode sparkNode;
 
   /**
    * visited is not overrided by para: this represents value flows in *any* contexts, this can avoid
@@ -30,7 +30,7 @@ public abstract class BNode {
    */
   private boolean visited = false;
 
-  BNode(Node origin) {
+  BNode(PagNode origin) {
     this.sparkNode = origin;
   }
 

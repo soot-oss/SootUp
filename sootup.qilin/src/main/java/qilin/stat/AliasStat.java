@@ -28,7 +28,7 @@ import qilin.core.PTA;
 import qilin.core.pag.FieldRefNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 import qilin.core.pag.SparkField;
 import qilin.core.pag.VarNode;
 import qilin.core.sets.PointsToSet;
@@ -58,9 +58,9 @@ public class AliasStat implements AbstractStat {
     for (SootMethod m : reachableMethods) {
       Map<SparkField, Map<Boolean, Set<LocalVarNode>>> localMap = new HashMap<>();
       MethodPAG srcmpag = pta.getPag().getMethodPAG(m);
-      QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+      QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
       while (reader.hasNext()) {
-        Node from = reader.next(), to = reader.next();
+        PagNode from = reader.next(), to = reader.next();
         if (from instanceof LocalVarNode) {
           if (to instanceof LocalVarNode) {
             if (!(((VarNode) from).getVariable() instanceof Local)) continue;

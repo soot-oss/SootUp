@@ -22,7 +22,7 @@ import java.util.*;
 import qilin.core.PTA;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.ClassConstantNode;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 import qilin.core.pag.StringConstantNode;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.SootClass;
@@ -63,7 +63,7 @@ public class UnmodifiablePointsToSet implements PointsToSet {
     final Set<Type> ret = new HashSet<>();
     pts.forall(
         new P2SetVisitor(pta) {
-          public void visit(Node n) {
+          public void visit(PagNode n) {
             Type t = n.getType();
             if (t instanceof ClassType) {
               ClassType rt = (ClassType) t;
@@ -84,7 +84,7 @@ public class UnmodifiablePointsToSet implements PointsToSet {
     final Set<String> ret = new HashSet<>();
     return pts.forall(
             new P2SetVisitor(pta) {
-              public void visit(Node n) {
+              public void visit(PagNode n) {
                 if (n instanceof StringConstantNode) {
                   ret.add(((StringConstantNode) n).getString());
                 } else {
@@ -101,7 +101,7 @@ public class UnmodifiablePointsToSet implements PointsToSet {
     final Set<ClassConstant> ret = new HashSet<>();
     return pts.forall(
             new P2SetVisitor(pta) {
-              public void visit(Node n) {
+              public void visit(PagNode n) {
                 if (n instanceof ClassConstantNode) {
                   ret.add(((ClassConstantNode) n).getClassConstant());
                 } else {
@@ -128,7 +128,7 @@ public class UnmodifiablePointsToSet implements PointsToSet {
     final StringBuffer ret = new StringBuffer();
     pts.forall(
         new P2SetVisitor(pta) {
-          public void visit(Node n) {
+          public void visit(PagNode n) {
             ret.append(n).append(",");
           }
         });
@@ -167,7 +167,7 @@ public class UnmodifiablePointsToSet implements PointsToSet {
     pts.forall(
         new P2SetVisitor(pta) {
           @Override
-          public void visit(Node n) {
+          public void visit(PagNode n) {
             AllocNode heap = (AllocNode) n;
             ptoSet.add(heap.base().getNumber());
           }

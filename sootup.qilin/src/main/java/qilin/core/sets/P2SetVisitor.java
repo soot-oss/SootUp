@@ -19,7 +19,7 @@
 package qilin.core.sets;
 
 import qilin.core.PTA;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 
 /**
  * Abstract base class for points-to set visitors used to enumerate points-to sets.
@@ -34,10 +34,10 @@ public abstract class P2SetVisitor {
     this.pta = pta;
   }
 
-  protected abstract void visit(Node n);
+  protected abstract void visit(PagNode n);
 
   public void visit(long idx) {
-    Node node = pta.getPag().getAllocNodeNumberer().get(idx);
+    PagNode node = pta.getPag().getAllocNodeNumberer().get(idx);
     visit(node);
   }
 

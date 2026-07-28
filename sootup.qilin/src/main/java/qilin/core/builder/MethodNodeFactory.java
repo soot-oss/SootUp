@@ -56,7 +56,6 @@ import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
@@ -85,7 +84,7 @@ public class MethodNodeFactory {
     this.scene = pag.getPta().getScene();
   }
 
-  public Node getNode(Value v) {
+  public PagNode getNode(Value v) {
     if (v instanceof Local l) {
         return caseLocal(l);
     } else if (v instanceof JCastExpr castExpr) {
@@ -196,8 +195,8 @@ public class MethodNodeFactory {
             }
 
             if (!(r.getType() instanceof ReferenceType)) return;
-            Node dest = getNode(l);
-            Node src = getNode(r);
+            PagNode dest = getNode(l);
+            PagNode src = getNode(r);
             mpag.addInternalEdge(src, dest);
           }
 
@@ -206,15 +205,15 @@ public class MethodNodeFactory {
             if (!(stmt.getLeftOp().getType() instanceof ReferenceType)) {
               return;
             }
-            Node dest = getNode(stmt.getLeftOp());
-            Node src = getNode(stmt.getRightOp());
+            PagNode dest = getNode(stmt.getLeftOp());
+            PagNode src = getNode(stmt.getRightOp());
             mpag.addInternalEdge(src, dest);
           }
 
           @Override
           public void caseReturnStmt(@NonNull JReturnStmt stmt) {
             if (!(stmt.getOp().getType() instanceof ReferenceType)) return;
-            Node retNode = getNode(stmt.getOp());
+            PagNode retNode = getNode(stmt.getOp());
             mpag.addInternalEdge(retNode, caseRet());
           }
 
@@ -298,7 +297,7 @@ public class MethodNodeFactory {
   }
 
   private VarNode caseCastExpr(JCastExpr ce) {
-    Node opNode = getNode(ce.getOp());
+    PagNode opNode = getNode(ce.getOp());
     VarNode castNode = pag.makeLocalVarNode(ce, ce.getType(), method);
     mpag.addInternalEdge(opNode, castNode);
     return castNode;
@@ -343,7 +342,7 @@ public class MethodNodeFactory {
     return pag.makeFieldRefNode(base, pag.getArrayElement());
   }
 
-  private Node caseCaughtExceptionRef(JCaughtExceptionRef cer) {
+  private PagNode caseCaughtExceptionRef(JCaughtExceptionRef cer) {
     if (pag.getPta().getConfig().isPreciseExceptions()) {
       // we model caughtException expression as an local assignment.
       return pag.makeLocalVarNode(cer, cer.getType(), method);
@@ -364,7 +363,7 @@ public class MethodNodeFactory {
     return pag.makeGlobalVarNode(sfr.getFieldSignature(), sfr.getType());
   }
 
-  private Node caseNullConstant(NullConstant nr) {
+  private PagNode caseNullConstant(NullConstant nr) {
     return null;
   }
 

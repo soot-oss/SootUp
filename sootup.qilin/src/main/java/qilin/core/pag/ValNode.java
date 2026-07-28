@@ -23,7 +23,7 @@ import qilin.util.Numberable;
 import sootup.core.types.Type;
 
 /** Represents a simple of pointer node in the pointer assignment graph. */
-public class ValNode extends Node implements Comparable, Numberable {
+public class ValNode extends PagNode implements Comparable, Numberable {
 
   protected ValNode(Type t) {
     super(t);

@@ -127,7 +127,7 @@ public class DebloatedPTA extends StagedPTA {
   }
 
   @Override
-  public Node parameterize(Node n, Context context) {
+  public PagNode parameterize(PagNode n, Context context) {
     return basePTA.parameterize(n, context);
   }
 
@@ -163,7 +163,7 @@ public class DebloatedPTA extends StagedPTA {
   }
 
   @Override
-  public PointsToSet reachingObjects(Node n) {
+  public PointsToSet reachingObjects(PagNode n) {
     return basePTA.reachingObjects(n);
   }
 

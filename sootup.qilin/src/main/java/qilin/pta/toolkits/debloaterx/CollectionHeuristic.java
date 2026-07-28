@@ -11,7 +11,7 @@ import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldRefNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 import qilin.core.pag.PAG;
 import qilin.core.pag.SparkField;
 import qilin.util.PTAUtils;
@@ -52,9 +52,9 @@ public class CollectionHeuristic {
     MethodPAG srcmpag = pag.getMethodPAG(method);
     Set<FieldRefNode> stores = new HashSet<>();
     Set<FieldRefNode> loads = new HashSet<>();
-    QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+    QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
     while (reader.hasNext()) {
-      Node from = reader.next(), to = reader.next();
+      PagNode from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
         if (to instanceof FieldRefNode) {
           FieldRefNode frn = (FieldRefNode) to;

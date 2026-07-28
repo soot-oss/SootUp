@@ -107,7 +107,7 @@ public class PAG {
   protected final Set<FieldSignature> globals;
   protected final Set<Triple<SootMethod, Local, Type>> locals;
   // ==========================outer objects==============================
-  protected ChunkedQueue<Node> edgeQueue;
+  protected ChunkedQueue<PagNode> edgeQueue;
 
   protected final Map<ValNode, Set<ValNode>> simple;
   protected final Map<ValNode, Set<ValNode>> simpleInv;
@@ -150,7 +150,7 @@ public class PAG {
     this.locals = DataFactory.createSet(100000);
   }
 
-  public void setEdgeQueue(ChunkedQueue<Node> edgeQueue) {
+  public void setEdgeQueue(ChunkedQueue<PagNode> edgeQueue) {
     this.edgeQueue = edgeQueue;
   }
 
@@ -182,7 +182,7 @@ public class PAG {
     return pta.getCgb();
   }
 
-  public QueueReader<Node> edgeReader() {
+  public QueueReader<PagNode> edgeReader() {
     return edgeQueue.reader();
   }
 
@@ -224,21 +224,21 @@ public class PAG {
     return false;
   }
 
-  public void addGlobalPAGEdge(Node from, Node to) {
+  public void addGlobalPAGEdge(PagNode from, PagNode to) {
     from = pta.parameterize(from, pta.emptyContext());
     to = pta.parameterize(to, pta.emptyContext());
     addEdge(from, to);
   }
 
   /** Adds an edge to the graph, returning false if it was already there. */
-  public final void addEdge(Node from, Node to) {
+  public final void addEdge(PagNode from, PagNode to) {
     if (addEdgeIntenal(from, to)) {
       edgeQueue.add(from);
       edgeQueue.add(to);
     }
   }
 
-  private boolean addEdgeIntenal(Node from, Node to) {
+  private boolean addEdgeIntenal(PagNode from, PagNode to) {
     if (from instanceof ValNode) {
       if (to instanceof ValNode) {
         return addSimpleEdge((ValNode) from, (ValNode) to);

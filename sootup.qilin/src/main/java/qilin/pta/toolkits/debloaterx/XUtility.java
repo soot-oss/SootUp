@@ -151,11 +151,11 @@ public class XUtility {
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
     Set<FieldRefNode> stores = new HashSet<>();
     Set<FieldRefNode> loads = new HashSet<>();
-    Set<Node> thisAliases = new HashSet<>();
+    Set<PagNode> thisAliases = new HashSet<>();
     thisAliases.add(thisRef);
-    QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+    QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
     while (reader.hasNext()) {
-      Node from = reader.next(), to = reader.next();
+      PagNode from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
         if (to instanceof FieldRefNode) {
           FieldRefNode frn = (FieldRefNode) to;

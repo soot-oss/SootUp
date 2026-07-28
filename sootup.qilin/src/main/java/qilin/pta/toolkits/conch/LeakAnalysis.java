@@ -34,7 +34,7 @@ import sootup.core.model.SootMethod;
  * This structure is used to check whether an object could flow out of its containing method.
  * */
 public class LeakAnalysis extends AbstractPAG {
-  private final Map<Node, Set<PathEdge>> pathEdges = new ConcurrentHashMap<>();
+  private final Map<PagNode, Set<PathEdge>> pathEdges = new ConcurrentHashMap<>();
   private final Set<PathEdge> initialSeeds = ConcurrentHashMap.newKeySet();
   private final Set<AllocNode> result = ConcurrentHashMap.newKeySet();
 
@@ -54,7 +54,7 @@ public class LeakAnalysis extends AbstractPAG {
     initialSeeds.forEach(pe -> executor.execute(new PathEdgeProcessingTask(pe)));
   }
 
-  protected void addThrowEdge(Node throwNode) {
+  protected void addThrowEdge(PagNode throwNode) {
     super.addThrowEdge(throwNode);
     initialSeeds.add(new PathEdge(throwNode, DFA.State.B, throwNode, DFA.State.B));
   }
@@ -75,12 +75,12 @@ public class LeakAnalysis extends AbstractPAG {
   }
 
   private void addPathEdge(PathEdge pe) {
-    Node tgtNode = pe.getTgtNode();
+    PagNode tgtNode = pe.getTgtNode();
     pathEdges.computeIfAbsent(tgtNode, k -> ConcurrentHashMap.newKeySet()).add(pe);
   }
 
   private boolean containPathEdge(PathEdge pe) {
-    Node tgtNode = pe.getTgtNode();
+    PagNode tgtNode = pe.getTgtNode();
     return pathEdges.getOrDefault(tgtNode, Collections.emptySet()).contains(pe);
   }
 
@@ -101,12 +101,12 @@ public class LeakAnalysis extends AbstractPAG {
     public void run() {
       addPathEdge(pe);
       DFA.State initState = pe.getSrcState();
-      Node sourceNode = pe.getSrcNode();
+      PagNode sourceNode = pe.getSrcNode();
       DFA.State targetState = pe.getTgtState();
-      Node targetNode = pe.getTgtNode();
+      PagNode targetNode = pe.getTgtNode();
 
       for (TranEdge e : outAndSummaryEdges(targetNode)) {
-        Node newTargetNode = e.getTarget();
+        PagNode newTargetNode = e.getTarget();
         DFA.TranCond tranCond = e.getTranCond();
         DFA.State nextState = DFA.nextState(targetState, tranCond);
         if (nextState == DFA.State.ERROR) {
@@ -198,8 +198,8 @@ public class LeakAnalysis extends AbstractPAG {
   }
 
   private void addSummaryEdge(TranEdge tranEdge) {
-    Node src = tranEdge.getSource();
-    Node tgt = tranEdge.getTarget();
+    PagNode src = tranEdge.getSource();
+    PagNode tgt = tranEdge.getTarget();
     DFA.TranCond tranCond = tranEdge.getTranCond();
     sumEdges.computeIfAbsent(src, k -> ConcurrentHashMap.newKeySet()).add(tranEdge);
     for (PathEdge pe : pathEdges.getOrDefault(src, Collections.emptySet())) {

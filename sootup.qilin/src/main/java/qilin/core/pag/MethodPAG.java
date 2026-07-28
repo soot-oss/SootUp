@@ -42,8 +42,8 @@ import sootup.core.model.SootMethod;
  * @author Ondrej Lhotak
  */
 public class MethodPAG {
-  private final ChunkedQueue<Node> internalEdges = new ChunkedQueue<>();
-  private final QueueReader<Node> internalReader = internalEdges.reader();
+  private final ChunkedQueue<PagNode> internalEdges = new ChunkedQueue<>();
+  private final QueueReader<PagNode> internalReader = internalEdges.reader();
   private final Set<SootMethod> clinits = DataFactory.createSet();
   private final Collection<InvokableStmt> invokeStmts = DataFactory.createSet();
   public Body body;
@@ -52,7 +52,7 @@ public class MethodPAG {
    * Since now the exception analysis is handled on-the-fly, we should record the exception edges
    * explicitly for Eagle and Turner.
    */
-  private final Map<Node, Set<Node>> exceptionEdges = DataFactory.createMap();
+  private final Map<PagNode, Set<PagNode>> exceptionEdges = DataFactory.createMap();
 
   protected MethodNodeFactory nodeFactory;
   protected final PTAScene ptaScene;
@@ -65,7 +65,7 @@ public class MethodPAG {
    * node are thrown more than once and lies in different catch blocks.
    * */
   public final Map<Stmt, List<Trap>> stmt2wrapperedTraps = DataFactory.createMap();
-  public final Map<Node, Map<Stmt, List<Trap>>> node2wrapperedTraps = DataFactory.createMap();
+  public final Map<PagNode, Map<Stmt, List<Trap>>> node2wrapperedTraps = DataFactory.createMap();
 
   public MethodPAG(PAG pag, SootMethod m, Body body) {
     this.ptaScene = pag.getPta().getScene();
@@ -132,7 +132,7 @@ public class MethodPAG {
     // Set<Stmt> inTraps = DataFactory.createSet();
   }
 
-  private void addStmtTrap(Node src, Stmt stmt, Trap trap) {
+  private void addStmtTrap(PagNode src, Stmt stmt, Trap trap) {
     Map<Stmt, List<Trap>> stmt2Traps =
         node2wrapperedTraps.computeIfAbsent(src, k -> DataFactory.createMap());
     List<Trap> trapList = stmt2Traps.computeIfAbsent(stmt, k -> DataFactory.createList());
@@ -155,7 +155,7 @@ public class MethodPAG {
     }
   }
 
-  public void addInternalEdge(Node src, Node dst) {
+  public void addInternalEdge(PagNode src, PagNode dst) {
     if (src == null) {
       return;
     }
@@ -163,7 +163,7 @@ public class MethodPAG {
     internalEdges.add(dst);
   }
 
-  public QueueReader<Node> getInternalReader() {
+  public QueueReader<PagNode> getInternalReader() {
     return internalReader;
   }
 
@@ -175,11 +175,11 @@ public class MethodPAG {
     return clinits.iterator();
   }
 
-  public void addExceptionEdge(Node from, Node to) {
+  public void addExceptionEdge(PagNode from, PagNode to) {
     this.exceptionEdges.computeIfAbsent(from, k -> DataFactory.createSet()).add(to);
   }
 
-  public Map<Node, Set<Node>> getExceptionEdges() {
+  public Map<PagNode, Set<PagNode>> getExceptionEdges() {
     return this.exceptionEdges;
   }
 }

@@ -1,15 +1,15 @@
 package qilin.pta.toolkits.debloaterx;
 
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 import qilin.core.pag.SparkField;
 
 public class Edge {
-  Node from;
-  Node to;
+  PagNode from;
+  PagNode to;
   SparkField field;
   EdgeKind kind;
 
-  Edge(Node from, Node to, SparkField f, EdgeKind kind) {
+  Edge(PagNode from, PagNode to, SparkField f, EdgeKind kind) {
     this.from = from;
     this.to = to;
     this.field = f;

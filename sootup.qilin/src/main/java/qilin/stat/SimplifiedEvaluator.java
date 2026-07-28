@@ -106,7 +106,7 @@ public class SimplifiedEvaluator implements IEvaluator {
             }
             boolean fails = false;
             Collection<AllocNode> pts = pta.reachingObjects(sm, (Local) v).toCollection();
-            for (Node n : pts) {
+            for (PagNode n : pts) {
               if (fails) {
                 break;
               }

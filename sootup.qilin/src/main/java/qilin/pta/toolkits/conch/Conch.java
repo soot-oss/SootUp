@@ -128,10 +128,10 @@ public class Conch extends AbstractConch {
     return ret;
   }
 
-  private Set<Node> mappingtoCallerCommingParamsOrHeaps(
-      Set<Node> params, SootMethod curr, SootMethod caller) {
+  private Set<PagNode> mappingtoCallerCommingParamsOrHeaps(
+          Set<PagNode> params, SootMethod curr, SootMethod caller) {
     MethodPAG cmpag = pag.getMethodPAG(caller);
-    Set<Node> ret = new HashSet<>();
+    Set<PagNode> ret = new HashSet<>();
     for (InvokableStmt stmt : cmpag.getInvokeStmts()) {
       if (!(stmt.getInvokeExpr().get() instanceof JSpecialInvokeExpr)) {
         continue;
@@ -139,7 +139,7 @@ public class Conch extends AbstractConch {
       MethodSignature methodSig = stmt.getInvokeExpr().get().getMethodSignature();
       Optional<? extends SootMethod> otarget = pta.getView().getMethod(methodSig);
       if (otarget.isPresent() && otarget.get().equals(curr)) {
-        for (Node n : params) {
+        for (PagNode n : params) {
           if (n instanceof VarNode) {
             VarNode paramNode = (VarNode) n;
             LocalVarNode argNode = PTAUtils.paramToArg(pag, stmt, cmpag, paramNode);
@@ -153,9 +153,9 @@ public class Conch extends AbstractConch {
     return ret;
   }
 
-  private boolean containHeaps(Set<Node> nodes) {
+  private boolean containHeaps(Set<PagNode> nodes) {
     boolean ret = false;
-    for (Node n : nodes) {
+    for (PagNode n : nodes) {
       if (n instanceof AllocNode) {
         ret = true;
         break;
@@ -164,12 +164,12 @@ public class Conch extends AbstractConch {
     return ret;
   }
 
-  private Trilean handleTransitiveConstructors(SootMethod sm, AllocNode heap, Set<Node> params) {
+  private Trilean handleTransitiveConstructors(SootMethod sm, AllocNode heap, Set<PagNode> params) {
     SootMethod containingMethod = heap.getMethod();
     ArrayList<SootMethod> chain = recoverConstructorChain(sm, heap);
     SootMethod caller = sm;
     SootMethod curr;
-    Set<Node> ret = params;
+    Set<PagNode> ret = params;
     boolean notSure = containHeaps(params);
     for (SootMethod method : chain) {
       curr = caller;
@@ -195,12 +195,12 @@ public class Conch extends AbstractConch {
     return tmpRes2;
   }
 
-  private Trilean checkResult(Set<Node> res) {
+  private Trilean checkResult(Set<PagNode> res) {
     if (res.isEmpty()) {
       return Trilean.FALSE;
     }
     boolean hasParam = false;
-    for (Node n : res) {
+    for (PagNode n : res) {
       if (!(n instanceof AllocNode)) {
         hasParam = true;
         break;
@@ -214,7 +214,7 @@ public class Conch extends AbstractConch {
   }
 
   private Trilean isCommingFromParams(LocalVarNode from, SootMethod method, AllocNode heap) {
-    Set<Node> ret = this.pfg.fetchReachableParamsOf(from);
+    Set<PagNode> ret = this.pfg.fetchReachableParamsOf(from);
     if (PTAUtils.isConstructor(method)) {
       return handleTransitiveConstructors(method, heap, ret);
     } else {
