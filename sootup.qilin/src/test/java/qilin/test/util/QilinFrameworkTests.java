@@ -25,9 +25,9 @@ import java.io.IOException;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import qilin.core.PTA;
+import qilin.core.PointerAnalysisFactory;
+import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
-import qilin.driver.PTAConfigPattern;
-import qilin.driver.PTAFactory;
 import qilin.util.PTAUtils;
 import sootup.core.views.View;
 
@@ -83,13 +83,13 @@ public abstract class QilinFrameworkTests {
   }
 
   public PTA run(String mainClass) {
-    return run(mainClass, "insens");
+    return run(mainClass, ContextSensitivity.insensitive());
   }
 
-  public PTA run(String mainClass, String ptaPattern) {
-    PTAConfigPattern pattern = new PTAConfigPattern(ptaPattern);
+  public PTA run(String mainClass, ContextSensitivity contextSensitivity) {
     PointerAnalysisConfig config =
         PointerAnalysisConfig.builder()
+            .contextSensitivity(contextSensitivity)
             .singleEntry(true)
             .clinitMode(PointerAnalysisConfig.ClinitMode.ON_THE_FLY)
             .enforceEmptyCtxForIgnoreTypes(true)
@@ -97,10 +97,10 @@ public abstract class QilinFrameworkTests {
             .preciseArrayElement(true)
             .preciseExceptions(true)
             .reflectionLogPath(refLogPath + File.separator + "Reflection.log")
-            .analysisName(pattern.toString())
+            .analysisName(contextSensitivity.toString())
             .build();
     View view = PTAUtils.createView(appPath, null, jrePath);
-    PTA pta = PTAFactory.createPTA(pattern, view, mainClass, config);
+    PTA pta = PointerAnalysisFactory.create(view, mainClass, config);
     pta.pureRun();
     return pta;
   }

@@ -56,9 +56,9 @@ public class PTAConfigPattern {
     String hkString = matcher.group(6);
 
     approach = Approach.toApproach(approachString);
-    k = kString.equals("") ? 1 : Integer.parseInt(kString);
+    k = kString.isEmpty() ? 1 : Integer.parseInt(kString);
     ctxKind = ContextKind.toCtxKind(typeString);
-    hk = hkString == null ? -1 : hkString.equals("") ? 1 : Integer.parseInt(hkString);
+    hk = hkString == null ? -1 : hkString.isEmpty() ? 1 : Integer.parseInt(hkString);
 
     if (k == 0) {
       ctxKind = ContextKind.INSENS;
@@ -234,30 +234,19 @@ public class PTAConfigPattern {
 
     @Override
     public String toString() {
-      switch (this) {
-        case DATADRIVEN:
-          return "data-driven";
-        case TUNNELING:
-          return "tunneling";
-        case BEAN:
-          return "bean";
-        case ZIPPER:
-          return "zipper";
-        case EAGLE:
-          return "eagle";
-        case TURNER:
-          return "turner";
-        case MERCURIAL:
-          return "mercurial";
-        case MAHJONG:
-          return "mahjong";
-        case SELECTX:
-          return "selectx";
-        case SPARK:
-          return "spark";
-        default:
-          return "";
-      }
+        return switch (this) {
+            case DATADRIVEN -> "data-driven";
+            case TUNNELING -> "tunneling";
+            case BEAN -> "bean";
+            case ZIPPER -> "zipper";
+            case EAGLE -> "eagle";
+            case TURNER -> "turner";
+            case MERCURIAL -> "mercurial";
+            case MAHJONG -> "mahjong";
+            case SELECTX -> "selectx";
+            case SPARK -> "spark";
+            default -> "";
+        };
     }
   }
 }

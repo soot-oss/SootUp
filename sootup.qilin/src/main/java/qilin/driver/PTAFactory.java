@@ -33,28 +33,24 @@ public class PTAFactory {
     switch (ptaConfigPattern.getContextKind()) {
       case HYBOBJ:
         {
-          switch (ptaConfigPattern.getApproach()) {
-            case DATADRIVEN:
-              {
-                // data-driven hybrid-2obj, Sehun Jeong oopsla'17
-                CtxConstructor ctxCons = new HybObjCtxConstructor();
-                return new DataDrivenPTA(scene, ctxCons);
-              }
-            case TUNNELING:
-              {
-                CtxConstructor ctxCons = new HybObjCtxConstructor();
-                return new TunnelingPTA(
-                    scene, ctxCons, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth());
-              }
-            default:
-              {
-                // static method using callsite as context, Yannis pldi'13
-                return new CoreVariantPTA(
-                    scene,
-                    ContextSensitivity.hybridObjectSensitive(
-                        ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth()));
-              }
-          }
+            return switch (ptaConfigPattern.getApproach()) {
+                case DATADRIVEN -> {
+                    // data-driven hybrid-2obj, Sehun Jeong oopsla'17
+                    CtxConstructor ctxCons = new HybObjCtxConstructor();
+                    yield new DataDrivenPTA(scene, ctxCons);
+                }
+                case TUNNELING -> {
+                    CtxConstructor ctxCons = new HybObjCtxConstructor();
+                    yield new TunnelingPTA(
+                            scene, ctxCons, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth());
+                }
+                default ->
+                    // static method using callsite as context, Yannis pldi'13
+                        new CoreVariantPTA(
+                                scene,
+                                ContextSensitivity.hybridObjectSensitive(
+                                        ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth()));
+            };
         }
       case OBJECT:
         {
@@ -139,67 +135,54 @@ public class PTAFactory {
         }
       case TYPE:
         {
-          switch (ptaConfigPattern.getApproach()) {
-            case DATADRIVEN:
-              {
-                CtxConstructor ctxCons = new TypeCtxConstructor();
-                return new DataDrivenPTA(scene, ctxCons);
-              }
-            case TUNNELING:
-              {
-                CtxConstructor ctxCons = new TypeCtxConstructor();
-                return new TunnelingPTA(
-                    scene, ctxCons, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth());
-              }
-            default:
-              {
-                // normal type-sensitive pointer analysis, Yannis popl'11
-                return new CoreVariantPTA(
-                    scene,
-                    ContextSensitivity.typeSensitive(
-                        ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth()));
-              }
-          }
+            return switch (ptaConfigPattern.getApproach()) {
+                case DATADRIVEN -> {
+                    CtxConstructor ctxCons = new TypeCtxConstructor();
+                    yield new DataDrivenPTA(scene, ctxCons);
+                }
+                case TUNNELING -> {
+                    CtxConstructor ctxCons = new TypeCtxConstructor();
+                    yield new TunnelingPTA(
+                            scene, ctxCons, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth());
+                }
+                default ->
+                    // normal type-sensitive pointer analysis, Yannis popl'11
+                        new CoreVariantPTA(
+                                scene,
+                                ContextSensitivity.typeSensitive(
+                                        ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth()));
+            };
         }
       case CALLSITE:
         {
-          switch (ptaConfigPattern.getApproach()) {
-            case ZIPPER:
-              {
-                CtxConstructor ctxCons = new CallsiteCtxConstructor();
-                return new ZipperPTA(
-                    scene, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth(), ctxCons);
-              }
-            case MAHJONG:
-              {
-                CtxConstructor ctxCons = new CallsiteCtxConstructor();
-                return new MahjongPTA(
-                    scene, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth(), ctxCons);
-              }
-            case DATADRIVEN:
-              {
-                CtxConstructor ctxCons = new CallsiteCtxConstructor();
-                return new DataDrivenPTA(scene, ctxCons);
-              }
-            case TUNNELING:
-              {
-                CtxConstructor ctxCons = new CallsiteCtxConstructor();
-                return new TunnelingPTA(
-                    scene, ctxCons, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth());
-              }
-            case SELECTX:
-              {
-                return new SelectxPTA(scene, ptaConfigPattern.getContextDepth());
-              }
-            default:
-              {
-                // CallSite Sensitive
-                return new CoreVariantPTA(
-                    scene,
-                    ContextSensitivity.callSite(
-                        ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth()));
-              }
-          }
+            return switch (ptaConfigPattern.getApproach()) {
+                case ZIPPER -> {
+                    CtxConstructor ctxCons = new CallsiteCtxConstructor();
+                    yield new ZipperPTA(
+                            scene, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth(), ctxCons);
+                }
+                case MAHJONG -> {
+                    CtxConstructor ctxCons = new CallsiteCtxConstructor();
+                    yield new MahjongPTA(
+                            scene, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth(), ctxCons);
+                }
+                case DATADRIVEN -> {
+                    CtxConstructor ctxCons = new CallsiteCtxConstructor();
+                    yield new DataDrivenPTA(scene, ctxCons);
+                }
+                case TUNNELING -> {
+                    CtxConstructor ctxCons = new CallsiteCtxConstructor();
+                    yield new TunnelingPTA(
+                            scene, ctxCons, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth());
+                }
+                case SELECTX -> new SelectxPTA(scene, ptaConfigPattern.getContextDepth());
+                default ->
+                    // CallSite Sensitive
+                        new CoreVariantPTA(
+                                scene,
+                                ContextSensitivity.callSite(
+                                        ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth()));
+            };
         }
       case INSENS:
       default:

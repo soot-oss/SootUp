@@ -20,6 +20,7 @@ package qilin.test.core;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import qilin.core.config.ContextSensitivity;
 import qilin.test.util.QilinFrameworkTests;
 
 public class NativeTests extends QilinFrameworkTests {
@@ -45,7 +46,7 @@ public class NativeTests extends QilinFrameworkTests {
 
   @Test
   public void testPrivilegedActions2() {
-    checkAssertions(run("qilin.microben.core.natives.PrivilegedActions2", "2o"));
+    checkAssertions(run("qilin.microben.core.natives.PrivilegedActions2", ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test

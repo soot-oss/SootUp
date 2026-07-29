@@ -19,27 +19,28 @@
 package qilin.test.context;
 
 import org.junit.jupiter.api.Test;
+import qilin.core.config.ContextSensitivity;
 import qilin.test.util.QilinFrameworkTests;
 
 public class CFATests extends QilinFrameworkTests {
 
   @Test
   public void testCFA1k0() {
-    checkAssertions(run("qilin.microben.context.cfa.CFA1k0", "1c"));
+    checkAssertions(run("qilin.microben.context.cfa.CFA1k0", ContextSensitivity.callSite(1)));
   }
 
   @Test
   public void testCFA1k1() {
-    checkAssertions(run("qilin.microben.context.cfa.CFA1k1", "1c"));
+    checkAssertions(run("qilin.microben.context.cfa.CFA1k1", ContextSensitivity.callSite(1)));
   }
 
   @Test
   public void testCFA1k2() {
-    checkAssertions(run("qilin.microben.context.cfa.CFA1k2", "1c"));
+    checkAssertions(run("qilin.microben.context.cfa.CFA1k2", ContextSensitivity.callSite(1)));
   }
 
   @Test
   public void testCFA2k() {
-    checkAssertions(run("qilin.microben.context.cfa.CFA2k", "2c"));
+    checkAssertions(run("qilin.microben.context.cfa.CFA2k", ContextSensitivity.callSite(2)));
   }
 }
