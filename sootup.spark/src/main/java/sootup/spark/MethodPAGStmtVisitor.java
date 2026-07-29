@@ -34,6 +34,7 @@ import sootup.callgraph.CallGraph;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.JParameterRef;
@@ -147,6 +148,18 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
       installCallEdges(expr, lhs, targetSig);
       // Record direct call edge in the OTF call graph and enqueue the target.
       addOtfCallEdge(targetSig, stmt);
+      return;
+    }
+    if (expr instanceof JDynamicInvokeExpr) {
+      // invokedynamic call sites (lambdas, method references, string-concat factories) have no
+      // dispatch receiver to defer resolution on -- they are not virtual calls in the
+      // AbstractInstanceInvokeExpr sense, so they must not be queued as a PendingVirtualCall
+      // (Solver.solveOnTheFly force-casts every pending call's expr to
+      // AbstractInstanceInvokeExpr to read the receiver, which throws a ClassCastException for
+      // these). CHA-mode call graph construction does not resolve invokedynamic targets either
+      // (see ClassHierarchyAnalysisAlgorithm.resolveCall, which returns Stream.empty() for
+      // JDynamicInvokeExpr), so skipping here keeps OTF mode's treatment consistent with CHA
+      // mode instead of crashing.
       return;
     }
     // Virtual or interface invoke: defer until the receiver's points-to set is known.

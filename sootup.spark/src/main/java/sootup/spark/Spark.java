@@ -32,7 +32,7 @@ import sootup.core.views.View;
 /**
  * Main access point to SPARK's functionality.
  *
- * <p>Exposes the call graph (CHA up-front, or built on-the-fly when {@code
+ * <p>Exposes the call graph (CHA up-front, supplied by the client, or built on-the-fly when {@code
  * SparkOptions#isOnFlyCallGraph()} is set) and a {@link PointsToAnalysis} over the resulting PAG.
  * Lower-level components such as the solver are package-private; clients should not bypass this
  * facade.
@@ -46,6 +46,11 @@ import sootup.core.views.View;
  *   PointsToAnalysis pta = spark.getPointsToAnalysis();
  *   CallGraph cg = spark.getCallGraph();
  * </pre>
+ *
+ * <p>To reuse a call graph the client already computed instead of having SPARK run CHA, pass it via
+ * {@code callGraph(...)}. This is ignored (with a warning logged) when {@code onFlyCallGraph} is
+ * on, since OTF mode grows its own call graph incrementally from the entry points instead of
+ * consuming one.
  */
 public class Spark {
 
@@ -54,9 +59,18 @@ public class Spark {
   private PointsToAnalysis pta;
 
   @Builder
-  Spark(@NonNull View view, @NonNull List<MethodSignature> entryPoints, SparkOptions sparkOptions) {
+  Spark(
+      @NonNull View view,
+      List<MethodSignature> entryPoints,
+      SparkOptions sparkOptions,
+      CallGraph callGraph) {
     this.solver =
-        Solver.builder().view(view).entryPoints(entryPoints).sparkOptions(sparkOptions).build();
+        Solver.builder()
+            .view(view)
+            .entryPoints(entryPoints)
+            .sparkOptions(sparkOptions)
+            .callGraph(callGraph)
+            .build();
   }
 
   /**
@@ -71,8 +85,9 @@ public class Spark {
   }
 
   /**
-   * Returns the call graph. Built via class-hierarchy analysis at construction time, or grown
-   * on-the-fly during {@link #solve()} when {@code SparkOptions#isOnFlyCallGraph()} is set.
+   * Returns the call graph: the one passed to the builder, one built via class-hierarchy analysis
+   * at construction time, or one grown on-the-fly during {@link #solve()} when {@code
+   * SparkOptions#isOnFlyCallGraph()} is set.
    */
   public CallGraph getCallGraph() {
     solve();
