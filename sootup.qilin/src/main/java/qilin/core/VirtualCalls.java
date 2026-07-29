@@ -19,7 +19,7 @@
 package qilin.core;
 
 import java.util.*;
-import qilin.util.DataFactory;
+
 import qilin.util.PTAUtils;
 import qilin.util.queue.ChunkedQueue;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -44,7 +44,7 @@ public class VirtualCalls {
 
   public VirtualCalls(View view) {
     this.view = view;
-    this.typeToVtbl = DataFactory.createMap((int) view.getClasses().count());
+      this.typeToVtbl = new HashMap<>((int) view.getClasses().count());
   }
 
   public SootMethod resolveSpecial(
@@ -80,7 +80,7 @@ public class VirtualCalls {
 
   public SootMethod resolveNonSpecial(ClassType t, MethodSubSignature subSig, boolean appOnly) {
     Map<MethodSubSignature, SootMethod> vtbl =
-        typeToVtbl.computeIfAbsent(t, k -> DataFactory.createMap(8));
+        typeToVtbl.computeIfAbsent(t, k -> new HashMap<>(8));
     SootMethod ret = vtbl.get(subSig);
     if (ret != null) {
       return ret;

@@ -22,7 +22,6 @@ import java.util.*;
 import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.config.PointerAnalysisConfig;
-import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
@@ -44,15 +43,21 @@ import sootup.core.model.SootMethod;
 public class MethodPAG {
   private final ChunkedQueue<PagNode> internalEdges = new ChunkedQueue<>();
   private final QueueReader<PagNode> internalReader = internalEdges.reader();
-  private final Set<SootMethod> clinits = DataFactory.createSet();
-  private final Collection<InvokableStmt> invokeStmts = DataFactory.createSet();
+  private final Set<SootMethod> clinits;
+  private final Collection<InvokableStmt> invokeStmts;
+
+  {
+    clinits = new HashSet<>();
+    invokeStmts = new HashSet<>();
+  }
+
   public Body body;
 
   /**
    * Since now the exception analysis is handled on-the-fly, we should record the exception edges
    * explicitly for Eagle and Turner.
    */
-  private final Map<PagNode, Set<PagNode>> exceptionEdges = DataFactory.createMap();
+  private final Map<PagNode, Set<PagNode>> exceptionEdges;
 
   protected MethodNodeFactory nodeFactory;
   protected final PTAScene ptaScene;
@@ -64,8 +69,14 @@ public class MethodPAG {
    * Map<Node, Map<Stmt, List<Trap>>> because there exists cases where the same
    * node are thrown more than once and lies in different catch blocks.
    * */
-  public final Map<Stmt, List<Trap>> stmt2wrapperedTraps = DataFactory.createMap();
-  public final Map<PagNode, Map<Stmt, List<Trap>>> node2wrapperedTraps = DataFactory.createMap();
+  public final Map<Stmt, List<Trap>> stmt2wrapperedTraps;
+  public final Map<PagNode, Map<Stmt, List<Trap>>> node2wrapperedTraps;
+
+  {
+    exceptionEdges = new HashMap<>();
+    stmt2wrapperedTraps = new HashMap<>();
+    node2wrapperedTraps = new HashMap<>();
+  }
 
   public MethodPAG(PAG pag, SootMethod m, Body body) {
     this.ptaScene = pag.getPta().getScene();
@@ -134,10 +145,10 @@ public class MethodPAG {
 
   private void addStmtTrap(PagNode src, Stmt stmt, Trap trap) {
     Map<Stmt, List<Trap>> stmt2Traps =
-        node2wrapperedTraps.computeIfAbsent(src, k -> DataFactory.createMap());
-    List<Trap> trapList = stmt2Traps.computeIfAbsent(stmt, k -> DataFactory.createList());
+        node2wrapperedTraps.computeIfAbsent(src, k -> new HashMap<>());
+    List<Trap> trapList = stmt2Traps.computeIfAbsent(stmt, k -> new ArrayList<>());
     trapList.add(trap);
-    stmt2wrapperedTraps.computeIfAbsent(stmt, k -> DataFactory.createList()).add(trap);
+    stmt2wrapperedTraps.computeIfAbsent(stmt, k -> new ArrayList<>()).add(trap);
   }
 
   protected void addMiscEdges() {
@@ -176,7 +187,7 @@ public class MethodPAG {
   }
 
   public void addExceptionEdge(PagNode from, PagNode to) {
-    this.exceptionEdges.computeIfAbsent(from, k -> DataFactory.createSet()).add(to);
+    this.exceptionEdges.computeIfAbsent(from, k -> new HashSet<>()).add(to);
   }
 
   public Map<PagNode, Set<PagNode>> getExceptionEdges() {

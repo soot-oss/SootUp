@@ -20,9 +20,9 @@ package qilin.core.pag;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import qilin.core.context.Context;
-import qilin.util.DataFactory;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
@@ -113,7 +113,7 @@ public abstract class VarNode extends ValNode {
     if (fields == null) {
       synchronized (this) {
         if (fields == null) {
-          fields = DataFactory.createMap();
+            fields = new HashMap<>();
         }
       }
     }

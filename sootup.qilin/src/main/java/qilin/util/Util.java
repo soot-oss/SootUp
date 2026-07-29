@@ -19,6 +19,7 @@
 package qilin.util;
 
 import java.io.*;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -41,7 +42,7 @@ public class Util {
   }
 
   public static <K, V> boolean addToMap(Map<K, Set<V>> map, K key, V value) {
-    return map.computeIfAbsent(key, k -> DataFactory.createSet()).add(value);
+    return map.computeIfAbsent(key, k -> new HashSet<>()).add(value);
   }
 
   public static <K, V> boolean removeFromMap(Map<K, Set<V>> map, K key, V value) {

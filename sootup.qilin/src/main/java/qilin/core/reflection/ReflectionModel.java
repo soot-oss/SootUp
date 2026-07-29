@@ -18,13 +18,10 @@
 
 package qilin.core.reflection;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import qilin.core.PTAScene;
 import qilin.core.pag.PAG;
-import qilin.util.DataFactory;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
@@ -101,7 +98,7 @@ public abstract class ReflectionModel {
     if (!ptaScene.reflectionBuilt.add(m)) {
       return;
     }
-    Map<Stmt, Collection<Stmt>> newUnits = DataFactory.createMap();
+      Map<Stmt, Collection<Stmt>> newUnits = new HashMap<>();
     Body body = pag.getMethodBody(m);
     List<Stmt> units = body.getStmts();
     for (final Stmt u : units) {

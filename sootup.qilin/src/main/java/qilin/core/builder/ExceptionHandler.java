@@ -24,7 +24,6 @@ import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.P2SetVisitor;
 import qilin.core.sets.PointsToSetInternal;
-import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
@@ -40,7 +39,7 @@ public class ExceptionHandler {
   public ExceptionHandler(PTA pta) {
     this.pta = pta;
     this.pag = pta.getPag();
-    this.throwNodeToSites = DataFactory.createMap((int) pta.getView().getClasses().count());
+    this.throwNodeToSites = new HashMap<>((int) pta.getView().getClasses().count());
   }
 
   public Collection<ExceptionThrowSite> throwSitesLookUp(VarNode throwNode) {
@@ -49,7 +48,7 @@ public class ExceptionHandler {
 
   public boolean addThrowSite(PagNode throwNode, ExceptionThrowSite ets) {
     Collection<ExceptionThrowSite> throwSites =
-        throwNodeToSites.computeIfAbsent(throwNode, k -> DataFactory.createSet());
+        throwNodeToSites.computeIfAbsent(throwNode, k -> new HashSet<>());
     return throwSites.add(ets);
   }
 

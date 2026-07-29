@@ -18,10 +18,10 @@
 
 package qilin.parm.heapabst;
 
+import java.util.HashSet;
 import java.util.Set;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.PAG;
-import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
@@ -30,9 +30,9 @@ import sootup.core.views.View;
 public class HeuristicAbstractor implements HeapAbstractor {
   private final PAG pag;
   private final View view;
-  private final Set<Type> mergedTypes = DataFactory.createSet();
+  private final Set<Type> mergedTypes = new HashSet<>();
 
-  public HeuristicAbstractor(PAG pag) {
+    public HeuristicAbstractor(PAG pag) {
     this.pag = pag;
     this.view = pag.getPta().getView();
     mergedTypes.add(PTAUtils.getClassType("java.lang.StringBuffer"));

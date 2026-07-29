@@ -29,7 +29,6 @@ import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.P2SetVisitor;
 import qilin.core.sets.PointsToSetInternal;
-import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
@@ -71,10 +70,10 @@ public class CallGraphBuilder {
     this.ptaScene = pta.getScene();
     ptaScene.setCallGraph(new OnFlyCallGraph());
     this.virtualCalls = new VirtualCalls(ptaScene.getView());
-    receiverToSites = DataFactory.createMap((int) ptaScene.getView().getClasses().count());
-    methodToInvokeStmt = DataFactory.createMap();
-    reachMethods = DataFactory.createSet();
-    calledges = DataFactory.createSet();
+    receiverToSites = new HashMap<>((int) ptaScene.getView().getClasses().count());
+    methodToInvokeStmt = new HashMap<>();
+      reachMethods = new HashSet<>();
+      calledges = new HashSet<>();
   }
 
   public void setRMQueue(ChunkedQueue<ContextMethod> rmQueue) {
@@ -115,7 +114,7 @@ public class CallGraphBuilder {
 
   private void constructCallGraph() {
     cicg = new OnFlyCallGraph();
-    Map<Stmt, Map<SootMethod, Set<SootMethod>>> map = DataFactory.createMap();
+    Map<Stmt, Map<SootMethod, Set<SootMethod>>> map = new HashMap<>();
     calledges.forEach(
         e -> {
           ptaScene.getCallGraph().addEdge(e);
@@ -123,8 +122,8 @@ public class CallGraphBuilder {
           SootMethod tgt = e.tgt();
           Stmt unit = e.srcUnit();
           Map<SootMethod, Set<SootMethod>> submap =
-              map.computeIfAbsent(unit, k -> DataFactory.createMap());
-          Set<SootMethod> set = submap.computeIfAbsent(src, k -> DataFactory.createSet());
+              map.computeIfAbsent(unit, k -> new HashMap<>());
+          Set<SootMethod> set = submap.computeIfAbsent(src, k -> new HashSet<>());
           if (set.add(tgt)) {
             cicg.addEdge(
                 new Edge(
@@ -203,7 +202,7 @@ public class CallGraphBuilder {
 
   public void injectCallEdge(Object heapOrType, ContextMethod callee, Kind kind) {
     Map<Object, InvokableStmt> stmtMap =
-        methodToInvokeStmt.computeIfAbsent(callee.method(), k -> DataFactory.createMap());
+        methodToInvokeStmt.computeIfAbsent(callee.method(), k -> new HashMap<>());
     if (!stmtMap.containsKey(heapOrType)) {
       AbstractInvokeExpr ie =
           new JStaticInvokeExpr(callee.method().getSignature(), Collections.emptyList());
@@ -237,7 +236,7 @@ public class CallGraphBuilder {
 
   public boolean recordVirtualCallSite(VarNode receiver, VirtualCallSite site) {
     Collection<VirtualCallSite> sites =
-        receiverToSites.computeIfAbsent(receiver, k -> DataFactory.createSet());
+        receiverToSites.computeIfAbsent(receiver, k -> new HashSet<>());
     return sites.add(site);
   }
 

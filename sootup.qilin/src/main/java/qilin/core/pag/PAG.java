@@ -34,7 +34,6 @@ import qilin.core.reflection.NopReflectionModel;
 import qilin.core.reflection.ReflectionModel;
 import qilin.core.reflection.TamiflexModel;
 import qilin.util.ArrayNumberer;
-import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import qilin.util.Triple;
 import qilin.util.queue.ChunkedQueue;
@@ -123,14 +122,14 @@ public class PAG {
   public PAG(PTA pta) {
     this.pta = pta;
     this.methodToBody = new ConcurrentHashMap<>();
-    this.simple = DataFactory.createMap();
-    this.simpleInv = DataFactory.createMap();
-    this.load = DataFactory.createMap();
-    this.loadInv = DataFactory.createMap();
-    this.alloc = DataFactory.createMap();
-    this.allocInv = DataFactory.createMap();
-    this.store = DataFactory.createMap();
-    this.storeInv = DataFactory.createMap();
+    this.simple = new HashMap<>();
+    this.simpleInv = new HashMap<>();
+    this.load = new HashMap<>();
+    this.loadInv = new HashMap<>();
+    this.alloc = new HashMap<>();
+    this.allocInv = new HashMap<>();
+    this.store = new HashMap<>();
+    this.storeInv = new HashMap<>();
     List<MethodEffectModel> effectModels = new ArrayList<>();
     effectModels.add(new ReflectionEffectModel(createReflectionModel()));
     effectModels.add(new NativeEffectModel(new NativeMethodDriver(pta.getScene(), this)));
@@ -138,16 +137,16 @@ public class PAG {
       effectModels.add(new LambdaMetafactoryModel(pta.getScene(), this));
     }
     this.effectModels = List.copyOf(effectModels);
-    this.contextVarNodeMap = DataFactory.createMap(16000);
-    this.contextAllocNodeMap = DataFactory.createMap(6000);
-    this.contextMethodMap = DataFactory.createMap(6000);
-    this.addedContexts = DataFactory.createMap();
-    this.contextFieldMap = DataFactory.createMap(6000);
-    this.valToAllocNode = DataFactory.createMap(10000);
-    this.valToValNode = DataFactory.createMap(100000);
+    this.contextVarNodeMap = new HashMap<>(16000);
+    this.contextAllocNodeMap = new HashMap<>(6000);
+    this.contextMethodMap = new HashMap<>(6000);
+    this.addedContexts = new HashMap<>();
+    this.contextFieldMap = new HashMap<>(6000);
+    this.valToAllocNode = new HashMap<>(10000);
+    this.valToValNode = new HashMap<>(100000);
     this.methodToPag = new ConcurrentHashMap<>();
-    this.globals = DataFactory.createSet(100000);
-    this.locals = DataFactory.createSet(100000);
+    this.globals = new HashSet<>(100000);
+    this.locals = new HashSet<>(100000);
   }
 
   public void setEdgeQueue(ChunkedQueue<PagNode> edgeQueue) {
@@ -188,7 +187,7 @@ public class PAG {
 
   // =======================add edge===============================
   protected <K, V> boolean addToMap(Map<K, Set<V>> m, K key, V value) {
-    Set<V> valueList = m.computeIfAbsent(key, k -> DataFactory.createSet(4));
+    Set<V> valueList = m.computeIfAbsent(key, k -> new HashSet<>(4));
     return valueList.add(value);
   }
 
@@ -464,7 +463,7 @@ public class PAG {
   /** Finds or creates the ContextVarNode for base variable base and context. */
   public ContextVarNode makeContextVarNode(VarNode base, Context context) {
     Map<Context, ContextVarNode> contextMap =
-        contextVarNodeMap.computeIfAbsent(base, k1 -> DataFactory.createMap());
+        contextVarNodeMap.computeIfAbsent(base, k1 -> new HashMap<>());
     ContextVarNode ret = contextMap.get(context);
     if (ret == null) {
       contextMap.put(context, ret = new ContextVarNode(base, context));
@@ -476,7 +475,7 @@ public class PAG {
   /** Finds or creates the ContextAllocNode for base alloc site and context. */
   public ContextAllocNode makeContextAllocNode(AllocNode allocNode, Context context) {
     Map<Context, ContextAllocNode> contextMap =
-        contextAllocNodeMap.computeIfAbsent(allocNode, k1 -> DataFactory.createMap());
+        contextAllocNodeMap.computeIfAbsent(allocNode, k1 -> new HashMap<>());
     ContextAllocNode ret = contextMap.get(context);
     if (ret == null) {
       contextMap.put(context, ret = new ContextAllocNode(allocNode, context));
@@ -488,7 +487,7 @@ public class PAG {
   /** Finds or creates the ContextMethod for method and context. */
   public ContextMethod makeContextMethod(Context context, SootMethod method) {
     Map<Context, ContextMethod> contextMap =
-        contextMethodMap.computeIfAbsent(method, k1 -> DataFactory.createMap());
+        contextMethodMap.computeIfAbsent(method, k1 -> new HashMap<>());
     return contextMap.computeIfAbsent(context, k -> new ContextMethod(method, context));
   }
 
@@ -525,7 +524,7 @@ public class PAG {
   public ContextField makeContextField(Context context, FieldValNode fieldValNode) {
     SparkField field = fieldValNode.getField();
     Map<SparkField, ContextField> field2odotf =
-        contextFieldMap.computeIfAbsent(context, k -> DataFactory.createMap());
+        contextFieldMap.computeIfAbsent(context, k -> new HashMap<>());
     ContextField ret = field2odotf.get(field);
     if (ret == null) {
       field2odotf.put(
@@ -629,7 +628,7 @@ public class PAG {
   }
 
   private void handleArrayCopy(SootMethod method) {
-    Map<Stmt, Collection<JAssignStmt>> newUnits = DataFactory.createMap();
+    Map<Stmt, Collection<JAssignStmt>> newUnits = new HashMap<>();
     Body body = getMethodBody(method);
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     int localCount = body.getLocalCount();
@@ -675,10 +674,10 @@ public class PAG {
                     "nativeArrayCopy" + (localCount++), PTAUtils.getClassType("java.lang.Object"));
             builder.addLocal(local);
             newUnits
-                .computeIfAbsent(s, k -> DataFactory.createSet())
+                .computeIfAbsent(s, k -> new HashSet<>())
                 .add(new JAssignStmt(local, src, StmtPositionInfo.getNoStmtPositionInfo()));
             newUnits
-                .computeIfAbsent(s, k -> DataFactory.createSet())
+                .computeIfAbsent(s, k -> new HashSet<>())
                 .add(new JAssignStmt(dst, local, StmtPositionInfo.getNoStmtPositionInfo()));
           }
         }
