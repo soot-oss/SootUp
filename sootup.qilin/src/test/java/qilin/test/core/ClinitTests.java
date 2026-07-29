@@ -19,9 +19,9 @@
 package qilin.test.core;
 
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-public class ClinitTests extends JunitTests {
+public class ClinitTests extends QilinFrameworkTests {
   @Test
   public void testClinitNewExpr() {
     checkAssertions(run("qilin.microben.core.clinit.ClinitNewExpr"));

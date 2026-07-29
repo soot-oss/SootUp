@@ -28,7 +28,7 @@ public final class PointerAnalysisConfig {
 
   public enum ClinitMode {
     FULL,
-    ONFLY,
+    ON_THE_FLY,
     APP
   }
 
@@ -188,7 +188,7 @@ public final class PointerAnalysisConfig {
     private ContextSensitivity contextSensitivity = ContextSensitivity.insensitive();
     private HeapAbstractionPolicy heapAbstractionPolicy = HeapAbstractionPolicy.ALLOC_SITE;
     private boolean singleEntry = false;
-    private ClinitMode clinitMode = ClinitMode.ONFLY;
+    private ClinitMode clinitMode = ClinitMode.ON_THE_FLY;
     private boolean preciseArrayElement = false;
     private boolean stringConstants = false;
     private boolean preciseExceptions = false;

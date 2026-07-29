@@ -19,11 +19,9 @@
 package qilin.core.builder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -33,7 +31,6 @@ import qilin.util.PTAUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.graph.MutableControlFlowGraph;
-import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -51,11 +48,10 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.*;
-import sootup.java.core.types.JavaClassType;
 
 public class FakeMainFactory extends ArtificialMethod {
 
-  private int implicitCallEdges;
+  private int implicitCallEdgeCount;
   private final SootClass mainClass;
   private final PointerAnalysisConfig config;
   private final EntryPoints entryPoints;
@@ -115,8 +111,8 @@ public class FakeMainFactory extends ArtificialMethod {
     return this.method;
   }
 
-  public int getImplicitCallEdges() {
-    return implicitCallEdges;
+  public int getImplicitCallEdgeCount() {
+    return implicitCallEdgeCount;
   }
 
   private List<SootMethod> getEntryPoints() {
@@ -152,7 +148,7 @@ public class FakeMainFactory extends ArtificialMethod {
   }
 
   private void makeFakeMain(SootField currentThread) {
-    implicitCallEdges = 0;
+    implicitCallEdgeCount = 0;
     for (SootMethod entry : getEntryPoints()) {
       if (entry.isStatic()) {
         if (entry
@@ -164,12 +160,12 @@ public class FakeMainFactory extends ArtificialMethod {
           Immediate strArray = getNewArray(PTAUtils.getClassType("java.lang.String"));
           addAssign(getArrayRef(strArray), mockStr);
           addInvoke(entry.getSignature().toString(), strArray);
-          implicitCallEdges++;
-        } else if (config.getClinitMode() != PointerAnalysisConfig.ClinitMode.ONFLY
+          implicitCallEdgeCount++;
+        } else if (config.getClinitMode() != PointerAnalysisConfig.ClinitMode.ON_THE_FLY
             || !PTAUtils.isStaticInitializer(entry)) {
           // in the on fly mode, we won't add a call directly for <clinit> methods.
           addInvoke(entry.getSignature().toString());
-          implicitCallEdges++;
+          implicitCallEdgeCount++;
         }
       }
     }

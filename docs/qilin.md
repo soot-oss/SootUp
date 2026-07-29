@@ -41,7 +41,7 @@ Other `ContextSensitivity` factory methods: `insensitive()`, `callSite(k[, hk])`
 
 The research-toolkit variants (bean, zipper, eagle, turner, mahjong, selectx, data-driven,
 tunneling, context debloating) are not yet migrated to this factory - they're still reached
-through the legacy `PTAPattern`/`PTAFactory` string-pattern dispatch, see the table below.
+through the legacy `PTAConfigPattern`/`PTAFactory` string-pattern dispatch, see the table below.
 
 ### Resolving reflection, native methods, and invokedynamic
 
@@ -121,9 +121,9 @@ string-pattern factory:
 
     ```java
     String MAINCLASS = "dacapo.antlr.Main"; // just an example
-    PTAPattern ptaPattern = new PTAPattern("Z-2o"); // ZIPPER-guided 2OBJ, e.g.
+    PTAPattern ptaConfigPattern = new PTAPattern("Z-2o"); // ZIPPER-guided 2OBJ, e.g.
     PointerAnalysisConfig config = PointerAnalysisConfig.builder().build();
-    PTA pta = PTAFactory.createPTA(ptaPattern, view, MAINCLASS, config);
+    PTA pta = PTAFactory.createPTA(ptaConfigPattern, view, MAINCLASS, config);
     pta.run();
     OnFlyCallGraph cg = pta.getCallGraph();
     ```

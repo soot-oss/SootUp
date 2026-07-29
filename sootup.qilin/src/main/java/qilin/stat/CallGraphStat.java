@@ -180,11 +180,11 @@ public class CallGraphStat implements AbstractStat {
         "#Reachable App Method (CS):", String.valueOf(reachableAppParameterizedMethods.size()));
     exporter.collectMetric(
         "#Call Edge(CI):",
-        String.valueOf(CICallEdges - pta.getScene().getFakeMainFactory().getImplicitCallEdges()));
+        String.valueOf(CICallEdges - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric(
         "\t#Static-Static Call Edge(CI):",
         String.valueOf(
-            CIStaticToStatic - pta.getScene().getFakeMainFactory().getImplicitCallEdges()));
+            CIStaticToStatic - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric("\t#Static-Instance Call Edge(CI):", String.valueOf(CIStaticToInstance));
     exporter.collectMetric("\t#Instance-Static Call Edge(CI):", String.valueOf(CIInstanceToStatic));
     exporter.collectMetric(
@@ -195,11 +195,11 @@ public class CallGraphStat implements AbstractStat {
     exporter.collectMetric("\t#Library-Library Call Edge(CI):", String.valueOf(CILib2lib));
     exporter.collectMetric(
         "#Call Edge(CS):",
-        String.valueOf(CSCallEdges - pta.getScene().getFakeMainFactory().getImplicitCallEdges()));
+        String.valueOf(CSCallEdges - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric(
         "\t#Static-Static Call Edge(CS):",
         String.valueOf(
-            CSStaticToStatic - pta.getScene().getFakeMainFactory().getImplicitCallEdges()));
+            CSStaticToStatic - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric("\t#Static-Instance Call Edge(CS):", String.valueOf(CSStaticToInstance));
     exporter.collectMetric("\t#Instance-Static Call Edge(CS):", String.valueOf(CSInstanceToStatic));
     exporter.collectMetric(

@@ -19,9 +19,9 @@
 package qilin.test.core;
 
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-public class FieldTests extends JunitTests {
+public class FieldTests extends QilinFrameworkTests {
   @Test
   public void testInstanceLoad() {
     checkAssertions(run("qilin.microben.core.field.InstanceLoad"));

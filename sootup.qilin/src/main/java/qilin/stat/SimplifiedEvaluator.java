@@ -65,7 +65,7 @@ public class SimplifiedEvaluator implements IEvaluator {
     exporter.collectMetric(
         "#Call Edge(CI):",
         String.valueOf(
-            ciCallGraph.size() - pta.getScene().getFakeMainFactory().getImplicitCallEdges()));
+            ciCallGraph.size() - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
 
     OnFlyCallGraph callGraph = pta.getCallGraph();
 

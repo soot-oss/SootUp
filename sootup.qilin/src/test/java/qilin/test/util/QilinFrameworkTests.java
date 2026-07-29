@@ -26,8 +26,8 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import qilin.core.PTA;
 import qilin.core.config.PointerAnalysisConfig;
+import qilin.driver.PTAConfigPattern;
 import qilin.driver.PTAFactory;
-import qilin.driver.PTAPattern;
 import qilin.util.PTAUtils;
 import sootup.core.views.View;
 
@@ -87,11 +87,11 @@ public abstract class QilinFrameworkTests {
   }
 
   public PTA run(String mainClass, String ptaPattern) {
-    PTAPattern pattern = new PTAPattern(ptaPattern);
+    PTAConfigPattern pattern = new PTAConfigPattern(ptaPattern);
     PointerAnalysisConfig config =
         PointerAnalysisConfig.builder()
             .singleEntry(true)
-            .clinitMode(PointerAnalysisConfig.ClinitMode.ONFLY)
+            .clinitMode(PointerAnalysisConfig.ClinitMode.ON_THE_FLY)
             .enforceEmptyCtxForIgnoreTypes(true)
             .heapAbstractionPolicy(PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE)
             .preciseArrayElement(true)

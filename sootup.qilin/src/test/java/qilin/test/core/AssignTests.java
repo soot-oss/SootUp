@@ -19,9 +19,9 @@
 package qilin.test.core;
 
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-public class AssignTests extends JunitTests {
+public class AssignTests extends QilinFrameworkTests {
   @Test
   public void testCastFail() {
     checkAssertions(run("qilin.microben.core.assign.CastFail"));

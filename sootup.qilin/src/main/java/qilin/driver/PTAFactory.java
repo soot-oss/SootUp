@@ -28,12 +28,12 @@ import sootup.core.views.View;
 
 public class PTAFactory {
   public static PTA createPTA(
-      PTAPattern ptaPattern, View view, String mainClassSig, PointerAnalysisConfig config) {
+          PTAConfigPattern ptaConfigPattern, View view, String mainClassSig, PointerAnalysisConfig config) {
     PTAScene scene = new PTAScene(view, mainClassSig, config);
-    switch (ptaPattern.getContextKind()) {
+    switch (ptaConfigPattern.getContextKind()) {
       case HYBOBJ:
         {
-          switch (ptaPattern.getApproach()) {
+          switch (ptaConfigPattern.getApproach()) {
             case DATADRIVEN:
               {
                 // data-driven hybrid-2obj, Sehun Jeong oopsla'17
@@ -44,7 +44,7 @@ public class PTAFactory {
               {
                 CtxConstructor ctxCons = new HybObjCtxConstructor();
                 return new TunnelingPTA(
-                    scene, ctxCons, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
+                    scene, ctxCons, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth());
               }
             default:
               {
@@ -52,18 +52,18 @@ public class PTAFactory {
                 return new CoreVariantPTA(
                     scene,
                     ContextSensitivity.hybridObjectSensitive(
-                        ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth()));
+                        ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth()));
               }
           }
         }
       case OBJECT:
         {
-          switch (ptaPattern.getApproach()) {
+          switch (ptaConfigPattern.getApproach()) {
             case EAGLE:
               {
                 // k-obj pointer analysis with Eagle pre-analysis, Jingbo OOPSLA'19
-                assert ptaPattern.getContextDepth() == ptaPattern.getHeapContextDepth() + 1;
-                BasePTA eagle = new EaglePTA(scene, ptaPattern.getContextDepth());
+                assert ptaConfigPattern.getContextDepth() == ptaConfigPattern.getHeapContextDepth() + 1;
+                BasePTA eagle = new EaglePTA(scene, ptaConfigPattern.getContextDepth());
                 if (config.isCtxDebloating()) {
                   return new DebloatedPTA(eagle, config.getDebloatApproach());
                 } else {
@@ -77,7 +77,7 @@ public class PTAFactory {
               }
             case TURNER:
               {
-                return new TurnerPTA(scene, ptaPattern.getContextDepth());
+                return new TurnerPTA(scene, ptaConfigPattern.getContextDepth());
               }
             case ZIPPER:
               {
@@ -85,8 +85,8 @@ public class PTAFactory {
                 BasePTA zipperPTA =
                     new ZipperPTA(
                         scene,
-                        ptaPattern.getContextDepth(),
-                        ptaPattern.getHeapContextDepth(),
+                        ptaConfigPattern.getContextDepth(),
+                        ptaConfigPattern.getHeapContextDepth(),
                         ctxCons);
                 if (config.isCtxDebloating()) {
                   return new DebloatedPTA(zipperPTA, config.getDebloatApproach());
@@ -100,8 +100,8 @@ public class PTAFactory {
                 BasePTA mahjongPTA =
                     new MahjongPTA(
                         scene,
-                        ptaPattern.getContextDepth(),
-                        ptaPattern.getHeapContextDepth(),
+                        ptaConfigPattern.getContextDepth(),
+                        ptaConfigPattern.getHeapContextDepth(),
                         ctxCons);
                 if (config.isCtxDebloating()) {
                   return new DebloatedPTA(mahjongPTA, config.getDebloatApproach());
@@ -118,7 +118,7 @@ public class PTAFactory {
               {
                 CtxConstructor ctxCons = new ObjCtxConstructor();
                 return new TunnelingPTA(
-                    scene, ctxCons, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
+                    scene, ctxCons, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth());
               }
             default:
               {
@@ -126,7 +126,7 @@ public class PTAFactory {
                     new CoreVariantPTA(
                         scene,
                         ContextSensitivity.objectSensitive(
-                            ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth()));
+                            ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth()));
 
                 if (config.isCtxDebloating()) {
                   return new DebloatedPTA(kobj, config.getDebloatApproach());
@@ -139,7 +139,7 @@ public class PTAFactory {
         }
       case TYPE:
         {
-          switch (ptaPattern.getApproach()) {
+          switch (ptaConfigPattern.getApproach()) {
             case DATADRIVEN:
               {
                 CtxConstructor ctxCons = new TypeCtxConstructor();
@@ -149,7 +149,7 @@ public class PTAFactory {
               {
                 CtxConstructor ctxCons = new TypeCtxConstructor();
                 return new TunnelingPTA(
-                    scene, ctxCons, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
+                    scene, ctxCons, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth());
               }
             default:
               {
@@ -157,24 +157,24 @@ public class PTAFactory {
                 return new CoreVariantPTA(
                     scene,
                     ContextSensitivity.typeSensitive(
-                        ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth()));
+                        ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth()));
               }
           }
         }
       case CALLSITE:
         {
-          switch (ptaPattern.getApproach()) {
+          switch (ptaConfigPattern.getApproach()) {
             case ZIPPER:
               {
                 CtxConstructor ctxCons = new CallsiteCtxConstructor();
                 return new ZipperPTA(
-                    scene, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth(), ctxCons);
+                    scene, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth(), ctxCons);
               }
             case MAHJONG:
               {
                 CtxConstructor ctxCons = new CallsiteCtxConstructor();
                 return new MahjongPTA(
-                    scene, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth(), ctxCons);
+                    scene, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth(), ctxCons);
               }
             case DATADRIVEN:
               {
@@ -185,11 +185,11 @@ public class PTAFactory {
               {
                 CtxConstructor ctxCons = new CallsiteCtxConstructor();
                 return new TunnelingPTA(
-                    scene, ctxCons, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
+                    scene, ctxCons, ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth());
               }
             case SELECTX:
               {
-                return new SelectxPTA(scene, ptaPattern.getContextDepth());
+                return new SelectxPTA(scene, ptaConfigPattern.getContextDepth());
               }
             default:
               {
@@ -197,7 +197,7 @@ public class PTAFactory {
                 return new CoreVariantPTA(
                     scene,
                     ContextSensitivity.callSite(
-                        ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth()));
+                        ptaConfigPattern.getContextDepth(), ptaConfigPattern.getHeapContextDepth()));
               }
           }
         }

@@ -39,7 +39,7 @@ import sootup.core.views.View;
 /**
  * Covers {@link qilin.core.invokedynamic.LambdaMetafactoryModel}: a lambda/method-reference whose
  * target is a plain static method must resolve to a direct call edge instead of silently vanishing.
- * Deliberately does not extend {@link qilin.test.util.JunitTests} - it shares static app/jre-path
+ * Deliberately does not extend {@link qilin.test.util.QilinFrameworkTests} - it shares static app/jre-path
  * fields across every subclass in the JVM, and this suite needs a Java 8+ library classpath (for
  * {@code java.lang.invoke.LambdaMetafactory}/{@code java.util.function.Supplier}), unlike the rest
  * of qilin's tests which run against the legacy JRE 6 fixture.

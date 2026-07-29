@@ -28,26 +28,31 @@ public class FlowSensTests extends QilinFrameworkTests {
     checkAssertions(run("qilin.microben.flowsens.Loops"));
   }
 
+  @Test
   @Disabled
   public void testFlowSens0() {
     checkAssertions(run("qilin.microben.flowsens.FlowSens0"));
   }
 
+  @Test
   @Disabled
   public void testInstanceOf0() {
     checkAssertions(run("qilin.microben.flowsens.InstanceOf0"));
   }
 
+  @Test
   @Disabled
   public void testBranching1() {
     checkAssertions(run("qilin.microben.flowsens.Branching1"));
   }
 
+  @Test
   @Disabled
   public void testStrongUpdate1() {
     checkAssertions(run("qilin.microben.flowsens.StrongUpdate1"));
   }
 
+  @Test
   @Disabled
   public void testStrongUpdate2() {
     checkAssertions(run("qilin.microben.flowsens.StrongUpdate2"));

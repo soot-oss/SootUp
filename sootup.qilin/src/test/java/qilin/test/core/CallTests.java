@@ -19,9 +19,9 @@
 package qilin.test.core;
 
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-public class CallTests extends JunitTests {
+public class CallTests extends QilinFrameworkTests {
   @Test
   public void testVirtualCall0() {
     checkAssertions(run("qilin.microben.core.call.VirtualCall0"));

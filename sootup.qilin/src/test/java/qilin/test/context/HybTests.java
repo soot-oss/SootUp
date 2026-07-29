@@ -19,9 +19,9 @@
 package qilin.test.context;
 
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-public class HybTests extends JunitTests {
+public class HybTests extends QilinFrameworkTests {
   @Test
   public void testHyb0() {
     checkAssertions(run("qilin.microben.context.hyb.Hyb0", "1h"));

@@ -20,9 +20,9 @@ package qilin.test.core;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-public class NativeTests extends JunitTests {
+public class NativeTests extends QilinFrameworkTests {
   @Test
   public void testArrayCopy() {
     checkAssertions(run("qilin.microben.core.natives.ArrayCopy"));

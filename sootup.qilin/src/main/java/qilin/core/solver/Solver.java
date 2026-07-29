@@ -119,7 +119,7 @@ public class Solver extends Propagator {
       addToPAG(mpag, momc.context());
       // !FIXME in a context-sensitive pointer analysis, clinits in a method maybe added multiple
       // times.
-      if (pta.getConfig().getClinitMode() == PointerAnalysisConfig.ClinitMode.ONFLY) {
+      if (pta.getConfig().getClinitMode() == PointerAnalysisConfig.ClinitMode.ON_THE_FLY) {
         // add <clinit> find in the method to reachableMethods.
         Iterator<SootMethod> it = mpag.triggeredClinits();
         while (it.hasNext()) {

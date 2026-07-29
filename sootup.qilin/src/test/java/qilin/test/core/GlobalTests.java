@@ -19,9 +19,9 @@
 package qilin.test.core;
 
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-public class GlobalTests extends JunitTests {
+public class GlobalTests extends QilinFrameworkTests {
   @Test
   public void testStaticLoad() {
     checkAssertions(run("qilin.microben.core.global.StaticLoad"));

@@ -154,7 +154,7 @@ public class TypeClientStat implements AbstractStat {
     exporter.collectMetric(
         "#Static Call Site(Total):",
         String.valueOf(
-            totalStaticCalls - pta.getScene().getFakeMainFactory().getImplicitCallEdges()));
+            totalStaticCalls - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric("#Virtual Call Site(Total):", String.valueOf(totalVirtualCalls));
     exporter.collectMetric("#Virtual Call Site(AppOnly):", String.valueOf(appVirtualCalls));
     exporter.collectMetric("#Virtual Call Site(Polymorphic):", String.valueOf(totalPolyCalls));

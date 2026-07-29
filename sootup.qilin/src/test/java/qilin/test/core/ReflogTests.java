@@ -21,11 +21,9 @@ package qilin.test.core;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import qilin.core.PTA;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-// WP2 follow-up: reflection resolution is out of scope for this redesign (WP1).
-@Disabled
-public class ReflogTests extends JunitTests {
+public class ReflogTests extends QilinFrameworkTests {
   @Test
   public void testFieldGetStatic() {
     checkAssertions(run("qilin.microben.core.reflog.FieldGetStatic"));

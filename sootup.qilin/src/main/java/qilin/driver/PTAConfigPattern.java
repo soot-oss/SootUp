@@ -25,12 +25,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import qilin.util.Util;
 
-public class PTAPattern {
+public class PTAConfigPattern {
   private ContextKind ctxKind;
   private Approach approach;
   private int k, hk;
 
-  public PTAPattern(String ptacmd) {
+  public PTAConfigPattern(String ptacmd) {
     parsePTACommand(ptacmd);
   }
 
