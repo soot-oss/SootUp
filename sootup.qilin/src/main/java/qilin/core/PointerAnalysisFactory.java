@@ -19,15 +19,14 @@
 package qilin.core;
 
 import qilin.core.config.PointerAnalysisConfig;
-import qilin.pta.tools.CoreVariantPTA;
 import sootup.core.views.View;
 
 /**
- * Type-safe entry point for the core context-sensitivity variants (insensitive, call-site, object,
- * type, hybrid-object, hybrid-type). Replaces the string-pattern-driven {@code
- * qilin.driver.PTAFactory} for these variants - the toolkit-based variants (bean, zipper, eagle,
- * turner, mahjong, selectx, data-driven/tunneling, debloating) are still reached only through
- * {@code PTAFactory} for now.
+ * Type-safe entry point for constructing a {@link PTA}. The concrete variant - core
+ * context-sensitivity (insensitive, call-site, object, type, hybrid-object, hybrid-type) or
+ * research-toolkit (bean, zipper, eagle, turner, mahjong, selectx, data-driven, tunneling,
+ * debloating) - is fully determined by {@link PointerAnalysisConfig#getContextSensitivity()}; see
+ * {@code qilin.core.config.ContextSensitivity} for the available factory methods.
  *
  * <p>Every call constructs a fresh {@link PTA} (with its own {@link PTAScene}/{@code PAG}); no
  * state is cached on {@link View}, so multiple independent analyses - even over the same view - can
@@ -39,6 +38,6 @@ public final class PointerAnalysisFactory {
 
   public static PTA create(View view, String mainClassSig, PointerAnalysisConfig config) {
     PTAScene scene = new PTAScene(view, mainClassSig, config);
-    return new CoreVariantPTA(scene, config.getContextSensitivity());
+    return config.getContextSensitivity().createPTA(scene, config);
   }
 }

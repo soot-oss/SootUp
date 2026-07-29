@@ -18,22 +18,43 @@
 
 package qilin.core.config;
 
-import qilin.parm.ctxcons.CallsiteCtxConstructor;
+import qilin.core.PTAScene;
 import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.ctxcons.HybObjCtxConstructor;
-import qilin.parm.ctxcons.HybTypeCtxConstructor;
-import qilin.parm.ctxcons.InsensCtxConstructor;
-import qilin.parm.ctxcons.ObjCtxConstructor;
-import qilin.parm.ctxcons.TypeCtxConstructor;
+import qilin.pta.tools.BasePTA;
+import qilin.pta.tools.DebloatedPTA;
+import qilin.pta.toolkits.bean.BeanObjectSensitivity;
+import qilin.pta.toolkits.dd.DataDrivenCallSiteSensitivity;
+import qilin.pta.toolkits.dd.DataDrivenHybridObjectSensitivity;
+import qilin.pta.toolkits.dd.DataDrivenObjectSensitivity;
+import qilin.pta.toolkits.dd.TunnelingCallSiteSensitivity;
+import qilin.pta.toolkits.dd.TunnelingHybridObjectSensitivity;
+import qilin.pta.toolkits.dd.TunnelingObjectSensitivity;
+import qilin.pta.toolkits.dd.TunnelingTypeSensitivity;
+import qilin.pta.toolkits.eagle.EagleObjectSensitivity;
+import qilin.pta.toolkits.mahjong.MahjongCallSiteSensitivity;
+import qilin.pta.toolkits.mahjong.MahjongObjectSensitivity;
+import qilin.pta.toolkits.selectx.SelectxCallSiteSensitivity;
+import qilin.pta.toolkits.turner.TurnerObjectSensitivity;
+import qilin.pta.toolkits.zipper.ZipperCallSiteSensitivity;
+import qilin.pta.toolkits.zipper.ZipperObjectSensitivity;
 
 /**
- * Type-safe, IDE-assisted replacement for the old {@code PTAPattern} string DSL (e.g. {@code
- * "2o1h"}, {@code "D-2o"}). Each factory method validates its arguments at construction time
- * instead of relying on regex parsing plus a hand-written compatibility matrix.
+ * Type-safe, IDE-assisted description of a pointer-analysis context-sensitivity variant. Each
+ * factory method validates its arguments at construction time instead of relying on regex
+ * parsing plus a hand-written compatibility matrix, and {@link #createPTA} builds the concrete
+ * {@link BasePTA} for the variant (context-debloating, where applicable, is applied per-variant
+ * here too) - this is the single place a {@link qilin.core.PTA} gets constructed from, covering
+ * both the core context-sensitivity variants (implemented alongside this class) and the
+ * research-toolkit ones (bean, zipper, eagle, turner, mahjong, selectx, data-driven, tunneling -
+ * each implemented in its own toolkit package, next to the {@code *PTA} class it builds). Not
+ * {@code sealed}: the toolkit implementations live in different packages, and this project has no
+ * {@code module-info.java}, so cross-package {@code permits} isn't available - the only
+ * publicly-constructible variants are still exactly the ones exposed by the factory methods
+ * below.
  */
 public abstract class ContextSensitivity {
 
-  private ContextSensitivity() {}
+  protected ContextSensitivity() {}
 
   /** Builds the {@link CtxConstructor} implementing this context-sensitivity variant. */
   public abstract CtxConstructor createCtxConstructor();
@@ -51,6 +72,9 @@ public abstract class ContextSensitivity {
   public int selectorContextDepth() {
     return contextDepth();
   }
+
+  /** Builds the concrete {@link BasePTA} for this variant. */
+  public abstract BasePTA createPTA(PTAScene scene, PointerAnalysisConfig config);
 
   public static ContextSensitivity insensitive() {
     return Insensitive.INSTANCE;
@@ -84,215 +108,112 @@ public abstract class ContextSensitivity {
     return new HybridTypeSens(k, hk);
   }
 
-  private static void requireNonNegative(int v, String name) {
+  /** BEAN-guided 2-object-sensitivity. Only k=2/hk=1 is supported by {@code BeanPTA}. */
+  public static ContextSensitivity beanObjectSensitive() {
+    return new BeanObjectSensitivity();
+  }
+
+  /** ZIPPER-guided k-object-sensitivity. */
+  public static ContextSensitivity zipperObjectSensitive(int k, int hk) {
+    return new ZipperObjectSensitivity(k, hk);
+  }
+
+  /** ZIPPER-guided k-callsite-sensitivity. */
+  public static ContextSensitivity zipperCallSite(int k, int hk) {
+    return new ZipperCallSiteSensitivity(k, hk);
+  }
+
+  /** EAGLE-guided k-object-sensitivity. Heap-context depth is always k-1. */
+  public static ContextSensitivity eagleObjectSensitive(int k) {
+    return new EagleObjectSensitivity(k);
+  }
+
+  /** TURNER-guided k-object-sensitivity. */
+  public static ContextSensitivity turnerObjectSensitive(int k) {
+    return new TurnerObjectSensitivity(k);
+  }
+
+  /** MAHJONG-guided k-object-sensitivity. */
+  public static ContextSensitivity mahjongObjectSensitive(int k, int hk) {
+    return new MahjongObjectSensitivity(k, hk);
+  }
+
+  /** MAHJONG-guided k-callsite-sensitivity. */
+  public static ContextSensitivity mahjongCallSite(int k, int hk) {
+    return new MahjongCallSiteSensitivity(k, hk);
+  }
+
+  /** Data-driven 2-object-sensitivity. Only k=2/hk=1 is supported by {@code DataDrivenPTA}. */
+  public static ContextSensitivity dataDrivenObjectSensitive() {
+    return new DataDrivenObjectSensitivity();
+  }
+
+  /** Data-driven 2-callsite-sensitivity. Only k=2/hk=1 is supported by {@code DataDrivenPTA}. */
+  public static ContextSensitivity dataDrivenCallSite() {
+    return new DataDrivenCallSiteSensitivity();
+  }
+
+  /**
+   * Data-driven hybrid-2-object-sensitivity. Only k=2/hk=1 is supported by {@code DataDrivenPTA}.
+   */
+  public static ContextSensitivity dataDrivenHybridObjectSensitive() {
+    return new DataDrivenHybridObjectSensitivity();
+  }
+
+  /** Tunneling k-object-sensitivity. */
+  public static ContextSensitivity tunnelingObjectSensitive(int k, int hk) {
+    return new TunnelingObjectSensitivity(k, hk);
+  }
+
+  /** Tunneling k-callsite-sensitivity. */
+  public static ContextSensitivity tunnelingCallSite(int k, int hk) {
+    return new TunnelingCallSiteSensitivity(k, hk);
+  }
+
+  /** Tunneling k-type-sensitivity. */
+  public static ContextSensitivity tunnelingTypeSensitive(int k, int hk) {
+    return new TunnelingTypeSensitivity(k, hk);
+  }
+
+  /** Tunneling hybrid-k-object-sensitivity. */
+  public static ContextSensitivity tunnelingHybridObjectSensitive(int k, int hk) {
+    return new TunnelingHybridObjectSensitivity(k, hk);
+  }
+
+  /** SELECTX-guided k-callsite-sensitivity. */
+  public static ContextSensitivity selectxCallSite(int k) {
+    return new SelectxCallSiteSensitivity(k);
+  }
+
+  protected static void requireNonNegative(int v, String name) {
     if (v < 0) {
       throw new IllegalArgumentException(name + " must be >= 0, was " + v);
     }
   }
 
-  private static final class Insensitive extends ContextSensitivity {
-    static final Insensitive INSTANCE = new Insensitive();
-
-    @Override
-    public CtxConstructor createCtxConstructor() {
-      return new InsensCtxConstructor();
-    }
-
-    @Override
-    public int contextDepth() {
-      return 0;
-    }
-
-    @Override
-    public int heapContextDepth() {
-      return 0;
-    }
-
-    @Override
-    public String toString() {
-      return "insensitive";
+  protected static void requirePositive(int v) {
+    if (v < 1) {
+      throw new IllegalArgumentException("k" + " must be >= 1, was " + v);
     }
   }
 
-  private static final class CallSite extends ContextSensitivity {
-    private final int k;
-    private final int hk;
-
-    CallSite(int k, int hk) {
-      requireNonNegative(k, "k");
-      requireNonNegative(hk, "hk");
-      this.k = k;
-      this.hk = hk;
-    }
-
-    @Override
-    public CtxConstructor createCtxConstructor() {
-      return new CallsiteCtxConstructor();
-    }
-
-    @Override
-    public int contextDepth() {
-      return k;
-    }
-
-    @Override
-    public int heapContextDepth() {
-      return hk;
-    }
-
-    @Override
-    public String toString() {
-      return k + "c+" + hk + "heap";
+  /** Shared by every object/type-sensitive variant: hk must be k or k-1. */
+  protected static void requireObjectOrTypeHeapRange(int k, int hk) {
+    if (hk > k || hk < k - 1) {
+      throw new IllegalArgumentException(
+          "heap context depth must be k or k-1 for object/type-sensitivity (k="
+              + k
+              + ", hk="
+              + hk
+              + ")");
     }
   }
 
-  private static final class ObjectSens extends ContextSensitivity {
-    private final int k;
-    private final int hk;
-
-    ObjectSens(int k, int hk) {
-      requireNonNegative(k, "k");
-      requireNonNegative(hk, "hk");
-      if (hk > k || hk < k - 1) {
-        throw new IllegalArgumentException(
-            "heap context depth must be k or k-1 for object-sensitivity (k="
-                + k
-                + ", hk="
-                + hk
-                + ")");
-      }
-      this.k = k;
-      this.hk = hk;
-    }
-
-    @Override
-    public CtxConstructor createCtxConstructor() {
-      return new ObjCtxConstructor();
-    }
-
-    @Override
-    public int contextDepth() {
-      return k;
-    }
-
-    @Override
-    public int heapContextDepth() {
-      return hk;
-    }
-
-    @Override
-    public String toString() {
-      return k + "o+" + hk + "heap";
-    }
+  protected static String label(String approach, int k, String ctxSuffix, int hk) {
+    return approach + "-" + k + ctxSuffix + "+" + hk + "heap";
   }
 
-  private static final class TypeSens extends ContextSensitivity {
-    private final int k;
-    private final int hk;
-
-    TypeSens(int k, int hk) {
-      requireNonNegative(k, "k");
-      requireNonNegative(hk, "hk");
-      if (hk > k || hk < k - 1) {
-        throw new IllegalArgumentException(
-            "heap context depth must be k or k-1 for type-sensitivity (k="
-                + k
-                + ", hk="
-                + hk
-                + ")");
-      }
-      this.k = k;
-      this.hk = hk;
-    }
-
-    @Override
-    public CtxConstructor createCtxConstructor() {
-      return new TypeCtxConstructor();
-    }
-
-    @Override
-    public int contextDepth() {
-      return k;
-    }
-
-    @Override
-    public int heapContextDepth() {
-      return hk;
-    }
-
-    @Override
-    public String toString() {
-      return k + "t+" + hk + "heap";
-    }
-  }
-
-  private static final class HybridObjectSens extends ContextSensitivity {
-    private final int k;
-    private final int hk;
-
-    HybridObjectSens(int k, int hk) {
-      requireNonNegative(k, "k");
-      requireNonNegative(hk, "hk");
-      this.k = k;
-      this.hk = hk;
-    }
-
-    @Override
-    public CtxConstructor createCtxConstructor() {
-      return new HybObjCtxConstructor();
-    }
-
-    @Override
-    public int contextDepth() {
-      return k;
-    }
-
-    @Override
-    public int heapContextDepth() {
-      return hk;
-    }
-
-    @Override
-    public int selectorContextDepth() {
-      // matches the legacy HybridObjectSensPTA, which selects with UniformSelector(k + 1, hk).
-      return k + 1;
-    }
-
-    @Override
-    public String toString() {
-      return k + "hybobj+" + hk + "heap";
-    }
-  }
-
-  private static final class HybridTypeSens extends ContextSensitivity {
-    private final int k;
-    private final int hk;
-
-    HybridTypeSens(int k, int hk) {
-      requireNonNegative(k, "k");
-      requireNonNegative(hk, "hk");
-      this.k = k;
-      this.hk = hk;
-    }
-
-    @Override
-    public CtxConstructor createCtxConstructor() {
-      return new HybTypeCtxConstructor();
-    }
-
-    @Override
-    public int contextDepth() {
-      return k;
-    }
-
-    @Override
-    public int heapContextDepth() {
-      return hk;
-    }
-
-    @Override
-    public String toString() {
-      return k + "hybtype+" + hk + "heap";
-    }
+  protected static BasePTA maybeDebloat(BasePTA pta, PointerAnalysisConfig config) {
+    return config.isCtxDebloating() ? new DebloatedPTA(pta, config.getDebloatApproach()) : pta;
   }
 }
