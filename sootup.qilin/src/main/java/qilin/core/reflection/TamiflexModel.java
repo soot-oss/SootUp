@@ -129,7 +129,8 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  protected Collection<Stmt> transformConstructorNewInstance(InvokableStmt s) {
+  protected Collection<Stmt> transformConstructorNewInstance(
+      Body.BodyBuilder builder, InvokableStmt s) {
     // <java.lang.reflect.Constructor: java.lang.Object newInstance(java.lang.Object[])>
     if (!(s instanceof JAssignStmt)) {
       return Collections.emptySet();
@@ -145,6 +146,7 @@ public class TamiflexModel extends ReflectionModel {
       JArrayRef arrayRef = JavaJimple.newArrayRef((Local) args, IntConstant.getInstance(0));
       Local arg =
           Jimple.newLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
+      builder.addLocal(arg);
       ret.add(new JAssignStmt(arg, arrayRef, StmtPositionInfo.getNoStmtPositionInfo()));
       for (String constructorSignature : constructorSignatures) {
         SootMethod constructor = ptaScene.getMethod(constructorSignature);
@@ -165,7 +167,7 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  protected Collection<Stmt> transformMethodInvoke(InvokableStmt s) {
+  protected Collection<Stmt> transformMethodInvoke(Body.BodyBuilder builder, InvokableStmt s) {
     // <java.lang.reflect.Method: java.lang.Object invoke(java.lang.Object,java.lang.Object[])>
     Collection<Stmt> ret = new HashSet<>();
     Map<Stmt, Set<String>> methodInvokes =
@@ -180,6 +182,7 @@ public class TamiflexModel extends ReflectionModel {
         JArrayRef arrayRef = JavaJimple.newArrayRef((Local) args, IntConstant.getInstance(0));
         arg =
             Jimple.newLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
+        builder.addLocal(arg);
         ret.add(new JAssignStmt(arg, arrayRef, StmtPositionInfo.getNoStmtPositionInfo()));
       }
 
@@ -296,7 +299,7 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  Collection<Stmt> transformArrayGet(InvokableStmt s) {
+  Collection<Stmt> transformArrayGet(Body.BodyBuilder builder, InvokableStmt s) {
     Collection<Stmt> ret = new HashSet<>();
     AbstractInvokeExpr iie = s.getInvokeExpr().get();
     Value base = iie.getArg(0);
@@ -310,6 +313,7 @@ public class TamiflexModel extends ReflectionModel {
             Jimple.newLocal(
                 "intermediate/" + base,
                 new ArrayType(PTAUtils.getClassType("java.lang.Object"), 1));
+        builder.addLocal(local);
         ret.add(new JAssignStmt(local, base, StmtPositionInfo.getNoStmtPositionInfo()));
         arrayRef = JavaJimple.newArrayRef(local, IntConstant.getInstance(0));
       }

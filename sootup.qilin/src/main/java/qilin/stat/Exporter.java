@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Pattern;
+
 import qilin.core.PTA;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
@@ -30,7 +32,6 @@ import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.Parm;
 import qilin.core.sets.PointsToSet;
-import qilin.util.Util;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -91,12 +92,12 @@ public class Exporter {
     StringBuilder builder = new StringBuilder();
     for (SootMethod sm : methods) {
       String sig = sm.getSignature().toString();
-      sig = Util.stripQuotes(sig);
+      sig = stripQuotes(sig);
       builder.append(sig);
       builder.append("\n");
     }
     String finalPath = getFilePath(fileName);
-    Util.writeToFile(finalPath, builder.toString());
+    writeToFile(finalPath, builder.toString());
   }
 
   public void dumpReachableMethods(Collection<SootMethod> reachables) {
@@ -133,7 +134,7 @@ public class Exporter {
     }
     String classTypes = "ClassType.csv";
     String finalPath = getFilePath(classTypes);
-    Util.writeToFile(finalPath, builder.toString());
+    writeToFile(finalPath, builder.toString());
   }
 
   public void dumpPolyCalls(Map<AbstractInvokeExpr, SootMethod> polys) {
@@ -151,7 +152,7 @@ public class Exporter {
     }
     String polyCalls = "PolyCalls.csv";
     String finalPath = getFilePath(polyCalls);
-    Util.writeToFile(finalPath, builder.toString());
+    writeToFile(finalPath, builder.toString());
   }
 
   public void dumpMayFailCasts(Map<SootMethod, Set<Stmt>> casts) {
@@ -173,7 +174,7 @@ public class Exporter {
     }
     String mayFailCasts = "MayFailCasts.csv";
     String finalPath = getFilePath(mayFailCasts);
-    Util.writeToFile(finalPath, builder.toString());
+    writeToFile(finalPath, builder.toString());
   }
 
   public void dumpMethodThrowPointsto(Map<SootMethod, PointsToSet> m2pts) {
@@ -191,7 +192,7 @@ public class Exporter {
           StringBuilder builder = new StringBuilder();
           builder.append(n.toString());
           builder.append("\t");
-          String sig = Util.stripQuotes(sm.getSignature().toString());
+          String sig = stripQuotes(sm.getSignature().toString());
           builder.append(sig);
           builder.append("\n");
           try {
@@ -217,8 +218,8 @@ public class Exporter {
       try (FileWriter fw = new FileWriter(mfile, true);
           BufferedWriter writer = new BufferedWriter(fw)) {
         for (Edge edge : ciCallGraph) {
-          String srcSig = Util.stripQuotes(edge.src().getSignature().toString());
-          String dstSig = Util.stripQuotes(edge.tgt().getSignature().toString());
+          String srcSig = stripQuotes(edge.src().getSignature().toString());
+          String dstSig = stripQuotes(edge.tgt().getSignature().toString());
           String str = edge.srcStmt() + " in method " + srcSig + "\t" + dstSig + "\n";
           writer.write(str);
         }
@@ -236,7 +237,7 @@ public class Exporter {
     }
     String insensReachVars = "InsensReachVars.csv";
     String finalPath = getFilePath(insensReachVars);
-    Util.writeToFile(finalPath, builder.toString());
+    writeToFile(finalPath, builder.toString());
   }
 
   public void dumpReachableLocalVarsNoNative(Collection<LocalVarNode> lvns) {
@@ -247,7 +248,7 @@ public class Exporter {
     }
     String insensReachVars = "InsensReachVarsNoNatives.csv";
     String finalPath = getFilePath(insensReachVars);
-    Util.writeToFile(finalPath, builder.toString());
+    writeToFile(finalPath, builder.toString());
   }
 
   private String getDoopVarName(LocalVarNode lvn) {
@@ -305,8 +306,28 @@ public class Exporter {
     if (pta.getConfig().isDumpStats()) {
       String statistics = "Statistics.txt";
       String finalPath = getFilePath(statistics);
-      Util.writeToFile(finalPath, tmp);
+      writeToFile(finalPath, tmp);
     }
     return tmp;
+  }
+
+  private static final Pattern qPat = Pattern.compile("'");
+  public static String stripQuotes(CharSequence s) {
+    return qPat.matcher(s).replaceAll("");
+  }
+
+  public static void writeToFile(String file, String content) {
+    try {
+      File mfile = new File(file);
+      if (!mfile.exists()) {
+        System.out.println(file);
+        mfile.createNewFile();
+      }
+      try (FileWriter writer = new FileWriter(mfile)) {
+        writer.write(content);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

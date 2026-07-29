@@ -18,11 +18,7 @@
 
 package qilin.stat;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import qilin.core.PTA;
 import qilin.core.pag.FieldRefNode;
@@ -33,7 +29,6 @@ import qilin.core.pag.SparkField;
 import qilin.core.pag.VarNode;
 import qilin.core.sets.PointsToSet;
 import qilin.util.Pair;
-import qilin.util.Util;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.SootMethod;
@@ -65,8 +60,8 @@ public class AliasStat implements AbstractStat {
           if (to instanceof LocalVarNode) {
             if (!(((VarNode) from).getVariable() instanceof Local)) continue;
             if (!(((VarNode) to).getVariable() instanceof Local)) continue;
-            Util.addToMap(assignMap, (LocalVarNode) from, (LocalVarNode) to);
-            Util.addToMap(assignMap, (LocalVarNode) to, (LocalVarNode) from);
+              assignMap.computeIfAbsent((LocalVarNode) from, k1 -> new HashSet<>()).add((LocalVarNode) to);
+              assignMap.computeIfAbsent((LocalVarNode) to, k -> new HashSet<>()).add((LocalVarNode) from);
           } else if (to instanceof FieldRefNode) {
             FieldRefNode fr = (FieldRefNode) to;
             LocalVarNode base = (LocalVarNode) fr.getBase();
@@ -144,7 +139,7 @@ public class AliasStat implements AbstractStat {
 
   public static <K, T, V> boolean addToMap(Map<K, Map<T, Set<V>>> m, K key1, T key2, V value) {
     Map<T, Set<V>> subMap = m.computeIfAbsent(key1, k -> new HashMap<>());
-    return Util.addToMap(subMap, key2, value);
+      return subMap.computeIfAbsent(key2, k -> new HashSet<>()).add(value);
   }
 
   public void aliasesProcessing() {

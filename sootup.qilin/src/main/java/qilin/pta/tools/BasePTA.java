@@ -40,6 +40,7 @@ import qilin.core.sets.PointsToSet;
 import qilin.core.solver.Propagator;
 import qilin.core.solver.Solver;
 import qilin.stat.IEvaluator;
+import qilin.stat.PTAEvaluator;
 import qilin.stat.SimplifiedEvaluator;
 import qilin.util.PTAUtils;
 import sootup.core.model.SootClass;
@@ -51,8 +52,8 @@ public abstract class BasePTA extends CorePTA {
 
   public BasePTA(PTAScene scene) {
     super(scene);
-    //    this.evaluator = new PTAEvaluator(this);
-    this.evaluator = new SimplifiedEvaluator(this);
+    this.evaluator =
+        getConfig().isDumpStats() ? new PTAEvaluator(this) : new SimplifiedEvaluator(this);
   }
 
   public IEvaluator evaluator() {

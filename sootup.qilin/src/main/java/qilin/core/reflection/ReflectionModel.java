@@ -76,18 +76,18 @@ public abstract class ReflectionModel {
     this.pag = pag;
   }
 
-  private Collection<Stmt> transform(InvokableStmt s) {
+  private Collection<Stmt> transform(Body.BodyBuilder builder, InvokableStmt s) {
     if (s.getInvokeExpr().isEmpty()) return Collections.emptyList();
     AbstractInvokeExpr ie = s.getInvokeExpr().get();
     return switch (ie.getMethodSignature().toString()) {
       case sigForName, sigForName2 -> transformClassForName(s);
       case sigClassNewInstance -> transformClassNewInstance(s);
-      case sigConstructorNewInstance -> transformConstructorNewInstance(s);
-      case sigMethodInvoke -> transformMethodInvoke(s);
+      case sigConstructorNewInstance -> transformConstructorNewInstance(builder, s);
+      case sigMethodInvoke -> transformMethodInvoke(builder, s);
       case sigFieldSet -> transformFieldSet(s);
       case sigFieldGet -> transformFieldGet(s);
       case sigArrayNewInstance -> transformArrayNewInstance(s);
-      case sigArrayGet -> transformArrayGet(s);
+      case sigArrayGet -> transformArrayGet(builder, s);
       case sigArraySet -> transformArraySet(s);
       default -> Collections.emptySet();
     };
@@ -98,15 +98,15 @@ public abstract class ReflectionModel {
     if (!ptaScene.reflectionBuilt.add(m)) {
       return;
     }
-      Map<Stmt, Collection<Stmt>> newUnits = new HashMap<>();
+    Map<Stmt, Collection<Stmt>> newUnits = new HashMap<>();
     Body body = pag.getMethodBody(m);
     List<Stmt> units = body.getStmts();
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     for (final Stmt u : units) {
       if (u.isInvokableStmt() && u.asInvokableStmt().getInvokeExpr().isPresent()) {
-        newUnits.put(u, transform(u.asInvokableStmt()));
+        newUnits.put(u, transform(builder, u.asInvokableStmt()));
       }
     }
-    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     for (Stmt unit : newUnits.keySet()) {
       for (Stmt succ : newUnits.get(unit)) {
@@ -128,9 +128,9 @@ public abstract class ReflectionModel {
 
   abstract Collection<Stmt> transformClassNewInstance(InvokableStmt s);
 
-  abstract Collection<Stmt> transformConstructorNewInstance(InvokableStmt s);
+  abstract Collection<Stmt> transformConstructorNewInstance(Body.BodyBuilder builder, InvokableStmt s);
 
-  abstract Collection<Stmt> transformMethodInvoke(InvokableStmt s);
+  abstract Collection<Stmt> transformMethodInvoke(Body.BodyBuilder builder, InvokableStmt s);
 
   abstract Collection<Stmt> transformFieldSet(InvokableStmt s);
 
@@ -138,7 +138,7 @@ public abstract class ReflectionModel {
 
   abstract Collection<Stmt> transformArrayNewInstance(InvokableStmt s);
 
-  abstract Collection<Stmt> transformArrayGet(InvokableStmt s);
+  abstract Collection<Stmt> transformArrayGet(Body.BodyBuilder builder, InvokableStmt s);
 
   abstract Collection<Stmt> transformArraySet(InvokableStmt s);
 }
