@@ -46,7 +46,10 @@ public class NativeTests extends QilinFrameworkTests {
 
   @Test
   public void testPrivilegedActions2() {
-    checkAssertions(run("qilin.microben.core.natives.PrivilegedActions2", ContextSensitivity.objectSensitive(2, 1)));
+    checkAssertions(
+        run(
+            "qilin.microben.core.natives.PrivilegedActions2",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test

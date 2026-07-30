@@ -23,7 +23,7 @@ import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
+import qilin.util.sets.PointsToSet;
 import qilin.core.solver.Propagator;
 import qilin.parm.select.CtxSelector;
 import qilin.parm.select.DebloatingSelector;
@@ -60,7 +60,7 @@ public class DebloatedPTA extends StagedPTA {
     CtxSelector debloatingSelector = new DebloatingSelector(ctxDepHeaps);
     basePTA.setContextSelector(new PipelineSelector(basePTA.ctxSelector(), debloatingSelector));
     if (basePTA instanceof StagedPTA stagedPTA) {
-        this.prePTA = stagedPTA.getPrePTA();
+      this.prePTA = stagedPTA.getPrePTA();
     } else {
       this.prePTA = new CoreVariantPTA(basePTA.getScene(), ContextSensitivity.insensitive());
     }

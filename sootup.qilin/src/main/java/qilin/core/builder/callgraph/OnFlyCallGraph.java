@@ -46,7 +46,7 @@ import sootup.core.signatures.MethodSignature;
  */
 public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   protected Set<MethodSignature> methods = new HashSet<>();
-    protected Map<MethodSignature, Set<Call>> calls = new HashMap<>();
+  protected Map<MethodSignature, Set<Call>> calls = new HashMap<>();
   protected int callCnt = 0;
 
   protected Set<Edge> edges = new LinkedHashSet<>();

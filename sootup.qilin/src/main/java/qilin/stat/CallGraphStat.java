@@ -180,7 +180,8 @@ public class CallGraphStat implements AbstractStat {
         "#Reachable App Method (CS):", String.valueOf(reachableAppParameterizedMethods.size()));
     exporter.collectMetric(
         "#Call Edge(CI):",
-        String.valueOf(CICallEdges - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
+        String.valueOf(
+            CICallEdges - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric(
         "\t#Static-Static Call Edge(CI):",
         String.valueOf(
@@ -195,7 +196,8 @@ public class CallGraphStat implements AbstractStat {
     exporter.collectMetric("\t#Library-Library Call Edge(CI):", String.valueOf(CILib2lib));
     exporter.collectMetric(
         "#Call Edge(CS):",
-        String.valueOf(CSCallEdges - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
+        String.valueOf(
+            CSCallEdges - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric(
         "\t#Static-Static Call Edge(CS):",
         String.valueOf(

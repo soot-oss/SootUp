@@ -86,33 +86,33 @@ public class MethodNodeFactory {
 
   public PagNode getNode(Value v) {
     if (v instanceof Local l) {
-        return caseLocal(l);
+      return caseLocal(l);
     } else if (v instanceof JCastExpr castExpr) {
-        return caseCastExpr(castExpr);
+      return caseCastExpr(castExpr);
     } else if (v instanceof JNewExpr ne) {
-        return caseNewExpr(ne);
+      return caseNewExpr(ne);
     } else if (v instanceof JStaticFieldRef sfr) {
-        return caseStaticFieldRef(sfr);
+      return caseStaticFieldRef(sfr);
     } else if (v instanceof JNewArrayExpr nae) {
-        return caseNewArrayExpr(nae);
+      return caseNewArrayExpr(nae);
     } else if (v instanceof JArrayRef ar) {
-        return caseArrayRef(ar);
+      return caseArrayRef(ar);
     } else if (v instanceof ClassConstant cc) {
-        return caseClassConstant(cc);
+      return caseClassConstant(cc);
     } else if (v instanceof StringConstant sc) {
-        return caseStringConstant(sc);
+      return caseStringConstant(sc);
     } else if (v instanceof JCaughtExceptionRef cef) {
-        return caseCaughtExceptionRef(cef);
+      return caseCaughtExceptionRef(cef);
     } else if (v instanceof JParameterRef pr) {
-        return caseParameterRef(pr);
+      return caseParameterRef(pr);
     } else if (v instanceof NullConstant nc) {
-        return caseNullConstant(nc);
+      return caseNullConstant(nc);
     } else if (v instanceof JInstanceFieldRef ifr) {
-        return caseInstanceFieldRef(ifr);
+      return caseInstanceFieldRef(ifr);
     } else if (v instanceof JThisRef) {
       return caseThis();
     } else if (v instanceof JNewMultiArrayExpr nmae) {
-        return caseNewMultiArrayExpr(nmae);
+      return caseNewMultiArrayExpr(nmae);
     }
     System.out.println(v + ";;" + v.getClass());
     return null;
@@ -143,13 +143,13 @@ public class MethodNodeFactory {
       getNode(arg);
     }
     if (s instanceof JAssignStmt assignStmt) {
-        Value l = assignStmt.getLeftOp();
+      Value l = assignStmt.getLeftOp();
       if ((l.getType() instanceof ReferenceType)) {
         getNode(l);
       }
     }
     if (ie instanceof AbstractInstanceInvokeExpr aie) {
-        getNode(aie.getBase());
+      getNode(aie.getBase());
     }
   }
 
@@ -168,6 +168,7 @@ public class MethodNodeFactory {
     s.accept(
         new AbstractStmtVisitor() {
           private Object result = null;
+
           private void setResult(Object result) {
             this.result = result;
           }

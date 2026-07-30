@@ -30,9 +30,7 @@ import qilin.parm.ctxcons.HybObjCtxConstructor;
 import qilin.pta.tools.BasePTA;
 import qilin.pta.tools.DataDrivenPTA;
 
-/**
- * Data-driven hybrid-2-object-sensitivity. Only k=2/hk=1 is supported by {@link DataDrivenPTA}.
- */
+/** Data-driven hybrid-2-object-sensitivity. Only k=2/hk=1 is supported by {@link DataDrivenPTA}. */
 public final class DataDrivenHybridObjectSensitivity extends ContextSensitivity {
 
   public DataDrivenHybridObjectSensitivity() {}

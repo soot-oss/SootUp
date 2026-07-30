@@ -16,7 +16,7 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.core.sets;
+package qilin.util.sets;
 
 import java.util.Iterator;
 

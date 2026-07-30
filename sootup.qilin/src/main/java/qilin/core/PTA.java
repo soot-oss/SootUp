@@ -27,12 +27,15 @@ import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
-import qilin.core.sets.*;
 import qilin.core.solver.Propagator;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.CtxSelector;
 import qilin.util.PTAUtils;
+import qilin.util.sets.HybridPointsToSet;
+import qilin.util.sets.PointsToSet;
+import qilin.util.sets.PointsToSetInternal;
+import qilin.util.sets.UnmodifiablePointsToSet;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -148,9 +151,9 @@ public abstract class PTA implements PointsToAnalysis {
   public PointsToSet reachingObjects(PagNode n) {
     final PointsToSetInternal ret;
     if (n instanceof ContextVarNode cvn) {
-        ret = cvn.getP2Set();
+      ret = cvn.getP2Set();
     } else if (n instanceof ContextField cf) {
-        ret = cf.getP2Set();
+      ret = cf.getP2Set();
     } else {
       VarNode varNode = (VarNode) n;
       ret = new HybridPointsToSet();
@@ -158,8 +161,7 @@ public abstract class PTA implements PointsToAnalysis {
         pag.getContextVarNodeMap()
             .get(varNode)
             .values()
-            .forEach(
-                vn -> ret.addAll(vn.getP2Set(), null));
+            .forEach(vn -> ret.addAll(vn.getP2Set(), null));
       }
     }
     return new UnmodifiablePointsToSet(this, ret);

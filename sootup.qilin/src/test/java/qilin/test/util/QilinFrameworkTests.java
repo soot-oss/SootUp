@@ -132,12 +132,12 @@ public abstract class QilinFrameworkTests {
   }
 
   /**
-   * For selective/heuristic context-sensitivity approaches (Zipper, Moon, ...): those only
-   * promise soundness ("may-alias" claims must still hold), not full k-obj precision - they may
-   * legitimately decide a given object/method isn't "precision-critical" and merge contexts
-   * there, which can make a "not-alias" claim from the plain-k-obj benchmark suite fail without
-   * that being a bug. Precision-only failures are printed, not asserted, so a real regression
-   * (or an unsound may-alias miss) still fails the build.
+   * For selective/heuristic context-sensitivity approaches (Zipper, Moon, ...): those only promise
+   * soundness ("may-alias" claims must still hold), not full k-obj precision - they may
+   * legitimately decide a given object/method isn't "precision-critical" and merge contexts there,
+   * which can make a "not-alias" claim from the plain-k-obj benchmark suite fail without that being
+   * a bug. Precision-only failures are printed, not asserted, so a real regression (or an unsound
+   * may-alias miss) still fails the build.
    */
   protected void checkSoundAssertions(PTA pta) {
     checkAssertions(pta, false);

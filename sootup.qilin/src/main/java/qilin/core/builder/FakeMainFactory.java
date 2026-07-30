@@ -71,7 +71,9 @@ public class FakeMainFactory extends ArtificialMethod {
         fact.getFieldSignature("currentThread", declaringClassSignature, "java.lang.Thread");
     JavaSootField currentThread =
         new JavaSootField(
-            currentThreadSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
+            currentThreadSig,
+            EnumSet.of(FieldModifier.STATIC),
+            NoPositionInformation.getInstance());
     this.globalThrowSig =
         fact.getFieldSignature("globalThrow", declaringClassSignature, "java.lang.Exception");
     JavaSootField globalThrow =

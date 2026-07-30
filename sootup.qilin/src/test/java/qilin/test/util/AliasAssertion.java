@@ -21,7 +21,7 @@ package qilin.test.util;
 import java.util.Objects;
 import qilin.core.PTA;
 import qilin.core.pag.LocalVarNode;
-import qilin.core.sets.PointsToSet;
+import qilin.util.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;

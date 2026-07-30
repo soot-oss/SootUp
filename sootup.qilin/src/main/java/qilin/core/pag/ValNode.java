@@ -18,7 +18,7 @@
 
 package qilin.core.pag;
 
-import qilin.core.sets.DoublePointsToSet;
+import qilin.util.sets.DoublePointsToSet;
 import qilin.util.Numberable;
 import sootup.core.types.Type;
 
@@ -35,10 +35,10 @@ public class ValNode extends PagNode implements Comparable<ValNode>, Numberable 
 
   /** Returns the points-to set for this node. */
   public DoublePointsToSet getP2Set() {
-      if (p2set == null) {
-        p2set = new DoublePointsToSet();
-      }
-      return p2set;
+    if (p2set == null) {
+      p2set = new DoublePointsToSet();
+    }
+    return p2set;
   }
 
   /** Delete current points-to set and make a new one */

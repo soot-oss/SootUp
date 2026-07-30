@@ -22,7 +22,7 @@ import java.util.*;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
+import qilin.util.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
 import sootup.core.model.SootMethod;

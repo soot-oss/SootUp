@@ -35,7 +35,7 @@ import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
+import qilin.util.sets.PointsToSet;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;

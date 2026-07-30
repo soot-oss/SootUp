@@ -34,7 +34,8 @@ public class Zipper {
   private final AtomicInteger analyzedClasses = new AtomicInteger(0);
   private final AtomicInteger totalPFGNodes = new AtomicInteger(0);
   private final AtomicInteger totalPFGEdges = new AtomicInteger(0);
-  private final ConcurrentDirectedGraphImpl<PagNode> overallPFG = new ConcurrentDirectedGraphImpl<>();
+  private final ConcurrentDirectedGraphImpl<PagNode> overallPFG =
+      new ConcurrentDirectedGraphImpl<>();
   private final Map<SootMethod, Integer> methodPts;
   private final Map<Type, Collection<SootMethod>> pcmMap = new ConcurrentHashMap<>(1024);
   private final ZOAG oag;

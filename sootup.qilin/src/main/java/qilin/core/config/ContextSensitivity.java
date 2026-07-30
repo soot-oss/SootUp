@@ -20,8 +20,6 @@ package qilin.core.config;
 
 import qilin.core.PTAScene;
 import qilin.parm.ctxcons.CtxConstructor;
-import qilin.pta.tools.BasePTA;
-import qilin.pta.tools.DebloatedPTA;
 import qilin.pta.toolkits.bean.BeanObjectSensitivity;
 import qilin.pta.toolkits.dd.DataDrivenCallSiteSensitivity;
 import qilin.pta.toolkits.dd.DataDrivenHybridObjectSensitivity;
@@ -37,20 +35,21 @@ import qilin.pta.toolkits.selectx.SelectxCallSiteSensitivity;
 import qilin.pta.toolkits.turner.TurnerObjectSensitivity;
 import qilin.pta.toolkits.zipper.ZipperCallSiteSensitivity;
 import qilin.pta.toolkits.zipper.ZipperObjectSensitivity;
+import qilin.pta.tools.BasePTA;
+import qilin.pta.tools.DebloatedPTA;
 
 /**
  * Type-safe, IDE-assisted description of a pointer-analysis context-sensitivity variant. Each
- * factory method validates its arguments at construction time instead of relying on regex
- * parsing plus a hand-written compatibility matrix, and {@link #createPTA} builds the concrete
- * {@link BasePTA} for the variant (context-debloating, where applicable, is applied per-variant
- * here too) - this is the single place a {@link qilin.core.PTA} gets constructed from, covering
- * both the core context-sensitivity variants (implemented alongside this class) and the
- * research-toolkit ones (bean, zipper, eagle, turner, mahjong, selectx, data-driven, tunneling -
- * each implemented in its own toolkit package, next to the {@code *PTA} class it builds). Not
- * {@code sealed}: the toolkit implementations live in different packages, and this project has no
- * {@code module-info.java}, so cross-package {@code permits} isn't available - the only
- * publicly-constructible variants are still exactly the ones exposed by the factory methods
- * below.
+ * factory method validates its arguments at construction time instead of relying on regex parsing
+ * plus a hand-written compatibility matrix, and {@link #createPTA} builds the concrete {@link
+ * BasePTA} for the variant (context-debloating, where applicable, is applied per-variant here too)
+ * - this is the single place a {@link qilin.core.PTA} gets constructed from, covering both the core
+ * context-sensitivity variants (implemented alongside this class) and the research-toolkit ones
+ * (bean, zipper, eagle, turner, mahjong, selectx, data-driven, tunneling - each implemented in its
+ * own toolkit package, next to the {@code *PTA} class it builds). Not {@code sealed}: the toolkit
+ * implementations live in different packages, and this project has no {@code module-info.java}, so
+ * cross-package {@code permits} isn't available - the only publicly-constructible variants are
+ * still exactly the ones exposed by the factory methods below.
  */
 public abstract class ContextSensitivity {
 
@@ -123,12 +122,17 @@ public abstract class ContextSensitivity {
     return new ZipperCallSiteSensitivity(k, hk, false);
   }
 
-  /** Zipper-e (express): ZIPPER-guided k-object-sensitivity with the express-mode threshold cutoff. */
+  /**
+   * Zipper-e (express): ZIPPER-guided k-object-sensitivity with the express-mode threshold cutoff.
+   */
   public static ContextSensitivity zipperExpressObjectSensitive(int k, int hk) {
     return new ZipperObjectSensitivity(k, hk, true);
   }
 
-  /** Zipper-e (express): ZIPPER-guided k-callsite-sensitivity with the express-mode threshold cutoff. */
+  /**
+   * Zipper-e (express): ZIPPER-guided k-callsite-sensitivity with the express-mode threshold
+   * cutoff.
+   */
   public static ContextSensitivity zipperExpressCallSite(int k, int hk) {
     return new ZipperCallSiteSensitivity(k, hk, true);
   }

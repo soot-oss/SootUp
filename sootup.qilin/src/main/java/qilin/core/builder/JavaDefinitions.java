@@ -22,7 +22,6 @@ package qilin.core.builder;
  * #L%
  */
 
-import qilin.util.PTAUtils;
 
 public class JavaDefinitions {
 

@@ -18,7 +18,6 @@
 
 package qilin.test.core;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import qilin.core.PTA;
 import qilin.test.util.QilinFrameworkTests;

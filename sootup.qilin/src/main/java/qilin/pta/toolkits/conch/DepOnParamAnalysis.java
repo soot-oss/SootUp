@@ -75,7 +75,8 @@ public class DepOnParamAnalysis extends AbstractPAG {
   }
 
   private void propagate(PagNode srcParam, PagNode currNode) {
-    Set<PagNode> fromParams = pathEdges.computeIfAbsent(currNode, k -> ConcurrentHashMap.newKeySet());
+    Set<PagNode> fromParams =
+        pathEdges.computeIfAbsent(currNode, k -> ConcurrentHashMap.newKeySet());
     if (!fromParams.contains(srcParam)) {
       executor.execute(new PathEdgeProcessingTask(srcParam, currNode));
     }

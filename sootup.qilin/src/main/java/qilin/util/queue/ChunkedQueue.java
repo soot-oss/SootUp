@@ -87,7 +87,7 @@ public class ChunkedQueue<E> {
         curArray = (Object[]) curObj;
         idx = 0;
       } else {
-        sb.append(curObj.toString());
+        sb.append(curObj);
         idx++;
       }
     }

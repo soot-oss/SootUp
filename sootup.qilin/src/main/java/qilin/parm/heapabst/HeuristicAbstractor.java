@@ -32,7 +32,7 @@ public class HeuristicAbstractor implements HeapAbstractor {
   private final View view;
   private final Set<Type> mergedTypes = new HashSet<>();
 
-    public HeuristicAbstractor(PAG pag) {
+  public HeuristicAbstractor(PAG pag) {
     this.pag = pag;
     this.view = pag.getPta().getView();
     mergedTypes.add(PTAUtils.getClassType("java.lang.StringBuffer"));

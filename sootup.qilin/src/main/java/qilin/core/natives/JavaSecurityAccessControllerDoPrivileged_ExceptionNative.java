@@ -24,7 +24,8 @@ import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
 public class JavaSecurityAccessControllerDoPrivileged_ExceptionNative extends NativeMethod {
-  public JavaSecurityAccessControllerDoPrivileged_ExceptionNative(View view, SootMethod method, PAG pag) {
+  public JavaSecurityAccessControllerDoPrivileged_ExceptionNative(
+      View view, SootMethod method, PAG pag) {
     super(view, method, pag);
   }
 

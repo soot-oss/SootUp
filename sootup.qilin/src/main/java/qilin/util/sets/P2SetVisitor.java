@@ -16,22 +16,32 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.util.graph;
+package qilin.util.sets;
 
-import java.util.Collection;
+import qilin.core.PTA;
+import qilin.core.pag.PagNode;
 
-public interface Tree<N> {
-  N getRoot();
+/**
+ * Abstract base class for points-to set visitors used to enumerate points-to sets.
+ *
+ * @author Ondrej Lhotak
+ */
+public abstract class P2SetVisitor {
+  protected boolean returnValue = false;
+  protected final PTA pta;
 
-  Collection<N> getLeaves();
+  protected P2SetVisitor(PTA pta) {
+    this.pta = pta;
+  }
 
-  boolean isALeaf(N n);
+  protected abstract void visit(PagNode n);
 
-  Collection<N> getAllNodes();
+  public void visit(long idx) {
+    PagNode node = pta.getPag().getAllocNodeNumberer().get(idx);
+    visit(node);
+  }
 
-  int size();
-
-  N parentOf(N n);
-
-  Collection<N> childrenOf(N n);
+  public boolean getReturnValue() {
+    return returnValue;
+  }
 }

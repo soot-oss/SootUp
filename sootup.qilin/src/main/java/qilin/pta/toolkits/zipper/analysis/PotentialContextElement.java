@@ -1,7 +1,12 @@
 package qilin.pta.toolkits.zipper.analysis;
 
+import com.google.common.collect.Interner;
+import com.google.common.collect.Interners;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import qilin.core.PTA;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
@@ -9,9 +14,6 @@ import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.VirtualCallSite;
 import qilin.pta.toolkits.zipper.flowgraph.ZOAG;
-import qilin.util.collect.SetFactory;
-import qilin.util.collect.multimap.ConcurrentMultiMap;
-import qilin.util.collect.multimap.MultiMap;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -22,16 +24,17 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
 
 public class PotentialContextElement {
-  private final MultiMap<Type, SootMethod> type2PCEMethods = new ConcurrentMultiMap<>();
+  private final SetMultimap<Type, SootMethod> type2PCEMethods =
+      Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet);
   private final PTA pta;
-  private final MultiMap<AllocNode, SootMethod> objToInvokedMethods;
+  private final SetMultimap<AllocNode, SootMethod> objToInvokedMethods;
 
   PotentialContextElement(PTA prePTA, ZOAG oag) {
     this.pta = prePTA;
     objToInvokedMethods = buildObjAndInvokeToCallee();
 
-    SetFactory<SootMethod> canonicalizer = new SetFactory<>();
-    MultiMap<Type, AllocNode> type2Objs = oag.getType2Objs();
+    Interner<Set<SootMethod>> canonicalizer = Interners.newStrongInterner();
+    SetMultimap<Type, AllocNode> type2Objs = oag.getType2Objs();
 
     type2Objs
         .keySet()
@@ -52,12 +55,13 @@ public class PotentialContextElement {
                   methods.addAll(invokedMethods);
                 }
               }
-              type2PCEMethods.putAll(type, canonicalizer.get(methods));
+              type2PCEMethods.putAll(type, canonicalizer.intern(methods));
             });
   }
 
-  private MultiMap<AllocNode, SootMethod> buildObjAndInvokeToCallee() {
-    MultiMap<AllocNode, SootMethod> objToInvokedMethods = new ConcurrentMultiMap<>();
+  private SetMultimap<AllocNode, SootMethod> buildObjAndInvokeToCallee() {
+    SetMultimap<AllocNode, SootMethod> objToInvokedMethods =
+        Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet);
     var pag = pta.getPag();
     OnFlyCallGraph callgraph = pta.getCallGraph();
     // collect virtual callsites.

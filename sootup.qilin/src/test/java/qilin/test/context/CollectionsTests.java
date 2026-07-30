@@ -25,51 +25,79 @@ import qilin.test.util.QilinFrameworkTests;
 public class CollectionsTests extends QilinFrameworkTests {
   @Test
   public void testArrayList0() {
-    checkAssertions(run("qilin.microben.context.collections.ArrayList0", ContextSensitivity.objectSensitive(2, 1)));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.ArrayList0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testLinkedList0() {
-    checkAssertions(run("qilin.microben.context.collections.LinkedList0", ContextSensitivity.objectSensitive(2, 1)));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.LinkedList0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testVector0() {
-    checkAssertions(run("qilin.microben.context.collections.Vector0", ContextSensitivity.objectSensitive(2, 1)));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.Vector0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testHashMap0() {
-    checkAssertions(run("qilin.microben.context.collections.HashMap0", ContextSensitivity.objectSensitive(2, 1)));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.HashMap0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testTreeMap0() {
-    checkAssertions(run("qilin.microben.context.collections.TreeMap0", ContextSensitivity.objectSensitive(2, 1)));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.TreeMap0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testHashSet0() {
-    checkAssertions(run("qilin.microben.context.collections.HashSet0", ContextSensitivity.objectSensitive(3, 2)));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.HashSet0",
+            ContextSensitivity.objectSensitive(3, 2)));
   }
 
   @Test
   public void testTreeSet0() {
-    checkAssertions(run("qilin.microben.context.collections.TreeSet0", ContextSensitivity.objectSensitive(3, 2)));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.TreeSet0",
+            ContextSensitivity.objectSensitive(3, 2)));
   }
 
   @Test
   public void testHashTable0() {
-    checkAssertions(run("qilin.microben.context.collections.HashTable0", ContextSensitivity.objectSensitive(2, 1)));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.HashTable0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testPriorityQueue0() {
-    checkAssertions(run("qilin.microben.context.collections.PriorityQueue0", ContextSensitivity.objectSensitive(2, 1)));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.PriorityQueue0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testStack0() {
-    checkAssertions(run("qilin.microben.context.collections.Stack0", ContextSensitivity.objectSensitive(2, 1)));
+    checkAssertions(
+        run("qilin.microben.context.collections.Stack0", ContextSensitivity.objectSensitive(2, 1)));
   }
 }

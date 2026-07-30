@@ -86,7 +86,7 @@ public class InterFlowAnalysis {
   }
 
   private Set<Pair<PagNode, State>> getNextNodeStates(
-          Pair<PagNode, State> nodeState, SparkField field, boolean in) {
+      Pair<PagNode, State> nodeState, SparkField field, boolean in) {
     PagNode node = nodeState.first();
     State state = nodeState.second();
     Set<Pair<PagNode, State>> ret = new HashSet<>();

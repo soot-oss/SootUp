@@ -33,10 +33,10 @@ public class TopologicalSorter<N> {
   }
 
   private void collect_reversed(
-          final DirectedGraph<N> graph,
-          final Set<N> visited,
-          final LinkedList<N> sortedList,
-          final N node) {
+      final DirectedGraph<N> graph,
+      final Set<N> visited,
+      final LinkedList<N> sortedList,
+      final N node) {
     if (visited.add(node)) {
       graph.predsOf(node).forEach(n -> collect_reversed(graph, visited, sortedList, n));
       sortedList.addFirst(node);
@@ -63,5 +63,4 @@ public class TopologicalSorter<N> {
       sortedList.addLast(node);
     }
   }
-
 }

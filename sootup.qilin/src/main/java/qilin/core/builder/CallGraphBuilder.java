@@ -27,8 +27,8 @@ import qilin.core.builder.callgraph.Kind;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
-import qilin.core.sets.P2SetVisitor;
-import qilin.core.sets.PointsToSetInternal;
+import qilin.util.sets.P2SetVisitor;
+import qilin.util.sets.PointsToSetInternal;
 import qilin.util.CallDetails;
 import qilin.util.PTAUtils;
 import qilin.util.queue.ChunkedQueue;
@@ -73,8 +73,8 @@ public class CallGraphBuilder {
     this.virtualCalls = new VirtualCalls(ptaScene.getView());
     receiverToSites = new HashMap<>((int) ptaScene.getView().getClasses().count());
     methodToInvokeStmt = new HashMap<>();
-      reachMethods = new HashSet<>();
-      calledges = new HashSet<>();
+    reachMethods = new HashSet<>();
+    calledges = new HashSet<>();
   }
 
   public void setRMQueue(ChunkedQueue<ContextMethod> rmQueue) {
@@ -122,8 +122,7 @@ public class CallGraphBuilder {
           SootMethod src = e.src();
           SootMethod tgt = e.tgt();
           Stmt unit = e.srcUnit();
-          Map<SootMethod, Set<SootMethod>> submap =
-              map.computeIfAbsent(unit, k -> new HashMap<>());
+          Map<SootMethod, Set<SootMethod>> submap = map.computeIfAbsent(unit, k -> new HashMap<>());
           Set<SootMethod> set = submap.computeIfAbsent(src, k -> new HashSet<>());
           if (set.add(tgt)) {
             cicg.addEdge(

@@ -266,7 +266,7 @@ public class IntraFlowAnalysis {
    * implementation of nextNodeStates in Algorithm 3 in the paper. It also encodes Fig 10 in the paper.
    * */
   private Set<Pair<PagNode, State>> getNextNodeStates(
-          Pair<PagNode, State> nodeState, Set<PagNode> thisAlias, Set<SparkField> stFields) {
+      Pair<PagNode, State> nodeState, Set<PagNode> thisAlias, Set<SparkField> stFields) {
     PagNode node = nodeState.first();
     State state = nodeState.second();
     Set<Pair<PagNode, State>> ret = new HashSet<>();

@@ -26,7 +26,7 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
+import qilin.util.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
@@ -101,7 +101,7 @@ public class Eagle {
   }
 
   public boolean addBalancedEdge(BNode from, BNode to) {
-      boolean ret = balancedOutEdges.computeIfAbsent(from, k -> new HashSet<>()).add(to);
+    boolean ret = balancedOutEdges.computeIfAbsent(from, k -> new HashSet<>()).add(to);
     balance_count++;
     total_edges_count++;
     return ret;

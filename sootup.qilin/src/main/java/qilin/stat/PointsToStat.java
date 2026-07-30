@@ -24,7 +24,7 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
+import qilin.util.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Triple;
 import sootup.core.jimple.common.Local;

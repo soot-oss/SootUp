@@ -25,16 +25,19 @@ import qilin.test.util.QilinFrameworkTests;
 public class HybTests extends QilinFrameworkTests {
   @Test
   public void testHyb0() {
-    checkAssertions(run("qilin.microben.context.hyb.Hyb0", ContextSensitivity.hybridObjectSensitive(1, 0)));
+    checkAssertions(
+        run("qilin.microben.context.hyb.Hyb0", ContextSensitivity.hybridObjectSensitive(1, 0)));
   }
 
   @Test
   public void testHyb1() {
-    checkAssertions(run("qilin.microben.context.hyb.Hyb1", ContextSensitivity.hybridObjectSensitive(1, 0)));
+    checkAssertions(
+        run("qilin.microben.context.hyb.Hyb1", ContextSensitivity.hybridObjectSensitive(1, 0)));
   }
 
   @Test
   public void testHyb2() {
-    checkAssertions(run("qilin.microben.context.hyb.Hyb2", ContextSensitivity.hybridObjectSensitive(2, 1)));
+    checkAssertions(
+        run("qilin.microben.context.hyb.Hyb2", ContextSensitivity.hybridObjectSensitive(2, 1)));
   }
 }

@@ -23,7 +23,7 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
+import qilin.util.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;

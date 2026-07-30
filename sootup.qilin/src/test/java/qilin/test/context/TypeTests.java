@@ -25,11 +25,13 @@ import qilin.test.util.QilinFrameworkTests;
 public class TypeTests extends QilinFrameworkTests {
   @Test
   public void testType1k0() {
-    checkAssertions(run("qilin.microben.context.type.Type1k0", ContextSensitivity.typeSensitive(1, 0)));
+    checkAssertions(
+        run("qilin.microben.context.type.Type1k0", ContextSensitivity.typeSensitive(1, 0)));
   }
 
   @Test
   public void testType2k0() {
-    checkAssertions(run("qilin.microben.context.type.Type2k0", ContextSensitivity.typeSensitive(2, 1)));
+    checkAssertions(
+        run("qilin.microben.context.type.Type2k0", ContextSensitivity.typeSensitive(2, 1)));
   }
 }

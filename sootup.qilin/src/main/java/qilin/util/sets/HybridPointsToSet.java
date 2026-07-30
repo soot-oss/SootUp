@@ -16,7 +16,7 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.core.sets;
+package qilin.util.sets;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -67,7 +67,7 @@ public final class HybridPointsToSet extends PointsToSetInternal {
       return false;
     }
     if (other instanceof DoublePointsToSet dpts) {
-        return nativeAddAll(dpts.getNewSet(), exclude) | nativeAddAll(dpts.getOldSet(), exclude);
+      return nativeAddAll(dpts.getNewSet(), exclude) | nativeAddAll(dpts.getOldSet(), exclude);
     }
     return nativeAddAll((HybridPointsToSet) other, exclude);
   }

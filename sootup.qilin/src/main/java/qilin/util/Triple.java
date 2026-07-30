@@ -18,18 +18,17 @@
 
 package qilin.util;
 
-import org.jspecify.annotations.NonNull;
-
 import java.util.Objects;
+import org.jspecify.annotations.NonNull;
 
 public record Triple<T1, T2, T3>(T1 first, T2 second, T3 third) {
 
   @Override
   public boolean equals(final Object o) {
     if (o instanceof Triple<?, ?, ?> anoTriple) {
-        return Objects.equals(this.first, anoTriple.first)
-              && Objects.equals(this.second, anoTriple.second)
-              && Objects.equals(this.third, anoTriple.third);
+      return Objects.equals(this.first, anoTriple.first)
+          && Objects.equals(this.second, anoTriple.second)
+          && Objects.equals(this.third, anoTriple.third);
     }
     return false;
   }

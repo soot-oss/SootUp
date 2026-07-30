@@ -39,10 +39,10 @@ import sootup.core.views.View;
 /**
  * Covers {@link qilin.core.invokedynamic.LambdaMetafactoryModel}: a lambda/method-reference whose
  * target is a plain static method must resolve to a direct call edge instead of silently vanishing.
- * Deliberately does not extend {@link qilin.test.util.QilinFrameworkTests} - it shares static app/jre-path
- * fields across every subclass in the JVM, and this suite needs a Java 8+ library classpath (for
- * {@code java.lang.invoke.LambdaMetafactory}/{@code java.util.function.Supplier}), unlike the rest
- * of qilin's tests which run against the legacy JRE 6 fixture.
+ * Deliberately does not extend {@link qilin.test.util.QilinFrameworkTests} - it shares static
+ * app/jre-path fields across every subclass in the JVM, and this suite needs a Java 8+ library
+ * classpath (for {@code java.lang.invoke.LambdaMetafactory}/{@code java.util.function.Supplier}),
+ * unlike the rest of qilin's tests which run against the legacy JRE 6 fixture.
  */
 public class InvokeDynamicTests {
   private static String appPath;
@@ -102,14 +102,16 @@ public class InvokeDynamicTests {
   // surefire JVM (4GB, parallel=all) alongside the rest of the suite. Kept as documented,
   // manually-runnable coverage for the ContextAllocNode.base() unwrap in CallGraphBuilder.dispatch
   // rather than deleted outright.
-  @Disabled("memory-hungry: object-sensitive analysis over full JRE8 rt.jar OOMs the shared test JVM")
+  @Disabled(
+      "memory-hungry: object-sensitive analysis over full JRE8 rt.jar OOMs the shared test JVM")
   @Test
   public void testLambdaObjectSensitive() {
     checkAssertions(
         run("qilin.microben.core.invokedynamic.Lambda", ContextSensitivity.objectSensitive(2, 1)));
   }
 
-  @Disabled("memory-hungry: object-sensitive analysis over full JRE8 rt.jar OOMs the shared test JVM")
+  @Disabled(
+      "memory-hungry: object-sensitive analysis over full JRE8 rt.jar OOMs the shared test JVM")
   @Test
   public void testStaticMethodRefObjectSensitive() {
     checkAssertions(

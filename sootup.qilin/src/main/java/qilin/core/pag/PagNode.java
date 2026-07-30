@@ -18,7 +18,7 @@
 
 package qilin.core.pag;
 
-import qilin.core.sets.DoublePointsToSet;
+import qilin.util.sets.DoublePointsToSet;
 import qilin.util.Numberable;
 import sootup.core.types.Type;
 

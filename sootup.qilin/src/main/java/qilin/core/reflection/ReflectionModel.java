@@ -19,7 +19,6 @@
 package qilin.core.reflection;
 
 import java.util.*;
-
 import qilin.core.PTAScene;
 import qilin.core.pag.PAG;
 import sootup.core.graph.MutableControlFlowGraph;
@@ -128,7 +127,8 @@ public abstract class ReflectionModel {
 
   abstract Collection<Stmt> transformClassNewInstance(InvokableStmt s);
 
-  abstract Collection<Stmt> transformConstructorNewInstance(Body.BodyBuilder builder, InvokableStmt s);
+  abstract Collection<Stmt> transformConstructorNewInstance(
+      Body.BodyBuilder builder, InvokableStmt s);
 
   abstract Collection<Stmt> transformMethodInvoke(Body.BodyBuilder builder, InvokableStmt s);
 

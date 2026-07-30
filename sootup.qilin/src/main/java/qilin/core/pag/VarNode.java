@@ -113,7 +113,7 @@ public abstract class VarNode extends ValNode {
     if (fields == null) {
       synchronized (this) {
         if (fields == null) {
-            fields = new HashMap<>();
+          fields = new HashMap<>();
         }
       }
     }

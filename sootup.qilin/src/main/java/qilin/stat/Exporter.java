@@ -24,14 +24,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
-
 import qilin.core.PTA;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.Parm;
-import qilin.core.sets.PointsToSet;
+import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -312,6 +311,7 @@ public class Exporter {
   }
 
   private static final Pattern qPat = Pattern.compile("'");
+
   public static String stripQuotes(CharSequence s) {
     return qPat.matcher(s).replaceAll("");
   }
