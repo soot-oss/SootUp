@@ -30,20 +30,22 @@ public class TopologicalSorter<N> {
   }
 
   public List<N> sort(final DirectedGraph<N> graph, final boolean reverse) {
-    this.initialize(graph);
+    this.graph = graph;
+    this.sortedList = new LinkedList<>();
+    this.visited = new HashSet<>();
+
     graph.allNodes().stream().filter(n -> graph.succsOf(n).isEmpty()).forEach(this::visit);
     List<N> result = this.sortedList;
     if (reverse) {
       Collections.reverse(result);
     }
-    this.clear();
-    return result;
-  }
 
-  private void initialize(final DirectedGraph<N> graph) {
-    this.graph = graph;
-    this.sortedList = new LinkedList<>();
-    this.visited = new HashSet<>();
+    // clear
+    this.graph = null;
+    this.sortedList = null;
+    this.visited = null;
+
+    return result;
   }
 
   private void visit(final N node) {
@@ -54,9 +56,4 @@ public class TopologicalSorter<N> {
     }
   }
 
-  private void clear() {
-    this.graph = null;
-    this.sortedList = null;
-    this.visited = null;
-  }
 }

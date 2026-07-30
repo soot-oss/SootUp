@@ -34,12 +34,14 @@ import qilin.pta.tools.ZipperPTA;
 public final class ZipperCallSiteSensitivity extends ContextSensitivity {
   private final int k;
   private final int hk;
+  private final boolean isExpress;
 
-  public ZipperCallSiteSensitivity(int k, int hk) {
+  public ZipperCallSiteSensitivity(int k, int hk, boolean isExpress) {
     requireNonNegative(k, "k");
     requireNonNegative(hk, "hk");
     this.k = k;
     this.hk = hk;
+    this.isExpress = isExpress;
   }
 
   @Override
@@ -59,11 +61,11 @@ public final class ZipperCallSiteSensitivity extends ContextSensitivity {
 
   @Override
   public BasePTA createPTA(PTAScene scene, PointerAnalysisConfig config) {
-    return new ZipperPTA(scene, k, hk, createCtxConstructor());
+    return new ZipperPTA(scene, k, hk, createCtxConstructor(), isExpress);
   }
 
   @Override
   public String toString() {
-    return label("zipper", k, "c", hk);
+    return label(isExpress ? "zipper-e" : "zipper", k, "c", hk);
   }
 }

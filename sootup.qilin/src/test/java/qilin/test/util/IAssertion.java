@@ -20,4 +20,15 @@ package qilin.test.util;
 
 public interface IAssertion {
   boolean check();
+
+  /**
+   * Whether this assertion must hold under any sound (over-approximating) points-to analysis,
+   * however imprecise - e.g. a "may-alias" claim, since collapsing context can only ever merge
+   * points-to sets, never split them. A "not-alias" claim is a precision claim instead: it can
+   * legitimately fail under a coarser or heuristically-selective analysis (Zipper, Moon, ...)
+   * without indicating unsoundness.
+   */
+  default boolean isSoundnessCritical() {
+    return true;
+  }
 }

@@ -71,6 +71,14 @@ public class AliasAssertion implements IAssertion {
     return isMayAlias(pta, va, vb) == groundTruth;
   }
 
+  @Override
+  public boolean isSoundnessCritical() {
+    // "may-alias" (groundTruth=true) must hold under any sound analysis, however imprecise.
+    // "not-alias" (groundTruth=false) is a precision claim a coarser/selective analysis can
+    // legitimately miss.
+    return groundTruth;
+  }
+
   private static boolean DEBUG = true;
 
   protected boolean isMayAlias(PTA pta, Value va, Value vb) {

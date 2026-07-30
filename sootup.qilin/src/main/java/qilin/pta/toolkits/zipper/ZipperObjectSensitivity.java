@@ -34,13 +34,15 @@ import qilin.pta.tools.ZipperPTA;
 public final class ZipperObjectSensitivity extends ContextSensitivity {
   private final int k;
   private final int hk;
+  private final boolean isExpress;
 
-  public ZipperObjectSensitivity(int k, int hk) {
+  public ZipperObjectSensitivity(int k, int hk, boolean isExpress) {
     requireNonNegative(k, "k");
     requireNonNegative(hk, "hk");
     requireObjectOrTypeHeapRange(k, hk);
     this.k = k;
     this.hk = hk;
+    this.isExpress = isExpress;
   }
 
   @Override
@@ -60,11 +62,11 @@ public final class ZipperObjectSensitivity extends ContextSensitivity {
 
   @Override
   public BasePTA createPTA(PTAScene scene, PointerAnalysisConfig config) {
-    return maybeDebloat(new ZipperPTA(scene, k, hk, createCtxConstructor()), config);
+    return maybeDebloat(new ZipperPTA(scene, k, hk, createCtxConstructor(), isExpress), config);
   }
 
   @Override
   public String toString() {
-    return label("zipper", k, "o", hk);
+    return label(isExpress ? "zipper-e" : "zipper", k, "o", hk);
   }
 }

@@ -33,11 +33,13 @@ public class FlowAnalysis {
   private Map<PagNode, Set<Edge>> wuEdges;
   private ConcurrentDirectedGraphImpl<PagNode> pollutionFlowGraph;
   private Reachability<PagNode> reachability;
+  private final ZOAG oag;
 
-  public FlowAnalysis(PTA pta, PotentialContextElement pce, ObjectFlowGraph ofg) {
+  public FlowAnalysis(PTA pta, PotentialContextElement pce, ObjectFlowGraph ofg, ZOAG oag) {
     this.pta = pta;
     this.pce = pce;
     this.objectFlowGraph = ofg;
+    this.oag = oag;
   }
 
   public void initialize(Type type, Set<SootMethod> inms, Set<SootMethod> outms) {
@@ -214,7 +216,7 @@ public class FlowAnalysis {
                       .forEach(e -> addWUEdge(next, e));
                 }
                 nextEdges.add(edge);
-              } else if (pce.allocateesOf(currentType).contains(base)) {
+              } else if (oag.getAllocateesOf(currentType).contains(base)) {
                 // Optimization, similar as above.
                 if (Global.isEnableWrappedFlow()) {
                   Set<VarNode> r = new HashSet<>();

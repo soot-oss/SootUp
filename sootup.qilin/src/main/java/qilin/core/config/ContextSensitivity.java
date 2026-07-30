@@ -115,12 +115,22 @@ public abstract class ContextSensitivity {
 
   /** ZIPPER-guided k-object-sensitivity. */
   public static ContextSensitivity zipperObjectSensitive(int k, int hk) {
-    return new ZipperObjectSensitivity(k, hk);
+    return new ZipperObjectSensitivity(k, hk, false);
   }
 
   /** ZIPPER-guided k-callsite-sensitivity. */
   public static ContextSensitivity zipperCallSite(int k, int hk) {
-    return new ZipperCallSiteSensitivity(k, hk);
+    return new ZipperCallSiteSensitivity(k, hk, false);
+  }
+
+  /** Zipper-e (express): ZIPPER-guided k-object-sensitivity with the express-mode threshold cutoff. */
+  public static ContextSensitivity zipperExpressObjectSensitive(int k, int hk) {
+    return new ZipperObjectSensitivity(k, hk, true);
+  }
+
+  /** Zipper-e (express): ZIPPER-guided k-callsite-sensitivity with the express-mode threshold cutoff. */
+  public static ContextSensitivity zipperExpressCallSite(int k, int hk) {
+    return new ZipperCallSiteSensitivity(k, hk, true);
   }
 
   /** EAGLE-guided k-object-sensitivity. Heap-context depth is always k-1. */

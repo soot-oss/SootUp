@@ -33,6 +33,7 @@ import qilin.pta.toolkits.common.OAG;
 import qilin.pta.toolkits.conch.Conch;
 import qilin.pta.toolkits.debloaterx.CollectionHeuristic;
 import qilin.pta.toolkits.debloaterx.DebloaterX;
+import qilin.pta.toolkits.moon.Moon;
 import qilin.stat.IEvaluator;
 import qilin.util.Stopwatch;
 import sootup.core.jimple.common.Local;
@@ -70,7 +71,14 @@ public class DebloatedPTA extends StagedPTA {
   @Override
   protected void preAnalysis() {
     Stopwatch sparkTimer = Stopwatch.newAndStart("Spark");
+    boolean needsCallDetails = debloatApproach == PointerAnalysisConfig.DebloatApproach.MOON;
+    if (needsCallDetails) {
+      prePTA.getScene().getCallDetails().enable();
+    }
     prePTA.pureRun();
+    if (needsCallDetails) {
+      prePTA.getScene().getCallDetails().disable();
+    }
     sparkTimer.stop();
     System.out.println(sparkTimer);
     if (debloatApproach == PointerAnalysisConfig.DebloatApproach.CONCH) {
@@ -100,6 +108,22 @@ public class DebloatedPTA extends StagedPTA {
       System.out.println("OAG #node:" + oag.nodeSize() + "; #edge:" + oag.edgeSize());
       System.out.println(
           "DebloaterX OAG #node:" + doag1.nodeSize() + "; #edge:" + doag1.edgeSize());
+    } else if (debloatApproach == PointerAnalysisConfig.DebloatApproach.MOON) {
+      Stopwatch moonTimer = Stopwatch.newAndStart("MOON");
+      int k = getConfig().getContextSensitivity().contextDepth();
+      Moon moon = new Moon(prePTA, k - 1);
+      Set<AllocNode> prObjs = moon.analyze();
+      moonTimer.stop();
+      System.out.println(moonTimer);
+      for (AllocNode obj : prObjs) {
+        this.ctxDepHeaps.add(obj.getNewExpr());
+      }
+      OAG oag = new OAG(prePTA);
+      oag.build();
+      OAG moonOAG = new DebloatedOAG(prePTA, prObjs);
+      moonOAG.build();
+      System.out.println("OAG #node:" + oag.nodeSize() + "; #edge:" + oag.edgeSize());
+      System.out.println("MOON OAG #node:" + moonOAG.nodeSize() + "; #edge:" + moonOAG.edgeSize());
     } else {
       assert (debloatApproach == PointerAnalysisConfig.DebloatApproach.COLLECTION);
       Stopwatch collectionHeuristic = Stopwatch.newAndStart("COLLECTION");
@@ -124,6 +148,26 @@ public class DebloatedPTA extends StagedPTA {
   @Override
   public Propagator getPropagator() {
     return basePTA.getPropagator();
+  }
+
+  @Override
+  public Collection<ContextMethod> getReachableMethods() {
+    return basePTA.getReachableMethods();
+  }
+
+  /**
+   * The wrapped, fully-analyzed selective PTA. {@link #getPag()} on this {@code DebloatedPTA}
+   * itself still returns this object's own vestigial PAG (constructed before {@code basePTA} is
+   * assigned, and never populated) - callers needing the real PAG/method bodies from the finished
+   * analysis (e.g. reading points-to results by hand) should go through here.
+   */
+  public BasePTA getBasePTA() {
+    return basePTA;
+  }
+
+  @Override
+  public Collection<SootMethod> getNakedReachableMethods() {
+    return basePTA.getNakedReachableMethods();
   }
 
   @Override

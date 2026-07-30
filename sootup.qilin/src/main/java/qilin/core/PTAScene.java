@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.config.PointerAnalysisConfig;
+import qilin.util.CallDetails;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
@@ -44,6 +45,7 @@ public class PTAScene {
   private final PointerAnalysisConfig config;
   private OnFlyCallGraph callgraph;
   private final FakeMainFactory fakeMainFactory;
+  private final CallDetails callDetails;
 
   // Thread-safe: guard the corresponding effect model's one-time-per-method work
   // (PAG.getMethodPAG()'s effect-model dispatch and arraycopy handling), which is reached from
@@ -66,6 +68,7 @@ public class PTAScene {
     SootClass mainClass = getSootClass(mainClassSig);
     // setup fakemain
     this.fakeMainFactory = new FakeMainFactory(view, mainClass, config);
+    this.callDetails = new CallDetails();
   }
 
   public PointerAnalysisConfig getConfig() {
@@ -78,6 +81,10 @@ public class PTAScene {
 
   public FakeMainFactory getFakeMainFactory() {
     return fakeMainFactory;
+  }
+
+  public CallDetails getCallDetails() {
+    return callDetails;
   }
 
   /*

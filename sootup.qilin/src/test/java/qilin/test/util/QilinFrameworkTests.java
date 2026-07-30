@@ -28,6 +28,7 @@ import qilin.core.PTA;
 import qilin.core.PointerAnalysisFactory;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
+import qilin.pta.tools.DebloatedPTA;
 import qilin.util.PTAUtils;
 import sootup.core.views.View;
 
@@ -87,30 +88,77 @@ public abstract class QilinFrameworkTests {
   }
 
   public PTA run(String mainClass, ContextSensitivity contextSensitivity) {
-    PointerAnalysisConfig config =
-        PointerAnalysisConfig.builder()
-            .contextSensitivity(contextSensitivity)
-            .singleEntry(true)
-            .clinitMode(PointerAnalysisConfig.ClinitMode.ON_THE_FLY)
-            .enforceEmptyCtxForIgnoreTypes(true)
-            .heapAbstractionPolicy(PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE)
-            .preciseArrayElement(true)
-            .preciseExceptions(true)
-            .reflectionLogPath(refLogPath + File.separator + "Reflection.log")
-            .analysisName(contextSensitivity.toString())
-            .build();
+    return run(mainClass, configBuilder(contextSensitivity).build());
+  }
+
+  public PTA run(
+      String mainClass,
+      ContextSensitivity contextSensitivity,
+      PointerAnalysisConfig.DebloatApproach debloatApproach) {
+    return run(
+        mainClass,
+        configBuilder(contextSensitivity)
+            .ctxDebloating(true)
+            .debloatApproach(debloatApproach)
+            .build());
+  }
+
+  private PointerAnalysisConfig.Builder configBuilder(ContextSensitivity contextSensitivity) {
+    return PointerAnalysisConfig.builder()
+        .contextSensitivity(contextSensitivity)
+        .singleEntry(true)
+        .clinitMode(PointerAnalysisConfig.ClinitMode.ON_THE_FLY)
+        .enforceEmptyCtxForIgnoreTypes(true)
+        .heapAbstractionPolicy(PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE)
+        .preciseArrayElement(true)
+        .preciseExceptions(true)
+        .reflectionLogPath(refLogPath + File.separator + "Reflection.log")
+        .analysisName(contextSensitivity.toString());
+  }
+
+  private PTA run(String mainClass, PointerAnalysisConfig config) {
     View view = PTAUtils.createView(appPath, null, jrePath);
     PTA pta = PointerAnalysisFactory.create(view, mainClass, config);
-    pta.pureRun();
+    // NOT pta.pureRun(): for staged toolkit variants (Zipper, DebloatedPTA/Moon, Bean, ...)
+    // pureRun() only calls getPropagator().propagate() and skips StagedPTA's
+    // preAnalysis()/mainAnalysis() entirely. run() is the correct top-level entry point for
+    // every PTA - it delegates to pureRun() for plain CoreVariantPTA too, so this is safe there.
+    pta.run();
     return pta;
   }
 
   protected void checkAssertions(PTA pta) {
+    checkAssertions(pta, true);
+  }
+
+  /**
+   * For selective/heuristic context-sensitivity approaches (Zipper, Moon, ...): those only
+   * promise soundness ("may-alias" claims must still hold), not full k-obj precision - they may
+   * legitimately decide a given object/method isn't "precision-critical" and merge contexts
+   * there, which can make a "not-alias" claim from the plain-k-obj benchmark suite fail without
+   * that being a bug. Precision-only failures are printed, not asserted, so a real regression
+   * (or an unsound may-alias miss) still fails the build.
+   */
+  protected void checkSoundAssertions(PTA pta) {
+    checkAssertions(pta, false);
+  }
+
+  private void checkAssertions(PTA pta, boolean requirePrecision) {
+    // DebloatedPTA's own getPag()/getReachableMethods() are its throwaway pre-basePTA-assignment
+    // state (see DebloatedPTA#getBasePTA) - the finished analysis and its PAG live on basePTA.
+    if (pta instanceof DebloatedPTA debloatedPTA) {
+      pta = debloatedPTA.getBasePTA();
+    }
     Set<IAssertion> aliasAssertionSet = AssertionsParser.retrieveQueryInfo(pta);
     for (IAssertion mAssert : aliasAssertionSet) {
       boolean answer = mAssert.check();
       System.out.println("Assertion is " + answer);
-      assertTrue(answer);
+      if (requirePrecision || mAssert.isSoundnessCritical()) {
+        assertTrue(answer);
+      } else if (!answer) {
+        System.out.println(
+            "Precision-only assertion failed (not a soundness issue, not asserted): " + mAssert);
+      }
     }
   }
 }

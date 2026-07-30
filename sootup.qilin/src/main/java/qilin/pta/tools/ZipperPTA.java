@@ -50,13 +50,15 @@ import sootup.core.types.ReferenceType;
  * */
 public class ZipperPTA extends StagedPTA {
   private final Set<SootMethod> PCMs = new HashSet<>();
+  private final boolean isExpress;
 
   /*
    * Zipper support object-sensitivity, callsite-sensitivity by using corresponding
    * context-constructor.
    * */
-  public ZipperPTA(PTAScene scene, int k, int hk, CtxConstructor ctxCons) {
+  public ZipperPTA(PTAScene scene, int k, int hk, CtxConstructor ctxCons, boolean isExpress) {
     super(scene);
+    this.isExpress = isExpress;
     this.ctxCons = ctxCons;
     CtxSelector us = new PartialMethodLvSelector(k, hk, PCMs);
     if (getConfig().isEnforceEmptyCtxForIgnoreTypes()) {
@@ -75,12 +77,14 @@ public class ZipperPTA extends StagedPTA {
 
   @Override
   protected void preAnalysis() {
+    getScene().getCallDetails().enable();
     Stopwatch sparkTimer = Stopwatch.newAndStart("Spark");
     prePTA.pureRun();
+    getScene().getCallDetails().disable();
     sparkTimer.stop();
     System.out.println(sparkTimer);
     Stopwatch zipperTimer = Stopwatch.newAndStart("Zipper");
-    Main.run(prePTA, PCMs);
+    Main.run(prePTA, PCMs, isExpress);
     zipperTimer.stop();
     System.out.println(zipperTimer);
     extraStats();

@@ -40,7 +40,8 @@ public final class PointerAnalysisConfig {
   public enum DebloatApproach {
     CONCH,
     DEBLOATERX,
-    COLLECTION
+    COLLECTION,
+    MOON
   }
 
   public enum TurnerConfig {

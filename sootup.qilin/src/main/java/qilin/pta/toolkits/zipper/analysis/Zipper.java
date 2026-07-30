@@ -11,11 +11,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import qilin.core.PTA;
 import qilin.core.pag.*;
-import qilin.pta.toolkits.common.OAG;
 import qilin.pta.toolkits.common.ToolUtil;
 import qilin.pta.toolkits.zipper.Global;
 import qilin.pta.toolkits.zipper.flowgraph.FlowAnalysis;
 import qilin.pta.toolkits.zipper.flowgraph.ObjectFlowGraph;
+import qilin.pta.toolkits.zipper.flowgraph.ZOAG;
 import qilin.util.ANSIColor;
 import qilin.util.Stopwatch;
 import qilin.util.graph.ConcurrentDirectedGraphImpl;
@@ -37,10 +37,11 @@ public class Zipper {
   private final ConcurrentDirectedGraphImpl<PagNode> overallPFG = new ConcurrentDirectedGraphImpl<>();
   private final Map<SootMethod, Integer> methodPts;
   private final Map<Type, Collection<SootMethod>> pcmMap = new ConcurrentHashMap<>(1024);
+  private final ZOAG oag;
 
   public Zipper(PTA pta) {
     this.pta = pta;
-    OAG oag = new OAG(pta);
+    this.oag = new ZOAG(pta);
     oag.build();
     System.out.println("#OAG:" + oag.allNodes().size());
     this.pce = new PotentialContextElement(pta, oag);
@@ -141,7 +142,7 @@ public class Zipper {
   }
 
   private void computePCM(List<ClassType> types) {
-    FlowAnalysis fa = new FlowAnalysis(pta, pce, ofg);
+    FlowAnalysis fa = new FlowAnalysis(pta, pce, ofg, oag);
     types.forEach(type -> analyze(type, fa));
   }
 
@@ -151,7 +152,7 @@ public class Zipper {
         type ->
             executorService.execute(
                 () -> {
-                  FlowAnalysis fa = new FlowAnalysis(pta, pce, ofg);
+                  FlowAnalysis fa = new FlowAnalysis(pta, pce, ofg, oag);
                   analyze(type, fa);
                 }));
     executorService.shutdown();

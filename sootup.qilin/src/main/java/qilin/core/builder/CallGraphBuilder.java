@@ -29,6 +29,7 @@ import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.P2SetVisitor;
 import qilin.core.sets.PointsToSetInternal;
+import qilin.util.CallDetails;
 import qilin.util.PTAUtils;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
@@ -198,6 +199,9 @@ public class CallGraphBuilder {
     PagNode thisRef = pag.getMethodPAG(callee).nodeFactory().caseThis();
     thisRef = pta.parameterize(thisRef, cstarget.context());
     pag.addEdge(receiverNode, thisRef);
+
+    // call detail recording for MOON / Zipper's optimized PotentialContextElement
+    ptaScene.getCallDetails().addCalleeToCtxAndCaller(callee, receiverNode, caller.method());
   }
 
   public void injectCallEdge(Object heapOrType, ContextMethod callee, Kind kind) {
@@ -222,6 +226,11 @@ public class CallGraphBuilder {
     Context typeContext = pta.createCalleeCtx(caller, null, new CallSite(callStmt), calleem);
     ContextMethod callee = pta.parameterize(calleem, typeContext);
     handleCallEdge(new Edge(caller, callStmt, callee, kind));
+
+    // call detail recording for MOON / Zipper's optimized PotentialContextElement
+    ptaScene
+        .getCallDetails()
+        .addCalleeToCtxAndCaller(calleem, CallDetails.STATIC_OBJ_CTX, caller.method());
   }
 
   protected void handleCallEdge(Edge edge) {
@@ -279,6 +288,9 @@ public class CallGraphBuilder {
       PagNode parm = tgtnf.caseParm(i);
       parm = pta.parameterize(parm, tgtContext);
       pag.addEdge(argNode, parm);
+
+      // call detail recording for MOON / Zipper's optimized PotentialContextElement
+      ptaScene.getCallDetails().addArgToParamToRecvValue(argNode, parm, s);
     }
     // add normal return edge
     if (s instanceof JAssignStmt) {
