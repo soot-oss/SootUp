@@ -64,7 +64,7 @@ public class Turner {
       mystat(mg);
       final TopologicalSorter<MergedNode<SootMethod>> topoSorter = new TopologicalSorter<>();
       topoSorter
-          .sort(mg, true)
+          .reverse_sort(mg)
           .forEach(
               node -> {
                 for (SootMethod method : node.getContent()) {

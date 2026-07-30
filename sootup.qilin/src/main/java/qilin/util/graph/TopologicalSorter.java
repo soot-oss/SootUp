@@ -21,38 +21,46 @@ package qilin.util.graph;
 import java.util.*;
 
 public class TopologicalSorter<N> {
-  private DirectedGraph<N> graph;
-  private List<N> sortedList;
-  private Set<N> visited;
+
+  public List<N> reverse_sort(final DirectedGraph<N> graph) {
+    LinkedList<N> sortedList = new LinkedList<>();
+    Set<N> visited = new HashSet<>();
+
+    graph.allNodes().stream()
+        .filter(n -> graph.succsOf(n).isEmpty())
+        .forEach(n -> collect_reversed(graph, visited, sortedList, n));
+    return sortedList;
+  }
+
+  private void collect_reversed(
+          final DirectedGraph<N> graph,
+          final Set<N> visited,
+          final LinkedList<N> sortedList,
+          final N node) {
+    if (visited.add(node)) {
+      graph.predsOf(node).forEach(n -> collect_reversed(graph, visited, sortedList, n));
+      sortedList.addFirst(node);
+    }
+  }
 
   public List<N> sort(final DirectedGraph<N> graph) {
-    return this.sort(graph, false);
+    LinkedList<N> sortedList = new LinkedList<>();
+    Set<N> visited = new HashSet<>();
+
+    graph.allNodes().stream()
+        .filter(n -> graph.succsOf(n).isEmpty())
+        .forEach(n -> collect(graph, visited, sortedList, n));
+    return sortedList;
   }
 
-  public List<N> sort(final DirectedGraph<N> graph, final boolean reverse) {
-    this.graph = graph;
-    this.sortedList = new LinkedList<>();
-    this.visited = new HashSet<>();
-
-    graph.allNodes().stream().filter(n -> graph.succsOf(n).isEmpty()).forEach(this::visit);
-    List<N> result = this.sortedList;
-    if (reverse) {
-      Collections.reverse(result);
-    }
-
-    // clear
-    this.graph = null;
-    this.sortedList = null;
-    this.visited = null;
-
-    return result;
-  }
-
-  private void visit(final N node) {
-    if (!this.visited.contains(node)) {
-      this.visited.add(node);
-      this.graph.predsOf(node).forEach(this::visit);
-      this.sortedList.add(node);
+  private void collect(
+      final DirectedGraph<N> graph,
+      final Set<N> visited,
+      final LinkedList<N> sortedList,
+      final N node) {
+    if (visited.add(node)) {
+      graph.predsOf(node).forEach(n -> collect(graph, visited, sortedList, n));
+      sortedList.addLast(node);
     }
   }
 
