@@ -333,27 +333,21 @@ public class DexExprVisitor extends AbstractExprVisitor {
     Immediate op2 = abstractIntBinopExpr.getOp2();
     Register op2Register = registerAllocator.getRegisterForImmediate(op2, false);
 
-    Register op1TmpRegister;
-    Register op2TmpRegister;
-
-    if (op1Register == targetRegister) {
-      op1TmpRegister = registerAllocator.getRegisterForType(op1Register.getType());
-      generateMoveInstruction(op1TmpRegister, op1Register, op1Register.getType());
-    } else {
-      op1TmpRegister = op1Register;
-    }
-
-    if (op2Register == targetRegister) {
-      op2TmpRegister = registerAllocator.getRegisterForType(op2Register.getType());
-      generateMoveInstruction(op2TmpRegister, op2Register, op2Register.getType());
-    } else {
-      op2TmpRegister = op2Register;
+    if (op1Register == targetRegister || op2Register == targetRegister) {
+      if (currentStmt.isJAssignStmt()) {
+        targetRegister =
+            registerAllocator.getRegisterForValueWithNewType(
+                currentStmt.asJAssignStmt().getLeftOp(), PrimitiveType.getInt(), false);
+      } else {
+        targetRegister.setType(PrimitiveType.getInt());
+      }
+      targetRegister.setIsTypeGuessed(true);
     }
 
     fixObjectType(PrimitiveType.getInt());
 
-    if (!(op1TmpRegister.getType() instanceof PrimitiveType)
-        || !(op2TmpRegister.getType() instanceof PrimitiveType)) {
+    if (!(op1Register.getType() instanceof PrimitiveType)
+        || !(op2Register.getType() instanceof PrimitiveType)) {
       throw new IllegalArgumentException(
           "Operands in IntBinopExpr are not primitive: "
               + op1Register.getType()
@@ -361,36 +355,32 @@ public class DexExprVisitor extends AbstractExprVisitor {
               + op2Register.getType());
     }
 
-    log.info("Op1 register {} of type {}", op1TmpRegister.getNumber(), op1TmpRegister.getType());
-    log.info("Op2 register {} of type {}", op2TmpRegister.getNumber(), op2TmpRegister.getType());
-
     PrimitiveType calcType =
         DexUtil.getArithmeticType(
-            (PrimitiveType) op1TmpRegister.getType(), (PrimitiveType) op2TmpRegister.getType());
+            (PrimitiveType) op1Register.getType(), (PrimitiveType) op2Register.getType());
 
     Register op1CastRegister;
     Register op2CastRegister;
 
-    if (DexUtil.isTypeBiggerOrEqual(op1TmpRegister.getType(), PrimitiveType.getInt())
-        && DexUtil.isTypeSmaller(op1TmpRegister.getType(), calcType)) {
+    if (DexUtil.isTypeBiggerOrEqual(op1Register.getType(), PrimitiveType.getInt())
+        && DexUtil.isTypeSmaller(op1Register.getType(), calcType)) {
       op1CastRegister = registerAllocator.getRegisterForType(calcType);
-      castPrimitive(op1TmpRegister, op1CastRegister, op1TmpRegister.getType(), calcType);
+      castPrimitive(op1Register, op1CastRegister, op1Register.getType(), calcType);
     } else {
-      op1CastRegister = op1TmpRegister;
+      op1CastRegister = op1Register;
     }
 
-    if (DexUtil.isTypeBiggerOrEqual(op2TmpRegister.getType(), PrimitiveType.getInt())
-        && DexUtil.isTypeSmaller(op2TmpRegister.getType(), calcType)
+    if (DexUtil.isTypeBiggerOrEqual(op2Register.getType(), PrimitiveType.getInt())
+        && DexUtil.isTypeSmaller(op2Register.getType(), calcType)
         && !List.of("SHL", "SHR", "USHR").contains(operation)) {
       op2CastRegister = registerAllocator.getRegisterForType(calcType);
-      castPrimitive(op2TmpRegister, op2CastRegister, op2TmpRegister.getType(), calcType);
+      castPrimitive(op2Register, op2CastRegister, op2Register.getType(), calcType);
     } else if (List.of("SHL", "SHR", "USHR").contains(operation)
-        && !DexUtil.isTypeSmallerOrEqual(op2TmpRegister.getType(), PrimitiveType.getInt())) {
+        && !DexUtil.isTypeSmallerOrEqual(op2Register.getType(), PrimitiveType.getInt())) {
       op2CastRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
-      castPrimitive(
-          op2TmpRegister, op2CastRegister, op2TmpRegister.getType(), PrimitiveType.getInt());
+      castPrimitive(op2Register, op2CastRegister, op2Register.getType(), PrimitiveType.getInt());
     } else {
-      op2CastRegister = op2TmpRegister;
+      op2CastRegister = op2Register;
     }
 
     Opcode opcode;
@@ -398,7 +388,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
       if (op1CastRegister.getType() == PrimitiveType.getLong()) {
         opcode = Opcode.CMP_LONG;
       } else {
-        log.info("{}", op1Register.getNumber());
         throw new IllegalArgumentException(
             "Operands in CmpExpr are not long: "
                 + op1CastRegister.getType()
@@ -452,11 +441,10 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
     while (dexStmtVisitor.getView().getClass(current).isPresent()) {
       SootClass sc = dexStmtVisitor.getView().getClass(current).get();
-      current = sc.getSuperclass().get();
-
       if (sc.getSuperclass().isEmpty()) {
         return false;
       }
+      current = sc.getSuperclass().get();
 
       if ((current == targetClassType)) {
         return true;
@@ -622,6 +610,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
           .map(
               r -> {
                 Register reg = registerAllocator.getRegisterForType(r.getType());
+                log.info("Move instruction invoke");
                 generateMoveInstruction(reg, r, r.getType());
                 return reg;
               })
@@ -647,7 +636,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
   }
 
   private void buildMoveResult(Type methodReturnType) {
-    log.info("Method return type: {}", methodReturnType);
     fixObjectType(methodReturnType);
     if (targetRegister != null) {
       Opcode opcode;
@@ -664,19 +652,52 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
   @Override
   public void caseCastExpr(@NonNull JCastExpr expr) {
+
+    if (currentStmt != null) {
+      log.info("Cast expr: {}", currentStmt.toString());
+    }
+
     Immediate op = expr.getOp();
     Type type = expr.getType();
     Register register = registerAllocator.getRegisterForImmediate(op, false);
-    log.info("Source register {}{}", register.getNumber(), register.getType());
-    log.info("Expression {}{}", expr.getOp(), expr.getType());
 
-    if (register == targetRegister) {
-      targetRegister = registerAllocator.getRegisterForValueWithNewType(op, type, false);
+    log.info("Target register type guesssed: {}", targetRegister.isTypeGuessed());
+    log.info("Target register type: {}", targetRegister.getType());
+
+    if (register == targetRegister && register.getType() == type) {
+      return;
+    }
+
+    if (register == targetRegister
+        || targetRegister.isTypeGuessed() && targetRegister.getType() != type) {
+      targetRegister =
+          registerAllocator.getRegisterForValueWithNewType(
+              currentStmt.asJAssignStmt().getLeftOp(), type, false);
+      targetRegister.setIsTypeGuessed(true);
+      log.info(
+          "New target register for cast expression with type {} and number {}",
+          type,
+          targetRegister.getNumber());
     }
 
     fixObjectType(type);
 
-    if (register.getType().equals(type) || type.toString().equals("java.lang.Object")) {
+    if (type.toString().equals("java.lang.Object")) {
+      log.info("Move instruction because of unnecesary cast");
+      generateMoveInstruction(targetRegister, register, register.getType());
+      return;
+    }
+
+    log.info("Cast expr");
+    log.info("Source register type: {} number: {}", register.getType(), register.getNumber());
+    log.info(
+        "Target register type: {}, number: {}",
+        targetRegister.getType(),
+        targetRegister.getNumber());
+    log.info("Cast type: {}", targetRegister.getType());
+
+    if (register.getType().equals(type)) {
+      log.info("Move instruction cast java.lang.Object");
       generateMoveInstruction(targetRegister, register, register.getType());
     } else if (register.getType() instanceof PrimitiveType && type instanceof PrimitiveType) {
       castPrimitive(register, targetRegister, register.getType(), type);
@@ -694,9 +715,12 @@ public class DexExprVisitor extends AbstractExprVisitor {
           new Instruction21c(Opcode.CHECK_CAST, targetRegister, castTypeReference), currentStmt);
     } else {
       Register tmpRegister = registerAllocator.getRegisterForType(sourceRegister.getType());
-      generateMoveInstruction(tmpRegister, sourceRegister, castType);
+      log.info("Move instruction cast object");
+      generateMoveInstruction(tmpRegister, sourceRegister, sourceRegister.getType());
       dexStmtVisitor.addInstruction(
           new Instruction21c(Opcode.CHECK_CAST, tmpRegister, castTypeReference), currentStmt);
+      log.info("Check cast on tmp register type  {}", tmpRegister.getType());
+      log.info("Move instruction cast object");
       generateMoveInstruction(targetRegister, tmpRegister, castType);
     }
   }
@@ -732,6 +756,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
     if (sourceTypeP == castTypeP) {
       if (targetR.getNumber() != sourceRegister.getNumber()) {
+        log.info("Move instruction cast primitive");
         generateMoveInstruction(targetR, sourceRegister, sourceTypeP);
       } else {
         dexStmtVisitor.addInstruction(new Instruction10x(Opcode.NOP), currentStmt);
@@ -889,13 +914,16 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
   protected void generateMoveInstruction(
       Register targetR, Register sourceRegister, Type valueType) {
+    log.info("Move stmt: {}", currentStmt.toString());
 
-    if (sourceRegister.getType() != targetR.getType() && targetR.isTypeGuessed()) {
+    if (sourceRegister.getType() != targetR.getType() || targetR.isTypeGuessed()) {
       log.info(
-          "Change type of target register from {} to {}",
+          "Change type of target register from {} to {} with guessed {}",
           targetR.getType(),
-          sourceRegister.getType());
+          sourceRegister.getType(),
+          sourceRegister.isTypeGuessed());
       targetR.setType(sourceRegister.getType());
+      targetR.setIsTypeGuessed(true);
     }
 
     log.info("Target register {} with type {}", targetR.getNumber(), targetR.getType());
@@ -965,23 +993,18 @@ public class DexExprVisitor extends AbstractExprVisitor {
   }
 
   private void fixObjectType(Type defaultType) {
-    log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
     if (targetRegister.getType().toString().equals("java.lang.Object")
         || targetRegister.isTypeGuessed()) {
+      log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
 
-      if (targetRegister.getType() != defaultType
-          && (targetRegister.getType().toString().equals("java.lang.Object")
-              || DexUtil.isWide(targetRegister.getType()) != DexUtil.isWide(defaultType))) {
-        if (currentStmt.isJAssignStmt()) {
-          targetRegister =
-              registerAllocator.getRegisterForValueWithNewType(
-                  currentStmt.asJAssignStmt().getLeftOp(), defaultType, false);
-        } else {
-          targetRegister.setType(defaultType);
-        }
+      if (targetRegister.getType() != defaultType && currentStmt.isJAssignStmt()) {
+        targetRegister =
+            registerAllocator.getRegisterForValueWithNewType(
+                currentStmt.asJAssignStmt().getLeftOp(), defaultType, false);
       } else {
         targetRegister.setType(defaultType);
       }
+      log.info("Set target register {} guessed true", targetRegister.getNumber());
       targetRegister.setIsTypeGuessed(true);
     }
   }

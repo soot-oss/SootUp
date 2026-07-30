@@ -4,13 +4,18 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
-import sootup.core.jimple.common.constant.Constant;
+import sootup.core.jimple.common.constant.*;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 
 public class RegisterAllocator {
+
+  private static final Logger log = LoggerFactory.getLogger(RegisterAllocator.class);
 
   private int nextRegisterNumber = 0;
   private final DexConstantVisitor dexConstantVisitor;
@@ -35,10 +40,18 @@ public class RegisterAllocator {
 
   private Register getRegisterForLocal(Local local, boolean isParameter) {
     if (registerMap.containsKey(local)) {
+      log.info(
+          "Local {} present in registerMap {}",
+          local.getName(),
+          registerMap.get(local).getNumber());
       return registerMap.get(local);
     } else {
       Register register = allocateNewRegister(local.getType(), isParameter, false);
       registerMap.put(local, register);
+      log.info(
+          "Local {} not present in registerMap. Allocate new register {}",
+          local.getName(),
+          register.getNumber());
       return register;
     }
   }
@@ -46,12 +59,36 @@ public class RegisterAllocator {
   public Register getRegisterForValueWithNewType(Value value, Type type, boolean isParameter) {
     Register register = allocateNewRegister(type, isParameter, false);
     registerMap.put(value, register);
+    log.info("Put {} {} into register map", value, register.getNumber());
     return register;
   }
 
   public Register getRegisterForConstant(Constant constant) {
+    Type type;
+    boolean guessed;
+    if (constant.getType().toString().equals("java.lang.Object")) {
+      guessed = true;
+      if (constant instanceof IntConstant) {
+        type = PrimitiveType.getInt();
+      } else if (constant instanceof FloatConstant) {
+        type = PrimitiveType.getFloat();
+      } else if (constant instanceof DoubleConstant) {
+        type = PrimitiveType.getDouble();
+      } else if (constant instanceof LongConstant) {
+        type = PrimitiveType.getLong();
+      } else if (constant instanceof BooleanConstant) {
+        type = PrimitiveType.getBoolean();
+      } else {
+        type = constant.getType();
+      }
+    } else {
+      type = constant.getType();
+      guessed = false;
+    }
+
     try {
-      Register register = allocateNewRegister(constant.getType(), false, false);
+      Register register = allocateNewRegister(type, false, false);
+      register.setIsTypeGuessed(guessed);
       dexConstantVisitor.setTargetRegister(register);
       constant.accept(dexConstantVisitor);
       return register;

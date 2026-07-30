@@ -87,12 +87,11 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
       Register targetRegister = registerAllocator.getRegisterForImmediate(leftOpLocal, false);
 
       if (rightOp instanceof Constant constant) {
+        log.info("New constant");
         if (targetRegister.getType().toString().equals("java.lang.Object")
             || targetRegister.isTypeGuessed()) {
           if (targetRegister.getType() != constant.getType()
-              && (targetRegister.getType().toString().equals("java.lang.Object")
-                  || DexUtil.isWide(targetRegister.getType())
-                      != DexUtil.isWide(constant.getType()))) {
+              && !targetRegister.getType().toString().equals("java.lang.Object")) {
             targetRegister =
                 registerAllocator.getRegisterForValueWithNewType(
                     leftOpLocal, constant.getType(), false);
@@ -121,6 +120,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
         if (leftOpLocal != sourceLocal) {
           Register sourceRegister = registerAllocator.getRegisterForImmediate(sourceLocal, false);
           dexExprVisitor.setCurrentStmt(stmt);
+          log.info("regular move instruction");
           dexExprVisitor.generateMoveInstruction(
               targetRegister, sourceRegister, sourceLocal.getType());
         }

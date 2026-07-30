@@ -17,6 +17,10 @@ public class Instruction21c extends OneRegisterInstruction {
     logSmali();
   }
 
+  public Reference getReference() {
+    return reference;
+  }
+
   @Override
   public BuilderInstruction getBuilderInstruction() {
     logSmali();

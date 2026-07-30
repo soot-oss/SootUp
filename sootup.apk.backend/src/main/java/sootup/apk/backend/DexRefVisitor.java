@@ -62,7 +62,10 @@ public class DexRefVisitor extends AbstractRefVisitor {
             fieldSignature.getName(),
             dexType);
     Opcode opcode = getRefOpcode("S", operation, dexType);
-    fixObjectType(ref.getType());
+    log.info(operation);
+    if (operation.startsWith("GET")) {
+      fixObjectType(ref.getType());
+    }
     dexStmtVisitor.addInstruction(
         new Instruction21c(opcode, targetRegister, fieldReference), currentStmt);
   }
@@ -79,7 +82,10 @@ public class DexRefVisitor extends AbstractRefVisitor {
     Local instance = ref.getBase();
     Register instanceRegister = registerAllocator.getRegisterForImmediate(instance, false);
     Opcode opcode = getRefOpcode("I", operation, dexType);
-    fixObjectType(ref.getType());
+    log.info(operation);
+    if (operation.startsWith("GET")) {
+      fixObjectType(ref.getType());
+    }
     dexStmtVisitor.addInstruction(
         new Instruction22c(opcode, targetRegister, instanceRegister, fieldReference), currentStmt);
   }
@@ -92,7 +98,9 @@ public class DexRefVisitor extends AbstractRefVisitor {
     Register indexRegister = registerAllocator.getRegisterForImmediate(index, false);
 
     ArrayType arrayType = (ArrayType) array.getType();
-    fixObjectType(arrayType);
+    if (operation.startsWith("GET")) {
+      fixObjectType(arrayType);
+    }
     String dexType =
         arrayType.getDimension() > 1
             ? DexUtil.toDexType(ArrayType.createArrayType(arrayType.getBaseType(), 1))
@@ -139,19 +147,18 @@ public class DexRefVisitor extends AbstractRefVisitor {
   }
 
   private void fixObjectType(Type defaultType) {
+
+    log.info("Target register type: {}", targetRegister.getType());
+    log.info("Target register guessed: {}", targetRegister.isTypeGuessed());
+    log.info("Is assign: {}", currentStmt.isJAssignStmt());
+    log.info("New type: {}", defaultType);
     if (targetRegister.getType().toString().equals("java.lang.Object")
         || targetRegister.isTypeGuessed()) {
 
-      if (targetRegister.getType() != defaultType
-          && (targetRegister.getType().toString().equals("java.lang.Object")
-              || DexUtil.isWide(targetRegister.getType()) != DexUtil.isWide(defaultType))) {
-        if (currentStmt.isJAssignStmt()) {
-          targetRegister =
-              registerAllocator.getRegisterForValueWithNewType(
-                  currentStmt.asJAssignStmt().getLeftOp(), defaultType, false);
-        } else {
-          targetRegister.setType(defaultType);
-        }
+      if (targetRegister.getType() != defaultType && currentStmt.isJAssignStmt()) {
+        targetRegister =
+            registerAllocator.getRegisterForValueWithNewType(
+                currentStmt.asJAssignStmt().getLeftOp(), defaultType, false);
       } else {
         targetRegister.setType(defaultType);
       }

@@ -65,7 +65,7 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
 
   @Override
   public void caseIntConstant(@NonNull IntConstant constant) {
-    fixObjectType(PrimitiveType.getFloat());
+    fixObjectType(PrimitiveType.getInt());
     int value = constant.getValue();
     if (DexUtil.inSigned4Bit(value)) {
       dexMethodBuilder.addInstruction(
@@ -130,7 +130,6 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
     fixObjectType(JavaIdentifierFactory.getInstance().getClassType(constant.getValue()));
     TypeReference referencedClass =
         new ImmutableTypeReference(DexUtil.toDexClassName(constant.getValue()));
-    log.info("CREATE CLASS {}", constant.getValue());
     dexMethodBuilder.addInstruction(
         new Instruction21c(Opcode.CONST_CLASS, targetRegister, referencedClass), currentStmt);
   }
@@ -191,9 +190,9 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
   }
 
   private void fixObjectType(Type defaultType) {
-    log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
     if (targetRegister.getType().toString().equals("java.lang.Object")
         || targetRegister.isTypeGuessed()) {
+      log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
       targetRegister.setType(defaultType);
       targetRegister.setIsTypeGuessed(true);
     }

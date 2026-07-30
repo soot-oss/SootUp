@@ -103,7 +103,7 @@ public class DexOutputLocation {
             "APK successfully created. The .apk still needs to be aligned with zipalign and signed with jarsigner");
       }
     } catch (IOException e) {
-      throw new RuntimeException("An exception occurred during creation of apk file");
+      throw new RuntimeException("An exception occurred during creation of .apk file");
     }
   }
 
