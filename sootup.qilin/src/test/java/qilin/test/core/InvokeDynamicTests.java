@@ -34,6 +34,7 @@ import qilin.core.config.PointerAnalysisConfig;
 import qilin.test.util.AssertionsParser;
 import qilin.test.util.IAssertion;
 import qilin.util.PTAUtils;
+import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
@@ -72,7 +73,8 @@ public class InvokeDynamicTests {
     PointerAnalysisConfig config =
         PointerAnalysisConfig.builder().contextSensitivity(contextSensitivity).build();
     View view = PTAUtils.createView(appPath, null, jre8Path);
-    PTA pta = PointerAnalysisFactory.create(view, mainClass, config);
+    ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
+    PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
     pta.pureRun();
     return pta;
   }

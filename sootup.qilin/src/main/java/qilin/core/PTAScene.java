@@ -41,7 +41,7 @@ import sootup.core.views.View;
 
 public class PTAScene {
   private final View view;
-  private final String mainClassSig;
+  private final ClassType mainClass;
   private final PointerAnalysisConfig config;
   private OnFlyCallGraph callgraph;
   private final FakeMainFactory fakeMainFactory;
@@ -57,17 +57,17 @@ public class PTAScene {
   public final Set<SootMethod> arraycopyBuilt;
   public final Set<SootMethod> dynamicInvokeBuilt;
 
-  public PTAScene(View view, String mainClassSig, PointerAnalysisConfig config) {
+  public PTAScene(View view, ClassType mainClass, PointerAnalysisConfig config) {
     this.nativeBuilt = ConcurrentHashMap.newKeySet();
     this.reflectionBuilt = ConcurrentHashMap.newKeySet();
     this.arraycopyBuilt = ConcurrentHashMap.newKeySet();
     this.dynamicInvokeBuilt = ConcurrentHashMap.newKeySet();
     this.view = view;
-    this.mainClassSig = mainClassSig;
+    this.mainClass = mainClass;
     this.config = config;
-    SootClass mainClass = getSootClass(mainClassSig);
+    SootClass mainSootClass = view.getClass(mainClass).get();
     // setup fakemain
-    this.fakeMainFactory = new FakeMainFactory(view, mainClass, config);
+    this.fakeMainFactory = new FakeMainFactory(view, mainSootClass, config);
     this.callDetails = new CallDetails();
   }
 
@@ -75,8 +75,8 @@ public class PTAScene {
     return config;
   }
 
-  public String getMainClassSignature() {
-    return mainClassSig;
+  public ClassType getMainClass() {
+    return mainClass;
   }
 
   public FakeMainFactory getFakeMainFactory() {

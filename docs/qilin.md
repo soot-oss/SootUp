@@ -27,7 +27,7 @@ since nothing is cached on `View` or held in JVM-global state:
 === "Java"
 
     ```Java
-    String entrypoint = "dacapo.antlr.Main";
+    ClassType entrypoint = view.getIdentifierFactory().getClassType("dacapo.antlr.Main");
     PointerAnalysisConfig config = PointerAnalysisConfig.builder()
         .contextSensitivity(ContextSensitivity.objectSensitive(2, 1)) // 2-object-sensitive, 1-level heap ctx
         .build();
@@ -125,7 +125,7 @@ context-sensitivity variants, through the same `PointerAnalysisFactory`:
 === "SootUp"
 
     ```java
-    String MAINCLASS = "dacapo.antlr.Main"; // just an example
+    ClassType MAINCLASS = view.getIdentifierFactory().getClassType("dacapo.antlr.Main"); // just an example
     PointerAnalysisConfig config = PointerAnalysisConfig.builder()
         .contextSensitivity(ContextSensitivity.zipperObjectSensitive(2, 1)) // ZIPPER-guided 2OBJ, e.g.
         .build();

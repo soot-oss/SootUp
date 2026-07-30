@@ -30,6 +30,7 @@ import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
 import qilin.pta.tools.DebloatedPTA;
 import qilin.util.PTAUtils;
+import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 public abstract class QilinFrameworkTests {
@@ -118,7 +119,8 @@ public abstract class QilinFrameworkTests {
 
   private PTA run(String mainClass, PointerAnalysisConfig config) {
     View view = PTAUtils.createView(appPath, null, jrePath);
-    PTA pta = PointerAnalysisFactory.create(view, mainClass, config);
+    ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
+    PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
     // NOT pta.pureRun(): for staged toolkit variants (Zipper, DebloatedPTA/Moon, Bean, ...)
     // pureRun() only calls getPropagator().propagate() and skips StagedPTA's
     // preAnalysis()/mainAnalysis() entirely. run() is the correct top-level entry point for

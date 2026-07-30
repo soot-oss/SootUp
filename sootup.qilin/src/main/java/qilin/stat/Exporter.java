@@ -75,7 +75,7 @@ public class Exporter {
     finalPath =
         finalPath
             + File.separator
-            + pta.getScene().getMainClassSignature()
+            + pta.getScene().getMainClass()
             + File.separator
             + pta.getConfig().getAnalysisName()
             + File.separator;

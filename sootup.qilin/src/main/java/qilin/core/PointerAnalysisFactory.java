@@ -19,6 +19,7 @@
 package qilin.core;
 
 import qilin.core.config.PointerAnalysisConfig;
+import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
@@ -36,8 +37,8 @@ public final class PointerAnalysisFactory {
 
   private PointerAnalysisFactory() {}
 
-  public static PTA create(View view, String mainClassSig, PointerAnalysisConfig config) {
-    PTAScene scene = new PTAScene(view, mainClassSig, config);
+  public static PTA create(View view, ClassType mainClass, PointerAnalysisConfig config) {
+    PTAScene scene = new PTAScene(view, mainClass, config);
     return config.getContextSensitivity().createPTA(scene, config);
   }
 }
