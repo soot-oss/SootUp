@@ -15,6 +15,8 @@ import org.jf.dexlib2.immutable.ImmutableMethodParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.apk.backend.instructions.*;
+import sootup.core.graph.BasicBlock;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
@@ -98,19 +100,44 @@ public class DexMethodBuilder {
         return null;
       }
 
-      List<Stmt> stmts = sootMethod.getBody().getStmts();
-
-      if (sootMethod.getName().equals("<init>")) {
-        fixInitMethod(stmts);
-      }
+      ControlFlowGraph<?> controlFlowGraph = sootMethod.getBody().getControlFlowGraph();
+      Collection<? extends BasicBlock<?>> blocks = controlFlowGraph.getBlocks();
+      log.info("BLOCKS: {}", blocks.size());
 
       DexConstantVisitor dexConstantVisitor = new DexConstantVisitor(this);
       registerAllocator = new RegisterAllocator(dexConstantVisitor);
       DexStmtVisitor dexStmtVisitor =
           new DexStmtVisitor(view, registerAllocator, dexConstantVisitor, this, sootMethod);
 
-      for (Stmt stmt : stmts) {
-        stmt.accept(dexStmtVisitor);
+      Queue<BasicBlock<?>> worklist = new ArrayDeque<>(controlFlowGraph.getBlocks());
+      Map<BasicBlock<?>, HashMap<Local, Register>> blockRegisterMap = new HashMap<>();
+
+      while (!worklist.isEmpty()) {
+        BasicBlock<?> block = worklist.poll();
+
+        Set<BasicBlock<?>> previousBlocks =
+            controlFlowGraph.predecessors(block.getHead()).stream()
+                .map(controlFlowGraph::getBlockOf)
+                .collect(Collectors.toSet());
+
+        if (previousBlocks.isEmpty()) {
+          registerAllocator.setRegisterMap(new HashMap<>());
+        } else {
+          Set<HashMap<Local, Register>> registerMaps =
+              previousBlocks.stream().map(blockRegisterMap::get).collect(Collectors.toSet());
+          HashMap<Local, Register> merged = mergeIncomingRegisterMaps(registerMaps);
+          registerAllocator.setRegisterMap(merged);
+        }
+
+        List<Stmt> stmts = block.getStmts();
+        if (sootMethod.getName().equals("<init>")) {
+          stmts = fixInitMethod(stmts);
+        }
+        for (Stmt stmt : stmts) {
+          stmt.accept(dexStmtVisitor);
+        }
+        blockRegisterMap.put(block, registerAllocator.getRegisterMap());
+        registerAllocator.resetRegisterMap();
       }
 
       int parameterSizeCount = DexUtil.getRegisterSizeCount(sootMethod.getParameterTypes());
@@ -138,8 +165,58 @@ public class DexMethodBuilder {
     }
   }
 
+  // merge register maps at branching points
+  private HashMap<Local, Register> mergeIncomingRegisterMaps(
+      Set<HashMap<Local, Register>> incomingRegisterMaps) {
+
+    HashMap<Local, Register> result = new HashMap<>();
+    Set<Local> locals = new HashSet<>();
+
+    for (Map<Local, Register> map : incomingRegisterMaps) {
+      locals.addAll(map.keySet());
+    }
+
+    for (Local local : locals) {
+
+      List<Register> regs =
+          incomingRegisterMaps.stream().map(m -> m.get(local)).filter(Objects::nonNull).toList();
+
+      Register first = regs.get(0);
+
+      // if a local has the same register in all registerMaps, there is nothing to do
+      if (regs.stream().allMatch(r -> r.equals(first))) {
+        result.put(local, first);
+        continue;
+      }
+
+      // a local has different types in different registerMap
+      if (!regs.stream().allMatch(r -> r.getType().equals(first.getType()))) {
+        throw new RuntimeException("Cannot merge " + local);
+      }
+
+      // a local has different registers but same type --> move previous registers to a new register
+      Register merged = registerAllocator.getRegisterForImmediate(local, false);
+      for (Map<Local, Register> localRegisterMap : incomingRegisterMaps) {
+        Register old = localRegisterMap.get(local);
+        if (!merged.equals(old)) {
+          AbstractInstruction move =
+              generateMoveInstruction(
+                  merged,
+                  old,
+                  old
+                      .getType()); // TODO does this instruction need to be inserted at the end of
+                                   // the corresponding previous block?
+        }
+      }
+      result.put(local, merged);
+    }
+
+    return result;
+  }
+
   // Remove all instructions that reference to p0 (this) until it is initialized
-  private void fixInitMethod(List<Stmt> stmts) {
+  private List<Stmt> fixInitMethod(List<Stmt> stmts) {
+    stmts = new ArrayList<>(stmts);
     int targetIndex = -1;
     for (int i = 0; i < stmts.size(); i++) {
       Stmt stmt = stmts.get(i);
@@ -191,6 +268,7 @@ public class DexMethodBuilder {
         }
       }
     }
+    return stmts;
   }
 
   public List<BuilderInstruction> addBuilderInstructions(
@@ -216,7 +294,6 @@ public class DexMethodBuilder {
     for (Register r : allRegisters) {
       r.setNumber(registerIndex);
       registerIndex += r.getSize();
-      log.info("Register {} with size {}", r.getNumber(), r.getSize());
     }
 
     List<BuilderInstruction> builderInstructions = new ArrayList<>();

@@ -20,7 +20,7 @@ public class RegisterAllocator {
   private int nextRegisterNumber = 0;
   private final DexConstantVisitor dexConstantVisitor;
 
-  private final HashMap<Value, Register> registerMap = new LinkedHashMap<>();
+  private HashMap<Local, Register> registerMap = new LinkedHashMap<>();
   private final List<Register> registerList = new LinkedList<>();
 
   public RegisterAllocator(DexConstantVisitor dexConstantVisitor) {
@@ -58,7 +58,9 @@ public class RegisterAllocator {
 
   public Register getRegisterForValueWithNewType(Value value, Type type, boolean isParameter) {
     Register register = allocateNewRegister(type, isParameter, false);
-    registerMap.put(value, register);
+    if (value instanceof Local local) {
+      registerMap.put(local, register);
+    }
     log.info("Put {} {} into register map", value, register.getNumber());
     return register;
   }
@@ -120,5 +122,17 @@ public class RegisterAllocator {
 
   protected List<Register> getRegisters() {
     return registerList;
+  }
+
+  protected HashMap<Local, Register> getRegisterMap() {
+    return registerMap;
+  }
+
+  protected void resetRegisterMap() {
+    registerMap = new HashMap<>();
+  }
+
+  protected void setRegisterMap(HashMap<Local, Register> registerMap) {
+    this.registerMap = registerMap;
   }
 }

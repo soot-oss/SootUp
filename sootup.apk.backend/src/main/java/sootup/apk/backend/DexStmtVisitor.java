@@ -166,9 +166,6 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   public void caseGotoStmt(@NonNull JGotoStmt stmt) {
     dexMethodBuilder.addInstruction(
         new Instruction10t(Opcode.GOTO, stmt.getTargetStmts(sootMethod.getBody()).get(0)), stmt);
-    // goto
-    // goto/16
-    // goto/32
   }
 
   @Override
