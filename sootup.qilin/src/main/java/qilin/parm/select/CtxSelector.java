@@ -41,11 +41,11 @@ public abstract class CtxSelector {
       return CtxConstructor.emptyContext;
     }
     ContextElements ctx = (ContextElements) context;
-    ContextElement[] fullContexts = ctx.getElements();
     if (length >= ctx.size()) {
       return context;
     }
     ContextElement[] newContexts = new ContextElement[length];
+    ContextElement[] fullContexts = ctx.getElements();
     System.arraycopy(fullContexts, 0, newContexts, 0, length);
     return new ContextElements(newContexts, length);
   }
