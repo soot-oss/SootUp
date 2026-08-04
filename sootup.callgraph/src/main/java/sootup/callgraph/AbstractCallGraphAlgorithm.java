@@ -34,8 +34,10 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
-import sootup.callgraph.scope.CallGraphScope;
-import sootup.callgraph.scope.DefaultCallGraphScope;
+import sootup.callgraph.scope.CallResolver;
+import sootup.callgraph.scope.DefaultCallResolver;
+import sootup.callgraph.scope.ExplorationVerdict;
+import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
@@ -76,23 +78,49 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /** The class type for java.lang.Thread, used for thread start call edge handling. */
   @NonNull protected final ClassType threadType;
 
-  /** Controls which classes/methods are excluded from call graph expansion. */
-  @NonNull private final CallGraphScope scope;
+  /** Controls which statements' calls are resolved and expanded at all (pre-dispatch). */
+  @NonNull private final CallResolver callResolver;
+
+  /** Controls which resolved dynamic-dispatch candidates are admitted/expanded (post-dispatch). */
+  @NonNull private final VirtualCallResolver virtualCallResolver;
 
   /** Creates a new call graph algorithm using the given view. */
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
-    this(view, new DefaultCallGraphScope(view));
+    this(view, new DefaultCallResolver(view), VirtualCallResolver.all());
   }
 
   /**
-   * Creates a new call graph algorithm using the given view and a custom {@link CallGraphScope} to
-   * control which classes/methods are excluded from call graph expansion.
+   * Creates a new call graph algorithm using the given view and a custom {@link CallResolver} to
+   * control which statements' calls are excluded from call graph expansion.
    */
-  protected AbstractCallGraphAlgorithm(@NonNull View view, @NonNull CallGraphScope scope) {
+  protected AbstractCallGraphAlgorithm(@NonNull View view, @NonNull CallResolver callResolver) {
+    this(view, callResolver, VirtualCallResolver.all());
+  }
+
+  /**
+   * Creates a new call graph algorithm using the given view and a custom {@link
+   * VirtualCallResolver} to control which resolved dynamic-dispatch candidates are admitted and
+   * expanded.
+   */
+  protected AbstractCallGraphAlgorithm(
+      @NonNull View view, @NonNull VirtualCallResolver virtualCallResolver) {
+    this(view, new DefaultCallResolver(view), virtualCallResolver);
+  }
+
+  /**
+   * Creates a new call graph algorithm using the given view and custom {@link CallResolver} and
+   * {@link VirtualCallResolver} to control which classes/methods are excluded from call graph
+   * expansion.
+   */
+  protected AbstractCallGraphAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
     this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
-    this.scope = scope;
+    this.callResolver = callResolver;
+    this.virtualCallResolver = virtualCallResolver;
   }
 
   /**
@@ -121,11 +149,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /**
    * Bundles the mutable work-list state threaded through call graph construction: methods still to
    * process, methods already processed, and methods that have been added to the graph only as the
-   * target of {@link CallGraphScope.ExplorationVerdict#STOP_AFTER_CALL} edges so far (discovered,
-   * but not yet queued for expansion). A method is promoted from {@code notYetExpanded} into {@code
-   * workList} the moment any edge admits it with {@link
-   * CallGraphScope.ExplorationVerdict#EXPLORE_METHOD}, so expansion is the logical OR across all
-   * incoming edges seen so far, not "whichever edge discovers it first."
+   * target of {@link ExplorationVerdict#STOP_AFTER_CALL} edges so far (discovered, but not yet
+   * queued for expansion). A method is promoted from {@code notYetExpanded} into {@code workList}
+   * the moment any edge admits it with {@link ExplorationVerdict#EXPLORE_METHOD}, so expansion is
+   * the logical OR across all incoming edges seen so far, not "whichever edge discovers it first."
    */
   private static final class Frontier {
     @NonNull private final Deque<MethodSignature> workList;
@@ -140,13 +167,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * Only {@link CallGraphScope.ExplorationVerdict#EXPLORE_METHOD} causes a statement's call(s) to
-   * be resolved; {@link CallGraphScope.ExplorationVerdict#STOP_AFTER_CALL} and {@link
-   * CallGraphScope.ExplorationVerdict#STOP} are equivalent at the pre-dispatch checkpoint, since no
-   * specific callee is known yet.
+   * Only {@link ExplorationVerdict#EXPLORE_METHOD} causes a statement's call(s) to be resolved;
+   * {@link ExplorationVerdict#STOP_AFTER_CALL} and {@link ExplorationVerdict#STOP} are equivalent
+   * at the pre-dispatch checkpoint, since no specific callee is known yet.
    */
-  private static boolean explores(CallGraphScope.ExplorationVerdict verdict) {
-    return verdict == CallGraphScope.ExplorationVerdict.EXPLORE_METHOD;
+  private static boolean explores(ExplorationVerdict verdict) {
+    return verdict == ExplorationVerdict.EXPLORE_METHOD;
   }
 
   /**
@@ -193,8 +219,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * workList</code> and processed as well. <code>cg</code> is updated accordingly. The method
    * postProcessingMethod is called after a method is processed in the <code>workList</code>.
    *
-   * @param frontier bundles the work list of methods still to process, the set of already
-   *     processed methods, and the set of methods discovered only via non-expanding edges so far.
+   * @param frontier bundles the work list of methods still to process, the set of already processed
+   *     methods, and the set of methods discovered only via non-expanding edges so far.
    * @param cg the call graph object that is filled with the found methods and call edges.
    */
   final void processWorkList(Frontier frontier, MutableCallGraph cg) {
@@ -243,9 +269,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * Adds the defined call to the given call graph, always expanding the target if newly
-   * discovered. If the source or target method was added as vertex to the call graph, they will be
-   * added to the worklist.
+   * Adds the defined call to the given call graph, always expanding the target if newly discovered.
+   * If the source or target method was added as vertex to the call graph, they will be added to the
+   * worklist.
    *
    * @param source the method signature of the caller
    * @param target the method signature of the callee
@@ -264,9 +290,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /**
    * Adds the defined call to the given call graph. If the source method was added as vertex to the
-   * call graph, it will be added to the worklist. The target is added to the worklist for
-   * expansion only if {@code expandTarget} is {@code true}; otherwise it is added to the graph as a
-   * node (and the edge is added) but left unexpanded unless a later call promotes it (see {@link
+   * call graph, it will be added to the worklist. The target is added to the worklist for expansion
+   * only if {@code expandTarget} is {@code true}; otherwise it is added to the graph as a node (and
+   * the edge is added) but left unexpanded unless a later call promotes it (see {@link
    * Frontier#notYetExpanded}).
    *
    * @param source the method signature of the caller
@@ -314,13 +340,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   protected void addCallToCG(
       @NonNull Call call, @NonNull MutableCallGraph cg, @NonNull Frontier frontier) {
     addCallToCG(
-        call.sourceMethodSignature(), call.targetMethodSignature(), call.invokableStmt(), cg,
+        call.sourceMethodSignature(),
+        call.targetMethodSignature(),
+        call.invokableStmt(),
+        cg,
         frontier);
   }
 
   /**
-   * Adds the defined call to the given call graph, always expanding the target if newly
-   * discovered. Overload for call sites that only have access to the raw worklist (e.g. {@code
+   * Adds the defined call to the given call graph, always expanding the target if newly discovered.
+   * Overload for call sites that only have access to the raw worklist (e.g. {@code
    * preProcessingMethod}/{@code postProcessingMethod} overrides, whose signature is fixed by the
    * abstract contract) rather than the internal {@link Frontier}. Calls added this way bypass the
    * {@link Frontier#notYetExpanded} promotion bookkeeping, matching their prior behavior.
@@ -366,19 +395,20 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .map(Stmt::asInvokableStmt)
         .forEach(
             stmt -> {
-              if (!explores(scope.tryAdvance(sourceMethod, stmt))) {
+              if (!explores(callResolver.tryAdvance(sourceMethod, stmt))) {
                 return;
               }
               resolveCall(sourceMethod, stmt)
                   .forEach(
-                      targetMethod -> addResolvedCall(sourceMethod, targetMethod, stmt, cg, frontier));
+                      targetMethod ->
+                          addResolvedCall(sourceMethod, targetMethod, stmt, cg, frontier));
             });
   }
 
   /**
-   * Applies {@link CallGraphScope#advanceCall(SootMethod, MethodSignature, InvokableStmt)} to a
-   * single dynamic-dispatch candidate resolved for the given statement, and adds the resulting edge
-   * to the call graph unless the verdict is {@link CallGraphScope.ExplorationVerdict#STOP}.
+   * Applies {@link VirtualCallResolver#tryAdvanceCall(SootMethod, MethodSignature, InvokableStmt)}
+   * to a single dynamic-dispatch candidate resolved for the given statement, and adds the resulting
+   * edge to the call graph unless the verdict is {@link ExplorationVerdict#STOP}.
    *
    * @param sourceMethod the caller method
    * @param targetMethod the resolved dynamic-dispatch candidate
@@ -392,8 +422,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull InvokableStmt stmt,
       @NonNull MutableCallGraph cg,
       @NonNull Frontier frontier) {
-    CallGraphScope.ExplorationVerdict verdict = scope.advanceCall(sourceMethod, targetMethod, stmt);
-    if (verdict == CallGraphScope.ExplorationVerdict.STOP) {
+    ExplorationVerdict verdict =
+        virtualCallResolver.tryAdvanceCall(sourceMethod, targetMethod, stmt);
+    if (verdict == ExplorationVerdict.STOP) {
       return;
     }
     addCallToCG(
@@ -402,7 +433,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         stmt,
         cg,
         frontier,
-        verdict == CallGraphScope.ExplorationVerdict.EXPLORE_METHOD);
+        verdict == ExplorationVerdict.EXPLORE_METHOD);
   }
 
   /**
@@ -419,7 +450,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
       InvokableStmt invokableStmt = stmt.asInvokableStmt();
-      if (!explores(scope.tryAdvance(sourceMethod, invokableStmt))) {
+      if (!explores(callResolver.tryAdvance(sourceMethod, invokableStmt))) {
         continue;
       }
       AbstractInvokeExpr sourceMethodInvokeExpr = invokableStmt.getInvokeExpr().orElse(null);
@@ -616,7 +647,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       Table<ClassType, BasicBlock<?>, Boolean> clinitCallTable) {
 
     ArrayListMultimap<ClassType, Call> potentialClinitCalls = ArrayListMultimap.create();
-    if (!explores(scope.tryAdvance(sourceMethod, invokableStmt))) {
+    if (!explores(callResolver.tryAdvance(sourceMethod, invokableStmt))) {
       return potentialClinitCalls;
     }
 

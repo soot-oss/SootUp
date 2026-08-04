@@ -28,17 +28,18 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
-/** The default {@link CallGraphScope}: excludes calls originating from library classes. */
-public class DefaultCallGraphScope implements CallGraphScope {
+/** The default {@link CallResolver}: excludes calls originating from library classes. */
+public class DefaultCallResolver implements CallResolver {
 
   @NonNull private final View view;
 
-  public DefaultCallGraphScope(@NonNull View view) {
+  public DefaultCallResolver(@NonNull View view) {
     this.view = view;
   }
 
   @Override
-  public ExplorationVerdict tryAdvance(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+  public ExplorationVerdict tryAdvance(
+      @NonNull SootMethod method, @NonNull InvokableStmt statement) {
     return view.getClass(method.getDeclaringClassType())
         .filter(SootClass::isLibraryClass)
         .map(sc -> ExplorationVerdict.STOP_AFTER_CALL)

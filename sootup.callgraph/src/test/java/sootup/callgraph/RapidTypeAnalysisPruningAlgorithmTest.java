@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
-import sootup.callgraph.mock.PruningCallGraphScope;
+import sootup.callgraph.mock.PruningCallResolver;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -15,19 +15,19 @@ public class RapidTypeAnalysisPruningAlgorithmTest extends CallGraphTest {
 
   @Override
   protected RapidTypeAnalysisAlgorithm createAlgorithm(JavaView view) {
-    return new RapidTypeAnalysisAlgorithm(view, new PruningCallGraphScope(view));
+    return new RapidTypeAnalysisAlgorithm(view, new PruningCallResolver(view));
   }
 
   /**
    * In this test case, the call graph of Pruning from the folder {@link
    * callgraph.Misc.binary.prune} is created using the <code>RapidTypeAnalysisAlgorithm</code> with
-   * a {@link PruningCallGraphScope}. It is expected that <code>methodB()</code> is not included as
-   * a caller in the call graph, because the scope excludes calls originating from <code>methodB
+   * a {@link PruningCallResolver}. It is expected that <code>methodB()</code> is not included as a
+   * caller in the call graph, because the resolver excludes calls originating from <code>methodB
    * </code>.
    */
   @Test
   public void testFalsePruning() {
-    // RTA with a CallGraphScope excluding methodB() and all calls from methodB()
+    // RTA with a CallResolver excluding methodB() and all calls from methodB()
     view = createViewForClassPath("src/test/resources/callgraph/Misc/binary");
     identifierFactory = view.getIdentifierFactory();
     mainClassSignature = identifierFactory.getClassType("prune.Pruning");

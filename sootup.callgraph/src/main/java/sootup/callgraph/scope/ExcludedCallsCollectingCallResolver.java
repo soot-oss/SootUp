@@ -32,22 +32,22 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
 /**
- * A {@link CallGraphScope} that applies the same filtering as {@link DefaultCallGraphScope}
- * (excluding calls originating from library classes), while additionally recording the signature of
- * every method whose calls were excluded, so callers can inspect what was pruned after the call
- * graph has been constructed, e.g. to diagnose why an expected method is missing from the call
- * graph.
+ * A {@link CallResolver} that applies the same filtering as {@link DefaultCallResolver} (excluding
+ * calls originating from library classes), while additionally recording the signature of every
+ * method whose calls were excluded, so callers can inspect what was pruned after the call graph has
+ * been constructed, e.g. to diagnose why an expected method is missing from the call graph.
  */
-public class ExcludedCallsCollectingCallGraphScope extends DefaultCallGraphScope {
+public class ExcludedCallsCollectingCallResolver extends DefaultCallResolver {
 
   private final Set<MethodSignature> visitedExcludedMethods = new HashSet<>();
 
-  public ExcludedCallsCollectingCallGraphScope(@NonNull View view) {
+  public ExcludedCallsCollectingCallResolver(@NonNull View view) {
     super(view);
   }
 
   @Override
-  public ExplorationVerdict tryAdvance(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
+  public ExplorationVerdict tryAdvance(
+      @NonNull SootMethod method, @NonNull InvokableStmt statement) {
     ExplorationVerdict strategy = super.tryAdvance(method, statement);
     if (strategy != ExplorationVerdict.EXPLORE_METHOD) {
       visitedExcludedMethods.add(method.getSignature());
