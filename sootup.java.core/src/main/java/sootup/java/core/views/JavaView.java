@@ -50,20 +50,7 @@ public class JavaView extends AbstractView {
 
   @NonNull protected final List<AnalysisInputLocation> inputLocations;
   @NonNull protected final ClassCache cache;
-
-  /**
-   * Types that none of the {@link AnalysisInputLocation}s could provide a class source for. {@link
-   * #cache} only memoizes successful resolutions, so without this every repeated lookup of an
-   * absent type re-runs {@link #getClassSource(ClassType)}, which probes every input location -
-   * including the JDK jimage filesystem - while holding this view's monitor. Call graph
-   * construction against an incomplete classpath does exactly that: it repeats a handful of failing
-   * lookups thousands of times.
-   *
-   * <p>Entries stay valid because the set of input locations is fixed for the lifetime of the view.
-   * A subclass that makes a class available afterwards has to call {@link
-   * #forgetAbsence(ClassType)} - see {@link MutableJavaView#addClass}.
-   */
-  @NonNull private final Set<ClassType> absentClasses = new HashSet<>();
+  @NonNull protected final LoadingStrategy loadingStrategy;
 
   protected volatile boolean isFullyResolved = false;
 
@@ -78,16 +65,26 @@ public class JavaView extends AbstractView {
   public JavaView(
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull ClassCacheProvider cacheProvider) {
-    this(inputLocations, cacheProvider, JavaIdentifierFactory.getInstance());
+    this(inputLocations, cacheProvider, LoadingStrategy.onDemand());
+  }
+
+  public JavaView(
+      @NonNull List<AnalysisInputLocation> inputLocations,
+      @NonNull ClassCacheProvider cacheProvider,
+      @NonNull LoadingStrategy loadingStrategy) {
+    this(inputLocations, cacheProvider, loadingStrategy, JavaIdentifierFactory.getInstance());
   }
 
   protected JavaView(
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull ClassCacheProvider cacheProvider,
+      @NonNull LoadingStrategy loadingStrategy,
       @NonNull JavaIdentifierFactory idf) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
+    this.loadingStrategy = loadingStrategy;
     this.identifierFactory = idf;
+    loadingStrategy.initialize(this);
   }
 
   /** Resolves all classes that are part of the view and stores them in the cache. */
@@ -121,32 +118,25 @@ public class JavaView extends AbstractView {
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
-    if (absentClasses.contains(type)) {
-      return Optional.empty();
-    }
-
-    Optional<JavaSootClassSource> abstractClass = getClassSource(type);
-    if (abstractClass.isEmpty()) {
-      absentClasses.add(type);
-      return Optional.empty();
-    }
-    return Optional.of(buildClassFrom(abstractClass.get()));
+    return loadingStrategy.resolveOnCacheMiss(this, type);
   }
 
   /**
    * Forgets that {@code type} was previously resolved as absent, so that the next {@link
    * #getClass(ClassType)} queries the input locations again. Subclasses that make a class available
-   * after construction should call this.
+   * after construction should call this. Delegates to the active {@link LoadingStrategy}; a no-op
+   * under the eager strategy, which tracks no absence state to forget - by design, not a bug, since
+   * a class absent after an eager load can never become present.
    *
    * <p>It is not load-bearing for {@link MutableJavaView} as currently written: {@link
-   * #getClass(ClassType)} consults {@link #cache} before {@link #absentClasses}, and {@code
-   * addClass} populates that cache, so a stale absence record is shadowed anyway. It guards the
-   * cases where that no longer holds - if the two checks are ever reordered, or if a mutating view
-   * is given an evicting cache such as {@link sootup.core.cache.LRUCache}, where an added class can
-   * disappear from the cache again and let the stale record surface.
+   * #getClass(ClassType)} consults {@link #cache} before the loading strategy, and {@code addClass}
+   * populates that cache, so a stale absence record is shadowed anyway. It guards the cases where
+   * that no longer holds - if the two checks are ever reordered, or if a mutating view is given an
+   * evicting cache such as {@link sootup.core.cache.LRUCache}, where an added class can disappear
+   * from the cache again and let the stale record surface.
    */
   protected synchronized void forgetAbsence(@NonNull ClassType type) {
-    absentClasses.remove(type);
+    loadingStrategy.makeAvailable(type);
   }
 
   @Override
