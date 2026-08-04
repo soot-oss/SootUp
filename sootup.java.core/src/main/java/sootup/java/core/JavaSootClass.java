@@ -28,6 +28,8 @@ import com.google.common.collect.Iterables;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -63,6 +65,9 @@ public class JavaSootClass implements SootClass, HasAnnotation {
 
   @NonNull private final Supplier<Set<? extends SootField>> _lazyFields;
 
+  @NonNull
+  private final Supplier<Map<MethodSubSignature, JavaSootMethod>> _lazyMethodBySubSignature;
+
   public JavaSootClass(SootClassSource classSource, SourceType sourceType) {
     this.classSource = classSource;
     this.sourceType = sourceType;
@@ -74,6 +79,8 @@ public class JavaSootClass implements SootClass, HasAnnotation {
     this.lazyPosition = Suppliers.memoize(classSource::resolvePosition);
     this._lazyMethods = Suppliers.memoize(this::lazyMethodInitializer);
     this._lazyFields = Suppliers.memoize(this::lazyFieldInitializer);
+    this._lazyMethodBySubSignature =
+        Suppliers.memoize(() -> buildMethodBySubSignatureMap(getMethods()));
   }
 
   public JavaSootClass(
@@ -96,14 +103,23 @@ public class JavaSootClass implements SootClass, HasAnnotation {
     this.lazySuperclass = Suppliers.ofInstance(superclass);
     this.lazyOuterClass = Suppliers.ofInstance(outerClass);
     this.lazyPosition = Suppliers.ofInstance(position);
+    this._lazyMethodBySubSignature = Suppliers.memoize(() -> buildMethodBySubSignatureMap(methods));
+  }
+
+  @NonNull
+  private static Map<MethodSubSignature, JavaSootMethod> buildMethodBySubSignatureMap(
+      @NonNull Set<JavaSootMethod> methods) {
+    Map<MethodSubSignature, JavaSootMethod> map = new HashMap<>(methods.size() * 2);
+    for (JavaSootMethod method : methods) {
+      map.put(method.getSignature().getSubSignature(), method);
+    }
+    return Collections.unmodifiableMap(map);
   }
 
   @Override
   @NonNull
   public Optional<JavaSootMethod> getMethod(@NonNull MethodSubSignature subSignature) {
-    return getMethods().stream()
-        .filter(method -> method.getSignature().getSubSignature().equals(subSignature))
-        .findAny();
+    return Optional.ofNullable(_lazyMethodBySubSignature.get().get(subSignature));
   }
 
   @Override

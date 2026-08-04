@@ -87,9 +87,12 @@ public class MethodSubSignature extends SootClassMemberSubSignature
     return Objects.equal(getParameterTypes(), that.getParameterTypes());
   }
 
+  private final Supplier<Integer> _cachedHashCode =
+      Suppliers.memoize(() -> Objects.hashCode(super.hashCode(), getParameterTypes()));
+
   @Override
   public int hashCode() {
-    return Objects.hashCode(super.hashCode(), getParameterTypes());
+    return _cachedHashCode.get();
   }
 
   @Override

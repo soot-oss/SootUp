@@ -35,6 +35,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
@@ -50,6 +51,7 @@ import sootup.spark.node.Node;
 
 @Getter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Slf4j
 class Solver {
 
   private View view;
@@ -62,21 +64,42 @@ class Solver {
   private IncrementalPointsToAnalysis incrementalAnalysis;
 
   @Builder
-  Solver(View view, List<MethodSignature> entryPoints, SparkOptions sparkOptions) {
+  Solver(
+      View view,
+      List<MethodSignature> entryPoints,
+      SparkOptions sparkOptions,
+      CallGraph callGraph) {
     this.view = view;
     this.entryPoints = entryPoints;
     this.sparkOptions = sparkOptions != null ? sparkOptions : SparkOptions.defaultOptions();
     this.pag = new PAG(this.sparkOptions);
     if (this.sparkOptions.isOnFlyCallGraph()) {
+      if (callGraph != null) {
+        log.warn(
+            "a pre-built call graph was supplied but onFlyCallGraph is enabled; discarding it "
+                + "since OTF mode grows its own call graph incrementally from the entry points");
+      }
+      requireEntryPoints(entryPoints);
       GraphBasedCallGraph cg = new GraphBasedCallGraph(entryPoints);
       for (MethodSignature ep : entryPoints) {
         cg.addMethod(ep);
       }
       this.callGraph = cg;
       this.incrementalAnalysis = new IncrementalPointsToAnalysis(this.pag);
+    } else if (callGraph != null) {
+      this.callGraph = callGraph;
+      this.incrementalAnalysis = null;
     } else {
+      requireEntryPoints(entryPoints);
       this.callGraph = new ClassHierarchyAnalysisAlgorithm(view).initialize(entryPoints);
       this.incrementalAnalysis = null;
+    }
+  }
+
+  private static void requireEntryPoints(List<MethodSignature> entryPoints) {
+    if (entryPoints == null || entryPoints.isEmpty()) {
+      throw new IllegalArgumentException(
+          "entryPoints is required unless a pre-built callGraph is supplied");
     }
   }
 
