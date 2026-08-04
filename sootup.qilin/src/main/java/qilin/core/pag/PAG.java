@@ -644,7 +644,7 @@ public class PAG {
             if (PTAUtils.isPrimitiveArrayType(srcArr.getType())) {
               continue;
             }
-            Type objType = PTAUtils.getClassType("java.lang.Object");
+            Type objType = PTAUtils.OBJECT;
             if (srcArr.getType() == objType) {
               Local localSrc =
                   Jimple.newLocal("intermediate/" + (localCount++), new ArrayType(objType, 1));
@@ -671,7 +671,7 @@ public class PAG {
             LValue dst = JavaJimple.newArrayRef((Local) dstArr, IntConstant.getInstance(0));
             Local local =
                 Jimple.newLocal(
-                    "nativeArrayCopy" + (localCount++), PTAUtils.getClassType("java.lang.Object"));
+                    "nativeArrayCopy" + (localCount++), PTAUtils.OBJECT);
             builder.addLocal(local);
             newUnits
                 .computeIfAbsent(s, k -> new HashSet<>())

@@ -28,7 +28,7 @@ import sootup.core.jimple.common.constant.StringConstant;
  */
 public class StringConstantNode extends ConstantNode {
   public StringConstantNode(StringConstant sc) {
-    super(sc, PTAUtils.getClassType("java.lang.String"), null);
+    super(sc, PTAUtils.STRING, null);
   }
 
   public String toString() {

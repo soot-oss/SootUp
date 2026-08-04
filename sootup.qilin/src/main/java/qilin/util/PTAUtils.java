@@ -68,6 +68,26 @@ public final class PTAUtils {
     return JavaIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
   }
 
+  public static final ClassType OBJECT = getClassType("java.lang.Object");
+  public static final ClassType STRING = getClassType("java.lang.String");
+  public static final ClassType THROWABLE = getClassType("java.lang.Throwable");
+  public static final ClassType THREAD = getClassType("java.lang.Thread");
+  public static final ClassType THREAD_GROUP = getClassType("java.lang.ThreadGroup");
+  public static final ClassType CLASS = getClassType("java.lang.Class");
+  public static final ClassType EXCEPTION = getClassType("java.lang.Exception");
+  public static final ClassType RUNNABLE = getClassType("java.lang.Runnable");
+  public static final ClassType STRING_BUFFER = getClassType("java.lang.StringBuffer");
+  public static final ClassType STRING_BUILDER = getClassType("java.lang.StringBuilder");
+  public static final ClassType PROTECTION_DOMAIN =
+      getClassType("java.security.ProtectionDomain");
+  public static final ClassType PRIVILEGED_ACTION_EXCEPTION =
+      getClassType("java.security.PrivilegedActionException");
+  public static final ClassType APP_CLASS_LOADER =
+      getClassType("sun.misc.Launcher$AppClassLoader");
+  public static final ClassType SYSTEM = getClassType("java.lang.System");
+  public static final ClassType UNIX_FILE_SYSTEM = getClassType("java.io.UnixFileSystem");
+  public static final ClassType COLLECTION = getClassType("java.util.Collection");
+
   // TODO: use isStaticInitializer from the IdentifierFactory
   public static boolean isStaticInitializer(SootMethod method) {
     return method.getName().equals("<clinit>");
@@ -186,7 +206,7 @@ public final class PTAUtils {
 
   public static boolean isThrowable(View view, Type type) {
     if (type instanceof ClassType) {
-      return canStoreType(view, type, PTAUtils.getClassType("java.lang.Throwable"));
+      return canStoreType(view, type, PTAUtils.THROWABLE);
     }
     return false;
   }

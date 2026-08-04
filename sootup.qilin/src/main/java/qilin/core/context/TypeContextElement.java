@@ -36,13 +36,13 @@ public class TypeContextElement implements ContextElement {
 
   public static TypeContextElement getTypeContextElement(AllocNode a) {
     SootMethod declaringMethod = a.getMethod();
-    Type declType = PTAUtils.getClassType("java.lang.Object");
+    Type declType = PTAUtils.OBJECT;
     if (declaringMethod != null) {
       declType = declaringMethod.getDeclaringClassType();
     } else if (a instanceof ClassConstantNode) {
-      declType = PTAUtils.getClassType("java.lang.System");
+      declType = PTAUtils.SYSTEM;
     } else if (a instanceof StringConstantNode) {
-      declType = PTAUtils.getClassType("java.lang.String");
+      declType = PTAUtils.STRING;
     }
     return new TypeContextElement(declType);
   }

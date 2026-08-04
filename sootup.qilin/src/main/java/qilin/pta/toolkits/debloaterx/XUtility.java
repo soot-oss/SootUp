@@ -75,7 +75,7 @@ public class XUtility {
   }
 
   private boolean isImpreciseType(Type type) {
-    if (type == PTAUtils.getClassType("java.lang.Object")) {
+    if (type == PTAUtils.OBJECT) {
       return true;
     }
     if (type instanceof ClassType) {

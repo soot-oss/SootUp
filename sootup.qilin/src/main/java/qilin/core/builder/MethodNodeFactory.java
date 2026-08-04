@@ -307,7 +307,7 @@ public class MethodNodeFactory {
   public VarNode caseThis() {
     Type type =
         method.isStatic()
-            ? PTAUtils.getClassType("java.lang.Object")
+            ? PTAUtils.OBJECT
             : method.getDeclaringClassType();
     VarNode ret = pag.makeLocalVarNode(new Parm(method, PointsToAnalysis.THIS_NODE), type, method);
     ret.setInterProcTarget();
@@ -333,7 +333,7 @@ public class MethodNodeFactory {
     VarNode ret =
         pag.makeLocalVarNode(
             new Parm(method, PointsToAnalysis.THROW_NODE),
-            PTAUtils.getClassType("java.lang.Throwable"),
+            PTAUtils.THROWABLE,
             method);
     ret.setInterProcSource();
     return ret;
@@ -371,22 +371,22 @@ public class MethodNodeFactory {
   private VarNode caseStringConstant(StringConstant sc) {
     AllocNode stringConstantNode = pag.makeStringConstantNode(sc);
     VarNode stringConstantVar =
-        pag.makeGlobalVarNode(sc, PTAUtils.getClassType("java.lang.String"));
+        pag.makeGlobalVarNode(sc, PTAUtils.STRING);
     mpag.addInternalEdge(stringConstantNode, stringConstantVar);
-    VarNode vn = pag.makeLocalVarNode(sc, PTAUtils.getClassType("java.lang.String"), method);
+    VarNode vn = pag.makeLocalVarNode(sc, PTAUtils.STRING, method);
     mpag.addInternalEdge(stringConstantVar, vn);
     return vn;
   }
 
   public LocalVarNode makeInvokeStmtThrowVarNode(Stmt invoke, SootMethod method) {
-    return pag.makeLocalVarNode(invoke, PTAUtils.getClassType("java.lang.Throwable"), method);
+    return pag.makeLocalVarNode(invoke, PTAUtils.THROWABLE, method);
   }
 
   public final VarNode caseClassConstant(ClassConstant cc) {
     AllocNode classConstant = pag.makeClassConstantNode(cc);
-    VarNode classConstantVar = pag.makeGlobalVarNode(cc, PTAUtils.getClassType("java.lang.Class"));
+    VarNode classConstantVar = pag.makeGlobalVarNode(cc, PTAUtils.CLASS);
     mpag.addInternalEdge(classConstant, classConstantVar);
-    VarNode vn = pag.makeLocalVarNode(cc, PTAUtils.getClassType("java.lang.Class"), method);
+    VarNode vn = pag.makeLocalVarNode(cc, PTAUtils.CLASS, method);
     mpag.addInternalEdge(classConstantVar, vn);
     return vn;
   }

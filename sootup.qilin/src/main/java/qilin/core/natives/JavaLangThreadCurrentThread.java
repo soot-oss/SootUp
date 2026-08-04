@@ -35,7 +35,7 @@ public class JavaLangThreadCurrentThread extends NativeMethod {
 
   @Override
   protected void simulateImpl() {
-    Local lv = getNextLocal(PTAUtils.getClassType("java.lang.Thread"));
+    Local lv = getNextLocal(PTAUtils.THREAD);
     addAssign(lv, currentThread);
     addReturn(lv);
   }

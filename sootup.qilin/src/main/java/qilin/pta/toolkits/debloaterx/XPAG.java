@@ -31,7 +31,7 @@ public class XPAG {
     this.pta = pta;
     this.pag = pta.getPag();
     this.utility = utility;
-    this.dummyThis = new LocalVarNode("DUMMYTHIS", PTAUtils.getClassType("java.lang.Object"), null);
+    this.dummyThis = new LocalVarNode("DUMMYTHIS", PTAUtils.OBJECT, null);
     buildGraph(pta.getNakedReachableMethods());
   }
 

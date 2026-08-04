@@ -136,13 +136,13 @@ public class VirtualCalls {
       ChunkedQueue<SootMethod> targets,
       boolean appOnly) {
     if (declaredType instanceof ArrayType) {
-      declaredType = PTAUtils.getClassType("java.lang.Object");
+      declaredType = PTAUtils.OBJECT;
     }
     if (sigType instanceof ArrayType) {
-      sigType = PTAUtils.getClassType("java.lang.Object");
+      sigType = PTAUtils.OBJECT;
     }
     if (t instanceof ArrayType) {
-      t = PTAUtils.getClassType("java.lang.Object");
+      t = PTAUtils.OBJECT;
     }
 
     if (declaredType != null && !PTAUtils.canStoreType(view, t, declaredType)) {

@@ -232,7 +232,7 @@ public abstract class AbstractMVFG {
         pag.findLocalVarNode(
             method,
             new Parm(method, PointsToAnalysis.THROW_NODE),
-            PTAUtils.getClassType("java.lang.Exception"));
+            PTAUtils.EXCEPTION);
     if (mThrow != null) {
       addStoreEdge(mThrow, thisRef);
     }

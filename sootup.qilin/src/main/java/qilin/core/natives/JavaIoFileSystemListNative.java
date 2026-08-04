@@ -33,8 +33,8 @@ public class JavaIoFileSystemListNative extends NativeMethod {
   /** ********************** java.io.FileSystem ********************** */
   /** Returns a String[] only exists in old JDK(e.g., JDK6). */
   protected void simulateImpl() {
-    Immediate arrLocal = getNewArray(PTAUtils.getClassType("java.lang.String"));
-    Value elem = getNew(PTAUtils.getClassType("java.lang.String"));
+    Immediate arrLocal = getNewArray(PTAUtils.STRING);
+    Value elem = getNew(PTAUtils.STRING);
     //        addInvoke(elem, "<java.lang.String: void <init>()>");
     addAssign(getArrayRef(arrLocal), elem);
     addReturn(arrLocal);

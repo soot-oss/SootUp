@@ -158,8 +158,8 @@ public class FakeMainFactory extends ArtificialMethod {
             .getSubSignature()
             .toString()
             .equals("void main(java.lang.String[])")) {
-          Value mockStr = getNew(PTAUtils.getClassType("java.lang.String"));
-          Immediate strArray = getNewArray(PTAUtils.getClassType("java.lang.String"));
+          Value mockStr = getNew(PTAUtils.STRING);
+          Immediate strArray = getNewArray(PTAUtils.STRING);
           addAssign(getArrayRef(strArray), mockStr);
           addInvoke(entry.getSignature().toString(), strArray);
           implicitCallEdgeCount++;
@@ -174,22 +174,22 @@ public class FakeMainFactory extends ArtificialMethod {
     if (config.isSingleEntry()) {
       return;
     }
-    Local sv = getNextLocal(PTAUtils.getClassType("java.lang.String"));
-    Local mainThread = getNew(PTAUtils.getClassType("java.lang.Thread"));
-    Local mainThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
-    Local systemThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
+    Local sv = getNextLocal(PTAUtils.STRING);
+    Local mainThread = getNew(PTAUtils.THREAD);
+    Local mainThreadGroup = getNew(PTAUtils.THREAD_GROUP);
+    Local systemThreadGroup = getNew(PTAUtils.THREAD_GROUP);
 
     JStaticFieldRef gCurrentThread = Jimple.newStaticFieldRef(currentThread.getSignature());
     addAssign(gCurrentThread, mainThread); // Store
-    Local vRunnable = getNextLocal(PTAUtils.getClassType("java.lang.Runnable"));
+    Local vRunnable = getNextLocal(PTAUtils.RUNNABLE);
 
-    Local lThreadGroup = getNextLocal(PTAUtils.getClassType("java.lang.ThreadGroup"));
+    Local lThreadGroup = getNextLocal(PTAUtils.THREAD_GROUP);
     addInvoke(
         mainThread,
         "<java.lang.Thread: void <init>(java.lang.ThreadGroup,java.lang.String)>",
         mainThreadGroup,
         sv);
-    Local tmpThread = getNew(PTAUtils.getClassType("java.lang.Thread"));
+    Local tmpThread = getNew(PTAUtils.THREAD);
     addInvoke(
         tmpThread,
         "<java.lang.Thread: void <init>(java.lang.ThreadGroup,java.lang.Runnable)>",
@@ -204,9 +204,9 @@ public class FakeMainFactory extends ArtificialMethod {
         systemThreadGroup,
         sv);
 
-    Local lThread = getNextLocal(PTAUtils.getClassType("java.lang.Thread"));
-    Local lThrowable = getNextLocal(PTAUtils.getClassType("java.lang.Throwable"));
-    Local tmpThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
+    Local lThread = getNextLocal(PTAUtils.THREAD);
+    Local lThrowable = getNextLocal(PTAUtils.THROWABLE);
+    Local tmpThreadGroup = getNew(PTAUtils.THREAD_GROUP);
     addInvoke(
         tmpThreadGroup,
         "<java.lang.ThreadGroup: void uncaughtException(java.lang.Thread,java.lang.Throwable)>",
@@ -214,10 +214,10 @@ public class FakeMainFactory extends ArtificialMethod {
         lThrowable); // TODO.
 
     // ClassLoader
-    Local defaultClassLoader = getNew(PTAUtils.getClassType("sun.misc.Launcher$AppClassLoader"));
+    Local defaultClassLoader = getNew(PTAUtils.APP_CLASS_LOADER);
     addInvoke(defaultClassLoader, "<java.lang.ClassLoader: void <init>()>");
-    Local vClass = getNextLocal(PTAUtils.getClassType("java.lang.Class"));
-    Local vDomain = getNextLocal(PTAUtils.getClassType("java.security.ProtectionDomain"));
+    Local vClass = getNextLocal(PTAUtils.CLASS);
+    Local vDomain = getNextLocal(PTAUtils.PROTECTION_DOMAIN);
     addInvoke(
         defaultClassLoader,
         "<java.lang.ClassLoader: java.lang.Class loadClassInternal(java.lang.String)>",
@@ -232,8 +232,8 @@ public class FakeMainFactory extends ArtificialMethod {
 
     // PrivilegedActionException
     Local privilegedActionException =
-        getNew(PTAUtils.getClassType("java.security.PrivilegedActionException"));
-    Local gLthrow = getNextLocal(PTAUtils.getClassType("java.lang.Exception"));
+        getNew(PTAUtils.PRIVILEGED_ACTION_EXCEPTION);
+    Local gLthrow = getNextLocal(PTAUtils.EXCEPTION);
     addInvoke(
         privilegedActionException,
         "<java.security.PrivilegedActionException: void <init>(java.lang.Exception)>",

@@ -38,6 +38,6 @@ public class ArrayElement implements SparkField {
   }
 
   public Type getType() {
-    return PTAUtils.getClassType("java.lang.Object");
+    return PTAUtils.OBJECT;
   }
 }

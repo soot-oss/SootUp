@@ -236,7 +236,7 @@ public class Solver extends Propagator {
     MethodSubSignature sigFinalize =
         JavaIdentifierFactory.getInstance().parseMethodSubSignature("void finalize()");
     Type type = heap.getType();
-    if (type instanceof ClassType && type != PTAUtils.getClassType("java.lang.Object")) {
+    if (type instanceof ClassType && type != PTAUtils.OBJECT) {
       ClassType refType = (ClassType) type;
       SootMethod finalizeMethod = cgb.resolveNonSpecial(refType, sigFinalize);
       if (finalizeMethod != null

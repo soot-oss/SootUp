@@ -35,8 +35,8 @@ public class HeuristicAbstractor implements HeapAbstractor {
   public HeuristicAbstractor(PAG pag) {
     this.pag = pag;
     this.view = pag.getPta().getView();
-    mergedTypes.add(PTAUtils.getClassType("java.lang.StringBuffer"));
-    mergedTypes.add(PTAUtils.getClassType("java.lang.StringBuilder"));
+    mergedTypes.add(PTAUtils.STRING_BUFFER);
+    mergedTypes.add(PTAUtils.STRING_BUILDER);
   }
 
   @Override

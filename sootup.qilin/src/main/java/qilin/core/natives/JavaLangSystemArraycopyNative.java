@@ -45,7 +45,7 @@ public class JavaLangSystemArraycopyNative extends NativeMethod {
   protected void simulateImpl() {
     //        Value srcArr = getPara(0);
     //        Value dstArr = getPara(2);
-    ClassType objType = PTAUtils.getClassType("java.lang.Object");
+    ClassType objType = PTAUtils.OBJECT;
     Value srcArr = getPara(0, new ArrayType(objType, 1));
     Value dstArr = getPara(2, new ArrayType(objType, 1));
     Value src = getArrayRef(srcArr);

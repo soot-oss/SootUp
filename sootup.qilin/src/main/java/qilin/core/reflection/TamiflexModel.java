@@ -145,7 +145,7 @@ public class TamiflexModel extends ReflectionModel {
       Value args = iie.getArg(0);
       JArrayRef arrayRef = JavaJimple.newArrayRef((Local) args, IntConstant.getInstance(0));
       Local arg =
-          Jimple.newLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
+          Jimple.newLocal("intermediate/" + arrayRef, PTAUtils.OBJECT);
       builder.addLocal(arg);
       ret.add(new JAssignStmt(arg, arrayRef, StmtPositionInfo.getNoStmtPositionInfo()));
       for (String constructorSignature : constructorSignatures) {
@@ -181,7 +181,7 @@ public class TamiflexModel extends ReflectionModel {
       if (args.getType() instanceof ArrayType) {
         JArrayRef arrayRef = JavaJimple.newArrayRef((Local) args, IntConstant.getInstance(0));
         arg =
-            Jimple.newLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
+            Jimple.newLocal("intermediate/" + arrayRef, PTAUtils.OBJECT);
         builder.addLocal(arg);
         ret.add(new JAssignStmt(arg, arrayRef, StmtPositionInfo.getNoStmtPositionInfo()));
       }
@@ -308,11 +308,11 @@ public class TamiflexModel extends ReflectionModel {
       Value arrayRef = null;
       if (base.getType() instanceof ArrayType) {
         arrayRef = JavaJimple.newArrayRef((Local) base, IntConstant.getInstance(0));
-      } else if (base.getType() == PTAUtils.getClassType("java.lang.Object")) {
+      } else if (base.getType() == PTAUtils.OBJECT) {
         Local local =
             Jimple.newLocal(
                 "intermediate/" + base,
-                new ArrayType(PTAUtils.getClassType("java.lang.Object"), 1));
+                new ArrayType(PTAUtils.OBJECT, 1));
         builder.addLocal(local);
         ret.add(new JAssignStmt(local, base, StmtPositionInfo.getNoStmtPositionInfo()));
         arrayRef = JavaJimple.newArrayRef(local, IntConstant.getInstance(0));

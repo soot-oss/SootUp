@@ -37,7 +37,7 @@ public class JavaIoFileSystemGetFileSystemNative extends NativeMethod {
    * JDK(e.g., JDK6).
    */
   protected void simulateImpl() {
-    Local newLocal0 = getNew(PTAUtils.getClassType("java.io.UnixFileSystem"));
+    Local newLocal0 = getNew(PTAUtils.UNIX_FILE_SYSTEM);
     addInvoke(newLocal0, "<java.io.UnixFileSystem: void <init>()>");
     addReturn(newLocal0);
   }

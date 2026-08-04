@@ -41,7 +41,7 @@ public class JavaLangReflectArraySet extends NativeMethod {
 
   @Override
   protected void simulateImpl() {
-    ClassType objType = PTAUtils.getClassType("java.lang.Object");
+    ClassType objType = PTAUtils.OBJECT;
     Local arrayBase = getPara(0, new ArrayType(objType, 1));
     Value rightValue = getPara(2);
     JArrayRef arrayRef = getArrayRef(arrayBase);
