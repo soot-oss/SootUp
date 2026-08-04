@@ -1,5 +1,6 @@
 package sootup.spark.test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -228,5 +229,32 @@ public class PointsToAnalysisTest {
     assertEquals(
         Collections.singleton(newO2),
         pta.reachingObjects(new JInstanceFieldRef(new Local("l4", oType), fSig), mainSig));
+  }
+
+  /**
+   * Regression test: {@code x = x.f} makes the LOAD edge's base and target the same local. Before
+   * the fix, propagating this edge iterated {@code pts(x)} while growing it in place, throwing
+   * {@link java.util.ConcurrentModificationException} whenever {@code pts(x)} already held more
+   * than one allocation site when the load was processed.
+   */
+  @Test
+  public void selfReferentialFieldLoadDoesNotThrowConcurrentModificationException() {
+    ClassType classSig = SparkTestUtil.idFactory.getClassType("SelfFieldLoad");
+    MethodSignature mainSig =
+        SparkTestUtil.idFactory.getMethodSignature(
+            classSig, SparkTestUtil.idFactory.getMainSubSignature());
+
+    PointsToAnalysis pta =
+        assertDoesNotThrow(() -> SparkTestUtil.solveMainWithSpark(mainSig).getPointsToAnalysis());
+
+    ClassType nodeType = SparkTestUtil.idFactory.getClassType("SelfFieldLoad$Node");
+    AllocationNode newA = SparkTestUtil.alloc(nodeType, 1L, mainSig);
+    AllocationNode newB = SparkTestUtil.alloc(nodeType, 2L, mainSig);
+    AllocationNode newC = SparkTestUtil.alloc(nodeType, 3L, mainSig);
+
+    // x merges {a, b} from the branch, then "x = x.f" must pull in c (stored via a.f = c and
+    // b.f = c) without dropping the pre-existing allocations.
+    Set<AllocationNode> reachingX = pta.reachingObjects(new Local("l4", nodeType), mainSig);
+    assertTrue(reachingX.containsAll(Set.of(newA, newB, newC)), reachingX::toString);
   }
 }

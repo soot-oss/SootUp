@@ -64,6 +64,8 @@ public class MutableJavaView extends JavaView implements MutableView {
       return;
     }
     this.cache.putClass(classType, clazz);
+    // the type may have been looked up - and recorded as absent - before it was added here
+    forgetAbsence(classType);
     this.fireAddition(clazz);
   }
 

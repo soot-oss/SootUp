@@ -34,6 +34,10 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.scope.CallResolver;
+import sootup.callgraph.scope.DefaultCallResolver;
+import sootup.callgraph.scope.ExplorationVerdict;
+import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
@@ -74,24 +78,49 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /** The class type for java.lang.Thread, used for thread start call edge handling. */
   @NonNull protected final ClassType threadType;
 
+  /** Controls which statements' calls are resolved and expanded at all (pre-dispatch). */
+  @NonNull private final CallResolver callResolver;
+
+  /** Controls which resolved dynamic-dispatch candidates are admitted/expanded (post-dispatch). */
+  @NonNull private final VirtualCallResolver virtualCallResolver;
+
   /** Creates a new call graph algorithm using the given view. */
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
-    this.view = view;
-    this.typeHierarchy = view.getTypeHierarchy();
-    this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
+    this(view, new DefaultCallResolver(view), VirtualCallResolver.all());
   }
 
   /**
-   * Decide whether a call from <code>method</code> represented by <code>statement</code> shall be
-   * added to the call graph. Default: accept everything. Subclasses can override this method to
-   * implement pruning.
-   *
-   * @param method the source (caller) method
-   * @param statement the invokable statement causing the call
-   * @return true if the call should be included in the call graph
+   * Creates a new call graph algorithm using the given view and a custom {@link CallResolver} to
+   * control which statements' calls are excluded from call graph expansion.
    */
-  protected boolean includeCall(@NonNull SootMethod method, @NonNull InvokableStmt statement) {
-    return true;
+  protected AbstractCallGraphAlgorithm(@NonNull View view, @NonNull CallResolver callResolver) {
+    this(view, callResolver, VirtualCallResolver.all());
+  }
+
+  /**
+   * Creates a new call graph algorithm using the given view and a custom {@link
+   * VirtualCallResolver} to control which resolved dynamic-dispatch candidates are admitted and
+   * expanded.
+   */
+  protected AbstractCallGraphAlgorithm(
+      @NonNull View view, @NonNull VirtualCallResolver virtualCallResolver) {
+    this(view, new DefaultCallResolver(view), virtualCallResolver);
+  }
+
+  /**
+   * Creates a new call graph algorithm using the given view and custom {@link CallResolver} and
+   * {@link VirtualCallResolver} to control which classes/methods are excluded from call graph
+   * expansion.
+   */
+  protected AbstractCallGraphAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver) {
+    this.view = view;
+    this.typeHierarchy = view.getTypeHierarchy();
+    this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
+    this.callResolver = callResolver;
+    this.virtualCallResolver = virtualCallResolver;
   }
 
   /**
@@ -113,8 +142,37 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     workList.addAll(clinits);
     MutableCallGraph cg = initializeCallGraph(entryPoints, clinits);
 
-    processWorkList(workList, processed, cg);
+    processWorkList(new Frontier(workList, processed), cg);
     return cg;
+  }
+
+  /**
+   * Bundles the mutable work-list state threaded through call graph construction: methods still to
+   * process, methods already processed, and methods that have been added to the graph only as the
+   * target of {@link ExplorationVerdict#STOP_AFTER_CALL} edges so far (discovered, but not yet
+   * queued for expansion). A method is promoted from {@code notYetExpanded} into {@code workList}
+   * the moment any edge admits it with {@link ExplorationVerdict#EXPLORE_METHOD}, so expansion is
+   * the logical OR across all incoming edges seen so far, not "whichever edge discovers it first."
+   */
+  private static final class Frontier {
+    @NonNull private final Deque<MethodSignature> workList;
+    @NonNull private final Set<MethodSignature> processed;
+    @NonNull private final Set<MethodSignature> notYetExpanded = new HashSet<>();
+
+    private Frontier(
+        @NonNull Deque<MethodSignature> workList, @NonNull Set<MethodSignature> processed) {
+      this.workList = workList;
+      this.processed = processed;
+    }
+  }
+
+  /**
+   * Only {@link ExplorationVerdict#EXPLORE_METHOD} causes a statement's call(s) to be resolved;
+   * {@link ExplorationVerdict#STOP_AFTER_CALL} and {@link ExplorationVerdict#STOP} are equivalent
+   * at the pre-dispatch checkpoint, since no specific callee is known yet.
+   */
+  private static boolean explores(ExplorationVerdict verdict) {
+    return verdict == ExplorationVerdict.EXPLORE_METHOD;
   }
 
   /**
@@ -161,29 +219,26 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * workList</code> and processed as well. <code>cg</code> is updated accordingly. The method
    * postProcessingMethod is called after a method is processed in the <code>workList</code>.
    *
-   * @param workList it contains all method that have to be processed in the call graph generation.
-   *     This list is filled in the execution with found call targets in the call graph algorithm.
-   * @param processed the list of processed method to only process the method once.
+   * @param frontier bundles the work list of methods still to process, the set of already processed
+   *     methods, and the set of methods discovered only via non-expanding edges so far.
    * @param cg the call graph object that is filled with the found methods and call edges.
    */
-  final void processWorkList(
-      Deque<MethodSignature> workList, Set<MethodSignature> processed, MutableCallGraph cg) {
-    while (!workList.isEmpty()) {
-      MethodSignature currentMethodSignature = workList.pop();
+  final void processWorkList(Frontier frontier, MutableCallGraph cg) {
+    while (!frontier.workList.isEmpty()) {
+      MethodSignature currentMethodSignature = frontier.workList.pop();
       // skip if already processed
-      if (processed.contains(currentMethodSignature)) {
+      if (frontier.processed.contains(currentMethodSignature)) {
         continue;
       }
 
-      // skip if library class
       SootClass currentClass =
           view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
-      if (currentClass == null || currentClass.isLibraryClass()) {
+      if (currentClass == null) {
         continue;
       }
 
       // perform pre-processing if needed
-      preProcessingMethod(currentMethodSignature, workList, cg);
+      preProcessingMethod(currentMethodSignature, frontier.workList, cg);
 
       // process the method
       if (!cg.containsMethod(currentMethodSignature)) {
@@ -199,17 +254,78 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   return;
                 }
                 // get all call targets of invocations in the method body
-                resolveAllCallsFromSourceMethod(currentMethod, cg, workList);
+                resolveAllCallsFromSourceMethod(currentMethod, cg, frontier);
 
                 // get all call targets of implicit edges in the method body
-                resolveAllImplicitCallsFromSourceMethod(currentMethod, cg, workList);
+                resolveAllImplicitCallsFromSourceMethod(currentMethod, cg, frontier);
               });
 
       // set method as processed
-      processed.add(currentMethodSignature);
+      frontier.processed.add(currentMethodSignature);
 
       // perform post-processing if needed
-      postProcessingMethod(currentMethodSignature, workList, cg);
+      postProcessingMethod(currentMethodSignature, frontier.workList, cg);
+    }
+  }
+
+  /**
+   * Adds the defined call to the given call graph, always expanding the target if newly discovered.
+   * If the source or target method was added as vertex to the call graph, they will be added to the
+   * worklist.
+   *
+   * @param source the method signature of the caller
+   * @param target the method signature of the callee
+   * @param invokeStmt the stmt causing the call
+   * @param cg the call graph that will be updated
+   * @param frontier the work-list state that will be updated
+   */
+  protected void addCallToCG(
+      @NonNull MethodSignature source,
+      @NonNull MethodSignature target,
+      @NonNull InvokableStmt invokeStmt,
+      @NonNull MutableCallGraph cg,
+      @NonNull Frontier frontier) {
+    addCallToCG(source, target, invokeStmt, cg, frontier, true);
+  }
+
+  /**
+   * Adds the defined call to the given call graph. If the source method was added as vertex to the
+   * call graph, it will be added to the worklist. The target is added to the worklist for expansion
+   * only if {@code expandTarget} is {@code true}; otherwise it is added to the graph as a node (and
+   * the edge is added) but left unexpanded unless a later call promotes it (see {@link
+   * Frontier#notYetExpanded}).
+   *
+   * @param source the method signature of the caller
+   * @param target the method signature of the callee
+   * @param invokeStmt the stmt causing the call
+   * @param cg the call graph that will be updated
+   * @param frontier the work-list state that will be updated
+   * @param expandTarget whether the target should be queued for expansion
+   */
+  private void addCallToCG(
+      @NonNull MethodSignature source,
+      @NonNull MethodSignature target,
+      @NonNull InvokableStmt invokeStmt,
+      @NonNull MutableCallGraph cg,
+      @NonNull Frontier frontier,
+      boolean expandTarget) {
+    if (!cg.containsMethod(source)) {
+      cg.addMethod(source);
+      frontier.workList.push(source);
+    }
+    if (!cg.containsMethod(target)) {
+      cg.addMethod(target);
+      if (expandTarget) {
+        frontier.workList.push(target);
+      } else {
+        frontier.notYetExpanded.add(target);
+      }
+    } else if (expandTarget && frontier.notYetExpanded.remove(target)) {
+      // promotion: an earlier edge left this target unexpanded, but this edge wants it expanded
+      frontier.workList.push(target);
+    }
+    if (!cg.containsCall(source, target, invokeStmt)) {
+      cg.addCall(source, target, invokeStmt);
     }
   }
 
@@ -217,19 +333,37 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * Adds the defined call to the given call graph. If the source or target method was added as
    * vertex to the call graph, they will be added to the worklist
    *
-   * @param source the method signature of the caller
-   * @param target the method signature of the callee
-   * @param invokeStmt the stmt causing the call
+   * @param call the call that should be added to the call graph
+   * @param cg the call graph that will be updated
+   * @param frontier the work-list state that will be updated
+   */
+  protected void addCallToCG(
+      @NonNull Call call, @NonNull MutableCallGraph cg, @NonNull Frontier frontier) {
+    addCallToCG(
+        call.sourceMethodSignature(),
+        call.targetMethodSignature(),
+        call.invokableStmt(),
+        cg,
+        frontier);
+  }
+
+  /**
+   * Adds the defined call to the given call graph, always expanding the target if newly discovered.
+   * Overload for call sites that only have access to the raw worklist (e.g. {@code
+   * preProcessingMethod}/{@code postProcessingMethod} overrides, whose signature is fixed by the
+   * abstract contract) rather than the internal {@link Frontier}. Calls added this way bypass the
+   * {@link Frontier#notYetExpanded} promotion bookkeeping, matching their prior behavior.
+   *
+   * @param call the call that should be added to the call graph
    * @param cg the call graph that will be updated
    * @param workList the worklist in which the method signature of newly added vertexes will be
    *     added
    */
   protected void addCallToCG(
-      @NonNull MethodSignature source,
-      @NonNull MethodSignature target,
-      @NonNull InvokableStmt invokeStmt,
-      @NonNull MutableCallGraph cg,
-      @NonNull Deque<MethodSignature> workList) {
+      @NonNull Call call, @NonNull MutableCallGraph cg, @NonNull Deque<MethodSignature> workList) {
+    MethodSignature source = call.sourceMethodSignature();
+    MethodSignature target = call.targetMethodSignature();
+    InvokableStmt invokeStmt = call.invokableStmt();
     if (!cg.containsMethod(source)) {
       cg.addMethod(source);
       workList.push(source);
@@ -244,25 +378,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * Adds the defined call to the given call graph. If the source or target method was added as
-   * vertex to the call graph, they will be added to the worklist
-   *
-   * @param call the call that should be added to the call graph
-   * @param cg the call graph that will be updated
-   * @param workList the worklist in which the method signature of newly added vertexes will be
-   *     added
-   */
-  protected void addCallToCG(
-      @NonNull Call call, @NonNull MutableCallGraph cg, @NonNull Deque<MethodSignature> workList) {
-    addCallToCG(
-        call.sourceMethodSignature(),
-        call.targetMethodSignature(),
-        call.invokableStmt(),
-        cg,
-        workList);
-  }
-
-  /**
    * This method resolves all calls from a given source method. resolveCall is called for each
    * invokable statements in the body of the source method that is implemented in the corresponding
    * call graph algorithm. If new methods will be added as vertexes in the call graph, the work list
@@ -271,24 +386,54 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param sourceMethod this signature is used to access the statements contained method body of
    *     the specified method
    * @param cg the call graph that will receive the found calls
-   * @param workList the work list that will be updated of found target methods
+   * @param frontier the work-list state that will be updated with found target methods
    */
   protected void resolveAllCallsFromSourceMethod(
-      @NonNull SootMethod sourceMethod,
-      @NonNull MutableCallGraph cg,
-      @NonNull Deque<MethodSignature> workList) {
+      @NonNull SootMethod sourceMethod, @NonNull MutableCallGraph cg, @NonNull Frontier frontier) {
     sourceMethod.getBody().getStmts().stream()
         .filter(Stmt::isInvokableStmt)
         .map(Stmt::asInvokableStmt)
         .forEach(
-            stmt ->
-                (includeCall(sourceMethod, stmt)
-                        ? resolveCall(sourceMethod, stmt)
-                        : Stream.<MethodSignature>empty())
-                    .forEach(
-                        targetMethod ->
-                            addCallToCG(
-                                sourceMethod.getSignature(), targetMethod, stmt, cg, workList)));
+            stmt -> {
+              if (!explores(callResolver.tryAdvance(sourceMethod, stmt))) {
+                return;
+              }
+              resolveCall(sourceMethod, stmt)
+                  .forEach(
+                      targetMethod ->
+                          addResolvedCall(sourceMethod, targetMethod, stmt, cg, frontier));
+            });
+  }
+
+  /**
+   * Applies {@link VirtualCallResolver#tryAdvanceCall(SootMethod, MethodSignature, InvokableStmt)}
+   * to a single dynamic-dispatch candidate resolved for the given statement, and adds the resulting
+   * edge to the call graph unless the verdict is {@link ExplorationVerdict#STOP}.
+   *
+   * @param sourceMethod the caller method
+   * @param targetMethod the resolved dynamic-dispatch candidate
+   * @param stmt the invokable statement causing the call
+   * @param cg the call graph that will receive the found call
+   * @param frontier the work-list state that will be updated
+   */
+  private void addResolvedCall(
+      @NonNull SootMethod sourceMethod,
+      @NonNull MethodSignature targetMethod,
+      @NonNull InvokableStmt stmt,
+      @NonNull MutableCallGraph cg,
+      @NonNull Frontier frontier) {
+    ExplorationVerdict verdict =
+        virtualCallResolver.tryAdvanceCall(sourceMethod, targetMethod, stmt);
+    if (verdict == ExplorationVerdict.STOP) {
+      return;
+    }
+    addCallToCG(
+        sourceMethod.getSignature(),
+        targetMethod,
+        stmt,
+        cg,
+        frontier,
+        verdict == ExplorationVerdict.EXPLORE_METHOD);
   }
 
   /**
@@ -296,18 +441,19 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *
    * @param sourceMethod the inspected source method
    * @param cg implicit start-run calls will be added to the call graph
-   * @param workList new run methods will be added to the work list
+   * @param frontier new run methods will be added to the work list
    */
   protected void implicitStartRunCall(
-      @NonNull SootMethod sourceMethod,
-      @NonNull MutableCallGraph cg,
-      @NonNull Deque<MethodSignature> workList) {
+      @NonNull SootMethod sourceMethod, @NonNull MutableCallGraph cg, @NonNull Frontier frontier) {
     for (Stmt stmt : sourceMethod.getBody().getStmts()) {
       if (!stmt.isInvokableStmt()) {
         continue;
       }
-      AbstractInvokeExpr sourceMethodInvokeExpr =
-          stmt.asInvokableStmt().getInvokeExpr().orElse(null);
+      InvokableStmt invokableStmt = stmt.asInvokableStmt();
+      if (!explores(callResolver.tryAdvance(sourceMethod, invokableStmt))) {
+        continue;
+      }
+      AbstractInvokeExpr sourceMethodInvokeExpr = invokableStmt.getInvokeExpr().orElse(null);
       if (sourceMethodInvokeExpr == null || !sourceMethodInvokeExpr.isJVirtualInvokeExpr()) {
         continue;
       }
@@ -336,12 +482,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           .forEach(
               runMethodSignature -> {
                 if (view.getMethod(runMethodSignature).isPresent()) {
-                  addCallToCG(
-                      sourceMethod.getSignature(),
-                      runMethodSignature,
-                      runInvokableStmt,
-                      cg,
-                      workList);
+                  addResolvedCall(sourceMethod, runMethodSignature, runInvokableStmt, cg, frontier);
                 }
               });
     }
@@ -352,18 +493,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *
    * @param sourceMethod the inspected source method
    * @param cg the mutable call graph where new calls will be added
-   * @param workList the worklist in which the new target methods will be added
+   * @param frontier the work-list state in which the new target methods will be added
    */
   protected void resolveAllImplicitCallsFromSourceMethod(
-      @NonNull SootMethod sourceMethod,
-      @NonNull MutableCallGraph cg,
-      @NonNull Deque<MethodSignature> workList) {
-    implicitStartRunCall(sourceMethod, cg, workList);
+      @NonNull SootMethod sourceMethod, @NonNull MutableCallGraph cg, @NonNull Frontier frontier) {
+    implicitStartRunCall(sourceMethod, cg, frontier);
     ArrayListMultimap<ClassType, Call> potentialStaticInitializerCalls =
         resolveAllStaticInitializerCalls(sourceMethod);
     Stream<Call> staticInitializerCalls =
         postProcessingStaticInitializerCalls(potentialStaticInitializerCalls);
-    addStaticInitializerCalls(staticInitializerCalls, cg, workList);
+    addStaticInitializerCalls(staticInitializerCalls, cg, frontier);
   }
 
   /**
@@ -507,10 +646,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       InvokableStmt invokableStmt,
       Table<ClassType, BasicBlock<?>, Boolean> clinitCallTable) {
 
+    ArrayListMultimap<ClassType, Call> potentialClinitCalls = ArrayListMultimap.create();
+    if (!explores(callResolver.tryAdvance(sourceMethod, invokableStmt))) {
+      return potentialClinitCalls;
+    }
+
     ControlFlowGraph<?> cfg = sourceMethod.getBody().getControlFlowGraph();
     BasicBlock<?> currentBlock = cfg.getBlockOf(invokableStmt);
     MethodSignature sourceSig = sourceMethod.getSignature();
-    ArrayListMultimap<ClassType, Call> potentialClinitCalls = ArrayListMultimap.create();
 
     // static initializer call of class + all superclasses
     Stream.concat(Stream.of(targetClass), typeHierarchy.superClassesOf(targetClass))
@@ -572,12 +715,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *
    * @param staticInitializerCalls stream of pruned, valid static initializer calls
    * @param cg mutable call graph where calls will be added
-   * @param workList the work list in which the method signature of newly static initializer calls
-   *     will be added
+   * @param frontier the work-list state in which newly static initializer call targets will be
+   *     added
    */
   private void addStaticInitializerCalls(
-      Stream<Call> staticInitializerCalls, MutableCallGraph cg, Deque<MethodSignature> workList) {
-    staticInitializerCalls.forEach(call -> addCallToCG(call, cg, workList));
+      Stream<Call> staticInitializerCalls, MutableCallGraph cg, Frontier frontier) {
+    staticInitializerCalls.forEach(call -> addCallToCG(call, cg, frontier));
   }
 
   /**
@@ -625,7 +768,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     // Step 1: Add edges from the new methods to other methods
     Deque<MethodSignature> workList = new ArrayDeque<>(newMethodSignatures);
     Set<MethodSignature> processed = new HashSet<>(oldCallGraph.getMethodSignatures());
-    processWorkList(workList, processed, updated);
+    processWorkList(new Frontier(workList, processed), updated);
 
     // Step 2: Add edges from old methods to methods overridden in the new class
     Stream<ClassType> superClasses = typeHierarchy.superClassesOf(classType);
