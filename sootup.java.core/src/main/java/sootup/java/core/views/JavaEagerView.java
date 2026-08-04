@@ -30,6 +30,7 @@ import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 
+/** Resolve all available SootClasses up front / eagerly. */
 public class JavaEagerView extends JavaView {
 
   public JavaEagerView(@NonNull AnalysisInputLocation inputLocation) {
@@ -43,37 +44,10 @@ public class JavaEagerView extends JavaView {
   public JavaEagerView(
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull ClassCacheProvider cacheProvider) {
-    super(inputLocations, cacheProvider, JavaIdentifierFactory.getInstance());
-    eagerLoadClasses();
-  }
-
-  protected void eagerLoadClasses() {
-    getClasses()
-        .forEach(
-            c -> {
-              c.getModifiers();
-              c.getFields();
-              c.getInterfaces();
-              c.getAnnotations();
-              c.getSuperclass();
-              c.getOuterClass();
-              c.getPosition();
-              c.getMethods()
-                  .forEach(
-                      m -> {
-                        if (m.hasBody()) {
-                          m.getBody();
-                        }
-                      });
-            }); // forces loading
-
-    // All class data is now in the FullCache — release file-system resources.
-    for (AnalysisInputLocation loc : inputLocations) {
-      try {
-        loc.close();
-      } catch (Exception e) {
-        throw new RuntimeException("Failed to close input location after eager load", e);
-      }
-    }
+    super(
+        inputLocations,
+        cacheProvider,
+        LoadingStrategy.eager(),
+        JavaIdentifierFactory.getInstance());
   }
 }
