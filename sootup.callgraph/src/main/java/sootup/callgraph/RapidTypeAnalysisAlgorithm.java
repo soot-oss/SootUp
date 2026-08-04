@@ -27,6 +27,8 @@ import java.util.*;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.scope.CallResolver;
+import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -74,6 +76,49 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       @NonNull View view, @NonNull Set<ClassType> preInstantiatedClasses) {
     super(view);
     this.instantiatedClasses = new HashSet<>(preInstantiatedClasses);
+  }
+
+  /**
+   * The constructor of the RTA algorithm that allows restricting which statements' calls are
+   * resolved during call graph construction.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param callResolver decides which statements' calls are excluded from the call graph
+   */
+  public RapidTypeAnalysisAlgorithm(@NonNull View view, @NonNull CallResolver callResolver) {
+    super(view, callResolver);
+    this.instantiatedClasses = new HashSet<>();
+  }
+
+  /**
+   * The constructor of the RTA algorithm that allows restricting which resolved dynamic-dispatch
+   * candidates are admitted/expanded during call graph construction.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param virtualCallResolver decides which resolved call candidates are excluded from the call
+   *     graph
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view, @NonNull VirtualCallResolver virtualCallResolver) {
+    super(view, virtualCallResolver);
+    this.instantiatedClasses = new HashSet<>();
+  }
+
+  /**
+   * The constructor of the RTA algorithm that allows restricting which calls are expanded during
+   * call graph construction.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param callResolver decides which statements' calls are excluded from the call graph
+   * @param virtualCallResolver decides which resolved call candidates are excluded from the call
+   *     graph
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver) {
+    super(view, callResolver, virtualCallResolver);
+    this.instantiatedClasses = new HashSet<>();
   }
 
   @NonNull
