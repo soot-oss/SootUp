@@ -24,7 +24,7 @@ import java.util.Map;
 import qilin.core.PTAScene;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
-import qilin.core.pag.Parm;
+import qilin.core.pag.MethodParameter;
 import qilin.pta.toolkits.eagle.Eagle;
 import qilin.util.Pair;
 import qilin.util.Stopwatch;
@@ -78,33 +78,29 @@ public class EaglePTA extends PartialObjSensPTA {
             if (v > 0) {
               return;
             }
-            if (k instanceof AllocNode) {
-              AllocNode heap = (AllocNode) k;
-              if (heap.getMethod() == null) {
+            if (k instanceof AllocNode heap) {
+                if (heap.getMethod() == null) {
                 return;
               }
               String newExpr = heap.getNewExpr().toString();
-              if (heap.getNewExpr() instanceof JNewArrayExpr) {
-                JNewArrayExpr nae = (JNewArrayExpr) heap.getNewExpr();
-                newExpr = "new " + nae.getBaseType() + "[]";
+              if (heap.getNewExpr() instanceof JNewArrayExpr nae) {
+                  newExpr = "new " + nae.getBaseType() + "[]";
               }
               String heapSig = heap.getMethod().toString() + "/" + newExpr;
               heapWriter.write(heapSig);
               heapWriter.write(EOL);
-            } else if (k instanceof LocalVarNode) {
-              LocalVarNode lvn = (LocalVarNode) k;
-              Object variable = lvn.getVariable();
+            } else if (k instanceof LocalVarNode lvn) {
+                Object variable = lvn.getVariable();
               String varName = variable.toString();
-              if (variable instanceof Parm) {
-                Parm parm = (Parm) variable;
-                if (parm.isThis()) {
+              if (variable instanceof MethodParameter methodParameter) {
+                  if (methodParameter.isThis()) {
                   varName = "@this";
-                } else if (parm.isReturn()) {
+                } else if (methodParameter.isReturn()) {
                   return;
-                } else if (parm.isThrowRet()) {
+                } else if (methodParameter.isThrowRet()) {
                   return;
                 } else {
-                  varName = "@parameter" + parm.getIndex();
+                  varName = "@parameter" + methodParameter.getIndex();
                 }
               } else if (variable instanceof Local) {
 

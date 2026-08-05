@@ -27,11 +27,11 @@ import sootup.core.model.SootMethod;
  *
  * @author Ondrej Lhotak
  */
-public class Parm {
+public class MethodParameter {
   private final int index;
   private final SootMethod method;
 
-  public Parm(SootMethod m, int i) {
+  public MethodParameter(SootMethod m, int i) {
     index = i;
     method = m;
   }
@@ -70,8 +70,8 @@ public class Parm {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    Parm parm = (Parm) o;
-    return index == parm.index && method.equals(parm.method);
+    MethodParameter methodParameter = (MethodParameter) o;
+    return index == methodParameter.index && method.equals(methodParameter.method);
   }
 
   @Override

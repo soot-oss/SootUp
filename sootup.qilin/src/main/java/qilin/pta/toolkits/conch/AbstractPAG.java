@@ -114,7 +114,7 @@ public abstract class AbstractPAG {
     PagNode throwNode =
         prePAG.findLocalVarNode(
             method,
-            new Parm(method, PointsToAnalysis.THROW_NODE),
+            new MethodParameter(method, PointsToAnalysis.THROW_NODE),
             PTAUtils.THROWABLE);
     if (throwNode != null) {
       addThrowEdge(throwNode);

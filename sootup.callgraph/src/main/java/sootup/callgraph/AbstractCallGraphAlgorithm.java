@@ -84,6 +84,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /** Controls which resolved dynamic-dispatch candidates are admitted/expanded (post-dispatch). */
   @NonNull private final VirtualCallResolver virtualCallResolver;
 
+  /**
+   * Whether each entry point's declaring-class {@code <clinit>} is eagerly seeded as a root before
+   * traversal starts, independently of whether any statement actually triggers it.
+   */
+  private final boolean seedEntryPointClinits;
+
   /** Creates a new call graph algorithm using the given view. */
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
     this(view, new DefaultCallResolver(view), VirtualCallResolver.all());
@@ -110,17 +116,56 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /**
    * Creates a new call graph algorithm using the given view and custom {@link CallResolver} and
    * {@link VirtualCallResolver} to control which classes/methods are excluded from call graph
-   * expansion.
+   * expansion. Entry points' declaring-class {@code <clinit>}s are eagerly seeded (see {@link
+   * #AbstractCallGraphAlgorithm(View, CallResolver, VirtualCallResolver, boolean)}).
    */
   protected AbstractCallGraphAlgorithm(
       @NonNull View view,
       @NonNull CallResolver callResolver,
       @NonNull VirtualCallResolver virtualCallResolver) {
+    this(view, callResolver, virtualCallResolver, true);
+  }
+
+  /**
+   * Creates a new call graph algorithm using the given view, custom {@link CallResolver} and
+   * {@link VirtualCallResolver}, and controls whether each entry point's declaring-class {@code
+   * <clinit>} is eagerly seeded as a root before traversal starts.
+   *
+   * <p>Combined with a {@link VirtualCallResolver} that governs {@code <clinit>} admission during
+   * traversal (see {@link sootup.callgraph.scope.SuppressClinitCallResolver}, {@link
+   * sootup.callgraph.scope.AppOnlyClinitCallResolver}), these two knobs reproduce Soot/Qilin's four
+   * classic static-initializer handling modes:
+   *
+   * <ul>
+   *   <li><b>FULL</b> - {@code seedEntryPointClinits=true} + {@code
+   *       new SuppressClinitCallResolver(view)}: only entry points' own {@code <clinit>}s are
+   *       modeled, nothing discovered elsewhere during traversal.
+   *   <li><b>ON_THE_FLY</b> - {@code seedEntryPointClinits=false} + {@link
+   *       VirtualCallResolver#all()}: no upfront seeding, every {@code <clinit>} triggered during
+   *       traversal is modeled as it's discovered.
+   *   <li><b>APP</b> - {@code seedEntryPointClinits=false} + {@code
+   *       new AppOnlyClinitCallResolver(view)}: like {@code ON_THE_FLY}, but {@code <clinit>}s of
+   *       library classes are not modeled.
+   *   <li><b>NONE</b> - {@code seedEntryPointClinits=false} + {@code
+   *       new SuppressClinitCallResolver(view)}: no {@code <clinit>} call is modeled at all.
+   * </ul>
+   *
+   * The other constructors default to {@code seedEntryPointClinits=true} with an admit-all {@link
+   * VirtualCallResolver}, which is the union of {@code FULL}'s eager seeding and {@code
+   * ON_THE_FLY}'s full discovery - SootUp's historical, always-on behavior - rather than any single
+   * one of the four modes above.
+   */
+  protected AbstractCallGraphAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
     this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
     this.callResolver = callResolver;
     this.virtualCallResolver = virtualCallResolver;
+    this.seedEntryPointClinits = seedEntryPointClinits;
   }
 
   /**
@@ -137,7 +182,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     Set<MethodSignature> processed = new HashSet<>();
 
     // find additional entry points
-    List<MethodSignature> clinits = getClinitFromEntryPoints(entryPoints);
+    List<MethodSignature> clinits =
+        seedEntryPointClinits ? getClinitFromEntryPoints(entryPoints) : Collections.emptyList();
 
     workList.addAll(clinits);
     MutableCallGraph cg = initializeCallGraph(entryPoints, clinits);
@@ -668,6 +714,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .forEach(
             targetMethod -> {
               MethodSignature targetSig = targetMethod.getSignature();
+              if (virtualCallResolver.tryAdvanceCall(sourceMethod, targetSig, invokableStmt)
+                  == ExplorationVerdict.STOP) {
+                return;
+              }
               ClassType targetClassType = targetSig.getDeclClassType();
 
               if (clinitCallTable.get(targetClassType, currentBlock) == null

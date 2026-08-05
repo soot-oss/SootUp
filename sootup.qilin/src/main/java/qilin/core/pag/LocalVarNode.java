@@ -42,17 +42,17 @@ public class LocalVarNode extends VarNode {
 
   /** Returns true if this VarNode represents the THIS pointer */
   public boolean isThis() {
-    if (variable instanceof Parm) {
-      Parm parm = (Parm) variable;
-      return parm.isThis();
+    if (variable instanceof MethodParameter) {
+      MethodParameter methodParameter = (MethodParameter) variable;
+      return methodParameter.isThis();
     }
     return false;
   }
 
   public boolean isReturn() {
-    if (variable instanceof Parm) {
-      Parm parm = (Parm) variable;
-      return parm.isReturn();
+    if (variable instanceof MethodParameter) {
+      MethodParameter methodParameter = (MethodParameter) variable;
+      return methodParameter.isReturn();
     }
     return false;
   }

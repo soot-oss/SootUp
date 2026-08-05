@@ -29,7 +29,7 @@ import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
-import qilin.core.pag.Parm;
+import qilin.core.pag.MethodParameter;
 import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
@@ -254,16 +254,16 @@ public class Exporter {
     SootMethod m = lvn.getMethod();
     Object v = lvn.getVariable();
     String varName = v.toString();
-    if (v instanceof Parm) {
-      Parm parm = (Parm) v;
-      if (parm.isThis()) {
+    if (v instanceof MethodParameter) {
+      MethodParameter methodParameter = (MethodParameter) v;
+      if (methodParameter.isThis()) {
         varName = "@this";
-      } else if (parm.isReturn()) {
+      } else if (methodParameter.isReturn()) {
 
-      } else if (parm.isThrowRet()) {
+      } else if (methodParameter.isThrowRet()) {
 
       } else {
-        varName = "@parameter" + parm.getIndex();
+        varName = "@parameter" + methodParameter.getIndex();
       }
     }
     return m.getSignature() + "/" + varName;

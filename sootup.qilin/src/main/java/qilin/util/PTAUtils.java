@@ -364,7 +364,7 @@ public final class PTAUtils {
       PAG pag, InvokableStmt invokeStmt, MethodPAG srcmpag, VarNode pi) {
     MethodNodeFactory srcnf = srcmpag.nodeFactory();
     AbstractInvokeExpr ie = invokeStmt.getInvokeExpr().get();
-    Parm mPi = (Parm) pi.getVariable();
+    MethodParameter mPi = (MethodParameter) pi.getVariable();
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
     LocalVarNode receiver;
     if (ie instanceof AbstractInstanceInvokeExpr) {

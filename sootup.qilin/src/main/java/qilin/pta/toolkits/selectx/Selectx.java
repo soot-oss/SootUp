@@ -340,7 +340,7 @@ public class Selectx {
           LocalVarNode throwFinal =
               prePAG.findLocalVarNode(
                   method,
-                  new Parm(tgtmtd, PointsToAnalysis.THROW_NODE),
+                  new MethodParameter(tgtmtd, PointsToAnalysis.THROW_NODE),
                   PTAUtils.THROWABLE);
           if (throwFinal != null) {
             this.addExitEdge(throwFinal, stmtThrowNode, callSite);
