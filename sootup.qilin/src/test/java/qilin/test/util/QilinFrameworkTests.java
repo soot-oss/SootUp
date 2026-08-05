@@ -104,7 +104,7 @@ public abstract class QilinFrameworkTests {
             .build());
   }
 
-  private PointerAnalysisConfig.Builder configBuilder(ContextSensitivity contextSensitivity) {
+  protected PointerAnalysisConfig.Builder configBuilder(ContextSensitivity contextSensitivity) {
     return PointerAnalysisConfig.builder()
         .contextSensitivity(contextSensitivity)
         .singleEntry(true)
