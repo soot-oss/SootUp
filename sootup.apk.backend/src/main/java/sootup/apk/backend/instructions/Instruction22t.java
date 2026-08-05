@@ -13,17 +13,18 @@ public class Instruction22t extends TwoRegisterInstruction {
   public Instruction22t(Opcode opcode, Register registerA, Register registerB, Stmt targetStmt) {
     super(opcode, registerA, registerB);
     this.targetStmt = targetStmt;
-    logSmali();
   }
 
   @Override
   public BuilderInstruction getBuilderInstruction() {
+    BuilderInstruction builderInstruction =
+        new BuilderInstruction22t(
+            getOpcode(),
+            getRegisterA().getNumber(),
+            getRegisterB().getNumber(),
+            getLabelAssigner().getOrCreateLabel(targetStmt));
     logSmali();
-    return new BuilderInstruction22t(
-        getOpcode(),
-        getRegisterA().getNumber(),
-        getRegisterB().getNumber(),
-        getLabelAssigner().getOrCreateLabel(targetStmt));
+    return builderInstruction;
   }
 
   @Override
@@ -33,7 +34,7 @@ public class Instruction22t extends TwoRegisterInstruction {
         getOpcode().name,
         getRegisterA().getNumber(),
         getRegisterB().getNumber(),
-        "label");
+        getLabelAssigner().getLabelName(targetStmt));
   }
 
   public Stmt getTargetStmt() {

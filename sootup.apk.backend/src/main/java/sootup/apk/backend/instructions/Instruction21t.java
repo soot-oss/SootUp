@@ -13,19 +13,26 @@ public class Instruction21t extends OneRegisterInstruction {
   public Instruction21t(Opcode opcode, Register registerA, Stmt targetStmt) {
     super(opcode, registerA);
     this.targetStmt = targetStmt;
-    logSmali();
   }
 
   @Override
   public BuilderInstruction getBuilderInstruction() {
+    BuilderInstruction builderInstruction =
+        new BuilderInstruction21t(
+            getOpcode(),
+            getRegisterA().getNumber(),
+            getLabelAssigner().getOrCreateLabel(targetStmt));
     logSmali();
-    return new BuilderInstruction21t(
-        getOpcode(), getRegisterA().getNumber(), getLabelAssigner().getOrCreateLabel(targetStmt));
+    return builderInstruction;
   }
 
   @Override
   public void logSmali() {
-    log.info("{} v{} :{}", getOpcode().name, getRegisterA().getNumber(), "label");
+    log.info(
+        "{} v{} :{}",
+        getOpcode().name,
+        getRegisterA().getNumber(),
+        getLabelAssigner().getLabelName(targetStmt));
   }
 
   public Stmt getTargetStmt() {

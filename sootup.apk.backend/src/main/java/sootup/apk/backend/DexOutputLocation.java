@@ -41,7 +41,8 @@ public class DexOutputLocation {
 
     opcodes = Opcodes.forApi(minSdkVersion);
     DexClassBuilder dexClassBuilder = new DexClassBuilder(this);
-    newDexPool();
+    currentDexPool = new DexPool(opcodes);
+    dexPoolList.add(currentDexPool);
 
     view.getClasses()
         .forEach(
@@ -63,7 +64,8 @@ public class DexOutputLocation {
 
     opcodes = Opcodes.forApi(minSdkVersion);
     DexClassBuilder dexClassBuilder = new DexClassBuilder(this);
-    newDexPool();
+    currentDexPool = new DexPool(opcodes);
+    dexPoolList.add(currentDexPool);
 
     view.getClasses()
         .forEach(
@@ -210,11 +212,6 @@ public class DexOutputLocation {
     }
   }
 
-  private void newDexPool() {
-    currentDexPool = new DexPool(opcodes);
-    dexPoolList.add(currentDexPool);
-  }
-
   protected void addClass(final ClassDef classDef) {
     currentDexPool.mark();
     currentDexPool.internClass(classDef);
@@ -225,7 +222,8 @@ public class DexOutputLocation {
                 + "and will therefore not run on older devices");
       }
       currentDexPool.reset();
-      newDexPool();
+      currentDexPool = new DexPool(opcodes);
+      dexPoolList.add(currentDexPool);
       currentDexPool.internClass(classDef);
       if (currentDexPool.hasOverflowed()) {
         throw new RuntimeException(

@@ -15,8 +15,6 @@ public class Instruction12x extends TwoRegisterInstruction {
   @Override
   public BuilderInstruction getBuilderInstruction() {
     logSmali();
-    log.info("{}", getRegisterA().getNumber());
-    log.info("{}", getRegisterB().getNumber());
     return new BuilderInstruction12x(
         getOpcode(), getRegisterA().getNumber(), getRegisterB().getNumber());
   }

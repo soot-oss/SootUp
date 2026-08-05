@@ -213,9 +213,44 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
 
   @Override
   public void caseSwitchStmt(@NonNull JSwitchStmt stmt) {
-    // packed-switch
-    // sparse-switch
-    // TODO
+
+    Register register = registerAllocator.getRegisterForImmediate(stmt.getKey(), false);
+
+    List<IntConstant> values = stmt.getValues();
+    Opcode opcode = getSwitchOpcode(values);
+
+    List<Stmt> targets = stmt.getTargetStmts(sootMethod.getBody()); // last entry is default
+    Optional<Stmt> defaultTarget = stmt.getDefaultTarget(sootMethod.getBody());
+
+    SwitchPayload switchPayload =
+        new SwitchPayload(
+            opcode,
+            values.stream().map(IntConstant::getValue).mapToInt(Integer::intValue).toArray(),
+            targets.toArray(Stmt[]::new));
+    addSwitchPayload(switchPayload);
+
+    Instruction31t instruction31t = new Instruction31t(opcode, register, switchPayload);
+    this.addInstruction(instruction31t, stmt);
+
+    defaultTarget.ifPresent(
+        value -> dexMethodBuilder.addInstruction(new Instruction10t(Opcode.GOTO, value), stmt));
+  }
+
+  public static Opcode getSwitchOpcode(List<IntConstant> values) {
+
+    if (values.isEmpty()) {
+      return Opcode.SPARSE_SWITCH;
+    }
+
+    ArrayList<IntConstant> valueList = new ArrayList<>(values);
+
+    valueList.sort(Comparator.comparing(IntConstant::getValue));
+
+    int packedSize =
+        4 + (valueList.get(valueList.size() - 1).getValue() - valueList.get(0).getValue() + 1);
+    int sparseSize = 2 + (valueList.size() * 2);
+
+    return packedSize <= sparseSize ? Opcode.PACKED_SWITCH : Opcode.SPARSE_SWITCH;
   }
 
   @Override
@@ -244,5 +279,9 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
 
   protected void addInstruction(AbstractInstruction instruction, Stmt stmt) {
     dexMethodBuilder.addInstruction(instruction, stmt);
+  }
+
+  protected void addSwitchPayload(SwitchPayload switchPayload) {
+    dexMethodBuilder.addSwitchPayload(switchPayload);
   }
 }

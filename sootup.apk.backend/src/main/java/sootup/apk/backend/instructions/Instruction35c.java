@@ -1,7 +1,6 @@
 package sootup.apk.backend.instructions;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
@@ -39,7 +38,6 @@ public class Instruction35c extends FiveRegisterInstruction {
   public BuilderInstruction getBuilderInstruction() {
     logSmali();
     List<Integer> registerNumbers = getInvokeRegisterNumbers();
-
     return new BuilderInstruction35c(
         getOpcode(),
         registerCount,
@@ -53,10 +51,10 @@ public class Instruction35c extends FiveRegisterInstruction {
 
   @Override
   public void logSmali() {
-    Set<Register> registers =
+    List<Register> registers =
         Stream.of(getRegisterA(), getRegisterB(), getRegisterC(), getRegisterD(), getRegisterE())
             .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
+            .toList();
     String var1 = null;
     String var2 = null;
     if (reference instanceof MethodReference methodReference) {

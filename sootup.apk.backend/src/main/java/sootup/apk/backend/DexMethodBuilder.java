@@ -4,8 +4,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jf.dexlib2.Opcode;
-import org.jf.dexlib2.builder.BuilderInstruction;
-import org.jf.dexlib2.builder.MethodImplementationBuilder;
+import org.jf.dexlib2.builder.*;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction10x;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction31t;
+import org.jf.dexlib2.builder.instruction.BuilderPackedSwitchPayload;
 import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.MethodImplementation;
 import org.jf.dexlib2.iface.MethodParameter;
@@ -38,6 +40,8 @@ public class DexMethodBuilder {
   private Map<BasicBlock<?>, List<AbstractInstruction>> instructions;
   private HashMap<AbstractInstruction, Stmt> instructionMap;
 
+  private final List<SwitchPayload> switchPayloads;
+
   private RegisterAllocator registerAllocator;
 
   private BasicBlock<?> currentBlock;
@@ -46,6 +50,7 @@ public class DexMethodBuilder {
     this.view = view;
     instructions = new LinkedHashMap<>();
     this.instructionMap = new HashMap<>();
+    this.switchPayloads = new ArrayList<>();
   }
 
   public ImmutableMethod createMethod(SootMethod sootMethod) {
@@ -115,11 +120,12 @@ public class DexMethodBuilder {
       Map<BasicBlock<?>, HashMap<Local, Register>> blockRegisterMap = new HashMap<>();
 
       while (!worklist.isEmpty()) {
-        BasicBlock<?> block = worklist.poll();
-        currentBlock = block;
+        currentBlock = worklist.poll();
+
+        log.info("BLOCK {}", currentBlock.toString());
 
         Set<BasicBlock<?>> previousBlocks =
-            controlFlowGraph.predecessors(block.getHead()).stream()
+            controlFlowGraph.predecessors(currentBlock.getHead()).stream()
                 .map(controlFlowGraph::getBlockOf)
                 .collect(Collectors.toSet());
 
@@ -131,15 +137,23 @@ public class DexMethodBuilder {
           registerAllocator.setRegisterMap(merged);
         }
 
-        List<Stmt> stmts = block.getStmts();
+        List<Stmt> stmts = currentBlock.getStmts();
         if (sootMethod.getName().equals("<init>")) {
           stmts = fixInitMethod(stmts);
         }
         for (Stmt stmt : stmts) {
+          log.info("Process stmt: {}", stmt);
           stmt.accept(dexStmtVisitor);
         }
-        blockRegisterMap.put(block, registerAllocator.getRegisterMap());
+        blockRegisterMap.put(currentBlock, registerAllocator.getRegisterMap());
         registerAllocator.resetRegisterMap();
+      }
+
+      for (var b : blocks) {
+        log.info("Instructions of block {}", b.toString());
+        for (var s : instructions.get(b)) {
+          log.info("{}", s.getOpcode());
+        }
       }
 
       int parameterSizeCount = DexUtil.getRegisterSizeCount(sootMethod.getParameterTypes());
@@ -206,7 +220,6 @@ public class DexMethodBuilder {
       // a local has different registers but same type --> move previous registers to a new register
       Register merged = registerAllocator.getRegisterForImmediate(local, false);
       for (BasicBlock<?> block : previousBlocks) {
-        currentBlock = block;
         HashMap<Local, Register> localRegisterMap = blockRegisterMap.get(block);
         if (localRegisterMap == null) {
           continue;
@@ -216,8 +229,7 @@ public class DexMethodBuilder {
           AbstractInstruction move = generateMoveInstruction(merged, old, old.getType());
           instructionMap.put(move, null);
           List<AbstractInstruction> prevInstr =
-              instructions.computeIfAbsent(currentBlock, k -> new ArrayList<>());
-          log.info("last instr: {}", prevInstr.get(prevInstr.size() - 1).getOpcode().name);
+              instructions.computeIfAbsent(block, k -> new ArrayList<>());
           if (!prevInstr.isEmpty()
               && (prevInstr.get(prevInstr.size() - 1).getOpcode().name.startsWith("goto")
                   || prevInstr.get(prevInstr.size() - 1).getOpcode().name.startsWith("if"))) {
@@ -290,9 +302,35 @@ public class DexMethodBuilder {
     return stmts;
   }
 
+  public void addBuilderInstructionsExampleSwitch(
+      MethodImplementationBuilder builder, LabelAssigner labelAssigner) {
+    Label payload = builder.getLabel("1");
+    Label case0 = builder.getLabel("2");
+    Label case1 = builder.getLabel("3");
+
+
+    // switch
+    builder.addInstruction(new BuilderInstruction31t(Opcode.PACKED_SWITCH, 0, payload));
+
+    // default path
+    builder.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+
+    // case blocks
+    builder.addLabel("0");
+    builder.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+
+    builder.addLabel("1");
+    builder.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+
+    // payload must still be inside the method
+    builder.addLabel("2");
+    builder.addInstruction(new BuilderPackedSwitchPayload(0, Arrays.asList(case0, case1)));
+  }
+
   public List<BuilderInstruction> addBuilderInstructions(
       MethodImplementationBuilder methodImplementationBuilder, LabelAssigner labelAssigner) {
 
+    log.info("ADD BUILDER INSTRUCTIONS");
     List<Register> sortedRegisters =
         registerAllocator.getRegisters().stream()
             .sorted(Comparator.comparing(Register::isParameter))
@@ -319,23 +357,29 @@ public class DexMethodBuilder {
 
     Set<Register> usedRegisters = new HashSet<>();
 
+    LinkedHashMap<SwitchPayload, BuilderInstruction> payloadInstructions = new LinkedHashMap<>();
+    for (SwitchPayload switchPayload : switchPayloads) {
+      switchPayload.setLabelAssigner(labelAssigner);
+      payloadInstructions.put(switchPayload, switchPayload.getBuilderInstruction());
+    }
+
     for (Map.Entry<BasicBlock<?>, List<AbstractInstruction>> entry : instructions.entrySet()) {
-      BasicBlock<?> block = entry.getKey();
+      currentBlock = entry.getKey();
       List<AbstractInstruction> instructionsOfBlock = entry.getValue();
 
-      currentBlock = block;
       int tmpIndx = 0;
       for (int i = 0; i < instructionsOfBlock.size(); i++) {
         AbstractInstruction instruction = instructionsOfBlock.get(i);
         instruction.setLabelAssigner(labelAssigner);
+        log.info("Original instruction: {}", instruction.getOpcode());
 
         if (labelAssigner.hasLabel(instructionMap.get(instruction))) {
-          labelAssigner.addLabel(instructionMap.get(instruction));
+          log.info("Set label at instruction {}", instruction.getOpcode().name);
+          labelAssigner.setLabel(instructionMap.get(instruction));
         }
 
         if (!tmpRegisters.isEmpty()) {
           List<Register> registers = instruction.getRegisters();
-          log.info("{}", instruction.getOpcode().name);
           if (!(instruction instanceof Instruction3rc
               || instruction instanceof Instruction4rcc
               || (instruction instanceof Instruction12x
@@ -443,6 +487,18 @@ public class DexMethodBuilder {
         }
       }
     }
+
+    payloadInstructions.forEach(
+        (switchPayload, builderInstruction) -> {
+          log.info("Set label for payload");
+          labelAssigner.setLabel(switchPayload);
+          switchPayload.logSmali();
+          builderInstructions.add(builderInstruction);
+          methodImplementationBuilder.addInstruction(builderInstruction);
+        });
+
+    log.info("Builder instructions created");
+
     return builderInstructions;
   }
 
@@ -479,6 +535,10 @@ public class DexMethodBuilder {
   protected void addInstruction(AbstractInstruction instruction, Stmt stmt) {
     instructionMap.put(instruction, stmt);
     instructions.computeIfAbsent(currentBlock, k -> new ArrayList<>()).add(instruction);
+  }
+
+  public void addSwitchPayload(SwitchPayload switchPayload) {
+    this.switchPayloads.add(switchPayload);
   }
 
   public void setRegisterAllocator(RegisterAllocator registerAllocator) {

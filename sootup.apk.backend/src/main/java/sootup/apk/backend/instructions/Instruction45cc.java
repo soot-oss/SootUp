@@ -2,8 +2,6 @@ package sootup.apk.backend.instructions;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
@@ -54,10 +52,10 @@ public class Instruction45cc extends FiveRegisterInstruction {
   @Override
   public void logSmali() {
     if (reference instanceof MethodReference methodReference) {
-      Set<Register> registers =
+      List<Register> registers =
           Stream.of(getRegisterA(), getRegisterB(), getRegisterC(), getRegisterD(), getRegisterE())
               .filter(Objects::nonNull)
-              .collect(Collectors.toSet());
+              .toList();
       log.info(
           String.format(
               "%s {%s}, %s->%s",

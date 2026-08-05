@@ -14,19 +14,20 @@ public class Instruction10t extends AbstractInstruction {
   public Instruction10t(Opcode opcode, Stmt targetStmt) {
     super(opcode, List.of());
     this.targetStmt = targetStmt;
-    logSmali();
   }
 
   @Override
   public BuilderInstruction getBuilderInstruction() {
+    BuilderInstruction builderInstruction =
+        new BuilderInstruction10t(
+            super.getOpcode(), getLabelAssigner().getOrCreateLabel(targetStmt));
     logSmali();
-    return new BuilderInstruction10t(
-        super.getOpcode(), getLabelAssigner().getOrCreateLabel(targetStmt));
+    return builderInstruction;
   }
 
   @Override
   public void logSmali() {
-    log.info("{} :{}", getOpcode().name, "label");
+    log.info("{} :{}", getOpcode().name, getLabelAssigner().getLabelName(targetStmt));
   }
 
   @Override
