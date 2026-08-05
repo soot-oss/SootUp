@@ -25,7 +25,6 @@ import qilin.core.builder.ExceptionHandler;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.Kind;
-import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.util.sets.DoublePointsToSet;
@@ -34,6 +33,10 @@ import qilin.util.sets.PointsToSetInternal;
 import qilin.util.PTAUtils;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
+import sootup.callgraph.scope.ExplorationVerdict;
+import sootup.callgraph.scope.VirtualCallResolver;
+import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -119,14 +122,26 @@ public class Solver extends Propagator {
       addToPAG(mpag, momc.context());
       // !FIXME in a context-sensitive pointer analysis, clinits in a method maybe added multiple
       // times.
-      if (pta.getConfig().getClinitMode() == PointerAnalysisConfig.ClinitMode.ON_THE_FLY) {
-        // add <clinit> find in the method to reachableMethods.
-        Iterator<SootMethod> it = mpag.triggeredClinits();
-        while (it.hasNext()) {
-          SootMethod sm = it.next();
-          cgb.injectCallEdge(
-              sm.getDeclaringClassType(), pta.parameterize(sm, pta.emptyContext()), Kind.CLINIT);
+      // add <clinit> found in the method to reachableMethods, subject to the configured
+      // VirtualCallResolver admission check. Qilin doesn't track the statement that triggered a
+      // given <clinit>, so a synthetic invoke stmt stands in for it - resolvers that only inspect
+      // the callee (e.g. SuppressClinitCallResolver/AppOnlyClinitCallResolver) are unaffected.
+      VirtualCallResolver clinitResolver = pta.getConfig().getClinitVirtualCallResolver();
+      Iterator<SootMethod> it = mpag.triggeredClinits();
+      while (it.hasNext()) {
+        SootMethod sm = it.next();
+        MethodSignature clinitSig = sm.getSignature();
+        InvokableStmt syntheticTrigger =
+            Jimple.newInvokeStmt(
+                    Jimple.newStaticInvokeExpr(clinitSig, Collections.emptyList()),
+                    StmtPositionInfo.getNoStmtPositionInfo())
+                .asInvokableStmt();
+        if (clinitResolver.tryAdvanceCall(method, clinitSig, syntheticTrigger)
+            == ExplorationVerdict.STOP) {
+          continue;
         }
+        cgb.injectCallEdge(
+            sm.getDeclaringClassType(), pta.parameterize(sm, pta.emptyContext()), Kind.CLINIT);
       }
       recordCallStmts(momc, mpag.getInvokeStmts());
       recordThrowStmts(momc, mpag.stmt2wrapperedTraps.keySet());

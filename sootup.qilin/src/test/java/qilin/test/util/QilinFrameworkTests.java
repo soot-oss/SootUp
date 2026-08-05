@@ -108,7 +108,7 @@ public abstract class QilinFrameworkTests {
     return PointerAnalysisConfig.builder()
         .contextSensitivity(contextSensitivity)
         .singleEntry(true)
-        .clinitMode(PointerAnalysisConfig.ClinitMode.ON_THE_FLY)
+        // ON_THE_FLY clinit handling (default: seedEntryPointClinits=false + admit-all resolver)
         .enforceEmptyCtxForIgnoreTypes(true)
         .heapAbstractionPolicy(PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE)
         .preciseArrayElement(true)

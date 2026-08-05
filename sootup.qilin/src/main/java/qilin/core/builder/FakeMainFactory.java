@@ -119,12 +119,10 @@ public class FakeMainFactory extends ArtificialMethod {
 
   private List<SootMethod> getEntryPoints() {
     List<SootMethod> ret = new ArrayList<>();
-    if (config.getClinitMode() == PointerAnalysisConfig.ClinitMode.FULL) {
+    if (config.isSeedEntryPointClinits()) {
       ret.addAll(entryPoints.clinits());
-    } else {
-      // on the fly mode, resolve the clinit methods on the fly.
-      ret.addAll(Collections.emptySet());
     }
+    // otherwise, resolve the clinit methods on the fly instead of seeding them upfront.
 
     if (config.isSingleEntry()) {
       List<SootMethod> entries = entryPoints.application();
@@ -163,9 +161,9 @@ public class FakeMainFactory extends ArtificialMethod {
           addAssign(getArrayRef(strArray), mockStr);
           addInvoke(entry.getSignature().toString(), strArray);
           implicitCallEdgeCount++;
-        } else if (config.getClinitMode() != PointerAnalysisConfig.ClinitMode.ON_THE_FLY
-            || !PTAUtils.isStaticInitializer(entry)) {
-          // in the on fly mode, we won't add a call directly for <clinit> methods.
+        } else if (config.isSeedEntryPointClinits() || !PTAUtils.isStaticInitializer(entry)) {
+          // when not eagerly seeding, we won't add a call directly for <clinit> methods - they're
+          // resolved on the fly instead.
           addInvoke(entry.getSignature().toString());
           implicitCallEdgeCount++;
         }

@@ -18,6 +18,8 @@
 
 package qilin.core.config;
 
+import sootup.callgraph.scope.VirtualCallResolver;
+
 /**
  * Immutable, type-safe replacement for the old {@code CoreConfig}/{@code PTAConfig} singletons. An
  * instance is threaded explicitly through {@code PTAScene} (and from there reachable via {@code
@@ -25,12 +27,6 @@ package qilin.core.config;
  * coexist in the same JVM.
  */
 public final class PointerAnalysisConfig {
-
-  public enum ClinitMode {
-    FULL,
-    ON_THE_FLY,
-    APP
-  }
 
   public enum HeapAbstractionPolicy {
     ALLOC_SITE,
@@ -53,7 +49,8 @@ public final class PointerAnalysisConfig {
   private final ContextSensitivity contextSensitivity;
   private final HeapAbstractionPolicy heapAbstractionPolicy;
   private final boolean singleEntry;
-  private final ClinitMode clinitMode;
+  private final boolean seedEntryPointClinits;
+  private final VirtualCallResolver clinitVirtualCallResolver;
   private final boolean preciseArrayElement;
   private final boolean stringConstants;
   private final boolean preciseExceptions;
@@ -75,7 +72,8 @@ public final class PointerAnalysisConfig {
     this.contextSensitivity = b.contextSensitivity;
     this.heapAbstractionPolicy = b.heapAbstractionPolicy;
     this.singleEntry = b.singleEntry;
-    this.clinitMode = b.clinitMode;
+    this.seedEntryPointClinits = b.seedEntryPointClinits;
+    this.clinitVirtualCallResolver = b.clinitVirtualCallResolver;
     this.preciseArrayElement = b.preciseArrayElement;
     this.stringConstants = b.stringConstants;
     this.preciseExceptions = b.preciseExceptions;
@@ -110,8 +108,31 @@ public final class PointerAnalysisConfig {
     return singleEntry;
   }
 
-  public ClinitMode getClinitMode() {
-    return clinitMode;
+  /**
+   * Whether each entry point's declaring-class {@code <clinit>} is eagerly seeded as a root before
+   * traversal starts, independently of whether the fake-main body actually triggers it. See {@link
+   * sootup.callgraph.AbstractCallGraphAlgorithm#AbstractCallGraphAlgorithm(sootup.core.views.View,
+   * sootup.callgraph.scope.CallResolver, VirtualCallResolver, boolean)} for the four classic
+   * static-initializer handling modes this, combined with {@link #getClinitVirtualCallResolver()},
+   * reproduces: {@code FULL} = {@code true} + {@code new SuppressClinitCallResolver(view)}; {@code
+   * ON_THE_FLY} (default) = {@code false} + {@link VirtualCallResolver#all()}; {@code APP} = {@code
+   * false} + {@code new AppOnlyClinitCallResolver(view)}; {@code NONE} = {@code false} + {@code new
+   * SuppressClinitCallResolver(view)}.
+   */
+  public boolean isSeedEntryPointClinits() {
+    return seedEntryPointClinits;
+  }
+
+  /**
+   * Governs admission of {@code <clinit>} calls discovered on the fly as the points-to analysis
+   * grows (see {@link #isSeedEntryPointClinits()} for how the two combine into the four classic
+   * modes). Qilin does not track the statement that triggered a given {@code <clinit>}, so
+   * resolvers consulted here receive a synthetic invoke statement standing in for it - resolvers
+   * that only inspect the callee (as {@code SuppressClinitCallResolver}/{@code
+   * AppOnlyClinitCallResolver} do) are unaffected by this.
+   */
+  public VirtualCallResolver getClinitVirtualCallResolver() {
+    return clinitVirtualCallResolver;
   }
 
   public boolean isPreciseArrayElement() {
@@ -189,7 +210,8 @@ public final class PointerAnalysisConfig {
     private ContextSensitivity contextSensitivity = ContextSensitivity.insensitive();
     private HeapAbstractionPolicy heapAbstractionPolicy = HeapAbstractionPolicy.ALLOC_SITE;
     private boolean singleEntry = false;
-    private ClinitMode clinitMode = ClinitMode.ON_THE_FLY;
+    private boolean seedEntryPointClinits = false;
+    private VirtualCallResolver clinitVirtualCallResolver = VirtualCallResolver.all();
     private boolean preciseArrayElement = false;
     private boolean stringConstants = false;
     private boolean preciseExceptions = false;
@@ -224,8 +246,13 @@ public final class PointerAnalysisConfig {
       return this;
     }
 
-    public Builder clinitMode(ClinitMode clinitMode) {
-      this.clinitMode = clinitMode;
+    public Builder seedEntryPointClinits(boolean seedEntryPointClinits) {
+      this.seedEntryPointClinits = seedEntryPointClinits;
+      return this;
+    }
+
+    public Builder clinitVirtualCallResolver(VirtualCallResolver clinitVirtualCallResolver) {
+      this.clinitVirtualCallResolver = clinitVirtualCallResolver;
       return this;
     }
 
