@@ -175,8 +175,7 @@ public class CollectionHeuristic {
     }
     // find more container types by checking whether a type has a field of a container type.
     Set<Type> newlyFound = new HashSet<>();
-    containerType.addAll(
-        ft2t.getOrDefault(PTAUtils.OBJECT, Collections.emptySet()));
+    containerType.addAll(ft2t.getOrDefault(PTAUtils.OBJECT, Collections.emptySet()));
     for (Type t1 : containerType) {
       for (Type t2 : ft2t.getOrDefault(t1, Collections.emptySet())) {
         if (!containerType.contains(t2)) {

@@ -195,7 +195,8 @@ public class CallGraphScopeTest {
         identifierFactory.getMethodSignature(
             "ccep.Class", "main", "void", Collections.singletonList("java.lang.String[]"));
     MethodSignature entryClinitSignature =
-        identifierFactory.getStaticInitializerSignature(identifierFactory.getClassType("ccep.Class"));
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccep.Class"));
 
     ClassHierarchyAnalysisAlgorithm cha =
         new ClassHierarchyAnalysisAlgorithm(
@@ -222,7 +223,8 @@ public class CallGraphScopeTest {
         identifierFactory.getMethodSignature(
             "ccep.Class", "main", "void", Collections.singletonList("java.lang.String[]"));
     MethodSignature entryClinitSignature =
-        identifierFactory.getStaticInitializerSignature(identifierFactory.getClassType("ccep.Class"));
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccep.Class"));
 
     ClassHierarchyAnalysisAlgorithm cha =
         new ClassHierarchyAnalysisAlgorithm(
@@ -250,7 +252,8 @@ public class CallGraphScopeTest {
         identifierFactory.getMethodSignature(
             "ccc.Class", "main", "void", Collections.singletonList("java.lang.String[]"));
     MethodSignature directTypeClinit =
-        identifierFactory.getStaticInitializerSignature(identifierFactory.getClassType("ccc.DirectType"));
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccc.DirectType"));
 
     ClassHierarchyAnalysisAlgorithm cha =
         new ClassHierarchyAnalysisAlgorithm(
@@ -277,7 +280,8 @@ public class CallGraphScopeTest {
         identifierFactory.getMethodSignature(
             "ccc.Class", "main", "void", Collections.singletonList("java.lang.String[]"));
     MethodSignature directTypeClinit =
-        identifierFactory.getStaticInitializerSignature(identifierFactory.getClassType("ccc.DirectType"));
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("ccc.DirectType"));
 
     ClassHierarchyAnalysisAlgorithm cha =
         new ClassHierarchyAnalysisAlgorithm(
@@ -304,9 +308,11 @@ public class CallGraphScopeTest {
         identifierFactory.getMethodSignature(
             "app.Application", "main", "void", Collections.singletonList("java.lang.String[]"));
     MethodSignature libraryClinit =
-        identifierFactory.getStaticInitializerSignature(identifierFactory.getClassType("lib.Library"));
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("lib.Library"));
     MethodSignature appClinit =
-        identifierFactory.getStaticInitializerSignature(identifierFactory.getClassType("app.Application"));
+        identifierFactory.getStaticInitializerSignature(
+            identifierFactory.getClassType("app.Application"));
 
     AppOnlyClinitCallResolver resolver = new AppOnlyClinitCallResolver(view);
     SootMethod main = view.getMethod(mainMethodSignature).orElseThrow(AssertionError::new);

@@ -669,9 +669,7 @@ public class PAG {
             }
             Value src = JavaJimple.newArrayRef((Local) srcArr, IntConstant.getInstance(0));
             LValue dst = JavaJimple.newArrayRef((Local) dstArr, IntConstant.getInstance(0));
-            Local local =
-                Jimple.newLocal(
-                    "nativeArrayCopy" + (localCount++), PTAUtils.OBJECT);
+            Local local = Jimple.newLocal("nativeArrayCopy" + (localCount++), PTAUtils.OBJECT);
             builder.addLocal(local);
             newUnits
                 .computeIfAbsent(s, k -> new HashSet<>())

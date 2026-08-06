@@ -51,12 +51,11 @@ import sootup.callgraph.config.CallGraphConfigBuilder;
 public interface CallGraphConfig {
 
   /**
-   * Builds the call graph for the analysis described by this configuration object. All state
-   * needed (view, entry points, algorithm-specific options) is already captured by the concrete
+   * Builds the call graph for the analysis described by this configuration object. All state needed
+   * (view, entry points, algorithm-specific options) is already captured by the concrete
    * implementation, typically via its own builder.
    */
-  @NonNull
-  CallGraph computeCallGraph();
+  @NonNull CallGraph computeCallGraph();
 
   /** Starts a new, family-agnostic {@link CallGraphConfig} builder. */
   @NonNull

@@ -230,9 +230,7 @@ public abstract class AbstractMVFG {
     }
     LocalVarNode mThrow =
         pag.findLocalVarNode(
-            method,
-            new MethodParameter(method, PointsToAnalysis.THROW_NODE),
-            PTAUtils.EXCEPTION);
+            method, new MethodParameter(method, PointsToAnalysis.THROW_NODE), PTAUtils.EXCEPTION);
     if (mThrow != null) {
       addStoreEdge(mThrow, thisRef);
     }

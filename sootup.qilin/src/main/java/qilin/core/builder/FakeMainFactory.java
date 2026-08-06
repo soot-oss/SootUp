@@ -229,8 +229,7 @@ public class FakeMainFactory extends ArtificialMethod {
         defaultClassLoader, "<java.lang.ClassLoader: void addClass(java.lang.Class)>", vClass);
 
     // PrivilegedActionException
-    Local privilegedActionException =
-        getNew(PTAUtils.PRIVILEGED_ACTION_EXCEPTION);
+    Local privilegedActionException = getNew(PTAUtils.PRIVILEGED_ACTION_EXCEPTION);
     Local gLthrow = getNextLocal(PTAUtils.EXCEPTION);
     addInvoke(
         privilegedActionException,

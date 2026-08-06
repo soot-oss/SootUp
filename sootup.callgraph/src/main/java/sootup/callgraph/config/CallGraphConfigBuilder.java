@@ -34,8 +34,8 @@ import sootup.core.views.View;
 
 /**
  * Stage 1 of the unified {@link sootup.callgraph.CallGraphConfig} builder chain: collects the
- * properties shared across every call-graph algorithm family, then transitions to a
- * family-specific stage. Obtained via {@link sootup.callgraph.CallGraphConfig#builder()}.
+ * properties shared across every call-graph algorithm family, then transitions to a family-specific
+ * stage. Obtained via {@link sootup.callgraph.CallGraphConfig#builder()}.
  *
  * <p>{@code view} and {@code entryPoints} are required (validated once a family stage is entered,
  * since {@code view} is needed to construct the default {@link CallResolver} and family-specific
@@ -87,7 +87,8 @@ public final class CallGraphConfigBuilder {
    * AppOnlyClinitCallResolver} for ready-made {@code <clinit>}-scoping resolvers.
    */
   @NonNull
-  public CallGraphConfigBuilder virtualCallResolver(@NonNull VirtualCallResolver virtualCallResolver) {
+  public CallGraphConfigBuilder virtualCallResolver(
+      @NonNull VirtualCallResolver virtualCallResolver) {
     this.virtualCallResolver = virtualCallResolver;
     return this;
   }

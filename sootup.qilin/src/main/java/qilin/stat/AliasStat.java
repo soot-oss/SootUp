@@ -27,9 +27,9 @@ import qilin.core.pag.MethodPAG;
 import qilin.core.pag.PagNode;
 import qilin.core.pag.SparkField;
 import qilin.core.pag.VarNode;
-import qilin.util.sets.PointsToSet;
 import qilin.util.Pair;
 import qilin.util.queue.QueueReader;
+import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.SootMethod;
 

@@ -35,7 +35,8 @@ import sootup.core.views.View;
  * transitions to a family-specific stage (see {@link CallGraphConfigBuilder#cha()}, {@link
  * CallGraphConfigBuilder#rta()}, {@link CallGraphConfigBuilder#into}). Public (unlike the builder's
  * internal state) because family-specific builders living in other modules (e.g. {@code
- * sootup.spark.SparkCallGraphConfig}, {@code qilin.callgraph.QilinCallGraphConfig}) need to read it.
+ * sootup.spark.SparkCallGraphConfig}, {@code qilin.callgraph.QilinCallGraphConfig}) need to read
+ * it.
  */
 public final class CommonCallGraphSettings {
 

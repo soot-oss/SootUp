@@ -13,8 +13,9 @@ import sootup.spark.SparkCallGraphConfig;
 import sootup.spark.test.SparkTestUtil;
 
 /**
- * End-to-end test of {@code sootup.callgraph.CallGraphConfig.builder()....into(SparkCallGraphConfig::from)}
- * - the Spark-specific stage of the unified staged {@link CallGraphConfig} builder chain.
+ * End-to-end test of {@code
+ * sootup.callgraph.CallGraphConfig.builder()....into(SparkCallGraphConfig::from)} - the
+ * Spark-specific stage of the unified staged {@link CallGraphConfig} builder chain.
  */
 public class CallGraphConfigTest {
 

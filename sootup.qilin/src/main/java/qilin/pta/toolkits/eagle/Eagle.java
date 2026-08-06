@@ -26,10 +26,10 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
-import qilin.util.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
+import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -325,9 +325,7 @@ public class Eagle {
           method.getReturnType() instanceof ReferenceType ? (LocalVarNode) srcnf.caseRet() : null;
       LocalVarNode throwFinal =
           prePAG.findLocalVarNode(
-              method,
-              new MethodParameter(method, PointsToAnalysis.THROW_NODE),
-              PTAUtils.THROWABLE);
+              method, new MethodParameter(method, PointsToAnalysis.THROW_NODE), PTAUtils.THROWABLE);
       if (method.isStatic()) {
         pts.getOrDefault(thisRef, Collections.emptySet())
             .forEach(

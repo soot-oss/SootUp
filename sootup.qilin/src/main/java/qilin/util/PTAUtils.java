@@ -78,12 +78,10 @@ public final class PTAUtils {
   public static final ClassType RUNNABLE = getClassType("java.lang.Runnable");
   public static final ClassType STRING_BUFFER = getClassType("java.lang.StringBuffer");
   public static final ClassType STRING_BUILDER = getClassType("java.lang.StringBuilder");
-  public static final ClassType PROTECTION_DOMAIN =
-      getClassType("java.security.ProtectionDomain");
+  public static final ClassType PROTECTION_DOMAIN = getClassType("java.security.ProtectionDomain");
   public static final ClassType PRIVILEGED_ACTION_EXCEPTION =
       getClassType("java.security.PrivilegedActionException");
-  public static final ClassType APP_CLASS_LOADER =
-      getClassType("sun.misc.Launcher$AppClassLoader");
+  public static final ClassType APP_CLASS_LOADER = getClassType("sun.misc.Launcher$AppClassLoader");
   public static final ClassType SYSTEM = getClassType("java.lang.System");
   public static final ClassType UNIX_FILE_SYSTEM = getClassType("java.io.UnixFileSystem");
   public static final ClassType COLLECTION = getClassType("java.util.Collection");

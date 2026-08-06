@@ -79,21 +79,21 @@ public class EaglePTA extends PartialObjSensPTA {
               return;
             }
             if (k instanceof AllocNode heap) {
-                if (heap.getMethod() == null) {
+              if (heap.getMethod() == null) {
                 return;
               }
               String newExpr = heap.getNewExpr().toString();
               if (heap.getNewExpr() instanceof JNewArrayExpr nae) {
-                  newExpr = "new " + nae.getBaseType() + "[]";
+                newExpr = "new " + nae.getBaseType() + "[]";
               }
               String heapSig = heap.getMethod().toString() + "/" + newExpr;
               heapWriter.write(heapSig);
               heapWriter.write(EOL);
             } else if (k instanceof LocalVarNode lvn) {
-                Object variable = lvn.getVariable();
+              Object variable = lvn.getVariable();
               String varName = variable.toString();
               if (variable instanceof MethodParameter methodParameter) {
-                  if (methodParameter.isThis()) {
+                if (methodParameter.isThis()) {
                   varName = "@this";
                 } else if (methodParameter.isReturn()) {
                   return;

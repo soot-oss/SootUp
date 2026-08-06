@@ -32,8 +32,9 @@ import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
- * End-to-end test of {@code sootup.callgraph.CallGraphConfig.builder()....into(QilinCallGraphConfig::from)}
- * - the Qilin-specific stage of the unified staged {@link CallGraphConfig} builder chain.
+ * End-to-end test of {@code
+ * sootup.callgraph.CallGraphConfig.builder()....into(QilinCallGraphConfig::from)} - the
+ * Qilin-specific stage of the unified staged {@link CallGraphConfig} builder chain.
  */
 public class QilinCallGraphConfigTest extends QilinFrameworkTests {
 

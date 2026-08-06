@@ -127,9 +127,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * Creates a new call graph algorithm using the given view, custom {@link CallResolver} and
-   * {@link VirtualCallResolver}, and controls whether each entry point's declaring-class {@code
-   * <clinit>} is eagerly seeded as a root before traversal starts.
+   * Creates a new call graph algorithm using the given view, custom {@link CallResolver} and {@link
+   * VirtualCallResolver}, and controls whether each entry point's declaring-class {@code <clinit>}
+   * is eagerly seeded as a root before traversal starts.
    *
    * <p>Combined with a {@link VirtualCallResolver} that governs {@code <clinit>} admission during
    * traversal (see {@link sootup.callgraph.scope.SuppressClinitCallResolver}, {@link
@@ -137,17 +137,17 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * classic static-initializer handling modes:
    *
    * <ul>
-   *   <li><b>FULL</b> - {@code seedEntryPointClinits=true} + {@code
-   *       new SuppressClinitCallResolver(view)}: only entry points' own {@code <clinit>}s are
-   *       modeled, nothing discovered elsewhere during traversal.
+   *   <li><b>FULL</b> - {@code seedEntryPointClinits=true} + {@code new
+   *       SuppressClinitCallResolver(view)}: only entry points' own {@code <clinit>}s are modeled,
+   *       nothing discovered elsewhere during traversal.
    *   <li><b>ON_THE_FLY</b> - {@code seedEntryPointClinits=false} + {@link
    *       VirtualCallResolver#all()}: no upfront seeding, every {@code <clinit>} triggered during
    *       traversal is modeled as it's discovered.
-   *   <li><b>APP</b> - {@code seedEntryPointClinits=false} + {@code
-   *       new AppOnlyClinitCallResolver(view)}: like {@code ON_THE_FLY}, but {@code <clinit>}s of
+   *   <li><b>APP</b> - {@code seedEntryPointClinits=false} + {@code new
+   *       AppOnlyClinitCallResolver(view)}: like {@code ON_THE_FLY}, but {@code <clinit>}s of
    *       library classes are not modeled.
-   *   <li><b>NONE</b> - {@code seedEntryPointClinits=false} + {@code
-   *       new SuppressClinitCallResolver(view)}: no {@code <clinit>} call is modeled at all.
+   *   <li><b>NONE</b> - {@code seedEntryPointClinits=false} + {@code new
+   *       SuppressClinitCallResolver(view)}: no {@code <clinit>} call is modeled at all.
    * </ul>
    *
    * The other constructors default to {@code seedEntryPointClinits=true} with an admit-all {@link
