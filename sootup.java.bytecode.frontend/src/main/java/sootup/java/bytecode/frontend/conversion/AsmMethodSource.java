@@ -57,10 +57,7 @@ import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.Body;
-import sootup.core.model.FullPosition;
-import sootup.core.model.MethodModifier;
-import sootup.core.model.Position;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PolymorphicMethodSignature;
@@ -1111,7 +1108,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     JavaClassType polyAnnotationType =
         identifierFactory.getClassType("java.lang.invoke.MethodHandle$PolymorphicSignature");
     // temp variable to hold the polymorphic signature match if we find one
-    MethodSignature polyMethodSignature = null;
+    PolymorphicMethodSignature polyMethodSignature = null;
     if (cls.equals(methodHandleType) || cls.equals(varHandleType)) {
       Set<? extends SootMethod> matchingMethods =
           view.getClassOrThrow(cls).getMethodsByName(methodSignatureName);

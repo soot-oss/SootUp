@@ -66,4 +66,21 @@ public class MethodSignature extends SootClassMemberSignature<MethodSubSignature
   public Type getParameterType(int n) {
     return getParameterTypes().get(n);
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    // accept any subclass of MethodSignature (like PolymorphicMethodSignature)
+    if (!(o instanceof MethodSignature)) {
+      return false;
+    }
+
+    MethodSignature that = (MethodSignature) o;
+
+    // Compare signature core components that actually define a method's identity
+    return this.getDeclClassType().equals(that.getDeclClassType()) &&
+            this.getSubSignature().equals(that.getSubSignature());
+  }
 }

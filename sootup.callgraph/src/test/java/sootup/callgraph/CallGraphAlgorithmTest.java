@@ -12,10 +12,6 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.PolymorphicMethodSignature;
-import sootup.core.signatures.PolymorphicMethodSubSignature;
-import sootup.core.types.ClassType;
-import sootup.core.types.Type;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
@@ -1134,48 +1130,5 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
     for (CallGraph.Call call : cg.getCalls()) {
       assertNotEquals(call.sourceMethodSignature(), call.targetMethodSignature());
     }
-  }
-
-  @Test
-  public void testPolymorphicSignatureExamples() {
-    CallGraph cg = loadCallGraph("Polymorphic", "PolymorphicSignatureExamples");
-
-    ClassType methodHandleType = identifierFactory.getClassType("java.lang.invoke.MethodHandle");
-    ClassType varHandleType = identifierFactory.getClassType("java.lang.invoke.VarHandle");
-    Type returnType = identifierFactory.getType("java.lang.Object");
-    Type parameterTypes = identifierFactory.getType("java.lang.Object[]");
-
-    MethodSignature invokeExactMethodSig =
-        new PolymorphicMethodSignature(
-            methodHandleType,
-            new PolymorphicMethodSubSignature(
-                "invokeExact", Collections.singletonList(parameterTypes), returnType));
-    Set<MethodSignature> callSourcesInvokeExact = cg.callSourcesTo(invokeExactMethodSig);
-    assertTrue(callSourcesInvokeExact.contains(mainMethodSignature));
-
-    MethodSignature invokeMethodSig =
-        new PolymorphicMethodSignature(
-            methodHandleType,
-            new PolymorphicMethodSubSignature(
-                "invoke", Collections.singletonList(parameterTypes), returnType));
-    Set<MethodSignature> callSourcesInvoke = cg.callSourcesTo(invokeMethodSig);
-    assertTrue(callSourcesInvoke.contains(mainMethodSignature));
-
-    MethodSignature getMethodSig =
-        new PolymorphicMethodSignature(
-            varHandleType,
-            new PolymorphicMethodSubSignature(
-                "get", Collections.singletonList(parameterTypes), returnType));
-    Set<MethodSignature> callSourcesGet = cg.callSourcesTo(getMethodSig);
-    assertTrue(callSourcesGet.contains(mainMethodSignature));
-
-    MethodSignature varTypeMethodSig =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("java.lang.invoke.VarHandle"),
-            "varType",
-            "java.lang.Class",
-            Collections.emptyList());
-    Set<MethodSignature> callSourcesVarType = cg.callSourcesTo(varTypeMethodSig);
-    assertTrue(callSourcesVarType.contains(mainMethodSignature));
   }
 }

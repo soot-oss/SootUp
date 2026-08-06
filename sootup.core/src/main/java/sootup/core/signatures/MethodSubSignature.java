@@ -74,17 +74,17 @@ public class MethodSubSignature extends SootClassMemberSubSignature
     if (this == o) {
       return true;
     }
-
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-
-    if (!super.equals(o)) {
+    // accept any subclass of MethodSubSignature (like PolymorphicMethodSubSignature)
+    if (!(o instanceof MethodSubSignature)) {
       return false;
     }
 
     MethodSubSignature that = (MethodSubSignature) o;
-    return Objects.equal(getParameterTypes(), that.getParameterTypes());
+
+    // Compare subsignature content, ignoring the specific Java Class of the object
+    return this.getName().equals(that.getName()) &&
+            this.getParameterTypes().equals(that.getParameterTypes()) &&
+            this.getType().equals(that.getType());
   }
 
   @Override
