@@ -15,15 +15,15 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.PolymorphicMethodSignature;
+import sootup.core.signatures.PolymorphicMethodSubSignature;
 import sootup.core.typehierarchy.MutableTypeHierarchy;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
+import sootup.core.types.Type;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.core.signatures.PolymorphicMethodSignature;
-import sootup.core.signatures.PolymorphicMethodSubSignature;
-import sootup.core.types.Type;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -298,14 +298,14 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest 
 
   /**
    * Verifies that CHA's per-target-method-signature cache for virtual/interface dispatch resolution
-   * (see {@link ClassHierarchyAnalysisAlgorithm#resolveVirtualDispatchTargets}) is invalidated
-   * after the type hierarchy is mutated via {@link MutableTypeHierarchy#addType} - i.e. a call
-   * after the mutation must re-query the hierarchy rather than serve a stale cached result.
+   * (see {@see ClassHierarchyAnalysisAlgorithm#resolveVirtualDispatchTargets}) is invalidated after
+   * the type hierarchy is mutated via {@link MutableTypeHierarchy#addType} - i.e. a call after the
+   * mutation must re-query the hierarchy rather than serve a stale cached result.
    *
    * <p>{@code chacache.C} is deliberately compiled to a separate location that is never part of the
    * main view's classpath (see {@code CHACache/binary-lazy}) and is added via a {@link SootClass}
    * resolved through a different {@link JavaView}, so it stays unresolvable by the main view's
-   * {@code getClass(...)} even after {@code addType}. Since {@link
+   * {@code getClass(...)} even after {@code addType}. Since {@see
    * ClassHierarchyAnalysisAlgorithm#resolveVirtualDispatchTargets} resolves each subtype via {@code
    * view.getClass(...)}, C never actually shows up in {@code resolveCall}'s result - so a plain
    * before/after equality check on the result wouldn't prove invalidation happened, it would pass
@@ -391,11 +391,11 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest 
   /**
    * Deterministic counterpart to {@link #testRepeatedResolveCallIsCheapAfterFirstResolution}:
    * instead of inferring caching from wall-clock time, this mocks the {@link TypeHierarchy} to
-   * directly count how many times {@link TypeHierarchy#subtypeClassesOf} - the expensive call
-   * {@link ClassHierarchyAnalysisAlgorithm#resolveVirtualDispatchTargets} is meant to avoid
-   * repeating - is actually invoked. Regardless of machine speed, resolving the same target
-   * signature many times must only reach the hierarchy once; every call after the first must be
-   * served from {@code virtualDispatchTargetsCache}.
+   * directly count how many times {@link TypeHierarchy#subtypeClassesOf} - the expensive call {@see
+   * ClassHierarchyAnalysisAlgorithm#resolveVirtualDispatchTargets} is meant to avoid repeating - is
+   * actually invoked. Regardless of machine speed, resolving the same target signature many times
+   * must only reach the hierarchy once; every call after the first must be served from {@code
+   * virtualDispatchTargetsCache}.
    */
   @Test
   public void testResolveVirtualDispatchTargetsOnlyQueriesHierarchyOnce() {
@@ -430,7 +430,7 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest 
   }
 
   /**
-   * Demonstrates the actual performance win from {@link
+   * Demonstrates the actual performance win from {@see
    * ClassHierarchyAnalysisAlgorithm#resolveVirtualDispatchTargets}: repeatedly resolving the *same*
    * virtual call site is cheap, even when the first resolution is genuinely expensive.
    *
