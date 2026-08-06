@@ -64,7 +64,6 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PolymorphicMethodSignature;
 import sootup.core.signatures.PolymorphicMethodSubSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
