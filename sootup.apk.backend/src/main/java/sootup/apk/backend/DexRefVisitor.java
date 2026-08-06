@@ -113,7 +113,7 @@ public class DexRefVisitor extends AbstractRefVisitor {
 
   @Override
   public void caseParameterRef(@NonNull JParameterRef ref) {
-    registerAllocator.getRegisterForParameter(immediate);
+    registerAllocator.allocateRegisterForParameter(immediate);
   }
 
   @Override
@@ -124,7 +124,7 @@ public class DexRefVisitor extends AbstractRefVisitor {
 
   @Override
   public void caseThisRef(@NonNull JThisRef ref) {
-    registerAllocator.getRegisterForParameter(immediate);
+    registerAllocator.allocateRegisterForParameter(immediate);
   }
 
   @Override
@@ -147,13 +147,9 @@ public class DexRefVisitor extends AbstractRefVisitor {
   }
 
   private void fixObjectType(Type defaultType) {
-
-    log.info("Target register type: {}", targetRegister.getType());
-    log.info("Target register guessed: {}", targetRegister.isTypeGuessed());
-    log.info("Is assign: {}", currentStmt.isJAssignStmt());
-    log.info("New type: {}", defaultType);
     if (targetRegister.getType().toString().equals("java.lang.Object")
         || targetRegister.isTypeGuessed()) {
+      log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
 
       if (targetRegister.getType() != defaultType && currentStmt.isJAssignStmt()) {
         targetRegister =

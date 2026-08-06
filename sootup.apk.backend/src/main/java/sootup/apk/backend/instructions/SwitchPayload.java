@@ -25,9 +25,7 @@ public class SwitchPayload extends AbstractInstruction {
 
   @Override
   public BuilderInstruction getBuilderInstruction() {
-    log.info("CREATE SWITCH PAYLOAD");
     if (getOpcode().equals(Opcode.SPARSE_SWITCH)) {
-
       List<SwitchLabelElement> switchElements = new ArrayList<>();
       for (int i = 0; i < keys.length; i++) {
         switchElements.add(
@@ -57,9 +55,7 @@ public class SwitchPayload extends AbstractInstruction {
   @Override
   public void logSmali() {
     if (getOpcode().equals(Opcode.SPARSE_SWITCH)) {
-      log.info(":{}", getLabelAssigner().getLabelName(this));
       log.info(".sparse-switch");
-
       for (int i = 0; i < keys.length; i++) {
         String label = getLabelAssigner().getLabelName(stmts[i]);
 
@@ -76,7 +72,6 @@ public class SwitchPayload extends AbstractInstruction {
       for (int key = cases.firstKey(); key <= cases.lastKey(); key++) {
         switchElements.add(getLabelAssigner().getLabelName(cases.getOrDefault(key, defaultStmt)));
       }
-      log.info(":{}", getLabelAssigner().getLabelName(this));
       log.info(".packed-switch 0x{}", Integer.toHexString(keys[0]));
       for (int i = 0; i < switchElements.size(); i++) {
         log.info("    {}    # {}", switchElements.get(i), keys[0] + i);

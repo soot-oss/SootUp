@@ -16,6 +16,10 @@ public class Instruction10t extends AbstractInstruction {
     this.targetStmt = targetStmt;
   }
 
+  public Stmt getTargetStmt() {
+    return targetStmt;
+  }
+
   @Override
   public BuilderInstruction getBuilderInstruction() {
     BuilderInstruction builderInstruction =

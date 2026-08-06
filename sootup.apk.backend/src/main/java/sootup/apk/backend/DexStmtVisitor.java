@@ -73,14 +73,28 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     }
 
     if (leftOp instanceof Ref ref) {
-      if (!(rightOp instanceof Immediate rightOpImmediate)) {
+      Register valueRegister;
+      if (rightOp instanceof JCastExpr jCastExpr) {
+        dexExprVisitor.setCurrentStmt(stmt);
+        valueRegister =
+            registerAllocator.getRegisterForValueWithNewType(
+                jCastExpr.getOp(), jCastExpr.getType(), false);
+        dexExprVisitor.setTargetRegister(valueRegister);
+        dexExprVisitor.setTargetStmt(stmt);
+        jCastExpr.accept(dexExprVisitor);
+      } else if (rightOp instanceof Immediate) {
+        valueRegister = registerAllocator.getRegisterForImmediate((Immediate) rightOp, false);
+      } else {
         throw new RuntimeException(
-            "Right-side of AssignStmt is no Immediate: " + rightOp.getType());
+            "Right-side of AssignStmt is no Immediate: "
+                + rightOp
+                + " with type "
+                + rightOp.getType());
       }
-      Register register = registerAllocator.getRegisterForImmediate(rightOpImmediate, false);
+
       dexRefVisitor.setCurrentStmt(stmt);
       dexRefVisitor.setOperation("PUT");
-      dexRefVisitor.setTargetRegister(register);
+      dexRefVisitor.setTargetRegister(valueRegister);
       ref.accept(dexRefVisitor);
 
     } else if (leftOp instanceof Local leftOpLocal) {
@@ -236,20 +250,17 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
         value -> dexMethodBuilder.addInstruction(new Instruction10t(Opcode.GOTO, value), stmt));
   }
 
-  public static Opcode getSwitchOpcode(List<IntConstant> values) {
-
+  private Opcode getSwitchOpcode(List<IntConstant> values) {
     if (values.isEmpty()) {
       return Opcode.SPARSE_SWITCH;
     }
 
     ArrayList<IntConstant> valueList = new ArrayList<>(values);
-
     valueList.sort(Comparator.comparing(IntConstant::getValue));
 
     int packedSize =
         4 + (valueList.get(valueList.size() - 1).getValue() - valueList.get(0).getValue() + 1);
     int sparseSize = 2 + (valueList.size() * 2);
-
     return packedSize <= sparseSize ? Opcode.PACKED_SWITCH : Opcode.SPARSE_SWITCH;
   }
 

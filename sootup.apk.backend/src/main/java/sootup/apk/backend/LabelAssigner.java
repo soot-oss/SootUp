@@ -1,9 +1,6 @@
 package sootup.apk.backend;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.jf.dexlib2.builder.Label;
 import org.jf.dexlib2.builder.MethodImplementationBuilder;
 import org.slf4j.Logger;
@@ -67,5 +64,17 @@ public class LabelAssigner {
       methodImplementationBuilder.addLabel(labelName);
       addedLabels.add(labelName);
     }
+  }
+
+  public boolean areLabelsNotYetPlaced() {
+    Collection<String> labelNames = labelNameMap.values();
+    boolean found = false;
+    for (String label : labelNames) {
+      if (!addedLabels.contains(label)) {
+        log.info("Unset label: {}", label);
+        found = true;
+      }
+    }
+      return found;
   }
 }

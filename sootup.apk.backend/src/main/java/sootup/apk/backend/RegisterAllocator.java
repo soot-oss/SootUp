@@ -108,12 +108,8 @@ public class RegisterAllocator {
     throw new RuntimeException("Immediate is neither local nor constant: " + immediate);
   }
 
-  public Register getRegisterForParameter(Immediate immediate) {
-    return getRegisterForImmediate(immediate, true);
-  }
-
-  public Register getEmptyRegister() {
-    return new Register(0, null, false, false);
+  public void allocateRegisterForParameter(Immediate immediate) {
+    getRegisterForImmediate(immediate, true);
   }
 
   protected int getRegisterCount() {
