@@ -259,26 +259,26 @@ public class ClassHierarchyAnalysisAlgorithmTest extends CallGraphAlgorithmTest 
     Type parameterTypes = identifierFactory.getType("java.lang.Object[]");
 
     PolymorphicMethodSignature invokeExactMethodSig =
-            new PolymorphicMethodSignature(
-                    methodHandleType,
-                    new PolymorphicMethodSubSignature(
-                            "invokeExact", Collections.singletonList(parameterTypes), returnType));
+        new PolymorphicMethodSignature(
+            methodHandleType,
+            new PolymorphicMethodSubSignature(
+                "invokeExact", Collections.singletonList(parameterTypes), returnType));
     Set<MethodSignature> callSourcesInvokeExact = cg.callSourcesTo(invokeExactMethodSig);
     assertTrue(callSourcesInvokeExact.contains(mainMethodSignature));
 
     PolymorphicMethodSignature invokeMethodSig =
-            new PolymorphicMethodSignature(
-                    methodHandleType,
-                    new PolymorphicMethodSubSignature(
-                            "invoke", Collections.singletonList(parameterTypes), returnType));
+        new PolymorphicMethodSignature(
+            methodHandleType,
+            new PolymorphicMethodSubSignature(
+                "invoke", Collections.singletonList(parameterTypes), returnType));
     Set<MethodSignature> callSourcesInvoke = cg.callSourcesTo(invokeMethodSig);
     assertTrue(callSourcesInvoke.contains(mainMethodSignature));
 
     PolymorphicMethodSignature getMethodSig =
-            new PolymorphicMethodSignature(
-                    varHandleType,
-                    new PolymorphicMethodSubSignature(
-                            "get", Collections.singletonList(parameterTypes), returnType));
+        new PolymorphicMethodSignature(
+            varHandleType,
+            new PolymorphicMethodSubSignature(
+                "get", Collections.singletonList(parameterTypes), returnType));
     Set<MethodSignature> callSourcesGet = cg.callSourcesTo(getMethodSig);
     assertTrue(callSourcesGet.contains(mainMethodSignature));
   }

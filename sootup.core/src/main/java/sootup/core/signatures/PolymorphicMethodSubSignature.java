@@ -25,17 +25,16 @@ package sootup.core.signatures;
 import org.jspecify.annotations.NonNull;
 import sootup.core.types.Type;
 
-/**
- * A marker subclass for {@code MethodSubSignature}.
- */
+/** A marker subclass for {@code MethodSubSignature}. */
 public class PolymorphicMethodSubSignature extends MethodSubSignature {
 
-  /** Pass-through constructor to instantiate a polymorphic method signature.
+  /**
+   * Pass-through constructor to instantiate a polymorphic method signature.
    *
    * @param name The method name.
    * @param parameterTypes The signatures of the method parameters.
    * @param type The return type signature.
-   * */
+   */
   public PolymorphicMethodSubSignature(
       @NonNull String name, @NonNull Iterable<? extends Type> parameterTypes, @NonNull Type type) {
     super(name, parameterTypes, type);

@@ -33,13 +33,14 @@ import sootup.core.types.Type;
  */
 public class PolymorphicMethodSignature extends MethodSignature {
 
-  /** Pass-through constructor to instantiate a polymorphic method signature.
+  /**
+   * Pass-through constructor to instantiate a polymorphic method signature.
    *
    * @param declaringClass The declaring class signature.
    * @param methodName The method name.
    * @param parameters The signatures of the method parameters.
    * @param fqReturnType The return type signature.
-   * */
+   */
   public PolymorphicMethodSignature(
       @NonNull ClassType declaringClass,
       @NonNull String methodName,

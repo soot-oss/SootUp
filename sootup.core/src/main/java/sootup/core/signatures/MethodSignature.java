@@ -73,14 +73,12 @@ public class MethodSignature extends SootClassMemberSignature<MethodSubSignature
       return true;
     }
     // accept any subclass of MethodSignature (like PolymorphicMethodSignature)
-    if (!(o instanceof MethodSignature)) {
+    if (!(o instanceof MethodSignature that)) {
       return false;
     }
 
-    MethodSignature that = (MethodSignature) o;
-
     // Compare signature core components that actually define a method's identity
-    return this.getDeclClassType().equals(that.getDeclClassType()) &&
-            this.getSubSignature().equals(that.getSubSignature());
+    return this.getDeclClassType().equals(that.getDeclClassType())
+        && this.getSubSignature().equals(that.getSubSignature());
   }
 }
