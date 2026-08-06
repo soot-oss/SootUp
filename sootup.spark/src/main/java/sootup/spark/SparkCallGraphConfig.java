@@ -85,7 +85,8 @@ public final class SparkCallGraphConfig implements CallGraphConfig {
                   common.getVirtualCallResolver(),
                   common.getSeedEntryPointClinits(true))
               .initialize(common.getEntryPoints());
-      spark = Spark.builder().view(common.getView()).callGraph(cha).sparkOptions(sparkOptions).build();
+      spark =
+          Spark.builder().view(common.getView()).callGraph(cha).sparkOptions(sparkOptions).build();
     }
     return spark.getCallGraph();
   }

@@ -305,18 +305,17 @@ public class MethodNodeFactory {
   }
 
   public VarNode caseThis() {
-    Type type =
-        method.isStatic()
-            ? PTAUtils.OBJECT
-            : method.getDeclaringClassType();
-    VarNode ret = pag.makeLocalVarNode(new MethodParameter(method, PointsToAnalysis.THIS_NODE), type, method);
+    Type type = method.isStatic() ? PTAUtils.OBJECT : method.getDeclaringClassType();
+    VarNode ret =
+        pag.makeLocalVarNode(new MethodParameter(method, PointsToAnalysis.THIS_NODE), type, method);
     ret.setInterProcTarget();
     return ret;
   }
 
   public VarNode caseParm(int index) {
     VarNode ret =
-        pag.makeLocalVarNode(new MethodParameter(method, index), method.getParameterType(index), method);
+        pag.makeLocalVarNode(
+            new MethodParameter(method, index), method.getParameterType(index), method);
     ret.setInterProcTarget();
     return ret;
   }
@@ -324,7 +323,9 @@ public class MethodNodeFactory {
   public VarNode caseRet() {
     VarNode ret =
         pag.makeLocalVarNode(
-            new MethodParameter(method, PointsToAnalysis.RETURN_NODE), method.getReturnType(), method);
+            new MethodParameter(method, PointsToAnalysis.RETURN_NODE),
+            method.getReturnType(),
+            method);
     ret.setInterProcSource();
     return ret;
   }
@@ -332,9 +333,7 @@ public class MethodNodeFactory {
   public VarNode caseMethodThrow() {
     VarNode ret =
         pag.makeLocalVarNode(
-            new MethodParameter(method, PointsToAnalysis.THROW_NODE),
-            PTAUtils.THROWABLE,
-            method);
+            new MethodParameter(method, PointsToAnalysis.THROW_NODE), PTAUtils.THROWABLE, method);
     ret.setInterProcSource();
     return ret;
   }
@@ -370,8 +369,7 @@ public class MethodNodeFactory {
 
   private VarNode caseStringConstant(StringConstant sc) {
     AllocNode stringConstantNode = pag.makeStringConstantNode(sc);
-    VarNode stringConstantVar =
-        pag.makeGlobalVarNode(sc, PTAUtils.STRING);
+    VarNode stringConstantVar = pag.makeGlobalVarNode(sc, PTAUtils.STRING);
     mpag.addInternalEdge(stringConstantNode, stringConstantVar);
     VarNode vn = pag.makeLocalVarNode(sc, PTAUtils.STRING, method);
     mpag.addInternalEdge(stringConstantVar, vn);
@@ -401,7 +399,11 @@ public class MethodNodeFactory {
     Optional<? extends ClassType> curr = Optional.of(cl.getType());
     while (curr.isPresent()) {
       ClassType ct = curr.get();
-      SootClass sc = scene.getView().getClass(ct).get();
+      Optional<? extends SootClass> osc = scene.getView().getClass(ct);
+      if (!osc.isPresent()) {
+        break;
+      }
+      SootClass sc = osc.get();
       worklist.add(sc);
       curr = sc.getSuperclass();
     }
