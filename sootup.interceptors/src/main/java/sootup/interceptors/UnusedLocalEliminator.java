@@ -25,10 +25,10 @@ package sootup.interceptors;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
 /**

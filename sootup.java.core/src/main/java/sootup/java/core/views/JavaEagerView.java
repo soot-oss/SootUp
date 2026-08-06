@@ -30,45 +30,24 @@ import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 
+/** Resolve all available SootClasses up front / eagerly. */
 public class JavaEagerView extends JavaView {
 
   public JavaEagerView(@NonNull AnalysisInputLocation inputLocation) {
-    super(Collections.singletonList(inputLocation));
-    eagerLoadClasses();
+    this(Collections.singletonList(inputLocation));
   }
 
   public JavaEagerView(@NonNull List<AnalysisInputLocation> inputLocations) {
-    super(inputLocations, new FullCacheProvider());
-    eagerLoadClasses();
+    this(inputLocations, new FullCacheProvider());
   }
 
   public JavaEagerView(
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull ClassCacheProvider cacheProvider) {
-    super(inputLocations, cacheProvider, JavaIdentifierFactory.getInstance());
-    eagerLoadClasses();
-  }
-
-  protected void eagerLoadClasses() {
-    if (!isFullyResolved) {
-      getClasses()
-          .forEach(
-              c -> {
-                c.getModifiers();
-                c.getFields();
-                c.getInterfaces();
-                c.getAnnotations();
-                c.getSuperclass();
-                c.getOuterClass();
-                c.getPosition();
-                c.getMethods()
-                    .forEach(
-                        m -> {
-                          if (m.hasBody()) {
-                            m.getBody().getStmts();
-                          }
-                        });
-              }); // forces loading
-    }
+    super(
+        inputLocations,
+        cacheProvider,
+        LoadingStrategy.eager(),
+        JavaIdentifierFactory.getInstance());
   }
 }

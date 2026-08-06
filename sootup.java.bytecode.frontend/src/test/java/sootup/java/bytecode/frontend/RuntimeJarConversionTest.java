@@ -12,12 +12,12 @@ import java.util.function.BiFunction;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptorMetric;
+import sootup.core.interceptor.RunTimeBodyInterceptor;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
-import sootup.core.transform.BodyInterceptorMetric;
-import sootup.core.transform.RunTimeBodyInterceptor;
 import sootup.core.util.Utils;
 import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.interceptors.CopyPropagator;
@@ -25,6 +25,7 @@ import sootup.interceptors.DeadAssignmentEliminator;
 import sootup.interceptors.TypeAssigner;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.views.JavaEagerView;
 import sootup.java.core.views.JavaView;
 
 public class RuntimeJarConversionTest {
@@ -32,12 +33,12 @@ public class RuntimeJarConversionTest {
   @Test
   public void testJarWithDefaultInterceptors() {
     AnalysisInputLocation inputLocation =
-        new DefaultRuntimeAnalysisInputLocation(SourceType.Library);
+        new DefaultRuntimeAnalysisInputLocation(SourceType.Library, Collections.emptyList());
     convertInputLocation(inputLocation);
   }
 
   private static void convertInputLocation(AnalysisInputLocation inputLocation) {
-    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+    JavaView view = new JavaEagerView(Collections.singletonList(inputLocation));
     int[] failedConversions = {0};
     long[] count = {0};
     view.getClasses()

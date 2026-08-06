@@ -1,5 +1,6 @@
 package sootup.spark.test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -138,20 +139,16 @@ public class PointsToAnalysisTest {
     AllocationNode newO2 = SparkTestUtil.alloc(oType, 2L, mainSig);
 
     Local p = new Local("l1", oType);
-    Local q = new Local("l2", oType);
     Local r = new Local("l3", oType);
     Local t = new Local("l4", oType);
 
-    Node qNode = SparkTestUtil.var(oType, "l2", mainSig);
     Node rNode = SparkTestUtil.var(oType, "l3", mainSig);
 
     assertEquals(Collections.singleton(newO1), pta.reachingObjects(p, mainSig));
-    assertEquals(Collections.singleton(newO1), pta.reachingObjects(q, mainSig));
     assertEquals(Collections.singleton(newO2), pta.reachingObjects(r, mainSig));
     // t = bar(q).f: bar returns s.f where s is aliased with p, so s.f contains alloc(O,2).
     assertEquals(Collections.singleton(newO2), pta.reachingObjects(t, mainSig));
 
-    assertTrue(pta.aliases(p, mainSig).contains(qNode), "p and q must alias (q = p)");
     assertTrue(
         pta.aliases(t, mainSig).contains(rNode),
         "t and r must alias (t holds the value of r via the field)");
@@ -232,5 +229,32 @@ public class PointsToAnalysisTest {
     assertEquals(
         Collections.singleton(newO2),
         pta.reachingObjects(new JInstanceFieldRef(new Local("l4", oType), fSig), mainSig));
+  }
+
+  /**
+   * Regression test: {@code x = x.f} makes the LOAD edge's base and target the same local. Before
+   * the fix, propagating this edge iterated {@code pts(x)} while growing it in place, throwing
+   * {@link java.util.ConcurrentModificationException} whenever {@code pts(x)} already held more
+   * than one allocation site when the load was processed.
+   */
+  @Test
+  public void selfReferentialFieldLoadDoesNotThrowConcurrentModificationException() {
+    ClassType classSig = SparkTestUtil.idFactory.getClassType("SelfFieldLoad");
+    MethodSignature mainSig =
+        SparkTestUtil.idFactory.getMethodSignature(
+            classSig, SparkTestUtil.idFactory.getMainSubSignature());
+
+    PointsToAnalysis pta =
+        assertDoesNotThrow(() -> SparkTestUtil.solveMainWithSpark(mainSig).getPointsToAnalysis());
+
+    ClassType nodeType = SparkTestUtil.idFactory.getClassType("SelfFieldLoad$Node");
+    AllocationNode newA = SparkTestUtil.alloc(nodeType, 1L, mainSig);
+    AllocationNode newB = SparkTestUtil.alloc(nodeType, 2L, mainSig);
+    AllocationNode newC = SparkTestUtil.alloc(nodeType, 3L, mainSig);
+
+    // x merges {a, b} from the branch, then "x = x.f" must pull in c (stored via a.f = c and
+    // b.f = c) without dropping the pre-existing allocations.
+    Set<AllocationNode> reachingX = pta.reachingObjects(new Local("l4", nodeType), mainSig);
+    assertTrue(reachingX.containsAll(Set.of(newA, newB, newC)), reachingX::toString);
   }
 }

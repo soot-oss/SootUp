@@ -1,0 +1,25 @@
+name: Sync release version with PR title
+
+on:
+  pull_request:
+    types:
+      - edited
+      - synchronize
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: Recompute release version from title tag
+    # head.repo check rejects fork PRs pretending to be our own release branches -
+    # legitimate release/prep-* branches are always pushed by our own automation into this repo.
+    # (Fork check itself is enforced inside the reusable workflow too; this is just
+    # a cheap skip so we don't even spin up a job run for irrelevant PRs.)
+    if: >
+      startsWith(github.head_ref, 'release/prep-') &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    # Reusable workflow: secure-software-engineering/actions/release/README.md
+    uses: secure-software-engineering/actions/.github/workflows/maven-release-title-sync.yml@486fdf8b917ee6ad71eb393010bd8b3952c208e6 # develop
+    secrets:
+      release_pat: ${{ secrets.AUTO_MERGE_PAT }} # default GITHUB_TOKEN is blocked by branch protection

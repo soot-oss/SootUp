@@ -29,11 +29,11 @@ import java.util.*;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.interceptors.BytecodeBodyInterceptors;
@@ -61,8 +61,8 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module
    * path.
    *
-   * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
-   *     SootClassSource}es for the files found on the class path
+   * @param modulePath The class path to search in The {@link PathbasedClassProvider} for generating
+   *     {@link SootClassSource}es for the files found on the class path
    */
   public JavaModulePathAnalysisInputLocation(@NonNull Path modulePath) {
     this(modulePath, SourceType.Application);
@@ -83,8 +83,8 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module
    * path.
    *
-   * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
-   *     SootClassSource}es for the files found on the class path
+   * @param modulePath The class path to search in The {@link PathbasedClassProvider} for generating
+   *     {@link SootClassSource}es for the files found on the class path
    * @param fileSystem filesystem for the path
    */
   public JavaModulePathAnalysisInputLocation(

@@ -1,0 +1,34 @@
+name: Publish Release
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - closed
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Tag, deploy to Maven Central and advance develop
+    # Reusable workflow: secure-software-engineering/actions/release/README.md
+    uses: secure-software-engineering/actions/.github/workflows/maven-release-publish.yml@486fdf8b917ee6ad71eb393010bd8b3952c208e6 # develop
+    permissions:
+      contents: write
+    with:
+      head_branch: develop
+      release_java_distribution: adopt
+      prepare_java_distribution: zulu
+      maven_server_id: central
+      deployment_environment: deployment
+    secrets:
+      release_pat: ${{ secrets.AUTO_MERGE_PAT }}
+      gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+      gpg_passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+      maven_username: ${{ secrets.MAVEN_USERNAME }}
+      maven_central_token: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
