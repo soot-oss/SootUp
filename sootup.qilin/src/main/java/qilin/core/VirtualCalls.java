@@ -97,8 +97,10 @@ public class VirtualCalls {
       Optional<? extends ClassType> oc = cls.getSuperclass();
       if (oc.isPresent()) {
         ClassType ct = oc.get();
-        SootClass c = view.getClass(ct).get();
-        ret = resolveNonSpecial(c.getType(), subSig);
+        Optional<? extends SootClass> oc2 = view.getClass(ct);
+        if (oc2.isPresent()) {
+          ret = resolveNonSpecial(oc2.get().getType(), subSig);
+        }
       }
     }
     if (ret == null) {
