@@ -17,7 +17,7 @@ jobs:
   publish:
     name: Tag, deploy to Maven Central and advance develop
     # Reusable workflow: secure-software-engineering/actions/release/README.md
-    uses: secure-software-engineering/actions/.github/workflows/maven-release-publish.yml@486fdf8b917ee6ad71eb393010bd8b3952c208e6 # develop
+    uses: secure-software-engineering/actions/.github/workflows/maven-release-publish.yml@7a286175a5ce134571e0228fc4da41885f2821e3 # develop
     permissions:
       contents: write
     with:
