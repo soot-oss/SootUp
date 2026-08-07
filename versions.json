@@ -37,6 +37,11 @@
     ]
   },
   {
+    "version": "v3.0.1",
+    "title": "latest",
+    "aliases": []
+  },
+  {
     "version": "v3.0.0",
     "title": "latest",
     "aliases": []
