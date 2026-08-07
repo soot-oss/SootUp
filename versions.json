@@ -2,7 +2,10 @@
   {
     "version": "pr-1702",
     "title": "Preview for PR-1702",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": true
+    }
   },
   {
     "version": "pr-1657",
