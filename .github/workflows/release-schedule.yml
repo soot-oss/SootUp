@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   schedule:
-    uses: secure-software-engineering/actions/.github/workflows/maven-release-schedule.yml@develop
+    uses: secure-software-engineering/actions/.github/workflows/maven-release-schedule.yml@5df8d9ec2f3351fbb13f2a7782dcdc4502e1a4dc
     with:
       head_branch: develop
       java_version: '17'
