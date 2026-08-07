@@ -68,6 +68,7 @@ public class VirtualCalls {
       if (!otgt.isPresent()) {
         System.out.println(
             "Wrarning: signature " + methodSig + " does not have a concrete method.");
+        return null;
       }
       return otgt.get();
     }
@@ -83,7 +84,11 @@ public class VirtualCalls {
     if (ret != null) {
       return ret;
     }
-    SootClass cls = view.getClass(t).get();
+    Optional<? extends SootClass> ocls = view.getClass(t);
+    if (!ocls.isPresent()) {
+      return null;
+    }
+    SootClass cls = ocls.get();
     if (appOnly && cls.isLibraryClass()) {
       return null;
     }
