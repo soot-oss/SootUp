@@ -313,7 +313,7 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
-                    <argLine>-Xmx4096M ${surefireArgLine}</argLine>
+                    <argLine>-Xmx8192M ${surefireArgLine}</argLine>
                     <trimStackTrace>false</trimStackTrace>
                     <parallel>all</parallel>
                     <useUnlimitedThreads>true</useUnlimitedThreads>
