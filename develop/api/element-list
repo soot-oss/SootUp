@@ -46,6 +46,7 @@ sootup.apk.frontend.main
 sootup.apk.frontend.tag
 sootup.apk.frontend.Util
 sootup.callgraph
+sootup.callgraph.scope
 sootup.codepropertygraph.ast
 sootup.codepropertygraph.cdg
 sootup.codepropertygraph.cfg

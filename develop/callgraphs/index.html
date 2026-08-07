@@ -798,6 +798,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#scoping-the-call-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoping the Call Graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#class-hierarchy-analysis" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1265,6 +1276,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#scoping-the-call-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoping the Call Graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#class-hierarchy-analysis" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1419,10 +1441,56 @@ Below, we show how to create a type hierarchy:</p>
 </div>
 </div>
 </div>
+<h2 id="scoping-the-call-graph">Scoping the Call Graph</h2>
+<p>By default, every call graph algorithm stops exploring at library classes
+(classes whose <code>SourceType</code> is <code>Library</code>, e.g. the JDK classes pulled in via <code>DefaultRuntimeAnalysisInputLocation</code>):
+a call <em>into</em> a library method is still recorded as an edge, but the library method's own body is never analyzed, so it never gets outgoing edges of its own.</p>
+<p>This behavior is controlled by a <code>CallGraphScope</code>. <code>CallGraphScope.filter(SootClass, MethodSignature)</code> is asked once per method before its calls are resolved;
+returning <code>true</code> excludes the method from expansion. The method still shows up as a node in the resulting call graph:
+it simply has no outgoing edges, since its body is never analyzed.
+The default scope (<code>DefaultCallGraphScope</code>) is exactly the "skip library classes" behavior described above.</p>
+<p>You can pass a custom <code>CallGraphScope</code> to <code>ClassHierarchyAnalysisAlgorithm</code>/<code>RapidTypeAnalysisAlgorithm</code> to change what gets explored, e.g. to also cut off a specific package:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">SootUp (custom scope)</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraphScope</span><span class="w"> </span><span class="n">skipTestPackage</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="p">(</span><span class="n">sc</span><span class="p">,</span><span class="w"> </span><span class="n">ms</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">sc</span><span class="p">.</span><span class="na">isLibraryClass</span><span class="p">()</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">sc</span><span class="p">.</span><span class="na">getType</span><span class="p">().</span><span class="na">getFullyQualifiedName</span><span class="p">().</span><span class="na">startsWith</span><span class="p">(</span><span class="s">&quot;com.example.tests&quot;</span><span class="p">);</span>
+
+<span class="n">CallGraphAlgorithm</span><span class="w"> </span><span class="n">cha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ClassHierarchyAnalysisAlgorithm</span><span class="p">(</span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">skipTestPackage</span><span class="p">);</span>
+<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cha</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">));</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>If you need to know <em>what</em> got excluded, e.g. to diagnose why an expected method is missing from the call graph, use <code>ExcludedCallsCollectingCallGraphScope</code>, which applies the default library-class filtering while recording every excluded method signature:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">SootUp (diagnosing exclusions)</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ExcludedCallsCollectingCallGraphScope</span><span class="w"> </span><span class="n">scope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ExcludedCallsCollectingCallGraphScope</span><span class="p">();</span>
+<span class="n">CallGraphAlgorithm</span><span class="w"> </span><span class="n">cha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ClassHierarchyAnalysisAlgorithm</span><span class="p">(</span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">scope</span><span class="p">);</span>
+<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cha</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">));</span>
+
+<span class="n">scope</span><span class="p">.</span><span class="na">getVisitedExcludedMethods</span><span class="p">().</span><span class="na">forEach</span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">::</span><span class="n">println</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Scope prunes expansion, not existing edges</p>
+<p>A <code>CallGraphScope</code> only decides whether a method's <em>own</em> calls get resolved. It does not remove edges that other, non-excluded methods already call into it -- those calls are still part of the call graph.</p>
+</div>
 <h2 id="class-hierarchy-analysis">Class Hierarchy Analysis</h2>
 <p>Class Hierarchy Analysis (CHA) algorithm is the most sound call graph construction algorithm available in SootUp. It soundly includes all implementers of an interface, when resolving a method call on an interface.
 You can construct a call graph with CHA as follows:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">SootUp</label><label for="__tabbed_3_2">Soot</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">SootUp</label><label for="__tabbed_5_2">Soot</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
@@ -1461,7 +1529,7 @@ You can construct a call graph with CHA as follows:</p>
 <h2 id="rapid-type-analysis">Rapid Type Analysis</h2>
 <p>Rapid Type Analysis (RTA) algorithm constructs a rather precise version of the call graph that the CHA constructs. It refines CHA by considering only the instantiated implementers of an interface, when resolving a method call on an interface.
 You can construct a call graph with RTA as follows:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">SootUp</label><label for="__tabbed_4_2">Soot</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">SootUp</label><label for="__tabbed_6_2">Soot</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
@@ -1565,7 +1633,7 @@ Spark requires an initial call graph to begin with. You can use one of the call 
 The nodes represent method signatures, and the edges contain labels showing the line numbers of the invoking statements.<br />
 In this example, the call graph was created using <strong>CHA</strong>.<br />
 The exported call graph can be sorted by providing a <code>Comparator</code> for <strong>Calls</strong>.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">unsorted</label><label for="__tabbed_5_2">sorted</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">unsorted</label><label for="__tabbed_7_2">sorted</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
