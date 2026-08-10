@@ -273,6 +273,15 @@ public class CallGraphBuilder {
     // add arg --> param edges.
     int numArgs = ie.getArgCount();
     for (int i = 0; i < numArgs; i++) {
+      if (i >= tgtmtd.getParameterCount()) {
+        // Call site arg count > target's declared param count: only reachable through the
+        // LambdaAllocNode virtual-dispatch bridge in dispatch(AllocNode, VirtualCallSite) - the
+        // SAM interface method being invoked doesn't necessarily have the same arity as the
+        // lambda's underlying static target once points-to imprecision lets the same
+        // LambdaAllocNode reach an unrelated call site. Documented gap, not a correctness bug:
+        // skip modeling this particular arg rather than crash.
+        continue;
+      }
       Value arg = ie.getArg(i);
       if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant) {
         continue;

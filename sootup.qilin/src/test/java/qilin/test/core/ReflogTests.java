@@ -20,15 +20,9 @@ package qilin.test.core;
 
 import org.junit.jupiter.api.Test;
 import qilin.core.PTA;
-import qilin.test.util.QilinLegacyFrameworkTests;
+import qilin.test.util.QilinFrameworkTests;
 
-/**
- * Extends {@link QilinLegacyFrameworkTests}, not {@link qilin.test.util.QilinFrameworkTests} - hits
- * the same static-call arg/param arity crash as {@link qilin.test.core.AssignTests} when analyzed
- * against the current JVM's full runtime image (11 of 12 tests error there; root cause not yet
- * isolated).
- */
-public class ReflogTests extends QilinLegacyFrameworkTests {
+public class ReflogTests extends QilinFrameworkTests {
   @Test
   public void testFieldGetStatic() {
     checkAssertions(run("qilin.microben.core.reflog.FieldGetStatic"));

@@ -19,17 +19,9 @@
 package qilin.test.core;
 
 import org.junit.jupiter.api.Test;
-import qilin.test.util.QilinLegacyFrameworkTests;
+import qilin.test.util.QilinFrameworkTests;
 
-/**
- * Extends {@link QilinLegacyFrameworkTests}, not {@link qilin.test.util.QilinFrameworkTests} -
- * {@code testCastFail} hits {@code CallGraphBuilder.processCallAssign}'s static-call arg/param
- * arity mismatch (IndexOutOfBoundsException at MethodSignature.getParameterType) when analyzed
- * against the current JVM's full runtime image instead of jre1.6.0_45 - same crash signature as
- * {@link ReflogTests}, root cause not yet isolated (not the invokedynamic/StringConcatFactory issue
- * from {@link ClinitTests} - this microbenchmark has no indy call sites).
- */
-public class AssignTests extends QilinLegacyFrameworkTests {
+public class AssignTests extends QilinFrameworkTests {
   @Test
   public void testCastFail() {
     checkAssertions(run("qilin.microben.core.assign.CastFail"));
