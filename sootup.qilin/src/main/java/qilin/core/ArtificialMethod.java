@@ -132,8 +132,8 @@ public abstract class ArtificialMethod {
 
   protected JStaticFieldRef getStaticFieldRef(String className, String name) {
     ClassType classType = PTAUtils.getClassType(className);
-    SootClass sc = (SootClass) view.getClass(classType).get();
-    SootField field = (SootField) sc.getField(name).get();
+    SootClass sc = view.getClass(classType).get();
+    SootField field = sc.getField(name).get();
     return Jimple.newStaticFieldRef(field.getSignature());
   }
 
@@ -144,8 +144,8 @@ public abstract class ArtificialMethod {
   /** add an instance invocation receiver.sig(args) */
   protected void addInvoke(Local receiver, String sig, Immediate... args) {
     MethodSignature methodSig = identifierFactory.parseMethodSignature(sig);
-    SootMethod method = (SootMethod) view.getMethod(methodSig).get();
-    SootClass clazz = (SootClass) view.getClass(method.getDeclaringClassType()).get();
+    SootMethod method = view.getMethod(methodSig).get();
+    SootClass clazz = view.getClass(method.getDeclaringClassType()).get();
     List<Immediate> argsL = Arrays.asList(args);
     AbstractInvokeExpr invoke =
         clazz.isInterface()

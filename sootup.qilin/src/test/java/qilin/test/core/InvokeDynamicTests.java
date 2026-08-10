@@ -97,16 +97,12 @@ public class InvokeDynamicTests {
   // shared surefire JVM (4GB, parallel=all) alongside the rest of the suite. Kept as documented,
   // manually-runnable coverage for the ContextAllocNode.base() unwrap in CallGraphBuilder.dispatch
   // rather than deleted outright.
-  @Disabled(
-      "memory-hungry: object-sensitive analysis over the full JDK runtime image OOMs the shared test JVM")
   @Test
   public void testLambdaObjectSensitive() {
     checkAssertions(
         run("qilin.microben.core.invokedynamic.Lambda", ContextSensitivity.objectSensitive(2, 1)));
   }
 
-  @Disabled(
-      "memory-hungry: object-sensitive analysis over the full JDK runtime image OOMs the shared test JVM")
   @Test
   public void testStaticMethodRefObjectSensitive() {
     checkAssertions(
