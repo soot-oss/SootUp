@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import qilin.core.PTA;
 import qilin.core.PointerAnalysisFactory;

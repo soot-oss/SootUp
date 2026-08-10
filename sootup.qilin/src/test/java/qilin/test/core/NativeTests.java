@@ -21,9 +21,16 @@ package qilin.test.core;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import qilin.core.config.ContextSensitivity;
-import qilin.test.util.QilinFrameworkTests;
+import qilin.test.util.QilinLegacyFrameworkTests;
 
-public class NativeTests extends QilinFrameworkTests {
+/**
+ * Extends {@link QilinLegacyFrameworkTests}, not {@link qilin.test.util.QilinFrameworkTests} -
+ * {@code testRefArrayGet}/{@code testRefArraySet} hit the same {@code invokedynamic}/{@code
+ * StringConcatFactory} qilin-resolution issue as {@link ClinitTests} (see its javadoc), and
+ * analyzing the rest of this suite against the full modern JDK runtime image (instead of
+ * jre1.6.0_45's much smaller rt.jar) OOMs the shared 4GB surefire JVM.
+ */
+public class NativeTests extends QilinLegacyFrameworkTests {
   @Test
   public void testArrayCopy() {
     checkAssertions(run("qilin.microben.core.natives.ArrayCopy"));

@@ -33,8 +33,18 @@ import qilin.util.PTAUtils;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
+/**
+ * Runs against the current JVM's own runtime image ({@link PTAUtils#createView(String, String)}) -
+ * safe because {@code singleEntry(true)} (below) skips {@code FakeMainFactory}'s pre-JDK9
+ * JVM-bootstrap modeling, and none of this base's subclasses' microbenchmarks touch java.util
+ * internals whose object graph differs across JRE versions.
+ *
+ * <p>{@link qilin.test.context.CollectionsTests} is the one exception - its assertions are
+ * calibrated to a real jre1.6.0_45's exact {@code java.util.HashMap}/{@code HashSet} internals - so
+ * it deliberately does not extend this class (see its own javadoc).
+ */
 public abstract class QilinFrameworkTests {
-  protected static String appPath, jrePath, refLogPath;
+  protected static String appPath, refLogPath;
   protected static boolean isSetUp = false;
 
   @BeforeAll
@@ -67,20 +77,6 @@ public abstract class QilinFrameworkTests {
                 + File.separator
                 + "reflog");
     refLogPath = refLogDir.getCanonicalPath();
-    File jreFile =
-        new File(
-            ".."
-                + File.separator
-                + "artifact"
-                + File.separator
-                + "benchmarks"
-                + File.separator
-                + "JREs"
-                + File.separator
-                + "jre1.6.0_45"
-            //    + "jre1.8.0_121_debug"
-            );
-    jrePath = jreFile.getCanonicalPath();
     isSetUp = true;
   }
 
@@ -105,6 +101,16 @@ public abstract class QilinFrameworkTests {
   }
 
   protected PointerAnalysisConfig.Builder configBuilder(ContextSensitivity contextSensitivity) {
+    return configBuilder(contextSensitivity, refLogPath);
+  }
+
+  /**
+   * Static/parameterized so classes that don't extend {@link QilinFrameworkTests} (e.g. {@link
+   * qilin.test.context.CollectionsTests}, pinned to a different JRE) can still share these config
+   * defaults instead of duplicating them.
+   */
+  public static PointerAnalysisConfig.Builder configBuilder(
+      ContextSensitivity contextSensitivity, String refLogPath) {
     return PointerAnalysisConfig.builder()
         .contextSensitivity(contextSensitivity)
         .singleEntry(true)
@@ -118,7 +124,7 @@ public abstract class QilinFrameworkTests {
   }
 
   private PTA run(String mainClass, PointerAnalysisConfig config) {
-    View view = PTAUtils.createView(appPath, null, jrePath);
+    View view = PTAUtils.createView(appPath, null);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
     PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
     // NOT pta.pureRun(): for staged toolkit variants (Zipper, DebloatedPTA/Moon, Bean, ...)
@@ -129,7 +135,7 @@ public abstract class QilinFrameworkTests {
     return pta;
   }
 
-  protected void checkAssertions(PTA pta) {
+  public static void checkAssertions(PTA pta) {
     checkAssertions(pta, true);
   }
 
@@ -145,7 +151,7 @@ public abstract class QilinFrameworkTests {
     checkAssertions(pta, false);
   }
 
-  private void checkAssertions(PTA pta, boolean requirePrecision) {
+  public static void checkAssertions(PTA pta, boolean requirePrecision) {
     // DebloatedPTA's own getPag()/getReachableMethods() are its throwaway pre-basePTA-assignment
     // state (see DebloatedPTA#getBasePTA) - the finished analysis and its PAG live on basePTA.
     if (pta instanceof DebloatedPTA debloatedPTA) {

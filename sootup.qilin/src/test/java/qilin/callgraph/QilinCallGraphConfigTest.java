@@ -40,7 +40,7 @@ public class QilinCallGraphConfigTest extends QilinFrameworkTests {
 
   @Test
   public void testIntoQilinStageBuildsCallGraph() {
-    View view = PTAUtils.createView(appPath, null, jrePath);
+    View view = PTAUtils.createView(appPath, null);
     ClassType mainClassType =
         view.getIdentifierFactory().getClassType("qilin.microben.core.clinit.ClinitStaticLoad");
 
@@ -58,7 +58,7 @@ public class QilinCallGraphConfigTest extends QilinFrameworkTests {
 
   @Test
   public void testMissingMainClassThrows() {
-    View view = PTAUtils.createView(appPath, null, jrePath);
+    View view = PTAUtils.createView(appPath, null);
     assertThrows(
         IllegalStateException.class,
         () ->

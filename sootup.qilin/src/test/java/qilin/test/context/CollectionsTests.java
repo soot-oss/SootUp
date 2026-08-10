@@ -20,9 +20,15 @@ package qilin.test.context;
 
 import org.junit.jupiter.api.Test;
 import qilin.core.config.ContextSensitivity;
-import qilin.test.util.QilinFrameworkTests;
+import qilin.test.util.QilinLegacyFrameworkTests;
 
-public class CollectionsTests extends QilinFrameworkTests {
+/**
+ * Extends {@link QilinLegacyFrameworkTests}, not {@link qilin.test.util.QilinFrameworkTests} -
+ * unlike the rest of qilin's tests, these mayAlias/notAlias assertions are calibrated to a real
+ * jre1.6.0_45's exact {@code java.util.HashMap}/{@code HashSet} internal object graph (e.g. {@code
+ * HashSet0.java}: "at least 3obj could pass this"), which changed substantially in later JDKs.
+ */
+public class CollectionsTests extends QilinLegacyFrameworkTests {
   @Test
   public void testArrayList0() {
     checkAssertions(

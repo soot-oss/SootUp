@@ -48,7 +48,7 @@ public class ClinitHandlingTests extends QilinFrameworkTests {
   private static final String TRIGGERED_CLASS = "qilin.microben.core.clinit.ClinitStaticLoad$A";
 
   private PTA run(VirtualCallResolver clinitVirtualCallResolver) {
-    View view = PTAUtils.createView(appPath, null, jrePath);
+    View view = PTAUtils.createView(appPath, null);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(MAIN_CLASS);
     PointerAnalysisConfig config =
         PointerAnalysisConfig.builder()
@@ -84,7 +84,7 @@ public class ClinitHandlingTests extends QilinFrameworkTests {
 
   @Test
   public void testSuppressClinitCallResolverDropsDiscoveredClinit() {
-    PTA pta = run(new SuppressClinitCallResolver(PTAUtils.createView(appPath, null, jrePath)));
+    PTA pta = run(new SuppressClinitCallResolver(PTAUtils.createView(appPath, null)));
     assertFalse(
         triggeredClinitIsReachable(pta),
         "a suppressing resolver must prevent Solver#processStmts from injecting the <clinit> edge");

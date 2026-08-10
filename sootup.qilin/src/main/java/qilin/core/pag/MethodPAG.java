@@ -158,11 +158,15 @@ public class MethodPAG {
         .equals(
             "<java.lang.ref.Reference: void <init>(java.lang.Object,java.lang.ref.ReferenceQueue)>")) {
       // Implements the special status of java.lang.ref.Reference just as in Doop
-      // (library/reference.logic).
+      // (library/reference.logic). "pending" is a JRE6/8-era Reference internal field - later
+      // JDKs' reference-processing rewrite dropped/renamed it, so skip this modeling if absent
+      // instead of crashing.
       SootClass sootClass = ptaScene.getSootClass("java.lang.ref.Reference");
-      SootField sf = sootClass.getField("pending").get();
-      JStaticFieldRef sfr = Jimple.newStaticFieldRef(sf.getSignature());
-      addInternalEdge(nodeFactory.caseThis(), nodeFactory.getNode(sfr));
+      Optional<? extends SootField> osf = sootClass.getField("pending");
+      if (osf.isPresent()) {
+        JStaticFieldRef sfr = Jimple.newStaticFieldRef(osf.get().getSignature());
+        addInternalEdge(nodeFactory.caseThis(), nodeFactory.getNode(sfr));
+      }
     }
   }
 
