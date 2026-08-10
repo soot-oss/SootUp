@@ -42,12 +42,13 @@ import sootup.core.views.View;
  * target is a plain static method must resolve to a direct call edge instead of silently vanishing.
  * Deliberately does not extend {@link qilin.test.util.QilinFrameworkTests} - it shares static
  * app/jre-path fields across every subclass in the JVM, and this suite needs a Java 8+ library
- * classpath (for {@code java.lang.invoke.LambdaMetafactory}/{@code java.util.function.Supplier}),
- * unlike the rest of qilin's tests which run against the legacy JRE 6 fixture.
+ * classpath (for {@code java.lang.invoke.LambdaMetafactory}/{@code java.util.function.Supplier}).
+ * Runs {@code singleEntry(true)} (skips {@code FakeMainFactory}'s pre-JDK9 JVM-bootstrap modeling -
+ * see {@link PTAUtils#createView(String, String)}) so it can use the current JVM's own runtime
+ * image instead of a downloaded legacy JRE fixture.
  */
 public class InvokeDynamicTests {
   private static String appPath;
-  private static String jre8Path;
 
   @BeforeAll
   public static void setUp() throws IOException {
@@ -56,23 +57,15 @@ public class InvokeDynamicTests {
         new File(
             rootDir, "sootup.qilin" + File.separator + "target" + File.separator + "test-classes");
     appPath = testDir.getCanonicalPath();
-    File jreFile =
-        new File(
-            rootDir,
-            "artifact"
-                + File.separator
-                + "benchmarks"
-                + File.separator
-                + "JREs"
-                + File.separator
-                + "jre1.8.0_121_debug");
-    jre8Path = jreFile.getCanonicalPath();
   }
 
   private PTA run(String mainClass, ContextSensitivity contextSensitivity) {
     PointerAnalysisConfig config =
-        PointerAnalysisConfig.builder().contextSensitivity(contextSensitivity).build();
-    View view = PTAUtils.createView(appPath, null, jre8Path);
+        PointerAnalysisConfig.builder()
+            .contextSensitivity(contextSensitivity)
+            .singleEntry(true)
+            .build();
+    View view = PTAUtils.createView(appPath, null);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
     PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
     pta.pureRun();
@@ -100,12 +93,12 @@ public class InvokeDynamicTests {
         run("qilin.microben.core.invokedynamic.StaticMethodRef", ContextSensitivity.insensitive()));
   }
 
-  // Object-sensitive analysis over the full JRE8 rt.jar is memory-hungry enough to OOM the shared
-  // surefire JVM (4GB, parallel=all) alongside the rest of the suite. Kept as documented,
+  // Object-sensitive analysis over the full JDK runtime image is memory-hungry enough to OOM the
+  // shared surefire JVM (4GB, parallel=all) alongside the rest of the suite. Kept as documented,
   // manually-runnable coverage for the ContextAllocNode.base() unwrap in CallGraphBuilder.dispatch
   // rather than deleted outright.
   @Disabled(
-      "memory-hungry: object-sensitive analysis over full JRE8 rt.jar OOMs the shared test JVM")
+      "memory-hungry: object-sensitive analysis over the full JDK runtime image OOMs the shared test JVM")
   @Test
   public void testLambdaObjectSensitive() {
     checkAssertions(
@@ -113,7 +106,7 @@ public class InvokeDynamicTests {
   }
 
   @Disabled(
-      "memory-hungry: object-sensitive analysis over full JRE8 rt.jar OOMs the shared test JVM")
+      "memory-hungry: object-sensitive analysis over the full JDK runtime image OOMs the shared test JVM")
   @Test
   public void testStaticMethodRefObjectSensitive() {
     checkAssertions(

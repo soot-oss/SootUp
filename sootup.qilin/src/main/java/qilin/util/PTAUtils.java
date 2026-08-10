@@ -57,6 +57,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
+import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
@@ -416,6 +417,30 @@ public final class PTAUtils {
     }
     final String classpath = String.join(File.pathSeparator, classPaths);
     logger.info("Soot ClassPath: {}", classpath);
+    return new JavaView(analysisInputLocations);
+  }
+
+  /**
+   * Like {@link #createView(String, String, String)}, but resolves the JRE against the current
+   * JVM's own runtime image ({@link DefaultRuntimeAnalysisInputLocation}) instead of an external
+   * JRE stub directory. Only safe for analyses that don't need {@code FakeMainFactory}'s pre-JDK9
+   * JVM-bootstrap modeling (i.e. {@code PointerAnalysisConfig.singleEntry(true)}) - that block
+   * references JDK6/7/8-internal classes (e.g. {@code sun.misc.Launcher$AppClassLoader}) removed by
+   * the JPMS module system in JDK9+.
+   */
+  public static View createView(String appPath, String libPath) {
+    List<String> classPaths = new ArrayList<>();
+    List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
+    // note that the order is important!
+    classPaths.add(appPath);
+    analysisInputLocations.add(new JavaClassPathAnalysisInputLocation(appPath));
+    classPaths.addAll(getLibJars(libPath));
+    for (String clazzPath : getLibJars(libPath)) {
+      analysisInputLocations.add(new JavaClassPathAnalysisInputLocation(clazzPath));
+    }
+    analysisInputLocations.add(new DefaultRuntimeAnalysisInputLocation());
+    logger.info(
+        "Soot ClassPath: {} + current JVM runtime", String.join(File.pathSeparator, classPaths));
     return new JavaView(analysisInputLocations);
   }
 
