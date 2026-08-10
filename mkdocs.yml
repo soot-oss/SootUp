@@ -21,6 +21,7 @@ nav:
       - BodyInterceptors: bodyinterceptors.md
       - TypeHierarchy: typehierarchy.md
       - Callgraphs: callgraphs.md
+      - Reflective Call Resolution: reflection-resolution.md
       - BuiltIn Analyses: builtin-analyses.md
       - Code Property Graphs: codepropertygraphs.md
 
