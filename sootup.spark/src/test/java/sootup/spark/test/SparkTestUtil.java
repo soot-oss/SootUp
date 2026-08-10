@@ -21,6 +21,7 @@ import sootup.spark.SparkOptions;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
 import sootup.spark.node.Node;
+import sootup.spark.node.StringConstantNode;
 import sootup.spark.node.VariableNode;
 
 @UtilityClass
@@ -84,6 +85,20 @@ public class SparkTestUtil {
   public static AllocationNode alloc(ClassType type, long site, MethodSignature sig) {
     return AllocationNode.builder()
         .type(type)
+        .allocationSite(site)
+        .containingMethodSig(sig)
+        .build();
+  }
+
+  /**
+   * Node produced by a string literal (a Jimple {@code StringConstant}) -- see {@link
+   * StringConstantNode} for why it carries {@code value} instead of being a plain {@link
+   * #alloc(ClassType, long, MethodSignature)}.
+   */
+  public static StringConstantNode stringAlloc(String value, Long site, MethodSignature sig) {
+    return StringConstantNode.builder()
+        .value(value)
+        .type(idFactory.getClassType("java.lang.String"))
         .allocationSite(site)
         .containingMethodSig(sig)
         .build();

@@ -77,7 +77,12 @@ public class TypesForSitesTest {
 
     ClassType stringType = SparkTestUtil.idFactory.getClassType("java.lang.String");
 
-    // With typesForSites=true, all String allocations collapse into a single type node
+    // With typesForSites=true, ordinary (new-expr) String allocations collapse into a single
+    // type node -- but string LITERALS never collapse together by value, even under
+    // typesForSites, since a Class.forName(...) reached interprocedurally from a literal depends
+    // on recovering exactly which literal reached it; collapsing "s1" and "s2" into one node
+    // would make that resolution silently (and unsoundly) pick an arbitrary one of the two. See
+    // StringConstantNode's class doc.
     AllocationNode typeNode =
         AllocationNode.builder()
             .type(stringType)
@@ -89,8 +94,12 @@ public class TypesForSitesTest {
     var stack4 = SparkTestUtil.var(stringType, "$stack4", mainSig);
     var l3 = SparkTestUtil.var(stringType, "l3", mainSig);
 
-    assertTrue(SparkTestUtil.containsEdge(delegate, typeNode, l1), "typeNode -> l1");
-    assertTrue(SparkTestUtil.containsEdge(delegate, typeNode, l2), "typeNode -> l2");
+    assertTrue(
+        SparkTestUtil.containsEdge(delegate, SparkTestUtil.stringAlloc("s1", null, mainSig), l1),
+        "stringAlloc(s1) -> l1");
+    assertTrue(
+        SparkTestUtil.containsEdge(delegate, SparkTestUtil.stringAlloc("s2", null, mainSig), l2),
+        "stringAlloc(s2) -> l2");
     assertTrue(SparkTestUtil.containsEdge(delegate, typeNode, stack4), "typeNode -> $stack4");
     assertTrue(SparkTestUtil.containsEdge(delegate, stack4, l3), "$stack4 -> l3");
   }

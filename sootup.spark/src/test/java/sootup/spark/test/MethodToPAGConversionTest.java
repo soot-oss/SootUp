@@ -130,20 +130,22 @@ public class MethodToPAGConversionTest {
 
     ClassType stringType = SparkTestUtil.idFactory.getClassType("java.lang.String");
 
-    // String s1 = "s1" — string constant definition: allocation node 1 → local l1
+    // String s1 = "s1" — string constant definition: a value-carrying StringConstantNode (site 1)
+    // -> local l1, so a later Class.forName(...) reached interprocedurally can still recover
+    // which literal this was (see StringConstantNode).
     assertTrue(
         SparkTestUtil.containsEdge(
             delegate,
-            SparkTestUtil.alloc(stringType, 1L, mainSig),
+            SparkTestUtil.stringAlloc("s1", 1L, mainSig),
             SparkTestUtil.var(stringType, "l1", mainSig)),
-        "alloc(String,1) -> l1");
-    // String s2 = "s2" — string constant definition: allocation node 2 → local l2
+        "stringAlloc(s1,1) -> l1");
+    // String s2 = "s2" — string constant definition: StringConstantNode (site 2) → local l2
     assertTrue(
         SparkTestUtil.containsEdge(
             delegate,
-            SparkTestUtil.alloc(stringType, 2L, mainSig),
+            SparkTestUtil.stringAlloc("s2", 2L, mainSig),
             SparkTestUtil.var(stringType, "l2", mainSig)),
-        "alloc(String,2) -> l2");
+        "stringAlloc(s2,2) -> l2");
     // String s3 = new String("s3") — explicit new: allocation node 3 → temp $stack4 → local l3
     assertTrue(
         SparkTestUtil.containsEdge(

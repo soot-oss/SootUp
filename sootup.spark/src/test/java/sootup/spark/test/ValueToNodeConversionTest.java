@@ -128,10 +128,16 @@ class ValueToNodeConversionTest {
 
   @Test
   void testCastExprToNodeConversion() {
+    // A cast doesn't produce a new value -- it's the same object viewed through a different
+    // static type -- so it must resolve to exactly the operand's own node, not nothing (dropping
+    // it would silently break value flow through any `(T) x` cast, an extremely common pattern in
+    // real bytecode).
     val local = JavaJimple.newLocal("r0", bType);
     val jcastExpr = JavaJimple.newCastExpr(local, aType);
     val node = nodeFactory.createNode(jcastExpr, methodSig);
-    assertTrue(node.isEmpty());
+    val localNode = nodeFactory.createNode(local, methodSig);
+    assertTrue(node.isPresent());
+    assertEquals(localNode, node);
   }
 
   @Test
@@ -180,9 +186,11 @@ class ValueToNodeConversionTest {
 
   @Test
   void testClassConstantToNodeConversion() {
+    // A class literal is a real java.lang.Class object -- it must produce a node (so virtual
+    // dispatch on it, e.g. .cast(...)/.isInstance(...), can resolve), not nothing.
     val classConstant = JavaJimple.newClassConstant(aType.toString());
     val node = nodeFactory.createNode(classConstant, methodSig);
-    assertTrue(node.isEmpty());
+    assertTrue(node.isPresent());
   }
 
   @Test

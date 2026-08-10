@@ -121,9 +121,20 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
     return Optional.ofNullable(node);
   }
 
+  /**
+   * A cast doesn't produce a new value -- it's the same object viewed through a different static
+   * type -- so, soundly (a successful runtime cast can't change which object is flowing through),
+   * this propagates the operand's own node instead of dropping it. Treating casts as opaque (via
+   * {@link #ignore}, as a `(T) x` expression previously was) silently breaks value flow through any
+   * explicit cast in real bytecode: e.g. `Object result = someMethod(); Foo typed = (Foo) result;`
+   * -- an extremely common pattern from generic erasure and covariant-return narrowing, including
+   * in the JDK's own code (this is exactly the point where {@code
+   * javax.xml.transform.TransformerFactory.newInstance(String, ClassLoader)}'s return value used to
+   * get lost, right after correctly resolving a reflectively-instantiated factory).
+   */
   @Override
   public void caseCastExpr(@NonNull JCastExpr expr) {
-    ignore(expr);
+    expr.getOp().accept(this);
   }
 
   @Override
@@ -136,9 +147,24 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
     ignore(constant);
   }
 
+  /**
+   * A class-literal constant (e.g. {@code SomeType.class}) represents a real, well-defined {@code
+   * java.lang.Class} object -- dropping it (as {@link #ignore} previously did) leaves any receiver
+   * holding one with an empty points-to set, so virtual dispatch on it (e.g. {@code
+   * someClassLiteral.cast(x)}, {@code .isInstance(x)}) could never resolve to anything. See {@link
+   * ClassConstantNode}.
+   */
   @Override
   public void caseClassConstant(@NonNull ClassConstant constant) {
-    ignore(constant);
+    ClassConstantNode.ClassConstantNodeBuilder<?, ?> builder =
+        ClassConstantNode.builder()
+            .value(constant.getValue())
+            .type(constant.getType())
+            .containingMethodSig(containingMethodSig);
+    if (!sparkOptions.isTypesForSites()) {
+      builder.allocationSite(Engine.incrementAndGetAllocCount());
+    }
+    this.node = builder.build();
   }
 
   @Override
@@ -413,8 +439,11 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseStringConstant(@NonNull StringConstant constant) {
-    AllocationNode.AllocationNodeBuilder<?, ?> builder =
-        AllocationNode.builder().type(constant.getType()).containingMethodSig(containingMethodSig);
+    StringConstantNode.StringConstantNodeBuilder<?, ?> builder =
+        StringConstantNode.builder()
+            .value(constant.getValue())
+            .type(constant.getType())
+            .containingMethodSig(containingMethodSig);
     if (!sparkOptions.isTypesForSites()) {
       builder.allocationSite(Engine.incrementAndGetAllocCount());
     }
