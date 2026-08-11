@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <groupId>org.soot-oss</groupId>
     <artifactId>sootup</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.0.2-SNAPSHOT</version>
     <name>SootUp</name>
     <description>A new version of Soot with a completely overhauled architecture</description>
     <url>https://soot-oss.github.io/SootUp</url>
@@ -313,7 +313,7 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
-                    <argLine>-Xmx4096M ${surefireArgLine}</argLine>
+                    <argLine>-Xmx8192M ${surefireArgLine}</argLine>
                     <trimStackTrace>false</trimStackTrace>
                     <parallel>all</parallel>
                     <useUnlimitedThreads>true</useUnlimitedThreads>
@@ -453,7 +453,7 @@
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>7.4.2</version>
+            <version>7.4.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -508,7 +508,7 @@
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
