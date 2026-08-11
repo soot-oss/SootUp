@@ -459,7 +459,7 @@
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>7.4.2</version>
+            <version>7.4.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
