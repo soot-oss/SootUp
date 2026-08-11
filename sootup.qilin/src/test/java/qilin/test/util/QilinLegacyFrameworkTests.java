@@ -38,6 +38,11 @@ import sootup.core.views.View;
  * sharing static state with a base that assumes the current-JVM-runtime path would still risk
  * confusion, so this pins its own copy instead. Reuses {@link QilinFrameworkTests}'s
  * config/assertion-checking helpers, which take no JRE-related state.
+ *
+ * <p>{@code jrePath} points at {@code src/test/resources/jre1.6.0_45-min}, a committed {@code
+ * lib/*.jar} directory containing only the jre1.6.0_45 classes actually needed (not a full ~50MB
+ * rt.jar, which isn't committed to this repo and isn't provisioned anywhere) - see {@link
+ * qilin.test.util.tools.MinimalJreExtractor} for how it's generated/regenerated.
  */
 public abstract class QilinLegacyFrameworkTests {
   protected static String appPath, jrePath, refLogPath;
@@ -72,16 +77,7 @@ public abstract class QilinLegacyFrameworkTests {
                 + File.separator
                 + "reflog");
     refLogPath = refLogDir.getCanonicalPath();
-    File jreFile =
-        new File(
-            rootDir,
-            "artifact"
-                + File.separator
-                + "benchmarks"
-                + File.separator
-                + "JREs"
-                + File.separator
-                + "jre1.6.0_45");
+    File jreFile = new File(testDir, "jre1.6.0_45-min");
     jrePath = jreFile.getCanonicalPath();
     isSetUp = true;
   }
