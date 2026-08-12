@@ -18,6 +18,7 @@
 
 package qilin.core.pag;
 
+import qilin.core.context.Context;
 import qilin.util.Numberable;
 
 /**
@@ -48,5 +49,10 @@ public class FieldRefNode extends PagNode implements Numberable {
 
   public String toString() {
     return "FieldRefNode " + getNumber() + " " + base + "." + field;
+  }
+
+  @Override
+  public PagNode parameterize(Parameterizer parameterizer, Context context) {
+    return parameterizer.parameterize(this, context);
   }
 }

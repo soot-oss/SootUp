@@ -18,6 +18,7 @@
 
 package qilin.core.pag;
 
+import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.util.Numberable;
 import sootup.core.jimple.common.Value;
@@ -83,5 +84,10 @@ public class AllocNode extends PagNode implements ContextElement, Numberable {
       }
     }
     return false;
+  }
+
+  @Override
+  public PagNode parameterize(Parameterizer parameterizer, Context context) {
+    return parameterizer.parameterize(this, context);
   }
 }

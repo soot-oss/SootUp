@@ -29,7 +29,7 @@ import sootup.core.model.SootMethod;
 /*
  * This represents a parameterized PTA which could be concreted to many pointer analyses.
  * */
-public abstract class CorePTA extends PTA {
+public abstract class CorePTA extends PTA implements Parameterizer {
   /*
    * The following three parameterized functions must be initialized before doing the pointer analysis.
    * */
@@ -69,51 +69,48 @@ public abstract class CorePTA extends PTA {
     return CtxConstructor.emptyContext;
   }
 
+  /**
+   * Dispatches to the matching {@code parameterize} overload via double dispatch on {@code n}'s
+   * runtime type (see {@link PagNode#parameterize(Parameterizer, Context)}), instead of an {@code
+   * instanceof} cascade that a new {@link PagNode} subtype could silently fall through.
+   */
   @Override
   public PagNode parameterize(PagNode n, Context context) {
     if (context == null) {
       throw new RuntimeException("null context!!!");
     }
-    if (n instanceof LocalVarNode) {
-      LocalVarNode lvn = (LocalVarNode) n;
-      return parameterize(lvn, context);
-    }
-    if (n instanceof FieldRefNode) {
-      FieldRefNode frn = (FieldRefNode) n;
-      return parameterize(frn, context);
-    }
-    if (n instanceof AllocNode) {
-      AllocNode an = (AllocNode) n;
-      return parameterize(an, context);
-    }
-    if (n instanceof FieldValNode) {
-      FieldValNode fvn = (FieldValNode) n;
-      return parameterize(fvn, context);
-    }
-    if (n instanceof GlobalVarNode) {
-      GlobalVarNode gvn = (GlobalVarNode) n;
-      return pag.makeContextVarNode(gvn, emptyContext());
-    }
-    throw new RuntimeException("cannot parameterize this node: " + n);
+    return n.parameterize(this, context);
   }
 
+  @Override
   public ContextField parameterize(FieldValNode fvn, Context context) {
     Context ctx = ctxSel.select(fvn, context);
     return pag.makeContextField(ctx, fvn);
   }
 
-  protected ContextVarNode parameterize(LocalVarNode vn, Context context) {
+  @Override
+  public ContextVarNode parameterize(LocalVarNode vn, Context context) {
     Context ctx = ctxSel.select(vn, context);
     return pag.makeContextVarNode(vn, ctx);
   }
 
-  protected FieldRefNode parameterize(FieldRefNode frn, Context context) {
+  @Override
+  public FieldRefNode parameterize(FieldRefNode frn, Context context) {
     return pag.makeFieldRefNode((VarNode) parameterize(frn.getBase(), context), frn.getField());
   }
 
-  protected ContextAllocNode parameterize(AllocNode node, Context context) {
+  @Override
+  public ContextAllocNode parameterize(AllocNode node, Context context) {
     Context ctx = ctxSel.select(node, context);
     return pag.makeContextAllocNode(node, ctx);
+  }
+
+  /**
+   * Global variables are never context-sensitive, so they always parameterize to the empty context.
+   */
+  @Override
+  public ContextVarNode parameterize(GlobalVarNode gvn, Context context) {
+    return pag.makeContextVarNode(gvn, emptyContext());
   }
 
   /** Finds or creates the ContextMethod for method and context. */

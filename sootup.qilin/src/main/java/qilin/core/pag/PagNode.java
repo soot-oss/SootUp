@@ -18,6 +18,7 @@
 
 package qilin.core.pag;
 
+import qilin.core.context.Context;
 import qilin.util.Numberable;
 import qilin.util.sets.DoublePointsToSet;
 import sootup.core.types.Type;
@@ -57,5 +58,17 @@ public class PagNode implements Numberable {
 
   public final void setNumber(int number) {
     this.number = number;
+  }
+
+  /**
+   * Turns this node into its context-sensitive counterpart by calling back into the matching
+   * overload of {@code parameterizer}. Only the node kinds that can actually be parameterized
+   * ({@link LocalVarNode}, {@link FieldRefNode}, {@link AllocNode}, {@link FieldValNode}, {@link
+   * GlobalVarNode}) override this; every other node kind is not meant to reach a context
+   * parameterization step, so the default fails loudly instead of silently doing nothing.
+   */
+  public PagNode parameterize(Parameterizer parameterizer, Context context) {
+    throw new UnsupportedOperationException(
+        "cannot parameterize node of type " + getClass().getSimpleName() + ": " + this);
   }
 }

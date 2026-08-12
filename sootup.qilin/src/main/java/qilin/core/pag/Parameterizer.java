@@ -19,36 +19,21 @@
 package qilin.core.pag;
 
 import qilin.core.context.Context;
-import sootup.core.model.SootMethod;
-import sootup.core.types.Type;
 
 /**
- * Represents a simple variable node in the pointer assignment graph that is not associated with any
- * particular method invocation.
- *
- * @author Ondrej Lhotak
+ * Double-dispatch counterpart of {@link PagNode#parameterize(Parameterizer, Context)}: each PAG
+ * node kind that knows how to turn itself into a context-sensitive node calls back into the
+ * matching overload here, instead of the caller (e.g. {@code CorePTA}) having to test the node's
+ * runtime type with an {@code instanceof} cascade. Implemented by {@code qilin.core.CorePTA}.
  */
-public class GlobalVarNode extends VarNode {
-  public GlobalVarNode(Object variable, Type t) {
-    super(variable, t);
-  }
+public interface Parameterizer {
+  ContextVarNode parameterize(LocalVarNode vn, Context context);
 
-  @Override
-  public VarNode base() {
-    return this;
-  }
+  FieldRefNode parameterize(FieldRefNode frn, Context context);
 
-  @Override
-  public SootMethod getMethod() {
-    return null;
-  }
+  ContextAllocNode parameterize(AllocNode node, Context context);
 
-  public String toString() {
-    return "GlobalVarNode " + getNumber() + " " + variable;
-  }
+  ContextField parameterize(FieldValNode fvn, Context context);
 
-  @Override
-  public PagNode parameterize(Parameterizer parameterizer, Context context) {
-    return parameterizer.parameterize(this, context);
-  }
+  ContextVarNode parameterize(GlobalVarNode gvn, Context context);
 }

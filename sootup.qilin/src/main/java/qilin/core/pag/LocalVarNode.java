@@ -18,6 +18,7 @@
 
 package qilin.core.pag;
 
+import qilin.core.context.Context;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
@@ -60,5 +61,10 @@ public class LocalVarNode extends VarNode {
   @Override
   public VarNode base() {
     return this;
+  }
+
+  @Override
+  public PagNode parameterize(Parameterizer parameterizer, Context context) {
+    return parameterizer.parameterize(this, context);
   }
 }
