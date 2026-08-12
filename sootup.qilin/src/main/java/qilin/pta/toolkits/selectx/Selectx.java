@@ -22,7 +22,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import qilin.core.PTA;
-import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
@@ -339,9 +338,7 @@ public class Selectx {
           LocalVarNode stmtThrowNode = srcnf.makeInvokeStmtThrowVarNode(s, method);
           LocalVarNode throwFinal =
               prePAG.findLocalVarNode(
-                  method,
-                  new MethodParameter(tgtmtd, PointsToAnalysis.THROW_NODE),
-                  PTAUtils.THROWABLE);
+                  method, MethodParameter.ofThrow(tgtmtd), PTAUtils.THROWABLE);
           if (throwFinal != null) {
             this.addExitEdge(throwFinal, stmtThrowNode, callSite);
           }

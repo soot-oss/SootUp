@@ -33,9 +33,6 @@ import sootup.core.model.SootMethod;
  */
 public interface PointsToAnalysis {
 
-  int THIS_NODE = -1;
-  int RETURN_NODE = -2;
-  int THROW_NODE = -3;
   String STRING_NODE = "STRING_NODE";
   String EXCEPTION_NODE = "EXCEPTION_NODE";
   String MAIN_THREAD_GROUP_NODE_LOCAL = "MAIN_THREAD_GROUP_NODE_LOCAL";

@@ -25,7 +25,6 @@ import java.util.Queue;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
 import qilin.core.PTAScene;
-import qilin.core.PointsToAnalysis;
 import qilin.core.pag.*;
 import qilin.core.pag.Field;
 import qilin.util.PTAUtils;
@@ -306,8 +305,7 @@ public class MethodNodeFactory {
 
   public VarNode caseThis() {
     Type type = method.isStatic() ? PTAUtils.OBJECT : method.getDeclaringClassType();
-    VarNode ret =
-        pag.makeLocalVarNode(new MethodParameter(method, PointsToAnalysis.THIS_NODE), type, method);
+    VarNode ret = pag.makeLocalVarNode(MethodParameter.ofThis(method), type, method);
     ret.setInterProcTarget();
     return ret;
   }
@@ -315,25 +313,21 @@ public class MethodNodeFactory {
   public VarNode caseParm(int index) {
     VarNode ret =
         pag.makeLocalVarNode(
-            new MethodParameter(method, index), method.getParameterType(index), method);
+            MethodParameter.ofOrdinary(method, index), method.getParameterType(index), method);
     ret.setInterProcTarget();
     return ret;
   }
 
   public VarNode caseRet() {
     VarNode ret =
-        pag.makeLocalVarNode(
-            new MethodParameter(method, PointsToAnalysis.RETURN_NODE),
-            method.getReturnType(),
-            method);
+        pag.makeLocalVarNode(MethodParameter.ofReturn(method), method.getReturnType(), method);
     ret.setInterProcSource();
     return ret;
   }
 
   public VarNode caseMethodThrow() {
     VarNode ret =
-        pag.makeLocalVarNode(
-            new MethodParameter(method, PointsToAnalysis.THROW_NODE), PTAUtils.THROWABLE, method);
+        pag.makeLocalVarNode(MethodParameter.ofThrow(method), PTAUtils.THROWABLE, method);
     ret.setInterProcSource();
     return ret;
   }

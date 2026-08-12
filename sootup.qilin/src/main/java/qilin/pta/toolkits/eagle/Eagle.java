@@ -21,7 +21,6 @@ package qilin.pta.toolkits.eagle;
 import java.util.*;
 import java.util.stream.Collectors;
 import qilin.core.PTA;
-import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
@@ -324,8 +323,7 @@ public class Eagle {
       LocalVarNode mret =
           method.getReturnType() instanceof ReferenceType ? (LocalVarNode) srcnf.caseRet() : null;
       LocalVarNode throwFinal =
-          prePAG.findLocalVarNode(
-              method, new MethodParameter(method, PointsToAnalysis.THROW_NODE), PTAUtils.THROWABLE);
+          prePAG.findLocalVarNode(method, MethodParameter.ofThrow(method), PTAUtils.THROWABLE);
       if (method.isStatic()) {
         pts.getOrDefault(thisRef, Collections.emptySet())
             .forEach(

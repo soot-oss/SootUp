@@ -20,7 +20,6 @@ package qilin.pta.toolkits.turner;
 
 import java.util.*;
 import qilin.core.PTA;
-import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
@@ -193,7 +192,7 @@ public abstract class AbstractMVFG {
         for (int i = 0; i < numArgs; i++) {
           if (args[i] == null) continue;
           ValNode argNode = pag.findValNode(args[i], method);
-          if (argNode instanceof LocalVarNode && satisfyAddingStoreCondition(i, targets)) {
+          if (argNode instanceof LocalVarNode && satisfyAddingStoreConditionForParam(i, targets)) {
             this.addStoreEdge((LocalVarNode) argNode, receiver);
           }
         }
@@ -206,7 +205,7 @@ public abstract class AbstractMVFG {
           LocalVarNode stmtThrowNode = srcnf.makeInvokeStmtThrowVarNode(s, method);
           this.addLoadEdge(receiver, stmtThrowNode);
         }
-        if (satisfyAddingStoreCondition(PointsToAnalysis.THIS_NODE, targets)) {
+        if (satisfyAddingStoreConditionForThis(targets)) {
           this.addStoreEdge(receiver, receiver);
         }
       }
@@ -229,8 +228,7 @@ public abstract class AbstractMVFG {
       addStoreEdge(mret, thisRef);
     }
     LocalVarNode mThrow =
-        pag.findLocalVarNode(
-            method, new MethodParameter(method, PointsToAnalysis.THROW_NODE), PTAUtils.EXCEPTION);
+        pag.findLocalVarNode(method, MethodParameter.ofThrow(method), PTAUtils.EXCEPTION);
     if (mThrow != null) {
       addStoreEdge(mThrow, thisRef);
     }
@@ -238,7 +236,10 @@ public abstract class AbstractMVFG {
 
   protected abstract boolean statisfyAddingLoadCondition(Set<SootMethod> targets);
 
-  protected abstract boolean satisfyAddingStoreCondition(int paramIndex, Set<SootMethod> targets);
+  protected abstract boolean satisfyAddingStoreConditionForThis(Set<SootMethod> targets);
+
+  protected abstract boolean satisfyAddingStoreConditionForParam(
+      int paramIndex, Set<SootMethod> targets);
 
   /*
    * Algorithm1: x \in R(flow) \cap R(iflow).

@@ -29,7 +29,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import qilin.core.PTA;
-import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
@@ -112,8 +111,7 @@ public abstract class AbstractPAG {
       addReturnEdge(mret);
     }
     PagNode throwNode =
-        prePAG.findLocalVarNode(
-            method, new MethodParameter(method, PointsToAnalysis.THROW_NODE), PTAUtils.THROWABLE);
+        prePAG.findLocalVarNode(method, MethodParameter.ofThrow(method), PTAUtils.THROWABLE);
     if (throwNode != null) {
       addThrowEdge(throwNode);
     }
