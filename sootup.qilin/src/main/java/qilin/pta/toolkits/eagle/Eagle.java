@@ -25,7 +25,9 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.FakeMainMethods;
+import qilin.util.JavaTypes;
+import qilin.util.StaticThisPointsTo;
 import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
 import qilin.util.sets.PointsToSet;
@@ -268,7 +270,7 @@ public class Eagle {
   public void buildGraph(PTA prePTA) {
     PAG prePAG = prePTA.getPag();
     // calculate points-to set for "This" pointer in each static method.
-    Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(prePTA);
+    Map<LocalVarNode, Set<AllocNode>> pts = StaticThisPointsTo.calcStaticThisPTS(prePTA);
 
     OnFlyCallGraph callGraph = prePTA.getCallGraph();
     for (SootMethod method : prePTA.getNakedReachableMethods()) {
@@ -279,7 +281,7 @@ public class Eagle {
       MethodNodeFactory srcnf = srcmpag.nodeFactory();
       LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
       // add local edges
-      if (PTAUtils.isFakeMainMethod(method)) {
+      if (FakeMainMethods.isFakeMainMethod(method)) {
         // special treatment for fake main
         this.addNewEdge(prePTA.getRootNode(), thisRef);
       }
@@ -323,7 +325,7 @@ public class Eagle {
       LocalVarNode mret =
           method.getReturnType() instanceof ReferenceType ? (LocalVarNode) srcnf.caseRet() : null;
       LocalVarNode throwFinal =
-          prePAG.findLocalVarNode(method, MethodParameter.ofThrow(method), PTAUtils.THROWABLE);
+          prePAG.findLocalVarNode(method, MethodParameter.ofThrow(method), JavaTypes.THROWABLE);
       if (method.isStatic()) {
         pts.getOrDefault(thisRef, Collections.emptySet())
             .forEach(

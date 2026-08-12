@@ -19,7 +19,7 @@
 package qilin.core.natives;
 
 import qilin.core.pag.PAG;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -41,7 +41,7 @@ public class JavaLangReflectArraySet extends NativeMethod {
 
   @Override
   protected void simulateImpl() {
-    ClassType objType = PTAUtils.OBJECT;
+    ClassType objType = JavaTypes.OBJECT;
     Local arrayBase = getPara(0, new ArrayType(objType, 1));
     Value rightValue = getPara(2);
     JArrayRef arrayRef = getArrayRef(arrayBase);

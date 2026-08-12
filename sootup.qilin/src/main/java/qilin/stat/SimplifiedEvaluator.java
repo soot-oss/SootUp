@@ -25,7 +25,8 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.FakeMainMethods;
+import qilin.util.JavaTypes;
 import qilin.util.Stopwatch;
 import qilin.util.Triple;
 import qilin.util.sets.PointsToSet;
@@ -110,7 +111,7 @@ public class SimplifiedEvaluator implements IEvaluator {
               if (fails) {
                 break;
               }
-              fails = !PTAUtils.castNeverFails(pta.getView(), n.getType(), targetType);
+              fails = !JavaTypes.castNeverFails(pta.getView(), n.getType(), targetType);
             }
             if (fails) {
               totalCastsMayFail++;
@@ -165,7 +166,7 @@ public class SimplifiedEvaluator implements IEvaluator {
     Set<LocalVarNode> tmp = new HashSet<>();
     for (LocalVarNode lvn : mLocalVarNodes) {
       SootMethod sm = lvn.getMethod();
-      if (PTAUtils.isFakeMainMethod(sm)) {
+      if (FakeMainMethods.isFakeMainMethod(sm)) {
         tmp.add(lvn);
         continue;
       }

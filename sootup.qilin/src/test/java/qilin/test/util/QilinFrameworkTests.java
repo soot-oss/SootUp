@@ -29,13 +29,13 @@ import qilin.core.PointerAnalysisFactory;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
 import qilin.pta.tools.DebloatedPTA;
-import qilin.util.PTAUtils;
+import qilin.util.ViewFactory;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
- * Runs against the current JVM's own runtime image ({@link PTAUtils#createView(String, String)}) -
- * safe because {@code singleEntry(true)} (below) skips {@code FakeMainFactory}'s pre-JDK9
+ * Runs against the current JVM's own runtime image ({@link ViewFactory#createView(String, String)})
+ * - safe because {@code singleEntry(true)} (below) skips {@code FakeMainFactory}'s pre-JDK9
  * JVM-bootstrap modeling, and none of this base's subclasses' microbenchmarks touch java.util
  * internals whose object graph differs across JRE versions.
  *
@@ -124,7 +124,7 @@ public abstract class QilinFrameworkTests {
   }
 
   private PTA run(String mainClass, PointerAnalysisConfig config) {
-    View view = PTAUtils.createView(appPath, null);
+    View view = ViewFactory.createView(appPath, null);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
     PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
     // NOT pta.pureRun(): for staged toolkit variants (Zipper, DebloatedPTA/Moon, Bean, ...)

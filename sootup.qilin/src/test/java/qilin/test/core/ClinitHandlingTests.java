@@ -29,7 +29,7 @@ import qilin.core.PointerAnalysisFactory;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
 import qilin.test.util.QilinFrameworkTests;
-import qilin.util.PTAUtils;
+import qilin.util.ViewFactory;
 import sootup.callgraph.scope.SuppressClinitCallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.model.SootMethod;
@@ -48,7 +48,7 @@ public class ClinitHandlingTests extends QilinFrameworkTests {
   private static final String TRIGGERED_CLASS = "qilin.microben.core.clinit.ClinitStaticLoad$A";
 
   private PTA run(VirtualCallResolver clinitVirtualCallResolver) {
-    View view = PTAUtils.createView(appPath, null);
+    View view = ViewFactory.createView(appPath, null);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(MAIN_CLASS);
     PointerAnalysisConfig config =
         PointerAnalysisConfig.builder()
@@ -84,7 +84,7 @@ public class ClinitHandlingTests extends QilinFrameworkTests {
 
   @Test
   public void testSuppressClinitCallResolverDropsDiscoveredClinit() {
-    PTA pta = run(new SuppressClinitCallResolver(PTAUtils.createView(appPath, null)));
+    PTA pta = run(new SuppressClinitCallResolver(ViewFactory.createView(appPath, null)));
     assertFalse(
         triggeredClinitIsReachable(pta),
         "a suppressing resolver must prevent Solver#processStmts from injecting the <clinit> edge");

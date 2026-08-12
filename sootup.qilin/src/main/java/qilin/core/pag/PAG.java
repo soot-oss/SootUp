@@ -34,7 +34,7 @@ import qilin.core.reflection.NopReflectionModel;
 import qilin.core.reflection.ReflectionModel;
 import qilin.core.reflection.TamiflexModel;
 import qilin.util.ArrayNumberer;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.Triple;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
@@ -641,10 +641,10 @@ public class PAG {
           if (sig.equals(
               "<java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>")) {
             Value srcArr = sie.getArg(0);
-            if (PTAUtils.isPrimitiveArrayType(srcArr.getType())) {
+            if (JavaTypes.isPrimitiveArrayType(srcArr.getType())) {
               continue;
             }
-            Type objType = PTAUtils.OBJECT;
+            Type objType = JavaTypes.OBJECT;
             if (srcArr.getType() == objType) {
               Local localSrc =
                   Jimple.newLocal("intermediate/" + (localCount++), new ArrayType(objType, 1));
@@ -655,7 +655,7 @@ public class PAG {
               srcArr = localSrc;
             }
             Value dstArr = sie.getArg(2);
-            if (PTAUtils.isPrimitiveArrayType(dstArr.getType())) {
+            if (JavaTypes.isPrimitiveArrayType(dstArr.getType())) {
               continue;
             }
             if (dstArr.getType() == objType) {
@@ -669,7 +669,7 @@ public class PAG {
             }
             Value src = JavaJimple.newArrayRef((Local) srcArr, IntConstant.getInstance(0));
             LValue dst = JavaJimple.newArrayRef((Local) dstArr, IntConstant.getInstance(0));
-            Local local = Jimple.newLocal("nativeArrayCopy" + (localCount++), PTAUtils.OBJECT);
+            Local local = Jimple.newLocal("nativeArrayCopy" + (localCount++), JavaTypes.OBJECT);
             builder.addLocal(local);
             newUnits
                 .computeIfAbsent(s, k -> new HashSet<>())

@@ -19,7 +19,7 @@
 package qilin.core;
 
 import java.util.*;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.queue.ChunkedQueue;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.model.SootClass;
@@ -143,19 +143,19 @@ public class VirtualCalls {
       ChunkedQueue<SootMethod> targets,
       boolean appOnly) {
     if (declaredType instanceof ArrayType) {
-      declaredType = PTAUtils.OBJECT;
+      declaredType = JavaTypes.OBJECT;
     }
     if (sigType instanceof ArrayType) {
-      sigType = PTAUtils.OBJECT;
+      sigType = JavaTypes.OBJECT;
     }
     if (t instanceof ArrayType) {
-      t = PTAUtils.OBJECT;
+      t = JavaTypes.OBJECT;
     }
 
-    if (declaredType != null && !PTAUtils.canStoreType(view, t, declaredType)) {
+    if (declaredType != null && !JavaTypes.canStoreType(view, t, declaredType)) {
       return;
     }
-    if (sigType != null && !PTAUtils.canStoreType(view, t, sigType)) {
+    if (sigType != null && !JavaTypes.canStoreType(view, t, sigType)) {
       return;
     }
     if (t instanceof ClassType) {

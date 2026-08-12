@@ -21,7 +21,7 @@ package qilin.core.pag;
 import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
 
@@ -38,7 +38,7 @@ public class ContextField extends ValNode {
   private static Type refineFieldType(
       Context context, SparkField field, boolean preciseArrayElement) {
     if (!preciseArrayElement) {
-      return PTAUtils.OBJECT;
+      return JavaTypes.OBJECT;
     }
     if (field instanceof ArrayElement) {
       ContextElement[] contextElements = ((ContextElements) context).getElements();

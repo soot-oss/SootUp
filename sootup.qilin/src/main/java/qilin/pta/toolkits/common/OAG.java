@@ -25,7 +25,8 @@ import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
 import qilin.core.pag.PagNode;
-import qilin.util.PTAUtils;
+import qilin.util.FakeMainMethods;
+import qilin.util.StaticThisPointsTo;
 import qilin.util.graph.DirectedGraph;
 import qilin.util.queue.QueueReader;
 import qilin.util.sets.PointsToSet;
@@ -104,7 +105,7 @@ public class OAG implements DirectedGraph<AllocNode> {
   }
 
   protected void buildOAG() {
-    Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(this.pta);
+    Map<LocalVarNode, Set<AllocNode>> pts = StaticThisPointsTo.calcStaticThisPTS(this.pta);
     for (SootMethod method : this.pta.getNakedReachableMethods()) {
       if (!pta.getPag().hasBody(method)) {
         continue;
@@ -117,7 +118,7 @@ public class OAG implements DirectedGraph<AllocNode> {
         PagNode from = reader.next(), to = reader.next();
         if (from instanceof AllocNode) {
           AllocNode tgt = (AllocNode) from;
-          if (PTAUtils.isFakeMainMethod(method)) {
+          if (FakeMainMethods.isFakeMainMethod(method)) {
             // special treatment for fake main
             AllocNode src = pta.getRootNode();
             addEdge(src, tgt);

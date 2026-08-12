@@ -16,27 +16,25 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.core.natives;
+package qilin.util;
 
-import qilin.core.pag.PAG;
-import qilin.util.JavaTypes;
-import sootup.core.jimple.common.Local;
-import sootup.core.jimple.common.Value;
 import sootup.core.model.SootMethod;
-import sootup.core.views.View;
+import sootup.core.types.ClassType;
 
-public class JavaLangThreadCurrentThread extends NativeMethod {
-  private final Value currentThread;
+/**
+ * Recognizes qilin's synthetic {@code qilin.pta.FakeMain} entry point, built by {@link
+ * qilin.core.builder.FakeMainFactory} to drive analysis from every possible JVM entry method.
+ */
+public final class FakeMainMethods {
+  private FakeMainMethods() {}
 
-  JavaLangThreadCurrentThread(View view, SootMethod method, Value currentThread, PAG pag) {
-    super(view, method, pag);
-    this.currentThread = currentThread;
+  public static boolean isFakeMainMethod(SootMethod method) {
+    String sig = "<qilin.pta.FakeMain: void main()>";
+    return method.getSignature().toString().equals(sig);
   }
 
-  @Override
-  protected void simulateImpl() {
-    Local lv = getNextLocal(JavaTypes.THREAD);
-    addAssign(lv, currentThread);
-    addReturn(lv);
+  public static boolean isFakeMainClass(ClassType classType) {
+    String sig = "qilin.pta.FakeMain";
+    return classType.toString().equals(sig);
   }
 }

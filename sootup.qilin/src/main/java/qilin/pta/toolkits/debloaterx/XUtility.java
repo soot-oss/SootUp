@@ -8,7 +8,7 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.Stopwatch;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.Local;
@@ -75,7 +75,7 @@ public class XUtility {
   }
 
   private boolean isImpreciseType(Type type) {
-    if (type == PTAUtils.OBJECT) {
+    if (type == JavaTypes.OBJECT) {
       return true;
     }
     if (type instanceof ClassType) {
@@ -308,13 +308,13 @@ public class XUtility {
       } else {
         ret = this.t2Fields.computeIfAbsent(refType, k -> new HashSet<>());
         for (AllocNode heap : this.o2Fields.keySet()) {
-          if (PTAUtils.canStoreType(pta.getView(), heap.getType(), refType)) {
+          if (JavaTypes.canStoreType(pta.getView(), heap.getType(), refType)) {
             for (SparkField sparkField : this.o2Fields.get(heap)) {
               if (sparkField instanceof Field) {
                 Field f = (Field) sparkField;
                 SootField sf = f.getField();
                 Type declType = sf.getDeclaringClassType();
-                if (PTAUtils.canStoreType(pta.getView(), type, declType)) {
+                if (JavaTypes.canStoreType(pta.getView(), type, declType)) {
                   ret.add(sparkField);
                 }
               } else {

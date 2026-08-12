@@ -25,7 +25,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import qilin.core.config.ContextSensitivity;
 import qilin.test.util.QilinFrameworkTests;
-import qilin.util.PTAUtils;
+import qilin.util.ViewFactory;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphConfig;
 import sootup.core.types.ClassType;
@@ -40,7 +40,7 @@ public class QilinCallGraphConfigTest extends QilinFrameworkTests {
 
   @Test
   public void testIntoQilinStageBuildsCallGraph() {
-    View view = PTAUtils.createView(appPath, null);
+    View view = ViewFactory.createView(appPath, null);
     ClassType mainClassType =
         view.getIdentifierFactory().getClassType("qilin.microben.core.clinit.ClinitStaticLoad");
 
@@ -58,7 +58,7 @@ public class QilinCallGraphConfigTest extends QilinFrameworkTests {
 
   @Test
   public void testMissingMainClassThrows() {
-    View view = PTAUtils.createView(appPath, null);
+    View view = ViewFactory.createView(appPath, null);
     assertThrows(
         IllegalStateException.class,
         () ->

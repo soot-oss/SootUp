@@ -23,8 +23,10 @@ import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.parm.ctxcons.CtxConstructor;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
+import sootup.core.types.Type;
 import sootup.core.views.View;
 
 public class HeuristicSelector extends CtxSelector {
@@ -51,8 +53,11 @@ public class HeuristicSelector extends CtxSelector {
 
   @Override
   public Context select(AllocNode heap, Context context) {
-    if (PTAUtils.isThrowable(view, heap.getType())
-        || PTAUtils.subtypeOfAbstractStringBuilder(heap.getType())) {
+    Type type = heap.getType();
+    boolean isStringBuilderLike =
+        type instanceof ClassType
+            && (type.equals(JavaTypes.STRING_BUFFER) || type.equals(JavaTypes.STRING_BUILDER));
+    if (JavaTypes.isThrowable(view, type) || isStringBuilderLike) {
       return CtxConstructor.emptyContext;
     }
     return context;

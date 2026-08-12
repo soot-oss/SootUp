@@ -24,7 +24,7 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.Pair;
 import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
@@ -228,7 +228,7 @@ public abstract class AbstractMVFG {
       addStoreEdge(mret, thisRef);
     }
     LocalVarNode mThrow =
-        pag.findLocalVarNode(method, MethodParameter.ofThrow(method), PTAUtils.EXCEPTION);
+        pag.findLocalVarNode(method, MethodParameter.ofThrow(method), JavaTypes.EXCEPTION);
     if (mThrow != null) {
       addStoreEdge(mThrow, thisRef);
     }

@@ -5,7 +5,7 @@ import java.util.Queue;
 import java.util.Set;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.Pair;
 import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
@@ -47,7 +47,7 @@ public class IntraFlowAnalysis {
     // handle parameters
     for (int i = 0; i < method.getParameterCount(); ++i) {
       if (method.getParameterType(i) instanceof ReferenceType
-          && !PTAUtils.isPrimitiveArrayType(method.getParameterType(i))) {
+          && !JavaTypes.isPrimitiveArrayType(method.getParameterType(i))) {
         LocalVarNode param = (LocalVarNode) srcnf.caseParm(i);
         this.params.add(param);
       }

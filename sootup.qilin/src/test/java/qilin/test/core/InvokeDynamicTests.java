@@ -32,7 +32,7 @@ import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
 import qilin.test.util.AssertionsParser;
 import qilin.test.util.IAssertion;
-import qilin.util.PTAUtils;
+import qilin.util.ViewFactory;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -43,7 +43,7 @@ import sootup.core.views.View;
  * app/jre-path fields across every subclass in the JVM, and this suite needs a Java 8+ library
  * classpath (for {@code java.lang.invoke.LambdaMetafactory}/{@code java.util.function.Supplier}).
  * Runs {@code singleEntry(true)} (skips {@code FakeMainFactory}'s pre-JDK9 JVM-bootstrap modeling -
- * see {@link PTAUtils#createView(String, String)}) so it can use the current JVM's own runtime
+ * see {@link ViewFactory#createView(String, String)}) so it can use the current JVM's own runtime
  * image instead of a downloaded legacy JRE fixture.
  */
 public class InvokeDynamicTests {
@@ -64,7 +64,7 @@ public class InvokeDynamicTests {
             .contextSensitivity(contextSensitivity)
             .singleEntry(true)
             .build();
-    View view = PTAUtils.createView(appPath, null);
+    View view = ViewFactory.createView(appPath, null);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
     PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
     pta.pureRun();

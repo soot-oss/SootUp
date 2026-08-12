@@ -32,7 +32,7 @@ import qilin.parm.select.CtxSelector;
 import qilin.parm.select.HeuristicSelector;
 import qilin.parm.select.PartialVarSelector;
 import qilin.parm.select.PipelineSelector;
-import qilin.util.PTAUtils;
+import qilin.util.PagQueries;
 import qilin.util.Stopwatch;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.Local;
@@ -92,7 +92,7 @@ public abstract class PartialObjSensPTA extends StagedPTA {
     ret.forEach(
         (sparkNode, l) -> {
           if (l > 0) {
-            csnodes.add(PTAUtils.getIR(sparkNode));
+            csnodes.add(PagQueries.getIR(sparkNode));
           }
           SootMethod method = null;
           if (sparkNode instanceof LocalVarNode) {

@@ -24,7 +24,7 @@ import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.ContextMethod;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -129,7 +129,7 @@ public class TypeClientStat implements AbstractStat {
               if (fails) {
                 break;
               }
-              fails = !PTAUtils.castNeverFails(pta.getView(), n.getType(), targetType);
+              fails = !JavaTypes.castNeverFails(pta.getView(), n.getType(), targetType);
             }
 
             if (fails) {

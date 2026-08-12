@@ -27,7 +27,8 @@ import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.Kind;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
+import qilin.util.PagQueries;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import qilin.util.sets.DoublePointsToSet;
@@ -256,7 +257,7 @@ public class Solver extends Propagator {
     MethodSubSignature sigFinalize =
         JavaIdentifierFactory.getInstance().parseMethodSubSignature("void finalize()");
     Type type = heap.getType();
-    if (type instanceof ClassType && type != PTAUtils.OBJECT) {
+    if (type instanceof ClassType && type != JavaTypes.OBJECT) {
       ClassType refType = (ClassType) type;
       SootMethod finalizeMethod = cgb.resolveNonSpecial(refType, sigFinalize);
       if (finalizeMethod != null
@@ -288,7 +289,7 @@ public class Solver extends Propagator {
             }
             final FieldValNode fvn = pag.makeFieldValNode(field);
             final ValNode oDotF =
-                (ValNode) pta.parameterize(fvn, PTAUtils.plusplusOp((AllocNode) n));
+                (ValNode) pta.parameterize(fvn, PagQueries.plusplusOp((AllocNode) n));
             pag.addEdge(from, oDotF);
           }
         });
@@ -303,7 +304,7 @@ public class Solver extends Propagator {
             }
             final FieldValNode fvn = pag.makeFieldValNode(field);
             final ValNode oDotF =
-                (ValNode) pta.parameterize(fvn, PTAUtils.plusplusOp((AllocNode) n));
+                (ValNode) pta.parameterize(fvn, PagQueries.plusplusOp((AllocNode) n));
             pag.addEdge(oDotF, to);
           }
         });
@@ -381,13 +382,11 @@ public class Solver extends Propagator {
 
   // we do not allow store to and load from constant heap/empty array.
   private boolean disallowStoreOrLoadOn(AllocNode heap) {
-    AllocNode base = heap.base();
-    // return base instanceof StringConstantNode || PTAUtils.isEmptyArray(base);
-    return PTAUtils.isEmptyArray(base);
+    return heap.base().isEmptyArray();
   }
 
   private boolean addWithTypeFiltering(PointsToSetInternal pts, Type type, PagNode node) {
-    if (PTAUtils.castNeverFails(pta.getView(), node.getType(), type)) {
+    if (JavaTypes.castNeverFails(pta.getView(), node.getType(), type)) {
       return pts.add(node.getNumber());
     }
     return false;

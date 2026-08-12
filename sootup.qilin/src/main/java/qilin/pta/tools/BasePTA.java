@@ -41,7 +41,8 @@ import qilin.core.solver.Solver;
 import qilin.stat.IEvaluator;
 import qilin.stat.PTAEvaluator;
 import qilin.stat.SimplifiedEvaluator;
-import qilin.util.PTAUtils;
+import qilin.util.FakeMainMethods;
+import qilin.util.PagQueries;
 import qilin.util.sets.PointsToSet;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
@@ -104,7 +105,7 @@ public abstract class BasePTA extends CorePTA {
         SootClass clz = null;
         if (vn instanceof LocalVarNode) {
           SootMethod sm = ((LocalVarNode) vn).getMethod();
-          if (sm != null && !PTAUtils.isFakeMainMethod(sm)) {
+          if (sm != null && !FakeMainMethods.isFakeMainMethod(sm)) {
             clz = getView().getClass(sm.getDeclaringClassType()).get();
           }
         } else if (vn instanceof GlobalVarNode) {
@@ -133,7 +134,7 @@ public abstract class BasePTA extends CorePTA {
           continue;
         }
 
-        String label = PTAUtils.getNodeLabel(vn);
+        String label = PagQueries.getNodeLabel(vn);
         nodes.put("[" + label + "]", vn);
         file.print(label + " -> {");
         PointsToSet p2set = pta.reachingObjects(vn);
@@ -144,7 +145,7 @@ public abstract class BasePTA extends CorePTA {
         }
         for (Iterator<AllocNode> it = p2set.iterator(); it.hasNext(); ) {
           PagNode n = it.next();
-          label = PTAUtils.getNodeLabel(n);
+          label = PagQueries.getNodeLabel(n);
           nodes.put("[" + label + "]", n);
           file.print(" ");
           file.print(label);

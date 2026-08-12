@@ -27,7 +27,8 @@ import org.jspecify.annotations.NonNull;
 import qilin.core.PTAScene;
 import qilin.core.pag.*;
 import qilin.core.pag.Field;
-import qilin.util.PTAUtils;
+import qilin.util.FakeMainMethods;
+import qilin.util.JavaTypes;
 import qilin.util.queue.UniqueQueue;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.common.Immediate;
@@ -155,7 +156,7 @@ public class MethodNodeFactory {
   private void resolveClinit(JStaticFieldRef staticFieldRef) {
     FieldSignature fieldSig = staticFieldRef.getFieldSignature();
     ClassType classType = fieldSig.getDeclClassType();
-    if (PTAUtils.isFakeMainClass(classType)) { // skip FakeMain
+    if (FakeMainMethods.isFakeMainClass(classType)) { // skip FakeMain
       return;
     }
     SootClass sootClass = scene.getView().getClass(classType).get();
@@ -304,7 +305,7 @@ public class MethodNodeFactory {
   }
 
   public VarNode caseThis() {
-    Type type = method.isStatic() ? PTAUtils.OBJECT : method.getDeclaringClassType();
+    Type type = method.isStatic() ? JavaTypes.OBJECT : method.getDeclaringClassType();
     VarNode ret = pag.makeLocalVarNode(MethodParameter.ofThis(method), type, method);
     ret.setInterProcTarget();
     return ret;
@@ -327,7 +328,7 @@ public class MethodNodeFactory {
 
   public VarNode caseMethodThrow() {
     VarNode ret =
-        pag.makeLocalVarNode(MethodParameter.ofThrow(method), PTAUtils.THROWABLE, method);
+        pag.makeLocalVarNode(MethodParameter.ofThrow(method), JavaTypes.THROWABLE, method);
     ret.setInterProcSource();
     return ret;
   }
@@ -363,22 +364,22 @@ public class MethodNodeFactory {
 
   private VarNode caseStringConstant(StringConstant sc) {
     AllocNode stringConstantNode = pag.makeStringConstantNode(sc);
-    VarNode stringConstantVar = pag.makeGlobalVarNode(sc, PTAUtils.STRING);
+    VarNode stringConstantVar = pag.makeGlobalVarNode(sc, JavaTypes.STRING);
     mpag.addInternalEdge(stringConstantNode, stringConstantVar);
-    VarNode vn = pag.makeLocalVarNode(sc, PTAUtils.STRING, method);
+    VarNode vn = pag.makeLocalVarNode(sc, JavaTypes.STRING, method);
     mpag.addInternalEdge(stringConstantVar, vn);
     return vn;
   }
 
   public LocalVarNode makeInvokeStmtThrowVarNode(Stmt invoke, SootMethod method) {
-    return pag.makeLocalVarNode(invoke, PTAUtils.THROWABLE, method);
+    return pag.makeLocalVarNode(invoke, JavaTypes.THROWABLE, method);
   }
 
   public final VarNode caseClassConstant(ClassConstant cc) {
     AllocNode classConstant = pag.makeClassConstantNode(cc);
-    VarNode classConstantVar = pag.makeGlobalVarNode(cc, PTAUtils.CLASS);
+    VarNode classConstantVar = pag.makeGlobalVarNode(cc, JavaTypes.CLASS);
     mpag.addInternalEdge(classConstant, classConstantVar);
-    VarNode vn = pag.makeLocalVarNode(cc, PTAUtils.CLASS, method);
+    VarNode vn = pag.makeLocalVarNode(cc, JavaTypes.CLASS, method);
     mpag.addInternalEdge(classConstantVar, vn);
     return vn;
   }

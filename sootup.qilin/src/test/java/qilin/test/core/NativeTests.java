@@ -25,7 +25,7 @@ import qilin.core.PointerAnalysisFactory;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
 import qilin.test.util.QilinFrameworkTests;
-import qilin.util.PTAUtils;
+import qilin.util.ViewFactory;
 import sootup.callgraph.scope.AppOnlyClinitCallResolver;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
@@ -46,7 +46,7 @@ public class NativeTests extends QilinFrameworkTests {
 
   @Override
   public PTA run(String mainClass, ContextSensitivity contextSensitivity) {
-    View view = PTAUtils.createView(appPath, null);
+    View view = ViewFactory.createView(appPath, null);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
     PointerAnalysisConfig config =
         QilinFrameworkTests.configBuilder(contextSensitivity, refLogPath)

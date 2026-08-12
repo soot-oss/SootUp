@@ -21,6 +21,8 @@ package qilin.core.pag;
 import qilin.core.context.ContextElement;
 import qilin.util.Numberable;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
@@ -70,5 +72,16 @@ public class AllocNode extends PagNode implements ContextElement, Numberable {
 
   public AllocNode base() {
     return this;
+  }
+
+  /** True if this allocation site is a {@code new T[0]}-shaped, statically-empty array. */
+  public boolean isEmptyArray() {
+    if (newExpr instanceof JNewArrayExpr nae) {
+      Value sizeVal = nae.getSize();
+      if (sizeVal instanceof IntConstant size) {
+        return size.getValue() == 0;
+      }
+    }
+    return false;
   }
 }

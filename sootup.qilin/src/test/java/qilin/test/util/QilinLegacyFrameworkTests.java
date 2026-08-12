@@ -25,7 +25,7 @@ import qilin.core.PTA;
 import qilin.core.PointerAnalysisFactory;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
-import qilin.util.PTAUtils;
+import qilin.util.ViewFactory;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -89,7 +89,7 @@ public abstract class QilinLegacyFrameworkTests {
   protected PTA run(String mainClass, ContextSensitivity contextSensitivity) {
     PointerAnalysisConfig config =
         QilinFrameworkTests.configBuilder(contextSensitivity, refLogPath).build();
-    View view = PTAUtils.createView(appPath, null, jrePath);
+    View view = ViewFactory.createView(appPath, null, jrePath);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
     PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
     // see QilinFrameworkTests#run(String, PointerAnalysisConfig) for why not pureRun()

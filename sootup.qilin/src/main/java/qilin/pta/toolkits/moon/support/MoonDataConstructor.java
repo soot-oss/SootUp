@@ -51,7 +51,7 @@ import qilin.pta.toolkits.common.OAG;
 import qilin.pta.toolkits.moon.graph.FieldPointsToGraph;
 import qilin.pta.toolkits.moon.graph.FlowKind;
 import qilin.pta.toolkits.moon.graph.VFG;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
@@ -366,7 +366,7 @@ public class MoonDataConstructor {
     // handle parameters.
     for (int i = 0; i < method.getParameterCount(); ++i) {
       if (method.getParameterType(i) instanceof ReferenceType
-          && !PTAUtils.isPrimitiveArrayType(method.getParameterType(i))) {
+          && !JavaTypes.isPrimitiveArrayType(method.getParameterType(i))) {
         LocalVarNode param = (LocalVarNode) factory.caseParm(i);
         vfgForObj.addSimpleFlowEdge(FlowKind.PARAMETER_PASSING, param, param);
       }
@@ -379,7 +379,7 @@ public class MoonDataConstructor {
 
     // handle returns
     if (method.getReturnType() instanceof ReferenceType
-        && !PTAUtils.isPrimitiveArrayType(method.getReturnType())) {
+        && !JavaTypes.isPrimitiveArrayType(method.getReturnType())) {
       vfgForObj.addSimpleFlowEdge(FlowKind.RETURN, factory.caseRet(), factory.caseRet());
     }
   }
@@ -435,7 +435,7 @@ public class MoonDataConstructor {
     for (int i = 0; i < inlinedMethod.getParameterCount(); ++i) {
       if (args[i] != null
           && inlinedMethod.getParameterType(i) instanceof ReferenceType
-          && !PTAUtils.isPrimitiveArrayType(inlinedMethod.getParameterType(i))) {
+          && !JavaTypes.isPrimitiveArrayType(inlinedMethod.getParameterType(i))) {
         LocalVarNode param = (LocalVarNode) nodeFactory.caseParm(i);
         ValNode argVal = pag.findValNode(args[i], caller);
         if (argVal instanceof LocalVarNode argNode) {
@@ -446,7 +446,7 @@ public class MoonDataConstructor {
     // handle return node
     if (retDest != null
         && inlinedMethod.getReturnType() instanceof ReferenceType
-        && !PTAUtils.isPrimitiveArrayType(inlinedMethod.getReturnType())) {
+        && !JavaTypes.isPrimitiveArrayType(inlinedMethod.getReturnType())) {
       vfgForObj.addSimpleFlowEdge(FlowKind.LOCAL_ASSIGN, nodeFactory.caseRet(), retDest);
     }
     // handle this node

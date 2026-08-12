@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.PAG;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
@@ -35,14 +35,15 @@ public class HeuristicAbstractor implements HeapAbstractor {
   public HeuristicAbstractor(PAG pag) {
     this.pag = pag;
     this.view = pag.getPta().getView();
-    mergedTypes.add(PTAUtils.STRING_BUFFER);
-    mergedTypes.add(PTAUtils.STRING_BUILDER);
+    mergedTypes.add(JavaTypes.STRING_BUFFER);
+    mergedTypes.add(JavaTypes.STRING_BUILDER);
   }
 
   @Override
   public AllocNode abstractHeap(AllocNode heap) {
     Type type = heap.getType();
-    if (mergedTypes.contains(type) || (PTAUtils.isThrowable(view, type) && mergedTypes.add(type))) {
+    if (mergedTypes.contains(type)
+        || (JavaTypes.isThrowable(view, type) && mergedTypes.add(type))) {
       return pag.makeAllocNode(pag.getMergedNewExpr((ReferenceType) type), type, null);
     } else {
       return heap;

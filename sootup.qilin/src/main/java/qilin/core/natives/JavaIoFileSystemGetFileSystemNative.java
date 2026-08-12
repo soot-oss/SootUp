@@ -19,7 +19,7 @@
 package qilin.core.natives;
 
 import qilin.core.pag.PAG;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
@@ -37,7 +37,7 @@ public class JavaIoFileSystemGetFileSystemNative extends NativeMethod {
    * JDK(e.g., JDK6).
    */
   protected void simulateImpl() {
-    Local newLocal0 = getNew(PTAUtils.UNIX_FILE_SYSTEM);
+    Local newLocal0 = getNew(JavaTypes.UNIX_FILE_SYSTEM);
     addInvoke(newLocal0, "<java.io.UnixFileSystem: void <init>()>");
     addReturn(newLocal0);
   }

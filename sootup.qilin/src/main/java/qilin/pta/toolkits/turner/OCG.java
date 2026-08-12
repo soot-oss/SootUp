@@ -23,7 +23,7 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.StaticThisPointsTo;
 import qilin.util.sets.PointsToSet;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
@@ -41,7 +41,7 @@ public class OCG {
 
   public OCG(PTA pta) {
     this.pta = pta;
-    this.pts = PTAUtils.calcStaticThisPTS(pta);
+    this.pts = StaticThisPointsTo.calcStaticThisPTS(pta);
     this.nodes = new HashMap<>();
     buildGraph();
   }

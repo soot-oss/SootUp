@@ -21,7 +21,7 @@ package qilin.test.util;
 import java.util.Objects;
 import qilin.core.PTA;
 import qilin.core.pag.LocalVarNode;
-import qilin.util.PTAUtils;
+import qilin.util.PagQueries;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -83,7 +83,7 @@ public class AliasAssertion implements IAssertion {
 
   private void printPts(Local l, String label) {
     LocalVarNode lvn = pta.getPag().findLocalVarNode(sm, l, l.getType());
-    System.out.println(label + " points to: " + PTAUtils.getNodeLabel(lvn) + lvn);
-    PTAUtils.printPts(pta, pta.reachingObjects(sm, l).toCIPointsToSet());
+    System.out.println(label + " points to: " + PagQueries.getNodeLabel(lvn) + lvn);
+    PagQueries.printPts(pta, pta.reachingObjects(sm, l).toCIPointsToSet());
   }
 }

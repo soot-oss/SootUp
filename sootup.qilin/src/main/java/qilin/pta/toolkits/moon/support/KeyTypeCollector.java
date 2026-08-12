@@ -30,7 +30,7 @@ import java.util.Set;
 import qilin.core.PTA;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.SparkField;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.model.SootClass;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
@@ -49,7 +49,7 @@ public class KeyTypeCollector {
   }
 
   private boolean isPolyType(Type type) {
-    if (type.equals(PTAUtils.OBJECT)) {
+    if (type.equals(JavaTypes.OBJECT)) {
       return true;
     }
     if (type instanceof ClassType classType) {
@@ -80,11 +80,11 @@ public class KeyTypeCollector {
     if (type instanceof ClassType classType) {
       if (!fieldRecorder.typeToFields.containsKey(type)) {
         for (AllocNode heap : fieldRecorder.objToFields.keySet()) {
-          if (PTAUtils.canStoreType(view, heap.getType(), classType)) {
+          if (JavaTypes.canStoreType(view, heap.getType(), classType)) {
             for (SparkField sparkField : fieldRecorder.objToFields.get(heap)) {
               if (sparkField instanceof qilin.core.pag.Field qField) {
                 ClassType declType = qField.getField().getDeclaringClassType();
-                if (PTAUtils.canStoreType(view, classType, declType)) {
+                if (JavaTypes.canStoreType(view, classType, declType)) {
                   fieldRecorder.typeToFields.put(type, sparkField);
                 }
               } else {

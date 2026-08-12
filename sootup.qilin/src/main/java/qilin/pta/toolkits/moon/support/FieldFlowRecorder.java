@@ -41,7 +41,7 @@ import qilin.pta.toolkits.moon.graph.FieldEdge;
 import qilin.pta.toolkits.moon.graph.FlowEdge;
 import qilin.pta.toolkits.moon.graph.FlowKind;
 import qilin.pta.toolkits.moon.graph.VFG;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.Pair;
 import qilin.util.collect.twokeymultimap.ConcurrentTwoKeyMultiMap;
 import sootup.core.model.SootMethod;
@@ -106,7 +106,7 @@ public class FieldFlowRecorder {
                     MethodNodeFactory factory = pta.getPag().getMethodPAG(m).nodeFactory();
                     for (int i = 0; i < m.getParameterCount(); ++i) {
                       if (m.getParameterType(i) instanceof ReferenceType
-                          && !PTAUtils.isPrimitiveArrayType(m.getParameterType(i))) {
+                          && !JavaTypes.isPrimitiveArrayType(m.getParameterType(i))) {
                         LocalVarNode param = (LocalVarNode) factory.caseParm(i);
                         objToArgOfInvokeMethods.put(obj, param);
                       }

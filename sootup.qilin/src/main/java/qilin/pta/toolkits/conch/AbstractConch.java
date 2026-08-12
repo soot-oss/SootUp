@@ -22,8 +22,9 @@ import java.util.*;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.PagQueries;
 import qilin.util.Pair;
+import qilin.util.StaticThisPointsTo;
 import qilin.util.sets.PointsToSet;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
@@ -70,7 +71,7 @@ public class AbstractConch {
      * thus, inherit its most recent instance methods' contexts (which is standard in the literature).
      * The following line computes the receiver objects for the this_ptr of static methods.
      * */
-    Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(pta);
+    Map<LocalVarNode, Set<AllocNode>> pts = StaticThisPointsTo.calcStaticThisPTS(pta);
     pta.getNakedReachableMethods().stream()
         .filter(pag::hasBody)
         .forEach(
@@ -141,7 +142,7 @@ public class AbstractConch {
       if (primitiveField(field)) {
         continue;
       }
-      if (PTAUtils.mustAlias(pta, thisRef, loadBase)) { // handle THIS LOAD, i.e., ... = this.f
+      if (PagQueries.mustAlias(pta, thisRef, loadBase)) { // handle THIS LOAD, i.e., ... = this.f
         Map<SparkField, Set<VarNode>> f2bs =
             m2thisFLoads.computeIfAbsent(method, k -> new HashMap<>());
         f2bs.computeIfAbsent(field, k -> new HashSet<>()).add(loadBase);
@@ -173,7 +174,7 @@ public class AbstractConch {
       if (primitiveField(field)) {
         continue;
       }
-      if (PTAUtils.mustAlias(pta, thisRef, storeBase)) { // handle this STORE, i.e., this.f = ...
+      if (PagQueries.mustAlias(pta, thisRef, storeBase)) { // handle this STORE, i.e., this.f = ...
         Map<SparkField, Set<Pair<VarNode, VarNode>>> m2s =
             m2thisFStores.computeIfAbsent(method, k -> new HashMap<>());
         m2s.computeIfAbsent(field, k -> new HashSet<>()).add(new Pair<>(storeBase, from));

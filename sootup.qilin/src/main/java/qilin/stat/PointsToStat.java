@@ -24,7 +24,7 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.FakeMainMethods;
 import qilin.util.Triple;
 import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.Local;
@@ -113,7 +113,7 @@ public class PointsToStat implements AbstractStat {
       try {
         GlobalVarNode gvn = pag.findGlobalVarNode(global);
         ClassType classType = global.getDeclClassType();
-        if (PTAUtils.isFakeMainClass(classType)) {
+        if (FakeMainMethods.isFakeMainClass(classType)) {
           continue;
         }
         Optional<? extends SootClass> optClass = pta.getView().getClass(classType);
@@ -235,7 +235,7 @@ public class PointsToStat implements AbstractStat {
     Set<LocalVarNode> tmp = new HashSet<>();
     for (LocalVarNode lvn : mLocalVarNodes) {
       SootMethod sm = lvn.getMethod();
-      if (PTAUtils.isFakeMainMethod(sm)) {
+      if (FakeMainMethods.isFakeMainMethod(sm)) {
         tmp.add(lvn);
         continue;
       }

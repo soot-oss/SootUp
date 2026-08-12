@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -31,7 +31,7 @@ public class XPAG {
     this.pta = pta;
     this.pag = pta.getPag();
     this.utility = utility;
-    this.dummyThis = new LocalVarNode("DUMMYTHIS", PTAUtils.OBJECT, null);
+    this.dummyThis = new LocalVarNode("DUMMYTHIS", JavaTypes.OBJECT, null);
     buildGraph(pta.getNakedReachableMethods());
   }
 
@@ -125,7 +125,7 @@ public class XPAG {
     // handle parameters.
     for (int i = 0; i < method.getParameterCount(); ++i) {
       if (method.getParameterType(i) instanceof ReferenceType
-          && !PTAUtils.isPrimitiveArrayType(method.getParameterType(i))) {
+          && !JavaTypes.isPrimitiveArrayType(method.getParameterType(i))) {
         LocalVarNode param = (LocalVarNode) srcnf.caseParm(i);
         addParamEdge(param);
       }
@@ -136,7 +136,7 @@ public class XPAG {
     }
     // handle returns
     if (method.getReturnType() instanceof ReferenceType
-        && !PTAUtils.isPrimitiveArrayType(method.getReturnType())) {
+        && !JavaTypes.isPrimitiveArrayType(method.getReturnType())) {
       addReturnEdge((LocalVarNode) srcnf.caseRet());
     }
   }
@@ -189,7 +189,7 @@ public class XPAG {
     for (int i = 0; i < tgtMethod.getParameterCount(); ++i) {
       if (args[i] != null
           && tgtMethod.getParameterType(i) instanceof ReferenceType
-          && !PTAUtils.isPrimitiveArrayType(tgtMethod.getParameterType(i))) {
+          && !JavaTypes.isPrimitiveArrayType(tgtMethod.getParameterType(i))) {
         LocalVarNode param = (LocalVarNode) nodeFactory.caseParm(i);
         ValNode argVal = pag.findValNode(args[i], srcMethod);
         if (argVal instanceof LocalVarNode) {
@@ -201,7 +201,7 @@ public class XPAG {
     // handle return node
     if (retDest != null
         && tgtMethod.getReturnType() instanceof ReferenceType
-        && !PTAUtils.isPrimitiveArrayType(tgtMethod.getReturnType())) {
+        && !JavaTypes.isPrimitiveArrayType(tgtMethod.getReturnType())) {
       addAssignEdge((LocalVarNode) nodeFactory.caseRet(), retDest);
     }
     // handle this node

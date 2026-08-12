@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import qilin.core.PTA;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.PagQueries;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
 
@@ -137,7 +137,7 @@ public class LeakAnalysis extends AbstractPAG {
             if (targetState == DFA.State.F) { // ret.f* = heap
               // add S -new-> r summary edge for symbolic heaps.
               VarNode ret = (VarNode) targetNode;
-              VarNode r = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, ret);
+              VarNode r = PagQueries.paramToArg(prePAG, invokeStmt, srcmpag, ret);
               if (r != null) {
                 AllocNode s = getSymbolicHeapOf(srcMethod, invokeStmt);
                 addSummaryEdge(new TranEdge(s, r, DFA.TranCond.NEW));
@@ -155,19 +155,19 @@ public class LeakAnalysis extends AbstractPAG {
             SootMethod srcMethod = edge.src();
             MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
             InvokableStmt invokeStmt = edge.srcUnit();
-            VarNode aj = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pj);
+            VarNode aj = PagQueries.paramToArg(prePAG, invokeStmt, srcmpag, pj);
             // a param reach end state.
             if (targetState == DFA.State.B && sourceNode != targetNode) { // pi.f* = pj, pi != pj.
               // add aj --> ai summary edge. inter_store.
               VarNode pi = (VarNode) targetNode;
-              VarNode ai = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pi);
+              VarNode ai = PagQueries.paramToArg(prePAG, invokeStmt, srcmpag, pi);
               if (ai != null && aj != null && ai != aj) {
                 addSummaryEdge(new TranEdge(aj, ai, DFA.TranCond.INTER_STORE));
               }
             } else if (targetState == DFA.State.F) { // ret.f* = pj
               // add aj --> r summary edge. inter_load.
               VarNode ret = (VarNode) targetNode;
-              VarNode r = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, ret);
+              VarNode r = PagQueries.paramToArg(prePAG, invokeStmt, srcmpag, ret);
               if (r != null && aj != null) {
                 addSummaryEdge(new TranEdge(aj, r, DFA.TranCond.INTER_ASSIGN));
               }
@@ -186,8 +186,8 @@ public class LeakAnalysis extends AbstractPAG {
             SootMethod srcMethod = edge.src();
             MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
             InvokableStmt invokeStmt = edge.srcUnit();
-            VarNode ai = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pi);
-            VarNode r = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, retOrThrow);
+            VarNode ai = PagQueries.paramToArg(prePAG, invokeStmt, srcmpag, pi);
+            VarNode r = PagQueries.paramToArg(prePAG, invokeStmt, srcmpag, retOrThrow);
             if (r != null && ai != null) {
               addSummaryEdge(new TranEdge(r, ai, DFA.TranCond.I_INTER_LOAD));
             }

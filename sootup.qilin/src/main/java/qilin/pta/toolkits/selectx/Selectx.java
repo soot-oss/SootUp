@@ -25,7 +25,7 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -337,8 +337,7 @@ public class Selectx {
           }
           LocalVarNode stmtThrowNode = srcnf.makeInvokeStmtThrowVarNode(s, method);
           LocalVarNode throwFinal =
-              prePAG.findLocalVarNode(
-                  method, MethodParameter.ofThrow(tgtmtd), PTAUtils.THROWABLE);
+              prePAG.findLocalVarNode(method, MethodParameter.ofThrow(tgtmtd), JavaTypes.THROWABLE);
           if (throwFinal != null) {
             this.addExitEdge(throwFinal, stmtThrowNode, callSite);
           }

@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.PAG;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 import sootup.core.views.View;
@@ -49,7 +49,7 @@ public class MahjongAbstractor implements HeapAbstractor {
     if (this.mergedHeap.contains(mergedIr)) {
       return pag.makeAllocNode(mergedIr, type, null);
     } else {
-      if (PTAUtils.isThrowable(view, type)) {
+      if (JavaTypes.isThrowable(view, type)) {
         // Mahjong still needs heuristics to handle throwable types.
         return pag.makeAllocNode("Merged " + type, type, null);
       }

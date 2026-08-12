@@ -25,9 +25,9 @@ import sootup.core.model.SootMethod;
  * Represents a synthetic pointer-assignment-graph variable for one of a method's special
  * argument-passing slots: an ordinary parameter at a given index (the base case, this class
  * itself), or the receiver ({@code this}), the return value, or the thrown exception (the {@link
- * This}, {@link Return} and {@link Throw} subclasses). Use the {@code of*} factory methods to
- * build one, and {@link #isThis()}/{@link #isReturn()}/{@link #isThrowRet()} to tell which kind
- * you have, rather than comparing against a magic sentinel index.
+ * This}, {@link Return} and {@link Throw} subclasses). Use the {@code of*} factory methods to build
+ * one, and {@link #isThis()}/{@link #isReturn()}/{@link #isThrowRet()} to tell which kind you have,
+ * rather than comparing against a magic sentinel index.
  *
  * @author Ondrej Lhotak
  */
@@ -64,8 +64,8 @@ public class MethodParameter {
   }
 
   /**
-   * Returns the ordinary-parameter index. Only valid on a plain (non-this/return/throw)
-   * instance; throws otherwise.
+   * Returns the ordinary-parameter index. Only valid on a plain (non-this/return/throw) instance;
+   * throws otherwise.
    */
   public int getIndex() {
     return index;

@@ -27,7 +27,7 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.PagQueries;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.SootMethod;
@@ -127,7 +127,7 @@ public class DepOnParamAnalysis extends AbstractPAG {
               VarNode r = (VarNode) srcnf.getNode(assignStmt.getLeftOp());
               if (sourceParam instanceof LocalVarNode) {
                 LocalVarNode pj = (LocalVarNode) sourceParam;
-                VarNode aj = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pj);
+                VarNode aj = PagQueries.paramToArg(prePAG, invokeStmt, srcmpag, pj);
                 if (aj != null) {
                   addSummaryEdge(new TranEdge(aj, r, DFA.TranCond.INTER_ASSIGN));
                 }

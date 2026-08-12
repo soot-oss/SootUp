@@ -31,7 +31,7 @@ import qilin.core.solver.Propagator;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.CtxSelector;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.sets.HybridPointsToSet;
 import qilin.util.sets.PointsToSet;
 import qilin.util.sets.PointsToSetInternal;
@@ -58,7 +58,7 @@ public abstract class PTA implements PointsToAnalysis {
     this.pag = createPAG();
     this.cgb = createCallGraphBuilder();
     this.eh = new ExceptionHandler(this);
-    AllocNode rootBase = pag.makeAllocNode("ROOT", PTAUtils.OBJECT, null);
+    AllocNode rootBase = pag.makeAllocNode("ROOT", JavaTypes.OBJECT, null);
     this.rootNode = new ContextAllocNode(rootBase, CtxConstructor.emptyContext);
   }
 

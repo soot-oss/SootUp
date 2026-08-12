@@ -40,7 +40,9 @@ import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
 import qilin.core.pag.PagNode;
 import qilin.pta.toolkits.common.OAG;
-import qilin.util.PTAUtils;
+import qilin.util.FakeMainMethods;
+import qilin.util.JavaTypes;
+import qilin.util.StaticThisPointsTo;
 import qilin.util.graph.TopologicalSorter;
 import qilin.util.queue.QueueReader;
 import qilin.util.sets.PointsToSet;
@@ -124,7 +126,7 @@ public class ZOAG extends OAG {
 
   @Override
   protected void buildOAG() {
-    Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(this.pta);
+    Map<LocalVarNode, Set<AllocNode>> pts = StaticThisPointsTo.calcStaticThisPTS(this.pta);
     for (SootMethod method : this.pta.getNakedReachableMethods()) {
       if (!pta.getPag().hasBody(method)) {
         continue;
@@ -136,7 +138,7 @@ public class ZOAG extends OAG {
       while (reader.hasNext()) {
         PagNode from = reader.next(), to = reader.next();
         if (from instanceof AllocNode tgt) {
-          if (PTAUtils.isFakeMainMethod(method)) {
+          if (FakeMainMethods.isFakeMainMethod(method)) {
             // special treatment for fake main
             AllocNode src = pta.getRootNode();
             addEdgeWithFilter(src, tgt);
@@ -160,13 +162,13 @@ public class ZOAG extends OAG {
     if (from instanceof ConstantNode || to instanceof ConstantNode) return;
     Type ftype = from.getType();
     Type ttype = to.getType();
-    if (ftype.equals(PTAUtils.STRING) || ttype.equals(PTAUtils.STRING)) return;
-    if (ftype.equals(PTAUtils.STRING_BUILDER) || ttype.equals(PTAUtils.STRING_BUILDER)) return;
-    if (ftype.equals(PTAUtils.STRING_BUFFER) || ttype.equals(PTAUtils.STRING_BUFFER)) return;
+    if (ftype.equals(JavaTypes.STRING) || ttype.equals(JavaTypes.STRING)) return;
+    if (ftype.equals(JavaTypes.STRING_BUILDER) || ttype.equals(JavaTypes.STRING_BUILDER)) return;
+    if (ftype.equals(JavaTypes.STRING_BUFFER) || ttype.equals(JavaTypes.STRING_BUFFER)) return;
 
     var view = pta.getView();
-    if (PTAUtils.canStoreType(view, ftype, PTAUtils.THROWABLE)
-        || PTAUtils.canStoreType(view, ttype, PTAUtils.THROWABLE)) return;
+    if (JavaTypes.canStoreType(view, ftype, JavaTypes.THROWABLE)
+        || JavaTypes.canStoreType(view, ttype, JavaTypes.THROWABLE)) return;
 
     addEdge(from, to);
   }

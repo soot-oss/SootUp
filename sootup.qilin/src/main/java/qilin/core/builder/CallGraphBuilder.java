@@ -28,7 +28,7 @@ import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.util.CallDetails;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import qilin.util.sets.P2SetVisitor;
@@ -177,7 +177,7 @@ public class CallGraphBuilder {
       SootMethod target = targets.next();
       if (site.iie() instanceof JSpecialInvokeExpr) {
         Type calleeDeclType = target.getDeclaringClassType();
-        if (!PTAUtils.canStoreType(pta.getView(), type, calleeDeclType)) {
+        if (!JavaTypes.canStoreType(pta.getView(), type, calleeDeclType)) {
           continue;
         }
       }
@@ -334,7 +334,7 @@ public class CallGraphBuilder {
     final ChunkedQueue<SootMethod> targetsQueue = new ChunkedQueue<>();
     final QueueReader<SootMethod> targets = targetsQueue.reader();
     if (site.kind() == Kind.THREAD
-        && !PTAUtils.canStoreType(ptaScene.getView(), type, PTAUtils.RUNNABLE)) {
+        && !JavaTypes.canStoreType(ptaScene.getView(), type, JavaTypes.RUNNABLE)) {
       return targets;
     }
     ContextMethod container = site.container();

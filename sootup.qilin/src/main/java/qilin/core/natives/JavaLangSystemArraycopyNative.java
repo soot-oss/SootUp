@@ -19,7 +19,7 @@
 package qilin.core.natives;
 
 import qilin.core.pag.PAG;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -45,7 +45,7 @@ public class JavaLangSystemArraycopyNative extends NativeMethod {
   protected void simulateImpl() {
     //        Value srcArr = getPara(0);
     //        Value dstArr = getPara(2);
-    ClassType objType = PTAUtils.OBJECT;
+    ClassType objType = JavaTypes.OBJECT;
     Value srcArr = getPara(0, new ArrayType(objType, 1));
     Value dstArr = getPara(2, new ArrayType(objType, 1));
     Value src = getArrayRef(srcArr);

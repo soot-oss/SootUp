@@ -22,7 +22,7 @@ import java.util.*;
 import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.config.PointerAnalysisConfig;
-import qilin.util.PTAUtils;
+import qilin.util.FakeMainMethods;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.Jimple;
@@ -119,7 +119,7 @@ public class MethodPAG {
 
   protected void buildNormal() {
     if (method.isStatic()) {
-      if (!PTAUtils.isFakeMainMethod(method)) {
+      if (!FakeMainMethods.isFakeMainMethod(method)) {
         SootClass sc = ptaScene.getView().getClass(method.getDeclaringClassType()).get();
         nodeFactory.clinitsOf(sc).forEach(this::addTriggeredClinit);
       }

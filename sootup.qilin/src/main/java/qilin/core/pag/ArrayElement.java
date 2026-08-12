@@ -18,7 +18,7 @@
 
 package qilin.core.pag;
 
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.types.Type;
 
 /**
@@ -38,6 +38,6 @@ public class ArrayElement implements SparkField {
   }
 
   public Type getType() {
-    return PTAUtils.OBJECT;
+    return JavaTypes.OBJECT;
   }
 }

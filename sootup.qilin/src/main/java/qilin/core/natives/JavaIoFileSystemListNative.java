@@ -19,7 +19,7 @@
 package qilin.core.natives;
 
 import qilin.core.pag.PAG;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Value;
 import sootup.core.model.SootMethod;
@@ -33,8 +33,8 @@ public class JavaIoFileSystemListNative extends NativeMethod {
   /** ********************** java.io.FileSystem ********************** */
   /** Returns a String[] only exists in old JDK(e.g., JDK6). */
   protected void simulateImpl() {
-    Immediate arrLocal = getNewArray(PTAUtils.STRING);
-    Value elem = getNew(PTAUtils.STRING);
+    Immediate arrLocal = getNewArray(JavaTypes.STRING);
+    Value elem = getNew(JavaTypes.STRING);
     //        addInvoke(elem, "<java.lang.String: void <init>()>");
     addAssign(getArrayRef(arrLocal), elem);
     addReturn(arrLocal);
