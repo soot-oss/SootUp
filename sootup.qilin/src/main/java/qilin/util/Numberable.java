@@ -21,6 +21,7 @@ package qilin.util;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+// Retained (mostly) verbatim from Soot/Spark; part of qilin's ported pointer-analysis core.
 
 /**
  * A class that numbers objects, so they can be placed in bitsets.

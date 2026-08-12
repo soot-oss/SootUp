@@ -21,6 +21,7 @@ package qilin.util.queue;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+// Retained (mostly) verbatim from Soot/Spark; part of qilin's ported pointer-analysis core.
 
 import java.util.Collection;
 import java.util.Collections;
