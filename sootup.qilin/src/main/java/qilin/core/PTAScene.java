@@ -28,11 +28,9 @@ import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.config.PointerAnalysisConfig;
 import qilin.util.CallDetails;
-import qilin.util.PTAUtils;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
@@ -121,9 +119,8 @@ public class PTAScene {
     return this.callgraph;
   }
 
-  public SootMethod getMethod(String methodSignature) {
-    MethodSignature mthdSig = view.getIdentifierFactory().parseMethodSignature(methodSignature);
-    return view.getMethod(mthdSig)
+  public SootMethod getMethod(MethodSignature methodSignature) {
+    return view.getMethod(methodSignature)
         .orElseThrow(
             () -> new IllegalArgumentException("Method not found in view: " + methodSignature));
   }
@@ -136,14 +133,12 @@ public class PTAScene {
     return view.getClasses().filter(SootClass::isLibraryClass).collect(Collectors.toSet());
   }
 
-  public boolean containsMethod(String methodSignature) {
-    MethodSignature mthdSig = view.getIdentifierFactory().parseMethodSignature(methodSignature);
-    return view.getMethod(mthdSig).isPresent();
+  public boolean containsMethod(MethodSignature methodSignature) {
+    return view.getMethod(methodSignature).isPresent();
   }
 
-  public boolean containsField(String fieldSignature) {
-    FieldSignature fieldSig = view.getIdentifierFactory().parseFieldSignature(fieldSignature);
-    return view.getField(fieldSig).isPresent();
+  public boolean containsField(FieldSignature fieldSignature) {
+    return view.getField(fieldSignature).isPresent();
   }
 
   public Collection<? extends SootClass> getClasses() {
@@ -154,23 +149,13 @@ public class PTAScene {
     return Collections.emptySet();
   }
 
-  public SootClass getSootClass(String className) {
-    ClassType classType = PTAUtils.getClassType(className);
+  public SootClass getSootClass(ClassType classType) {
     return view.getClass(classType)
-        .orElseThrow(() -> new IllegalArgumentException("Class not found in view: " + className));
+        .orElseThrow(() -> new IllegalArgumentException("Class not found in view: " + classType));
   }
 
-  public boolean containsClass(String className) {
-    ClassType classType = PTAUtils.getClassType(className);
-    Optional<? extends SootClass> oclazz = view.getClass(classType);
-    return oclazz.isPresent();
-  }
-
-  public SootField getField(String fieldSignature) {
-    FieldSignature fieldSig = view.getIdentifierFactory().parseFieldSignature(fieldSignature);
-    return view.getField(fieldSig)
-        .orElseThrow(
-            () -> new IllegalArgumentException("Field not found in view: " + fieldSignature));
+  public boolean containsClass(ClassType classType) {
+    return view.getClass(classType).isPresent();
   }
 
   public boolean isApplicationMethod(SootMethod sm) {

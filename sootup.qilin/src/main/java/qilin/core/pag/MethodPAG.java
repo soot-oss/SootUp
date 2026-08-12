@@ -161,7 +161,9 @@ public class MethodPAG {
       // (library/reference.logic). "pending" is a JRE6/8-era Reference internal field - later
       // JDKs' reference-processing rewrite dropped/renamed it, so skip this modeling if absent
       // instead of crashing.
-      SootClass sootClass = ptaScene.getSootClass("java.lang.ref.Reference");
+      SootClass sootClass =
+          ptaScene.getSootClass(
+              ptaScene.getView().getIdentifierFactory().getClassType("java.lang.ref.Reference"));
       Optional<? extends SootField> osf = sootClass.getField("pending");
       if (osf.isPresent()) {
         JStaticFieldRef sfr = Jimple.newStaticFieldRef(osf.get().getSignature());

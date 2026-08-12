@@ -235,7 +235,7 @@ public class MethodNodeFactory {
   }
 
   private AllocNode caseNewExpr(JNewExpr ne) {
-    SootClass cl = scene.getSootClass(ne.getType().toString());
+    SootClass cl = scene.getSootClass(ne.getType());
     clinitsOf(cl).forEach(mpag::addTriggeredClinit);
     return pag.makeAllocNode(ne, ne.getType(), method);
   }

@@ -51,8 +51,10 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
@@ -109,7 +111,8 @@ public class TamiflexModel extends ReflectionModel {
     if (classNewInstances.containsKey(s)) {
       Collection<String> classNames = classNewInstances.get(s);
       for (String clsName : classNames) {
-        SootClass cls = ptaScene.getSootClass(clsName);
+        SootClass cls =
+            ptaScene.getSootClass(ptaScene.getView().getIdentifierFactory().getClassType(clsName));
         MethodSubSignature initSubSig =
             ptaScene.getView().getIdentifierFactory().parseMethodSubSignature("void <init>()");
         Optional<? extends SootMethod> omthd = cls.getMethod(initSubSig);
@@ -148,7 +151,9 @@ public class TamiflexModel extends ReflectionModel {
       builder.addLocal(arg);
       ret.add(new JAssignStmt(arg, arrayRef, StmtPositionInfo.getNoStmtPositionInfo()));
       for (String constructorSignature : constructorSignatures) {
-        SootMethod constructor = ptaScene.getMethod(constructorSignature);
+        SootMethod constructor =
+            ptaScene.getMethod(
+                ptaScene.getView().getIdentifierFactory().parseMethodSignature(constructorSignature));
         JNewExpr newExpr = new JNewExpr(constructor.getDeclaringClassType());
         ret.add(new JAssignStmt(lvalue, newExpr, StmtPositionInfo.getNoStmtPositionInfo()));
         int argCount = constructor.getParameterCount();
@@ -185,7 +190,9 @@ public class TamiflexModel extends ReflectionModel {
       }
 
       for (String methodSignature : methodSignatures) {
-        SootMethod method = ptaScene.getMethod(methodSignature);
+        SootMethod method =
+            ptaScene.getMethod(
+                ptaScene.getView().getIdentifierFactory().parseMethodSignature(methodSignature));
         int argCount = method.getParameterCount();
         List<Immediate> mArgs = new ArrayList<>(argCount);
         for (int i = 0; i < argCount; i++) {
@@ -363,7 +370,8 @@ public class TamiflexModel extends ReflectionModel {
           case ClassForName:
             break;
           case ClassNewInstance:
-            if (!ptaScene.containsClass(mappedTarget)) {
+            if (!ptaScene.containsClass(
+                ptaScene.getView().getIdentifierFactory().getClassType(mappedTarget))) {
               if (verbose) {
                 System.out.println("Warning: Unknown mapped class for signature: " + mappedTarget);
               }
@@ -372,7 +380,8 @@ public class TamiflexModel extends ReflectionModel {
             break;
           case ConstructorNewInstance:
           case MethodInvoke:
-            if (!ptaScene.containsMethod(mappedTarget)) {
+            if (!ptaScene.containsMethod(
+                ptaScene.getView().getIdentifierFactory().parseMethodSignature(mappedTarget))) {
               if (verbose) {
                 System.out.println("Warning: Unknown mapped method for signature: " + mappedTarget);
               }
@@ -381,7 +390,8 @@ public class TamiflexModel extends ReflectionModel {
             break;
           case FieldSet:
           case FieldGet:
-            if (!ptaScene.containsField(mappedTarget)) {
+            if (!ptaScene.containsField(
+                ptaScene.getView().getIdentifierFactory().parseFieldSignature(mappedTarget))) {
               if (verbose) {
                 System.out.println("Warning: Unknown mapped field for signature: " + mappedTarget);
               }
@@ -412,11 +422,12 @@ public class TamiflexModel extends ReflectionModel {
   private Collection<SootMethod> inferSourceMethod(String inClzDotMthd) {
     String inClassStr = inClzDotMthd.substring(0, inClzDotMthd.lastIndexOf("."));
     String inMethodStr = inClzDotMthd.substring(inClzDotMthd.lastIndexOf(".") + 1);
-    if (!ptaScene.containsClass(inClassStr)) {
+    ClassType inClassType = ptaScene.getView().getIdentifierFactory().getClassType(inClassStr);
+    if (!ptaScene.containsClass(inClassType)) {
       System.out.println("Warning: unknown class \"" + inClassStr + "\" is referenced.");
       return Collections.emptySet();
     }
-    SootClass sootClass = ptaScene.getSootClass(inClassStr);
+    SootClass sootClass = ptaScene.getSootClass(inClassType);
     Set<SootMethod> ret = new HashSet<>();
     Set<? extends SootMethod> declMethods = sootClass.getMethods();
     for (SootMethod m : declMethods) {
