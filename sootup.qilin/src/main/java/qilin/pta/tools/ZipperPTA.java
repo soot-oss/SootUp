@@ -22,15 +22,12 @@ import java.util.HashSet;
 import java.util.Set;
 import qilin.core.PTAScene;
 import qilin.core.config.ContextSensitivity;
-import qilin.core.config.PointerAnalysisConfig;
+import qilin.core.config.PointerAnalysisComponents;
 import qilin.core.pag.*;
 import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.AllocSiteAbstractor;
-import qilin.parm.heapabst.HeuristicAbstractor;
+import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.CtxSelector;
-import qilin.parm.select.HeuristicSelector;
 import qilin.parm.select.PartialMethodLvSelector;
-import qilin.parm.select.PipelineSelector;
 import qilin.pta.toolkits.zipper.Main;
 import qilin.util.Stopwatch;
 import qilin.util.queue.QueueReader;
@@ -59,19 +56,10 @@ public class ZipperPTA extends StagedPTA {
   public ZipperPTA(PTAScene scene, int k, int hk, CtxConstructor ctxCons, boolean isExpress) {
     super(scene);
     this.isExpress = isExpress;
-    this.ctxCons = ctxCons;
     CtxSelector us = new PartialMethodLvSelector(k, hk, PCMs);
-    if (getConfig().isEnforceEmptyCtxForIgnoreTypes()) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
-    } else {
-      this.ctxSel = us;
-    }
-    if (getConfig().getHeapAbstractionPolicy()
-        == PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE) {
-      this.heapAbst = new HeuristicAbstractor(pag);
-    } else {
-      this.heapAbst = new AllocSiteAbstractor();
-    }
+    CtxSelector ctxSel = PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbst = PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(ctxCons, ctxSel, heapAbst);
     this.prePTA = new CoreVariantPTA(scene, ContextSensitivity.insensitive());
   }
 

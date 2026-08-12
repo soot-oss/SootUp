@@ -43,11 +43,12 @@ public class MahjongPTA extends StagedPTA {
 
   public MahjongPTA(PTAScene scene, int k, int hk, CtxConstructor ctxCons) {
     super(scene);
-    this.ctxCons = ctxCons;
     CtxSelector us = new UniformSelector(k, hk);
     CtxSelector ds = new DebloatingSelector(csHeap);
-    this.ctxSel = new PipelineSelector(us, ds);
-    this.heapAbst = new MahjongAbstractor(pag, mergedHeap, heapModelMap);
+    initComponents(
+        ctxCons,
+        new PipelineSelector(us, ds),
+        new MahjongAbstractor(pag, mergedHeap, heapModelMap));
     this.prePTA = new CoreVariantPTA(scene, ContextSensitivity.insensitive());
     System.out.println("Mahjong ...");
   }

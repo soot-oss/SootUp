@@ -35,9 +35,9 @@ public final class CoreVariantPTA extends BasePTA {
 
   public CoreVariantPTA(PTAScene scene, ContextSensitivity contextSensitivity) {
     super(scene);
-    this.ctxCons = contextSensitivity.createCtxConstructor();
-    this.ctxSel =
-        PointerAnalysisComponents.createCtxSelector(getConfig(), getView(), contextSensitivity);
-    this.heapAbst = PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(
+        contextSensitivity.createCtxConstructor(),
+        PointerAnalysisComponents.createCtxSelector(getConfig(), getView(), contextSensitivity),
+        PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag));
   }
 }

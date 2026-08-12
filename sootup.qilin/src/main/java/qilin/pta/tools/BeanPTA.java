@@ -22,14 +22,11 @@ import java.util.HashMap;
 import java.util.Map;
 import qilin.core.PTAScene;
 import qilin.core.config.ContextSensitivity;
-import qilin.core.config.PointerAnalysisConfig;
+import qilin.core.config.PointerAnalysisComponents;
 import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.AllocSiteAbstractor;
-import qilin.parm.heapabst.HeuristicAbstractor;
+import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.BeanSelector;
 import qilin.parm.select.CtxSelector;
-import qilin.parm.select.HeuristicSelector;
-import qilin.parm.select.PipelineSelector;
 import qilin.pta.toolkits.bean.Bean;
 import qilin.util.Stopwatch;
 
@@ -43,19 +40,10 @@ public class BeanPTA extends StagedPTA {
 
   public BeanPTA(PTAScene scene, CtxConstructor ctxCons) {
     super(scene);
-    this.ctxCons = ctxCons;
     CtxSelector us = new BeanSelector(pag, beanNexCtxMap);
-    if (getConfig().isEnforceEmptyCtxForIgnoreTypes()) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
-    } else {
-      this.ctxSel = us;
-    }
-    if (getConfig().getHeapAbstractionPolicy()
-        == PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE) {
-      this.heapAbst = new HeuristicAbstractor(pag);
-    } else {
-      this.heapAbst = new AllocSiteAbstractor();
-    }
+    CtxSelector ctxSel = PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbst = PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(ctxCons, ctxSel, heapAbst);
     prePTA = new CoreVariantPTA(scene, ContextSensitivity.insensitive());
     System.out.println("bean ...");
   }

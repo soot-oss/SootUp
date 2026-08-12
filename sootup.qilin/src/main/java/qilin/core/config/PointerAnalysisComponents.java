@@ -52,6 +52,15 @@ public final class PointerAnalysisComponents {
             ? new InsenSelector()
             : new UniformSelector(
                 contextSensitivity.selectorContextDepth(), contextSensitivity.heapContextDepth());
+    return wrapIgnoreTypesGuard(config, view, base);
+  }
+
+  /**
+   * Wraps {@code base} with a {@link HeuristicSelector} guard that forces an empty context for
+   * ignore-types, when the config asks for it; otherwise returns {@code base} unchanged.
+   */
+  public static CtxSelector wrapIgnoreTypesGuard(
+      PointerAnalysisConfig config, View view, CtxSelector base) {
     return config.isEnforceEmptyCtxForIgnoreTypes()
         ? new PipelineSelector(new HeuristicSelector(view), base)
         : base;

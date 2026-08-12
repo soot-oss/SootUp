@@ -19,13 +19,10 @@
 package qilin.pta.tools;
 
 import qilin.core.PTAScene;
-import qilin.core.config.PointerAnalysisConfig;
+import qilin.core.config.PointerAnalysisComponents;
 import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.AllocSiteAbstractor;
-import qilin.parm.heapabst.HeuristicAbstractor;
+import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.CtxSelector;
-import qilin.parm.select.HeuristicSelector;
-import qilin.parm.select.PipelineSelector;
 import qilin.parm.select.UniformSelector;
 import qilin.pta.toolkits.dd.TunnelingConstructor;
 
@@ -37,19 +34,11 @@ import qilin.pta.toolkits.dd.TunnelingConstructor;
 public class TunnelingPTA extends BasePTA {
   public TunnelingPTA(PTAScene scene, CtxConstructor ctxCons, int k, int hk) {
     super(scene);
-    this.ctxCons = new TunnelingConstructor(getView(), pag, ctxCons);
+    CtxConstructor tunnelingCtxCons = new TunnelingConstructor(getView(), pag, ctxCons);
     CtxSelector us = new UniformSelector(k, hk);
-    if (getConfig().isEnforceEmptyCtxForIgnoreTypes()) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
-    } else {
-      this.ctxSel = us;
-    }
-    if (getConfig().getHeapAbstractionPolicy()
-        == PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE) {
-      this.heapAbst = new HeuristicAbstractor(pag);
-    } else {
-      this.heapAbst = new AllocSiteAbstractor();
-    }
+    CtxSelector ctxSel = PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbst = PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(tunnelingCtxCons, ctxSel, heapAbst);
     System.out.println("context-tunneling ...");
   }
 }

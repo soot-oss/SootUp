@@ -23,15 +23,12 @@ import java.util.Map;
 import java.util.Set;
 import qilin.core.PTAScene;
 import qilin.core.config.ContextSensitivity;
-import qilin.core.config.PointerAnalysisConfig;
+import qilin.core.config.PointerAnalysisComponents;
 import qilin.core.pag.*;
 import qilin.parm.ctxcons.ObjCtxConstructor;
-import qilin.parm.heapabst.AllocSiteAbstractor;
-import qilin.parm.heapabst.HeuristicAbstractor;
+import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.CtxSelector;
-import qilin.parm.select.HeuristicSelector;
 import qilin.parm.select.PartialVarSelector;
-import qilin.parm.select.PipelineSelector;
 import qilin.util.PagQueries;
 import qilin.util.Stopwatch;
 import qilin.util.queue.QueueReader;
@@ -56,19 +53,10 @@ public abstract class PartialObjSensPTA extends StagedPTA {
 
   public PartialObjSensPTA(PTAScene scene, int ctxLen) {
     super(scene);
-    this.ctxCons = new ObjCtxConstructor();
     CtxSelector us = new PartialVarSelector(ctxLen, ctxLen - 1, csnodes, csmethods);
-    if (getConfig().isEnforceEmptyCtxForIgnoreTypes()) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
-    } else {
-      this.ctxSel = us;
-    }
-    if (getConfig().getHeapAbstractionPolicy()
-        == PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE) {
-      this.heapAbst = new HeuristicAbstractor(pag);
-    } else {
-      this.heapAbst = new AllocSiteAbstractor();
-    }
+    CtxSelector ctxSel = PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbst = PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(new ObjCtxConstructor(), ctxSel, heapAbst);
     this.prePTA = new CoreVariantPTA(scene, ContextSensitivity.insensitive());
     this.prePAG = prePTA.getPag();
   }
