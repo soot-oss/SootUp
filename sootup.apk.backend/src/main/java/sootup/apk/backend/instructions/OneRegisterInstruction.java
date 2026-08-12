@@ -25,7 +25,7 @@ public abstract class OneRegisterInstruction extends AbstractInstruction {
     if (index != -1) {
       mutableList.set(index, newRegister);
     }
-    if (registerA.equals(oldRegister)) {
+    if (registerA != null && registerA.equals(oldRegister)) {
       registerA = newRegister;
     }
     super.setRegisters(List.copyOf(mutableList));

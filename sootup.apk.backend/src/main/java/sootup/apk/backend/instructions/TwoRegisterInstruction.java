@@ -30,9 +30,9 @@ public abstract class TwoRegisterInstruction extends AbstractInstruction {
     if (index != -1) {
       mutableList.set(index, newRegister);
     }
-    if (registerA.equals(oldRegister)) {
+    if (registerA != null && registerA.equals(oldRegister)) {
       registerA = newRegister;
-    } else if (registerB.equals(oldRegister)) {
+    } else if (registerB != null && registerB.equals(oldRegister)) {
       registerB = newRegister;
     }
     super.setRegisters(List.copyOf(mutableList));

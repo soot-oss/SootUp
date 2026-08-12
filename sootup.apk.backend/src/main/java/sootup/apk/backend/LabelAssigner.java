@@ -68,13 +68,13 @@ public class LabelAssigner {
 
   public boolean areLabelsNotYetPlaced() {
     Collection<String> labelNames = labelNameMap.values();
-    boolean found = false;
+    boolean labelsNotPlaced = false;
     for (String label : labelNames) {
       if (!addedLabels.contains(label)) {
         log.info("Unset label: {}", label);
-        found = true;
+        labelsNotPlaced = true;
       }
     }
-      return found;
+    return labelsNotPlaced;
   }
 }

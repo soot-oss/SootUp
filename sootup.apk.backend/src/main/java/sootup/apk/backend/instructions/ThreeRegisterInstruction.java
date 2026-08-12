@@ -37,11 +37,11 @@ public abstract class ThreeRegisterInstruction extends AbstractInstruction {
     if (index != -1) {
       mutableList.set(index, newRegister);
     }
-    if (registerA.equals(oldRegister)) {
+    if (registerA != null && registerA.equals(oldRegister)) {
       registerA = newRegister;
-    } else if (registerB.equals(oldRegister)) {
+    } else if (registerB != null && registerB.equals(oldRegister)) {
       registerB = newRegister;
-    } else if (registerC.equals(oldRegister)) {
+    } else if (registerC != null && registerC.equals(oldRegister)) {
       registerC = newRegister;
     }
     super.setRegisters(List.copyOf(mutableList));

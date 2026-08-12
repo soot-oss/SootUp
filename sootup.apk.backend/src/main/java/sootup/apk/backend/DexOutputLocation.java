@@ -44,13 +44,13 @@ public class DexOutputLocation {
     currentDexPool = new DexPool(opcodes);
     dexPoolList.add(currentDexPool);
 
-    view.getClasses()
-        .forEach(
-            c -> {
-              if (c.getName().startsWith("com.example.exampleapp.MainActivity")) {
-                dexClassBuilder.createClass(c);
-              }
-            });
+    var classes = view.getClasses().toList();
+    classes.forEach(
+        c -> {
+          if (c.getName().startsWith("com.example.exampleapp.MainActivity")) {
+            dexClassBuilder.createClass(c);
+          }
+        });
     try {
       writeDexFiles(outputDir);
     } catch (IOException e) {

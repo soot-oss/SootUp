@@ -10,6 +10,7 @@ import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.*;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 
@@ -65,7 +66,7 @@ public class RegisterAllocator {
     return register;
   }
 
-  public Register getRegisterForConstant(Constant constant) {
+  public Register getRegisterForConstant(Constant constant, Stmt currentStmt) {
     Type type;
     boolean guessed;
     if (constant.getType().toString().equals("java.lang.Object")) {
@@ -92,6 +93,7 @@ public class RegisterAllocator {
       Register register = allocateNewRegister(type, false, false);
       register.setIsTypeGuessed(guessed);
       dexConstantVisitor.setTargetRegister(register);
+      dexConstantVisitor.setCurrentStmt(currentStmt);
       constant.accept(dexConstantVisitor);
       return register;
     } catch (Exception e) {
@@ -99,17 +101,18 @@ public class RegisterAllocator {
     }
   }
 
-  public Register getRegisterForImmediate(Immediate immediate, boolean isParameter) {
+  public Register getRegisterForImmediate(
+      Immediate immediate, boolean isParameter, Stmt currentStmt) {
     if (immediate instanceof Local local) {
       return getRegisterForLocal(local, isParameter);
     } else if (immediate instanceof Constant constant) {
-      return getRegisterForConstant(constant);
+      return getRegisterForConstant(constant, currentStmt);
     }
     throw new RuntimeException("Immediate is neither local nor constant: " + immediate);
   }
 
   public void allocateRegisterForParameter(Immediate immediate) {
-    getRegisterForImmediate(immediate, true);
+    getRegisterForImmediate(immediate, true, null);
   }
 
   protected int getRegisterCount() {

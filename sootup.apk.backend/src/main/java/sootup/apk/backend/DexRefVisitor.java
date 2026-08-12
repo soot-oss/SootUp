@@ -62,7 +62,6 @@ public class DexRefVisitor extends AbstractRefVisitor {
             fieldSignature.getName(),
             dexType);
     Opcode opcode = getRefOpcode("S", operation, dexType);
-    log.info(operation);
     if (operation.startsWith("GET")) {
       fixObjectType(ref.getType());
     }
@@ -80,9 +79,9 @@ public class DexRefVisitor extends AbstractRefVisitor {
             fieldSignature.getName(),
             dexType);
     Local instance = ref.getBase();
-    Register instanceRegister = registerAllocator.getRegisterForImmediate(instance, false);
+    Register instanceRegister =
+        registerAllocator.getRegisterForImmediate(instance, false, currentStmt);
     Opcode opcode = getRefOpcode("I", operation, dexType);
-    log.info(operation);
     if (operation.startsWith("GET")) {
       fixObjectType(ref.getType());
     }
@@ -93,13 +92,13 @@ public class DexRefVisitor extends AbstractRefVisitor {
   @Override
   public void caseArrayRef(@NonNull JArrayRef ref) {
     Local array = ref.getBase();
-    Register arrayRegister = registerAllocator.getRegisterForImmediate(array, false);
+    Register arrayRegister = registerAllocator.getRegisterForImmediate(array, false, currentStmt);
     Immediate index = ref.getIndex();
-    Register indexRegister = registerAllocator.getRegisterForImmediate(index, false);
+    Register indexRegister = registerAllocator.getRegisterForImmediate(index, false, currentStmt);
 
     ArrayType arrayType = (ArrayType) array.getType();
     if (operation.startsWith("GET")) {
-      fixObjectType(arrayType);
+      fixObjectType(((ArrayType) array.getType()).getElementType());
     }
     String dexType =
         arrayType.getDimension() > 1

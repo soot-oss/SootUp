@@ -17,6 +17,7 @@ import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.*;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 import sootup.core.views.View;
 
 public class DexStmtVisitor extends AbstractStmtVisitor {
@@ -76,14 +77,12 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
       Register valueRegister;
       if (rightOp instanceof JCastExpr jCastExpr) {
         dexExprVisitor.setCurrentStmt(stmt);
-        valueRegister =
-            registerAllocator.getRegisterForValueWithNewType(
-                jCastExpr.getOp(), jCastExpr.getType(), false);
+        valueRegister = registerAllocator.getRegisterForType(jCastExpr.getType());
         dexExprVisitor.setTargetRegister(valueRegister);
-        dexExprVisitor.setTargetStmt(stmt);
+        dexExprVisitor.setCurrentStmt(stmt);
         jCastExpr.accept(dexExprVisitor);
       } else if (rightOp instanceof Immediate) {
-        valueRegister = registerAllocator.getRegisterForImmediate((Immediate) rightOp, false);
+        valueRegister = registerAllocator.getRegisterForImmediate((Immediate) rightOp, false, stmt);
       } else {
         throw new RuntimeException(
             "Right-side of AssignStmt is no Immediate: "
@@ -98,10 +97,9 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
       ref.accept(dexRefVisitor);
 
     } else if (leftOp instanceof Local leftOpLocal) {
-      Register targetRegister = registerAllocator.getRegisterForImmediate(leftOpLocal, false);
+      Register targetRegister = registerAllocator.getRegisterForImmediate(leftOpLocal, false, stmt);
 
       if (rightOp instanceof Constant constant) {
-        log.info("New constant");
         if (targetRegister.getType().toString().equals("java.lang.Object")
             || targetRegister.isTypeGuessed()) {
           if (targetRegister.getType() != constant.getType()
@@ -132,9 +130,12 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
 
       } else if (rightOp instanceof Local sourceLocal) {
         if (leftOpLocal != sourceLocal) {
-          Register sourceRegister = registerAllocator.getRegisterForImmediate(sourceLocal, false);
+
+          targetRegister = fixObjectType(sourceLocal.getType(), stmt, targetRegister);
+
+          Register sourceRegister =
+              registerAllocator.getRegisterForImmediate(sourceLocal, false, stmt);
           dexExprVisitor.setCurrentStmt(stmt);
-          log.info("regular move instruction");
           dexExprVisitor.generateMoveInstruction(
               targetRegister, sourceRegister, sourceLocal.getType());
         }
@@ -154,7 +155,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     Immediate op1 = stmt.getLeftOp();
     IdentityRef op2 = stmt.getRightOp();
     if (op2 instanceof JCaughtExceptionRef) {
-      Register register = registerAllocator.getRegisterForImmediate(stmt.getLeftOp(), false);
+      Register register = registerAllocator.getRegisterForImmediate(stmt.getLeftOp(), false, stmt);
       dexRefVisitor.setCurrentStmt(stmt);
       dexRefVisitor.setTargetRegister(register);
     }
@@ -165,14 +166,14 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   @Override
   public void caseEnterMonitorStmt(@NonNull JEnterMonitorStmt stmt) {
     Immediate op = stmt.getOp();
-    Register register = registerAllocator.getRegisterForImmediate(op, false);
+    Register register = registerAllocator.getRegisterForImmediate(op, false, stmt);
     dexMethodBuilder.addInstruction(new Instruction11x(Opcode.MONITOR_ENTER, register), stmt);
   }
 
   @Override
   public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
     Immediate op = stmt.getOp();
-    Register register = registerAllocator.getRegisterForImmediate(op, false);
+    Register register = registerAllocator.getRegisterForImmediate(op, false, stmt);
     dexMethodBuilder.addInstruction(new Instruction11x(Opcode.MONITOR_EXIT, register), stmt);
   }
 
@@ -207,7 +208,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   @Override
   public void caseReturnStmt(@NonNull JReturnStmt stmt) {
     Immediate op = stmt.getOp();
-    Register register = registerAllocator.getRegisterForImmediate(op, false);
+    Register register = registerAllocator.getRegisterForImmediate(op, false, stmt);
     String dexType = DexUtil.toDexType(op.getType());
     Opcode opcode;
     if (DexUtil.isObject(dexType)) {
@@ -228,7 +229,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   @Override
   public void caseSwitchStmt(@NonNull JSwitchStmt stmt) {
 
-    Register register = registerAllocator.getRegisterForImmediate(stmt.getKey(), false);
+    Register register = registerAllocator.getRegisterForImmediate(stmt.getKey(), false, stmt);
 
     List<IntConstant> values = stmt.getValues();
     Opcode opcode = getSwitchOpcode(values);
@@ -267,7 +268,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   @Override
   public void caseThrowStmt(@NonNull JThrowStmt stmt) {
     Immediate op = stmt.getOp();
-    Register register = registerAllocator.getRegisterForImmediate(op, false);
+    Register register = registerAllocator.getRegisterForImmediate(op, false, stmt);
     this.addInstruction(new Instruction11x(Opcode.THROW, register), stmt);
   }
 
@@ -294,5 +295,23 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
 
   protected void addSwitchPayload(SwitchPayload switchPayload) {
     dexMethodBuilder.addSwitchPayload(switchPayload);
+  }
+
+  private Register fixObjectType(Type defaultType, Stmt currentStmt, Register targetRegister) {
+    if (targetRegister.getType().toString().equals("java.lang.Object")
+        || targetRegister.isTypeGuessed()) {
+      log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
+
+      if (targetRegister.getType() != defaultType && currentStmt.isJAssignStmt()) {
+        targetRegister =
+            registerAllocator.getRegisterForValueWithNewType(
+                currentStmt.asJAssignStmt().getLeftOp(), defaultType, false);
+      } else {
+        targetRegister.setType(defaultType);
+      }
+      log.info("Set target register {} guessed true", targetRegister.getNumber());
+      targetRegister.setIsTypeGuessed(true);
+    }
+    return targetRegister;
   }
 }

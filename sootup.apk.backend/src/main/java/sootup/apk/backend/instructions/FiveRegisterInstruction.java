@@ -62,15 +62,15 @@ public abstract class FiveRegisterInstruction extends AbstractInstruction {
     if (index != -1) {
       mutableList.set(index, newRegister);
     }
-    if (registerA.equals(oldRegister)) {
+    if (registerA != null && registerA.equals(oldRegister)) {
       registerA = newRegister;
-    } else if (registerB.equals(oldRegister)) {
+    } else if (registerB != null && registerB.equals(oldRegister)) {
       registerB = newRegister;
-    } else if (registerC.equals(oldRegister)) {
+    } else if (registerC != null && registerC.equals(oldRegister)) {
       registerC = newRegister;
-    } else if (registerD.equals(oldRegister)) {
+    } else if (registerD != null && registerD.equals(oldRegister)) {
       registerD = newRegister;
-    } else if (registerE.equals(oldRegister)) {
+    } else if (registerE != null && registerE.equals(oldRegister)) {
       registerE = newRegister;
     }
     super.setRegisters(List.copyOf(mutableList));
