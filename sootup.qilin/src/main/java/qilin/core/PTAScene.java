@@ -65,7 +65,10 @@ public class PTAScene {
     this.view = view;
     this.mainClass = mainClass;
     this.config = config;
-    SootClass mainSootClass = view.getClass(mainClass).get();
+    SootClass mainSootClass =
+        view.getClass(mainClass)
+            .orElseThrow(
+                () -> new IllegalArgumentException("Main class not found in view: " + mainClass));
     // setup fakemain
     this.fakeMainFactory = new FakeMainFactory(view, mainSootClass, config);
     this.callDetails = new CallDetails();
@@ -120,7 +123,9 @@ public class PTAScene {
 
   public SootMethod getMethod(String methodSignature) {
     MethodSignature mthdSig = view.getIdentifierFactory().parseMethodSignature(methodSignature);
-    return view.getMethod(mthdSig).get();
+    return view.getMethod(mthdSig)
+        .orElseThrow(
+            () -> new IllegalArgumentException("Method not found in view: " + methodSignature));
   }
 
   public Collection<SootClass> getApplicationClasses() {
@@ -151,7 +156,8 @@ public class PTAScene {
 
   public SootClass getSootClass(String className) {
     ClassType classType = PTAUtils.getClassType(className);
-    return view.getClass(classType).get();
+    return view.getClass(classType)
+        .orElseThrow(() -> new IllegalArgumentException("Class not found in view: " + className));
   }
 
   public boolean containsClass(String className) {
@@ -162,7 +168,9 @@ public class PTAScene {
 
   public SootField getField(String fieldSignature) {
     FieldSignature fieldSig = view.getIdentifierFactory().parseFieldSignature(fieldSignature);
-    return view.getField(fieldSig).get();
+    return view.getField(fieldSig)
+        .orElseThrow(
+            () -> new IllegalArgumentException("Field not found in view: " + fieldSignature));
   }
 
   public boolean isApplicationMethod(SootMethod sm) {
