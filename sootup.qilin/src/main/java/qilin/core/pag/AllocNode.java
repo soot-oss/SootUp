@@ -20,6 +20,7 @@ package qilin.core.pag;
 
 import qilin.core.context.ContextElement;
 import qilin.util.Numberable;
+import sootup.core.jimple.common.Value;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
@@ -38,9 +39,25 @@ public class AllocNode extends PagNode implements ContextElement, Numberable {
     this.newExpr = newExpr;
   }
 
-  /** Returns the new expression of this allocation site. */
+  /**
+   * Returns the new expression of this allocation site. This is usually a Jimple {@link Value}
+   * (e.g. {@link sootup.core.jimple.common.expr.JNewExpr}, {@link
+   * sootup.core.jimple.common.expr.JNewArrayExpr}), but for synthetic allocation sites (heap
+   * merging, the root node, ...) it can also be a plain {@link String} label or another sentinel
+   * object. Use {@link #getAllocationExpr()} if you only care about the common "real expression"
+   * case.
+   */
   public Object getNewExpr() {
     return newExpr;
+  }
+
+  /**
+   * Returns this allocation site's expression as a Jimple {@link Value}, or {@code null} if the
+   * underlying object is a synthetic sentinel (e.g. a merged/root heap label) rather than a real
+   * expression — see {@link #getNewExpr()}.
+   */
+  public Value getAllocationExpr() {
+    return newExpr instanceof Value ? (Value) newExpr : null;
   }
 
   public String toString() {
