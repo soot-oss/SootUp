@@ -22,11 +22,16 @@ import java.util.Objects;
 import sootup.core.model.SootField;
 import sootup.core.types.Type;
 
-/** a wrapper of normal field. */
-public class Field implements SparkField {
+/**
+ * A {@link SparkField} wrapping a real, declared {@link SootField} -- as opposed to {@link
+ * ArrayElement}, which is the pseudo-field standing in for "any array cell". Named {@code
+ * ConcreteField} rather than {@code Field} to avoid colliding with {@link sootup.core.model.Field},
+ * an unrelated interface {@code SootField} itself implements.
+ */
+public class ConcreteField implements SparkField {
   private final SootField field;
 
-  public Field(SootField sf) {
+  public ConcreteField(SootField sf) {
     this.field = sf;
   }
 
@@ -48,7 +53,7 @@ public class Field implements SparkField {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    Field field1 = (Field) o;
+    ConcreteField field1 = (ConcreteField) o;
     return field.equals(field1.field);
   }
 

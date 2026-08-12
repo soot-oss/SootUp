@@ -88,7 +88,8 @@ public class FieldRecorder {
       return usageMap.containsKey(var);
     }
     if (!usageMap.containsKey(var)) return false;
-    return usageMap.get(var).keySet().stream().anyMatch(sf -> sf instanceof qilin.core.pag.Field);
+    return usageMap.get(var).keySet().stream()
+        .anyMatch(sf -> sf instanceof qilin.core.pag.ConcreteField);
   }
 
   public Set<LocalVarNode> getStoredFromVars(LocalVarNode var, SparkField field) {

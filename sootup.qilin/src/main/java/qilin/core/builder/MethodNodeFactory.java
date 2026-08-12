@@ -26,7 +26,6 @@ import java.util.Set;
 import org.jspecify.annotations.NonNull;
 import qilin.core.PTAScene;
 import qilin.core.pag.*;
-import qilin.core.pag.Field;
 import qilin.util.FakeMainMethods;
 import qilin.util.JavaTypes;
 import qilin.util.queue.UniqueQueue;
@@ -256,7 +255,8 @@ public class MethodNodeFactory {
       sf = osf.get();
     }
     Local base = ifr.getBase();
-    return pag.makeFieldRefNode(pag.makeLocalVarNode(base, base.getType(), method), new Field(sf));
+    return pag.makeFieldRefNode(
+        pag.makeLocalVarNode(base, base.getType(), method), new ConcreteField(sf));
   }
 
   private VarNode caseNewMultiArrayExpr(JNewMultiArrayExpr nmae) {

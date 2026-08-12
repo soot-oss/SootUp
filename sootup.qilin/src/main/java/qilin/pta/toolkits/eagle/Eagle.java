@@ -188,7 +188,7 @@ public class Eagle {
 
   public boolean reachValidReceiverObject(BNode from, BNode to) {
     BNode fromEI = getBNode(to.sparkNode, false);
-    if (from.sparkNode instanceof Field || from.sparkNode instanceof ArrayElement) {
+    if (from.sparkNode instanceof ConcreteField || from.sparkNode instanceof ArrayElement) {
       return getOutEdges(fromEI).contains(from);
     }
     return true;

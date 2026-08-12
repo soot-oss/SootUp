@@ -310,8 +310,8 @@ public class XUtility {
         for (AllocNode heap : this.o2Fields.keySet()) {
           if (JavaTypes.canStoreType(pta.getView(), heap.getType(), refType)) {
             for (SparkField sparkField : this.o2Fields.get(heap)) {
-              if (sparkField instanceof Field) {
-                Field f = (Field) sparkField;
+              if (sparkField instanceof ConcreteField) {
+                ConcreteField f = (ConcreteField) sparkField;
                 SootField sf = f.getField();
                 Type declType = sf.getDeclaringClassType();
                 if (JavaTypes.canStoreType(pta.getView(), type, declType)) {

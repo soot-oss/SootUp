@@ -243,8 +243,8 @@ public class StoredVarTraverser {
                 }
               } else {
                 SparkField labeledField = ((FieldEdge) inEdge).field();
-                if (labeledField instanceof qilin.core.pag.Field labeledQField
-                    && storedField instanceof qilin.core.pag.Field storedQField) {
+                if (labeledField instanceof qilin.core.pag.ConcreteField labeledQField
+                    && storedField instanceof qilin.core.pag.ConcreteField storedQField) {
                   if (labeledQField
                       .getField()
                       .getDeclaringClassType()

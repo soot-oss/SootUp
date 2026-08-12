@@ -204,7 +204,7 @@ public abstract class PTA implements PointsToAnalysis {
     if (f.isStatic()) {
       throw new RuntimeException("The parameter f must be an *instance* field.");
     }
-    return reachingObjectsInternal(s, new Field(f));
+    return reachingObjectsInternal(s, new ConcreteField(f));
   }
 
   /**
@@ -228,7 +228,7 @@ public abstract class PTA implements PointsToAnalysis {
       }
     } else {
       ret = new HybridPointsToSet();
-      SparkField sparkField = new Field(f);
+      SparkField sparkField = new ConcreteField(f);
       pag.getContextFieldVarNodeMap().values().stream()
           .filter(map -> map.containsKey(sparkField))
           .forEach(

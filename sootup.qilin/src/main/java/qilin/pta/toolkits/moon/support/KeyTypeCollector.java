@@ -82,7 +82,7 @@ public class KeyTypeCollector {
         for (AllocNode heap : fieldRecorder.objToFields.keySet()) {
           if (JavaTypes.canStoreType(view, heap.getType(), classType)) {
             for (SparkField sparkField : fieldRecorder.objToFields.get(heap)) {
-              if (sparkField instanceof qilin.core.pag.Field qField) {
+              if (sparkField instanceof qilin.core.pag.ConcreteField qField) {
                 ClassType declType = qField.getField().getDeclaringClassType();
                 if (JavaTypes.canStoreType(view, classType, declType)) {
                   fieldRecorder.typeToFields.put(type, sparkField);

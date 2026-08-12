@@ -25,10 +25,10 @@ import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.AllocNode;
+import qilin.core.pag.ConcreteField;
 import qilin.core.pag.ContextAllocNode;
 import qilin.core.pag.ContextField;
 import qilin.core.pag.ContextVarNode;
-import qilin.core.pag.Field;
 import qilin.core.pag.FieldRefNode;
 import qilin.core.pag.GlobalVarNode;
 import qilin.core.pag.LocalVarNode;
@@ -56,8 +56,8 @@ public final class PagQueries {
     } else if (sparkNode instanceof AllocNode) {
       return ((AllocNode) sparkNode).getNewExpr();
     } else { // sparkField?
-      if (sparkNode instanceof Field) {
-        return ((Field) sparkNode).getField();
+      if (sparkNode instanceof ConcreteField) {
+        return ((ConcreteField) sparkNode).getField();
       } else { // ArrayElement
         return sparkNode;
       }
