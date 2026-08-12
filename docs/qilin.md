@@ -75,12 +75,15 @@ PointsToSet pts1 = pta.reachingObjects(method, v1, f); // PTS(v1.f)
 ```
 
 Third, we can check whether two variables, `a` and `b`, are aliases by checking
-whether there is an object that exists in both of their points-to sets.
+whether there is an object that exists in both of their points-to sets:
 
-Qilin does not currently offer a `isMayAlias` API within the PTA class.
-However, a similar functionality can be found in `qilin.test.util.AliasAssertion` with the method:
-```boolean isMayAlias(PTA pta, Value va, Value vb)```
-This method allows to check for potential aliasing between two values given a PTA instance.
+```java
+boolean mayAlias = pta.isMayAlias(method, a, b);
+```
+
+`isMayAlias` also special-cases `null`/String/class constants (e.g. two `null` constants always
+may-alias, a `null` never may-aliases a non-null value). It accepts `Local` references plus those
+constants; passing any other `Value` kind throws `IllegalArgumentException`.
 
 ### A Full list of Pointer Analyses
 

@@ -22,12 +22,8 @@ import java.util.Objects;
 import qilin.core.PTA;
 import qilin.core.pag.LocalVarNode;
 import qilin.util.PTAUtils;
-import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
-import sootup.core.jimple.common.constant.ClassConstant;
-import sootup.core.jimple.common.constant.NullConstant;
-import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -68,7 +64,11 @@ public class AliasAssertion implements IAssertion {
 
   @Override
   public boolean check() {
-    return isMayAlias(pta, va, vb) == groundTruth;
+    if (DEBUG && va instanceof Local a && vb instanceof Local b) {
+      printPts(a, "va");
+      printPts(b, "vb");
+    }
+    return pta.isMayAlias(sm, va, vb) == groundTruth;
   }
 
   @Override
@@ -79,52 +79,11 @@ public class AliasAssertion implements IAssertion {
     return groundTruth;
   }
 
-  private static boolean DEBUG = true;
+  private static final boolean DEBUG = true;
 
-  protected boolean isMayAlias(PTA pta, Value va, Value vb) {
-    if (va instanceof NullConstant && vb instanceof NullConstant) {
-      return true;
-    }
-    if (va instanceof NullConstant || vb instanceof NullConstant) {
-      return false;
-    }
-    if (va instanceof StringConstant && vb instanceof StringConstant) {
-      return va.equals(vb);
-    } else if (va instanceof StringConstant) {
-      StringConstant strConst = (StringConstant) va;
-      String s = strConst.getValue();
-      if (!pta.getConfig().isStringConstants()) {
-        s = "STRING_NODE";
-      }
-      PointsToSet pts = pta.reachingObjects(sm, (Local) vb).toCIPointsToSet();
-      return pts.possibleStringConstants().contains(s);
-    } else if (vb instanceof StringConstant) {
-      StringConstant strConst = (StringConstant) vb;
-      String s = strConst.getValue();
-      if (!pta.getConfig().isStringConstants()) {
-        s = "STRING_NODE";
-      }
-      PointsToSet pts = pta.reachingObjects(sm, (Local) va).toCIPointsToSet();
-      return pts.possibleStringConstants().contains(s);
-    } else if (va instanceof ClassConstant) {
-      PointsToSet pts = pta.reachingObjects(sm, (Local) vb).toCIPointsToSet();
-      return pts.possibleClassConstants().contains(va);
-    } else if (vb instanceof ClassConstant) {
-      PointsToSet pts = pta.reachingObjects(sm, (Local) va).toCIPointsToSet();
-      return pts.possibleClassConstants().contains(vb);
-    }
-    PointsToSet pts1 = pta.reachingObjects(sm, (Local) va).toCIPointsToSet();
-    if (DEBUG) {
-      LocalVarNode lvn = pta.getPag().findLocalVarNode(sm, va, va.getType());
-      System.out.println("va points to: " + PTAUtils.getNodeLabel(lvn) + lvn);
-      PTAUtils.printPts(pta, pts1);
-    }
-    PointsToSet pts2 = pta.reachingObjects(sm, (Local) vb).toCIPointsToSet();
-    if (DEBUG) {
-      LocalVarNode lvn = pta.getPag().findLocalVarNode(sm, vb, vb.getType());
-      System.out.println("vb points to: " + PTAUtils.getNodeLabel(lvn) + lvn);
-      PTAUtils.printPts(pta, pts2);
-    }
-    return pts1.hasNonEmptyIntersection(pts2);
+  private void printPts(Local l, String label) {
+    LocalVarNode lvn = pta.getPag().findLocalVarNode(sm, l, l.getType());
+    System.out.println(label + " points to: " + PTAUtils.getNodeLabel(lvn) + lvn);
+    PTAUtils.printPts(pta, pta.reachingObjects(sm, l).toCIPointsToSet());
   }
 }

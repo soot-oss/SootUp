@@ -22,6 +22,7 @@ import qilin.core.context.Context;
 import qilin.core.pag.PagNode;
 import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 
@@ -66,4 +67,11 @@ public interface PointsToAnalysis {
 
   /** Returns the set of objects pointed to by elements of the arrays in the PointsToSet s. */
   PointsToSet reachingObjectsOfArrayElement(PointsToSet s);
+
+  /**
+   * Returns whether va and vb, evaluated in method m, may point to a common runtime object.
+   * Supports {@link Local} references and {@code null}/String/class constants; any other {@link
+   * Value} kind is rejected with {@link IllegalArgumentException}.
+   */
+  boolean isMayAlias(SootMethod m, Value va, Value vb);
 }

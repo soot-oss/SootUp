@@ -37,6 +37,10 @@ import qilin.util.sets.PointsToSet;
 import qilin.util.sets.PointsToSetInternal;
 import qilin.util.sets.UnmodifiablePointsToSet;
 import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
@@ -264,5 +268,51 @@ public abstract class PTA implements PointsToAnalysis {
               }
             });
     return new UnmodifiablePointsToSet(this, ret);
+  }
+
+  @Override
+  public boolean isMayAlias(SootMethod m, Value va, Value vb) {
+    if (va instanceof NullConstant && vb instanceof NullConstant) {
+      return true;
+    }
+    if (va instanceof NullConstant || vb instanceof NullConstant) {
+      return false;
+    }
+    if (va instanceof StringConstant && vb instanceof StringConstant) {
+      return va.equals(vb);
+    }
+    if (va instanceof StringConstant sc) {
+      return mayAliasWithStringConstant(m, sc, vb);
+    }
+    if (vb instanceof StringConstant sc) {
+      return mayAliasWithStringConstant(m, sc, va);
+    }
+    if (va instanceof ClassConstant cc) {
+      return mayAliasWithClassConstant(m, cc, vb);
+    }
+    if (vb instanceof ClassConstant cc) {
+      return mayAliasWithClassConstant(m, cc, va);
+    }
+    return mayAliasPts(m, va).hasNonEmptyIntersection(mayAliasPts(m, vb));
+  }
+
+  private boolean mayAliasWithStringConstant(SootMethod m, StringConstant constant, Value other) {
+    String s = getConfig().isStringConstants() ? constant.getValue() : PointsToAnalysis.STRING_NODE;
+    Set<String> possible = mayAliasPts(m, other).possibleStringConstants();
+    return possible != null && possible.contains(s);
+  }
+
+  private boolean mayAliasWithClassConstant(SootMethod m, ClassConstant constant, Value other) {
+    Set<ClassConstant> possible = mayAliasPts(m, other).possibleClassConstants();
+    return possible != null && possible.contains(constant);
+  }
+
+  private PointsToSet mayAliasPts(SootMethod m, Value v) {
+    if (!(v instanceof Local l)) {
+      throw new IllegalArgumentException(
+          "isMayAlias only supports Local references (plus null/String/class constants); got "
+              + v.getClass().getSimpleName());
+    }
+    return reachingObjects(m, l).toCIPointsToSet();
   }
 }

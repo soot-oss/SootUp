@@ -103,7 +103,7 @@ public class PTAScene {
   }
 
   /*
-   *  wrapper methods of Soot Scene. Note, we do not allow you to use Soot Scene directly in qilin.qilin.pta subproject
+   *  wrapper methods of the sootup View. Note, we do not allow you to use the View directly in qilin.pta
    * to avoid confusing.
    * */
   public void setCallGraph(OnFlyCallGraph cg) {

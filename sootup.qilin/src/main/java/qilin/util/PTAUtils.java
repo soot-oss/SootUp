@@ -87,14 +87,13 @@ public final class PTAUtils {
   public static final ClassType UNIX_FILE_SYSTEM = getClassType("java.io.UnixFileSystem");
   public static final ClassType COLLECTION = getClassType("java.util.Collection");
 
-  // TODO: use isStaticInitializer from the IdentifierFactory
   public static boolean isStaticInitializer(SootMethod method) {
-    return method.getName().equals("<clinit>");
+    return JavaIdentifierFactory.getInstance()
+        .isStaticInitializerSubSignature(method.getSubSignature());
   }
 
-  // TODO: use isConstructor from the IdentifierFactory
   public static boolean isConstructor(SootMethod method) {
-    return method.getName().equals("<init>");
+    return method.isConstructor(JavaIdentifierFactory.getInstance());
   }
 
   public static Map<LocalVarNode, Set<AllocNode>> calcStaticThisPTS(PTA pta) {
