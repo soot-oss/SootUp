@@ -24,10 +24,10 @@ import qilin.core.PTAScene;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisComponents;
 import qilin.core.pag.*;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.HeapAbstractor;
-import qilin.parm.select.CtxSelector;
-import qilin.parm.select.PartialMethodLvSelector;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.select.ContextSelector;
+import qilin.parm.select.PartialMethodLevelSelector;
 import qilin.pta.toolkits.zipper.Main;
 import qilin.util.Stopwatch;
 import qilin.util.queue.QueueReader;
@@ -53,13 +53,16 @@ public class ZipperPTA extends StagedPTA {
    * Zipper support object-sensitivity, callsite-sensitivity by using corresponding
    * context-constructor.
    * */
-  public ZipperPTA(PTAScene scene, int k, int hk, CtxConstructor ctxCons, boolean isExpress) {
+  public ZipperPTA(
+      PTAScene scene, int k, int hk, ContextConstructor contextConstructor, boolean isExpress) {
     super(scene);
     this.isExpress = isExpress;
-    CtxSelector us = new PartialMethodLvSelector(k, hk, PCMs);
-    CtxSelector ctxSel = PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
-    HeapAbstractor heapAbst = PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
-    initComponents(ctxCons, ctxSel, heapAbst);
+    ContextSelector us = new PartialMethodLevelSelector(k, hk, PCMs);
+    ContextSelector contextSelector =
+        PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbstractor =
+        PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(contextConstructor, contextSelector, heapAbstractor);
     this.prePTA = new CoreVariantPTA(scene, ContextSensitivity.insensitive());
   }
 

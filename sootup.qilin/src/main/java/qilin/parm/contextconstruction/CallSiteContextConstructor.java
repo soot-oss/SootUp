@@ -16,33 +16,29 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.parm.select;
+package qilin.parm.contextconstruction;
 
 import qilin.core.context.Context;
-import qilin.core.pag.AllocNode;
-import qilin.core.pag.FieldValNode;
-import qilin.core.pag.LocalVarNode;
-import qilin.parm.ctxcons.CtxConstructor;
+import qilin.core.context.ContextElement;
+import qilin.core.context.ContextElements;
+import qilin.core.pag.CallSite;
+import qilin.core.pag.ContextAllocNode;
+import qilin.core.pag.ContextMethod;
 import sootup.core.model.SootMethod;
 
-public class InsenSelector extends CtxSelector {
-  @Override
-  public Context select(SootMethod m, Context context) {
-    return CtxConstructor.emptyContext;
-  }
+public class CallSiteContextConstructor implements ContextConstructor {
 
   @Override
-  public Context select(LocalVarNode lvn, Context context) {
-    return CtxConstructor.emptyContext;
-  }
-
-  @Override
-  public Context select(FieldValNode fvn, Context context) {
-    return contextTailor(context, 1);
-  }
-
-  @Override
-  public Context select(AllocNode heap, Context context) {
-    return CtxConstructor.emptyContext;
+  public Context constructCtx(
+      ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
+    Context callerContext = caller.context();
+    assert callerContext instanceof ContextElements;
+    ContextElements ctxElems = (ContextElements) callerContext;
+    int s = ctxElems.size();
+    ContextElement[] cxt = ctxElems.getElements();
+    ContextElement[] array = new ContextElement[s + 1];
+    array[0] = callSite;
+    System.arraycopy(cxt, 0, array, 1, s);
+    return new ContextElements(array, s + 1);
   }
 }

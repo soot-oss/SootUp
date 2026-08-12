@@ -23,10 +23,10 @@ import java.util.Map;
 import qilin.core.PTAScene;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisComponents;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.HeapAbstractor;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
 import qilin.parm.select.BeanSelector;
-import qilin.parm.select.CtxSelector;
+import qilin.parm.select.ContextSelector;
 import qilin.pta.toolkits.bean.Bean;
 import qilin.util.Stopwatch;
 
@@ -38,12 +38,14 @@ public class BeanPTA extends StagedPTA {
   // [current heap, [allocator heap, [heap ctx, new ctx]]] only for B-2obj;
   Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap = new HashMap<>();
 
-  public BeanPTA(PTAScene scene, CtxConstructor ctxCons) {
+  public BeanPTA(PTAScene scene, ContextConstructor contextConstructor) {
     super(scene);
-    CtxSelector us = new BeanSelector(pag, beanNexCtxMap);
-    CtxSelector ctxSel = PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
-    HeapAbstractor heapAbst = PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
-    initComponents(ctxCons, ctxSel, heapAbst);
+    ContextSelector us = new BeanSelector(pag, beanNexCtxMap);
+    ContextSelector contextSelector =
+        PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbstractor =
+        PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(contextConstructor, contextSelector, heapAbstractor);
     prePTA = new CoreVariantPTA(scene, ContextSensitivity.insensitive());
     System.out.println("bean ...");
   }

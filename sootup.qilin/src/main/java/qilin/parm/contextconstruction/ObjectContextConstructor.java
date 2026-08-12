@@ -16,7 +16,7 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.parm.ctxcons;
+package qilin.parm.contextconstruction;
 
 import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
@@ -26,9 +26,24 @@ import qilin.core.pag.ContextAllocNode;
 import qilin.core.pag.ContextMethod;
 import sootup.core.model.SootMethod;
 
-public interface CtxConstructor {
-  Context constructCtx(
-      ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target);
+// implementation of obj context...(Ana Tosem'05)
+public class ObjectContextConstructor implements ContextConstructor {
 
-  Context emptyContext = new ContextElements(new ContextElement[0], 0);
+  @Override
+  public Context constructCtx(
+      ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
+    Context callerContext = caller.context();
+    if (receiverNode == null) { // static invoke
+      return callerContext;
+    }
+    Context context = receiverNode.context();
+    assert context instanceof ContextElements;
+    ContextElements ctxElems = (ContextElements) context;
+    int s = ctxElems.size();
+    ContextElement[] cxtAllocs = ctxElems.getElements();
+    ContextElement[] array = new ContextElement[s + 1];
+    array[0] = receiverNode.base();
+    System.arraycopy(cxtAllocs, 0, array, 1, s);
+    return new ContextElements(array, s + 1);
+  }
 }

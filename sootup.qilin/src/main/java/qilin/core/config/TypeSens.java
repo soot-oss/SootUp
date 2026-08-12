@@ -23,8 +23,8 @@ package qilin.core.config;
  */
 
 import qilin.core.PTAScene;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.ctxcons.TypeCtxConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.contextconstruction.TypeContextConstructor;
 import qilin.pta.tools.BasePTA;
 import qilin.pta.tools.CoreVariantPTA;
 
@@ -41,8 +41,8 @@ final class TypeSens extends ContextSensitivity {
   }
 
   @Override
-  public CtxConstructor createCtxConstructor() {
-    return new TypeCtxConstructor();
+  public ContextConstructor createContextConstructor() {
+    return new TypeContextConstructor();
   }
 
   @Override

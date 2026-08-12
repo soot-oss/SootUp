@@ -23,8 +23,8 @@ package qilin.core.config;
  */
 
 import qilin.core.PTAScene;
-import qilin.parm.ctxcons.CallsiteCtxConstructor;
-import qilin.parm.ctxcons.CtxConstructor;
+import qilin.parm.contextconstruction.CallSiteContextConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
 import qilin.pta.tools.BasePTA;
 import qilin.pta.tools.CoreVariantPTA;
 
@@ -40,8 +40,8 @@ final class CallSite extends ContextSensitivity {
   }
 
   @Override
-  public CtxConstructor createCtxConstructor() {
-    return new CallsiteCtxConstructor();
+  public ContextConstructor createContextConstructor() {
+    return new CallSiteContextConstructor();
   }
 
   @Override

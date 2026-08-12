@@ -25,8 +25,8 @@ package qilin.pta.toolkits.bean;
 import qilin.core.PTAScene;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.ctxcons.ObjCtxConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.contextconstruction.ObjectContextConstructor;
 import qilin.pta.tools.BasePTA;
 import qilin.pta.tools.BeanPTA;
 
@@ -36,8 +36,8 @@ public final class BeanObjectSensitivity extends ContextSensitivity {
   public BeanObjectSensitivity() {}
 
   @Override
-  public CtxConstructor createCtxConstructor() {
-    return new ObjCtxConstructor();
+  public ContextConstructor createContextConstructor() {
+    return new ObjectContextConstructor();
   }
 
   @Override
@@ -52,7 +52,7 @@ public final class BeanObjectSensitivity extends ContextSensitivity {
 
   @Override
   public BasePTA createPTA(PTAScene scene, PointerAnalysisConfig config) {
-    return new BeanPTA(scene, createCtxConstructor());
+    return new BeanPTA(scene, createContextConstructor());
   }
 
   @Override

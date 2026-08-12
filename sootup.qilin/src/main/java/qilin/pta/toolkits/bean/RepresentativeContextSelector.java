@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.AllocNode;
-import qilin.parm.ctxcons.CtxConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
 import qilin.pta.toolkits.common.OAG;
 import qilin.util.Triple;
 
@@ -120,7 +120,7 @@ public class RepresentativeContextSelector extends ContextSelector {
       Queue<Triple<AllocNode, ContextElements, Boolean>> worklist, OAG oag, AllocNode node) {
     Set<AllocNode> reachRoots = selectReachNodes(oag.rootNodes(), node, oag);
     boolean split = reachRoots.size() > 1;
-    ContextElements emptyCtx = (ContextElements) CtxConstructor.emptyContext;
+    ContextElements emptyCtx = (ContextElements) ContextConstructor.emptyContext;
     reachRoots.forEach(
         root ->
             worklist.add(

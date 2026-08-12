@@ -20,9 +20,9 @@ package qilin.pta.tools;
 
 import qilin.core.PTAScene;
 import qilin.core.config.PointerAnalysisComponents;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.HeapAbstractor;
-import qilin.parm.select.CtxSelector;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.select.ContextSelector;
 import qilin.parm.select.UniformSelector;
 import qilin.pta.toolkits.dd.TunnelingConstructor;
 
@@ -32,13 +32,16 @@ import qilin.pta.toolkits.dd.TunnelingConstructor;
  * not show the claimed effectiveness. Maybe we should train the benchmarks to get new formulas?
  * */
 public class TunnelingPTA extends BasePTA {
-  public TunnelingPTA(PTAScene scene, CtxConstructor ctxCons, int k, int hk) {
+  public TunnelingPTA(PTAScene scene, ContextConstructor contextConstructor, int k, int hk) {
     super(scene);
-    CtxConstructor tunnelingCtxCons = new TunnelingConstructor(getView(), pag, ctxCons);
-    CtxSelector us = new UniformSelector(k, hk);
-    CtxSelector ctxSel = PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
-    HeapAbstractor heapAbst = PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
-    initComponents(tunnelingCtxCons, ctxSel, heapAbst);
+    ContextConstructor tunnelingCtxCons =
+        new TunnelingConstructor(getView(), pag, contextConstructor);
+    ContextSelector us = new UniformSelector(k, hk);
+    ContextSelector contextSelector =
+        PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbstractor =
+        PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(tunnelingCtxCons, contextSelector, heapAbstractor);
     System.out.println("context-tunneling ...");
   }
 }

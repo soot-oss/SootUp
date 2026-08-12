@@ -16,10 +16,13 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.parm.heapabst;
+package qilin.parm.heapabstraction;
 
 import qilin.core.pag.AllocNode;
 
-public interface HeapAbstractor {
-  AllocNode abstractHeap(AllocNode heap);
+public class AllocSiteAbstractor implements HeapAbstractor {
+  @Override
+  public AllocNode abstractHeap(AllocNode heap) {
+    return heap;
+  }
 }

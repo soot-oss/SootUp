@@ -18,34 +18,43 @@
 
 package qilin.parm.select;
 
-import java.util.Map;
+import java.util.Set;
 import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
+import qilin.parm.contextconstruction.ContextConstructor;
 import sootup.core.model.SootMethod;
 
-public class FullMethodLvSelector extends CtxSelector {
+public class PartialMethodLevelSelector extends ContextSelector {
   private final int k;
-  /*
-   * Methods and its corresponding context length obtained by Data-driven (OOPSLA 2017).
-   * */
-  private final Map<SootMethod, Integer> m2len;
+  private final int hk;
+  // precision-critical methods selected by the method-level approaches, e.g., Zipper.
+  private final Set<SootMethod> pcm;
 
-  public FullMethodLvSelector(Map<SootMethod, Integer> m2len, int k) {
-    this.m2len = m2len;
+  public PartialMethodLevelSelector(int k, int hk, Set<SootMethod> pcm) {
     this.k = k;
+    this.hk = hk;
+    this.pcm = pcm;
   }
 
   @Override
   public Context select(SootMethod m, Context context) {
-    return contextTailor(context, m2len.getOrDefault(m, 0));
+    if (pcm.contains(m)) {
+      return contextTailor(context, k);
+    } else {
+      return ContextConstructor.emptyContext;
+    }
   }
 
   @Override
   public Context select(LocalVarNode lvn, Context context) {
     SootMethod sm = lvn.getMethod();
-    return contextTailor(context, m2len.getOrDefault(sm, 0));
+    if (pcm.contains(sm)) {
+      return contextTailor(context, k);
+    } else {
+      return ContextConstructor.emptyContext;
+    }
   }
 
   @Override
@@ -56,6 +65,10 @@ public class FullMethodLvSelector extends CtxSelector {
   @Override
   public Context select(AllocNode heap, Context context) {
     SootMethod sm = heap.getMethod();
-    return contextTailor(context, Math.max(0, m2len.getOrDefault(sm, 0) - 1));
+    if (pcm.contains(sm)) {
+      return contextTailor(context, hk);
+    } else {
+      return context;
+    }
   }
 }

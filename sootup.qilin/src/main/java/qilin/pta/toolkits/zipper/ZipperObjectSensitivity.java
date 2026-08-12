@@ -25,8 +25,8 @@ package qilin.pta.toolkits.zipper;
 import qilin.core.PTAScene;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.ctxcons.ObjCtxConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.contextconstruction.ObjectContextConstructor;
 import qilin.pta.tools.BasePTA;
 import qilin.pta.tools.ZipperPTA;
 
@@ -46,8 +46,8 @@ public final class ZipperObjectSensitivity extends ContextSensitivity {
   }
 
   @Override
-  public CtxConstructor createCtxConstructor() {
-    return new ObjCtxConstructor();
+  public ContextConstructor createContextConstructor() {
+    return new ObjectContextConstructor();
   }
 
   @Override
@@ -62,7 +62,7 @@ public final class ZipperObjectSensitivity extends ContextSensitivity {
 
   @Override
   public BasePTA createPTA(PTAScene scene, PointerAnalysisConfig config) {
-    return maybeDebloat(new ZipperPTA(scene, k, hk, createCtxConstructor(), isExpress), config);
+    return maybeDebloat(new ZipperPTA(scene, k, hk, createContextConstructor(), isExpress), config);
   }
 
   @Override

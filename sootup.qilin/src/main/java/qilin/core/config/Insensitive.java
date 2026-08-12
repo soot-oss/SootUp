@@ -23,8 +23,8 @@ package qilin.core.config;
  */
 
 import qilin.core.PTAScene;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.ctxcons.InsensCtxConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.contextconstruction.InsensitiveContextConstructor;
 import qilin.pta.tools.BasePTA;
 import qilin.pta.tools.CoreVariantPTA;
 
@@ -32,8 +32,8 @@ final class Insensitive extends ContextSensitivity {
   static final Insensitive INSTANCE = new Insensitive();
 
   @Override
-  public CtxConstructor createCtxConstructor() {
-    return new InsensCtxConstructor();
+  public ContextConstructor createContextConstructor() {
+    return new InsensitiveContextConstructor();
   }
 
   @Override

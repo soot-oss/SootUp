@@ -23,8 +23,8 @@ package qilin.core.config;
  */
 
 import qilin.core.PTAScene;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.ctxcons.HybTypeCtxConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.contextconstruction.HybridTypeContextConstructor;
 import qilin.pta.tools.BasePTA;
 import qilin.pta.tools.CoreVariantPTA;
 
@@ -40,8 +40,8 @@ final class HybridTypeSens extends ContextSensitivity {
   }
 
   @Override
-  public CtxConstructor createCtxConstructor() {
-    return new HybTypeCtxConstructor();
+  public ContextConstructor createContextConstructor() {
+    return new HybridTypeContextConstructor();
   }
 
   @Override

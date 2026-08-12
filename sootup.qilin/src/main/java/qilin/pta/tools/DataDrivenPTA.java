@@ -20,9 +20,9 @@ package qilin.pta.tools;
 
 import qilin.core.PTAScene;
 import qilin.core.config.PointerAnalysisComponents;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.HeapAbstractor;
-import qilin.parm.select.CtxSelector;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.select.ContextSelector;
 import qilin.pta.toolkits.dd.DataDrivenSelector;
 
 /*
@@ -37,12 +37,14 @@ import qilin.pta.toolkits.dd.DataDrivenSelector;
 
 public class DataDrivenPTA extends BasePTA {
 
-  public DataDrivenPTA(PTAScene scene, CtxConstructor ctxCons) {
+  public DataDrivenPTA(PTAScene scene, ContextConstructor contextConstructor) {
     super(scene);
-    CtxSelector us = new DataDrivenSelector(ctxCons.getClass(), pag);
-    CtxSelector ctxSel = PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
-    HeapAbstractor heapAbst = PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
-    initComponents(ctxCons, ctxSel, heapAbst);
+    ContextSelector us = new DataDrivenSelector(contextConstructor.getClass(), pag);
+    ContextSelector contextSelector =
+        PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbstractor =
+        PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(contextConstructor, contextSelector, heapAbstractor);
     System.out.println("data-driven ...");
   }
 }

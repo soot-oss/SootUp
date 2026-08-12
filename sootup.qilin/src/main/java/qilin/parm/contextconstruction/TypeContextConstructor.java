@@ -16,7 +16,7 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.parm.ctxcons;
+package qilin.parm.contextconstruction;
 
 import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
@@ -29,7 +29,7 @@ import qilin.core.pag.ContextMethod;
 import sootup.core.model.SootMethod;
 
 // implementation of type context...(Yannis popl'11)
-public class TypeCtxConstructor implements CtxConstructor {
+public class TypeContextConstructor implements ContextConstructor {
 
   @Override
   public Context constructCtx(

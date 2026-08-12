@@ -25,24 +25,24 @@ import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
 import qilin.core.pag.ContextMethod;
 import qilin.core.pag.PAG;
-import qilin.parm.ctxcons.*;
+import qilin.parm.contextconstruction.*;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
-public class TunnelingConstructor implements CtxConstructor {
+public class TunnelingConstructor implements ContextConstructor {
   private final View view;
   private final PAG pag;
-  private final CtxConstructor ctxCons;
+  private final ContextConstructor contextConstructor;
   private final Map<SootMethod, CtxTunnelingFeaturesTrueTable> m2ftt = new HashMap<>();
 
   private CtxTunnelingFeaturesTrueTable findOrCreateTunnelingFeaturesTrueTable(SootMethod sm) {
     return m2ftt.computeIfAbsent(sm, k -> new CtxTunnelingFeaturesTrueTable(view, sm, pag));
   }
 
-  public TunnelingConstructor(View view, PAG pag, CtxConstructor ctxCons) {
+  public TunnelingConstructor(View view, PAG pag, ContextConstructor contextConstructor) {
     this.view = view;
     this.pag = pag;
-    this.ctxCons = ctxCons;
+    this.contextConstructor = contextConstructor;
   }
 
   @Override
@@ -50,26 +50,26 @@ public class TunnelingConstructor implements CtxConstructor {
       ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
     CtxTunnelingFeaturesTrueTable ctftt1 = findOrCreateTunnelingFeaturesTrueTable(caller.method());
     CtxTunnelingFeaturesTrueTable ctftt2 = findOrCreateTunnelingFeaturesTrueTable(target);
-    if (ctxCons instanceof CallsiteCtxConstructor) {
+    if (contextConstructor instanceof CallSiteContextConstructor) {
       if (ctftt1.cfaFormula1() || ctftt2.cfaFormula2()) {
         return caller.context();
       }
-    } else if (ctxCons instanceof TypeCtxConstructor) {
+    } else if (contextConstructor instanceof TypeContextConstructor) {
       if (ctftt1.typeFormula1() || ctftt2.typeFormula2()) {
         return caller.context();
       }
-    } else if (ctxCons instanceof ObjCtxConstructor) {
+    } else if (contextConstructor instanceof ObjectContextConstructor) {
       if (ctftt1.objFormula1() || ctftt2.objFormula2()) {
         return caller.context();
       }
-    } else if (ctxCons instanceof HybObjCtxConstructor) {
+    } else if (contextConstructor instanceof HybridObjectContextConstructor) {
       if (ctftt1.hybridFormula1() || ctftt2.hybridFormula2()) {
         return caller.context();
       }
     } else {
       throw new RuntimeException(
-          "unsupported context constructor for tunneling: " + ctxCons.getClass());
+          "unsupported context constructor for tunneling: " + contextConstructor.getClass());
     }
-    return ctxCons.constructCtx(caller, receiverNode, callSite, target);
+    return contextConstructor.constructCtx(caller, receiverNode, callSite, target);
   }
 }

@@ -25,8 +25,8 @@ package qilin.pta.toolkits.mahjong;
 import qilin.core.PTAScene;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.ctxcons.ObjCtxConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.contextconstruction.ObjectContextConstructor;
 import qilin.pta.tools.BasePTA;
 import qilin.pta.tools.MahjongPTA;
 
@@ -44,8 +44,8 @@ public final class MahjongObjectSensitivity extends ContextSensitivity {
   }
 
   @Override
-  public CtxConstructor createCtxConstructor() {
-    return new ObjCtxConstructor();
+  public ContextConstructor createContextConstructor() {
+    return new ObjectContextConstructor();
   }
 
   @Override
@@ -60,7 +60,7 @@ public final class MahjongObjectSensitivity extends ContextSensitivity {
 
   @Override
   public BasePTA createPTA(PTAScene scene, PointerAnalysisConfig config) {
-    return maybeDebloat(new MahjongPTA(scene, k, hk, createCtxConstructor()), config);
+    return maybeDebloat(new MahjongPTA(scene, k, hk, createContextConstructor()), config);
   }
 
   @Override

@@ -19,7 +19,7 @@
 package qilin.core.config;
 
 import qilin.core.PTAScene;
-import qilin.parm.ctxcons.CtxConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
 import qilin.pta.toolkits.bean.BeanObjectSensitivity;
 import qilin.pta.toolkits.dd.DataDrivenCallSiteSensitivity;
 import qilin.pta.toolkits.dd.DataDrivenHybridObjectSensitivity;
@@ -55,8 +55,8 @@ public abstract class ContextSensitivity {
 
   protected ContextSensitivity() {}
 
-  /** Builds the {@link CtxConstructor} implementing this context-sensitivity variant. */
-  public abstract CtxConstructor createCtxConstructor();
+  /** Builds the {@link ContextConstructor} implementing this context-sensitivity variant. */
+  public abstract ContextConstructor createContextConstructor();
 
   /** The method-context depth (k). */
   public abstract int contextDepth();

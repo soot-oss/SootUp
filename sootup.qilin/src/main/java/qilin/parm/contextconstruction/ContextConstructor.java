@@ -16,19 +16,19 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.parm.ctxcons;
+package qilin.parm.contextconstruction;
 
 import qilin.core.context.Context;
+import qilin.core.context.ContextElement;
+import qilin.core.context.ContextElements;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
 import qilin.core.pag.ContextMethod;
 import sootup.core.model.SootMethod;
 
-public class InsensCtxConstructor implements CtxConstructor {
+public interface ContextConstructor {
+  Context constructCtx(
+      ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target);
 
-  @Override
-  public Context constructCtx(
-      ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
-    return emptyContext;
-  }
+  Context emptyContext = new ContextElements(new ContextElement[0], 0);
 }

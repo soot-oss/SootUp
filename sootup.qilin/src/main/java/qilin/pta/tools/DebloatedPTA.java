@@ -24,7 +24,7 @@ import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.solver.Propagator;
-import qilin.parm.select.CtxSelector;
+import qilin.parm.select.ContextSelector;
 import qilin.parm.select.DebloatingSelector;
 import qilin.parm.select.PipelineSelector;
 import qilin.pta.toolkits.common.DebloatedOAG;
@@ -57,8 +57,8 @@ public class DebloatedPTA extends StagedPTA {
   public DebloatedPTA(BasePTA basePTA, PointerAnalysisConfig.DebloatApproach approach) {
     super(basePTA.getScene());
     this.basePTA = basePTA;
-    CtxSelector debloatingSelector = new DebloatingSelector(ctxDepHeaps);
-    basePTA.setContextSelector(new PipelineSelector(basePTA.ctxSelector(), debloatingSelector));
+    ContextSelector debloatingSelector = new DebloatingSelector(ctxDepHeaps);
+    basePTA.setContextSelector(new PipelineSelector(basePTA.contextSelector(), debloatingSelector));
     if (basePTA instanceof StagedPTA stagedPTA) {
       this.prePTA = stagedPTA.getPrePTA();
     } else {

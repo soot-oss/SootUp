@@ -27,11 +27,11 @@ import sootup.core.model.SootMethod;
 /*
  * A pipeline context selector which selects context by firstly using ctxSelA and then ctxSelB.
  * */
-public class PipelineSelector extends CtxSelector {
-  private final CtxSelector ctxSelA;
-  private final CtxSelector ctxSelB;
+public class PipelineSelector extends ContextSelector {
+  private final ContextSelector ctxSelA;
+  private final ContextSelector ctxSelB;
 
-  public PipelineSelector(CtxSelector lenSelA, CtxSelector lenSelB) {
+  public PipelineSelector(ContextSelector lenSelA, ContextSelector lenSelB) {
     this.ctxSelA = lenSelA;
     this.ctxSelB = lenSelB;
   }

@@ -16,13 +16,19 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.parm.heapabst;
+package qilin.parm.contextconstruction;
 
-import qilin.core.pag.AllocNode;
+import qilin.core.context.Context;
+import qilin.core.pag.CallSite;
+import qilin.core.pag.ContextAllocNode;
+import qilin.core.pag.ContextMethod;
+import sootup.core.model.SootMethod;
 
-public class AllocSiteAbstractor implements HeapAbstractor {
+public class InsensitiveContextConstructor implements ContextConstructor {
+
   @Override
-  public AllocNode abstractHeap(AllocNode heap) {
-    return heap;
+  public Context constructCtx(
+      ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
+    return emptyContext;
   }
 }

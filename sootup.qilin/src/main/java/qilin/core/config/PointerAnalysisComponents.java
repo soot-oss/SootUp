@@ -19,12 +19,12 @@
 package qilin.core.config;
 
 import qilin.core.pag.PAG;
-import qilin.parm.heapabst.AllocSiteAbstractor;
-import qilin.parm.heapabst.HeapAbstractor;
-import qilin.parm.heapabst.HeuristicAbstractor;
-import qilin.parm.select.CtxSelector;
+import qilin.parm.heapabstraction.AllocSiteAbstractor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.heapabstraction.HeuristicAbstractor;
+import qilin.parm.select.ContextSelector;
 import qilin.parm.select.HeuristicSelector;
-import qilin.parm.select.InsenSelector;
+import qilin.parm.select.InsensitiveSelector;
 import qilin.parm.select.PipelineSelector;
 import qilin.parm.select.UniformSelector;
 import sootup.core.views.View;
@@ -45,11 +45,11 @@ public final class PointerAnalysisComponents {
         : new AllocSiteAbstractor();
   }
 
-  public static CtxSelector createCtxSelector(
+  public static ContextSelector createContextSelector(
       PointerAnalysisConfig config, View view, ContextSensitivity contextSensitivity) {
-    CtxSelector base =
+    ContextSelector base =
         contextSensitivity.contextDepth() == 0
-            ? new InsenSelector()
+            ? new InsensitiveSelector()
             : new UniformSelector(
                 contextSensitivity.selectorContextDepth(), contextSensitivity.heapContextDepth());
     return wrapIgnoreTypesGuard(config, view, base);
@@ -59,8 +59,8 @@ public final class PointerAnalysisComponents {
    * Wraps {@code base} with a {@link HeuristicSelector} guard that forces an empty context for
    * ignore-types, when the config asks for it; otherwise returns {@code base} unchanged.
    */
-  public static CtxSelector wrapIgnoreTypesGuard(
-      PointerAnalysisConfig config, View view, CtxSelector base) {
+  public static ContextSelector wrapIgnoreTypesGuard(
+      PointerAnalysisConfig config, View view, ContextSelector base) {
     return config.isEnforceEmptyCtxForIgnoreTypes()
         ? new PipelineSelector(new HeuristicSelector(view), base)
         : base;

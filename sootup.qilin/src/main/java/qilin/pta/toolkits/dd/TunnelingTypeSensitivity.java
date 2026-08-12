@@ -25,8 +25,8 @@ package qilin.pta.toolkits.dd;
 import qilin.core.PTAScene;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.ctxcons.TypeCtxConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.contextconstruction.TypeContextConstructor;
 import qilin.pta.tools.BasePTA;
 import qilin.pta.tools.TunnelingPTA;
 
@@ -44,8 +44,8 @@ public final class TunnelingTypeSensitivity extends ContextSensitivity {
   }
 
   @Override
-  public CtxConstructor createCtxConstructor() {
-    return new TypeCtxConstructor();
+  public ContextConstructor createContextConstructor() {
+    return new TypeContextConstructor();
   }
 
   @Override
@@ -60,7 +60,7 @@ public final class TunnelingTypeSensitivity extends ContextSensitivity {
 
   @Override
   public BasePTA createPTA(PTAScene scene, PointerAnalysisConfig config) {
-    return new TunnelingPTA(scene, createCtxConstructor(), k, hk);
+    return new TunnelingPTA(scene, createContextConstructor(), k, hk);
   }
 
   @Override

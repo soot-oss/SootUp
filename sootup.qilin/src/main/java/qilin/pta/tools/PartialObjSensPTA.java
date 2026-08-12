@@ -25,10 +25,10 @@ import qilin.core.PTAScene;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisComponents;
 import qilin.core.pag.*;
-import qilin.parm.ctxcons.ObjCtxConstructor;
-import qilin.parm.heapabst.HeapAbstractor;
-import qilin.parm.select.CtxSelector;
-import qilin.parm.select.PartialVarSelector;
+import qilin.parm.contextconstruction.ObjectContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.select.ContextSelector;
+import qilin.parm.select.PartialVariableSelector;
 import qilin.util.PagQueries;
 import qilin.util.Stopwatch;
 import qilin.util.queue.QueueReader;
@@ -53,10 +53,12 @@ public abstract class PartialObjSensPTA extends StagedPTA {
 
   public PartialObjSensPTA(PTAScene scene, int ctxLen) {
     super(scene);
-    CtxSelector us = new PartialVarSelector(ctxLen, ctxLen - 1, csnodes, csmethods);
-    CtxSelector ctxSel = PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
-    HeapAbstractor heapAbst = PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
-    initComponents(new ObjCtxConstructor(), ctxSel, heapAbst);
+    ContextSelector us = new PartialVariableSelector(ctxLen, ctxLen - 1, csnodes, csmethods);
+    ContextSelector contextSelector =
+        PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbstractor =
+        PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(new ObjectContextConstructor(), contextSelector, heapAbstractor);
     this.prePTA = new CoreVariantPTA(scene, ContextSensitivity.insensitive());
     this.prePAG = prePTA.getPag();
   }

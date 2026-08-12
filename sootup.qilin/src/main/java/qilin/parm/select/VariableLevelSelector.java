@@ -18,57 +18,52 @@
 
 package qilin.parm.select;
 
-import java.util.Set;
+import java.util.Map;
 import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
-import qilin.parm.ctxcons.CtxConstructor;
 import sootup.core.model.SootMethod;
 
-public class PartialMethodLvSelector extends CtxSelector {
+/*
+ * This class is for a future technique and thus currently has no usage.
+ * */
+public class VariableLevelSelector extends ContextSelector {
   private final int k;
   private final int hk;
-  // precision-critical methods selected by the method-level approaches, e.g., Zipper.
-  private final Set<SootMethod> pcm;
+  /* mapping from nodes to the context length they require.
+   * This is designed for a future approaches.
+   */
+  private final Map<Object, Integer> node2Len;
+  private final Map<SootMethod, Integer> mthd2Len;
 
-  public PartialMethodLvSelector(int k, int hk, Set<SootMethod> pcm) {
+  public VariableLevelSelector(
+      int k, int hk, Map<Object, Integer> node2Len, Map<SootMethod, Integer> m2len) {
     this.k = k;
     this.hk = hk;
-    this.pcm = pcm;
+    this.node2Len = node2Len;
+    this.mthd2Len = m2len;
   }
 
   @Override
   public Context select(SootMethod m, Context context) {
-    if (pcm.contains(m)) {
-      return contextTailor(context, k);
-    } else {
-      return CtxConstructor.emptyContext;
-    }
+    return contextTailor(context, Math.min(k, mthd2Len.getOrDefault(m, 0)));
   }
 
   @Override
   public Context select(LocalVarNode lvn, Context context) {
-    SootMethod sm = lvn.getMethod();
-    if (pcm.contains(sm)) {
-      return contextTailor(context, k);
-    } else {
-      return CtxConstructor.emptyContext;
-    }
+    Object ir = lvn.getVariable();
+    return contextTailor(context, Math.min(k, node2Len.getOrDefault(ir, 0)));
   }
 
   @Override
   public Context select(FieldValNode fvn, Context context) {
-    return contextTailor(context, k);
+    return contextTailor(context, Math.min(k, node2Len.getOrDefault(fvn.getField(), 0)));
   }
 
   @Override
   public Context select(AllocNode heap, Context context) {
-    SootMethod sm = heap.getMethod();
-    if (pcm.contains(sm)) {
-      return contextTailor(context, hk);
-    } else {
-      return context;
-    }
+    Object ir = heap.getNewExpr();
+    return contextTailor(context, Math.min(hk, node2Len.getOrDefault(ir, 0)));
   }
 }

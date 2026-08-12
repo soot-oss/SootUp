@@ -16,44 +16,37 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.parm.heapabst;
+package qilin.parm.heapabstraction;
 
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.PAG;
 import qilin.util.JavaTypes;
-import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 
-public class MahjongAbstractor implements HeapAbstractor {
-  private final Set<Object> mergedHeap;
-  private final Map<Object, Object> heapModelMap;
+public class HeuristicAbstractor implements HeapAbstractor {
   private final PAG pag;
   private final View view;
+  private final Set<Type> mergedTypes = new HashSet<>();
 
-  public MahjongAbstractor(PAG pag, Set<Object> mergedHeap, Map<Object, Object> heapModelMap) {
+  public HeuristicAbstractor(PAG pag) {
     this.pag = pag;
     this.view = pag.getPta().getView();
-    this.mergedHeap = mergedHeap;
-    this.heapModelMap = heapModelMap;
+    mergedTypes.add(JavaTypes.STRING_BUFFER);
+    mergedTypes.add(JavaTypes.STRING_BUILDER);
   }
 
   @Override
   public AllocNode abstractHeap(AllocNode heap) {
-    Object newExpr = heap.getNewExpr();
     Type type = heap.getType();
-    SootMethod m = heap.getMethod();
-    Object mergedIr = this.heapModelMap.get(newExpr);
-    if (this.mergedHeap.contains(mergedIr)) {
-      return pag.makeAllocNode(mergedIr, type, null);
+    if (mergedTypes.contains(type)
+        || (JavaTypes.isThrowable(view, type) && mergedTypes.add(type))) {
+      return pag.makeAllocNode(pag.getMergedNewExpr((ReferenceType) type), type, null);
     } else {
-      if (JavaTypes.isThrowable(view, type)) {
-        // Mahjong still needs heuristics to handle throwable types.
-        return pag.makeAllocNode("Merged " + type, type, null);
-      }
-      return pag.makeAllocNode(newExpr, type, m);
+      return heap;
     }
   }
 }

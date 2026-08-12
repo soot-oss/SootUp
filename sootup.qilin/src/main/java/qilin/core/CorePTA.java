@@ -22,18 +22,18 @@ import java.util.Objects;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.solver.Propagator;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.HeapAbstractor;
-import qilin.parm.select.CtxSelector;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.select.ContextSelector;
 import sootup.core.model.SootMethod;
 
 /*
  * This represents a parameterized PTA which could be concreted to many pointer analyses.
  * */
 public abstract class CorePTA extends PTA implements Parameterizer {
-  private CtxConstructor ctxCons;
-  private CtxSelector ctxSel;
-  private HeapAbstractor heapAbst;
+  private ContextConstructor contextConstructor;
+  private ContextSelector contextSelector;
+  private HeapAbstractor heapAbstractor;
   private boolean componentsInitialized = false;
 
   public CorePTA(PTAScene scene) {
@@ -49,13 +49,15 @@ public abstract class CorePTA extends PTA implements Parameterizer {
    * surfacing later, deep inside the solver.
    */
   protected final void initComponents(
-      CtxConstructor ctxCons, CtxSelector ctxSel, HeapAbstractor heapAbst) {
+      ContextConstructor contextConstructor,
+      ContextSelector contextSelector,
+      HeapAbstractor heapAbstractor) {
     if (componentsInitialized) {
       throw new IllegalStateException("initComponents() has already been called for " + this);
     }
-    this.ctxCons = Objects.requireNonNull(ctxCons, "ctxCons");
-    this.ctxSel = Objects.requireNonNull(ctxSel, "ctxSel");
-    this.heapAbst = Objects.requireNonNull(heapAbst, "heapAbst");
+    this.contextConstructor = Objects.requireNonNull(contextConstructor, "contextConstructor");
+    this.contextSelector = Objects.requireNonNull(contextSelector, "contextSelector");
+    this.heapAbstractor = Objects.requireNonNull(heapAbstractor, "heapAbstractor");
     this.componentsInitialized = true;
   }
 
@@ -68,24 +70,24 @@ public abstract class CorePTA extends PTA implements Parameterizer {
     }
   }
 
-  public CtxSelector ctxSelector() {
+  public ContextSelector contextSelector() {
     checkComponentsInitialized();
-    return ctxSel;
+    return contextSelector;
   }
 
-  public void setContextSelector(CtxSelector ctxSelector) {
+  public void setContextSelector(ContextSelector contextSelector) {
     checkComponentsInitialized();
-    this.ctxSel = Objects.requireNonNull(ctxSelector, "ctxSelector");
+    this.contextSelector = Objects.requireNonNull(contextSelector, "contextSelector");
   }
 
-  public CtxConstructor ctxConstructor() {
+  public ContextConstructor contextConstructor() {
     checkComponentsInitialized();
-    return ctxCons;
+    return contextConstructor;
   }
 
   public HeapAbstractor heapAbstractor() {
     checkComponentsInitialized();
-    return heapAbst;
+    return heapAbstractor;
   }
 
   public abstract Propagator getPropagator();
@@ -93,11 +95,12 @@ public abstract class CorePTA extends PTA implements Parameterizer {
   @Override
   public Context createCalleeCtx(
       ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
-    return ctxConstructor().constructCtx(caller, (ContextAllocNode) receiverNode, callSite, target);
+    return contextConstructor()
+        .constructCtx(caller, (ContextAllocNode) receiverNode, callSite, target);
   }
 
   public Context emptyContext() {
-    return CtxConstructor.emptyContext;
+    return ContextConstructor.emptyContext;
   }
 
   /**
@@ -115,13 +118,13 @@ public abstract class CorePTA extends PTA implements Parameterizer {
 
   @Override
   public ContextField parameterize(FieldValNode fvn, Context context) {
-    Context ctx = ctxSelector().select(fvn, context);
+    Context ctx = contextSelector().select(fvn, context);
     return pag.makeContextField(ctx, fvn);
   }
 
   @Override
   public ContextVarNode parameterize(LocalVarNode vn, Context context) {
-    Context ctx = ctxSelector().select(vn, context);
+    Context ctx = contextSelector().select(vn, context);
     return pag.makeContextVarNode(vn, ctx);
   }
 
@@ -132,7 +135,7 @@ public abstract class CorePTA extends PTA implements Parameterizer {
 
   @Override
   public ContextAllocNode parameterize(AllocNode node, Context context) {
-    Context ctx = ctxSelector().select(node, context);
+    Context ctx = contextSelector().select(node, context);
     return pag.makeContextAllocNode(node, ctx);
   }
 
@@ -147,7 +150,7 @@ public abstract class CorePTA extends PTA implements Parameterizer {
   /** Finds or creates the ContextMethod for method and context. */
   @Override
   public ContextMethod parameterize(SootMethod method, Context context) {
-    Context ctx = ctxSelector().select(method, context);
+    Context ctx = contextSelector().select(method, context);
     return pag.makeContextMethod(ctx, method);
   }
 

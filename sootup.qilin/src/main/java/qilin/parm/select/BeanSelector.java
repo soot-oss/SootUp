@@ -28,7 +28,7 @@ import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.PAG;
 import sootup.core.model.SootMethod;
 
-public class BeanSelector extends CtxSelector {
+public class BeanSelector extends ContextSelector {
   private final PAG pag;
   private final Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap;
   // currently, we only support k = 2 and hk = 1;

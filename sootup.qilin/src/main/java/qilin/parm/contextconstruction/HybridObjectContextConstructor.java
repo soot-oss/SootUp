@@ -16,7 +16,7 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.parm.ctxcons;
+package qilin.parm.contextconstruction;
 
 import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
@@ -27,7 +27,7 @@ import qilin.core.pag.ContextMethod;
 import sootup.core.model.SootMethod;
 
 // implementation of selective hybrid context...(Yannis pldi'13)
-public class HybObjCtxConstructor implements CtxConstructor {
+public class HybridObjectContextConstructor implements ContextConstructor {
   /*
    * Support Sb-1obj, S-2obj+H, ...
    * */

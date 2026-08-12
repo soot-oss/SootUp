@@ -16,40 +16,10 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.parm.select;
+package qilin.parm.heapabstraction;
 
-import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
-import qilin.core.pag.FieldValNode;
-import qilin.core.pag.LocalVarNode;
-import sootup.core.model.SootMethod;
 
-public class UniformSelector extends ContextSelector {
-  private final int k;
-  private final int hk;
-
-  public UniformSelector(int k, int hk) {
-    this.k = k;
-    this.hk = hk;
-  }
-
-  @Override
-  public Context select(SootMethod m, Context context) {
-    return contextTailor(context, k);
-  }
-
-  @Override
-  public Context select(LocalVarNode lvn, Context context) {
-    return contextTailor(context, k);
-  }
-
-  @Override
-  public Context select(FieldValNode fvn, Context context) {
-    return contextTailor(context, k);
-  }
-
-  @Override
-  public Context select(AllocNode heap, Context context) {
-    return contextTailor(context, hk);
-  }
+public interface HeapAbstractor {
+  AllocNode abstractHeap(AllocNode heap);
 }

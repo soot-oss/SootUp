@@ -18,52 +18,69 @@
 
 package qilin.parm.select;
 
-import java.util.Map;
+import java.util.Set;
 import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
+import qilin.core.pag.ConcreteField;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
+import qilin.parm.contextconstruction.ContextConstructor;
 import sootup.core.model.SootMethod;
 
-/*
- * This class is for a future technique and thus currently has no usage.
- * */
-public class VarLvSelector extends CtxSelector {
+public class PartialVariableSelector extends ContextSelector {
   private final int k;
   private final int hk;
-  /* mapping from nodes to the context length they require.
-   * This is designed for a future approaches.
-   */
-  private final Map<Object, Integer> node2Len;
-  private final Map<SootMethod, Integer> mthd2Len;
+  // precision-critical nodes selected by the partial-variable-level approaches, e.g., Eagle,
+  // Turner.
+  private final Set<Object> csnodes;
+  private final Set<SootMethod> pcm;
 
-  public VarLvSelector(
-      int k, int hk, Map<Object, Integer> node2Len, Map<SootMethod, Integer> m2len) {
+  public PartialVariableSelector(int k, int hk, Set<Object> csnodes, Set<SootMethod> pcm) {
     this.k = k;
     this.hk = hk;
-    this.node2Len = node2Len;
-    this.mthd2Len = m2len;
+    this.csnodes = csnodes;
+    this.pcm = pcm;
   }
 
   @Override
   public Context select(SootMethod m, Context context) {
-    return contextTailor(context, Math.min(k, mthd2Len.getOrDefault(m, 0)));
+    if (pcm.contains(m)) {
+      return contextTailor(context, k);
+    } else {
+      return ContextConstructor.emptyContext;
+    }
   }
 
   @Override
   public Context select(LocalVarNode lvn, Context context) {
     Object ir = lvn.getVariable();
-    return contextTailor(context, Math.min(k, node2Len.getOrDefault(ir, 0)));
+    if (csnodes.contains(ir)) {
+      return contextTailor(context, k);
+    } else {
+      return ContextConstructor.emptyContext;
+    }
   }
 
   @Override
   public Context select(FieldValNode fvn, Context context) {
-    return contextTailor(context, Math.min(k, node2Len.getOrDefault(fvn.getField(), 0)));
+    Object tmp = fvn.getField();
+    if (tmp instanceof ConcreteField) {
+      tmp = ((ConcreteField) tmp).getField();
+    }
+    if (csnodes.contains(tmp)) {
+      return contextTailor(context, k);
+    } else {
+      return ContextConstructor.emptyContext;
+    }
   }
 
   @Override
   public Context select(AllocNode heap, Context context) {
     Object ir = heap.getNewExpr();
-    return contextTailor(context, Math.min(hk, node2Len.getOrDefault(ir, 0)));
+    if (csnodes.contains(ir)) {
+      return contextTailor(context, hk);
+    } else {
+      return ContextConstructor.emptyContext;
+    }
   }
 }

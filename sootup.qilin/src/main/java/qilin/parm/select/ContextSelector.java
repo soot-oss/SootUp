@@ -24,10 +24,10 @@ import qilin.core.context.ContextElements;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
-import qilin.parm.ctxcons.CtxConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
 import sootup.core.model.SootMethod;
 
-public abstract class CtxSelector {
+public abstract class ContextSelector {
   public abstract Context select(SootMethod m, Context context);
 
   public abstract Context select(LocalVarNode lvn, Context context);
@@ -38,7 +38,7 @@ public abstract class CtxSelector {
 
   protected Context contextTailor(Context context, int length) {
     if (length == 0) {
-      return CtxConstructor.emptyContext;
+      return ContextConstructor.emptyContext;
     }
     ContextElements ctx = (ContextElements) context;
     if (length >= ctx.size()) {

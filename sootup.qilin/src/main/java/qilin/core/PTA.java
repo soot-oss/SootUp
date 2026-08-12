@@ -28,9 +28,9 @@ import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.solver.Propagator;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.HeapAbstractor;
-import qilin.parm.select.CtxSelector;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.select.ContextSelector;
 import qilin.util.JavaTypes;
 import qilin.util.sets.HybridPointsToSet;
 import qilin.util.sets.PointsToSet;
@@ -59,7 +59,7 @@ public abstract class PTA implements PointsToAnalysis {
     this.cgb = createCallGraphBuilder();
     this.eh = new ExceptionHandler(this);
     AllocNode rootBase = pag.makeAllocNode("ROOT", JavaTypes.OBJECT, null);
-    this.rootNode = new ContextAllocNode(rootBase, CtxConstructor.emptyContext);
+    this.rootNode = new ContextAllocNode(rootBase, ContextConstructor.emptyContext);
   }
 
   protected abstract PAG createPAG();
@@ -134,9 +134,9 @@ public abstract class PTA implements PointsToAnalysis {
 
   public abstract HeapAbstractor heapAbstractor();
 
-  public abstract CtxConstructor ctxConstructor();
+  public abstract ContextConstructor contextConstructor();
 
-  public abstract CtxSelector ctxSelector();
+  public abstract ContextSelector contextSelector();
 
   /** Returns the set of objects pointed to by variable l. */
   @Override

@@ -25,8 +25,8 @@ import qilin.core.PTAScene;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisComponents;
 import qilin.core.pag.*;
-import qilin.parm.ctxcons.CallsiteCtxConstructor;
-import qilin.parm.heapabst.HeapAbstractor;
+import qilin.parm.contextconstruction.CallSiteContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
 import qilin.parm.select.*;
 import qilin.util.PagQueries;
 import qilin.util.Stopwatch;
@@ -51,10 +51,12 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
 
   public PartialCallSiteSensPTA(PTAScene scene, int ctxLen) {
     super(scene);
-    CtxSelector us = new PartialVarSelector(ctxLen, ctxLen - 1, csnodes, csmethods);
-    CtxSelector ctxSel = PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
-    HeapAbstractor heapAbst = PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
-    initComponents(new CallsiteCtxConstructor(), ctxSel, heapAbst);
+    ContextSelector us = new PartialVariableSelector(ctxLen, ctxLen - 1, csnodes, csmethods);
+    ContextSelector contextSelector =
+        PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbstractor =
+        PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(new CallSiteContextConstructor(), contextSelector, heapAbstractor);
     this.prePTA = new CoreVariantPTA(scene, ContextSensitivity.insensitive());
   }
 

@@ -25,8 +25,8 @@ package qilin.pta.toolkits.selectx;
 import qilin.core.PTAScene;
 import qilin.core.config.ContextSensitivity;
 import qilin.core.config.PointerAnalysisConfig;
-import qilin.parm.ctxcons.CallsiteCtxConstructor;
-import qilin.parm.ctxcons.CtxConstructor;
+import qilin.parm.contextconstruction.CallSiteContextConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
 import qilin.pta.tools.BasePTA;
 import qilin.pta.tools.SelectxPTA;
 
@@ -40,8 +40,8 @@ public final class SelectxCallSiteSensitivity extends ContextSensitivity {
   }
 
   @Override
-  public CtxConstructor createCtxConstructor() {
-    return new CallsiteCtxConstructor();
+  public ContextConstructor createContextConstructor() {
+    return new CallSiteContextConstructor();
   }
 
   @Override
