@@ -43,18 +43,18 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 
 public class VFGTraversal {
-  private final int objCtxLen;
+  private final int objContextLen;
   private final MoonDataConstructor.MoonDataStructure moonData;
 
-  public VFGTraversal(int objCtxLen, MoonDataConstructor.MoonDataStructure moonData) {
-    this.objCtxLen = objCtxLen;
+  public VFGTraversal(int objContextLen, MoonDataConstructor.MoonDataStructure moonData) {
+    this.objContextLen = objContextLen;
     this.moonData = moonData;
   }
 
   public List<SetMultimap<AllocNode, TraversalResult>> traverse(
       SetMultimap<AllocNode, LocalVarNode> objToBaseVar) {
-    List<SetMultimap<AllocNode, TraversalResult>> objToMatchRets = new ArrayList<>(objCtxLen);
-    for (int i = 0; i < objCtxLen; i++) {
+    List<SetMultimap<AllocNode, TraversalResult>> objToMatchRets = new ArrayList<>(objContextLen);
+    for (int i = 0; i < objContextLen; i++) {
       objToMatchRets.add(
           Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet));
     }
@@ -65,7 +65,7 @@ public class VFGTraversal {
     FieldFlowRecorder fieldFlowRecorder = moonData.fieldFlowRecorder();
     OAG oag = moonData.oag();
 
-    StoredVarTraverser storedVarTraverser = new StoredVarTraverser(moonData, objCtxLen);
+    StoredVarTraverser storedVarTraverser = new StoredVarTraverser(moonData, objContextLen);
     objToBaseVar.keySet().parallelStream()
         .forEach(
             obj ->
@@ -87,7 +87,7 @@ public class VFGTraversal {
                               int toBeCheckedLen = determineToBeCheckedLen(obj, oag);
                               TraversalResult traversalResult =
                                   storedVarTraverser.findSourceOfVarStoredIn(
-                                      obj, storedVar, objCtxLen, storedField);
+                                      obj, storedVar, objContextLen, storedField);
                               objToMatchRets.get(toBeCheckedLen - 1).put(obj, traversalResult);
                             }
                           }
@@ -97,14 +97,14 @@ public class VFGTraversal {
 
   private int determineToBeCheckedLen(AllocNode obj, OAG oag) {
     int toBeCheckedLen;
-    if (this.objCtxLen == 1) {
+    if (this.objContextLen == 1) {
       toBeCheckedLen = 1;
-    } else if (this.objCtxLen == 2) {
+    } else if (this.objContextLen == 2) {
       if (!(obj.getType() instanceof ArrayType) && oag.getPredsOf(obj).size() == 1)
         toBeCheckedLen = 2;
       else toBeCheckedLen = 1;
     } else {
-      throw new RuntimeException("Unsupported objCtxLen: " + this.objCtxLen);
+      throw new RuntimeException("Unsupported objContextLen: " + this.objContextLen);
     }
     return toBeCheckedLen;
   }

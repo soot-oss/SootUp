@@ -54,7 +54,7 @@ public final class PointerAnalysisConfig {
   private final boolean preciseArrayElement;
   private final boolean stringConstants;
   private final boolean preciseExceptions;
-  private final boolean enforceEmptyCtxForIgnoreTypes;
+  private final boolean enforceEmptyContextForIgnoreTypes;
   private final String reflectionLogPath;
   private final boolean resolveDynamicInvoke;
   private final boolean preAnalysisOnly;
@@ -77,7 +77,7 @@ public final class PointerAnalysisConfig {
     this.preciseArrayElement = b.preciseArrayElement;
     this.stringConstants = b.stringConstants;
     this.preciseExceptions = b.preciseExceptions;
-    this.enforceEmptyCtxForIgnoreTypes = b.enforceEmptyCtxForIgnoreTypes;
+    this.enforceEmptyContextForIgnoreTypes = b.enforceEmptyContextForIgnoreTypes;
     this.reflectionLogPath = b.reflectionLogPath;
     this.resolveDynamicInvoke = b.resolveDynamicInvoke;
     this.preAnalysisOnly = b.preAnalysisOnly;
@@ -147,8 +147,8 @@ public final class PointerAnalysisConfig {
     return preciseExceptions;
   }
 
-  public boolean isEnforceEmptyCtxForIgnoreTypes() {
-    return enforceEmptyCtxForIgnoreTypes;
+  public boolean isEnforceEmptyContextForIgnoreTypes() {
+    return enforceEmptyContextForIgnoreTypes;
   }
 
   /** Path to a Tamiflex reflection log, or {@code null} if reflection resolution is disabled. */
@@ -169,7 +169,7 @@ public final class PointerAnalysisConfig {
     return preAnalysisOnly;
   }
 
-  public boolean isCtxDebloating() {
+  public boolean isContextDebloating() {
     return ctxDebloating;
   }
 
@@ -215,7 +215,7 @@ public final class PointerAnalysisConfig {
     private boolean preciseArrayElement = false;
     private boolean stringConstants = false;
     private boolean preciseExceptions = false;
-    private boolean enforceEmptyCtxForIgnoreTypes = false;
+    private boolean enforceEmptyContextForIgnoreTypes = false;
     private String reflectionLogPath = null;
     private boolean resolveDynamicInvoke = true;
     private boolean preAnalysisOnly = false;
@@ -271,8 +271,8 @@ public final class PointerAnalysisConfig {
       return this;
     }
 
-    public Builder enforceEmptyCtxForIgnoreTypes(boolean enforceEmptyCtxForIgnoreTypes) {
-      this.enforceEmptyCtxForIgnoreTypes = enforceEmptyCtxForIgnoreTypes;
+    public Builder enforceEmptyContextForIgnoreTypes(boolean enforceEmptyContextForIgnoreTypes) {
+      this.enforceEmptyContextForIgnoreTypes = enforceEmptyContextForIgnoreTypes;
       return this;
     }
 

@@ -32,7 +32,7 @@ import sootup.core.model.SootMethod;
 public class TypeContextConstructor implements ContextConstructor {
 
   @Override
-  public Context constructCtx(
+  public Context constructContext(
       ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
     Context callerContext = caller.context();
     if (receiverNode == null) { // static invoke

@@ -32,8 +32,8 @@ import qilin.core.pag.SparkField;
 import sootup.core.model.SootMethod;
 
 public class TraversalResult {
-  private final List<Set<AllocNode>> matchedCtxObjsOfThisAsParam;
-  private final List<Set<AllocNode>> matchedCtxObjsOfParam;
+  private final List<Set<AllocNode>> matchedContextObjsOfThisAsParam;
+  private final List<Set<AllocNode>> matchedContextObjsOfParam;
   private final List<Set<AllocNode>> newlyAllocObjs;
   private final int recordSize;
   private boolean metParamOfAllocatedMethod;
@@ -44,12 +44,12 @@ public class TraversalResult {
     this.field = field;
     matchLayer++;
     recordSize = matchLayer;
-    matchedCtxObjsOfThisAsParam = new ArrayList<>(matchLayer);
-    matchedCtxObjsOfParam = new ArrayList<>(matchLayer);
+    matchedContextObjsOfThisAsParam = new ArrayList<>(matchLayer);
+    matchedContextObjsOfParam = new ArrayList<>(matchLayer);
     newlyAllocObjs = new ArrayList<>(matchLayer);
     for (int i = 0; i < matchLayer; i++) {
-      matchedCtxObjsOfThisAsParam.add(null);
-      matchedCtxObjsOfParam.add(null);
+      matchedContextObjsOfThisAsParam.add(null);
+      matchedContextObjsOfParam.add(null);
       newlyAllocObjs.add(null);
     }
   }
@@ -88,36 +88,39 @@ public class TraversalResult {
     }
   }
 
-  public void addMatchedCtxObjsByThisAsParam(Set<AllocNode> matchedCtxObjsOfThis, int index) {
-    if (matchedCtxObjsOfThis.isEmpty()) return;
-    if (this.matchedCtxObjsOfThisAsParam.get(index) == null) {
-      this.matchedCtxObjsOfThisAsParam.set(index, new HashSet<>(matchedCtxObjsOfThis));
+  public void addMatchedContextObjsByThisAsParam(
+      Set<AllocNode> matchedContextObjsOfThis, int index) {
+    if (matchedContextObjsOfThis.isEmpty()) return;
+    if (this.matchedContextObjsOfThisAsParam.get(index) == null) {
+      this.matchedContextObjsOfThisAsParam.set(index, new HashSet<>(matchedContextObjsOfThis));
     } else {
-      this.matchedCtxObjsOfThisAsParam.get(index).addAll(matchedCtxObjsOfThis);
+      this.matchedContextObjsOfThisAsParam.get(index).addAll(matchedContextObjsOfThis);
     }
   }
 
-  public void addMatchedCtxObjsOfParam(Set<AllocNode> matchedCtxObjsOfParam, int index) {
-    if (matchedCtxObjsOfParam.isEmpty()) return;
-    if (this.matchedCtxObjsOfParam.get(index) == null) {
-      this.matchedCtxObjsOfParam.set(index, new HashSet<>(matchedCtxObjsOfParam));
+  public void addMatchedContextObjsOfParam(Set<AllocNode> matchedContextObjsOfParam, int index) {
+    if (matchedContextObjsOfParam.isEmpty()) return;
+    if (this.matchedContextObjsOfParam.get(index) == null) {
+      this.matchedContextObjsOfParam.set(index, new HashSet<>(matchedContextObjsOfParam));
     } else {
-      this.matchedCtxObjsOfParam.get(index).addAll(matchedCtxObjsOfParam);
+      this.matchedContextObjsOfParam.get(index).addAll(matchedContextObjsOfParam);
     }
   }
 
-  public Set<AllocNode> getMatchedCtxObjsOfThis(int index) {
+  public Set<AllocNode> getMatchedContextObjsOfThis(int index) {
     if (index >= recordSize) return Collections.emptySet();
-    Set<AllocNode> matchedCtxObjsOfThis = this.matchedCtxObjsOfThisAsParam.get(index);
-    return matchedCtxObjsOfThis == null ? Collections.emptySet() : Set.copyOf(matchedCtxObjsOfThis);
-  }
-
-  public Set<AllocNode> getMatchedCtxObjsOfParam(int index) {
-    if (index >= recordSize) return Collections.emptySet();
-    Set<AllocNode> matchedCtxObjsOfParam = this.matchedCtxObjsOfParam.get(index);
-    return matchedCtxObjsOfParam == null
+    Set<AllocNode> matchedContextObjsOfThis = this.matchedContextObjsOfThisAsParam.get(index);
+    return matchedContextObjsOfThis == null
         ? Collections.emptySet()
-        : Set.copyOf(matchedCtxObjsOfParam);
+        : Set.copyOf(matchedContextObjsOfThis);
+  }
+
+  public Set<AllocNode> getMatchedContextObjsOfParam(int index) {
+    if (index >= recordSize) return Collections.emptySet();
+    Set<AllocNode> matchedContextObjsOfParam = this.matchedContextObjsOfParam.get(index);
+    return matchedContextObjsOfParam == null
+        ? Collections.emptySet()
+        : Set.copyOf(matchedContextObjsOfParam);
   }
 
   public Set<AllocNode> getNewlyAllocObjs(int index) {
@@ -126,9 +129,10 @@ public class TraversalResult {
     return newlyAllocObjs == null ? Collections.emptySet() : Set.copyOf(newlyAllocObjs);
   }
 
-  public boolean hasSpecificCtxObj(AllocNode ctxObj) {
-    return this.matchedCtxObjsOfParam.stream().anyMatch(s -> s != null && s.contains(ctxObj))
-        || this.matchedCtxObjsOfThisAsParam.stream().anyMatch(s -> s != null && s.contains(ctxObj));
+  public boolean hasSpecificContextObj(AllocNode ctxObj) {
+    return this.matchedContextObjsOfParam.stream().anyMatch(s -> s != null && s.contains(ctxObj))
+        || this.matchedContextObjsOfThisAsParam.stream()
+            .anyMatch(s -> s != null && s.contains(ctxObj));
   }
 
   public boolean hasSpecificNewlyAllocObj(AllocNode newlyAllocObj) {
@@ -140,8 +144,8 @@ public class TraversalResult {
         .anyMatch(s -> s != null && !Collections.disjoint(s, newlyAllocObjs));
   }
 
-  public boolean hasAnyOfCtxObjsOfThis() {
-    return this.matchedCtxObjsOfThisAsParam.stream().anyMatch(s -> s != null && !s.isEmpty());
+  public boolean hasAnyOfContextObjsOfThis() {
+    return this.matchedContextObjsOfThisAsParam.stream().anyMatch(s -> s != null && !s.isEmpty());
   }
 
   public Set<AllocNode> getAllNewlyAllocObjs() {
@@ -150,9 +154,9 @@ public class TraversalResult {
     return allNewlyAllocObjs;
   }
 
-  public boolean hasCtxObjsOnLayerOf(int checkLayer) {
-    return !getMatchedCtxObjsOfParam(checkLayer).isEmpty()
-        || !getMatchedCtxObjsOfThis(checkLayer).isEmpty();
+  public boolean hasContextObjsOnLayerOf(int checkLayer) {
+    return !getMatchedContextObjsOfParam(checkLayer).isEmpty()
+        || !getMatchedContextObjsOfThis(checkLayer).isEmpty();
   }
 
   public boolean hasNewlyAllocObjs() {

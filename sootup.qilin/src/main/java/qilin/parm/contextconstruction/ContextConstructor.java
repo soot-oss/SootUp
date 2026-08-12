@@ -27,7 +27,7 @@ import qilin.core.pag.ContextMethod;
 import sootup.core.model.SootMethod;
 
 public interface ContextConstructor {
-  Context constructCtx(
+  Context constructContext(
       ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target);
 
   Context emptyContext = new ContextElements(new ContextElement[0], 0);

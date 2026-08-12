@@ -228,6 +228,6 @@ public abstract class ContextSensitivity {
   }
 
   protected static BasePTA maybeDebloat(BasePTA pta, PointerAnalysisConfig config) {
-    return config.isCtxDebloating() ? new DebloatedPTA(pta, config.getDebloatApproach()) : pta;
+    return config.isContextDebloating() ? new DebloatedPTA(pta, config.getDebloatApproach()) : pta;
   }
 }

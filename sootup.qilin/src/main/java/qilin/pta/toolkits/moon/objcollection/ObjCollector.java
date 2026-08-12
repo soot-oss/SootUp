@@ -42,12 +42,12 @@ import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 
 public class ObjCollector {
-  private final int maxCtxLayer;
+  private final int maxContextLayer;
   private final MoonDataConstructor.MoonDataStructure moonData;
   private final PartialChecker partialChecker;
 
-  public ObjCollector(int maxCtxLayer, MoonDataConstructor.MoonDataStructure moonData) {
-    this.maxCtxLayer = maxCtxLayer;
+  public ObjCollector(int maxContextLayer, MoonDataConstructor.MoonDataStructure moonData) {
+    this.maxContextLayer = maxContextLayer;
     this.moonData = moonData;
     this.partialChecker = new PartialChecker(moonData);
   }
@@ -135,7 +135,7 @@ public class ObjCollector {
       var wrapperObjToFields =
           collectWrapperContainerPRObjs(prObjDepGraph, basePRObjToFields.keySet());
       recurPRObjToFields.putAll(wrapperObjToFields);
-      if (maxCtxLayer == 2) {
+      if (maxContextLayer == 2) {
         var allocatorObjToFields =
             collectAllocatorContainersFor3obj(basePRObjToFields.keySet(), traversalResults);
         var wrapperOfAllocObjToFields =
@@ -155,20 +155,21 @@ public class ObjCollector {
     for (AllocNode basePRObj : basePRObjs) {
       for (SetMultimap<AllocNode, TraversalResult> traversalResult : traversalResults) {
         for (TraversalResult resultOfVarTrace : traversalResult.get(basePRObj)) {
-          Set<AllocNode> firstLayerCtxObjs =
-              new HashSet<>(resultOfVarTrace.getMatchedCtxObjsOfParam(1));
-          Set<AllocNode> secondLayerCtxObjs =
-              new HashSet<>(resultOfVarTrace.getMatchedCtxObjsOfParam(2));
-          if (firstLayerCtxObjs.isEmpty() || secondLayerCtxObjs.isEmpty()) {
+          Set<AllocNode> firstLayerContextObjs =
+              new HashSet<>(resultOfVarTrace.getMatchedContextObjsOfParam(1));
+          Set<AllocNode> secondLayerContextObjs =
+              new HashSet<>(resultOfVarTrace.getMatchedContextObjsOfParam(2));
+          if (firstLayerContextObjs.isEmpty() || secondLayerContextObjs.isEmpty()) {
             continue;
           }
-          for (AllocNode firstLayerCtxObj : firstLayerCtxObjs) {
-            Set<AllocNode> allocatorsOfFirstLayerCtxObjs =
-                moonData.oag().getPredsOf(firstLayerCtxObj);
-            if ((firstLayerCtxObj.getMethod() != null && firstLayerCtxObj.getMethod().isStatic())
-                || Util.haveOverlap(allocatorsOfFirstLayerCtxObjs, secondLayerCtxObjs)) {
-              if (partialChecker.check(firstLayerCtxObj)) {
-                allocPRObjToFields.put(firstLayerCtxObj, resultOfVarTrace.getField());
+          for (AllocNode firstLayerContextObj : firstLayerContextObjs) {
+            Set<AllocNode> allocatorsOfFirstLayerContextObjs =
+                moonData.oag().getPredsOf(firstLayerContextObj);
+            if ((firstLayerContextObj.getMethod() != null
+                    && firstLayerContextObj.getMethod().isStatic())
+                || Util.haveOverlap(allocatorsOfFirstLayerContextObjs, secondLayerContextObjs)) {
+              if (partialChecker.check(firstLayerContextObj)) {
+                allocPRObjToFields.put(firstLayerContextObj, resultOfVarTrace.getField());
               }
             }
           }
@@ -192,7 +193,7 @@ public class ObjCollector {
       int depth = depthQueue.element();
       if (!visited.contains(current)) {
         visited.add(current);
-        if (depth < maxCtxLayer) {
+        if (depth < maxContextLayer) {
           // Push unvisited successors onto the queue
           for (LabeledGraph<AllocNode, SparkField>.LabelEdge outEdge :
               containerGraph.getOutEdgesOf(current)) {
@@ -222,7 +223,7 @@ public class ObjCollector {
       for (SetMultimap<AllocNode, TraversalResult> traversalResult : traversalResults) {
         for (TraversalResult resultOfVarTrace : traversalResult.get(nonInnerContainerObj)) {
           for (int layer = 0; layer < resultOfVarTrace.getRecordSize(); layer++) {
-            if (layer > maxCtxLayer) break;
+            if (layer > maxContextLayer) break;
             Set<AllocNode> newlyAllocObjs = resultOfVarTrace.getNewlyAllocObjs(layer);
             for (AllocNode newlyAllocObj : newlyAllocObjs) {
               if (newlyAllocObj.equals(nonInnerContainerObj)) continue;
@@ -257,7 +258,7 @@ public class ObjCollector {
             partialChecker.addMetParamObj(obj);
           }
           var field = traversalResult.getField();
-          if (traversalResult.hasCtxObjsOnLayerOf(checkLayer)) {
+          if (traversalResult.hasContextObjsOnLayerOf(checkLayer)) {
             basePRObjToFields.put(obj, field);
             traversalResult
                 .getVisitedMethods()

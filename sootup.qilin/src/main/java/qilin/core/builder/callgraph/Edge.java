@@ -61,7 +61,7 @@ public final class Edge implements Invalidatable {
     return (src == null) ? null : src.method();
   }
 
-  public Context srcCtxt() {
+  public Context srcContext() {
     return (src == null) ? null : src.context();
   }
 
@@ -81,7 +81,7 @@ public final class Edge implements Invalidatable {
     return (tgt == null) ? null : tgt.method();
   }
 
-  public Context tgtCtxt() {
+  public Context tgtContext() {
     return (tgt == null) ? null : tgt.context();
   }
 

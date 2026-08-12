@@ -63,7 +63,7 @@ public class StoredVarTraverser {
   private final CallDetails methodCallDetail;
   private final SetMultimap<AllocNode, SootMethod> objToInvokedMethodsOn;
   private final OAG objectAllocationGraphWithArr;
-  private final int maxCtxLayer;
+  private final int maxContextLayer;
   private final Map<AllocNode, Map<AllocNode, Integer>> ctxObjsCache = new ConcurrentHashMap<>();
   private final FieldPointsToGraph fieldPointsToGraph;
   private final Set<LocalVarNode> allocatedVars;
@@ -71,8 +71,8 @@ public class StoredVarTraverser {
   private final PtrSetCache ptrSetCache;
   private final PAG pag;
 
-  public StoredVarTraverser(MoonDataConstructor.MoonDataStructure moonData, int maxCtxLayer) {
-    this.maxCtxLayer = maxCtxLayer;
+  public StoredVarTraverser(MoonDataConstructor.MoonDataStructure moonData, int maxContextLayer) {
+    this.maxContextLayer = maxContextLayer;
     this.pag = moonData.pag();
     this.methodCallDetail = pag.getPta().getScene().getCallDetails();
     this.vfgForField = moonData.vfgForField();
@@ -100,7 +100,7 @@ public class StoredVarTraverser {
       // This is a hack for special case of EventListenerList.
       // Specifically, it's a has a lazy-init field, which will be initialized when certain method
       // is called, and this behavior cannot be captured with context-insensitive analysis.
-      traversalResult.addMatchedCtxObjsOfParam(objectAllocationGraphWithArr.getPredsOf(obj), 1);
+      traversalResult.addMatchedContextObjsOfParam(objectAllocationGraphWithArr.getPredsOf(obj), 1);
     }
 
     while (!stack.isEmpty()) {
@@ -124,7 +124,7 @@ public class StoredVarTraverser {
           if (newObj.equals(obj) || objectAllocationGraphWithArr.getSuccsOf(obj).contains(newObj)) {
             allocatorLayer = 0;
           } else {
-            Map<AllocNode, Integer> ctxObjs = getCtxObjsOf(obj);
+            Map<AllocNode, Integer> ctxObjs = getContextObjsOf(obj);
             for (AllocNode allocator : ctxObjs.keySet()) {
               if (objectAllocationGraphWithArr.getSuccsOf(allocator).contains(newObj)) {
                 allocatorLayer = ctxObjs.get(allocator);
@@ -174,7 +174,7 @@ public class StoredVarTraverser {
             }
           }
           case THIS_PASSING -> {
-            List<Set<AllocNode>> ctxObjs = collectCtxObj(crtPtr, obj);
+            List<Set<AllocNode>> ctxObjs = collectContextObj(crtPtr, obj);
             for (int allocatorLayer = 0; allocatorLayer < ctxObjs.size(); allocatorLayer++) {
               Set<AllocNode> ctxObjsOfLayer = ctxObjs.get(allocatorLayer);
               if (ctxObjsOfLayer.isEmpty()) continue;
@@ -182,14 +182,16 @@ public class StoredVarTraverser {
                 // match finished.
                 if (connectedUnderLimitNumOfField(varStored, ctxObjsOfLayer, obj)
                     != FieldRelation.NONE) {
-                  traversalResult.addMatchedCtxObjsByThisAsParam(ctxObjsOfLayer, allocatorLayer);
+                  traversalResult.addMatchedContextObjsByThisAsParam(
+                      ctxObjsOfLayer, allocatorLayer);
                 }
 
               } else {
                 if (allocatorLayer > 0 && allocatorLayer >= crtAllocatorLevel) {
                   if (connectedUnderLimitNumOfField(varStored, ctxObjsOfLayer, obj)
                       != FieldRelation.NONE) {
-                    traversalResult.addMatchedCtxObjsByThisAsParam(ctxObjsOfLayer, allocatorLayer);
+                    traversalResult.addMatchedContextObjsByThisAsParam(
+                        ctxObjsOfLayer, allocatorLayer);
                   }
                 }
               }
@@ -223,11 +225,11 @@ public class StoredVarTraverser {
           }
           case FIELD_LOAD -> {
             if (checkIfThis(predNode)) {
-              if (maxCtxLayer == 1
+              if (maxContextLayer == 1
                   && storedField.getType().toString().contains("java.awt.image.SampleModel")) {
                 // handle another special case for SampleModel
                 if (crtTrace.getVisitedFlowCounter(FlowKind.THIS_FIELD_STORE_AND_LOAD) > 0) {
-                  List<Set<AllocNode>> ctxObjs = collectCtxObj(crtPtr, obj);
+                  List<Set<AllocNode>> ctxObjs = collectContextObj(crtPtr, obj);
                   for (int allocatorLayer = 0; allocatorLayer < ctxObjs.size(); allocatorLayer++) {
                     Set<AllocNode> ctxObjsOfLayer = ctxObjs.get(allocatorLayer);
                     if (ctxObjsOfLayer.isEmpty()) continue;
@@ -236,7 +238,8 @@ public class StoredVarTraverser {
                       // match finished.
                       if (connectedUnderLimitNumOfField(varStored, ctxObjsOfLayer, obj)
                           != FieldRelation.NONE) {
-                        traversalResult.addMatchedCtxObjsOfParam(ctxObjsOfLayer, allocatorLayer);
+                        traversalResult.addMatchedContextObjsOfParam(
+                            ctxObjsOfLayer, allocatorLayer);
                       }
                     }
                   }
@@ -307,20 +310,20 @@ public class StoredVarTraverser {
       if (!predOfParamPassing.isEmpty()) {
         if (getMethodOfPointer(crtPtr).isStatic()) {
           // in static method.
-          Set<AllocNode> layerOneCtxObjs = objectAllocationGraphWithArr.getPredsOf(obj);
+          Set<AllocNode> layerOneContextObjs = objectAllocationGraphWithArr.getPredsOf(obj);
           if (getMethodOfPointer(crtPtr).equals(obj.getMethod())) {
-            if (layerOneCtxObjs.size() > 1 && 1 >= crtAllocatorLevel) {
+            if (layerOneContextObjs.size() > 1 && 1 >= crtAllocatorLevel) {
               FieldRelation fieldRelation =
                   connectedUnderLimitNumOfField(varStored, reachingPTS(crtPtr), obj);
               if (checkFieldRelation(fieldRelation, predOfParamPassing, varStored)) {
-                traversalResult.addMatchedCtxObjsOfParam(layerOneCtxObjs, 1);
+                traversalResult.addMatchedContextObjsOfParam(layerOneContextObjs, 1);
               }
             }
           } else if (maxAllocLayerToTrace == 2 && crtAllocatorLevel >= 1) {
             FieldRelation fieldRelation =
                 connectedUnderLimitNumOfField(varStored, reachingPTS(crtPtr), obj);
             if (checkFieldRelation(fieldRelation, predOfParamPassing, varStored)) {
-              traversalResult.addMatchedCtxObjsOfParam(layerOneCtxObjs, 2);
+              traversalResult.addMatchedContextObjsOfParam(layerOneContextObjs, 2);
             }
           }
 
@@ -349,7 +352,7 @@ public class StoredVarTraverser {
             // all called by this variable.
             for (PagNode pred : predOfParamPassing) {
               if (falseParamPassingFlow(crtPtr, pred, obj)) continue;
-              List<Set<AllocNode>> ctxObjs = collectCtxObj(pred, obj);
+              List<Set<AllocNode>> ctxObjs = collectContextObj(pred, obj);
               if (ctxObjs.stream().anyMatch(s -> !s.isEmpty())) {
                 TraversalStatus newPtrTrace =
                     new TraversalStatus(
@@ -366,7 +369,7 @@ public class StoredVarTraverser {
             }
           } else {
 
-            List<Set<AllocNode>> ctxObjs = collectCtxObj(crtPtr, obj);
+            List<Set<AllocNode>> ctxObjs = collectContextObj(crtPtr, obj);
             for (int allocatorLayer = 0; allocatorLayer < ctxObjs.size(); allocatorLayer++) {
               Set<AllocNode> ctxObjsOfLayer = ctxObjs.get(allocatorLayer);
               if (ctxObjsOfLayer.isEmpty()) continue;
@@ -375,7 +378,7 @@ public class StoredVarTraverser {
                 FieldRelation fieldRelation =
                     connectedUnderLimitNumOfField(varStored, reachingPTS(crtPtr), obj);
                 if (checkFieldRelation(fieldRelation, predOfParamPassing, varStored)) {
-                  traversalResult.addMatchedCtxObjsOfParam(ctxObjsOfLayer, allocatorLayer);
+                  traversalResult.addMatchedContextObjsOfParam(ctxObjsOfLayer, allocatorLayer);
                   break;
                 }
               } else {
@@ -384,7 +387,7 @@ public class StoredVarTraverser {
                   FieldRelation fieldRelation =
                       connectedUnderLimitNumOfField(varStored, reachingPTS(crtPtr), obj);
                   if (checkFieldRelation(fieldRelation, predOfParamPassing, varStored)) {
-                    traversalResult.addMatchedCtxObjsOfParam(ctxObjsOfLayer, allocatorLayer);
+                    traversalResult.addMatchedContextObjsOfParam(ctxObjsOfLayer, allocatorLayer);
                     toBreak = true;
                   }
                 }
@@ -427,25 +430,25 @@ public class StoredVarTraverser {
   }
 
   private int getMaxAllocLayer(PagNode crtPtr, AllocNode obj) {
-    Map<AllocNode, Integer> ctxs = getCtxObjsOf(obj);
+    Map<AllocNode, Integer> ctxs = getContextObjsOf(obj);
     Set<AllocNode> ctxObjs = ctxs.keySet();
-    Collection<Pair<Object, SootMethod>> usageCtxAndCallerPairs =
-        methodCallDetail.usageCtxAndCallerOf(getMethodOfPointer(crtPtr));
+    Collection<Pair<Object, SootMethod>> usageContextAndCallerPairs =
+        methodCallDetail.usageContextAndCallerOf(getMethodOfPointer(crtPtr));
 
-    Set<AllocNode> matchCtxObjs =
-        usageCtxAndCallerPairs.stream()
+    Set<AllocNode> matchContextObjs =
+        usageContextAndCallerPairs.stream()
             .map(p -> (AllocNode) (p.first()))
             .filter(ctxObjs::contains)
             .collect(Collectors.toSet());
-    return matchCtxObjs.stream().mapToInt(ctxs::get).min().orElse(-1);
+    return matchContextObjs.stream().mapToInt(ctxs::get).min().orElse(-1);
   }
 
-  private List<Set<AllocNode>> collectCtxObj(PagNode crtPtr, AllocNode obj) {
-    Map<AllocNode, Integer> ctxs = getCtxObjsOf(obj);
+  private List<Set<AllocNode>> collectContextObj(PagNode crtPtr, AllocNode obj) {
+    Map<AllocNode, Integer> ctxs = getContextObjsOf(obj);
     Set<AllocNode> ctxObjs = ctxs.keySet();
     SootMethod crtMethod = getMethodOfPointer(crtPtr);
-    List<Set<AllocNode>> result = new ArrayList<>(this.maxCtxLayer + 1);
-    for (int i = 0; i < this.maxCtxLayer + 1; i++) {
+    List<Set<AllocNode>> result = new ArrayList<>(this.maxContextLayer + 1);
+    for (int i = 0; i < this.maxContextLayer + 1; i++) {
       result.add(Collections.emptySet());
     }
     int maxLayer = -1;
@@ -464,29 +467,29 @@ public class StoredVarTraverser {
     return result;
   }
 
-  private Map<AllocNode, Integer> getCtxObjsOf(AllocNode obj) {
+  private Map<AllocNode, Integer> getContextObjsOf(AllocNode obj) {
     return ctxObjsCache.computeIfAbsent(
         obj,
         k -> {
           Map<AllocNode, Integer> result = new HashMap<>();
-          List<Set<AllocNode>> layerOfCtxObjs = new ArrayList<>();
-          layerOfCtxObjs.add(new HashSet<>(Set.of(obj))); // index 0 for current obj.
-          layerOfCtxObjs.add(
+          List<Set<AllocNode>> layerOfContextObjs = new ArrayList<>();
+          layerOfContextObjs.add(new HashSet<>(Set.of(obj))); // index 0 for current obj.
+          layerOfContextObjs.add(
               new HashSet<>(objectAllocationGraphWithArr.getPredsOf(obj))); // index 1 for first
           // allocators of current obj.
 
-          for (int i = 2; i <= maxCtxLayer; i++) {
-            layerOfCtxObjs.add(
+          for (int i = 2; i <= maxContextLayer; i++) {
+            layerOfContextObjs.add(
                 new HashSet<>(
-                    layerOfCtxObjs.get(i - 1).stream()
+                    layerOfContextObjs.get(i - 1).stream()
                         .map(objectAllocationGraphWithArr::getPredsOf)
                         .flatMap(Set::stream)
                         .collect(Collectors.toSet())));
           }
           Set<AllocNode> alreadyIn = new HashSet<>();
-          for (int i = 0; i < layerOfCtxObjs.size(); i++) {
-            Set<AllocNode> layerCtx = layerOfCtxObjs.get(i);
-            for (AllocNode ctx : layerCtx) {
+          for (int i = 0; i < layerOfContextObjs.size(); i++) {
+            Set<AllocNode> layerContext = layerOfContextObjs.get(i);
+            for (AllocNode ctx : layerContext) {
               if (alreadyIn.contains(ctx)) continue;
               alreadyIn.add(ctx);
               result.put(ctx, i);

@@ -191,7 +191,8 @@ public class CallGraphBuilder {
       SootMethod callee,
       Kind kind,
       AllocNode receiverNode) {
-    Context tgtContext = pta.createCalleeCtx(caller, receiverNode, new CallSite(callStmt), callee);
+    Context tgtContext =
+        pta.createCalleeContext(caller, receiverNode, new CallSite(callStmt), callee);
     ContextMethod cstarget = pta.parameterize(callee, tgtContext);
     handleCallEdge(new Edge(caller, callStmt, cstarget, kind));
     PagNode thisRef = pag.getMethodPAG(callee).nodeFactory().caseThis();
@@ -199,7 +200,7 @@ public class CallGraphBuilder {
     pag.addEdge(receiverNode, thisRef);
 
     // call detail recording for MOON / Zipper's optimized PotentialContextElement
-    ptaScene.getCallDetails().addCalleeToCtxAndCaller(callee, receiverNode, caller.method());
+    ptaScene.getCallDetails().addCalleeToContextAndCaller(callee, receiverNode, caller.method());
   }
 
   public void injectCallEdge(Object heapOrType, ContextMethod callee, Kind kind) {
@@ -221,14 +222,14 @@ public class CallGraphBuilder {
 
   public void addStaticEdge(
       ContextMethod caller, InvokableStmt callStmt, SootMethod calleem, Kind kind) {
-    Context typeContext = pta.createCalleeCtx(caller, null, new CallSite(callStmt), calleem);
+    Context typeContext = pta.createCalleeContext(caller, null, new CallSite(callStmt), calleem);
     ContextMethod callee = pta.parameterize(calleem, typeContext);
     handleCallEdge(new Edge(caller, callStmt, callee, kind));
 
     // call detail recording for MOON / Zipper's optimized PotentialContextElement
     ptaScene
         .getCallDetails()
-        .addCalleeToCtxAndCaller(calleem, CallDetails.STATIC_OBJ_CTX, caller.method());
+        .addCalleeToContextAndCaller(calleem, CallDetails.STATIC_OBJ_CTX, caller.method());
   }
 
   protected void handleCallEdge(Edge edge) {
@@ -264,8 +265,8 @@ public class CallGraphBuilder {
     MethodPAG srcmpag = pag.getMethodPAG(e.src());
     MethodPAG tgtmpag = pag.getMethodPAG(e.tgt());
     Stmt s = e.srcUnit();
-    Context srcContext = e.srcCtxt();
-    Context tgtContext = e.tgtCtxt();
+    Context srcContext = e.srcContext();
+    Context tgtContext = e.tgtContext();
     MethodNodeFactory srcnf = srcmpag.nodeFactory();
     MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
     SootMethod tgtmtd = tgtmpag.getMethod();

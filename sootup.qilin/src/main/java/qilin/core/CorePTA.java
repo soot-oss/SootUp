@@ -93,10 +93,10 @@ public abstract class CorePTA extends PTA implements Parameterizer {
   public abstract Propagator getPropagator();
 
   @Override
-  public Context createCalleeCtx(
+  public Context createCalleeContext(
       ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
     return contextConstructor()
-        .constructCtx(caller, (ContextAllocNode) receiverNode, callSite, target);
+        .constructContext(caller, (ContextAllocNode) receiverNode, callSite, target);
   }
 
   public Context emptyContext() {

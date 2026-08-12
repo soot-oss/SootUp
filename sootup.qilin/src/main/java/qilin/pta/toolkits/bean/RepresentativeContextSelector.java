@@ -71,21 +71,21 @@ public class RepresentativeContextSelector extends ContextSelector {
         reachSuccs.forEach(
             succ -> {
               final boolean isJoinSucc = oag.getInDegreeOf(succ) > 1;
-              ContextElements newCtx;
+              ContextElements newContext;
               boolean succSplit = split;
               if (split && isJoinSucc && !ctx.contains(heap)) {
-                newCtx = ContextElements.newContext(ctx, heap, depth);
+                newContext = ContextElements.newContext(ctx, heap, depth);
                 succSplit = false;
               } else {
-                newCtx = ctx;
+                newContext = ctx;
               }
               if (isFork) {
                 succSplit = true;
               }
               Set<ContextElements> ctxs = tempContextMap.get(succ);
-              if (ctxs == null || !ctxs.contains(newCtx)) {
-                addAllocation(ctx, heap, newCtx, succ);
-                worklist.add(new Triple<>(succ, newCtx, succSplit));
+              if (ctxs == null || !ctxs.contains(newContext)) {
+                addAllocation(ctx, heap, newContext, succ);
+                worklist.add(new Triple<>(succ, newContext, succSplit));
               }
             });
       }
@@ -120,10 +120,10 @@ public class RepresentativeContextSelector extends ContextSelector {
       Queue<Triple<AllocNode, ContextElements, Boolean>> worklist, OAG oag, AllocNode node) {
     Set<AllocNode> reachRoots = selectReachNodes(oag.rootNodes(), node, oag);
     boolean split = reachRoots.size() > 1;
-    ContextElements emptyCtx = (ContextElements) ContextConstructor.emptyContext;
+    ContextElements emptyContext = (ContextElements) ContextConstructor.emptyContext;
     reachRoots.forEach(
         root ->
             worklist.add(
-                new Triple<>(root, ContextElements.newContext(emptyCtx, root, depth), split)));
+                new Triple<>(root, ContextElements.newContext(emptyContext, root, depth), split)));
   }
 }

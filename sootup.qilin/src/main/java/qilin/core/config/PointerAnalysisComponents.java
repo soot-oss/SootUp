@@ -61,7 +61,7 @@ public final class PointerAnalysisComponents {
    */
   public static ContextSelector wrapIgnoreTypesGuard(
       PointerAnalysisConfig config, View view, ContextSelector base) {
-    return config.isEnforceEmptyCtxForIgnoreTypes()
+    return config.isEnforceEmptyContextForIgnoreTypes()
         ? new PipelineSelector(new HeuristicSelector(view), base)
         : base;
   }

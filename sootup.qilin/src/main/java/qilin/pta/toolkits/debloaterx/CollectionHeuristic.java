@@ -39,7 +39,7 @@ public class CollectionHeuristic {
 
   protected final Set<AllocNode> ctxDepHeaps = ConcurrentHashMap.newKeySet();
 
-  public Set<AllocNode> getCtxDepHeaps() {
+  public Set<AllocNode> getContextDepHeaps() {
     return ctxDepHeaps;
   }
 

@@ -39,11 +39,11 @@ import qilin.pta.toolkits.moon.support.PtrSetCache;
 public class TraversalInitializer {
 
   private final MoonDataConstructor.MoonDataStructure moonData;
-  private final int objCtxLen;
+  private final int objContextLen;
 
-  public TraversalInitializer(MoonDataConstructor.MoonDataStructure moonData, int objCtxLen) {
+  public TraversalInitializer(MoonDataConstructor.MoonDataStructure moonData, int objContextLen) {
     this.moonData = moonData;
-    this.objCtxLen = objCtxLen;
+    this.objContextLen = objContextLen;
   }
 
   public SetMultimap<AllocNode, LocalVarNode> initializeObjToVarMap() {
@@ -60,7 +60,7 @@ public class TraversalInitializer {
             .filter(
                 o -> {
                   if (!containerObjs.contains(o)) return false;
-                  if (!hasMultiCtx(o)) return false;
+                  if (!hasMultiContext(o)) return false;
                   if (o instanceof ContextAllocNode) {
                     throw new RuntimeException("ContextAllocNode detected!");
                   }
@@ -82,11 +82,11 @@ public class TraversalInitializer {
     return containerObjToBaseVar;
   }
 
-  public boolean hasMultiCtx(AllocNode obj) {
+  public boolean hasMultiContext(AllocNode obj) {
     Set<AllocNode> crtObjs = new HashSet<>();
     crtObjs.add(obj);
     var oag = moonData.oag();
-    for (int i = 0; i < this.objCtxLen; i++) {
+    for (int i = 0; i < this.objContextLen; i++) {
       Set<AllocNode> preds =
           crtObjs.stream().map(oag::getPredsOf).flatMap(Set::stream).collect(Collectors.toSet());
       if (preds.size() > 1) return true;

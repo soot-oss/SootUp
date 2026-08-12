@@ -245,11 +245,11 @@ public class Solver extends Propagator {
       MethodPAG tgtmpag = pag.getMethodPAG(rm);
       MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
       PagNode parm = tgtnf.caseParm(0);
-      Context calleeCtx = pta.emptyContext();
+      Context calleeContext = pta.emptyContext();
       AllocNode baseHeap = heap.base();
-      parm = pta.parameterize(parm, calleeCtx);
+      parm = pta.parameterize(parm, calleeContext);
       pag.addEdge(heap, parm);
-      cgb.injectCallEdge(baseHeap, pta.parameterize(rm, calleeCtx), Kind.STATIC);
+      cgb.injectCallEdge(baseHeap, pta.parameterize(rm, calleeContext), Kind.STATIC);
     }
   }
 

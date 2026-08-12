@@ -68,13 +68,13 @@ public class Turner {
           .forEach(
               node -> {
                 for (SootMethod method : node.getContent()) {
-                  nodes.addAll(computeCtxLevelForVariables(method, node));
+                  nodes.addAll(computeContextLevelForVariables(method, node));
                 }
               });
     } else {
       reachables.forEach(
           method -> {
-            nodes.addAll(computeCtxLevelForVariables(method));
+            nodes.addAll(computeContextLevelForVariables(method));
           });
     }
     // collect nodes and their level
@@ -173,7 +173,7 @@ public class Turner {
     System.out.println("#CITOPBOT:" + topandbottoms);
   }
 
-  private Collection<Object> computeCtxLevelForVariables(SootMethod method) {
+  private Collection<Object> computeContextLevelForVariables(SootMethod method) {
     if (!prePTA.getPag().hasBody(method)) {
       return Collections.emptySet();
     } else {
@@ -184,7 +184,7 @@ public class Turner {
     }
   }
 
-  private Collection<Object> computeCtxLevelForVariables(
+  private Collection<Object> computeContextLevelForVariables(
       SootMethod method, MergedNode<SootMethod> sccNode) {
     if (!prePTA.getPag().hasBody(method)) {
       return Collections.emptySet();

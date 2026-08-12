@@ -52,7 +52,7 @@ import sootup.core.model.SootMethod;
 public class CallDetails {
   public static final Object STATIC_OBJ_CTX = new Object();
 
-  private final SetMultimap<SootMethod, Pair<Object, SootMethod>> calleeToCtxAndCaller =
+  private final SetMultimap<SootMethod, Pair<Object, SootMethod>> calleeToContextAndCaller =
       HashMultimap.create();
   private final Table<SootMethod, SootMethod, Set<Object>> callerCalleeToRecvObj =
       HashBasedTable.create();
@@ -74,14 +74,14 @@ public class CallDetails {
     enabled = false;
   }
 
-  public void addCalleeToCtxAndCaller(SootMethod callee, Object ctx, SootMethod caller) {
+  public void addCalleeToContextAndCaller(SootMethod callee, Object ctx, SootMethod caller) {
     if (!enabled) return;
     callerToCallee.put(caller, callee);
     if (ctx instanceof AllocNode || ctx.equals(STATIC_OBJ_CTX)) {
       if (ctx instanceof ContextAllocNode contextAllocNode) {
         ctx = contextAllocNode.base();
       }
-      calleeToCtxAndCaller.put(callee, new Pair<>(ctx, caller));
+      calleeToContextAndCaller.put(callee, new Pair<>(ctx, caller));
       if (!callerCalleeToRecvObj.contains(caller, callee)) {
         callerCalleeToRecvObj.put(caller, callee, new HashSet<>());
       }
@@ -97,9 +97,9 @@ public class CallDetails {
     }
   }
 
-  public Collection<Pair<Object, SootMethod>> usageCtxAndCallerOf(SootMethod callee) {
+  public Collection<Pair<Object, SootMethod>> usageContextAndCallerOf(SootMethod callee) {
     checkInitialized();
-    return calleeToCtxAndCaller.get(callee);
+    return calleeToContextAndCaller.get(callee);
   }
 
   public void addInvokeExpr(LocalVarNode receiver, AbstractInstanceInvokeExpr invokeExpr) {
@@ -113,11 +113,11 @@ public class CallDetails {
     if (recvValue == null) {
       return;
     }
-    if (arg instanceof ContextVarNode argCtxVarNode) {
-      arg = argCtxVarNode.base();
+    if (arg instanceof ContextVarNode argContextVarNode) {
+      arg = argContextVarNode.base();
     }
-    if (param instanceof ContextVarNode paramCtxVarNode) {
-      param = paramCtxVarNode.base();
+    if (param instanceof ContextVarNode paramContextVarNode) {
+      param = paramContextVarNode.base();
     }
     LocalVarNode argVar = (LocalVarNode) arg;
     LocalVarNode paramVar = (LocalVarNode) param;

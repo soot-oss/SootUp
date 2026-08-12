@@ -202,7 +202,7 @@ public class DebloaterX {
     }
   }
 
-  public Set<AllocNode> getCtxDepHeaps() {
+  public Set<AllocNode> getContextDepHeaps() {
     return ctxDepHeaps;
   }
 }

@@ -34,14 +34,14 @@ import qilin.pta.toolkits.dd.TunnelingConstructor;
 public class TunnelingPTA extends BasePTA {
   public TunnelingPTA(PTAScene scene, ContextConstructor contextConstructor, int k, int hk) {
     super(scene);
-    ContextConstructor tunnelingCtxCons =
+    ContextConstructor tunnelingContextConstructor =
         new TunnelingConstructor(getView(), pag, contextConstructor);
     ContextSelector us = new UniformSelector(k, hk);
     ContextSelector contextSelector =
         PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
     HeapAbstractor heapAbstractor =
         PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
-    initComponents(tunnelingCtxCons, contextSelector, heapAbstractor);
+    initComponents(tunnelingContextConstructor, contextSelector, heapAbstractor);
     System.out.println("context-tunneling ...");
   }
 }

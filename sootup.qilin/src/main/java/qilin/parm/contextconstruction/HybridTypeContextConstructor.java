@@ -31,14 +31,14 @@ import sootup.core.model.SootMethod;
 public class HybridTypeContextConstructor implements ContextConstructor {
 
   @Override
-  public Context constructCtx(
+  public Context constructContext(
       ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
     Context callerContext = caller.context();
     if (receiverNode == null) { // static invoke
       assert callerContext instanceof ContextElements;
-      ContextElements callerCtxs = (ContextElements) callerContext;
-      ContextElement[] cxtAllocs = callerCtxs.getElements();
-      int s = callerCtxs.size();
+      ContextElements callerContexts = (ContextElements) callerContext;
+      ContextElement[] cxtAllocs = callerContexts.getElements();
+      int s = callerContexts.size();
       ContextElement[] array = new ContextElement[s + 1];
       array[1] = callSite;
       array[0] = cxtAllocs[0];

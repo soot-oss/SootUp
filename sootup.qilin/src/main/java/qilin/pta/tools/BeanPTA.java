@@ -36,11 +36,11 @@ import qilin.util.Stopwatch;
 public class BeanPTA extends StagedPTA {
   // currently, we only support k = 2 and hk = 1;
   // [current heap, [allocator heap, [heap ctx, new ctx]]] only for B-2obj;
-  Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap = new HashMap<>();
+  Map<Object, Map<Object, Map<Object, Object>>> beanNexContextMap = new HashMap<>();
 
   public BeanPTA(PTAScene scene, ContextConstructor contextConstructor) {
     super(scene);
-    ContextSelector us = new BeanSelector(pag, beanNexCtxMap);
+    ContextSelector us = new BeanSelector(pag, beanNexContextMap);
     ContextSelector contextSelector =
         PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
     HeapAbstractor heapAbstractor =
@@ -57,7 +57,7 @@ public class BeanPTA extends StagedPTA {
     sparkTimer.stop();
     System.out.println(sparkTimer);
     Stopwatch beanTimer = Stopwatch.newAndStart("Bean");
-    Bean.run(prePTA, beanNexCtxMap);
+    Bean.run(prePTA, beanNexContextMap);
     beanTimer.stop();
     System.out.println(beanTimer);
   }

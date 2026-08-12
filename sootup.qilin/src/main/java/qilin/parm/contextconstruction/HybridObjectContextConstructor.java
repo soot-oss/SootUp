@@ -32,14 +32,14 @@ public class HybridObjectContextConstructor implements ContextConstructor {
    * Support Sb-1obj, S-2obj+H, ...
    * */
   @Override
-  public Context constructCtx(
+  public Context constructContext(
       ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
     Context callerContext = caller.context();
     if (receiverNode == null) { // static invoke
       assert callerContext instanceof ContextElements;
-      ContextElements callerCtx = (ContextElements) callerContext;
-      ContextElement[] cxtAllocs = callerCtx.getElements();
-      int s = callerCtx.size();
+      ContextElements callerContextElements = (ContextElements) callerContext;
+      ContextElement[] cxtAllocs = callerContextElements.getElements();
+      int s = callerContextElements.size();
       ContextElement[] array;
       if (s >= 1) {
         array = new ContextElement[s + 1];

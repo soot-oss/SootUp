@@ -93,8 +93,8 @@ public class DebloatedPTA extends StagedPTA {
       Stopwatch debloaterXTimer = Stopwatch.newAndStart("DebloaterX");
       DebloaterX debloaterX = new DebloaterX(prePTA);
       debloaterX.run();
-      Set<AllocNode> mCtxDepHeaps = debloaterX.getCtxDepHeaps();
-      for (AllocNode obj : mCtxDepHeaps) {
+      Set<AllocNode> mContextDepHeaps = debloaterX.getContextDepHeaps();
+      for (AllocNode obj : mContextDepHeaps) {
         this.ctxDepHeaps.add(obj.getNewExpr());
       }
       System.out.println();
@@ -103,7 +103,7 @@ public class DebloatedPTA extends StagedPTA {
       // stat OAG reductions
       OAG oag = new OAG(prePTA);
       oag.build();
-      OAG doag1 = new DebloatedOAG(prePTA, mCtxDepHeaps);
+      OAG doag1 = new DebloatedOAG(prePTA, mContextDepHeaps);
       doag1.build();
       System.out.println("OAG #node:" + oag.nodeSize() + "; #edge:" + oag.edgeSize());
       System.out.println(
@@ -131,7 +131,7 @@ public class DebloatedPTA extends StagedPTA {
       ch.run();
       collectionHeuristic.stop();
       System.out.println(collectionHeuristic);
-      for (AllocNode obj : ch.getCtxDepHeaps()) {
+      for (AllocNode obj : ch.getContextDepHeaps()) {
         this.ctxDepHeaps.add(obj.getNewExpr());
       }
     }
@@ -196,9 +196,9 @@ public class DebloatedPTA extends StagedPTA {
   }
 
   @Override
-  public Context createCalleeCtx(
+  public Context createCalleeContext(
       ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
-    return basePTA.createCalleeCtx(caller, receiverNode, callSite, target);
+    return basePTA.createCalleeContext(caller, receiverNode, callSite, target);
   }
 
   @Override

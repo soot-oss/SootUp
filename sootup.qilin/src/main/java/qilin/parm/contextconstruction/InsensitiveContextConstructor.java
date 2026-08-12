@@ -27,7 +27,7 @@ import sootup.core.model.SootMethod;
 public class InsensitiveContextConstructor implements ContextConstructor {
 
   @Override
-  public Context constructCtx(
+  public Context constructContext(
       ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
     return emptyContext;
   }

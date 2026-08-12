@@ -29,7 +29,7 @@ import sootup.core.model.SootMethod;
 public class CallSiteContextConstructor implements ContextConstructor {
 
   @Override
-  public Context constructCtx(
+  public Context constructContext(
       ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
     Context callerContext = caller.context();
     assert callerContext instanceof ContextElements;

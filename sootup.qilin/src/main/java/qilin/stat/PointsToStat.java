@@ -39,7 +39,7 @@ public class PointsToStat implements AbstractStat {
   private final PTA pta;
   private final PAG pag;
   private int contextCnt = 0;
-  private double avgCtxPerMthd = 0.0;
+  private double avgContextPerMthd = 0.0;
 
   private int ciAllocs = 0;
   private int csAllocs = 0;
@@ -200,7 +200,7 @@ public class PointsToStat implements AbstractStat {
           cnts[1] += v.size();
         });
     contextCnt = cnts[1];
-    avgCtxPerMthd = cnts[1] * 1.0 / cnts[0];
+    avgContextPerMthd = cnts[1] * 1.0 / cnts[0];
 
     // stat method throw points-to.
     for (SootMethod sm : pta.getNakedReachableMethods()) {
@@ -265,7 +265,7 @@ public class PointsToStat implements AbstractStat {
   @Override
   public void export(Exporter exporter) {
     exporter.collectMetric("#Context:", String.valueOf(contextCnt));
-    exporter.collectMetric("#Avg Context per Method:", String.valueOf(avgCtxPerMthd));
+    exporter.collectMetric("#Avg Context per Method:", String.valueOf(avgContextPerMthd));
     exporter.collectMetric("#Method with Throw Pointer-to:", String.valueOf(methodThrowCnt));
 
     exporter.collectMetric("#Alloc Node(CI): ", String.valueOf(ciAllocs));

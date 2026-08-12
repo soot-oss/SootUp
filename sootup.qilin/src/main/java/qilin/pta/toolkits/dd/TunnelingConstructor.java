@@ -46,7 +46,7 @@ public class TunnelingConstructor implements ContextConstructor {
   }
 
   @Override
-  public Context constructCtx(
+  public Context constructContext(
       ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
     CtxTunnelingFeaturesTrueTable ctftt1 = findOrCreateTunnelingFeaturesTrueTable(caller.method());
     CtxTunnelingFeaturesTrueTable ctftt2 = findOrCreateTunnelingFeaturesTrueTable(target);
@@ -70,6 +70,6 @@ public class TunnelingConstructor implements ContextConstructor {
       throw new RuntimeException(
           "unsupported context constructor for tunneling: " + contextConstructor.getClass());
     }
-    return contextConstructor.constructCtx(caller, receiverNode, callSite, target);
+    return contextConstructor.constructContext(caller, receiverNode, callSite, target);
   }
 }
