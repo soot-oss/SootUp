@@ -24,8 +24,10 @@ import qilin.core.pag.AllocNode;
 import qilin.core.pag.ClassConstantNode;
 import qilin.core.pag.PagNode;
 import qilin.core.pag.StringConstantNode;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
@@ -111,6 +113,33 @@ public class UnmodifiablePointsToSet implements PointsToSet {
             })
         ? null
         : ret;
+  }
+
+  @Override
+  public Set<Value> possibleAllocationSites() {
+    final Set<Value> ret = new HashSet<>();
+    pts.forall(
+        new P2SetVisitor(pta) {
+          public void visit(PagNode n) {
+            Value v = ((AllocNode) n).getAllocationExpr();
+            if (v != null) {
+              ret.add(v);
+            }
+          }
+        });
+    return ret;
+  }
+
+  @Override
+  public Set<SootMethod> possibleAllocatingMethods() {
+    final Set<SootMethod> ret = new HashSet<>();
+    pts.forall(
+        new P2SetVisitor(pta) {
+          public void visit(PagNode n) {
+            ret.add(((AllocNode) n).getMethod());
+          }
+        });
+    return ret;
   }
 
   @Override

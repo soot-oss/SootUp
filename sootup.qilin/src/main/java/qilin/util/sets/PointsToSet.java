@@ -22,7 +22,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import qilin.core.pag.AllocNode;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
 /**
@@ -55,6 +57,17 @@ public interface PointsToSet {
    * something else, returns null.
    */
   Set<ClassConstant> possibleClassConstants();
+
+  /**
+   * Sootup-facing view of this set: the allocation expression (e.g. {@code new Foo()}, {@code new
+   * int[n]}) of every allocation site in the set that has one. Synthetic allocation sites (heap-
+   * merge nodes, the PAG root node, ...) have no such expression and are omitted — see {@link
+   * AllocNode#getAllocationExpr()}.
+   */
+  Set<Value> possibleAllocationSites();
+
+  /** Sootup-facing view of this set: the methods containing an allocation site in this set. */
+  Set<SootMethod> possibleAllocatingMethods();
 
   /**
    * Size of objects in this set.
