@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.config.PointerAnalysisConfig;
@@ -32,7 +31,6 @@ import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
@@ -104,8 +102,11 @@ public class PTAScene {
   }
 
   /*
-   *  wrapper methods of the sootup View. Note, we do not allow you to use the View directly in qilin.pta
-   * to avoid confusing.
+   * getView() is the escape hatch to the underlying sootup View for everything View already does
+   * directly (getClasses(), getMethod(...).isPresent(), ...). The methods below only exist because
+   * they add something View doesn't: getMethod()/getSootClass() turn a raw Optional.get() into a
+   * descriptive exception, and isApplicationMethod() is qilin-specific derived logic, not a plain
+   * View lookup.
    * */
   public void setCallGraph(OnFlyCallGraph cg) {
     this.callgraph = cg;
@@ -125,26 +126,6 @@ public class PTAScene {
             () -> new IllegalArgumentException("Method not found in view: " + methodSignature));
   }
 
-  public Collection<SootClass> getApplicationClasses() {
-    return view.getClasses().filter(SootClass::isApplicationClass).collect(Collectors.toSet());
-  }
-
-  public Collection<SootClass> getLibraryClasses() {
-    return view.getClasses().filter(SootClass::isLibraryClass).collect(Collectors.toSet());
-  }
-
-  public boolean containsMethod(MethodSignature methodSignature) {
-    return view.getMethod(methodSignature).isPresent();
-  }
-
-  public boolean containsField(FieldSignature fieldSignature) {
-    return view.getField(fieldSignature).isPresent();
-  }
-
-  public Collection<? extends SootClass> getClasses() {
-    return view.getClasses().collect(Collectors.toList());
-  }
-
   public Collection<SootClass> getPhantomClasses() {
     return Collections.emptySet();
   }
@@ -152,10 +133,6 @@ public class PTAScene {
   public SootClass getSootClass(ClassType classType) {
     return view.getClass(classType)
         .orElseThrow(() -> new IllegalArgumentException("Class not found in view: " + classType));
-  }
-
-  public boolean containsClass(ClassType classType) {
-    return view.getClass(classType).isPresent();
   }
 
   public boolean isApplicationMethod(SootMethod sm) {

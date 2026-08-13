@@ -54,9 +54,7 @@ import qilin.pta.toolkits.moon.graph.VFG;
 import qilin.util.JavaTypes;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.Value;
-import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.NullConstant;
-import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -65,7 +63,6 @@ import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ReferenceType;
 
@@ -257,11 +254,10 @@ public class MoonDataConstructor {
           fieldRecorder.putStore((LocalVarNode) fr.getBase(), fr.getField(), (LocalVarNode) from);
         } else if (to instanceof GlobalVarNode globalVarTo) {
           // local-global
-          Object variable = globalVarTo.getVariable();
-          if (variable instanceof FieldSignature) {
+          if (globalVarTo.getFieldSignature() != null) {
             vfgForField.addSimpleFlowEdge(FlowKind.STATIC_STORE, from, globalVarTo);
-          } else if (!(variable instanceof ClassConstant)
-              && !(variable instanceof StringConstant)) {
+          } else if (globalVarTo.getClassConstant() == null
+              && globalVarTo.getStringConstant() == null) {
             throw new RuntimeException("Unknown GlobalVarNode");
           }
         } else {
@@ -286,10 +282,10 @@ public class MoonDataConstructor {
         fieldRecorder.putLoad((LocalVarNode) fr.getBase(), fr.getField(), (LocalVarNode) to);
       } else if (from instanceof GlobalVarNode globalVarFrom) {
         // global-local
-        Object variable = globalVarFrom.getVariable();
-        if (variable instanceof FieldSignature) {
+        if (globalVarFrom.getFieldSignature() != null) {
           vfgForField.addSimpleFlowEdge(FlowKind.STATIC_LOAD, globalVarFrom, to);
-        } else if (!(variable instanceof ClassConstant) && !(variable instanceof StringConstant)) {
+        } else if (globalVarFrom.getClassConstant() == null
+            && globalVarFrom.getStringConstant() == null) {
           throw new RuntimeException("Unknown GlobalVarNode");
         }
       }

@@ -30,7 +30,6 @@ import qilin.core.pag.VarNode;
 import qilin.util.Pair;
 import qilin.util.queue.QueueReader;
 import qilin.util.sets.PointsToSet;
-import sootup.core.jimple.common.Local;
 import sootup.core.model.SootMethod;
 
 public class AliasStat implements AbstractStat {
@@ -58,8 +57,8 @@ public class AliasStat implements AbstractStat {
         PagNode from = reader.next(), to = reader.next();
         if (from instanceof LocalVarNode) {
           if (to instanceof LocalVarNode) {
-            if (!(((VarNode) from).getVariable() instanceof Local)) continue;
-            if (!(((VarNode) to).getVariable() instanceof Local)) continue;
+            if (((VarNode) from).getLocal() == null) continue;
+            if (((VarNode) to).getLocal() == null) continue;
             assignMap
                 .computeIfAbsent((LocalVarNode) from, k1 -> new HashSet<>())
                 .add((LocalVarNode) to);
@@ -69,14 +68,14 @@ public class AliasStat implements AbstractStat {
           } else if (to instanceof FieldRefNode) {
             FieldRefNode fr = (FieldRefNode) to;
             LocalVarNode base = (LocalVarNode) fr.getBase();
-            if (!(base.getVariable() instanceof Local)) continue;
+            if (base.getLocal() == null) continue;
             addToMap(globalMap, fr.getField(), true, base);
             addToMap(localMap, fr.getField(), true, base);
           } // else//local-global
         } else if (from instanceof FieldRefNode) {
           FieldRefNode fr = (FieldRefNode) from;
           LocalVarNode base = (LocalVarNode) fr.getBase();
-          if (!(base.getVariable() instanceof Local)) continue;
+          if (base.getLocal() == null) continue;
           addToMap(globalMap, fr.getField(), false, base);
           addToMap(localMap, fr.getField(), false, base);
         } // else//global-local or new
@@ -136,8 +135,8 @@ public class AliasStat implements AbstractStat {
   }
 
   private boolean checkAlias(LocalVarNode l1, LocalVarNode l2) {
-    PointsToSet pts1 = pta.reachingObjects(l1.getMethod(), (Local) l1.getVariable());
-    PointsToSet pts2 = pta.reachingObjects(l2.getMethod(), (Local) l2.getVariable());
+    PointsToSet pts1 = pta.reachingObjects(l1.getMethod(), l1.getLocal());
+    PointsToSet pts2 = pta.reachingObjects(l2.getMethod(), l2.getLocal());
     return pts1.hasNonEmptyIntersection(pts2);
   }
 

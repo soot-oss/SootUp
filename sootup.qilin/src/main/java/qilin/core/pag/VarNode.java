@@ -91,6 +91,14 @@ public abstract class VarNode extends ValNode {
   }
 
   /**
+   * Returns the underlying variable as a {@link MethodParameter} (this/return/throw/ordinary
+   * parameter), or {@code null} if this node does not represent one — see {@link #getVariable()}.
+   */
+  public MethodParameter getMethodParameter() {
+    return variable instanceof MethodParameter ? (MethodParameter) variable : null;
+  }
+
+  /**
    * Designates this node as the potential target of a interprocedural assignment edge which may be
    * added during on-the-fly call graph updating.
    */

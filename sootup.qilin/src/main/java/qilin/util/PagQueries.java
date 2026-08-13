@@ -120,7 +120,7 @@ public final class PagQueries {
       PAG pag, InvokableStmt invokeStmt, MethodPAG srcmpag, VarNode pi) {
     MethodNodeFactory srcnf = srcmpag.nodeFactory();
     AbstractInvokeExpr ie = invokeStmt.getInvokeExpr().get();
-    MethodParameter mPi = (MethodParameter) pi.getVariable();
+    MethodParameter mPi = pi.getMethodParameter();
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
     LocalVarNode receiver;
     if (ie instanceof AbstractInstanceInvokeExpr) {

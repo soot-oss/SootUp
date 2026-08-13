@@ -254,8 +254,8 @@ public class Exporter {
     SootMethod m = lvn.getMethod();
     Object v = lvn.getVariable();
     String varName = v.toString();
-    if (v instanceof MethodParameter) {
-      MethodParameter methodParameter = (MethodParameter) v;
+    MethodParameter methodParameter = lvn.getMethodParameter();
+    if (methodParameter != null) {
       if (methodParameter.isThis()) {
         varName = "@this";
       } else if (methodParameter.isReturn()) {

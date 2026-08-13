@@ -43,19 +43,13 @@ public class LocalVarNode extends VarNode {
 
   /** Returns true if this VarNode represents the THIS pointer */
   public boolean isThis() {
-    if (variable instanceof MethodParameter) {
-      MethodParameter methodParameter = (MethodParameter) variable;
-      return methodParameter.isThis();
-    }
-    return false;
+    MethodParameter mp = getMethodParameter();
+    return mp != null && mp.isThis();
   }
 
   public boolean isReturn() {
-    if (variable instanceof MethodParameter) {
-      MethodParameter methodParameter = (MethodParameter) variable;
-      return methodParameter.isReturn();
-    }
-    return false;
+    MethodParameter mp = getMethodParameter();
+    return mp != null && mp.isReturn();
   }
 
   @Override

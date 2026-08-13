@@ -45,8 +45,8 @@ import qilin.util.FakeMainMethods;
 import qilin.util.PagQueries;
 import qilin.util.sets.PointsToSet;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.FieldSignature;
 
 public abstract class BasePTA extends CorePTA {
   protected IEvaluator evaluator;
@@ -110,10 +110,9 @@ public abstract class BasePTA extends CorePTA {
           }
         } else if (vn instanceof GlobalVarNode) {
           GlobalVarNode gvn = (GlobalVarNode) vn;
-          Object variable = gvn.getVariable();
-          if (variable instanceof SootField) {
-            SootField sf = (SootField) variable;
-            clz = getView().getClass(sf.getDeclaringClassType()).get();
+          FieldSignature fieldSig = gvn.getFieldSignature();
+          if (fieldSig != null) {
+            clz = getView().getClass(fieldSig.getDeclClassType()).get();
           }
         } else if (vn instanceof ContextVarNode) {
           ContextVarNode cv = (ContextVarNode) vn;
@@ -123,10 +122,9 @@ public abstract class BasePTA extends CorePTA {
             clz = getView().getClass(cvbase.getMethod().getDeclaringClassType()).get();
           } else if (varNode instanceof GlobalVarNode) {
             GlobalVarNode gvn = (GlobalVarNode) varNode;
-            Object variable = gvn.getVariable();
-            if (variable instanceof SootField) {
-              SootField sf = (SootField) variable;
-              clz = getView().getClass(sf.getDeclaringClassType()).get();
+            FieldSignature fieldSig = gvn.getFieldSignature();
+            if (fieldSig != null) {
+              clz = getView().getClass(fieldSig.getDeclClassType()).get();
             }
           }
         }

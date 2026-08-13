@@ -372,8 +372,10 @@ public class TamiflexModel extends ReflectionModel {
           case ClassForName:
             break;
           case ClassNewInstance:
-            if (!ptaScene.containsClass(
-                ptaScene.getView().getIdentifierFactory().getClassType(mappedTarget))) {
+            if (ptaScene
+                .getView()
+                .getClass(ptaScene.getView().getIdentifierFactory().getClassType(mappedTarget))
+                .isEmpty()) {
               if (verbose) {
                 System.out.println("Warning: Unknown mapped class for signature: " + mappedTarget);
               }
@@ -382,8 +384,11 @@ public class TamiflexModel extends ReflectionModel {
             break;
           case ConstructorNewInstance:
           case MethodInvoke:
-            if (!ptaScene.containsMethod(
-                ptaScene.getView().getIdentifierFactory().parseMethodSignature(mappedTarget))) {
+            if (ptaScene
+                .getView()
+                .getMethod(
+                    ptaScene.getView().getIdentifierFactory().parseMethodSignature(mappedTarget))
+                .isEmpty()) {
               if (verbose) {
                 System.out.println("Warning: Unknown mapped method for signature: " + mappedTarget);
               }
@@ -392,8 +397,11 @@ public class TamiflexModel extends ReflectionModel {
             break;
           case FieldSet:
           case FieldGet:
-            if (!ptaScene.containsField(
-                ptaScene.getView().getIdentifierFactory().parseFieldSignature(mappedTarget))) {
+            if (ptaScene
+                .getView()
+                .getField(
+                    ptaScene.getView().getIdentifierFactory().parseFieldSignature(mappedTarget))
+                .isEmpty()) {
               if (verbose) {
                 System.out.println("Warning: Unknown mapped field for signature: " + mappedTarget);
               }
@@ -425,7 +433,7 @@ public class TamiflexModel extends ReflectionModel {
     String inClassStr = inClzDotMthd.substring(0, inClzDotMthd.lastIndexOf("."));
     String inMethodStr = inClzDotMthd.substring(inClzDotMthd.lastIndexOf(".") + 1);
     ClassType inClassType = ptaScene.getView().getIdentifierFactory().getClassType(inClassStr);
-    if (!ptaScene.containsClass(inClassType)) {
+    if (ptaScene.getView().getClass(inClassType).isEmpty()) {
       System.out.println("Warning: unknown class \"" + inClassStr + "\" is referenced.");
       return Collections.emptySet();
     }
