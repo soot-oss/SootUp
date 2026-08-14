@@ -169,28 +169,18 @@ public final class AsmUtil {
     if (desc.length() > 1) {
       return Optional.empty();
     }
-    switch (desc.charAt(0)) {
-      case 'Z':
-        return Optional.of(PrimitiveType.getBoolean());
-      case 'B':
-        return Optional.of(PrimitiveType.getByte());
-      case 'C':
-        return Optional.of(PrimitiveType.getChar());
-      case 'S':
-        return Optional.of(PrimitiveType.getShort());
-      case 'I':
-        return Optional.of(PrimitiveType.getInt());
-      case 'F':
-        return Optional.of(PrimitiveType.getFloat());
-      case 'J':
-        return Optional.of(PrimitiveType.getLong());
-      case 'D':
-        return Optional.of(PrimitiveType.getDouble());
-      case 'V':
-        return Optional.of(VoidType.getInstance());
-      default:
-    }
-    return Optional.empty();
+    return switch (desc.charAt(0)) {
+      case 'Z' -> Optional.of(PrimitiveType.getBoolean());
+      case 'B' -> Optional.of(PrimitiveType.getByte());
+      case 'C' -> Optional.of(PrimitiveType.getChar());
+      case 'S' -> Optional.of(PrimitiveType.getShort());
+      case 'I' -> Optional.of(PrimitiveType.getInt());
+      case 'F' -> Optional.of(PrimitiveType.getFloat());
+      case 'J' -> Optional.of(PrimitiveType.getLong());
+      case 'D' -> Optional.of(PrimitiveType.getDouble());
+      case 'V' -> Optional.of(VoidType.getInstance());
+      default -> Optional.empty();
+    };
   }
 
   /** Converts n types contained in desc to a list of Jimple Types */
