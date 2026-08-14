@@ -161,12 +161,7 @@ public interface TypeHierarchy {
     } else if (supertype instanceof ClassType) {
       String supertypeName = ((ClassType) supertype).getFullyQualifiedName();
       if (potentialSubtype instanceof ClassType) {
-        String potentialSubtypeName = ((ClassType) potentialSubtype).getFullyQualifiedName();
-        // any potential subtype is a subtype of java.lang.Object except java.lang.Object itself
-        // superClassOf() check is a fast path
-        return (supertypeName.equals(jlObject) && !potentialSubtypeName.equals(jlObject))
-            || superClassesOf((ClassType) potentialSubtype).anyMatch(t -> t == supertype)
-            || implementedInterfacesOf((ClassType) potentialSubtype).anyMatch(t -> t == supertype);
+        return isClassSubtype((ClassType) supertype, (ClassType) potentialSubtype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
         return supertypeName.equals(jlObject)
@@ -194,6 +189,25 @@ public interface TypeHierarchy {
       currentSuperClass = superClassOf(superClassType);
     }
     return superClasses.stream();
+  }
+
+  /**
+   * Returns true if <code>potentialSubtype</code> is a (possibly indirect) subtype of <code>
+   * supertype</code>, both of which are class types (not arrays). Extracted out of {@link
+   * #isSubtype(Type, Type)} so implementations can override it with a check faster than the
+   * default's linear {@link #superClassesOf(ClassType)}/{@link #implementedInterfacesOf(ClassType)}
+   * walk.
+   */
+  default boolean isClassSubtype(
+      @NonNull ClassType supertype, @NonNull ClassType potentialSubtype) {
+    String supertypeName = supertype.getFullyQualifiedName();
+    String potentialSubtypeName = potentialSubtype.getFullyQualifiedName();
+    final String jlObject = "java.lang.Object";
+    // any potential subtype is a subtype of java.lang.Object except java.lang.Object itself
+    // superClassOf() check is a fast path
+    return (supertypeName.equals(jlObject) && !potentialSubtypeName.equals(jlObject))
+        || superClassesOf(potentialSubtype).anyMatch(t -> t == supertype)
+        || implementedInterfacesOf(potentialSubtype).anyMatch(t -> t == supertype);
   }
 
   Stream<ClassType> directlyImplementedInterfacesOf(@NonNull ClassType type);
