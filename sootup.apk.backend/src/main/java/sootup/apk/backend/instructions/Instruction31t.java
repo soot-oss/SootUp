@@ -7,11 +7,11 @@ import sootup.apk.backend.Register;
 
 public class Instruction31t extends OneRegisterInstruction {
 
-  SwitchPayload switchPayload;
+  AbstractPayload payload;
 
-  public Instruction31t(Opcode opcode, Register registerA, SwitchPayload switchPayload) {
+  public Instruction31t(Opcode opcode, Register registerA, AbstractPayload payload) {
     super(opcode, registerA);
-    this.switchPayload = switchPayload;
+    this.payload = payload;
   }
 
   @Override
@@ -20,7 +20,7 @@ public class Instruction31t extends OneRegisterInstruction {
         new BuilderInstruction31t(
             super.getOpcode(),
             getRegisterA().getNumber(),
-            getLabelAssigner().getOrCreateLabel(switchPayload));
+            getLabelAssigner().getOrCreateLabel(payload));
     logSmali();
     return builderInstruction;
   }
@@ -31,6 +31,6 @@ public class Instruction31t extends OneRegisterInstruction {
         "{} {}, :{}",
         getOpcode().name,
         getRegisterA().getNumber(),
-        getLabelAssigner().getLabelName(switchPayload));
+        getLabelAssigner().getLabelName(payload));
   }
 }

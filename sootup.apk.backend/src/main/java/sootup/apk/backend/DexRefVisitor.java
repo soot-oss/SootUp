@@ -112,11 +112,13 @@ public class DexRefVisitor extends AbstractRefVisitor {
 
   @Override
   public void caseParameterRef(@NonNull JParameterRef ref) {
-    registerAllocator.allocateRegisterForParameter(immediate);
+    Register r = registerAllocator.allocateRegisterForParameter(immediate);
+    r.setType(ref.getType());
   }
 
   @Override
   public void caseCaughtExceptionRef(@NonNull JCaughtExceptionRef ref) {
+    fixObjectType(ref.getType());
     dexStmtVisitor.addInstruction(
         new Instruction11x(Opcode.MOVE_EXCEPTION, targetRegister), currentStmt);
   }
@@ -150,14 +152,23 @@ public class DexRefVisitor extends AbstractRefVisitor {
         || targetRegister.isTypeGuessed()) {
       log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
 
-      if (targetRegister.getType() != defaultType && currentStmt.isJAssignStmt()) {
-        targetRegister =
-            registerAllocator.getRegisterForValueWithNewType(
-                currentStmt.asJAssignStmt().getLeftOp(), defaultType, false);
-      } else {
+      if (targetRegister.getType() != defaultType) {
+        if (currentStmt.isJAssignStmt()) {
+          targetRegister =
+              registerAllocator.getRegisterForValueWithNewType(
+                  currentStmt.asJAssignStmt().getLeftOp(), defaultType, false);
+          targetRegister.setIsTypeGuessed(true);
+          return;
+        } else if (currentStmt.isJIdentityStmt()) {
+          targetRegister =
+              registerAllocator.getRegisterForValueWithNewType(
+                  currentStmt.asJIdentityStmt().getLeftOp(), defaultType, false);
+          targetRegister.setIsTypeGuessed(true);
+          return;
+        }
+        targetRegister.setIsTypeGuessed(true);
         targetRegister.setType(defaultType);
       }
-      targetRegister.setIsTypeGuessed(true);
     }
   }
 }

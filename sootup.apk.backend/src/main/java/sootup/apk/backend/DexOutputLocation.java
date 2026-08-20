@@ -215,6 +215,7 @@ public class DexOutputLocation {
   protected void addClass(final ClassDef classDef) {
     currentDexPool.mark();
     currentDexPool.internClass(classDef);
+    log.info("Class {} added to dexPool", classDef.getType());
     if (currentDexPool.hasOverflowed()) {
       if (!opcodes.isArt()) {
         log.warn(

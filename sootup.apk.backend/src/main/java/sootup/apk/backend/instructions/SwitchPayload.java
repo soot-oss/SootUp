@@ -12,7 +12,7 @@ import org.jf.dexlib2.builder.instruction.BuilderSparseSwitchPayload;
 import sootup.apk.backend.Register;
 import sootup.core.jimple.common.stmt.Stmt;
 
-public class SwitchPayload extends AbstractInstruction {
+public class SwitchPayload extends AbstractPayload {
 
   private final int[] keys;
   private final Stmt[] stmts;

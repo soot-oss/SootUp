@@ -42,17 +42,19 @@ public class RegisterAllocator {
   private Register getRegisterForLocal(Local local, boolean isParameter) {
     if (registerMap.containsKey(local)) {
       log.info(
-          "Local {} present in registerMap {}",
+          "Local {} present in registerMap {} with type {}",
           local.getName(),
-          registerMap.get(local).getNumber());
+          registerMap.get(local).getNumber(),
+          registerMap.get(local).getType());
       return registerMap.get(local);
     } else {
       Register register = allocateNewRegister(local.getType(), isParameter, false);
       registerMap.put(local, register);
       log.info(
-          "Local {} not present in registerMap. Allocate new register {}",
+          "Local {} not present in registerMap. Allocate new register {} with type {}",
           local.getName(),
-          register.getNumber());
+          register.getNumber(),
+          register.getType());
       return register;
     }
   }
@@ -111,8 +113,12 @@ public class RegisterAllocator {
     throw new RuntimeException("Immediate is neither local nor constant: " + immediate);
   }
 
-  public void allocateRegisterForParameter(Immediate immediate) {
-    getRegisterForImmediate(immediate, true, null);
+  public Register allocateRegisterForParameter(Immediate immediate) {
+    return getRegisterForImmediate(immediate, true, null);
+  }
+
+  protected void insertIntoRegisterMap(Local local, Register register) {
+    registerMap.put(local, register);
   }
 
   protected int getRegisterCount() {

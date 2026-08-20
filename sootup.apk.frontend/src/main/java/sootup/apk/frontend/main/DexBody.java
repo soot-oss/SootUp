@@ -586,7 +586,8 @@ public class DexBody {
         // exceptions can only be of ReferenceType
         if (t instanceof JavaClassType) {
           JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-          JavaClassType type = identifierFactory.getClassType(((JavaClassType) t).getClassName());
+          JavaClassType type =
+              identifierFactory.getClassType(((JavaClassType) t).getFullyQualifiedName());
           DexLibAbstractInstruction instruction =
               instructionAtAddress(handler.getHandlerCodeAddress());
           if (!(instruction instanceof MoveExceptionInstruction)) {
