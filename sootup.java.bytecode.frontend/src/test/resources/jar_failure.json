@@ -1,0 +1,8 @@
+[
+{
+  "jar_name": "database-mysql-impl-4.0.0-RC12.jar",
+  "exception": "cannot convert Object to (Soot-)Constant.",
+  "download_url": "https://repo1.maven.org/maven2/eu/cloudnetservice/cloudnet/database-mysql-impl/4.0.0-RC12/database-mysql-impl-4.0.0-RC12.jar",
+  "failedMethodSignature": ""
+}
+]

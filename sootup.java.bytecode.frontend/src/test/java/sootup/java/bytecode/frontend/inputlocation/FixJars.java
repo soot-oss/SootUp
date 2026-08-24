@@ -1,38 +1,19 @@
 package sootup.java.bytecode.frontend.inputlocation;
 
-import java.nio.file.Paths;
-import java.util.Collections;
+import categories.TestCategories;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.Body;
-import sootup.core.model.SourceType;
-import sootup.interceptors.NopEliminator;
 import sootup.java.core.views.JavaView;
-import sootup.jimple.frontend.JimpleAnalysisInputLocation;
 
 public class FixJars extends BaseFixJarsTest {
 
-  @Test
-  /* Isolated testcase from:
-   * String jarDownloadUrl = "https://repo1.maven.org/maven2/io/github/adven27/exam-core/2024.0.10/exam-core-2024.0.10.jar";
-   * String methodSignature = "<io.github.adven27.concordion.extensions.exam.core.logger.LoggingFormatterExtension$LoggingFormatterListener: void afterExample(org.concordion.api.listener.ExampleEvent)>";
-   */
-  public void executeexamcorejar() {
-    AnalysisInputLocation inputLocation =
-        new JimpleAnalysisInputLocation(
-            Paths.get("./src/test/resources/"),
-            SourceType.Application,
-            Collections.singletonList(new NopEliminator()));
-    JavaView jimpleView = new JavaView(inputLocation);
-    jimpleView
-        .getClasses()
-        .forEach(
-            sootClass -> {
-              Body body =
-                  sootClass.getMethodsByName("nopEliminatorBug").stream()
-                      .findFirst()
-                      .get()
-                      .getBody();
-            });
-  }
+@Test
+public void executedatabasemysqlimplRCjar(){
+	String jarDownloadUrl = "https://repo1.maven.org/maven2/eu/cloudnetservice/cloudnet/database-mysql-impl/4.0.0-RC12/database-mysql-impl-4.0.0-RC12.jar";
+    String methodSignature = "";
+    JavaView javaView = supplyJavaView(jarDownloadUrl);
+    assertMethodConversion(javaView,methodSignature);
+    assertJar(javaView);
+}
+
 }
