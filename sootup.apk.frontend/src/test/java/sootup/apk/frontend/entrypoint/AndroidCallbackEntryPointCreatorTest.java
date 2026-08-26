@@ -160,6 +160,7 @@ public class AndroidCallbackEntryPointCreatorTest {
     ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/FlowSensitivity1.apk");
     List<MethodSignature> callbackEntryPoints =
         AndroidCallbackEntryPointCreator.getCallbackEntryPoints(ctx.view, ctx.appClassNames);
-    assertEquals(callbackEntryPoints.size(), new java.util.LinkedHashSet<>(callbackEntryPoints).size());
+    assertEquals(
+        callbackEntryPoints.size(), new java.util.LinkedHashSet<>(callbackEntryPoints).size());
   }
 }

@@ -58,10 +58,15 @@ Everything Android-specific reduces to *what entry points get passed to
    was ever actually registered anywhere), matching how CHA/RTA are already
    over-approximate. **[Implemented in this pass.]**
 
-4. **Layout XML parsing.** Parse `res/layout/*.xml` (binary XML, same
-   `axml` dependency) for `android:onClick` attributes, feeding step 3 from
-   declared bindings rather than bytecode heuristics alone. *(Not yet
-   implemented.)*
+4. **Layout XML parsing.** Parse `res/layout*/*.xml` (binary XML, same
+   `axml` dependency) for `android:onClick` attributes — a widget wired
+   straight to a `void method(View)` by name, with no `setOnClickListener`
+   call site for step 3 to find. Extraction only yields method *names*, not
+   which activity uses which layout (that needs a `resources.arsc` parser to
+   resolve `R.layout.*` constants back to file names, not implemented), so
+   every extracted name is checked against every manifest-declared activity
+   — an over-approximation in the same spirit as step 3. **[Implemented in
+   this pass.]**
 
 5. **Entry-point generation.** Combine the manifest model (1) and lifecycle
    tables (2) into the actual `List<MethodSignature>` passed to
@@ -123,8 +128,16 @@ Everything Android-specific reduces to *what entry points get passed to
    likewise — `LocationLeak1.apk`/`FlowSensitivity1.apk` bundle the
    `android.support.v4`/`v7` compat libraries directly into their own dex,
    which contain real listener implementations, so no hand-built APK was
-   needed for step 3 either. The feature-isolated APKs remain deferred until
-   steps 4/7/8 exist.
+   needed for step 3 either. Step 4 is the first case that genuinely needed
+   a hand-built fixture: none of the three sample APKs use `android:onClick`
+   at all (confirmed by scanning them), so `AndroidLayoutParser` is tested
+   against a real compiled binary layout XML built with the same `axml`
+   library's writer (a genuine round trip through the format, not a
+   string/DOM stand-in), and `AndroidLayoutEntryPointCreator`'s wiring is
+   tested by declaring a real, dex-declared support-library class as a
+   synthetic manifest activity (`AndroidManifest`'s constructor is public
+   for exactly this). The remaining feature-isolated APKs stay deferred
+   until steps 7/8 exist.
 
 10. **Public API.** A single entry point (e.g. `AndroidCallGraphAlgorithm`)
     that hides the entry-point plumbing — give it an APK + platforms path,
@@ -134,7 +147,7 @@ Everything Android-specific reduces to *what entry points get passed to
     *(Not yet implemented — steps 1/2/5 are usable directly via
     `AndroidManifestParser` + `AndroidEntryPointCreator` in the meantime.)*
 
-## Implemented so far: steps 1, 2, 3, 5
+## Implemented so far: steps 1, 2, 3, 4, 5
 
 New packages under `sootup.apk.frontend`:
 
@@ -142,7 +155,9 @@ New packages under `sootup.apk.frontend`:
   `AndroidManifest`, `AndroidManifestParser` (step 1).
 - `entrypoint/` — `LifecycleMethod`, `AndroidEntryPointConstants` (step 2),
   `AndroidEntryPointCreator` (step 5), `AndroidCallbackConstants`,
-  `AndroidCallbackEntryPointCreator` (step 3).
+  `AndroidCallbackEntryPointCreator` (step 3), `AndroidLayoutEntryPointCreator`
+  (step 4).
+- `layout/` — `AndroidLayoutParser` (step 4).
 
 ### Correctness fix found while building step 3: the app/library class boundary
 
@@ -171,8 +186,9 @@ fully qualified names of classes actually declared in the APK's dex, which
 is what "app class" should mean regardless of how `SourceType` was
 configured on the classpath locations added alongside it. Both
 `AndroidEntryPointCreator.resolveOverride` (step 5, now package-visible and
-reused by step 3) and `AndroidCallbackEntryPointCreator` take this set
-explicitly rather than consulting `isLibraryClass()`.
+reused by steps 3 and 4) and `AndroidCallbackEntryPointCreator`/
+`AndroidLayoutEntryPointCreator` take this set explicitly rather than
+consulting `isLibraryClass()`.
 
 Known limitations carried forward deliberately (not silent gaps — flagged
 for later steps):
@@ -188,4 +204,8 @@ for later steps):
   friends); `Runnable`/`AsyncTask`/`Handler` callbacks are step 8's job, not
   step 3's, to avoid overlapping with `sootup.callgraph`'s existing
   `Thread#start()`→`run()` implicit-call handling.
-- No ICC, no layout parsing yet — steps 4, 7, 8 above.
+- Step 4 extracts `android:onClick` method names but can't map a layout to
+  the specific activity that inflates it (no `resources.arsc`/`R.layout.*`
+  resolution), so it checks every name against every declared activity —
+  sound but imprecise, same tradeoff as step 3.
+- No ICC, no async/threading entry points yet — steps 7, 8 above.
