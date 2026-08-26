@@ -59,10 +59,15 @@ public final class AndroidEntryPointCreator {
   /**
    * Returns the deduplicated entry points for every component declared in {@code manifest},
    * resolved against {@code view}'s classes and type hierarchy.
+   *
+   * @param appClassNames the fully qualified names of classes actually declared in the APK's dex
+   *     (see {@link sootup.apk.frontend.ApkAnalysisInputLocation#getApplicationClassNames()}), used
+   *     to tell the app's own classes apart from platform (android.jar) classes when walking up a
+   *     component's superclass chain.
    */
   @NonNull
   public static List<MethodSignature> getEntryPoints(
-      @NonNull View view, @NonNull AndroidManifest manifest) {
+      @NonNull View view, @NonNull AndroidManifest manifest, @NonNull Set<String> appClassNames) {
     Set<MethodSignature> entryPoints = new LinkedHashSet<>();
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
 
@@ -73,13 +78,19 @@ public final class AndroidEntryPointCreator {
                 collectEntryPoints(
                     view,
                     identifierFactory,
+                    appClassNames,
                     applicationClassName,
                     AndroidComponentType.APPLICATION,
                     entryPoints));
 
     for (ManifestComponent component : manifest.getComponents()) {
       collectEntryPoints(
-          view, identifierFactory, component.getClassName(), component.getType(), entryPoints);
+          view,
+          identifierFactory,
+          appClassNames,
+          component.getClassName(),
+          component.getType(),
+          entryPoints);
     }
 
     return new ArrayList<>(entryPoints);
@@ -88,45 +99,60 @@ public final class AndroidEntryPointCreator {
   private static void collectEntryPoints(
       @NonNull View view,
       @NonNull IdentifierFactory identifierFactory,
+      @NonNull Set<String> appClassNames,
       @NonNull String className,
       @NonNull AndroidComponentType componentType,
       @NonNull Set<MethodSignature> out) {
     ClassType classType = identifierFactory.getClassType(className);
     for (LifecycleMethod lifecycleMethod :
         AndroidEntryPointConstants.getLifecycleMethods(componentType)) {
-      resolveOverride(view, identifierFactory, classType, lifecycleMethod).ifPresent(out::add);
+      resolveOverride(view, identifierFactory, appClassNames, classType, lifecycleMethod)
+          .ifPresent(out::add);
     }
   }
 
   /**
-   * Walks {@code componentType}'s superclass chain (starting at itself) for the first app-defined
-   * (non-library) class that overrides {@code lifecycleMethod}, matching how the Android framework
-   * actually dispatches lifecycle callbacks to whichever subclass implements them (commonly a
-   * shared base activity/service rather than the leaf class). Returns empty if the app never
-   * overrides this callback anywhere in the hierarchy, or if the component's class isn't part of
-   * the view at all.
+   * Walks {@code startClass}'s superclass chain (starting at itself) for the first class in {@code
+   * appClassNames} that overrides {@code targetMethod}, matching how the Android framework actually
+   * dispatches a callback to whichever subclass implements it (commonly a shared base
+   * activity/service rather than the leaf class). Returns empty if no class in {@code
+   * appClassNames} overrides this callback anywhere in the hierarchy, or if {@code startClass}
+   * isn't part of the view at all.
+   *
+   * <p>Deliberately checks membership in {@code appClassNames} rather than {@link
+   * SootClass#isLibraryClass()}: the latter reflects the {@link sootup.core.model.SourceType} the
+   * class's {@code AnalysisInputLocation} reports, and a platform jar added via {@code
+   * JavaClassPathAnalysisInputLocation}'s single-argument constructor (as this module's tests do)
+   * defaults to {@code SourceType.Application} — so {@code isLibraryClass()} can't tell an
+   * android.jar class apart from an app class in that setup, which would let a framework base
+   * class's own default implementation (e.g. {@code Activity#onCreate}) be mistaken for an app
+   * override.
    */
   @NonNull
-  private static Optional<MethodSignature> resolveOverride(
+  static Optional<MethodSignature> resolveOverride(
       @NonNull View view,
       @NonNull IdentifierFactory identifierFactory,
-      @NonNull ClassType componentType,
-      @NonNull LifecycleMethod lifecycleMethod) {
+      @NonNull Set<String> appClassNames,
+      @NonNull ClassType startClass,
+      @NonNull LifecycleMethod targetMethod) {
     MethodSubSignature subSignature =
         identifierFactory
             .getMethodSignature(
-                componentType,
-                lifecycleMethod.getName(),
-                lifecycleMethod.getReturnType(),
-                lifecycleMethod.getParameterTypes())
+                startClass,
+                targetMethod.getName(),
+                targetMethod.getReturnType(),
+                targetMethod.getParameterTypes())
             .getSubSignature();
 
-    ClassType current = componentType;
+    ClassType current = startClass;
     while (current != null) {
+      if (!appClassNames.contains(current.getFullyQualifiedName())) {
+        // We've walked up into a platform/library class (or off the app's own classes
+        // entirely): the app doesn't override this callback anywhere.
+        return Optional.empty();
+      }
       Optional<? extends SootClass> sootClass = view.getClass(current);
-      if (!sootClass.isPresent() || sootClass.get().isLibraryClass()) {
-        // Either unresolved, or we've walked up into the Android framework's own classes:
-        // the app doesn't override this callback anywhere.
+      if (!sootClass.isPresent()) {
         return Optional.empty();
       }
       Optional<? extends SootMethod> method = sootClass.get().getMethod(subSignature);

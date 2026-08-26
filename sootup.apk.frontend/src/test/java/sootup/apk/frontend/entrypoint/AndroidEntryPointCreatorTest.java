@@ -25,15 +25,10 @@ package sootup.apk.frontend.entrypoint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import sootup.apk.frontend.ApkAnalysisInputLocation;
-import sootup.apk.frontend.DexBodyInterceptors;
-import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.apk.frontend.manifest.AndroidManifest;
 import sootup.apk.frontend.manifest.AndroidManifestParser;
 import sootup.callgraph.CallGraph;
@@ -41,9 +36,7 @@ import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.RapidTypeAnalysisAlgorithm;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.views.JavaView;
 
 /**
  * Validates that entry points derived automatically from the manifest (steps 1/2/5 of {@code
@@ -52,42 +45,23 @@ import sootup.java.core.views.JavaView;
  */
 public class AndroidEntryPointCreatorTest {
 
-  private static final String ANDROID_PLATFORMS_PATH = "src/test/resources/platforms";
-
-  private static JavaView createViewForApk(String apkPathString) {
-    Path apkPath = Paths.get(apkPathString);
-    AndroidVersionInfo androidVersionInfo = new AndroidVersionInfo(apkPath, ANDROID_PLATFORMS_PATH);
-
-    ApkAnalysisInputLocation apkInputLocation =
-        new ApkAnalysisInputLocation(
-            apkPath, androidVersionInfo, DexBodyInterceptors.Default.bodyInterceptors());
-    JavaClassPathAnalysisInputLocation classPathInputLocation =
-        new JavaClassPathAnalysisInputLocation(
-            ANDROID_PLATFORMS_PATH
-                + File.separator
-                + "android-"
-                + androidVersionInfo.getApi_version()
-                + File.separator
-                + "android.jar");
-
-    return new JavaView(List.of(apkInputLocation, classPathInputLocation));
-  }
-
   @Test
   public void testFlowSensitivityEntryPointsMatchCallGraphTest() {
-    JavaView view = createViewForApk("src/test/resources/FlowSensitivity1.apk");
+    ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/FlowSensitivity1.apk");
     AndroidManifest manifest =
         AndroidManifestParser.parseFromApk(Paths.get("src/test/resources/FlowSensitivity1.apk"));
 
-    List<MethodSignature> entryPoints = AndroidEntryPointCreator.getEntryPoints(view, manifest);
+    List<MethodSignature> entryPoints =
+        AndroidEntryPointCreator.getEntryPoints(ctx.view, manifest, ctx.appClassNames);
 
     MethodSignature onCreate =
-        view.getIdentifierFactory()
+        ctx.view
+            .getIdentifierFactory()
             .getMethodSignature(
                 "de.ecspride.MainActivity", "onCreate", "void", List.of("android.os.Bundle"));
     assertTrue(entryPoints.contains(onCreate));
 
-    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view);
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(ctx.view);
     CallGraph cg = cha.initialize(entryPoints);
     assertTrue(cg.containsMethod(onCreate));
     assertEquals(9, cg.callsFrom(onCreate).size());
@@ -95,21 +69,24 @@ public class AndroidEntryPointCreatorTest {
 
   @Test
   public void testLocationLeakEntryPointsMatchCallGraphTest() {
-    JavaView view = createViewForApk("src/test/resources/LocationLeak1.apk");
+    ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/LocationLeak1.apk");
     AndroidManifest manifest =
         AndroidManifestParser.parseFromApk(Paths.get("src/test/resources/LocationLeak1.apk"));
 
-    List<MethodSignature> entryPoints = AndroidEntryPointCreator.getEntryPoints(view, manifest);
+    List<MethodSignature> entryPoints =
+        AndroidEntryPointCreator.getEntryPoints(ctx.view, manifest, ctx.appClassNames);
 
     MethodSignature onCreate =
-        view.getIdentifierFactory()
+        ctx.view
+            .getIdentifierFactory()
             .getMethodSignature(
                 "de.ecspride.LocationLeak1", "onCreate", "void", List.of("android.os.Bundle"));
     assertTrue(entryPoints.contains(onCreate));
 
     CallGraphAlgorithm rta =
         new RapidTypeAnalysisAlgorithm(
-            view, view.getClasses().map(JavaSootClass::getType).collect(Collectors.toSet()));
+            ctx.view,
+            ctx.view.getClasses().map(JavaSootClass::getType).collect(Collectors.toSet()));
     CallGraph cg = rta.initialize(entryPoints);
     assertTrue(cg.containsMethod(onCreate));
     assertEquals(5, cg.callsFrom(onCreate).size());
@@ -117,19 +94,21 @@ public class AndroidEntryPointCreatorTest {
 
   @Test
   public void testCryptoEntryPointsMatchCallGraphTest() {
-    JavaView view = createViewForApk("src/test/resources/Crypto.apk");
+    ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/Crypto.apk");
     AndroidManifest manifest =
         AndroidManifestParser.parseFromApk(Paths.get("src/test/resources/Crypto.apk"));
 
-    List<MethodSignature> entryPoints = AndroidEntryPointCreator.getEntryPoints(view, manifest);
+    List<MethodSignature> entryPoints =
+        AndroidEntryPointCreator.getEntryPoints(ctx.view, manifest, ctx.appClassNames);
 
     MethodSignature onCreate =
-        view.getIdentifierFactory()
+        ctx.view
+            .getIdentifierFactory()
             .getMethodSignature(
                 "com.example.MainActivity", "onCreate", "void", List.of("android.os.Bundle"));
     assertTrue(entryPoints.contains(onCreate));
 
-    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view);
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(ctx.view);
     CallGraph cg = cha.initialize(entryPoints);
     assertTrue(cg.containsMethod(onCreate));
     assertEquals(3, cg.callsFrom(onCreate).size());
@@ -137,7 +116,7 @@ public class AndroidEntryPointCreatorTest {
 
   @Test
   public void testNoApplicationClassMeansNoApplicationEntryPoints() {
-    JavaView view = createViewForApk("src/test/resources/Crypto.apk");
+    ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/Crypto.apk");
     AndroidManifest manifest =
         AndroidManifestParser.parseFromApk(Paths.get("src/test/resources/Crypto.apk"));
 
@@ -145,7 +124,8 @@ public class AndroidEntryPointCreatorTest {
 
     // every generated entry point must belong to a declared component's class (or a superclass
     // of it), never to a synthesized "Application" placeholder
-    List<MethodSignature> entryPoints = AndroidEntryPointCreator.getEntryPoints(view, manifest);
+    List<MethodSignature> entryPoints =
+        AndroidEntryPointCreator.getEntryPoints(ctx.view, manifest, ctx.appClassNames);
     assertTrue(entryPoints.size() > 0);
   }
 }

@@ -36,6 +36,7 @@ import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.ClassModifier;
+import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.util.Modifiers;
@@ -110,6 +111,22 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
                             DexUtil.dottedClassName(dexClass.toString()),
                             Modifiers.getClassModifiers(dexClass.getAccessFlags()))));
     return classList;
+  }
+
+  /**
+   * The fully qualified names of the classes actually declared in this APK's dex files.
+   *
+   * <p>This is the reliable way to tell an app-defined class apart from a platform (android.jar) or
+   * other classpath class in a {@link View}: {@link SootClass#isLibraryClass()} reflects the {@link
+   * SourceType} the class's {@code AnalysisInputLocation} reports, and classpath locations such as
+   * {@code JavaClassPathAnalysisInputLocation} default to {@code SourceType.Application} unless a
+   * caller explicitly passes {@code SourceType.Library} — so {@code isLibraryClass()} is not a safe
+   * app/platform boundary to rely on when android.jar was added the same way it is in this module's
+   * tests.
+   */
+  @NonNull
+  public Set<String> getApplicationClassNames() {
+    return Collections.unmodifiableSet(classNamesList.keySet());
   }
 
   @NonNull

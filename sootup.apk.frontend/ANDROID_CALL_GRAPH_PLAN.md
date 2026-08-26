@@ -46,11 +46,17 @@ Everything Android-specific reduces to *what entry points get passed to
    this as a lookup table keyed by component type (mirrors FlowDroid's
    `AndroidEntryPointConstants`). **[Implemented in this pass.]**
 
-3. **Callback/listener discovery.** Scan resolved Jimple bodies for classes
-   implementing Android callback interfaces (`View.OnClickListener`,
-   adapters, etc.) and for `setOnClickListener`-style registrations /
-   anonymous inner listeners — code reachable from the framework even
-   though nothing in the app directly calls it. *(Not yet implemented.)*
+3. **Callback/listener discovery.** Scan every app class for ones
+   implementing a known Android UI callback interface (`View.OnClickListener`,
+   `TextWatcher`, adapter listeners, etc.) — code reachable from the
+   framework once registered on a widget, even though nothing in the app
+   directly calls it. Deliberately whole-view rather than tied to a
+   `setOnClickListener`-style call site: an implementation can be an
+   anonymous inner class, a top-level class, or reused across several
+   registrations, so scanning for the interface is more robust than tracing
+   registration call sites. This over-approximates (doesn't prove the class
+   was ever actually registered anywhere), matching how CHA/RTA are already
+   over-approximate. **[Implemented in this pass.]**
 
 4. **Layout XML parsing.** Parse `res/layout/*.xml` (binary XML, same
    `axml` dependency) for `android:onClick` attributes, feeding step 3 from
@@ -113,8 +119,12 @@ Everything Android-specific reduces to *what entry points get passed to
    DroidBench-style APKs (`FlowSensitivity1.apk`, `LocationLeak1.apk`,
    `Crypto.apk`) plus small hand-built APKs isolating one feature each
    (manifest-only activity, XML `onClick`, listener, ICC, `AsyncTask`).
-   Steps 1/2/5 are covered by tests in this pass against the three existing
-   APKs; the feature-isolated APKs are deferred until steps 3/4/7/8 exist.
+   Steps 1/2/5 are covered by tests against the three existing APKs; step 3
+   likewise — `LocationLeak1.apk`/`FlowSensitivity1.apk` bundle the
+   `android.support.v4`/`v7` compat libraries directly into their own dex,
+   which contain real listener implementations, so no hand-built APK was
+   needed for step 3 either. The feature-isolated APKs remain deferred until
+   steps 4/7/8 exist.
 
 10. **Public API.** A single entry point (e.g. `AndroidCallGraphAlgorithm`)
     that hides the entry-point plumbing — give it an APK + platforms path,
@@ -124,14 +134,45 @@ Everything Android-specific reduces to *what entry points get passed to
     *(Not yet implemented — steps 1/2/5 are usable directly via
     `AndroidManifestParser` + `AndroidEntryPointCreator` in the meantime.)*
 
-## This pass: steps 1, 2, 5
+## Implemented so far: steps 1, 2, 3, 5
 
 New packages under `sootup.apk.frontend`:
 
 - `manifest/` — `AndroidComponentType`, `IntentFilter`, `ManifestComponent`,
   `AndroidManifest`, `AndroidManifestParser` (step 1).
 - `entrypoint/` — `LifecycleMethod`, `AndroidEntryPointConstants` (step 2),
-  `AndroidEntryPointCreator` (step 5).
+  `AndroidEntryPointCreator` (step 5), `AndroidCallbackConstants`,
+  `AndroidCallbackEntryPointCreator` (step 3).
+
+### Correctness fix found while building step 3: the app/library class boundary
+
+Step 5's `resolveOverride` originally stopped walking a component's
+superclass chain on `SootClass#isLibraryClass()`. Building step 3 (which
+needs the same "is this an app class" boundary, this time to decide *which*
+classes to scan at all rather than where to stop) surfaced that
+`isLibraryClass()` isn't a safe signal here: it reflects the `SourceType`
+reported by a class's `AnalysisInputLocation`, and this module's tests (and
+presumably any caller following the same pattern) add the platform jar via
+`JavaClassPathAnalysisInputLocation`'s single-argument constructor, which
+defaults to `SourceType.Application` — the same source type
+`ApkAnalysisInputLocation` reports for the APK's own dex classes. A scratch
+scan confirmed `isLibraryClass()` returning `false` for `android.jar`
+classes (and even bundled `junit`/JDK stub classes) in this setup, which
+would have made step 3's "scan all app classes" sweep in the entirety of
+android.jar, and would have let step 5 mistake a framework base class's own
+default implementation (e.g. `Activity#onCreate`) for an app override once
+a manifest component didn't override it directly (this happened not to bite
+any of the three existing sample APKs, since each declares exactly one
+activity that overrides `onCreate` itself — so the walk never needed to
+reach the framework boundary to find a match).
+
+Fixed by adding `ApkAnalysisInputLocation#getApplicationClassNames()` — the
+fully qualified names of classes actually declared in the APK's dex, which
+is what "app class" should mean regardless of how `SourceType` was
+configured on the classpath locations added alongside it. Both
+`AndroidEntryPointCreator.resolveOverride` (step 5, now package-visible and
+reused by step 3) and `AndroidCallbackEntryPointCreator` take this set
+explicitly rather than consulting `isLibraryClass()`.
 
 Known limitations carried forward deliberately (not silent gaps — flagged
 for later steps):
@@ -143,5 +184,8 @@ for later steps):
   false" per pre-API-31 Android semantics; the API-31+ "must be explicit
   when intent filters are present" enforcement isn't modeled (harmless here
   since it doesn't affect entry-point generation, only manifest validity).
-- No ICC, no callback/listener discovery, no layout parsing yet — steps 3,
-  4, 7, 8 above.
+- Step 3 covers UI listener interfaces only (`View.OnClickListener` and
+  friends); `Runnable`/`AsyncTask`/`Handler` callbacks are step 8's job, not
+  step 3's, to avoid overlapping with `sootup.callgraph`'s existing
+  `Thread#start()`→`run()` implicit-call handling.
+- No ICC, no layout parsing yet — steps 4, 7, 8 above.
