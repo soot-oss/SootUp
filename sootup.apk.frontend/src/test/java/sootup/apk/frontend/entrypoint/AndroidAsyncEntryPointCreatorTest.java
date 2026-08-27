@@ -33,9 +33,9 @@ import sootup.core.signatures.MethodSignature;
 /**
  * Validates step 8 of {@code ANDROID_CALL_GRAPH_PLAN.md}: async/threading entry points
  * (`Runnable`/`Callable` implementations, `AsyncTask` subclasses). Like step 3,
- * `LocationLeak1.apk`/`FlowSensitivity1.apk` bundle the `android.support` compat libraries
- * directly into their own dex, which happen to contain real implementations of all three shapes -
- * no hand-built fixture needed.
+ * `LocationLeak1.apk`/`FlowSensitivity1.apk` bundle the `android.support` compat libraries directly
+ * into their own dex, which happen to contain real implementations of all three shapes - no
+ * hand-built fixture needed.
  */
 public class AndroidAsyncEntryPointCreatorTest {
 
@@ -104,7 +104,9 @@ public class AndroidAsyncEntryPointCreatorTest {
 
     String className = "android.support.v4.print.PrintHelperKitkat$2$1";
     MethodSignature onPreExecute =
-        ctx.view.getIdentifierFactory().getMethodSignature(className, "onPreExecute", "void", List.of());
+        ctx.view
+            .getIdentifierFactory()
+            .getMethodSignature(className, "onPreExecute", "void", List.of());
     MethodSignature doInBackground =
         ctx.view
             .getIdentifierFactory()

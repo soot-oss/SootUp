@@ -296,9 +296,20 @@ public final class AndroidIccResolver {
    * then folds every subsequent call on that same local (constructor, {@code setClass}, {@code
    * setClassName}, {@code setAction}) into it. Deliberately not backward-from-the-call-site or
    * control-flow-sensitive — see the class doc for what that trades away.
+   *
+   * <p>Constant arguments are resolved through {@link #collectConstantLocals}, not read directly
+   * off the invoke's argument list: real dex bytecode has no way to pass a literal class/string
+   * constant straight into an invoke — {@code const-class}/{@code const-string} always load it into
+   * a register first, so by the time it reaches SootUp's Jimple it's a separate {@code JAssignStmt}
+   * (e.g. {@code $u1 = class "Lpkg/Cls;"}) followed by a use of that local, never a constant
+   * inlined directly as the argument.
    */
   @NonNull
   private static Map<Local, IntentInfo> collectIntentInfo(@NonNull SootMethod method) {
+    Map<Local, String> classConstantByLocal = new HashMap<>();
+    Map<Local, String> stringConstantByLocal = new HashMap<>();
+    collectConstantLocals(method, classConstantByLocal, stringConstantByLocal);
+
     Map<Local, IntentInfo> infoByLocal = new HashMap<>();
 
     for (Stmt stmt : method.getBody().getStmts()) {
@@ -328,27 +339,60 @@ public final class AndroidIccResolver {
       if (info == null) {
         continue;
       }
-      applyIntentMethod(info, invoked.getName(), expr.getArgs());
+      applyIntentMethod(
+          info, invoked.getName(), expr.getArgs(), classConstantByLocal, stringConstantByLocal);
     }
 
     return infoByLocal;
   }
 
+  /**
+   * Populates {@code classConstantByLocal}/{@code stringConstantByLocal} from every {@code local =
+   * class "..."} / {@code local = "..."} assignment in the body, normalizing a class constant's raw
+   * dex type descriptor (e.g. {@code "Lpkg/Cls;"}) to a dotted name as it's collected.
+   */
+  private static void collectConstantLocals(
+      @NonNull SootMethod method,
+      @NonNull Map<Local, String> classConstantByLocal,
+      @NonNull Map<Local, String> stringConstantByLocal) {
+    for (Stmt stmt : method.getBody().getStmts()) {
+      if (!(stmt instanceof JAssignStmt)) {
+        continue;
+      }
+      Object leftOp = ((JAssignStmt) stmt).getLeftOp();
+      Object rightOp = ((JAssignStmt) stmt).getRightOp();
+      if (!(leftOp instanceof Local)) {
+        continue;
+      }
+      if (rightOp instanceof ClassConstant) {
+        classConstantByLocal.put(
+            (Local) leftOp, normalizeClassName(((ClassConstant) rightOp).getValue()));
+      } else if (rightOp instanceof StringConstant) {
+        stringConstantByLocal.put((Local) leftOp, ((StringConstant) rightOp).getValue());
+      }
+    }
+  }
+
   private static void applyIntentMethod(
-      @NonNull IntentInfo info, @NonNull String methodName, @NonNull List<Immediate> args) {
+      @NonNull IntentInfo info,
+      @NonNull String methodName,
+      @NonNull List<Immediate> args,
+      @NonNull Map<Local, String> classConstantByLocal,
+      @NonNull Map<Local, String> stringConstantByLocal) {
     switch (methodName) {
       case "<init>":
-        classArgClassName(args).ifPresent(name -> info.explicitClassName = name);
-        firstArgIfString(args).ifPresent(info.actions::add);
+        classArg(args, classConstantByLocal).ifPresent(name -> info.explicitClassName = name);
+        firstArgAsString(args, stringConstantByLocal).ifPresent(info.actions::add);
         break;
       case "setClass":
-        classArgClassName(args).ifPresent(name -> info.explicitClassName = name);
+        classArg(args, classConstantByLocal).ifPresent(name -> info.explicitClassName = name);
         break;
       case "setClassName":
-        lastArgIfString(args).ifPresent(name -> info.explicitClassName = name);
+        lastArgAsString(args, stringConstantByLocal)
+            .ifPresent(name -> info.explicitClassName = name);
         break;
       case "setAction":
-        firstArgIfString(args).ifPresent(info.actions::add);
+        firstArgAsString(args, stringConstantByLocal).ifPresent(info.actions::add);
         break;
       default:
         break;
@@ -356,30 +400,47 @@ public final class AndroidIccResolver {
   }
 
   @NonNull
-  private static Optional<String> classArgClassName(@NonNull List<Immediate> args) {
+  private static Optional<String> classArg(
+      @NonNull List<Immediate> args, @NonNull Map<Local, String> classConstantByLocal) {
     for (Immediate arg : args) {
       if (arg instanceof ClassConstant) {
-        String raw = ((ClassConstant) arg).getValue();
-        return Optional.of(DexUtil.isByteCodeClassName(raw) ? DexUtil.dottedClassName(raw) : raw);
+        return Optional.of(normalizeClassName(((ClassConstant) arg).getValue()));
+      }
+      if (arg instanceof Local && classConstantByLocal.containsKey(arg)) {
+        return Optional.of(classConstantByLocal.get(arg));
       }
     }
     return Optional.empty();
   }
 
   @NonNull
-  private static Optional<String> firstArgIfString(@NonNull List<Immediate> args) {
-    return args.isEmpty() ? Optional.empty() : asString(args.get(0));
+  private static Optional<String> firstArgAsString(
+      @NonNull List<Immediate> args, @NonNull Map<Local, String> stringConstantByLocal) {
+    return args.isEmpty() ? Optional.empty() : asString(args.get(0), stringConstantByLocal);
   }
 
   @NonNull
-  private static Optional<String> lastArgIfString(@NonNull List<Immediate> args) {
-    return args.isEmpty() ? Optional.empty() : asString(args.get(args.size() - 1));
+  private static Optional<String> lastArgAsString(
+      @NonNull List<Immediate> args, @NonNull Map<Local, String> stringConstantByLocal) {
+    return args.isEmpty()
+        ? Optional.empty()
+        : asString(args.get(args.size() - 1), stringConstantByLocal);
   }
 
   @NonNull
-  private static Optional<String> asString(@NonNull Immediate value) {
-    return value instanceof StringConstant
-        ? Optional.of(((StringConstant) value).getValue())
-        : Optional.empty();
+  private static Optional<String> asString(
+      @NonNull Immediate value, @NonNull Map<Local, String> stringConstantByLocal) {
+    if (value instanceof StringConstant) {
+      return Optional.of(((StringConstant) value).getValue());
+    }
+    if (value instanceof Local && stringConstantByLocal.containsKey(value)) {
+      return Optional.of(stringConstantByLocal.get(value));
+    }
+    return Optional.empty();
+  }
+
+  @NonNull
+  private static String normalizeClassName(@NonNull String raw) {
+    return DexUtil.isByteCodeClassName(raw) ? DexUtil.dottedClassName(raw) : raw;
   }
 }

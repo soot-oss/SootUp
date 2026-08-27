@@ -33,21 +33,30 @@ import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
-/** Shared test fixture: a {@link JavaView} for a test APK plus its dex-declared class names. */
-final class ApkTestContext {
+/**
+ * Shared test fixture: a {@link JavaView} for a test APK plus its dex-declared class names.
+ *
+ * <p>Public so {@code sootup.apk.frontend.fixture}'s hand-built fixture APKs (step 9 of {@code
+ * ANDROID_CALL_GRAPH_PLAN.md}) can reuse the exact same view-construction logic as every other test
+ * in this module, via {@link #forApkPath}.
+ */
+public final class ApkTestContext {
 
   private static final String ANDROID_PLATFORMS_PATH = "src/test/resources/platforms";
 
-  final JavaView view;
-  final Set<String> appClassNames;
+  public final JavaView view;
+  public final Set<String> appClassNames;
 
   private ApkTestContext(JavaView view, Set<String> appClassNames) {
     this.view = view;
     this.appClassNames = appClassNames;
   }
 
-  static ApkTestContext forApk(String apkPathString) {
-    Path apkPath = Paths.get(apkPathString);
+  public static ApkTestContext forApk(String apkPathString) {
+    return forApkPath(Paths.get(apkPathString));
+  }
+
+  public static ApkTestContext forApkPath(Path apkPath) {
     AndroidVersionInfo androidVersionInfo = new AndroidVersionInfo(apkPath, ANDROID_PLATFORMS_PATH);
 
     ApkAnalysisInputLocation apkInputLocation =

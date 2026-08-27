@@ -1,0 +1,220 @@
+package sootup.apk.frontend;
+
+/*-
+ * #%L
+ * SootUp
+ * %%
+ * Copyright (C) 2022 - 2024 Kadiray Karakaya, Markus Schmidt, Jonas Klauke, Stefan Schott, Palaniappan Muthuraman, Marcus Hüwe and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
+import java.io.File;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.jspecify.annotations.NonNull;
+import sootup.apk.frontend.entrypoint.AndroidAsyncEntryPointCreator;
+import sootup.apk.frontend.entrypoint.AndroidCallbackEntryPointCreator;
+import sootup.apk.frontend.entrypoint.AndroidEntryPointCreator;
+import sootup.apk.frontend.entrypoint.AndroidLayoutEntryPointCreator;
+import sootup.apk.frontend.icc.AndroidIccResolver;
+import sootup.apk.frontend.layout.AndroidLayoutParser;
+import sootup.apk.frontend.main.AndroidVersionInfo;
+import sootup.apk.frontend.manifest.AndroidManifest;
+import sootup.apk.frontend.manifest.AndroidManifestParser;
+import sootup.callgraph.CallGraph;
+import sootup.callgraph.CallGraphAlgorithm;
+import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
+import sootup.callgraph.MutableCallGraph;
+import sootup.callgraph.RapidTypeAnalysisAlgorithm;
+import sootup.core.model.SootClass;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.views.JavaView;
+
+/**
+ * The public entry point for this module (step 10 of {@code ANDROID_CALL_GRAPH_PLAN.md}): give it
+ * an APK and an Android platforms directory, get back everything steps 1–9 compute — the parsed
+ * manifest, the resolved {@link JavaView}, the combined entry-point list, and a full {@link
+ * CallGraph} with ICC edges already added — without needing to know that plumbing exists.
+ *
+ * <p>This wraps exactly the call sequence every one of this module's own tests already performs by
+ * hand (see any class under {@code sootup.apk.frontend.fixture} for the unwrapped version):
+ *
+ * <ol>
+ *   <li>Resolve the APK's target SDK version ({@link AndroidVersionInfo}) to pick a matching {@code
+ *       android.jar}, and build a {@link JavaView} over the APK's dex plus that platform jar.
+ *   <li>Parse {@code AndroidManifest.xml} (step 1) and collect the APK's dex-declared class names
+ *       (the reliable app/platform boundary the rest of this module's entry-point resolution
+ *       depends on — see {@link ApkAnalysisInputLocation#getApplicationClassNames()}).
+ *   <li>Combine every entry-point source: manifest lifecycle callbacks (step 5), listener/callback
+ *       interface implementations (step 3), {@code android:onClick} targets (step 4), and
+ *       async/threading constructs (step 8).
+ *   <li>Run a caller-chosen {@link CallGraphAlgorithm} (CHA or RTA) over that combined list, then
+ *       layer step 7's ICC edges on top of the resulting graph.
+ * </ol>
+ *
+ * <p>Each underlying piece stays independently usable and separately tested — this class adds no
+ * new analysis logic of its own, only wiring. A caller who needs finer control (a different
+ * android.jar per component, a custom {@link CallGraphAlgorithm}, only some of the entry-point
+ * sources) should use the individual creators directly instead of this façade.
+ */
+public final class AndroidApkAnalysis {
+
+  @NonNull private final JavaView view;
+  @NonNull private final AndroidManifest manifest;
+  @NonNull private final Set<String> applicationClassNames;
+  @NonNull private final List<MethodSignature> entryPoints;
+
+  private AndroidApkAnalysis(
+      @NonNull JavaView view,
+      @NonNull AndroidManifest manifest,
+      @NonNull Set<String> applicationClassNames,
+      @NonNull List<MethodSignature> entryPoints) {
+    this.view = view;
+    this.manifest = manifest;
+    this.applicationClassNames = applicationClassNames;
+    this.entryPoints = entryPoints;
+  }
+
+  /**
+   * Analyzes the given APK: builds the {@link JavaView}, parses the manifest, and resolves the
+   * combined entry-point list. Building a {@link CallGraph} from the result is a separate step
+   * ({@link #buildCallGraphWithCHA()}/{@link #buildCallGraphWithRTA()}/{@link
+   * #buildCallGraph(CallGraphAlgorithm)}) so a caller only interested in the manifest or entry
+   * points isn't forced to pay for call-graph construction too.
+   *
+   * @param apkPath path to the APK file to analyze
+   * @param androidPlatformsPath path to a directory of {@code android-<api>/android.jar} platform
+   *     jars (see {@link AndroidVersionInfo} for where to obtain one)
+   */
+  @NonNull
+  public static AndroidApkAnalysis create(
+      @NonNull Path apkPath, @NonNull String androidPlatformsPath) {
+    AndroidVersionInfo versionInfo = new AndroidVersionInfo(apkPath, androidPlatformsPath);
+
+    ApkAnalysisInputLocation apkInputLocation =
+        new ApkAnalysisInputLocation(
+            apkPath, versionInfo, DexBodyInterceptors.Default.bodyInterceptors());
+    JavaClassPathAnalysisInputLocation classPathInputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            androidPlatformsPath
+                + File.separator
+                + "android-"
+                + versionInfo.getApi_version()
+                + File.separator
+                + "android.jar");
+    JavaView view = new JavaView(List.of(apkInputLocation, classPathInputLocation));
+
+    AndroidManifest manifest = AndroidManifestParser.parseFromApk(apkPath);
+    Set<String> applicationClassNames = apkInputLocation.getApplicationClassNames();
+    List<MethodSignature> entryPoints =
+        collectEntryPoints(apkPath, view, manifest, applicationClassNames);
+
+    return new AndroidApkAnalysis(view, manifest, applicationClassNames, entryPoints);
+  }
+
+  @NonNull
+  private static List<MethodSignature> collectEntryPoints(
+      @NonNull Path apkPath,
+      @NonNull JavaView view,
+      @NonNull AndroidManifest manifest,
+      @NonNull Set<String> applicationClassNames) {
+    Set<MethodSignature> combined = new LinkedHashSet<>();
+    combined.addAll(AndroidEntryPointCreator.getEntryPoints(view, manifest, applicationClassNames));
+    combined.addAll(
+        AndroidCallbackEntryPointCreator.getCallbackEntryPoints(view, applicationClassNames));
+    combined.addAll(AndroidAsyncEntryPointCreator.getAsyncEntryPoints(view, applicationClassNames));
+
+    Set<String> onClickMethodNames = AndroidLayoutParser.parseOnClickMethodNamesFromApk(apkPath);
+    combined.addAll(
+        AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
+            view, manifest, applicationClassNames, onClickMethodNames));
+
+    return new ArrayList<>(combined);
+  }
+
+  @NonNull
+  public JavaView getView() {
+    return view;
+  }
+
+  @NonNull
+  public AndroidManifest getManifest() {
+    return manifest;
+  }
+
+  /** The fully qualified names of classes actually declared in the APK's dex. */
+  @NonNull
+  public Set<String> getApplicationClassNames() {
+    return applicationClassNames;
+  }
+
+  /** The combined entry points from steps 3/4/5/8 — every root this façade knows how to derive. */
+  @NonNull
+  public List<MethodSignature> getEntryPoints() {
+    return entryPoints;
+  }
+
+  /**
+   * Runs {@code algorithm} over this analysis's entry points, then adds step 7's ICC edges on top
+   * of the result.
+   *
+   * @throws IllegalStateException if {@code algorithm} doesn't produce a {@link MutableCallGraph}
+   *     (every {@code sootup.callgraph} algorithm shipped in this codebase does; this only guards
+   *     against a hypothetical third-party {@link CallGraphAlgorithm} that doesn't)
+   */
+  @NonNull
+  public CallGraph buildCallGraph(@NonNull CallGraphAlgorithm algorithm) {
+    CallGraph callGraph = algorithm.initialize(entryPoints);
+    if (!(callGraph instanceof MutableCallGraph)) {
+      throw new IllegalStateException(
+          "Cannot add ICC edges: "
+              + algorithm.getClass().getName()
+              + " produced a "
+              + callGraph.getClass().getName()
+              + ", which isn't a MutableCallGraph. Both ClassHierarchyAnalysisAlgorithm and "
+              + "RapidTypeAnalysisAlgorithm satisfy this.");
+    }
+    MutableCallGraph mutableCallGraph = (MutableCallGraph) callGraph;
+    AndroidIccResolver.addIccEdges(mutableCallGraph, view, manifest, applicationClassNames);
+    return mutableCallGraph;
+  }
+
+  /** Convenience for {@code buildCallGraph(new ClassHierarchyAnalysisAlgorithm(getView()))}. */
+  @NonNull
+  public CallGraph buildCallGraphWithCHA() {
+    return buildCallGraph(new ClassHierarchyAnalysisAlgorithm(view));
+  }
+
+  /**
+   * Convenience for RTA, seeded with every class in the view as a potentially-instantiated type
+   * (matching how this module's own {@code CallGraphTest} constructs RTA) — a caller wanting a more
+   * precise instantiated-type set should build {@link RapidTypeAnalysisAlgorithm} directly and pass
+   * it to {@link #buildCallGraph(CallGraphAlgorithm)} instead.
+   */
+  @NonNull
+  public CallGraph buildCallGraphWithRTA() {
+    Set<ClassType> instantiatedTypes =
+        view.getClasses().map(SootClass::getType).collect(Collectors.toSet());
+    return buildCallGraph(new RapidTypeAnalysisAlgorithm(view, instantiatedTypes));
+  }
+}

@@ -1,5 +1,12 @@
 # Android APK Call Graph — Implementation Plan
 
+**Status: all 10 steps implemented.** Start at `AndroidApkAnalysis` (module
+root of `sootup.apk.frontend`) for the public entry point, or at any of
+this section's per-step notes for how a given piece works and why. The
+rest of this document is the design history, kept because the *why*
+behind each step's tradeoffs and limitations doesn't belong in code
+comments and is exactly what a future change to this area needs first.
+
 ## Context
 
 `sootup.apk.frontend` already converts an APK's DEX bytecode to Jimple
@@ -217,23 +224,77 @@ Everything Android-specific reduces to *what entry points get passed to
    `PrintHelperKitkat$2$1`), including a genuine negative case for free — an
    abstract intermediate class (`ModernAsyncTask$WorkerRunnable`) that
    implements `Callable` but never itself overrides `call()`, correctly
-   producing no entry point. The one remaining hand-built fixture (a real
-   compiled multi-component sample APK) stays deferred — steps 1–5/7/8 are
-   already validated individually; a combined fixture would mainly exercise
-   wiring, better done alongside step 10's public API.
+   producing no entry point.
 
-10. **Public API.** A single entry point (e.g. `AndroidCallGraphAlgorithm`)
-    that hides the entry-point plumbing — give it an APK + platforms path,
-    get back a `CallGraph`. Decide then whether to populate
-    `sootup.apk.parser`/`sootup.apk.backend` for this (registering them in
-    the root `pom.xml`) or keep everything inside `sootup.apk.frontend`.
-    *(Not yet implemented — steps 1/2/3/4/5/7/8 are usable directly via
-    `AndroidManifestParser` + `AndroidEntryPointCreator` +
-    `AndroidCallbackEntryPointCreator` + `AndroidLayoutEntryPointCreator` +
-    `AndroidAsyncEntryPointCreator` + `AndroidIccResolver` in the
-    meantime.)*
+   **The five hand-built, feature-isolated fixture APKs are now real,
+   compiled APKs — not a workaround.** Producing a genuine `.apk` normally
+   needs the Android SDK's own build tooling (`aapt2`, `d8`), which isn't
+   installed in this environment (or, presumably, in CI). Rather than settle
+   for a weaker synthetic stand-in, `org.smali:smali` — the assembler
+   belonging to the same `dexlib2` library `sootup.apk.frontend` already
+   depends on to *read* dex — turned out to expose a small, genuinely
+   reusable programmatic API (`Smali.assemble(SmaliOptions, List<String>)`,
+   compiling hand-written `.smali` source files straight to a `classes.dex`
+   byte-for-byte identical in shape to what `d8` would produce). Combined
+   with the `axml` writer already used for step 4's manifest/layout
+   fixtures, `sootup.apk.frontend.fixture.FixtureApkBuilder` assembles real
+   `.smali` sources, encodes a real binary `AndroidManifest.xml` (and
+   `res/layout` entries where needed), and zips them into a plain,
+   unsigned/unaligned `.apk` — which is all `ApkAnalysisInputLocation` and
+   this module's manifest/layout parsers ever need, since they read specific
+   known zip entries directly rather than going through the Android
+   runtime, the same way the checked-in DroidBench sample APKs are
+   consumed. This is the first validation in the whole plan that exercises
+   the *complete* real pipeline end to end — dexlib2's dex reader, this
+   module's own `instruction/*` Jimple translators, the real AXML
+   manifest/layout parsers — rather than a shortcut (`JimpleStringAnalysisInputLocation`
+   for step 7, bundled third-party bytecode for steps 3/8).
 
-## Implemented so far: steps 1, 2, 3, 4, 5, 7, 8
+   That completeness immediately paid for itself: `IccFixtureTest` (real
+   compiled `const-class`/`new-instance`/`invoke-direct` bytecode) failed on
+   the very first run, exposing a real bug in `AndroidIccResolver` that
+   every one of step 7's *own* tests had missed — see the dedicated section
+   below.
+
+   `ManifestLifecycleFixtureTest`/`OnClickFixtureTest`/`ListenerFixtureTest`/
+   `AsyncTaskFixtureTest` cover the manifest-only-activity+service+receiver,
+   `android:onClick`, listener, and `AsyncTask` fixtures respectively — each
+   proving its target helper method is unreachable from lifecycle entry
+   points alone and reachable once the relevant step's entry points are
+   added, against real compiled bytecode. **[Implemented in this pass.]**
+
+10. **Public API.** A single entry point that hides the entry-point
+    plumbing — give it an APK + platforms path, get back a `CallGraph`.
+
+    **`AndroidApkAnalysis`, kept in `sootup.apk.frontend`.**
+    `sootup.apk.parser`/`sootup.apk.backend` stay empty and unregistered —
+    by this point every step's implementation already lives in
+    `sootup.apk.frontend` with no natural seam suggesting a split, and
+    registering two new Maven modules (new `pom.xml`s, root `pom.xml`
+    `<modules>` and license-check-roots entries) would add real overhead
+    for no corresponding benefit. `AndroidApkAnalysis.create(apkPath,
+    platformsPath)` builds the `JavaView`, parses the manifest, and
+    combines every entry-point source (steps 3/4/5/8) into one list, all
+    eagerly; a separate `buildCallGraph(CallGraphAlgorithm)` (plus
+    `buildCallGraphWithCHA()`/`buildCallGraphWithRTA()` convenience
+    wrappers) runs the caller's chosen algorithm over that list and layers
+    step 7's ICC edges on top — split out so a caller only wanting the
+    manifest or entry points isn't forced into call-graph construction.
+    This is deliberately *only* wiring: every underlying piece stays
+    independently usable and separately tested, exactly the call sequence
+    every fixture test already performed by hand (see any class under
+    `sootup.apk.frontend.fixture` for the unwrapped version).
+
+    Step 9's writeup deferred one thing to here: "a combined fixture would
+    mainly exercise wiring, better done alongside step 10's public API."
+    `CombinedFixtureAnalysisTest` is that fixture — one real, compiled,
+    six-class APK exercising steps 3/4/5/7/8 at once, run entirely through
+    `AndroidApkAnalysis` (not by calling each step's creator directly),
+    checking both the combined entry-point list and the resulting CHA *and*
+    RTA call graphs. It passed on the first run. **[Implemented in this
+    pass.]**
+
+## Implemented so far: steps 1, 2, 3, 4, 5, 7, 8, 9, 10 — the full plan
 
 New packages under `sootup.apk.frontend`:
 
@@ -245,6 +306,64 @@ New packages under `sootup.apk.frontend`:
   (step 4), `AndroidAsyncConstants`, `AndroidAsyncEntryPointCreator` (step 8).
 - `layout/` — `AndroidLayoutParser` (step 4).
 - `icc/` — `AndroidIccResolver` (step 7).
+- (module root) — `AndroidApkAnalysis` (step 10), alongside the pre-existing
+  `ApkAnalysisInputLocation`/`DexBodyInterceptors`.
+
+Test-only additions for step 9 (`src/test/java/sootup/apk/frontend/fixture/`):
+`FixtureApkBuilder` (the smali+axml→real-`.apk` builder),
+`ManifestLifecycleFixtureTest`, `OnClickFixtureTest`, `ListenerFixtureTest`,
+`IccFixtureTest`, `AsyncTaskFixtureTest`, and (step 10)
+`CombinedFixtureAnalysisTest`. `ApkTestContext` (used by every other test in
+this module) is now `public` so the `fixture` package can reuse its
+view-construction logic via a new `forApkPath(Path)` overload (the original
+`forApk(String)` — for the checked-in resource APKs — now just delegates to
+it).
+
+Step 9 also added two `pom.xml` dependencies: `org.smali:smali` (test
+scope, `sootup.apk.frontend` only — the assembler; version-matched to the
+`dexlib2` version already pinned in the root `pom.xml`'s
+`dependencyManagement`, where the version now also lives).
+
+### Bug found by step 9: `AndroidIccResolver` never worked against real dex
+
+Every one of step 7's own tests passed, yet `IccFixtureTest` — the first
+*real, compiled* multi-component APK step 7 was ever run against — failed
+on the first attempt. The cause: `AndroidIccResolver`'s constant tracing
+originally checked whether an invoke's argument *was itself* a
+`ClassConstant`/`StringConstant`. That's true of hand-written Jimple text
+(step 7's own tests write `specialinvoke $i0.<Intent: void
+<init>(Context,Class)>(this, class "LTargetActivity;")`, inlining the
+constant directly as an argument, which is valid Jimple syntax) — but it
+can never be true of Jimple translated from real dex bytecode: Dalvik
+invoke instructions only take register operands, so `const-class`/
+`const-string` always load into a register (→ a Jimple local) *first*, via
+a separate assignment statement, and the invoke references that local, not
+the constant. Real dex-derived Jimple for `new Intent(this,
+Target.class)` looks like:
+
+```
+$u1 = class "Ltest/fixture/icc/TargetActivity;"
+specialinvoke $u0.<android.content.Intent: void <init>(Context,Class)>(this, $u1)
+```
+
+— never a constant inlined as the argument. `AndroidIccResolver` now does
+a first pass over each method body building `Local → constant value` maps
+(`collectConstantLocals`), and every place that reads a `ClassConstant`/
+`StringConstant` argument (`classArg`, `firstArgAsString`,
+`lastArgAsString`) resolves *through* those maps when the argument is a
+`Local`, not just when it's a constant literal. The five step 7 tests in
+`AndroidIccResolverTest` still pass unchanged (inlined constants are still
+handled, just no longer the *only* case), and `IccFixtureTest` now passes
+against real bytecode too.
+
+The lesson generalizes: **every prior step's tests that used
+`JimpleStringAnalysisInputLocation` or hand-picked existing bytecode were
+real, but none of them exercised the actual dex→Jimple translation for a
+*newly constructed* scenario** — steps 3/8's tests read pre-existing
+bundled bytecode (already real), and step 7's tests wrote Jimple text
+directly (bypassing translation entirely). Step 9 is the first place a
+scenario was both *newly authored* and *run through the real dex
+translator*, which is exactly the combination that caught this.
 
 Step 7 also changed `sootup.apk.frontend`'s `pom.xml`: `sootup.callgraph` is
 now a normal compile dependency (it was test-scoped before, since steps 1–5
@@ -321,7 +440,10 @@ for later steps):
   from steps 1/3/4/5's combined entry points — run on a CHA/RTA graph built
   from step 5 alone, an ICC target that only step 3/4 would have added as a
   node won't get its own subtree expanded, though the edge to it is still
-  added.
+  added. (This entry originally also said constant tracing only handled a
+  constant inlined directly as an invoke argument — step 9's real-bytecode
+  fixture caught that this is never how real dex-derived Jimple looks;
+  fixed, see the dedicated writeup above.)
 - Step 8's `Runnable`/`Callable` scan is deliberately unscoped: it treats
   every implementation as reachable regardless of whether it's actually
   ever passed to `Handler.post`/`View.post`/an executor, or whether it's
