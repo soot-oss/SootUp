@@ -44,7 +44,7 @@ import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.MutableCallGraph;
 import sootup.callgraph.RapidTypeAnalysisAlgorithm;
-import sootup.core.model.SootClass;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -121,7 +121,8 @@ public final class AndroidApkAnalysis {
                 + "android-"
                 + versionInfo.getApi_version()
                 + File.separator
-                + "android.jar");
+                + "android.jar",
+            SourceType.Library);
     JavaView view = new JavaView(List.of(apkInputLocation, classPathInputLocation));
 
     AndroidManifest manifest = AndroidManifestParser.parseFromApk(apkPath);
@@ -206,15 +207,33 @@ public final class AndroidApkAnalysis {
   }
 
   /**
-   * Convenience for RTA, seeded with every class in the view as a potentially-instantiated type
-   * (matching how this module's own {@code CallGraphTest} constructs RTA) — a caller wanting a more
-   * precise instantiated-type set should build {@link RapidTypeAnalysisAlgorithm} directly and pass
-   * it to {@link #buildCallGraph(CallGraphAlgorithm)} instead.
+   * Convenience for RTA, seeded with every <em>app</em> class (not android.jar) as a
+   * potentially-instantiated type.
+   *
+   * <p>{@link RapidTypeAnalysisAlgorithm} isn't a static filter over a fixed universe — it
+   * discovers instantiated types as it explores reachable code (see its {@code
+   * instantiatedClasses.add(...)} during worklist processing) and uses the set to prune virtual
+   * dispatch candidates down to types actually seen being {@code new}'d. Seeding it with every
+   * class in the *entire* view (as an earlier version of this method did, and as this module's
+   * pre-existing {@code CallGraphTest} still does) means every android.jar subtype of a common
+   * framework base type (e.g. every {@code View} subclass the SDK ships) is considered
+   * "instantiated" from the start — for any virtual call through that base type, RTA then behaves
+   * exactly like CHA, silently losing the precision RTA exists to provide.
+   *
+   * <p>App classes are seeded explicitly because the framework instantiates manifest components
+   * (and framework-invoked callback classes — listeners, {@code AsyncTask}s) itself, via {@code
+   * new}s that never appear in the app's own bytecode for RTA to discover; every other real
+   * instantiation (including of framework types the app itself {@code new}s, e.g. {@code new
+   * ArrayList()}) is picked up organically as RTA explores from the entry points. A caller wanting
+   * a different seed should build {@link RapidTypeAnalysisAlgorithm} directly and pass it to {@link
+   * #buildCallGraph(CallGraphAlgorithm)} instead.
    */
   @NonNull
   public CallGraph buildCallGraphWithRTA() {
     Set<ClassType> instantiatedTypes =
-        view.getClasses().map(SootClass::getType).collect(Collectors.toSet());
+        applicationClassNames.stream()
+            .map(name -> view.getIdentifierFactory().getClassType(name))
+            .collect(Collectors.toSet());
     return buildCallGraph(new RapidTypeAnalysisAlgorithm(view, instantiatedTypes));
   }
 }

@@ -23,6 +23,7 @@ package sootup.apk.frontend.entrypoint;
  */
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -104,6 +105,22 @@ public final class AndroidEntryPointCreator {
       @NonNull AndroidComponentType componentType,
       @NonNull Set<MethodSignature> out) {
     ClassType classType = identifierFactory.getClassType(className);
+
+    // The OS instantiates every manifest component itself (reflectively, via the required
+    // public no-arg constructor) before calling any lifecycle method on it - there is no app
+    // call site for this, the same reason lifecycle methods themselves need to be entry points.
+    // Unlike lifecycle methods, this isn't resolveOverride'd up the hierarchy: Android always
+    // instantiates the exact declared component class, and javac always emits a default no-arg
+    // constructor on it even if the source never wrote one, so a direct lookup on classType
+    // itself is both correct and sufficient.
+    MethodSubSignature constructorSubSignature =
+        identifierFactory
+            .getMethodSignature(classType, "<init>", "void", Collections.emptyList())
+            .getSubSignature();
+    view.getClass(classType)
+        .flatMap(sootClass -> sootClass.getMethod(constructorSubSignature))
+        .ifPresent(constructor -> out.add(constructor.getSignature()));
+
     for (LifecycleMethod lifecycleMethod :
         AndroidEntryPointConstants.getLifecycleMethods(componentType)) {
       resolveOverride(view, identifierFactory, appClassNames, classType, lifecycleMethod)

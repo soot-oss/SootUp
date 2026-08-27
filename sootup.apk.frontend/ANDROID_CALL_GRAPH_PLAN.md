@@ -407,6 +407,110 @@ and `AndroidCallbackEntryPointCreator`/`AndroidLayoutEntryPointCreator`/
 `AndroidIccResolver`/`AndroidAsyncEntryPointCreator` take this set
 explicitly rather than consulting `isLibraryClass()`.
 
+### Post-completion fix: the same `SourceType` boundary bug, a third time — this time actually bloating the call graph
+
+The app/library boundary bug above was fixed everywhere *this module's own
+code* checked it (`resolveOverride` and friends, via
+`getApplicationClassNames()`). It was never fixed at the *source* —
+`AndroidApkAnalysis.create()` was still handing `JavaClassPathAnalysisInputLocation`
+the platform jar via the single-argument constructor, so `isLibraryClass()`
+was still `false` for every android.jar class. This doesn't affect this
+module's own entry-point logic (which stopped consulting
+`isLibraryClass()` back at step 3), but `sootup.callgraph`'s own
+`DefaultCallResolver` — the thing that decides whether to expand a
+method's own outgoing calls at all — relies on exactly that flag: `if
+(sourceMethod`'s declaring class `isLibraryClass()`) don't resolve any
+calls from it`. With android.jar misclassified as non-library, CHA/RTA
+happily expanded *into* android.jar's own method bodies and kept going
+recursively, pulling a large, uncontrolled slice of the framework's own
+internal call graph into the result — this is what a user noticed
+directly ("the call graph contains all methods from android.jar").
+
+Fixed with one line: `AndroidApkAnalysis.create()` now constructs the
+platform jar's input location with `SourceType.Library` explicitly. The
+direct edge from an app method into whatever framework API it calls is
+unaffected (`VirtualCallResolver.all()`, which governs whether a resolved
+*target* is admitted, doesn't consult `isLibraryClass()` at all) — only
+the recursive expansion *into* that framework method's own body stops.
+
+A related, second bug surfaced while measuring the first fix's effect: the
+size reduction from the `SourceType` fix alone was smaller than expected.
+`buildCallGraphWithRTA()` seeded `RapidTypeAnalysisAlgorithm`'s
+instantiated-types set with `view.getClasses()` — every class in the
+*entire* view, app and android.jar alike (copied from this module's
+pre-existing `CallGraphTest`, without questioning it at the time). RTA
+isn't a static filter over a fixed universe, though — it *discovers*
+instantiated types as it explores reachable code and uses the set to prune
+virtual-dispatch candidates down to types actually seen being `new`'d.
+Seeding it with literally every android.jar class up front means every
+subtype of a common framework base type (every `View` subclass the SDK
+ships, for instance) is "instantiated" from the start — RTA degenerates
+into CHA-equivalence for any dispatch through such a type, silently
+losing the precision RTA exists to provide. Fixed by seeding
+`buildCallGraphWithRTA()` with only the APK's own app classes: the
+framework instantiates manifest components and callback classes itself
+via `new`s that never appear in the app's own bytecode for RTA to
+discover, so those need seeding explicitly, while every other real
+instantiation — including of framework types the app itself constructs,
+e.g. `new ArrayList()` — is picked up organically as RTA explores from the
+entry points.
+
+Measured across the full public DroidBench corpus (188 real APKs, all 17
+categories — see the validation note two sections up): the `SourceType`
+fix alone reduced total CHA graph size from 177,386 to 172,420 methods
+(888,583 → 796,836 calls) — a real but modest reduction, because
+android.jar in the `android-platforms` jars used here is largely a stub
+jar with little of its own body to recursively expand into. The RTA
+seeding fix mattered far more: before it, RTA was essentially
+CHA-equivalent in size; after it, RTA totals 122,329 methods and 497,165
+calls against CHA's 172,420/796,836 on the same corpus — RTA now does
+real, additional work over CHA, which it wasn't before. `CallGraphTest`
+(pre-existing, not part of this plan) still constructs RTA the old,
+unfixed way and its hardcoded expected-count assertions still pass — it
+wasn't touched, since changing its seeding could invalidate counts
+verified against that specific pattern.
+
+### Post-completion fix: component constructors were never entry points
+
+Found via the user's own differential Soot-vs-SootUp call graph comparison
+on DroidBench's `Button1` (a real, independent methodology this plan's own
+DroidBench sweep couldn't have caught, since the sweep only checks that
+nothing crashes and counts look sane — it has no ground truth to diff
+against). Soot/FlowDroid's dummy-main explicitly calls `new
+Button1()`/`Button1.<init>()` before calling `onCreate`; SootUp's
+entry-point list had no equivalent — `Button1.<init>()` was a real method
+in the dex (confirmed directly against the actual downloaded `Button1.apk`,
+not just the current DroidBench source tree, which turned out to have
+drifted from what the prebuilt APK actually contains — see below) but
+never became a call-graph node or root at all, because nothing calls it:
+not app code (the OS instantiates the component reflectively), and not
+this module's entry-point model (which only ever added *lifecycle
+methods*, never the implicit `new` that precedes them).
+
+Fixed by adding each manifest component's own no-arg constructor as an
+entry point in `AndroidEntryPointCreator.collectEntryPoints`, alongside its
+lifecycle methods. Unlike lifecycle methods this isn't `resolveOverride`'d
+up the superclass chain: Android always instantiates the exact declared
+component class, and javac always emits a default no-arg constructor on it
+even when the source never wrote one, so a direct lookup on the component's
+own class is correct and sufficient. This is conceptually the same class of
+gap as static initializers (`<clinit>`), which `sootup.callgraph` already
+handles automatically for every entry point's declaring class — instance
+constructors just have no such generic handling, since outside Android
+nothing calls `new X()` "implicitly" from outside the program for
+`sootup.callgraph` to reason about.
+
+Also worth recording as a methodology note: chasing this down required
+fetching DroidBench's actual `Button1.java`/manifest/layout source from
+GitHub to understand what the app *should* do, but the current source tree
+didn't have the `setDataIntent(Intent)` method the comparison report showed
+as "only in Soot" at all — the checked-in prebuilt `Button1.apk` predates
+a source refactor. The real ground truth turned out to be the downloaded
+APK's actual bytecode (inspected directly through this module's own dex
+pipeline), not the current source tree — worth remembering for any future
+Soot-diff finding that references a method name that doesn't appear where
+expected in DroidBench's current source.
+
 Known limitations carried forward deliberately (not silent gaps — flagged
 for later steps):
 

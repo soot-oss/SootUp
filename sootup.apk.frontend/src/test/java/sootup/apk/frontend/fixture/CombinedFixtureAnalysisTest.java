@@ -37,15 +37,14 @@ import sootup.core.signatures.MethodSignature;
  * The combined fixture step 9's writeup deferred to step 10: one real, compiled, multi-component
  * APK exercising every step (1/2/3/4/5/7/8) at once, run entirely through {@link
  * AndroidApkAnalysis} — this module's public façade — rather than by calling each step's creator
- * directly the way every other fixture test does. If the façade's wiring is wrong, this is the
- * test that would catch it: a component from each step, and a helper method reachable only if
- * that step's entry points were correctly included in the combined list.
+ * directly the way every other fixture test does. If the façade's wiring is wrong, this is the test
+ * that would catch it: a component from each step, and a helper method reachable only if that
+ * step's entry points were correctly included in the combined list.
  *
  * <p>Package {@code test.fixture.combined}: {@code MainActivity} (manifest lifecycle + {@code
- * android:onClick} + explicit ICC to {@code TargetActivity}), {@code MyService}/{@code
- * MyReceiver} (manifest lifecycle), {@code TargetActivity} (ICC target), {@code MyClickListener}
- * (step 3, never manifest-declared), {@code MyTask} (step 8 {@code AsyncTask}, never
- * manifest-declared).
+ * android:onClick} + explicit ICC to {@code TargetActivity}), {@code MyService}/{@code MyReceiver}
+ * (manifest lifecycle), {@code TargetActivity} (ICC target), {@code MyClickListener} (step 3, never
+ * manifest-declared), {@code MyTask} (step 8 {@code AsyncTask}, never manifest-declared).
  */
 public class CombinedFixtureAnalysisTest {
 
@@ -280,7 +279,8 @@ public class CombinedFixtureAnalysisTest {
         entryPoints.contains(sig("MainActivity", "onSaveClicked", "void", "android.view.View")),
         "step 4: android:onClick");
     assertTrue(
-        entryPoints.contains(sig("MyTask", "doInBackground", "java.lang.Object", "java.lang.Object[]")),
+        entryPoints.contains(
+            sig("MyTask", "doInBackground", "java.lang.Object", "java.lang.Object[]")),
         "step 8: AsyncTask");
   }
 
@@ -343,6 +343,7 @@ public class CombinedFixtureAnalysisTest {
     return analysis
         .getView()
         .getIdentifierFactory()
-        .getMethodSignature(PKG + "." + simpleClassName, methodName, returnType, List.of(paramTypes));
+        .getMethodSignature(
+            PKG + "." + simpleClassName, methodName, returnType, List.of(paramTypes));
   }
 }

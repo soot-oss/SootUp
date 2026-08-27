@@ -115,6 +115,37 @@ public class AndroidEntryPointCreatorTest {
   }
 
   @Test
+  public void testComponentConstructorIsAnEntryPoint() {
+    // The OS instantiates every manifest component itself (reflectively, via its required
+    // no-arg constructor) before calling any lifecycle method on it - there's no app call site
+    // for `new MainActivity()`, the same reason lifecycle methods themselves need to be entry
+    // points. Found missing via a real Soot-vs-SootUp call graph diff on DroidBench's Button1:
+    // Soot's dummyMain explicitly calls the component constructor; SootUp's entry-point list
+    // didn't, so the constructor (and whatever it itself does - e.g. a field initializer, or
+    // just the super() call up into android.jar) was invisible to the resulting call graph.
+    ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/Crypto.apk");
+    AndroidManifest manifest =
+        AndroidManifestParser.parseFromApk(Paths.get("src/test/resources/Crypto.apk"));
+
+    List<MethodSignature> entryPoints =
+        AndroidEntryPointCreator.getEntryPoints(ctx.view, manifest, ctx.appClassNames);
+
+    MethodSignature constructor =
+        ctx.view
+            .getIdentifierFactory()
+            .getMethodSignature("com.example.MainActivity", "<init>", "void", List.of());
+    assertTrue(entryPoints.contains(constructor));
+
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(ctx.view);
+    CallGraph cg = cha.initialize(entryPoints);
+    assertTrue(cg.containsMethod(constructor));
+    // the constructor's own super() call becomes visible too, now that it's actually explored
+    assertTrue(
+        cg.callTargetsFrom(constructor).stream()
+            .anyMatch(target -> target.getName().equals("<init>")));
+  }
+
+  @Test
   public void testNoApplicationClassMeansNoApplicationEntryPoints() {
     ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/Crypto.apk");
     AndroidManifest manifest =
