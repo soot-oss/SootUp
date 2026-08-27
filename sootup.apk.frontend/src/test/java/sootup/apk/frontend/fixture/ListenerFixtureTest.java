@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sootup.apk.frontend.entrypoint.AndroidCallbackEntryPointCreator;
@@ -42,10 +43,14 @@ import sootup.core.signatures.MethodSignature;
 
 /**
  * Isolates step 3 (listener/callback interface discovery) against a real, hand-built, compiled APK:
- * an {@code Activity} that never references a separate {@code View.OnClickListener}-implementing
- * class at all (no {@code setOnClickListener} call site to resolve, matching how a
- * layout-registered listener actually works) — nothing in app code calls {@code
- * MyClickListener#onClick}, so it must be unreachable without step 3 and reachable with it.
+ * an {@code Activity} whose {@code onCreate} constructs a {@code View.OnClickListener}
+ * implementation but never calls its {@code onClick} directly (matching how a real registered
+ * listener actually runs — the framework calls it, not app code) — {@code MyClickListener#onClick}
+ * must be unreachable without step 3 and reachable with it. The construction itself (a {@code new
+ * MyClickListener()} in reachable code) is what step 3's instantiated-type filter (see {@code
+ * AndroidCallbackEntryPointCreatorTest}) needs to admit the candidate at all — a listener class no
+ * reachable code ever constructs can never be live in real Android execution either, so it's
+ * correctly excluded, not just conveniently so.
  */
 public class ListenerFixtureTest {
 
@@ -54,6 +59,7 @@ public class ListenerFixtureTest {
 
   private static ApkTestContext ctx;
   private static AndroidManifest manifest;
+  private static Path apkPath;
 
   @BeforeAll
   public static void buildFixture() throws Exception {
@@ -70,6 +76,8 @@ public class ListenerFixtureTest {
             + ".method public onCreate(Landroid/os/Bundle;)V\n"
             + "    .registers 3\n"
             + "    invoke-super {p0, p1}, Landroid/app/Activity;->onCreate(Landroid/os/Bundle;)V\n"
+            + "    new-instance v0, Ltest/fixture/listener/MyClickListener;\n"
+            + "    invoke-direct {v0}, Ltest/fixture/listener/MyClickListener;-><init>()V\n"
             + "    return-void\n"
             + ".end method\n";
 
@@ -95,7 +103,7 @@ public class ListenerFixtureTest {
             + "    return-void\n"
             + ".end method\n";
 
-    Path apkPath =
+    apkPath =
         new FixtureApkBuilder()
             .smali(activitySmali)
             .smali(listenerSmali)
@@ -106,10 +114,15 @@ public class ListenerFixtureTest {
     manifest = AndroidManifestParser.parseFromApk(apkPath);
   }
 
+  private static List<MethodSignature> callbackEntryPoints() {
+    Set<String> instantiated = ctx.instantiatedClassNamesFromCoreEntryPoints(manifest, apkPath);
+    return AndroidCallbackEntryPointCreator.getCallbackEntryPoints(
+        ctx.view, ctx.appClassNames, instantiated);
+  }
+
   @Test
   public void testListenerEntryPointResolvesToRealMethod() {
-    List<MethodSignature> callbackEntryPoints =
-        AndroidCallbackEntryPointCreator.getCallbackEntryPoints(ctx.view, ctx.appClassNames);
+    List<MethodSignature> callbackEntryPoints = callbackEntryPoints();
 
     MethodSignature onClick =
         ctx.view
@@ -131,8 +144,7 @@ public class ListenerFixtureTest {
     CallGraph lifecycleGraph = lifecycleCha.initialize(lifecycleOnly);
     assertFalse(lifecycleGraph.containsMethod(listenerHelper));
 
-    List<MethodSignature> callbackEntryPoints =
-        AndroidCallbackEntryPointCreator.getCallbackEntryPoints(ctx.view, ctx.appClassNames);
+    List<MethodSignature> callbackEntryPoints = callbackEntryPoints();
     List<MethodSignature> combined = new ArrayList<>(lifecycleOnly);
     combined.addAll(callbackEntryPoints);
     CallGraphAlgorithm combinedCha = new ClassHierarchyAnalysisAlgorithm(ctx.view);

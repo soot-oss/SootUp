@@ -45,6 +45,17 @@ import sootup.core.views.View;
  * app's whole class set, since a listener implementation can appear anywhere (an anonymous inner
  * class in an Activity, a top-level class, a Fragment, ...), not just on manifest-declared
  * components.
+ *
+ * <p>Scanning is further restricted to classes known to be instantiated somewhere in already-
+ * reachable code (see {@link InstantiatedTypeCollector}). This isn't a precision heuristic: a
+ * listener/callback class can only ever run if something registers a live instance of it (e.g.
+ * {@code view.setOnClickListener(x)}), and nothing can register an instance it never constructed —
+ * so "never `new`'d in reachable code" is a sound precondition for "can never actually fire", not
+ * just a plausible-looking one. Without this filter, an app that bundles a large library
+ * (support-v4/v7, or any AAR) pulls in every listener interface implementation anywhere in that
+ * library's own internal machinery as an entry point, even when the app's own code never exercises
+ * any of it — confirmed directly against a real DroidBench sample bundling the support library,
+ * where this cut the resulting call graph from 657 methods to a small fraction of that.
  */
 public final class AndroidCallbackEntryPointCreator {
 
@@ -59,10 +70,15 @@ public final class AndroidCallbackEntryPointCreator {
    *     (android.jar) classes that themselves implement one of these listener interfaces (e.g.
    *     {@code Activity} implements {@code View.OnCreateContextMenuListener}) aren't mistaken for
    *     app-defined callback targets.
+   * @param instantiatedClassNames the fully qualified names of classes known to be instantiated
+   *     somewhere in already-reachable code (see {@link InstantiatedTypeCollector}) — a candidate
+   *     class not in this set is skipped entirely, per the class doc above.
    */
   @NonNull
   public static List<MethodSignature> getCallbackEntryPoints(
-      @NonNull View view, @NonNull Set<String> appClassNames) {
+      @NonNull View view,
+      @NonNull Set<String> appClassNames,
+      @NonNull Set<String> instantiatedClassNames) {
     Set<MethodSignature> entryPoints = new LinkedHashSet<>();
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     TypeHierarchy typeHierarchy = view.getTypeHierarchy();
@@ -70,6 +86,9 @@ public final class AndroidCallbackEntryPointCreator {
         AndroidCallbackConstants.getListenerInterfaceMethods();
 
     for (String className : appClassNames) {
+      if (!instantiatedClassNames.contains(className)) {
+        continue;
+      }
       ClassType classType = identifierFactory.getClassType(className);
       view.getClass(classType)
           .ifPresent(

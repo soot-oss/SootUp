@@ -42,9 +42,12 @@ import sootup.core.signatures.MethodSignature;
  * step's entry points were correctly included in the combined list.
  *
  * <p>Package {@code test.fixture.combined}: {@code MainActivity} (manifest lifecycle + {@code
- * android:onClick} + explicit ICC to {@code TargetActivity}), {@code MyService}/{@code MyReceiver}
- * (manifest lifecycle), {@code TargetActivity} (ICC target), {@code MyClickListener} (step 3, never
- * manifest-declared), {@code MyTask} (step 8 {@code AsyncTask}, never manifest-declared).
+ * android:onClick} + explicit ICC to {@code TargetActivity} + constructing {@code MyClickListener}
+ * and {@code MyTask}), {@code MyService}/{@code MyReceiver} (manifest lifecycle), {@code
+ * TargetActivity} (ICC target), {@code MyClickListener} (step 3, never manifest-declared — {@code
+ * onCreate} constructs it so it survives the instantiated-type filter, matching how a real listener
+ * has to be built before it's registered), {@code MyTask} (step 8 {@code AsyncTask}, never
+ * manifest-declared, constructed the same way).
  */
 public class CombinedFixtureAnalysisTest {
 
@@ -67,7 +70,7 @@ public class CombinedFixtureAnalysisTest {
             + ".end method\n"
             + "\n"
             + ".method public onCreate(Landroid/os/Bundle;)V\n"
-            + "    .registers 4\n"
+            + "    .registers 6\n"
             + "    invoke-super {p0, p1}, Landroid/app/Activity;->onCreate(Landroid/os/Bundle;)V\n"
             + "    invoke-direct {p0}, L"
             + PKG.replace('.', '/')
@@ -78,6 +81,18 @@ public class CombinedFixtureAnalysisTest {
             + "/TargetActivity;\n"
             + "    invoke-direct {v0, p0, v1}, Landroid/content/Intent;-><init>(Landroid/content/Context;Ljava/lang/Class;)V\n"
             + "    invoke-virtual {p0, v0}, Landroid/app/Activity;->startActivity(Landroid/content/Intent;)V\n"
+            + "    new-instance v2, L"
+            + PKG.replace('.', '/')
+            + "/MyClickListener;\n"
+            + "    invoke-direct {v2}, L"
+            + PKG.replace('.', '/')
+            + "/MyClickListener;-><init>()V\n"
+            + "    new-instance v3, L"
+            + PKG.replace('.', '/')
+            + "/MyTask;\n"
+            + "    invoke-direct {v3}, L"
+            + PKG.replace('.', '/')
+            + "/MyTask;-><init>()V\n"
             + "    return-void\n"
             + ".end method\n"
             + "\n"

@@ -26,8 +26,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.apk.frontend.manifest.AndroidManifest;
 import sootup.apk.frontend.manifest.AndroidManifestParser;
@@ -38,64 +42,42 @@ import sootup.core.signatures.MethodSignature;
 
 /**
  * Validates step 3 of {@code ANDROID_CALL_GRAPH_PLAN.md}: discovering callback/listener
- * implementations that the manifest-driven lifecycle entry points (steps 1/2/5) never reach.
+ * implementations that the manifest-driven lifecycle entry points (steps 1/2/5) never reach —
+ * restricted to classes actually instantiated somewhere in that reachable code (the precision
+ * tightening layered on afterward; see {@link InstantiatedTypeCollector}).
  */
 public class AndroidCallbackEntryPointCreatorTest {
+
+  private static List<MethodSignature> getCallbackEntryPoints(ApkTestContext ctx, Path apkPath) {
+    AndroidManifest manifest = AndroidManifestParser.parseFromApk(apkPath);
+    Set<String> instantiated = ctx.instantiatedClassNamesFromCoreEntryPoints(manifest, apkPath);
+    return AndroidCallbackEntryPointCreator.getCallbackEntryPoints(
+        ctx.view, ctx.appClassNames, instantiated);
+  }
 
   @Test
   public void testCryptoHasNoCallbackEntryPoints() {
     // Crypto.apk's only app classes are MainActivity (which doesn't itself override any listener
     // interface method beyond what Activity already implements intrinsically) and a plain utility
     // class - no listener implementations to find.
-    ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/Crypto.apk");
-    List<MethodSignature> callbackEntryPoints =
-        AndroidCallbackEntryPointCreator.getCallbackEntryPoints(ctx.view, ctx.appClassNames);
-    assertTrue(callbackEntryPoints.isEmpty());
-  }
-
-  @Test
-  public void testLocationLeakFindsBundledListenerImplementations() {
-    // LocationLeak1.apk bundles the android.support.v4 compat library directly in its dex, which
-    // contains real OnClickListener/DialogInterface listener implementations - genuine app-bundled
-    // code, not platform (android.jar) code, and exactly what step 3 should surface.
-    ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/LocationLeak1.apk");
-    List<MethodSignature> callbackEntryPoints =
-        AndroidCallbackEntryPointCreator.getCallbackEntryPoints(ctx.view, ctx.appClassNames);
-
-    MethodSignature pagerTabStripOnClick =
-        ctx.view
-            .getIdentifierFactory()
-            .getMethodSignature(
-                "android.support.v4.view.PagerTabStrip$2",
-                "onClick",
-                "void",
-                List.of("android.view.View"));
-    MethodSignature dialogFragmentOnCancel =
-        ctx.view
-            .getIdentifierFactory()
-            .getMethodSignature(
-                "android.support.v4.app.DialogFragment",
-                "onCancel",
-                "void",
-                List.of("android.content.DialogInterface"));
-
-    assertTrue(callbackEntryPoints.contains(pagerTabStripOnClick));
-    assertTrue(callbackEntryPoints.contains(dialogFragmentOnCancel));
+    Path apkPath = Paths.get("src/test/resources/Crypto.apk");
+    ApkTestContext ctx = ApkTestContext.forApkPath(apkPath);
+    assertTrue(getCallbackEntryPoints(ctx, apkPath).isEmpty());
   }
 
   @Test
   public void testCallbackEntryPointsAreUnreachableFromLifecycleEntryPointsAlone() {
-    // The concrete value of step 3: these callback methods are not found by CHA rooted only at
-    // the step 5 lifecycle entry points, so without step 3 they'd be (wrongly) treated as dead.
-    ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/LocationLeak1.apk");
-    AndroidManifest manifest =
-        AndroidManifestParser.parseFromApk(Paths.get("src/test/resources/LocationLeak1.apk"));
+    // The concrete value of step 3: any callback method it finds is not found by CHA rooted only
+    // at the step 5 lifecycle entry points, so without step 3 it'd be (wrongly) treated as dead -
+    // and, symmetrically, everything step 3 finds must actually be instantiated in that same
+    // lifecycle-only reachable code, or it wouldn't have passed the instantiated-type filter.
+    Path apkPath = Paths.get("src/test/resources/LocationLeak1.apk");
+    ApkTestContext ctx = ApkTestContext.forApkPath(apkPath);
+    AndroidManifest manifest = AndroidManifestParser.parseFromApk(apkPath);
 
     List<MethodSignature> lifecycleEntryPoints =
         AndroidEntryPointCreator.getEntryPoints(ctx.view, manifest, ctx.appClassNames);
-    List<MethodSignature> callbackEntryPoints =
-        AndroidCallbackEntryPointCreator.getCallbackEntryPoints(ctx.view, ctx.appClassNames);
-    assertFalse(callbackEntryPoints.isEmpty());
+    List<MethodSignature> callbackEntryPoints = getCallbackEntryPoints(ctx, apkPath);
 
     CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(ctx.view);
     CallGraph lifecycleOnlyGraph = cha.initialize(lifecycleEntryPoints);
@@ -107,7 +89,7 @@ public class AndroidCallbackEntryPointCreatorTest {
 
     // Once combined, the call graph actually contains every callback entry point as a root.
     CallGraphAlgorithm combinedCha = new ClassHierarchyAnalysisAlgorithm(ctx.view);
-    List<MethodSignature> combined = new java.util.ArrayList<>(lifecycleEntryPoints);
+    List<MethodSignature> combined = new ArrayList<>(lifecycleEntryPoints);
     combined.addAll(callbackEntryPoints);
     CallGraph combinedGraph = combinedCha.initialize(combined);
     for (MethodSignature callback : callbackEntryPoints) {
@@ -116,51 +98,71 @@ public class AndroidCallbackEntryPointCreatorTest {
   }
 
   @Test
-  public void testFlowSensitivityFindsMultipleDistinctListenerInterfaces() {
-    ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/FlowSensitivity1.apk");
-    List<MethodSignature> callbackEntryPoints =
-        AndroidCallbackEntryPointCreator.getCallbackEntryPoints(ctx.view, ctx.appClassNames);
-
-    // The bundled appcompat/support library implements several distinct listener interfaces
-    // (OnClickListener, OnItemClickListener, OnKeyListener, TextWatcher, ...); assert we found a
-    // representative one from each rather than pinning the exact (large, library-version-specific)
-    // count.
-    MethodSignature actionBarViewOnClick =
-        ctx.view
-            .getIdentifierFactory()
-            .getMethodSignature(
-                "android.support.v7.internal.widget.ActionBarView$2",
-                "onClick",
-                "void",
-                List.of("android.view.View"));
-    MethodSignature searchViewTextWatcher =
-        ctx.view
-            .getIdentifierFactory()
-            .getMethodSignature(
-                "android.support.v7.widget.SearchView$12",
-                "afterTextChanged",
-                "void",
-                List.of("android.text.Editable"));
-    MethodSignature menuItemClick =
-        ctx.view
-            .getIdentifierFactory()
-            .getMethodSignature(
-                "android.support.v7.internal.view.menu.MenuItemWrapperICS$OnMenuItemClickListenerWrapper",
-                "onMenuItemClick",
-                "boolean",
-                List.of("android.view.MenuItem"));
-
-    assertTrue(callbackEntryPoints.contains(actionBarViewOnClick));
-    assertTrue(callbackEntryPoints.contains(searchViewTextWatcher));
-    assertTrue(callbackEntryPoints.contains(menuItemClick));
+  public void testResultsAreDeduplicated() {
+    Path apkPath = Paths.get("src/test/resources/FlowSensitivity1.apk");
+    ApkTestContext ctx = ApkTestContext.forApkPath(apkPath);
+    List<MethodSignature> callbackEntryPoints = getCallbackEntryPoints(ctx, apkPath);
+    assertEquals(callbackEntryPoints.size(), new LinkedHashSet<>(callbackEntryPoints).size());
   }
 
   @Test
-  public void testResultsAreDeduplicated() {
-    ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/FlowSensitivity1.apk");
-    List<MethodSignature> callbackEntryPoints =
-        AndroidCallbackEntryPointCreator.getCallbackEntryPoints(ctx.view, ctx.appClassNames);
-    assertEquals(
-        callbackEntryPoints.size(), new java.util.LinkedHashSet<>(callbackEntryPoints).size());
+  public void testInstantiatedListenerIsFound() {
+    // android.support.v7.internal.widget.ActivityChooserView$Callbacks#onClick and
+    // android.support.v7.internal.view.menu.MenuDialogHelper#onClick are both genuinely
+    // instantiated somewhere in FlowSensitivity1.apk's reachable code (verified via a diagnostic
+    // dump of InstantiatedTypeCollector's output for this apk), so unlike the bundled-but-dead
+    // classes this filter is meant to exclude, these must still be found.
+    Path apkPath = Paths.get("src/test/resources/FlowSensitivity1.apk");
+    ApkTestContext ctx = ApkTestContext.forApkPath(apkPath);
+    List<MethodSignature> callbackEntryPoints = getCallbackEntryPoints(ctx, apkPath);
+
+    MethodSignature activityChooserViewCallbacksOnClick =
+        ctx.view
+            .getIdentifierFactory()
+            .getMethodSignature(
+                "android.support.v7.internal.widget.ActivityChooserView$Callbacks",
+                "onClick",
+                "void",
+                List.of("android.view.View"));
+    MethodSignature menuDialogHelperOnClick =
+        ctx.view
+            .getIdentifierFactory()
+            .getMethodSignature(
+                "android.support.v7.internal.view.menu.MenuDialogHelper",
+                "onClick",
+                "void",
+                List.of("android.content.DialogInterface", "int"));
+
+    assertTrue(callbackEntryPoints.contains(activityChooserViewCallbacksOnClick));
+    assertTrue(callbackEntryPoints.contains(menuDialogHelperOnClick));
+  }
+
+  @Test
+  public void testNeverInstantiatedCandidateIsExcluded() {
+    // android.support.v4.content.ModernAsyncTask$WorkerRunnable exists in FlowSensitivity1.apk's
+    // dex and (per AndroidAsyncEntryPointCreatorTest) genuinely has no override of its own to
+    // begin with - but even a class that DID override a listener method should never appear here
+    // unless something in reachable code actually constructs it. This is the same shape of gap
+    // that a real Soot-vs-SootUp comparison caught in production: a bundled-but-never-used class
+    // (there, most of android.support.v4.app.BackStackRecord/FragmentManagerImpl on a real
+    // DroidBench sample) must not be treated as reachable just because it's linked into the dex.
+    Path apkPath = Paths.get("src/test/resources/FlowSensitivity1.apk");
+    ApkTestContext ctx = ApkTestContext.forApkPath(apkPath);
+    AndroidManifest manifest = AndroidManifestParser.parseFromApk(apkPath);
+    Set<String> instantiated = ctx.instantiatedClassNamesFromCoreEntryPoints(manifest, apkPath);
+
+    assertFalse(
+        instantiated.contains("android.support.v4.content.ModernAsyncTask$WorkerRunnable"),
+        "sanity check: this class must not be reachable-instantiated for this test to be meaningful");
+
+    List<MethodSignature> callbackEntryPoints = getCallbackEntryPoints(ctx, apkPath);
+    boolean anyFromThatClass =
+        callbackEntryPoints.stream()
+            .anyMatch(
+                sig ->
+                    sig.getDeclClassType()
+                        .getFullyQualifiedName()
+                        .equals("android.support.v4.content.ModernAsyncTask$WorkerRunnable"));
+    assertFalse(anyFromThatClass);
   }
 }

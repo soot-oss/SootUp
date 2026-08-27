@@ -34,6 +34,7 @@ import sootup.apk.frontend.entrypoint.AndroidAsyncEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidCallbackEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidLayoutEntryPointCreator;
+import sootup.apk.frontend.entrypoint.InstantiatedTypeCollector;
 import sootup.apk.frontend.icc.AndroidIccResolver;
 import sootup.apk.frontend.layout.AndroidLayoutParser;
 import sootup.apk.frontend.main.AndroidVersionInfo;
@@ -133,22 +134,60 @@ public final class AndroidApkAnalysis {
     return new AndroidApkAnalysis(view, manifest, applicationClassNames, entryPoints);
   }
 
+  /**
+   * Computed in two phases so steps 3/8's blanket "implements a known interface" scan can be
+   * restricted to classes with actual evidence of use, rather than pulling in every listener/task
+   * implementation anywhere in a bundled library's own internal machinery regardless of whether the
+   * app's code ever exercises it (confirmed directly against a real DroidBench sample bundling the
+   * support library: without this, one small single-activity app's call graph ballooned to 657
+   * methods, almost entirely library-internal code no path from the app's own logic ever reaches).
+   *
+   * <ul>
+   *   <li><b>Phase 1 — core entry points.</b> Manifest lifecycle callbacks (step 5) and {@code
+   *       android:onClick} targets (step 4) don't have this problem: the OS instantiates manifest
+   *       components itself, and an {@code android:onClick} target is a method on an already-known
+   *       component class, not a class discovered by scanning for interfaces. Expand these with CHA
+   *       plus ICC edges (step 7) to get a reachable-code baseline.
+   *   <li><b>Phase 2 — filtered discovery.</b> Scan that baseline for instantiated types ({@link
+   *       InstantiatedTypeCollector}), then run steps 3/8's candidate scan restricted to classes in
+   *       that set — a listener/task class can only ever run if something constructs and hands off
+   *       a live instance of it, so "never `new`'d in reachable code" is a sound, not just
+   *       plausible, precondition for "can never actually fire".
+   * </ul>
+   *
+   * <p>Deliberately not a fixed point: a class instantiated only inside another class that phase 2
+   * itself just discovered (chaining two levels deep) won't be picked up. Documented as a known,
+   * bounded limitation in {@code ANDROID_CALL_GRAPH_PLAN.md} rather than solved here, the same way
+   * step 7's ICC resolution bounds itself to a single pass.
+   */
   @NonNull
   private static List<MethodSignature> collectEntryPoints(
       @NonNull Path apkPath,
       @NonNull JavaView view,
       @NonNull AndroidManifest manifest,
       @NonNull Set<String> applicationClassNames) {
-    Set<MethodSignature> combined = new LinkedHashSet<>();
-    combined.addAll(AndroidEntryPointCreator.getEntryPoints(view, manifest, applicationClassNames));
-    combined.addAll(
-        AndroidCallbackEntryPointCreator.getCallbackEntryPoints(view, applicationClassNames));
-    combined.addAll(AndroidAsyncEntryPointCreator.getAsyncEntryPoints(view, applicationClassNames));
-
+    List<MethodSignature> coreEntryPoints = new ArrayList<>();
+    coreEntryPoints.addAll(
+        AndroidEntryPointCreator.getEntryPoints(view, manifest, applicationClassNames));
     Set<String> onClickMethodNames = AndroidLayoutParser.parseOnClickMethodNamesFromApk(apkPath);
-    combined.addAll(
+    coreEntryPoints.addAll(
         AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
             view, manifest, applicationClassNames, onClickMethodNames));
+
+    MutableCallGraph coreGraph =
+        (MutableCallGraph)
+            (CallGraph) new ClassHierarchyAnalysisAlgorithm(view).initialize(coreEntryPoints);
+    AndroidIccResolver.addIccEdges(coreGraph, view, manifest, applicationClassNames);
+    Set<String> instantiatedClassNames =
+        InstantiatedTypeCollector.collectInstantiatedClassNames(view, coreGraph);
+
+    Set<MethodSignature> combined = new LinkedHashSet<>(coreEntryPoints);
+    combined.addAll(
+        AndroidCallbackEntryPointCreator.getCallbackEntryPoints(
+            view, applicationClassNames, instantiatedClassNames));
+    combined.addAll(
+        AndroidAsyncEntryPointCreator.getAsyncEntryPoints(
+            view, applicationClassNames, instantiatedClassNames));
 
     return new ArrayList<>(combined);
   }

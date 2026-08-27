@@ -548,13 +548,80 @@ for later steps):
   constant inlined directly as an invoke argument — step 9's real-bytecode
   fixture caught that this is never how real dex-derived Jimple looks;
   fixed, see the dedicated writeup above.)
-- Step 8's `Runnable`/`Callable` scan is deliberately unscoped: it treats
-  every implementation as reachable regardless of whether it's actually
-  ever passed to `Handler.post`/`View.post`/an executor, or whether it's
-  already reachable some other way (e.g. constructed and `.run()`-called
-  directly in app code, which CHA would already find). This trades
-  precision for simplicity and matches the plan's own framing of step 8 as
-  "the same shape as step 3." A call-site-specific version (tracing the
-  argument to `Handler.post` the way step 7 traces `Intent` targets) would
-  be more precise but was judged not worth the added complexity given the
-  broader scan is already sound.
+- Step 8's `Runnable`/`Callable`/`AsyncTask` scan (like step 3's listener
+  scan) doesn't trace the specific call site that hands an instance to
+  `Handler.post`/`View.post`/an executor/a registration API — it's still a
+  blanket "does this class implement/extend the right thing" scan, now
+  restricted to classes actually instantiated in reachable code (see the
+  instantiated-type-filtering writeup below), not to classes actually
+  *passed to* one of those APIs. A call-site-specific version (tracing the
+  argument the way step 7 traces `Intent` targets) would be more precise
+  but was judged not worth the added complexity given the broader scan is
+  already sound once restricted to instantiated types.
+
+### Post-completion fix: steps 3/8 tightened with instantiated-type filtering
+
+Found the same way as the constructor-entry-point fix above: a differential
+Soot-vs-SootUp comparison on the user's own `Button1.apk` (via their
+separate `CallGraphComparison` project), which turned out to be a
+different, larger APK than DroidBench's minimal GitHub sample — it bundles
+the full `android.support.v4`/`v7` libraries. Soot/FlowDroid produced 19
+nodes/23 edges; SootUp produced 657 nodes/1298 edges, almost entirely
+`android.support.*` internals no path from the app's own code ever
+reaches.
+
+Root cause: steps 3 and 8 scan *every app class* (i.e. every class in the
+dex, including all of a bundled library's own internal machinery) for one
+implementing a known listener interface or extending `AsyncTask`/
+`Runnable`/`Callable`, with no check for whether anything ever actually
+constructs an instance of it. A library can ship dozens of listener/task
+implementations for its own internal use that a given app never
+exercises; each admitted candidate's CHA transitive closure can pull in
+large swaths of otherwise-untouched library code.
+
+Fixed with a two-phase entry-point computation
+(`AndroidApkAnalysis.collectEntryPoints`, and mirrored for tests in
+`ApkTestContext.instantiatedClassNamesFromCoreEntryPoints`):
+
+1. **Phase 1 — core entry points.** Manifest lifecycle callbacks (step 5)
+   and `android:onClick` targets (step 4) don't have this problem: the OS
+   instantiates manifest components itself, and an `android:onClick`
+   target is a method on an already-known component class, not a class
+   discovered by scanning for interfaces. Expand these with CHA plus
+   step 7's ICC edges to get a reachable-code baseline.
+2. **Phase 2 — filtered discovery.** Scan that baseline
+   (`InstantiatedTypeCollector`, reusing `sootup.callgraph`'s own
+   `InstantiateClassValueVisitor` pattern-matcher) for every class `new`'d
+   in any reachable method body, then run steps 3/8's candidate scan
+   restricted to classes in that set.
+
+This is a sound restriction, not a heuristic: a listener/task class can
+only ever run if something constructs and hands off a live instance of it
+to a registration API, so "never `new`'d in reachable code" is a valid
+precondition for "can never actually fire" — not an approximation traded
+for precision.
+
+Deliberately not a fixed point: a class instantiated only inside another
+class that phase 2 itself just discovered (chaining two levels deep) won't
+be picked up. Same bounded-limitation shape as step 7's single-pass ICC
+resolution above, and flagged the same way rather than solved here.
+
+Validated two ways:
+
+- **DroidBench sweep** (all 188 APKs, same methodology as the earlier
+  `SourceType`/RTA-seeding fix): CHA totals dropped from 172,420 methods /
+  796,836 calls to 94,723 methods / 467,389 calls (both ~45%/41% lower);
+  RTA totals dropped from 122,329 methods / 497,165 calls to 67,222
+  methods / 297,562 calls (~45%/40% lower). All 188 APKs still analyze
+  without error.
+- **The user's actual `Button1.apk`** (the support-library-bundling one
+  that originally motivated this fix): CHA output went from 657 nodes /
+  1298 edges to 14 nodes / 13 edges — in the same ballpark as Soot/
+  FlowDroid's 19 nodes / 23 edges, rather than ~30x larger. All four of
+  `Button1`'s own app-class nodes (`<init>`, `<clinit>`, `onCreate`,
+  `sendMessage`) are present, resolving the original "application class
+  nodes are not appearing in SootUp" complaint. The remaining gap to
+  Soot/FlowDroid's count is attributable to FlowDroid's synthetic
+  `dummyMain` entry-point method and its `setDataIntent(Intent)`-style
+  lifecycle modeling, which this module doesn't attempt to replicate —
+  out of scope for this fix.

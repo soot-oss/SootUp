@@ -25,11 +25,20 @@ package sootup.apk.frontend.entrypoint;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import sootup.apk.frontend.ApkAnalysisInputLocation;
 import sootup.apk.frontend.DexBodyInterceptors;
+import sootup.apk.frontend.icc.AndroidIccResolver;
+import sootup.apk.frontend.layout.AndroidLayoutParser;
 import sootup.apk.frontend.main.AndroidVersionInfo;
+import sootup.apk.frontend.manifest.AndroidManifest;
+import sootup.callgraph.CallGraph;
+import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
+import sootup.callgraph.MutableCallGraph;
+import sootup.core.model.SourceType;
+import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
@@ -69,9 +78,34 @@ public final class ApkTestContext {
                 + "android-"
                 + androidVersionInfo.getApi_version()
                 + File.separator
-                + "android.jar");
+                + "android.jar",
+            SourceType.Library);
 
     JavaView view = new JavaView(List.of(apkInputLocation, classPathInputLocation));
     return new ApkTestContext(view, apkInputLocation.getApplicationClassNames());
+  }
+
+  /**
+   * Replicates {@code AndroidApkAnalysis}'s phase-1 computation (manifest lifecycle + {@code
+   * android:onClick} entry points, expanded with CHA plus ICC edges) and returns the classes found
+   * instantiated in that reachable code — the set steps 3/8's tests need to pass as evidence a
+   * candidate listener/task class is actually reachable, not just linked into the dex.
+   */
+  public Set<String> instantiatedClassNamesFromCoreEntryPoints(
+      AndroidManifest manifest, Path apkPath) {
+    List<MethodSignature> core = new ArrayList<>();
+    core.addAll(AndroidEntryPointCreator.getEntryPoints(view, manifest, appClassNames));
+    core.addAll(
+        AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
+            view,
+            manifest,
+            appClassNames,
+            AndroidLayoutParser.parseOnClickMethodNamesFromApk(apkPath)));
+
+    MutableCallGraph coreGraph =
+        (MutableCallGraph) (CallGraph) new ClassHierarchyAnalysisAlgorithm(view).initialize(core);
+    AndroidIccResolver.addIccEdges(coreGraph, view, manifest, appClassNames);
+
+    return InstantiatedTypeCollector.collectInstantiatedClassNames(view, coreGraph);
   }
 }

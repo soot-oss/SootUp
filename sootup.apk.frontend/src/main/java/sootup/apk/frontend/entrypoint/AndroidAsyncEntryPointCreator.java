@@ -43,6 +43,12 @@ import sootup.core.views.View;
  * extending {@code android.os.AsyncTask} (a superclass relationship, checked via {@link
  * TypeHierarchy#superClassesOf}, not {@code implementedInterfacesOf} — {@code AsyncTask} is an
  * abstract class, not an interface).
+ *
+ * <p>Scanning is further restricted to classes known to be instantiated somewhere in already-
+ * reachable code (see {@link InstantiatedTypeCollector}) — the same non-heuristic filter, and for
+ * the same reason, as {@link AndroidCallbackEntryPointCreator}: a {@code Runnable}/{@code
+ * Callable}/{@code AsyncTask} can only run if something constructs and hands off a live instance of
+ * it, so a candidate class never `new`'d in reachable code cannot possibly do so.
  */
 public final class AndroidAsyncEntryPointCreator {
 
@@ -51,10 +57,15 @@ public final class AndroidAsyncEntryPointCreator {
   /**
    * @param appClassNames the fully qualified names of classes actually declared in the APK's dex
    *     (see {@link sootup.apk.frontend.ApkAnalysisInputLocation#getApplicationClassNames()}).
+   * @param instantiatedClassNames the fully qualified names of classes known to be instantiated
+   *     somewhere in already-reachable code (see {@link InstantiatedTypeCollector}) — a candidate
+   *     class not in this set is skipped entirely, per the class doc above.
    */
   @NonNull
   public static List<MethodSignature> getAsyncEntryPoints(
-      @NonNull View view, @NonNull Set<String> appClassNames) {
+      @NonNull View view,
+      @NonNull Set<String> appClassNames,
+      @NonNull Set<String> instantiatedClassNames) {
     Set<MethodSignature> entryPoints = new LinkedHashSet<>();
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     TypeHierarchy typeHierarchy = view.getTypeHierarchy();
@@ -63,6 +74,9 @@ public final class AndroidAsyncEntryPointCreator {
     List<LifecycleMethod> asyncTaskMethods = AndroidAsyncConstants.getAsyncTaskMethods();
 
     for (String className : appClassNames) {
+      if (!instantiatedClassNames.contains(className)) {
+        continue;
+      }
       ClassType classType = identifierFactory.getClassType(className);
       view.getClass(classType)
           .ifPresent(

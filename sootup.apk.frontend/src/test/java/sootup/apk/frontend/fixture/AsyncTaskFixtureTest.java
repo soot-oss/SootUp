@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sootup.apk.frontend.entrypoint.AndroidAsyncEntryPointCreator;
@@ -56,6 +57,7 @@ public class AsyncTaskFixtureTest {
 
   private static ApkTestContext ctx;
   private static AndroidManifest manifest;
+  private static Path apkPath;
 
   @BeforeAll
   public static void buildFixture() throws Exception {
@@ -72,6 +74,8 @@ public class AsyncTaskFixtureTest {
             + ".method public onCreate(Landroid/os/Bundle;)V\n"
             + "    .registers 3\n"
             + "    invoke-super {p0, p1}, Landroid/app/Activity;->onCreate(Landroid/os/Bundle;)V\n"
+            + "    new-instance v0, Ltest/fixture/async/MyTask;\n"
+            + "    invoke-direct {v0}, Ltest/fixture/async/MyTask;-><init>()V\n"
             + "    return-void\n"
             + ".end method\n";
 
@@ -108,7 +112,7 @@ public class AsyncTaskFixtureTest {
             + "    return-void\n"
             + ".end method\n";
 
-    Path apkPath =
+    apkPath =
         new FixtureApkBuilder()
             .smali(activitySmali)
             .smali(taskSmali)
@@ -119,10 +123,15 @@ public class AsyncTaskFixtureTest {
     manifest = AndroidManifestParser.parseFromApk(apkPath);
   }
 
+  private static List<MethodSignature> asyncEntryPoints() {
+    Set<String> instantiated = ctx.instantiatedClassNamesFromCoreEntryPoints(manifest, apkPath);
+    return AndroidAsyncEntryPointCreator.getAsyncEntryPoints(
+        ctx.view, ctx.appClassNames, instantiated);
+  }
+
   @Test
   public void testAsyncTaskEntryPointsResolveToRealMethods() {
-    List<MethodSignature> asyncEntryPoints =
-        AndroidAsyncEntryPointCreator.getAsyncEntryPoints(ctx.view, ctx.appClassNames);
+    List<MethodSignature> asyncEntryPoints = asyncEntryPoints();
 
     MethodSignature doInBackground =
         ctx.view
@@ -156,8 +165,7 @@ public class AsyncTaskFixtureTest {
     assertFalse(lifecycleGraph.containsMethod(backgroundHelper));
     assertFalse(lifecycleGraph.containsMethod(postHelper));
 
-    List<MethodSignature> asyncEntryPoints =
-        AndroidAsyncEntryPointCreator.getAsyncEntryPoints(ctx.view, ctx.appClassNames);
+    List<MethodSignature> asyncEntryPoints = asyncEntryPoints();
     List<MethodSignature> combined = new ArrayList<>(lifecycleOnly);
     combined.addAll(asyncEntryPoints);
     CallGraphAlgorithm combinedCha = new ClassHierarchyAnalysisAlgorithm(ctx.view);
