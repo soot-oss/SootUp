@@ -127,9 +127,14 @@ public final class AndroidEntryPointCreator {
    * android.jar class apart from an app class in that setup, which would let a framework base
    * class's own default implementation (e.g. {@code Activity#onCreate}) be mistaken for an app
    * override.
+   *
+   * <p>Public because callback discovery ({@code AndroidCallbackEntryPointCreator}), layout {@code
+   * android:onClick} resolution ({@code AndroidLayoutEntryPointCreator}) and ICC resolution ({@code
+   * sootup.apk.frontend.icc.AndroidIccResolver}) all need the exact same "find the app override of
+   * this callback" logic, just starting from a different class and callback.
    */
   @NonNull
-  static Optional<MethodSignature> resolveOverride(
+  public static Optional<MethodSignature> resolveOverride(
       @NonNull View view,
       @NonNull IdentifierFactory identifierFactory,
       @NonNull Set<String> appClassNames,

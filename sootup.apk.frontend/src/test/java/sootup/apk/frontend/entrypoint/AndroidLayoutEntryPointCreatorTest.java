@@ -43,11 +43,11 @@ import sootup.core.signatures.MethodSignature;
  * there's no manifest-declared activity in them that this creator would legitimately match against
  * real layout data. Instead, these tests build a small {@link AndroidManifest} directly (its
  * constructor is public exactly to allow this) declaring one of LocationLeak1.apk's real,
- * dex-declared classes as if it were the manifest's activity, and check the wiring against a
- * method that genuinely exists there — {@code
- * android.support.v4.view.PagerTabStrip$2#onClick(android.view.View):void}, a real bundled
- * listener implementation (see {@code AndroidCallbackEntryPointCreatorTest}) — rather than
- * fabricating bytecode.
+ * dex-declared classes as if it were the manifest's activity, and check the wiring against a method
+ * that genuinely exists there — {@code
+ * android.support.v4.view.PagerTabStrip$2#onClick(android.view.View):void}, a real bundled listener
+ * implementation (see {@code AndroidCallbackEntryPointCreatorTest}) — rather than fabricating
+ * bytecode.
  */
 public class AndroidLayoutEntryPointCreatorTest {
 

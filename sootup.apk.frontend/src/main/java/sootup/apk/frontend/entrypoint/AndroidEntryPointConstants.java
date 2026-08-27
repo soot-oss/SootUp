@@ -25,6 +25,7 @@ package sootup.apk.frontend.entrypoint;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.manifest.AndroidComponentType;
 
@@ -157,5 +158,17 @@ public final class AndroidEntryPointConstants {
       default:
         return Collections.emptyList();
     }
+  }
+
+  /**
+   * Looks up a single named lifecycle callback for a component type, e.g. {@code
+   * getLifecycleMethod(SERVICE, "onStartCommand")}. Used where a caller needs one specific callback
+   * rather than the full contract (e.g. ICC resolution, which targets only the callback relevant to
+   * the specific triggering call).
+   */
+  @NonNull
+  public static Optional<LifecycleMethod> getLifecycleMethod(
+      @NonNull AndroidComponentType type, @NonNull String name) {
+    return getLifecycleMethods(type).stream().filter(m -> m.getName().equals(name)).findFirst();
   }
 }
