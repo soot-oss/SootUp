@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.entrypoint.AndroidAsyncEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidCallbackEntryPointCreator;
+import sootup.apk.frontend.entrypoint.AndroidDummyMainFactory;
 import sootup.apk.frontend.entrypoint.AndroidEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidLayoutEntryPointCreator;
 import sootup.apk.frontend.entrypoint.InstantiatedTypeCollector;
@@ -49,7 +50,9 @@ import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
+import sootup.java.core.views.MutableJavaView;
 
 /**
  * The public entry point for this module (step 10 of {@code ANDROID_CALL_GRAPH_PLAN.md}): give it
@@ -80,20 +83,23 @@ import sootup.java.core.views.JavaView;
  */
 public final class AndroidApkAnalysis {
 
-  @NonNull private final JavaView view;
+  @NonNull private final MutableJavaView view;
   @NonNull private final AndroidManifest manifest;
   @NonNull private final Set<String> applicationClassNames;
   @NonNull private final List<MethodSignature> entryPoints;
+  @NonNull private final MethodSignature dummyMainSignature;
 
   private AndroidApkAnalysis(
-      @NonNull JavaView view,
+      @NonNull MutableJavaView view,
       @NonNull AndroidManifest manifest,
       @NonNull Set<String> applicationClassNames,
-      @NonNull List<MethodSignature> entryPoints) {
+      @NonNull List<MethodSignature> entryPoints,
+      @NonNull MethodSignature dummyMainSignature) {
     this.view = view;
     this.manifest = manifest;
     this.applicationClassNames = applicationClassNames;
     this.entryPoints = entryPoints;
+    this.dummyMainSignature = dummyMainSignature;
   }
 
   /**
@@ -124,14 +130,20 @@ public final class AndroidApkAnalysis {
                 + File.separator
                 + "android.jar",
             SourceType.Library);
-    JavaView view = new JavaView(List.of(apkInputLocation, classPathInputLocation));
+    MutableJavaView view = new MutableJavaView(List.of(apkInputLocation, classPathInputLocation));
 
     AndroidManifest manifest = AndroidManifestParser.parseFromApk(apkPath);
     Set<String> applicationClassNames = apkInputLocation.getApplicationClassNames();
     List<MethodSignature> entryPoints =
         collectEntryPoints(apkPath, view, manifest, applicationClassNames);
 
-    return new AndroidApkAnalysis(view, manifest, applicationClassNames, entryPoints);
+    JavaSootClass dummyMainClass = AndroidDummyMainFactory.createDummyMainClass(view, entryPoints);
+    view.addClass(dummyMainClass);
+    MethodSignature dummyMainSignature =
+        AndroidDummyMainFactory.getDummyMainSignature(view.getIdentifierFactory());
+
+    return new AndroidApkAnalysis(
+        view, manifest, applicationClassNames, entryPoints, dummyMainSignature);
   }
 
   /**
@@ -215,6 +227,19 @@ public final class AndroidApkAnalysis {
   }
 
   /**
+   * The signature of the synthetic {@code dummyMain} method ({@link AndroidDummyMainFactory})
+   * already registered in {@link #getView()}: a real method with a real Jimple body that
+   * unconditionally calls every entry point from {@link #getEntryPoints()} once. For callers built
+   * around the classic single-entry-point convention (e.g. a taint analysis that expects one
+   * concrete method with a body to seed its own supergraph) rather than {@code
+   * CallGraphAlgorithm.initialize(List)}'s flat list.
+   */
+  @NonNull
+  public MethodSignature getDummyMainSignature() {
+    return dummyMainSignature;
+  }
+
+  /**
    * Runs {@code algorithm} over this analysis's entry points, then adds step 7's ICC edges on top
    * of the result.
    *
@@ -246,6 +271,36 @@ public final class AndroidApkAnalysis {
   }
 
   /**
+   * Like {@link #buildCallGraph(CallGraphAlgorithm)}, but rooted at {@link #getDummyMainSignature()}
+   * alone instead of the flat {@link #getEntryPoints()} list. Structurally equivalent (every entry
+   * point is one call away from the dummy main, which itself calls each exactly once) — use this
+   * only when a caller specifically needs the single-root shape, e.g. to hand {@link
+   * #getDummyMainSignature()}'s method to an analysis built around that convention.
+   */
+  @NonNull
+  public CallGraph buildCallGraphFromDummyMain(@NonNull CallGraphAlgorithm algorithm) {
+    CallGraph callGraph = algorithm.initialize(List.of(dummyMainSignature));
+    if (!(callGraph instanceof MutableCallGraph)) {
+      throw new IllegalStateException(
+          "Cannot add ICC edges: "
+              + algorithm.getClass().getName()
+              + " produced a "
+              + callGraph.getClass().getName()
+              + ", which isn't a MutableCallGraph. Both ClassHierarchyAnalysisAlgorithm and "
+              + "RapidTypeAnalysisAlgorithm satisfy this.");
+    }
+    MutableCallGraph mutableCallGraph = (MutableCallGraph) callGraph;
+    AndroidIccResolver.addIccEdges(mutableCallGraph, view, manifest, applicationClassNames);
+    return mutableCallGraph;
+  }
+
+  /** Convenience for {@code buildCallGraphFromDummyMain(new ClassHierarchyAnalysisAlgorithm(getView()))}. */
+  @NonNull
+  public CallGraph buildCallGraphFromDummyMainWithCHA() {
+    return buildCallGraphFromDummyMain(new ClassHierarchyAnalysisAlgorithm(view));
+  }
+
+  /**
    * Convenience for RTA, seeded with every <em>app</em> class (not android.jar) as a
    * potentially-instantiated type.
    *
@@ -269,10 +324,22 @@ public final class AndroidApkAnalysis {
    */
   @NonNull
   public CallGraph buildCallGraphWithRTA() {
-    Set<ClassType> instantiatedTypes =
-        applicationClassNames.stream()
-            .map(name -> view.getIdentifierFactory().getClassType(name))
-            .collect(Collectors.toSet());
-    return buildCallGraph(new RapidTypeAnalysisAlgorithm(view, instantiatedTypes));
+    return buildCallGraph(new RapidTypeAnalysisAlgorithm(view, applicationClassTypes()));
+  }
+
+  /**
+   * Convenience for {@code buildCallGraphFromDummyMain(new RapidTypeAnalysisAlgorithm(getView(),
+   * ...))}, seeded the same way as {@link #buildCallGraphWithRTA()}.
+   */
+  @NonNull
+  public CallGraph buildCallGraphFromDummyMainWithRTA() {
+    return buildCallGraphFromDummyMain(new RapidTypeAnalysisAlgorithm(view, applicationClassTypes()));
+  }
+
+  @NonNull
+  private Set<ClassType> applicationClassTypes() {
+    return applicationClassNames.stream()
+        .map(name -> view.getIdentifierFactory().getClassType(name))
+        .collect(Collectors.toSet());
   }
 }

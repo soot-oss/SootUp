@@ -22,15 +22,23 @@ package sootup.apk.frontend.fixture;
  * #L%
  */
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sootup.apk.frontend.AndroidApkAnalysis;
 import sootup.apk.frontend.manifest.AndroidComponentType;
 import sootup.callgraph.CallGraph;
+import sootup.core.jimple.common.stmt.JInvokeStmt;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 
 /**
@@ -351,6 +359,60 @@ public class CombinedFixtureAnalysisTest {
     assertTrue(
         cg.callTargetsFrom(sig("MainActivity", "onCreate", "void", "android.os.Bundle"))
             .contains(sig("TargetActivity", "onCreate", "void", "android.os.Bundle")));
+  }
+
+  @Test
+  public void testDummyMainBodyCallsEveryEntryPointExactlyOnce() {
+    // The dummy main (AndroidDummyMainFactory) exists for callers built around the classic
+    // single-entry-point convention rather than CallGraphAlgorithm.initialize(List)'s flat list -
+    // its whole value is that its body literally contains a call to every entry point, so a caller
+    // handed just this one method can reach everything the flat list would have rooted separately.
+    SootMethod dummyMain =
+        analysis.getView().getMethod(analysis.getDummyMainSignature()).orElseThrow();
+    Body body = dummyMain.getBody();
+
+    List<MethodSignature> calledSignatures =
+        body.getStmts().stream()
+            .filter(JInvokeStmt.class::isInstance)
+            .map(JInvokeStmt.class::cast)
+            .map(stmt -> stmt.getInvokeExpr().orElseThrow().getMethodSignature())
+            .collect(Collectors.toList());
+
+    assertEquals(
+        new HashSet<>(analysis.getEntryPoints()),
+        new HashSet<>(calledSignatures),
+        "dummy main must call every entry point, and nothing else");
+    assertEquals(
+        analysis.getEntryPoints().size(),
+        calledSignatures.size(),
+        "each entry point must be called exactly once");
+  }
+
+  @Test
+  public void testCallGraphFromDummyMainReachesEveryStepsHelper() {
+    // Structurally equivalent to testCallGraphWithChaConnectsEveryStepsHelper's flat-list version:
+    // every helper below is one extra hop away (through the dummy main) instead of being a direct
+    // root, but still reachable.
+    CallGraph cg = analysis.buildCallGraphFromDummyMainWithCHA();
+    MethodSignature dummyMain = analysis.getDummyMainSignature();
+
+    Set<MethodSignature> reachableFromDummyMain = new HashSet<>();
+    for (MethodSignature entryPoint : analysis.getEntryPoints()) {
+      reachableFromDummyMain.addAll(cg.callTargetsFrom(entryPoint));
+    }
+
+    assertTrue(cg.containsMethod(dummyMain));
+    assertTrue(cg.callTargetsFrom(dummyMain).containsAll(analysis.getEntryPoints()));
+    assertTrue(
+        reachableFromDummyMain.contains(sig("MainActivity", "lifecycleHelper", "void")),
+        "step 5 edge, reached through the dummy main");
+    assertTrue(
+        reachableFromDummyMain.contains(sig("MyClickListener", "listenerHelper", "void")),
+        "step 3 edge, reached through the dummy main");
+    assertTrue(
+        reachableFromDummyMain.contains(
+            sig("MyTask", "backgroundHelper", "void")),
+        "step 8 edge, reached through the dummy main");
   }
 
   private static MethodSignature sig(
