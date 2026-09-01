@@ -22,7 +22,6 @@ package sootup.apk.frontend.entrypoint;
  * #L%
  */
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
@@ -41,45 +40,21 @@ import sootup.core.signatures.MethodSignature;
  * Validates step 4 of {@code ANDROID_CALL_GRAPH_PLAN.md}. None of this module's checked-in sample
  * APKs actually use {@code android:onClick} (confirmed by {@code AndroidLayoutParserTest}), so
  * there's no manifest-declared activity in them that this creator would legitimately match against
- * real layout data. Instead, these tests build a small {@link AndroidManifest} directly (its
- * constructor is public exactly to allow this) declaring one of LocationLeak1.apk's real,
- * dex-declared classes as if it were the manifest's activity, and check the wiring against a method
- * that genuinely exists there — {@code
- * android.support.v4.view.PagerTabStrip$2#onClick(android.view.View):void}, a real bundled listener
- * implementation (see {@code AndroidCallbackEntryPointCreatorTest}) — rather than fabricating
- * bytecode.
+ * real layout data. The positive "resolves to a real, compiled method" path is instead covered by
+ * {@code sootup.apk.frontend.fixture.OnClickFixtureTest}, which builds a real hand-compiled fixture
+ * APK (via {@code FixtureApkBuilder}) rather than borrowing a class from a bundled library the way
+ * this file used to (a bundled-library class's own listener wiring is never a legitimate {@code
+ * android:onClick} target for someone else's activity — see {@code
+ * AndroidCallbackEntryPointCreatorTest} for why that distinction matters). These tests instead
+ * cover the filtering/edge-case behavior around it: empty and non-existent method names, and
+ * non-{@code Activity} components being ignored — using one of LocationLeak1.apk's real,
+ * dex-declared classes purely as a stand-in for "some real class in the view," since none of these
+ * cases ever reach the point of resolving a genuine override.
  */
 public class AndroidLayoutEntryPointCreatorTest {
 
   private static final String REAL_ONCLICK_CLASS = "android.support.v4.view.PagerTabStrip$2";
   private static final String REAL_ONCLICK_METHOD = "onClick";
-
-  @Test
-  public void testFindsRealMethodViaSyntheticManifestComponent() {
-    ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/LocationLeak1.apk");
-    AndroidManifest manifest =
-        new AndroidManifest(
-            "de.ecspride",
-            null,
-            List.of(
-                new ManifestComponent(
-                    AndroidComponentType.ACTIVITY,
-                    REAL_ONCLICK_CLASS,
-                    true,
-                    true,
-                    Collections.emptyList())));
-
-    List<MethodSignature> entryPoints =
-        AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
-            ctx.view, manifest, ctx.appClassNames, Set.of(REAL_ONCLICK_METHOD));
-
-    MethodSignature expected =
-        ctx.view
-            .getIdentifierFactory()
-            .getMethodSignature(
-                REAL_ONCLICK_CLASS, REAL_ONCLICK_METHOD, "void", List.of("android.view.View"));
-    assertEquals(List.of(expected), entryPoints);
-  }
 
   @Test
   public void testNonExistentMethodNameYieldsNoEntryPoints() {

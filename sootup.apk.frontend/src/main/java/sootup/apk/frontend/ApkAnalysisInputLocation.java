@@ -69,6 +69,73 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
   final Map<String, EnumSet<ClassModifier>> classNamesList;
 
   /**
+   * Package prefixes for third-party libraries commonly statically linked into an app's own dex
+   * (support-v4/v7, AndroidX, Play Services, Kotlin's runtime): {@link #getClassSources(View)}
+   * reports {@link SourceType#Library} for classes under these prefixes even though they're
+   * declared in the same dex as the app's own classes, so the rest of the pipeline (call-graph
+   * construction's library-boundary checks, entry-point resolution) can tell them apart from
+   * genuine app code the same reliable way it already does for platform (android.jar) classes.
+   * Without this, a class like {@code android.support.v7.internal.widget.ActivityChooserView} is
+   * indistinguishable from app code: its lifecycle-callback overrides get mistaken for app-authored
+   * entry points, and once reached, call-graph construction walks its full body - and everything
+   * transitively reachable through it - as if it were the app's own logic. FlowDroid draws the same
+   * line via its {@code SystemClassHandler} package classification.
+   */
+  private static final List<String> BUNDLED_LIBRARY_PACKAGE_PREFIXES =
+      Collections.unmodifiableList(
+          Arrays.asList(
+              "android.support.",
+              "androidx.",
+              "com.google.android.material.",
+              "com.google.android.gms.",
+              "kotlin.",
+              "kotlinx."));
+
+  /** Whether {@code fullyQualifiedName} belongs to a bundled/statically-linked library. */
+  public static boolean isBundledLibraryClass(@NonNull String fullyQualifiedName) {
+    for (String prefix : BUNDLED_LIBRARY_PACKAGE_PREFIXES) {
+      if (fullyQualifiedName.startsWith(prefix)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * A view of this location reported as the {@link AnalysisInputLocation} for bundled-library
+   * classes: identical to the outer instance in every respect except {@link #getSourceType()},
+   * which is what {@code JavaView} actually consults (via {@code
+   * SootClassSource#getAnalysisInputLocation()}) to decide a class's {@link SourceType}.
+   */
+  private final AnalysisInputLocation bundledLibraryInputLocation =
+      new AnalysisInputLocation() {
+        @NonNull
+        @Override
+        public Optional<? extends SootClassSource> getClassSource(
+            @NonNull ClassType type, @NonNull View view) {
+          return ApkAnalysisInputLocation.this.getClassSource(type, view);
+        }
+
+        @NonNull
+        @Override
+        public Stream<? extends SootClassSource> getClassSources(@NonNull View view) {
+          return ApkAnalysisInputLocation.this.getClassSources(view);
+        }
+
+        @NonNull
+        @Override
+        public SourceType getSourceType() {
+          return SourceType.Library;
+        }
+
+        @NonNull
+        @Override
+        public List<BodyInterceptor> getBodyInterceptors() {
+          return bodyInterceptors;
+        }
+      };
+
+  /**
    * Creates a new ApkAnalysisInputLocation.
    *
    * @param apkPath the path to the APK file to analyze system libraries (android.jar files) for
@@ -114,15 +181,17 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
   }
 
   /**
-   * The fully qualified names of the classes actually declared in this APK's dex files.
+   * The fully qualified names of the classes actually declared in this APK's dex files - both the
+   * app's own classes and any bundled library (see {@link #isBundledLibraryClass}) statically
+   * linked into the same dex.
    *
-   * <p>This is the reliable way to tell an app-defined class apart from a platform (android.jar) or
-   * other classpath class in a {@link View}: {@link SootClass#isLibraryClass()} reflects the {@link
-   * SourceType} the class's {@code AnalysisInputLocation} reports, and classpath locations such as
-   * {@code JavaClassPathAnalysisInputLocation} default to {@code SourceType.Application} unless a
-   * caller explicitly passes {@code SourceType.Library} — so {@code isLibraryClass()} is not a safe
-   * app/platform boundary to rely on when android.jar was added the same way it is in this module's
-   * tests.
+   * <p>This is the reliable way to tell classes belonging to this program (app code and whatever's
+   * bundled with it) apart from platform (android.jar) or other classpath classes in a {@link
+   * View}. It does <em>not</em> distinguish the app's own classes from a bundled library within the
+   * program - for that, check {@link SootClass#isLibraryClass()}, which now reflects both
+   * boundaries correctly: {@link #getClassSource(ClassType, View)} reports {@link
+   * SourceType#Library} for bundled-library classes the same way android.jar's {@code
+   * AnalysisInputLocation} does for platform classes.
    */
   @NonNull
   public Set<String> getApplicationClassNames() {
@@ -133,7 +202,9 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
   @Override
   public Optional<? extends SootClassSource> getClassSource(
       @NonNull ClassType type, @NonNull View view) {
-    return new DexClassProvider(view).createClassSource(this, apk_path, type);
+    AnalysisInputLocation reportedLocation =
+        isBundledLibraryClass(type.getFullyQualifiedName()) ? bundledLibraryInputLocation : this;
+    return new DexClassProvider(view).createClassSource(reportedLocation, apk_path, type);
   }
 
   @NonNull

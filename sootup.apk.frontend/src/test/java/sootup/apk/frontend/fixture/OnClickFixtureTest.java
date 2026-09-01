@@ -35,8 +35,10 @@ import sootup.apk.frontend.entrypoint.AndroidEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidLayoutEntryPointCreator;
 import sootup.apk.frontend.entrypoint.ApkTestContext;
 import sootup.apk.frontend.layout.AndroidLayoutParser;
+import sootup.apk.frontend.manifest.AndroidComponentType;
 import sootup.apk.frontend.manifest.AndroidManifest;
 import sootup.apk.frontend.manifest.AndroidManifestParser;
+import sootup.apk.frontend.manifest.ManifestComponent;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
@@ -107,6 +109,35 @@ public class OnClickFixtureTest {
     List<MethodSignature> onClickEntryPoints =
         AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
             ctx.view, manifest, ctx.appClassNames, onClickMethodNames);
+
+    MethodSignature onSaveClicked =
+        ctx.view
+            .getIdentifierFactory()
+            .getMethodSignature(CLASS_NAME, "onSaveClicked", "void", List.of("android.view.View"));
+    assertTrue(onClickEntryPoints.contains(onSaveClicked));
+  }
+
+  @Test
+  public void testSyntheticManifestComponentAlsoResolvesToRealMethod() {
+    // Unlike testOnClickEntryPointResolvesToRealMethod above, which resolves against the
+    // fixture's own real, parsed manifest, this builds an AndroidManifest object directly (its
+    // constructor is public exactly to allow this) declaring the same real, compiled class as the
+    // activity - proving getOnClickEntryPoints/resolveOverride's wiring works from any
+    // AndroidManifest, not just one AndroidManifestParser produced. This class used to belong to a
+    // bundled library (android.support.v4.view.PagerTabStrip$2) purely because it was real,
+    // already-compiled bytecode; that stood in for genuine app reachability by accident, which is
+    // exactly what this fixture avoids by construction.
+    AndroidManifest syntheticManifest =
+        new AndroidManifest(
+            "test.fixture.onclick",
+            null,
+            List.of(
+                new ManifestComponent(
+                    AndroidComponentType.ACTIVITY, CLASS_NAME, true, true, List.of())));
+
+    List<MethodSignature> onClickEntryPoints =
+        AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
+            ctx.view, syntheticManifest, ctx.appClassNames, Set.of("onSaveClicked"));
 
     MethodSignature onSaveClicked =
         ctx.view

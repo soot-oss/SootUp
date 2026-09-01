@@ -89,10 +89,22 @@ public class AndroidAsyncEntryPointCreatorTest {
   }
 
   @Test
-  public void testInstantiatedAsyncTypesAreFound() {
-    // All three are genuinely instantiated somewhere in FlowSensitivity1.apk's reachable code
-    // (verified via a diagnostic dump of InstantiatedTypeCollector's output for this apk) and
-    // cover all three shapes step 8 looks for: a Callable, a Runnable, and an AsyncTask subclass.
+  public void testBundledLibraryAsyncTypeIsNeverAnEntryPointEvenIfInstantiated() {
+    // These three used to show up in FlowSensitivity1.apk's phase-1 "instantiated" set and this
+    // test asserted they must be found - on the theory that instantiation evidence alone made
+    // them legitimate. That evidence turned out to be a symptom of a different bug: before
+    // ApkAnalysisInputLocation started reporting SourceType.Library for bundled-library classes
+    // (support-v4/v7, AndroidX, Play Services, Kotlin's runtime - see
+    // ApkAnalysisInputLocation#isBundledLibraryClass), CHA's library-boundary check couldn't tell
+    // these classes apart from real app code, so it walked straight through the support library's
+    // own internal implementation and marked whatever it happened to construct along the way as
+    // "instantiated" - not because de.ecspride.MainActivity's own code ever does. With the
+    // boundary fixed (verified directly: FlowSensitivity1.apk's phase-1 instantiated set dropped
+    // from including these to a handful of real app/fragment classes), none of the three is even
+    // in the instantiated set anymore - and, matching FlowDroid's SystemClassHandler
+    // classification, resolveOverride now excludes library classes unconditionally, so
+    // instantiation evidence for a bundled-library class wouldn't be enough to manufacture it into
+    // an entry point regardless.
     Path apkPath = Paths.get("src/test/resources/FlowSensitivity1.apk");
     ApkTestContext ctx = ApkTestContext.forApkPath(apkPath);
     List<MethodSignature> entryPoints = getAsyncEntryPoints(ctx, apkPath);
@@ -119,8 +131,8 @@ public class AndroidAsyncEntryPointCreatorTest {
                 "java.lang.Object",
                 List.of("java.lang.Object[]"));
 
-    assertTrue(entryPoints.contains(modernAsyncTaskCall));
-    assertTrue(entryPoints.contains(fragmentManagerImplRun));
-    assertTrue(entryPoints.contains(persistHistoryAsyncTaskDoInBackground));
+    assertFalse(entryPoints.contains(modernAsyncTaskCall));
+    assertFalse(entryPoints.contains(fragmentManagerImplRun));
+    assertFalse(entryPoints.contains(persistHistoryAsyncTaskDoInBackground));
   }
 }

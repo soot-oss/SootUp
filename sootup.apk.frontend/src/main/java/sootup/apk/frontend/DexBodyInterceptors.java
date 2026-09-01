@@ -29,9 +29,22 @@ import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.interceptors.DexNullTransformer;
 import sootup.apk.frontend.interceptors.DexNumberTranformer;
 import sootup.core.interceptor.BodyInterceptor;
+import sootup.interceptors.TypeAssigner;
 
 public enum DexBodyInterceptors {
-  Default(new DexNumberTranformer(), new DexNullTransformer());
+  // TypeAssigner runs last: unlike javac-derived bytecode (where every local already carries a
+  // concrete declared type), dex bytecode is weakly typed at the bytecode level — a register can
+  // be used as an int, a boolean, or an object reference at different points, disambiguated only
+  // by how it's used — so dexlib2-derived Jimple locals start out with
+  // sootup.core.types.UnknownType
+  // until something resolves them. DexNumberTranformer/DexNullTransformer narrow numeric and
+  // null-vs-zero ambiguity first; TypeAssigner then does the same most-specific-common-supertype
+  // resolution JavaClassPathAnalysisInputLocation already applies to javac-derived bodies (see
+  // SootUpManager.createView in the FAIR project for the equivalent javac-side wiring), so a
+  // consumer that needs every local to carry a concrete, non-Unknown type (e.g. FAIR's
+  // TypeExtension.toFairType(), which has no case for UnknownType) doesn't need every downstream
+  // caller to remember to run its own type-resolution pass over dex bodies.
+  Default(new DexNumberTranformer(), new DexNullTransformer(), new TypeAssigner());
 
   @NonNull private final List<BodyInterceptor> bodyInterceptors;
 

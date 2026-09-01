@@ -106,12 +106,24 @@ public class AndroidCallbackEntryPointCreatorTest {
   }
 
   @Test
-  public void testInstantiatedListenerIsFound() {
+  public void testBundledLibraryListenerIsNeverAnEntryPointEvenIfInstantiated() {
     // android.support.v7.internal.widget.ActivityChooserView$Callbacks#onClick and
-    // android.support.v7.internal.view.menu.MenuDialogHelper#onClick are both genuinely
-    // instantiated somewhere in FlowSensitivity1.apk's reachable code (verified via a diagnostic
-    // dump of InstantiatedTypeCollector's output for this apk), so unlike the bundled-but-dead
-    // classes this filter is meant to exclude, these must still be found.
+    // android.support.v7.internal.view.menu.MenuDialogHelper#onClick previously showed up in
+    // FlowSensitivity1.apk's phase-1 "instantiated" set (this test used to assert they must be
+    // found, on the theory that instantiation evidence alone made them legitimate). That evidence
+    // turned out to be a symptom of a different bug: before ApkAnalysisInputLocation started
+    // reporting SourceType.Library for bundled-library classes (support-v4/v7, AndroidX, Play
+    // Services, Kotlin's runtime - see ApkAnalysisInputLocation#isBundledLibraryClass), CHA's
+    // library-boundary check couldn't tell these classes apart from real app code, so it walked
+    // straight through the support library's own internal implementation (e.g. everything
+    // super.onCreate()/getMenuInflater().inflate() transitively construct inside ActionBar/Toolbar
+    // plumbing) and marked whatever it happened to construct along the way as "instantiated" - not
+    // because de.ecspride.MainActivity's own code ever does. With the boundary fixed (verified
+    // directly: FlowSensitivity1.apk's phase-1 instantiated set dropped from including these to a
+    // handful of real app/fragment classes), neither class is even in the instantiated set anymore
+    // - and, matching FlowDroid's SystemClassHandler classification, resolveOverride now excludes
+    // library classes unconditionally, so instantiation evidence for a bundled-library class
+    // wouldn't be enough to manufacture it into an entry point regardless.
     Path apkPath = Paths.get("src/test/resources/FlowSensitivity1.apk");
     ApkTestContext ctx = ApkTestContext.forApkPath(apkPath);
     List<MethodSignature> callbackEntryPoints = getCallbackEntryPoints(ctx, apkPath);
@@ -133,8 +145,8 @@ public class AndroidCallbackEntryPointCreatorTest {
                 "void",
                 List.of("android.content.DialogInterface", "int"));
 
-    assertTrue(callbackEntryPoints.contains(activityChooserViewCallbacksOnClick));
-    assertTrue(callbackEntryPoints.contains(menuDialogHelperOnClick));
+    assertFalse(callbackEntryPoints.contains(activityChooserViewCallbacksOnClick));
+    assertFalse(callbackEntryPoints.contains(menuDialogHelperOnClick));
   }
 
   @Test

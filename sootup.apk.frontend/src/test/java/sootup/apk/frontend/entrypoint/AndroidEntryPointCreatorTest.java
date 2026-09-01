@@ -23,6 +23,7 @@ package sootup.apk.frontend.entrypoint;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
@@ -65,6 +66,26 @@ public class AndroidEntryPointCreatorTest {
     CallGraph cg = cha.initialize(entryPoints);
     assertTrue(cg.containsMethod(onCreate));
     assertEquals(9, cg.callsFrom(onCreate).size());
+  }
+
+  @Test
+  public void testInheritedBundledLibraryOverrideIsNotAnEntryPoint() {
+    // Found via a real SootUp-vs-FlowDroid comparison on DroidBench's FlowSensitivity1:
+    // MainActivity
+    // doesn't override onActivityResult itself, but its dex-embedded support-v4/v7 ancestor
+    // FragmentActivity does (just to forward the call to child fragments). Ground truth for this
+    // app is 0 leaks; FlowDroid's dummy-main never calls onActivityResult at all since it only
+    // wires overrides declared on the manifest's own component class (and its nested classes), so
+    // promoting the inherited FragmentActivity override to a top-level entry point with
+    // top-seeded params was a SootUp-only false positive.
+    ApkTestContext ctx = ApkTestContext.forApk("src/test/resources/FlowSensitivity1.apk");
+    AndroidManifest manifest =
+        AndroidManifestParser.parseFromApk(Paths.get("src/test/resources/FlowSensitivity1.apk"));
+
+    List<MethodSignature> entryPoints =
+        AndroidEntryPointCreator.getEntryPoints(ctx.view, manifest, ctx.appClassNames);
+
+    assertFalse(entryPoints.stream().anyMatch(sig -> sig.getName().equals("onActivityResult")));
   }
 
   @Test

@@ -130,20 +130,26 @@ public final class AndroidEntryPointCreator {
 
   /**
    * Walks {@code startClass}'s superclass chain (starting at itself) for the first class in {@code
-   * appClassNames} that overrides {@code targetMethod}, matching how the Android framework actually
-   * dispatches a callback to whichever subclass implements it (commonly a shared base
-   * activity/service rather than the leaf class). Returns empty if no class in {@code
-   * appClassNames} overrides this callback anywhere in the hierarchy, or if {@code startClass}
-   * isn't part of the view at all.
+   * appClassNames} that overrides {@code targetMethod} and isn't itself a library class, matching
+   * how the Android framework actually dispatches a callback to whichever subclass implements it
+   * (commonly a shared base activity/service rather than the leaf class). Returns empty if no such
+   * class overrides this callback anywhere in the hierarchy, or if {@code startClass} isn't part of
+   * the view at all.
    *
-   * <p>Deliberately checks membership in {@code appClassNames} rather than {@link
-   * SootClass#isLibraryClass()}: the latter reflects the {@link sootup.core.model.SourceType} the
-   * class's {@code AnalysisInputLocation} reports, and a platform jar added via {@code
-   * JavaClassPathAnalysisInputLocation}'s single-argument constructor (as this module's tests do)
-   * defaults to {@code SourceType.Application} — so {@code isLibraryClass()} can't tell an
-   * android.jar class apart from an app class in that setup, which would let a framework base
-   * class's own default implementation (e.g. {@code Activity#onCreate}) be mistaken for an app
-   * override.
+   * <p>Checks both membership in {@code appClassNames} <em>and</em> {@link
+   * SootClass#isLibraryClass()} at every step, including {@code startClass} itself: {@code
+   * appClassNames} excludes platform (android.jar) classes and anything else off the program
+   * entirely, while {@code isLibraryClass()} excludes bundled/statically-linked libraries
+   * (support-v4/v7, AndroidX, Play Services, Kotlin's runtime) that are declared in the same dex as
+   * the app's own classes and so would otherwise pass the {@code appClassNames} check
+   * indistinguishably from real app code. {@link sootup.apk.frontend.ApkAnalysisInputLocation} is
+   * what makes {@code isLibraryClass()} a reliable signal for both boundaries: it reports {@link
+   * sootup.core.model.SourceType#Library} for bundled-library classes the same way android.jar's
+   * {@code AnalysisInputLocation} does for platform classes, so a framework base class's default
+   * implementation (e.g. {@code Activity#onCreate}) or a support-library base class's own dispatch
+   * logic (e.g. {@code FragmentActivity#onActivityResult}, which just forwards to child fragments)
+   * is never mistaken for an app-authored override — at any point in the walk, {@code startClass}
+   * included.
    *
    * <p>Public because callback discovery ({@code AndroidCallbackEntryPointCreator}), layout {@code
    * android:onClick} resolution ({@code AndroidLayoutEntryPointCreator}) and ICC resolution ({@code
@@ -174,7 +180,10 @@ public final class AndroidEntryPointCreator {
         return Optional.empty();
       }
       Optional<? extends SootClass> sootClass = view.getClass(current);
-      if (!sootClass.isPresent()) {
+      if (!sootClass.isPresent() || sootClass.get().isLibraryClass()) {
+        // Either not in the view at all, or a bundled library class (see
+        // ApkAnalysisInputLocation#isBundledLibraryClass): its overrides are pre-written
+        // library dispatch plumbing, not anything the app author wrote.
         return Optional.empty();
       }
       Optional<? extends SootMethod> method = sootClass.get().getMethod(subSignature);
