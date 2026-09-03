@@ -817,11 +817,11 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         addNodeToBlock(firstBlock, stmt);
       }
 
-      // i.e. can just be the single followingblock which we merge now
+      // i.e. can just be the single following block which we merge now
       firstBlock.clearSuccessorBlocks();
 
       // update linking info into firstBlock
-      // done in clearPredecessorBlock      firstBlock.removeSuccessorBlock(followingBlock);
+      // done in clearPredecessorBlock firstBlock.removeSuccessorBlock(followingBlock);
       List<MutableBasicBlock> successors = followingBlock.getSuccessors();
       for (int i = 0; i < successors.size(); i++) {
         MutableBasicBlock succ = successors.get(i);
