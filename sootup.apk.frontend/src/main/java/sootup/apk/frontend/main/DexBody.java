@@ -34,6 +34,7 @@ import org.jf.dexlib2.immutable.debug.ImmutableLineNumber;
 import org.jf.dexlib2.immutable.debug.ImmutableRestartLocal;
 import org.jf.dexlib2.immutable.debug.ImmutableStartLocal;
 import org.jf.dexlib2.util.MethodUtil;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
@@ -327,9 +328,6 @@ public class DexBody {
     jimplify();
     // All the statements are converted, it is time to create a mutable statement graph
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
-    // If the Nop Statements are not removed, graph.initializeWith throws a runtime exception
-    // It is only for the case where there is a JNop Statement after the return statement. Crazy
-    // android code :(
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature(
@@ -337,10 +335,6 @@ public class DexBody {
                 method.getName(),
                 DexUtil.toSootType(method.getReturnType(), 0),
                 parameterTypes);
-    while (stmtList.get(stmtList.size() - 1) instanceof JNopStmt) {
-      stmtList.remove(stmtList.size() - 1);
-    }
-    //    stmtList.removeIf(JNopStmt.class::isInstance);
     Map<BranchingStmt, List<Stmt>> branchingStmtListMap = convertMultimap(branchingMap);
     Set<Stmt> blockBegin = new HashSet<>();
     Set<Stmt> blockEnd = new HashSet<>();
@@ -356,6 +350,14 @@ public class DexBody {
           blockBegin.add(trap.getEndStmt());
           blockBegin.add(trap.getHandlerStmt());
         });
+
+    // A Stmt that does not fall through - a return, a throw, a goto - ends its block. Whatever dex
+    // placed behind it is only reachable by a jump and must not be chained onto it.
+    for (Stmt stmt : stmtList) {
+      if (!stmt.fallsThrough()) {
+        blockEnd.add(stmt);
+      }
+    }
 
     List<List<Stmt>> listList = new ArrayList<>();
     List<Stmt> currentList = new ArrayList<>();
