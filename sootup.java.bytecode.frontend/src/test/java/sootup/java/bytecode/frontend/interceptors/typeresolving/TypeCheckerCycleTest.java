@@ -20,10 +20,10 @@ import sootup.jimple.frontend.JimpleStringAnalysisInputLocation;
 public class TypeCheckerCycleTest {
 
   @Test
-  @Timeout(
-      value = 500,
-      unit = TimeUnit.MILLISECONDS,
-      threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
+  // Only guards against the infinite loop this test was written for, so it is deliberately far
+  // above the real runtime (a few ms): a tighter bound just flakes when the machine is busy or the
+  // ANTLR lexer is still warming up.
+  @Timeout(value = 3, unit = TimeUnit.SECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
   public void testWorklistLoopExplicitly() {
     JavaView view = getCycleView();
     MethodSignature signature =
