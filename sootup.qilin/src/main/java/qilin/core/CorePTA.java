@@ -18,108 +18,139 @@
 
 package qilin.core;
 
+import java.util.Objects;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.solver.Propagator;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.HeapAbstractor;
-import qilin.parm.select.CtxSelector;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.select.ContextSelector;
 import sootup.core.model.SootMethod;
 
 /*
  * This represents a parameterized PTA which could be concreted to many pointer analyses.
  * */
-public abstract class CorePTA extends PTA {
-  /*
-   * The following three parameterized functions must be initialized before doing the pointer analysis.
-   * */
-  protected CtxConstructor ctxCons;
-  protected CtxSelector ctxSel;
-  protected HeapAbstractor heapAbst;
+public abstract class CorePTA extends PTA implements Parameterizer {
+  private ContextConstructor contextConstructor;
+  private ContextSelector contextSelector;
+  private HeapAbstractor heapAbstractor;
+  private boolean componentsInitialized = false;
 
   public CorePTA(PTAScene scene) {
     super(scene);
   }
 
-  public CtxSelector ctxSelector() {
-    return ctxSel;
+  /**
+   * Wires up the three context-sensitivity policies this analysis needs, atomically. Must be called
+   * exactly once, from the concrete subclass's constructor, right after {@code super(scene)}
+   * returns. Grouping all three into a single call -- instead of three independent {@code
+   * protected} field assignments a subclass constructor could partially forget -- turns a missing
+   * policy into an immediate, descriptive failure here instead of a {@code NullPointerException}
+   * surfacing later, deep inside the solver.
+   */
+  protected final void initComponents(
+      ContextConstructor contextConstructor,
+      ContextSelector contextSelector,
+      HeapAbstractor heapAbstractor) {
+    if (componentsInitialized) {
+      throw new IllegalStateException("initComponents() has already been called for " + this);
+    }
+    this.contextConstructor = Objects.requireNonNull(contextConstructor, "contextConstructor");
+    this.contextSelector = Objects.requireNonNull(contextSelector, "contextSelector");
+    this.heapAbstractor = Objects.requireNonNull(heapAbstractor, "heapAbstractor");
+    this.componentsInitialized = true;
   }
 
-  public void setContextSelector(CtxSelector ctxSelector) {
-    this.ctxSel = ctxSelector;
+  private void checkComponentsInitialized() {
+    if (!componentsInitialized) {
+      throw new IllegalStateException(
+          "context-sensitivity components not initialized: the "
+              + getClass().getSimpleName()
+              + " constructor must call initComponents(...) before this analysis can be used");
+    }
   }
 
-  public CtxConstructor ctxConstructor() {
-    return ctxCons;
+  public ContextSelector contextSelector() {
+    checkComponentsInitialized();
+    return contextSelector;
+  }
+
+  public void setContextSelector(ContextSelector contextSelector) {
+    checkComponentsInitialized();
+    this.contextSelector = Objects.requireNonNull(contextSelector, "contextSelector");
+  }
+
+  public ContextConstructor contextConstructor() {
+    checkComponentsInitialized();
+    return contextConstructor;
   }
 
   public HeapAbstractor heapAbstractor() {
-    return this.heapAbst;
+    checkComponentsInitialized();
+    return heapAbstractor;
   }
 
   public abstract Propagator getPropagator();
 
   @Override
-  public Context createCalleeCtx(
+  public Context createCalleeContext(
       ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
-    return ctxCons.constructCtx(caller, (ContextAllocNode) receiverNode, callSite, target);
+    return contextConstructor()
+        .constructContext(caller, (ContextAllocNode) receiverNode, callSite, target);
   }
 
   public Context emptyContext() {
-    return CtxConstructor.emptyContext;
+    return ContextConstructor.emptyContext;
   }
 
+  /**
+   * Dispatches to the matching {@code parameterize} overload via double dispatch on {@code n}'s
+   * runtime type (see {@link PagNode#parameterize(Parameterizer, Context)}), instead of an {@code
+   * instanceof} cascade that a new {@link PagNode} subtype could silently fall through.
+   */
   @Override
-  public Node parameterize(Node n, Context context) {
+  public PagNode parameterize(PagNode n, Context context) {
     if (context == null) {
       throw new RuntimeException("null context!!!");
     }
-    if (n instanceof LocalVarNode) {
-      LocalVarNode lvn = (LocalVarNode) n;
-      return parameterize(lvn, context);
-    }
-    if (n instanceof FieldRefNode) {
-      FieldRefNode frn = (FieldRefNode) n;
-      return parameterize(frn, context);
-    }
-    if (n instanceof AllocNode) {
-      AllocNode an = (AllocNode) n;
-      return parameterize(an, context);
-    }
-    if (n instanceof FieldValNode) {
-      FieldValNode fvn = (FieldValNode) n;
-      return parameterize(fvn, context);
-    }
-    if (n instanceof GlobalVarNode) {
-      GlobalVarNode gvn = (GlobalVarNode) n;
-      return pag.makeContextVarNode(gvn, emptyContext());
-    }
-    throw new RuntimeException("cannot parameterize this node: " + n);
+    return n.parameterize(this, context);
   }
 
+  @Override
   public ContextField parameterize(FieldValNode fvn, Context context) {
-    Context ctx = ctxSel.select(fvn, context);
+    Context ctx = contextSelector().select(fvn, context);
     return pag.makeContextField(ctx, fvn);
   }
 
-  protected ContextVarNode parameterize(LocalVarNode vn, Context context) {
-    Context ctx = ctxSel.select(vn, context);
+  @Override
+  public ContextVarNode parameterize(LocalVarNode vn, Context context) {
+    Context ctx = contextSelector().select(vn, context);
     return pag.makeContextVarNode(vn, ctx);
   }
 
-  protected FieldRefNode parameterize(FieldRefNode frn, Context context) {
+  @Override
+  public FieldRefNode parameterize(FieldRefNode frn, Context context) {
     return pag.makeFieldRefNode((VarNode) parameterize(frn.getBase(), context), frn.getField());
   }
 
-  protected ContextAllocNode parameterize(AllocNode node, Context context) {
-    Context ctx = ctxSel.select(node, context);
+  @Override
+  public ContextAllocNode parameterize(AllocNode node, Context context) {
+    Context ctx = contextSelector().select(node, context);
     return pag.makeContextAllocNode(node, ctx);
+  }
+
+  /**
+   * Global variables are never context-sensitive, so they always parameterize to the empty context.
+   */
+  @Override
+  public ContextVarNode parameterize(GlobalVarNode gvn, Context context) {
+    return pag.makeContextVarNode(gvn, emptyContext());
   }
 
   /** Finds or creates the ContextMethod for method and context. */
   @Override
   public ContextMethod parameterize(SootMethod method, Context context) {
-    Context ctx = ctxSel.select(method, context);
+    Context ctx = contextSelector().select(method, context);
     return pag.makeContextMethod(ctx, method);
   }
 

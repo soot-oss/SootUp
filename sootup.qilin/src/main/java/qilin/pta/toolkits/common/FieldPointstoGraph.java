@@ -23,7 +23,7 @@ import qilin.core.PTA;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.PAG;
 import qilin.core.pag.SparkField;
-import qilin.core.sets.PointsToSet;
+import qilin.util.sets.PointsToSet;
 
 public class FieldPointstoGraph {
   private final Map<AllocNode, Map<SparkField, Set<AllocNode>>> pointsTo = new HashMap<>();

@@ -18,30 +18,27 @@
 
 package qilin.core.pag;
 
-import qilin.core.sets.DoublePointsToSet;
 import qilin.util.Numberable;
+import qilin.util.sets.DoublePointsToSet;
 import sootup.core.types.Type;
 
 /** Represents a simple of pointer node in the pointer assignment graph. */
-public class ValNode extends Node implements Comparable, Numberable {
+public class ValNode extends PagNode implements Comparable<ValNode>, Numberable {
 
   protected ValNode(Type t) {
     super(t);
   }
 
-  public int compareTo(Object o) {
-    ValNode other = (ValNode) o;
+  public int compareTo(ValNode other) {
     return other.getNumber() - this.getNumber();
   }
 
   /** Returns the points-to set for this node. */
   public DoublePointsToSet getP2Set() {
-    if (p2set != null) {
-      return p2set;
-    } else {
+    if (p2set == null) {
       p2set = new DoublePointsToSet();
-      return p2set;
     }
+    return p2set;
   }
 
   /** Delete current points-to set and make a new one */

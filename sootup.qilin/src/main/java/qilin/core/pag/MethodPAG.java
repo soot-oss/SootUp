@@ -19,11 +19,10 @@
 package qilin.core.pag;
 
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.util.DataFactory;
-import qilin.util.PTAUtils;
+import qilin.core.config.PointerAnalysisConfig;
+import qilin.util.FakeMainMethods;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.Jimple;
@@ -42,20 +41,27 @@ import sootup.core.model.SootMethod;
  * @author Ondrej Lhotak
  */
 public class MethodPAG {
-  private final ChunkedQueue<Node> internalEdges = new ChunkedQueue<>();
-  private final QueueReader<Node> internalReader = internalEdges.reader();
-  private final Set<SootMethod> clinits = DataFactory.createSet();
-  private final Collection<InvokableStmt> invokeStmts = DataFactory.createSet();
+  private final ChunkedQueue<PagNode> internalEdges = new ChunkedQueue<>();
+  private final QueueReader<PagNode> internalReader = internalEdges.reader();
+  private final Set<SootMethod> clinits;
+  private final Collection<InvokableStmt> invokeStmts;
+
+  {
+    clinits = new HashSet<>();
+    invokeStmts = new HashSet<>();
+  }
+
   public Body body;
 
   /**
    * Since now the exception analysis is handled on-the-fly, we should record the exception edges
    * explicitly for Eagle and Turner.
    */
-  private final Map<Node, Set<Node>> exceptionEdges = DataFactory.createMap();
+  private final Map<PagNode, Set<PagNode>> exceptionEdges;
 
   protected MethodNodeFactory nodeFactory;
   protected final PTAScene ptaScene;
+  protected final PointerAnalysisConfig config;
   SootMethod method;
   /*
    * List[i-1] is wrappered in List[i].
@@ -63,11 +69,18 @@ public class MethodPAG {
    * Map<Node, Map<Stmt, List<Trap>>> because there exists cases where the same
    * node are thrown more than once and lies in different catch blocks.
    * */
-  public final Map<Stmt, List<Trap>> stmt2wrapperedTraps = DataFactory.createMap();
-  public final Map<Node, Map<Stmt, List<Trap>>> node2wrapperedTraps = DataFactory.createMap();
+  public final Map<Stmt, List<Trap>> stmt2wrapperedTraps;
+  public final Map<PagNode, Map<Stmt, List<Trap>>> node2wrapperedTraps;
+
+  {
+    exceptionEdges = new HashMap<>();
+    stmt2wrapperedTraps = new HashMap<>();
+    node2wrapperedTraps = new HashMap<>();
+  }
 
   public MethodPAG(PAG pag, SootMethod m, Body body) {
     this.ptaScene = pag.getPta().getScene();
+    this.config = pag.getPta().getConfig();
     this.method = m;
     this.nodeFactory = new MethodNodeFactory(pag, this);
     this.body = body;
@@ -106,7 +119,7 @@ public class MethodPAG {
 
   protected void buildNormal() {
     if (method.isStatic()) {
-      if (!PTAUtils.isFakeMainMethod(method)) {
+      if (!FakeMainMethods.isFakeMainMethod(method)) {
         SootClass sc = ptaScene.getView().getClass(method.getDeclaringClassType()).get();
         nodeFactory.clinitsOf(sc).forEach(this::addTriggeredClinit);
       }
@@ -122,7 +135,7 @@ public class MethodPAG {
 
   protected void buildException() {
     // we use the same logic as doop (library/exceptions/precise.logic).
-    if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
+    if (!config.isPreciseExceptions()) {
       return;
     }
     // List<Trap> traps = body.getTraps();
@@ -130,12 +143,12 @@ public class MethodPAG {
     // Set<Stmt> inTraps = DataFactory.createSet();
   }
 
-  private void addStmtTrap(Node src, Stmt stmt, Trap trap) {
+  private void addStmtTrap(PagNode src, Stmt stmt, Trap trap) {
     Map<Stmt, List<Trap>> stmt2Traps =
-        node2wrapperedTraps.computeIfAbsent(src, k -> DataFactory.createMap());
-    List<Trap> trapList = stmt2Traps.computeIfAbsent(stmt, k -> DataFactory.createList());
+        node2wrapperedTraps.computeIfAbsent(src, k -> new HashMap<>());
+    List<Trap> trapList = stmt2Traps.computeIfAbsent(stmt, k -> new ArrayList<>());
     trapList.add(trap);
-    stmt2wrapperedTraps.computeIfAbsent(stmt, k -> DataFactory.createList()).add(trap);
+    stmt2wrapperedTraps.computeIfAbsent(stmt, k -> new ArrayList<>()).add(trap);
   }
 
   protected void addMiscEdges() {
@@ -145,15 +158,21 @@ public class MethodPAG {
         .equals(
             "<java.lang.ref.Reference: void <init>(java.lang.Object,java.lang.ref.ReferenceQueue)>")) {
       // Implements the special status of java.lang.ref.Reference just as in Doop
-      // (library/reference.logic).
-      SootClass sootClass = ptaScene.getSootClass("java.lang.ref.Reference");
-      SootField sf = sootClass.getField("pending").get();
-      JStaticFieldRef sfr = Jimple.newStaticFieldRef(sf.getSignature());
-      addInternalEdge(nodeFactory.caseThis(), nodeFactory.getNode(sfr));
+      // (library/reference.logic). "pending" is a JRE6/8-era Reference internal field - later
+      // JDKs' reference-processing rewrite dropped/renamed it, so skip this modeling if absent
+      // instead of crashing.
+      SootClass sootClass =
+          ptaScene.getSootClass(
+              ptaScene.getView().getIdentifierFactory().getClassType("java.lang.ref.Reference"));
+      Optional<? extends SootField> osf = sootClass.getField("pending");
+      if (osf.isPresent()) {
+        JStaticFieldRef sfr = Jimple.newStaticFieldRef(osf.get().getSignature());
+        addInternalEdge(nodeFactory.caseThis(), nodeFactory.getNode(sfr));
+      }
     }
   }
 
-  public void addInternalEdge(Node src, Node dst) {
+  public void addInternalEdge(PagNode src, PagNode dst) {
     if (src == null) {
       return;
     }
@@ -161,7 +180,7 @@ public class MethodPAG {
     internalEdges.add(dst);
   }
 
-  public QueueReader<Node> getInternalReader() {
+  public QueueReader<PagNode> getInternalReader() {
     return internalReader;
   }
 
@@ -173,11 +192,11 @@ public class MethodPAG {
     return clinits.iterator();
   }
 
-  public void addExceptionEdge(Node from, Node to) {
-    this.exceptionEdges.computeIfAbsent(from, k -> DataFactory.createSet()).add(to);
+  public void addExceptionEdge(PagNode from, PagNode to) {
+    this.exceptionEdges.computeIfAbsent(from, k -> new HashSet<>()).add(to);
   }
 
-  public Map<Node, Set<Node>> getExceptionEdges() {
+  public Map<PagNode, Set<PagNode>> getExceptionEdges() {
     return this.exceptionEdges;
   }
 }

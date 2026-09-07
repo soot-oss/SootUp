@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
-import qilin.CoreConfig;
 import qilin.core.CorePTA;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
@@ -33,27 +32,29 @@ import qilin.core.pag.AllocNode;
 import qilin.core.pag.ContextVarNode;
 import qilin.core.pag.GlobalVarNode;
 import qilin.core.pag.LocalVarNode;
-import qilin.core.pag.Node;
 import qilin.core.pag.PAG;
+import qilin.core.pag.PagNode;
 import qilin.core.pag.ValNode;
 import qilin.core.pag.VarNode;
-import qilin.core.sets.PointsToSet;
 import qilin.core.solver.Propagator;
 import qilin.core.solver.Solver;
 import qilin.stat.IEvaluator;
+import qilin.stat.PTAEvaluator;
 import qilin.stat.SimplifiedEvaluator;
-import qilin.util.PTAUtils;
+import qilin.util.FakeMainMethods;
+import qilin.util.PagQueries;
+import qilin.util.sets.PointsToSet;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.FieldSignature;
 
 public abstract class BasePTA extends CorePTA {
   protected IEvaluator evaluator;
 
   public BasePTA(PTAScene scene) {
     super(scene);
-    //    this.evaluator = new PTAEvaluator(this);
-    this.evaluator = new SimplifiedEvaluator(this);
+    this.evaluator =
+        getConfig().isDumpStats() ? new PTAEvaluator(this) : new SimplifiedEvaluator(this);
   }
 
   public IEvaluator evaluator() {
@@ -85,15 +86,15 @@ public abstract class BasePTA extends CorePTA {
   }
 
   protected void dumpStats() {
-    if (CoreConfig.v().getOutConfig().dumppts) {
-      dumpPts(this, !CoreConfig.v().getOutConfig().dumplibpts);
+    if (getConfig().isDumpPointsToSet()) {
+      dumpPts(this, !getConfig().isDumpLibraryPointsToSet());
     }
   }
 
   /** dump pts to sootoutput/pts */
   private void dumpPts(PTA pta, boolean appOnly) {
-    final String output_dir = CoreConfig.v().getOutConfig().outDir;
-    Map<String, Node> nodes = new TreeMap<>();
+    final String output_dir = getConfig().getOutputDirectory();
+    Map<String, PagNode> nodes = new TreeMap<>();
     try {
       PrintWriter file = new PrintWriter(new File(output_dir, "pts.txt"));
       file.println("Points-to results:");
@@ -104,15 +105,14 @@ public abstract class BasePTA extends CorePTA {
         SootClass clz = null;
         if (vn instanceof LocalVarNode) {
           SootMethod sm = ((LocalVarNode) vn).getMethod();
-          if (sm != null && !PTAUtils.isFakeMainMethod(sm)) {
+          if (sm != null && !FakeMainMethods.isFakeMainMethod(sm)) {
             clz = getView().getClass(sm.getDeclaringClassType()).get();
           }
         } else if (vn instanceof GlobalVarNode) {
           GlobalVarNode gvn = (GlobalVarNode) vn;
-          Object variable = gvn.getVariable();
-          if (variable instanceof SootField) {
-            SootField sf = (SootField) variable;
-            clz = getView().getClass(sf.getDeclaringClassType()).get();
+          FieldSignature fieldSig = gvn.getFieldSignature();
+          if (fieldSig != null) {
+            clz = getView().getClass(fieldSig.getDeclClassType()).get();
           }
         } else if (vn instanceof ContextVarNode) {
           ContextVarNode cv = (ContextVarNode) vn;
@@ -122,10 +122,9 @@ public abstract class BasePTA extends CorePTA {
             clz = getView().getClass(cvbase.getMethod().getDeclaringClassType()).get();
           } else if (varNode instanceof GlobalVarNode) {
             GlobalVarNode gvn = (GlobalVarNode) varNode;
-            Object variable = gvn.getVariable();
-            if (variable instanceof SootField) {
-              SootField sf = (SootField) variable;
-              clz = getView().getClass(sf.getDeclaringClassType()).get();
+            FieldSignature fieldSig = gvn.getFieldSignature();
+            if (fieldSig != null) {
+              clz = getView().getClass(fieldSig.getDeclClassType()).get();
             }
           }
         }
@@ -133,7 +132,7 @@ public abstract class BasePTA extends CorePTA {
           continue;
         }
 
-        String label = PTAUtils.getNodeLabel(vn);
+        String label = PagQueries.getNodeLabel(vn);
         nodes.put("[" + label + "]", vn);
         file.print(label + " -> {");
         PointsToSet p2set = pta.reachingObjects(vn);
@@ -143,8 +142,8 @@ public abstract class BasePTA extends CorePTA {
           continue;
         }
         for (Iterator<AllocNode> it = p2set.iterator(); it.hasNext(); ) {
-          Node n = it.next();
-          label = PTAUtils.getNodeLabel(n);
+          PagNode n = it.next();
+          label = PagQueries.getNodeLabel(n);
           nodes.put("[" + label + "]", n);
           file.print(" ");
           file.print(label);

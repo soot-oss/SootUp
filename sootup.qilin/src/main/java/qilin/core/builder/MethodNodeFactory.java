@@ -24,12 +24,10 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
-import qilin.CoreConfig;
 import qilin.core.PTAScene;
-import qilin.core.PointsToAnalysis;
 import qilin.core.pag.*;
-import qilin.core.pag.Field;
-import qilin.util.PTAUtils;
+import qilin.util.FakeMainMethods;
+import qilin.util.JavaTypes;
 import qilin.util.queue.UniqueQueue;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.common.Immediate;
@@ -57,7 +55,6 @@ import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
@@ -86,47 +83,34 @@ public class MethodNodeFactory {
     this.scene = pag.getPta().getScene();
   }
 
-  public Node getNode(Value v) {
-    if (v instanceof Local) {
-      Local l = (Local) v;
+  public PagNode getNode(Value v) {
+    if (v instanceof Local l) {
       return caseLocal(l);
-    } else if (v instanceof JCastExpr) {
-      JCastExpr castExpr = (JCastExpr) v;
+    } else if (v instanceof JCastExpr castExpr) {
       return caseCastExpr(castExpr);
-    } else if (v instanceof JNewExpr) {
-      JNewExpr ne = (JNewExpr) v;
+    } else if (v instanceof JNewExpr ne) {
       return caseNewExpr(ne);
-    } else if (v instanceof JStaticFieldRef) {
-      JStaticFieldRef sfr = (JStaticFieldRef) v;
+    } else if (v instanceof JStaticFieldRef sfr) {
       return caseStaticFieldRef(sfr);
-    } else if (v instanceof JNewArrayExpr) {
-      JNewArrayExpr nae = (JNewArrayExpr) v;
+    } else if (v instanceof JNewArrayExpr nae) {
       return caseNewArrayExpr(nae);
-    } else if (v instanceof JArrayRef) {
-      JArrayRef ar = (JArrayRef) v;
+    } else if (v instanceof JArrayRef ar) {
       return caseArrayRef(ar);
-    } else if (v instanceof ClassConstant) {
-      ClassConstant cc = (ClassConstant) v;
+    } else if (v instanceof ClassConstant cc) {
       return caseClassConstant(cc);
-    } else if (v instanceof StringConstant) {
-      StringConstant sc = (StringConstant) v;
+    } else if (v instanceof StringConstant sc) {
       return caseStringConstant(sc);
-    } else if (v instanceof JCaughtExceptionRef) {
-      JCaughtExceptionRef cef = (JCaughtExceptionRef) v;
+    } else if (v instanceof JCaughtExceptionRef cef) {
       return caseCaughtExceptionRef(cef);
-    } else if (v instanceof JParameterRef) {
-      JParameterRef pr = (JParameterRef) v;
+    } else if (v instanceof JParameterRef pr) {
       return caseParameterRef(pr);
-    } else if (v instanceof NullConstant) {
-      NullConstant nc = (NullConstant) v;
+    } else if (v instanceof NullConstant nc) {
       return caseNullConstant(nc);
-    } else if (v instanceof JInstanceFieldRef) {
-      JInstanceFieldRef ifr = (JInstanceFieldRef) v;
+    } else if (v instanceof JInstanceFieldRef ifr) {
       return caseInstanceFieldRef(ifr);
     } else if (v instanceof JThisRef) {
       return caseThis();
-    } else if (v instanceof JNewMultiArrayExpr) {
-      JNewMultiArrayExpr nmae = (JNewMultiArrayExpr) v;
+    } else if (v instanceof JNewMultiArrayExpr nmae) {
       return caseNewMultiArrayExpr(nmae);
     }
     System.out.println(v + ";;" + v.getClass());
@@ -157,15 +141,13 @@ public class MethodNodeFactory {
       }
       getNode(arg);
     }
-    if (s instanceof JAssignStmt) {
-      JAssignStmt assignStmt = (JAssignStmt) s;
+    if (s instanceof JAssignStmt assignStmt) {
       Value l = assignStmt.getLeftOp();
       if ((l.getType() instanceof ReferenceType)) {
         getNode(l);
       }
     }
-    if (ie instanceof AbstractInstanceInvokeExpr) {
-      AbstractInstanceInvokeExpr aie = (AbstractInstanceInvokeExpr) ie;
+    if (ie instanceof AbstractInstanceInvokeExpr aie) {
       getNode(aie.getBase());
     }
   }
@@ -173,7 +155,7 @@ public class MethodNodeFactory {
   private void resolveClinit(JStaticFieldRef staticFieldRef) {
     FieldSignature fieldSig = staticFieldRef.getFieldSignature();
     ClassType classType = fieldSig.getDeclClassType();
-    if (PTAUtils.isFakeMainClass(classType)) { // skip FakeMain
+    if (FakeMainMethods.isFakeMainClass(classType)) { // skip FakeMain
       return;
     }
     SootClass sootClass = scene.getView().getClass(classType).get();
@@ -184,9 +166,9 @@ public class MethodNodeFactory {
   private void handleIntraStmt(Stmt s) {
     s.accept(
         new AbstractStmtVisitor() {
-          protected Object result = null;
+          private Object result = null;
 
-          protected void setResult(Object result) {
+          private void setResult(Object result) {
             this.result = result;
           }
 
@@ -213,8 +195,8 @@ public class MethodNodeFactory {
             }
 
             if (!(r.getType() instanceof ReferenceType)) return;
-            Node dest = getNode(l);
-            Node src = getNode(r);
+            PagNode dest = getNode(l);
+            PagNode src = getNode(r);
             mpag.addInternalEdge(src, dest);
           }
 
@@ -223,26 +205,21 @@ public class MethodNodeFactory {
             if (!(stmt.getLeftOp().getType() instanceof ReferenceType)) {
               return;
             }
-            Node dest = getNode(stmt.getLeftOp());
-            Node src = getNode(stmt.getRightOp());
+            PagNode dest = getNode(stmt.getLeftOp());
+            PagNode src = getNode(stmt.getRightOp());
             mpag.addInternalEdge(src, dest);
-          }
-
-          @Override
-          public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
-            defaultCaseStmt(stmt);
           }
 
           @Override
           public void caseReturnStmt(@NonNull JReturnStmt stmt) {
             if (!(stmt.getOp().getType() instanceof ReferenceType)) return;
-            Node retNode = getNode(stmt.getOp());
+            PagNode retNode = getNode(stmt.getOp());
             mpag.addInternalEdge(retNode, caseRet());
           }
 
           @Override
           public void caseThrowStmt(@NonNull JThrowStmt stmt) {
-            if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
+            if (!pag.getPta().getConfig().isPreciseExceptions()) {
               mpag.addInternalEdge(getNode(stmt.getOp()), getNode(scene.getFieldGlobalThrow()));
             }
           }
@@ -258,7 +235,7 @@ public class MethodNodeFactory {
   }
 
   private AllocNode caseNewExpr(JNewExpr ne) {
-    SootClass cl = scene.getSootClass(ne.getType().toString());
+    SootClass cl = scene.getSootClass(ne.getType());
     clinitsOf(cl).forEach(mpag::addTriggeredClinit);
     return pag.makeAllocNode(ne, ne.getType(), method);
   }
@@ -267,7 +244,7 @@ public class MethodNodeFactory {
     FieldSignature fieldSig = ifr.getFieldSignature();
     Optional<? extends SootField> osf = scene.getView().getField(fieldSig);
     SootField sf;
-    if (!osf.isPresent()) {
+    if (osf.isEmpty()) {
       sf =
           new JavaSootField(
               fieldSig,
@@ -278,7 +255,8 @@ public class MethodNodeFactory {
       sf = osf.get();
     }
     Local base = ifr.getBase();
-    return pag.makeFieldRefNode(pag.makeLocalVarNode(base, base.getType(), method), new Field(sf));
+    return pag.makeFieldRefNode(
+        pag.makeLocalVarNode(base, base.getType(), method), new ConcreteField(sf));
   }
 
   private VarNode caseNewMultiArrayExpr(JNewMultiArrayExpr nmae) {
@@ -313,60 +291,54 @@ public class MethodNodeFactory {
               method);
       VarNode vn = pag.makeLocalVarNode(an.getNewExpr(), an.getType(), method);
       mpag.addInternalEdge(an, vn); // new
-      mpag.addInternalEdge(vn, pag.makeFieldRefNode(prevVn, ArrayElement.v())); // store
+      mpag.addInternalEdge(vn, pag.makeFieldRefNode(prevVn, pag.getArrayElement())); // store
       prevVn = vn;
     }
     return ret;
   }
 
   private VarNode caseCastExpr(JCastExpr ce) {
-    Node opNode = getNode(ce.getOp());
+    PagNode opNode = getNode(ce.getOp());
     VarNode castNode = pag.makeLocalVarNode(ce, ce.getType(), method);
     mpag.addInternalEdge(opNode, castNode);
     return castNode;
   }
 
   public VarNode caseThis() {
-    Type type =
-        method.isStatic()
-            ? PTAUtils.getClassType("java.lang.Object")
-            : method.getDeclaringClassType();
-    VarNode ret = pag.makeLocalVarNode(new Parm(method, PointsToAnalysis.THIS_NODE), type, method);
+    Type type = method.isStatic() ? JavaTypes.OBJECT : method.getDeclaringClassType();
+    VarNode ret = pag.makeLocalVarNode(MethodParameter.ofThis(method), type, method);
     ret.setInterProcTarget();
     return ret;
   }
 
   public VarNode caseParm(int index) {
     VarNode ret =
-        pag.makeLocalVarNode(new Parm(method, index), method.getParameterType(index), method);
+        pag.makeLocalVarNode(
+            MethodParameter.ofOrdinary(method, index), method.getParameterType(index), method);
     ret.setInterProcTarget();
     return ret;
   }
 
   public VarNode caseRet() {
     VarNode ret =
-        pag.makeLocalVarNode(
-            new Parm(method, PointsToAnalysis.RETURN_NODE), method.getReturnType(), method);
+        pag.makeLocalVarNode(MethodParameter.ofReturn(method), method.getReturnType(), method);
     ret.setInterProcSource();
     return ret;
   }
 
   public VarNode caseMethodThrow() {
     VarNode ret =
-        pag.makeLocalVarNode(
-            new Parm(method, PointsToAnalysis.THROW_NODE),
-            PTAUtils.getClassType("java.lang.Throwable"),
-            method);
+        pag.makeLocalVarNode(MethodParameter.ofThrow(method), JavaTypes.THROWABLE, method);
     ret.setInterProcSource();
     return ret;
   }
 
   public final FieldRefNode caseArray(VarNode base) {
-    return pag.makeFieldRefNode(base, ArrayElement.v());
+    return pag.makeFieldRefNode(base, pag.getArrayElement());
   }
 
-  private Node caseCaughtExceptionRef(JCaughtExceptionRef cer) {
-    if (CoreConfig.v().getPtaConfig().preciseExceptions) {
+  private PagNode caseCaughtExceptionRef(JCaughtExceptionRef cer) {
+    if (pag.getPta().getConfig().isPreciseExceptions()) {
       // we model caughtException expression as an local assignment.
       return pag.makeLocalVarNode(cer, cer.getType(), method);
     } else {
@@ -386,29 +358,28 @@ public class MethodNodeFactory {
     return pag.makeGlobalVarNode(sfr.getFieldSignature(), sfr.getType());
   }
 
-  private Node caseNullConstant(NullConstant nr) {
+  private PagNode caseNullConstant(NullConstant nr) {
     return null;
   }
 
   private VarNode caseStringConstant(StringConstant sc) {
     AllocNode stringConstantNode = pag.makeStringConstantNode(sc);
-    VarNode stringConstantVar =
-        pag.makeGlobalVarNode(sc, PTAUtils.getClassType("java.lang.String"));
+    VarNode stringConstantVar = pag.makeGlobalVarNode(sc, JavaTypes.STRING);
     mpag.addInternalEdge(stringConstantNode, stringConstantVar);
-    VarNode vn = pag.makeLocalVarNode(sc, PTAUtils.getClassType("java.lang.String"), method);
+    VarNode vn = pag.makeLocalVarNode(sc, JavaTypes.STRING, method);
     mpag.addInternalEdge(stringConstantVar, vn);
     return vn;
   }
 
   public LocalVarNode makeInvokeStmtThrowVarNode(Stmt invoke, SootMethod method) {
-    return pag.makeLocalVarNode(invoke, PTAUtils.getClassType("java.lang.Throwable"), method);
+    return pag.makeLocalVarNode(invoke, JavaTypes.THROWABLE, method);
   }
 
   public final VarNode caseClassConstant(ClassConstant cc) {
     AllocNode classConstant = pag.makeClassConstantNode(cc);
-    VarNode classConstantVar = pag.makeGlobalVarNode(cc, PTAUtils.getClassType("java.lang.Class"));
+    VarNode classConstantVar = pag.makeGlobalVarNode(cc, JavaTypes.CLASS);
     mpag.addInternalEdge(classConstant, classConstantVar);
-    VarNode vn = pag.makeLocalVarNode(cc, PTAUtils.getClassType("java.lang.Class"), method);
+    VarNode vn = pag.makeLocalVarNode(cc, JavaTypes.CLASS, method);
     mpag.addInternalEdge(classConstantVar, vn);
     return vn;
   }
@@ -423,7 +394,11 @@ public class MethodNodeFactory {
     Optional<? extends ClassType> curr = Optional.of(cl.getType());
     while (curr.isPresent()) {
       ClassType ct = curr.get();
-      SootClass sc = scene.getView().getClass(ct).get();
+      Optional<? extends SootClass> osc = scene.getView().getClass(ct);
+      if (!osc.isPresent()) {
+        break;
+      }
+      SootClass sc = osc.get();
       worklist.add(sc);
       curr = sc.getSuperclass();
     }

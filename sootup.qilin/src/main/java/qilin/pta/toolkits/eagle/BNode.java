@@ -19,7 +19,7 @@
 package qilin.pta.toolkits.eagle;
 
 import qilin.core.pag.AllocNode;
-import qilin.util.PTAUtils;
+import qilin.util.PagQueries;
 
 /** Original Graph Node(sparkNode) expanded bidirectinally */
 public class BNode {
@@ -41,7 +41,7 @@ public class BNode {
   }
 
   public Object getIR() {
-    return PTAUtils.getIR(sparkNode);
+    return PagQueries.getIR(sparkNode);
   }
 
   boolean isHeapPlus() {

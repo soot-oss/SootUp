@@ -51,6 +51,11 @@ import sootup.core.views.View;
  * {@code callGraph(...)}. This is ignored (with a warning logged) when {@code onFlyCallGraph} is
  * on, since OTF mode grows its own call graph incrementally from the entry points instead of
  * consuming one.
+ *
+ * <p>Spark has no {@code <clinit>}-handling knob of its own; this is also the way to control it in
+ * the non-OTF path. Pre-build the graph with {@code ClassHierarchyAnalysisAlgorithm}'s {@code
+ * seedEntryPointClinits}/{@code sootup.callgraph.scope.VirtualCallResolver} constructor and pass it
+ * via {@code callGraph(...)} instead of letting Spark run CHA with its defaults.
  */
 public class Spark {
 

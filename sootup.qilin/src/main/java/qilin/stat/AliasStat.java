@@ -18,24 +18,18 @@
 
 package qilin.stat;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import qilin.core.PTA;
 import qilin.core.pag.FieldRefNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 import qilin.core.pag.SparkField;
 import qilin.core.pag.VarNode;
-import qilin.core.sets.PointsToSet;
 import qilin.util.Pair;
-import qilin.util.Util;
 import qilin.util.queue.QueueReader;
-import sootup.core.jimple.common.Local;
+import qilin.util.sets.PointsToSet;
 import sootup.core.model.SootMethod;
 
 public class AliasStat implements AbstractStat {
@@ -58,26 +52,30 @@ public class AliasStat implements AbstractStat {
     for (SootMethod m : reachableMethods) {
       Map<SparkField, Map<Boolean, Set<LocalVarNode>>> localMap = new HashMap<>();
       MethodPAG srcmpag = pta.getPag().getMethodPAG(m);
-      QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+      QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
       while (reader.hasNext()) {
-        Node from = reader.next(), to = reader.next();
+        PagNode from = reader.next(), to = reader.next();
         if (from instanceof LocalVarNode) {
           if (to instanceof LocalVarNode) {
-            if (!(((VarNode) from).getVariable() instanceof Local)) continue;
-            if (!(((VarNode) to).getVariable() instanceof Local)) continue;
-            Util.addToMap(assignMap, (LocalVarNode) from, (LocalVarNode) to);
-            Util.addToMap(assignMap, (LocalVarNode) to, (LocalVarNode) from);
+            if (((VarNode) from).getLocal() == null) continue;
+            if (((VarNode) to).getLocal() == null) continue;
+            assignMap
+                .computeIfAbsent((LocalVarNode) from, k1 -> new HashSet<>())
+                .add((LocalVarNode) to);
+            assignMap
+                .computeIfAbsent((LocalVarNode) to, k -> new HashSet<>())
+                .add((LocalVarNode) from);
           } else if (to instanceof FieldRefNode) {
             FieldRefNode fr = (FieldRefNode) to;
             LocalVarNode base = (LocalVarNode) fr.getBase();
-            if (!(base.getVariable() instanceof Local)) continue;
+            if (base.getLocal() == null) continue;
             addToMap(globalMap, fr.getField(), true, base);
             addToMap(localMap, fr.getField(), true, base);
           } // else//local-global
         } else if (from instanceof FieldRefNode) {
           FieldRefNode fr = (FieldRefNode) from;
           LocalVarNode base = (LocalVarNode) fr.getBase();
-          if (!(base.getVariable() instanceof Local)) continue;
+          if (base.getLocal() == null) continue;
           addToMap(globalMap, fr.getField(), false, base);
           addToMap(localMap, fr.getField(), false, base);
         } // else//global-local or new
@@ -137,14 +135,14 @@ public class AliasStat implements AbstractStat {
   }
 
   private boolean checkAlias(LocalVarNode l1, LocalVarNode l2) {
-    PointsToSet pts1 = pta.reachingObjects(l1.getMethod(), (Local) l1.getVariable());
-    PointsToSet pts2 = pta.reachingObjects(l2.getMethod(), (Local) l2.getVariable());
+    PointsToSet pts1 = pta.reachingObjects(l1.getMethod(), l1.getLocal());
+    PointsToSet pts2 = pta.reachingObjects(l2.getMethod(), l2.getLocal());
     return pts1.hasNonEmptyIntersection(pts2);
   }
 
   public static <K, T, V> boolean addToMap(Map<K, Map<T, Set<V>>> m, K key1, T key2, V value) {
     Map<T, Set<V>> subMap = m.computeIfAbsent(key1, k -> new HashMap<>());
-    return Util.addToMap(subMap, key2, value);
+    return subMap.computeIfAbsent(key2, k -> new HashSet<>()).add(value);
   }
 
   public void aliasesProcessing() {
@@ -154,21 +152,21 @@ public class AliasStat implements AbstractStat {
             reachableMethods.stream()
                 .filter(pta.getScene()::isApplicationMethod)
                 .collect(Collectors.toSet()));
-    this.intraAlias_app = r1.getFirst();
-    this.intraAlias_incstst_app = r1.getSecond();
+    this.intraAlias_app = r1.first();
+    this.intraAlias_incstst_app = r1.second();
     Pair<Integer, Integer> r2 = computeInterAliases();
-    this.globalAlias_app = r2.getFirst();
-    this.globalAlias_incstst_app = r2.getSecond();
+    this.globalAlias_app = r2.first();
+    this.globalAlias_incstst_app = r2.second();
     Pair<Integer, Integer> r3 =
         recordAndComputeIntraAliases(
             reachableMethods.stream()
                 .filter(m -> !pta.getScene().isApplicationMethod(m))
                 .collect(Collectors.toSet()));
-    this.intraAlias = this.intraAlias_app + r3.getFirst();
-    this.intraAlias_incstst = this.intraAlias_incstst_app + r3.getSecond();
+    this.intraAlias = this.intraAlias_app + r3.first();
+    this.intraAlias_incstst = this.intraAlias_incstst_app + r3.second();
     Pair<Integer, Integer> r4 = computeInterAliases();
-    this.globalAlias = r4.getFirst();
-    this.globalAlias_incstst = r4.getSecond();
+    this.globalAlias = r4.first();
+    this.globalAlias_incstst = r4.second();
   }
 
   public int getGlobalAliasesIncludingStSt() {

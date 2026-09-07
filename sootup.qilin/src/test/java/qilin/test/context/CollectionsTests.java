@@ -18,59 +18,92 @@
 
 package qilin.test.context;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.core.config.ContextSensitivity;
+import qilin.test.util.QilinLegacyFrameworkTests;
 
-@Disabled
-public class CollectionsTests extends JunitTests {
+/**
+ * Extends {@link QilinLegacyFrameworkTests}, not {@link qilin.test.util.QilinFrameworkTests} -
+ * unlike the rest of qilin's tests, these mayAlias/notAlias assertions are calibrated to a real
+ * jre1.6.0_45's exact {@code java.util.HashMap}/{@code HashSet} internal object graph (e.g. {@code
+ * HashSet0.java}: "at least 3obj could pass this"), which changed substantially in later JDKs.
+ */
+public class CollectionsTests extends QilinLegacyFrameworkTests {
   @Test
   public void testArrayList0() {
-    checkAssertions(run("qilin.microben.context.collections.ArrayList0", "2o"));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.ArrayList0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testLinkedList0() {
-    checkAssertions(run("qilin.microben.context.collections.LinkedList0", "2o"));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.LinkedList0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testVector0() {
-    checkAssertions(run("qilin.microben.context.collections.Vector0", "2o"));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.Vector0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testHashMap0() {
-    checkAssertions(run("qilin.microben.context.collections.HashMap0", "2o"));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.HashMap0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testTreeMap0() {
-    checkAssertions(run("qilin.microben.context.collections.TreeMap0", "2o"));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.TreeMap0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testHashSet0() {
-    checkAssertions(run("qilin.microben.context.collections.HashSet0", "3o"));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.HashSet0",
+            ContextSensitivity.objectSensitive(3, 2)));
   }
 
   @Test
   public void testTreeSet0() {
-    checkAssertions(run("qilin.microben.context.collections.TreeSet0", "3o"));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.TreeSet0",
+            ContextSensitivity.objectSensitive(3, 2)));
   }
 
   @Test
   public void testHashTable0() {
-    checkAssertions(run("qilin.microben.context.collections.HashTable0", "2o"));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.HashTable0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testPriorityQueue0() {
-    checkAssertions(run("qilin.microben.context.collections.PriorityQueue0", "2o"));
+    checkAssertions(
+        run(
+            "qilin.microben.context.collections.PriorityQueue0",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test
   public void testStack0() {
-    checkAssertions(run("qilin.microben.context.collections.Stack0", "2o"));
+    checkAssertions(
+        run("qilin.microben.context.collections.Stack0", ContextSensitivity.objectSensitive(2, 1)));
   }
 }

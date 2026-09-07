@@ -22,16 +22,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import qilin.core.PTAScene;
+import qilin.core.config.ContextSensitivity;
+import qilin.core.config.PointerAnalysisComponents;
 import qilin.core.pag.*;
-import qilin.parm.ctxcons.ObjCtxConstructor;
-import qilin.parm.heapabst.AllocSiteAbstractor;
-import qilin.parm.heapabst.HeuristicAbstractor;
-import qilin.parm.select.CtxSelector;
-import qilin.parm.select.HeuristicSelector;
-import qilin.parm.select.PartialVarSelector;
-import qilin.parm.select.PipelineSelector;
-import qilin.pta.PTAConfig;
-import qilin.util.PTAUtils;
+import qilin.parm.contextconstruction.ObjectContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.select.ContextSelector;
+import qilin.parm.select.PartialVariableSelector;
+import qilin.util.PagQueries;
 import qilin.util.Stopwatch;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.Local;
@@ -55,19 +53,13 @@ public abstract class PartialObjSensPTA extends StagedPTA {
 
   public PartialObjSensPTA(PTAScene scene, int ctxLen) {
     super(scene);
-    this.ctxCons = new ObjCtxConstructor();
-    CtxSelector us = new PartialVarSelector(ctxLen, ctxLen - 1, csnodes, csmethods);
-    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
-    } else {
-      this.ctxSel = us;
-    }
-    if (PTAConfig.v().getPtaConfig().mergeHeap) {
-      this.heapAbst = new HeuristicAbstractor(pag);
-    } else {
-      this.heapAbst = new AllocSiteAbstractor();
-    }
-    this.prePTA = new Spark(scene);
+    ContextSelector us = new PartialVariableSelector(ctxLen, ctxLen - 1, csnodes, csmethods);
+    ContextSelector contextSelector =
+        PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbstractor =
+        PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(new ObjectContextConstructor(), contextSelector, heapAbstractor);
+    this.prePTA = new CoreVariantPTA(scene, ContextSensitivity.insensitive());
     this.prePAG = prePTA.getPag();
   }
 
@@ -90,7 +82,7 @@ public abstract class PartialObjSensPTA extends StagedPTA {
     ret.forEach(
         (sparkNode, l) -> {
           if (l > 0) {
-            csnodes.add(PTAUtils.getIR(sparkNode));
+            csnodes.add(PagQueries.getIR(sparkNode));
           }
           SootMethod method = null;
           if (sparkNode instanceof LocalVarNode) {
@@ -123,13 +115,13 @@ public abstract class PartialObjSensPTA extends StagedPTA {
     for (ContextMethod momc : prePTA.getReachableMethods()) {
       SootMethod method = momc.method();
       Set<Object> nodes = new HashSet<>();
-      if (!PTAUtils.hasBody(method)) {
+      if (!pag.hasBody(method)) {
         return;
       }
       MethodPAG srcmpag = pag.getMethodPAG(method);
-      QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+      QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
       while (reader.hasNext()) {
-        Node from = reader.next(), to = reader.next();
+        PagNode from = reader.next(), to = reader.next();
         if (from instanceof LocalVarNode) {
           nodes.add(((VarNode) from).getVariable());
         } else if (from instanceof AllocNode) {

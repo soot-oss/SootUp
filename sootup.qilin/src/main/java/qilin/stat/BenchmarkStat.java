@@ -21,9 +21,7 @@ package qilin.stat;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import qilin.CoreConfig;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
@@ -58,10 +56,9 @@ public class BenchmarkStat implements AbstractStat {
             .collect(Collectors.toSet());
     reachableAppClasses =
         reachableClasses.stream().filter(SootClass::isApplicationClass).collect(Collectors.toSet());
-    PTAScene scene = pta.getScene();
-    classes = scene.getClasses().size();
-    appClasses = scene.getApplicationClasses().size();
-    phantomClasses = scene.getPhantomClasses().size();
+    classes = (int) view.getClasses().count();
+    appClasses = (int) view.getClasses().filter(SootClass::isApplicationClass).count();
+    phantomClasses = pta.getScene().getPhantomClasses().size();
     libClasses = classes - appClasses - phantomClasses;
     libReachableClasses = (reachableClasses.size() - reachableAppClasses.size() - 1); // -FakeMain
   }
@@ -76,8 +73,8 @@ public class BenchmarkStat implements AbstractStat {
     exporter.collectMetric("#Appclass(reachable):", String.valueOf(reachableAppClasses.size()));
     exporter.collectMetric("#Libclass(reachable):", String.valueOf(libReachableClasses));
 
-    if (CoreConfig.v().getOutConfig().dumpStats) {
-      exporter.dumpClassTypes(pta.getScene().getClasses());
+    if (pta.getConfig().isDumpStats()) {
+      exporter.dumpClassTypes(pta.getView().getClasses().collect(Collectors.toList()));
     }
   }
 }

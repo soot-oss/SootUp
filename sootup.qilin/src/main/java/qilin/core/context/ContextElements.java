@@ -30,6 +30,7 @@ public class ContextElements implements Context {
     this.size = s;
   }
 
+  // be cautious not to modify these elements outside! not copying
   public ContextElement[] getElements() {
     return array;
   }

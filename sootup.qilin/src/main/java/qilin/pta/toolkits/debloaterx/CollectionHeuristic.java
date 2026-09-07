@@ -11,10 +11,10 @@ import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldRefNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
-import qilin.core.pag.Node;
 import qilin.core.pag.PAG;
+import qilin.core.pag.PagNode;
 import qilin.core.pag.SparkField;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.queue.QueueReader;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -39,7 +39,7 @@ public class CollectionHeuristic {
 
   protected final Set<AllocNode> ctxDepHeaps = ConcurrentHashMap.newKeySet();
 
-  public Set<AllocNode> getCtxDepHeaps() {
+  public Set<AllocNode> getContextDepHeaps() {
     return ctxDepHeaps;
   }
 
@@ -52,9 +52,9 @@ public class CollectionHeuristic {
     MethodPAG srcmpag = pag.getMethodPAG(method);
     Set<FieldRefNode> stores = new HashSet<>();
     Set<FieldRefNode> loads = new HashSet<>();
-    QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+    QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
     while (reader.hasNext()) {
-      Node from = reader.next(), to = reader.next();
+      PagNode from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
         if (to instanceof FieldRefNode) {
           FieldRefNode frn = (FieldRefNode) to;
@@ -85,7 +85,7 @@ public class CollectionHeuristic {
 
   private void buildHeapFieldsMapping() {
     pta.getNakedReachableMethods().stream()
-        .filter(PTAUtils::hasBody)
+        .filter(pag::hasBody)
         .forEach(this::buildHeapFieldsMappingIn);
   }
 
@@ -111,7 +111,7 @@ public class CollectionHeuristic {
     }
     boolean flag = false;
     for (SootClass interf : worklist) {
-      if (interf.getType() == PTAUtils.getClassType("java.util.Collection")
+      if (interf.getType() == JavaTypes.COLLECTION
       //    || interf.getType() == RefType.v("java.util.Map")
       ) {
         flag = true;
@@ -141,7 +141,7 @@ public class CollectionHeuristic {
           containerType.add(type);
         } else {
           for (SparkField sf : t2Fields.get(type)) {
-            if (sf.getType() == PTAUtils.getClassType("java.lang.Object")) {
+            if (sf.getType() == JavaTypes.OBJECT) {
               containerType.add(type);
               break;
             }
@@ -149,7 +149,7 @@ public class CollectionHeuristic {
         }
       } else if (type instanceof ArrayType) {
         ArrayType at = (ArrayType) type;
-        if (at.getBaseType() == PTAUtils.getClassType("java.lang.Object")) {
+        if (at.getBaseType() == JavaTypes.OBJECT) {
           containerType.add(at);
         }
       } else {
@@ -175,8 +175,7 @@ public class CollectionHeuristic {
     }
     // find more container types by checking whether a type has a field of a container type.
     Set<Type> newlyFound = new HashSet<>();
-    containerType.addAll(
-        ft2t.getOrDefault(PTAUtils.getClassType("java.lang.Object"), Collections.emptySet()));
+    containerType.addAll(ft2t.getOrDefault(JavaTypes.OBJECT, Collections.emptySet()));
     for (Type t1 : containerType) {
       for (Type t2 : ft2t.getOrDefault(t1, Collections.emptySet())) {
         if (!containerType.contains(t2)) {

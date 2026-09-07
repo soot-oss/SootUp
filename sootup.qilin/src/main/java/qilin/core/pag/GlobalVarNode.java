@@ -18,12 +18,21 @@
 
 package qilin.core.pag;
 
+import qilin.core.context.Context;
+import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.types.Type;
 
 /**
  * Represents a simple variable node in the pointer assignment graph that is not associated with any
- * particular method invocation.
+ * particular method invocation. Unlike {@link LocalVarNode}, whose underlying variable (see {@link
+ * #getVariable()}) can be several different kinds of synthetic key, a {@code GlobalVarNode}'s
+ * variable is always exactly one of {@link FieldSignature} (a static field), {@link
+ * StringConstant}, or {@link ClassConstant} — see {@link PAG#makeGlobalVarNode(Object, Type)}. Use
+ * {@link #getFieldSignature()}/{@link #getStringConstant()}/{@link #getClassConstant()} instead of
+ * casting {@link #getVariable()} yourself.
  *
  * @author Ondrej Lhotak
  */
@@ -42,7 +51,27 @@ public class GlobalVarNode extends VarNode {
     return null;
   }
 
+  /** Returns the underlying static field, or {@code null} if this node represents a constant. */
+  public FieldSignature getFieldSignature() {
+    return variable instanceof FieldSignature ? (FieldSignature) variable : null;
+  }
+
+  /** Returns the underlying string constant, or {@code null} if this node represents a field. */
+  public StringConstant getStringConstant() {
+    return variable instanceof StringConstant ? (StringConstant) variable : null;
+  }
+
+  /** Returns the underlying class constant, or {@code null} if this node represents a field. */
+  public ClassConstant getClassConstant() {
+    return variable instanceof ClassConstant ? (ClassConstant) variable : null;
+  }
+
   public String toString() {
     return "GlobalVarNode " + getNumber() + " " + variable;
+  }
+
+  @Override
+  public PagNode parameterize(Parameterizer parameterizer, Context context) {
+    return parameterizer.parameterize(this, context);
   }
 }

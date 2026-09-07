@@ -1,7 +1,5 @@
 # Incorporate Qilin Pointer Analysis
 
-# WIP! Experimental!
-
 ### Dependencies
 
 === "Maven"
@@ -21,22 +19,45 @@
 
 ### How to create a pointer analysis
 
-!!! note "WIP: Beware most likely the API will change so you only need to specify SootUp objects!"
-
-One can create an Andersen's context-insensitive analysis with following code:
+For the core context-sensitivity variants (insensitive, call-site, object, type, and their
+hybrid variants), use the type-safe `PointerAnalysisFactory` - no singletons, no string patterns,
+and independent `View`s (or repeated calls against the same `View`) can be analyzed concurrently
+since nothing is cached on `View` or held in JVM-global state:
 
 === "Java"
 
     ```Java
-    String entrypoint = "dacapo.antlr.Main";
-    PTAPattern ptaPattern = new PTAPattern("insens");
-    PTA pta = PTAFactory.createPTA(ptaPattern, view, entrypoint);
+    ClassType entrypoint = view.getIdentifierFactory().getClassType("dacapo.antlr.Main");
+    PointerAnalysisConfig config = PointerAnalysisConfig.builder()
+        .contextSensitivity(ContextSensitivity.objectSensitive(2, 1)) // 2-object-sensitive, 1-level heap ctx
+        .build();
+    PTA pta = PointerAnalysisFactory.create(view, entrypoint, config);
     pta.run();
     ```
 
-Users must specify the program's `View`, select a `PTAPattern`
-(indicating the desired types of pointer analyses to perform),
-and designate the `entrypoint` - which is serving as the entry point for the analysis.
+Other `ContextSensitivity` factory methods: `insensitive()`, `callSite(k[, hk])`,
+`objectSensitive(k[, hk])`, `typeSensitive(k, hk)`, `hybridObjectSensitive(k, hk)`,
+`hybridTypeSensitive(k, hk)`.
+
+The research-toolkit variants (bean, zipper, eagle, turner, mahjong, selectx, data-driven,
+tunneling, context debloating) go through the same `PointerAnalysisFactory`/`ContextSensitivity`
+pair - see the table below for their factory methods.
+
+### Resolving reflection, native methods, and invokedynamic
+
+Some call targets can't be derived from a method's own bytecode. Qilin resolves these through a
+shared `qilin.core.effect.MethodEffectModel` hook, applied once per method just before its body is
+turned into constraints:
+
+- **Reflection** (`Class.forName`, `Method.invoke`, ...) - off by default; set
+  `PointerAnalysisConfig.builder().reflectionLogPath(path)` to a Tamiflex trace log to resolve it.
+- **Native methods** - a fixed table of simulated JDK natives (`Object.clone`, `Thread.start0`,
+  ...); unrecognized natives are left unmodeled.
+- **invokedynamic (lambdas/method references)** - on by default
+  (`PointerAnalysisConfig.isResolveDynamicInvoke()`). Resolves the common case - a lambda body or
+  method reference whose target is a plain static method - directly from the bootstrap's
+  `MethodHandle` constant, no log needed. Captured (closure) lambdas, constructor references
+  (`Foo::new`), and unbound instance method references are not yet resolved.
 
 ### How to use pointer analysis results
 
@@ -54,52 +75,64 @@ PointsToSet pts1 = pta.reachingObjects(method, v1, f); // PTS(v1.f)
 ```
 
 Third, we can check whether two variables, `a` and `b`, are aliases by checking
-whether there is an object that exists in both of their points-to sets.
+whether there is an object that exists in both of their points-to sets:
 
-Qilin does not currently offer a `isMayAlias` API within the PTA class.
-However, a similar functionality can be found in `qilin.test.util.AliasAssertion` with the method:
-```boolean isMayAlias(PTA pta, Value va, Value vb)```
-This method allows to check for potential aliasing between two values given a PTA instance.
+```java
+boolean mayAlias = pta.isMayAlias(method, a, b);
+```
+
+`isMayAlias` also special-cases `null`/String/class constants (e.g. two `null` constants always
+may-alias, a `null` never may-aliases a non-null value). It accepts `Local` references plus those
+constants; passing any other `Value` kind throws `IllegalArgumentException`.
 
 ### A Full list of Pointer Analyses
 
 [Qilin](https://github.com/QilinPTA/Qilin)'s toolbox includes a rich set of pointer analyses, which are given below:
 
-Note that the symbol **k** used in the table should be replaced with a concrete small constant like 1 or 2.
+Note that **k** used below is a concrete small constant like 1 or 2, and `hk` the heap-context
+depth (defaults vary by variant - see `ContextSensitivity`'s Javadoc for each factory method).
 
-| PTA patterns               | Description                                                   | Reference                                                                 |
-|----------------------------|---------------------------------------------------------------|---------------------------------------------------------------------------|
-| **insens**                 | Andersen's context-insensitive analysis                       | [Paper](https://link.springer.com/chapter/10.1007/3-540-36579-6_12)       |
-| **k**c                     | **k**-callsite-sensitive pointer analysis (denoted **k**CFA). | [Paper](https://www.cse.psu.edu/~trj1/cse598-f11/docs/sharir_pnueli1.pdf) |
-| **k**o                     | **k**-object-sensitive pointer analysis (denoted **k**OBJ).   | [Paper](https://dl.acm.org/doi/abs/10.1145/1044834.1044835)               |
-| **k**t                     | **k**-type-sensitive pointer analysis (denoted **k**TYPE).    | [Paper](https://dl.acm.org/doi/abs/10.1145/1926385.1926390)               |
-| **k**h                     | hybrid **k**-object-sensitive pointer analysis.               | [Paper](https://dl.acm.org/doi/10.1145/2499370.2462191)                   |
-| **k**ht                    | hybrid **k**-type-sensitive pointer analysis.                 | [Paper](https://dl.acm.org/doi/10.1145/2499370.2462191)                   |
-| B-2o                       | BEAN-guided 2OBJ. Only k=2 is supported.                      | [Paper](https://link.springer.com/chapter/10.1007/978-3-662-53413-7_24)   |
-| D-2o                       | Data-driven 2OBJ. Only k=2 is supported.                      | [Paper](https://dl.acm.org/doi/10.1145/3133924)                           |
-| D-2c                       | Data-driven 2CFA. Only k=2 is supported.                      | [Paper](https://dl.acm.org/doi/10.1145/3133924)                           |
-| M-**k**o                   | MAHJONG-guided **k**OBJ.                                      | [Paper](https://dl.acm.org/doi/10.1145/3062341.3062360)                   |
-| M-**k**c                   | MAHJONG-guided **k**CFA.                                      | [Paper](https://dl.acm.org/doi/10.1145/3062341.3062360)                   |
-| E-**k**o                   | EAGLE-guided **k**OBJ.                                        | [Paper](https://dl.acm.org/doi/10.1145/3360574)                           |
-| T-**k**o                   | TURNER-guided **k**OBJ.                                       | [Paper](https://drops.dagstuhl.de/opus/volltexte/2021/14059/)             |
-| Z-**k**o                   | ZIPPER-guided **k**OBJ.                                       | [Paper](https://dl.acm.org/doi/10.1145/3276511)                           |
-| Z-**k**c                   | ZIPPER-guided **k**CFA.                                       | [Paper](https://dl.acm.org/doi/10.1145/3276511)                           |
-| Z-**k**o -cd               | The context debloated version of ZIPPER-guided **k**OBJ.      | [Paper](https://doi.org/10.1109/ASE51524.2021.9678880)                    |
-| **k**o -cd -cda=CONCH      | The context debloated version of **k**OBJ using Conch.        | [Paper](https://doi.org/10.1109/ASE51524.2021.9678880)                    |
-| **k**o -cd -cda=DEBLOATERX | The context debloated version of **k**OBJ using DebloaterX.   | [Paper](https://dl.acm.org/doi/10.1145/3622832)                           |
-| s-**k**c                   | SELECTX-guided **k**CFA.                                      | [Paper](https://doi.org/10.1007/978-3-030-88806-0_13)                     |
+| `ContextSensitivity` factory method                | Description                                                   | Reference                                                                 |
+|------------------------------------------------------|-----------------------------------------------------------------|----------------------------------------------------------------------------|
+| `insensitive()`                                       | Andersen's context-insensitive analysis                         | [Paper](https://link.springer.com/chapter/10.1007/3-540-36579-6_12)       |
+| `callSite(k[, hk])`                                   | **k**-callsite-sensitive pointer analysis (denoted **k**CFA).   | [Paper](https://www.cse.psu.edu/~trj1/cse598-f11/docs/sharir_pnueli1.pdf) |
+| `objectSensitive(k[, hk])`                            | **k**-object-sensitive pointer analysis (denoted **k**OBJ).     | [Paper](https://dl.acm.org/doi/abs/10.1145/1044834.1044835)               |
+| `typeSensitive(k, hk)`                                | **k**-type-sensitive pointer analysis (denoted **k**TYPE).      | [Paper](https://dl.acm.org/doi/abs/10.1145/1926385.1926390)               |
+| `hybridObjectSensitive(k, hk)`                        | hybrid **k**-object-sensitive pointer analysis.                 | [Paper](https://dl.acm.org/doi/10.1145/2499370.2462191)                   |
+| `hybridTypeSensitive(k, hk)`                          | hybrid **k**-type-sensitive pointer analysis.                   | [Paper](https://dl.acm.org/doi/10.1145/2499370.2462191)                   |
+| `beanObjectSensitive()`                               | BEAN-guided 2OBJ. Only k=2 is supported.                        | [Paper](https://link.springer.com/chapter/10.1007/978-3-662-53413-7_24)   |
+| `dataDrivenObjectSensitive()`                         | Data-driven 2OBJ. Only k=2 is supported.                        | [Paper](https://dl.acm.org/doi/10.1145/3133924)                           |
+| `dataDrivenCallSite()`                                | Data-driven 2CFA. Only k=2 is supported.                        | [Paper](https://dl.acm.org/doi/10.1145/3133924)                           |
+| `dataDrivenHybridObjectSensitive()`                   | Data-driven hybrid-2OBJ. Only k=2 is supported.                 | [Paper](https://dl.acm.org/doi/10.1145/3133924)                           |
+| `mahjongObjectSensitive(k, hk)`                       | MAHJONG-guided **k**OBJ.                                        | [Paper](https://dl.acm.org/doi/10.1145/3062341.3062360)                   |
+| `mahjongCallSite(k, hk)`                              | MAHJONG-guided **k**CFA.                                        | [Paper](https://dl.acm.org/doi/10.1145/3062341.3062360)                   |
+| `eagleObjectSensitive(k)`                             | EAGLE-guided **k**OBJ.                                          | [Paper](https://dl.acm.org/doi/10.1145/3360574)                           |
+| `turnerObjectSensitive(k)`                            | TURNER-guided **k**OBJ.                                         | [Paper](https://drops.dagstuhl.de/opus/volltexte/2021/14059/)             |
+| `zipperObjectSensitive(k, hk)`                        | ZIPPER-guided **k**OBJ.                                         | [Paper](https://dl.acm.org/doi/10.1145/3276511)                           |
+| `zipperCallSite(k, hk)`                               | ZIPPER-guided **k**CFA.                                         | [Paper](https://dl.acm.org/doi/10.1145/3276511)                           |
+| `tunnelingObjectSensitive/CallSite/TypeSensitive/HybridObjectSensitive(k, hk)` | Tunneling context sensitivity, per underlying variant. |                                                                             |
+| `selectxCallSite(k)`                                  | SELECTX-guided **k**CFA.                                        | [Paper](https://doi.org/10.1007/978-3-030-88806-0_13)                     |
+
+Context debloating is a config toggle layered on top of an object-sensitive variant (the default
+k-obj, or `zipperObjectSensitive`/`mahjongObjectSensitive`/`eagleObjectSensitive`), not a separate
+factory method: set `PointerAnalysisConfig.builder().ctxDebloating(true)` and pick a
+`debloatApproach` (`CONCH`, `DEBLOATERX`, or `COLLECTION` for the Zipper-cd algorithm).
+[Debloating paper](https://doi.org/10.1109/ASE51524.2021.9678880),
+[DebloaterX paper](https://dl.acm.org/doi/10.1145/3622832).
 
 ## Qilin Pointer Analysis
 
-Qilin builds a call graph on the fly with the pointer analysis.
-You can construct a call graph with Qilin as follows:
+Qilin builds a call graph on the fly with the pointer analysis, for both core and toolkit
+context-sensitivity variants, through the same `PointerAnalysisFactory`:
 
 === "SootUp"
 
     ```java
-    String MAINCLASS = "dacapo.antlr.Main"; // just an example
-    PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern("insens"); // "2o"=>2OBJ, "1c"=>1CFA, etc.
-    PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern, view, MAINCLASS);
+    ClassType MAINCLASS = view.getIdentifierFactory().getClassType("dacapo.antlr.Main"); // just an example
+    PointerAnalysisConfig config = PointerAnalysisConfig.builder()
+        .contextSensitivity(ContextSensitivity.zipperObjectSensitive(2, 1)) // ZIPPER-guided 2OBJ, e.g.
+        .build();
+    PTA pta = PointerAnalysisFactory.create(view, MAINCLASS, config);
     pta.run();
-    CallGraph cg = pta.getCallGraph();
+    OnFlyCallGraph cg = pta.getCallGraph();
     ```

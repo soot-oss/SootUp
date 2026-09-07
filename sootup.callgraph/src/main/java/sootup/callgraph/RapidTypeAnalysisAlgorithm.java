@@ -121,6 +121,54 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     this.instantiatedClasses = new HashSet<>();
   }
 
+  /**
+   * The constructor of the RTA algorithm that allows restricting which calls are expanded during
+   * call graph construction, and whether entry points' declaring-class {@code <clinit>}s are
+   * eagerly seeded as roots. See {@link AbstractCallGraphAlgorithm#AbstractCallGraphAlgorithm(View,
+   * CallResolver, VirtualCallResolver, boolean)} for the four classic static-initializer handling
+   * modes this enables.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param callResolver decides which statements' calls are excluded from the call graph
+   * @param virtualCallResolver decides which resolved call candidates are excluded from the call
+   *     graph
+   * @param seedEntryPointClinits whether entry points' declaring-class {@code <clinit>}s are
+   *     eagerly seeded as roots before traversal starts
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits) {
+    super(view, callResolver, virtualCallResolver, seedEntryPointClinits);
+    this.instantiatedClasses = new HashSet<>();
+  }
+
+  /**
+   * The constructor of the RTA algorithm that combines a predefined set of already-instantiated
+   * classes with restricting which calls are expanded and whether entry points' declaring-class
+   * {@code <clinit>}s are eagerly seeded as roots. See {@link
+   * AbstractCallGraphAlgorithm#AbstractCallGraphAlgorithm(View, CallResolver, VirtualCallResolver,
+   * boolean)} for the four classic static-initializer handling modes this enables.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param preInstantiatedClasses predefined set of instantiated classes
+   * @param callResolver decides which statements' calls are excluded from the call graph
+   * @param virtualCallResolver decides which resolved call candidates are excluded from the call
+   *     graph
+   * @param seedEntryPointClinits whether entry points' declaring-class {@code <clinit>}s are
+   *     eagerly seeded as roots before traversal starts
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull Set<ClassType> preInstantiatedClasses,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits) {
+    super(view, callResolver, virtualCallResolver, seedEntryPointClinits);
+    this.instantiatedClasses = new HashSet<>(preInstantiatedClasses);
+  }
+
   @NonNull
   @Override
   public CallGraph initialize() {

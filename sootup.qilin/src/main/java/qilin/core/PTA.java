@@ -24,15 +24,23 @@ import java.util.Set;
 import qilin.core.builder.CallGraphBuilder;
 import qilin.core.builder.ExceptionHandler;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
-import qilin.core.sets.*;
 import qilin.core.solver.Propagator;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.HeapAbstractor;
-import qilin.parm.select.CtxSelector;
-import qilin.util.PTAUtils;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.select.ContextSelector;
+import qilin.util.JavaTypes;
+import qilin.util.sets.HybridPointsToSet;
+import qilin.util.sets.PointsToSet;
+import qilin.util.sets.PointsToSetInternal;
+import qilin.util.sets.UnmodifiablePointsToSet;
 import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
@@ -50,8 +58,8 @@ public abstract class PTA implements PointsToAnalysis {
     this.pag = createPAG();
     this.cgb = createCallGraphBuilder();
     this.eh = new ExceptionHandler(this);
-    AllocNode rootBase = pag.makeAllocNode("ROOT", PTAUtils.getClassType("java.lang.Object"), null);
-    this.rootNode = new ContextAllocNode(rootBase, CtxConstructor.emptyContext);
+    AllocNode rootBase = pag.makeAllocNode("ROOT", JavaTypes.OBJECT, null);
+    this.rootNode = new ContextAllocNode(rootBase, ContextConstructor.emptyContext);
   }
 
   protected abstract PAG createPAG();
@@ -76,6 +84,10 @@ public abstract class PTA implements PointsToAnalysis {
 
   public PTAScene getScene() {
     return scene;
+  }
+
+  public PointerAnalysisConfig getConfig() {
+    return scene.getConfig();
   }
 
   public CallGraphBuilder getCgb() {
@@ -109,7 +121,7 @@ public abstract class PTA implements PointsToAnalysis {
 
   protected abstract Propagator getPropagator();
 
-  public abstract Node parameterize(Node n, Context context);
+  public abstract PagNode parameterize(PagNode n, Context context);
 
   public abstract ContextMethod parameterize(SootMethod method, Context context);
 
@@ -117,25 +129,21 @@ public abstract class PTA implements PointsToAnalysis {
 
   public abstract Context emptyContext();
 
-  public abstract Context createCalleeCtx(
+  public abstract Context createCalleeContext(
       ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target);
 
   public abstract HeapAbstractor heapAbstractor();
 
-  public abstract CtxConstructor ctxConstructor();
+  public abstract ContextConstructor contextConstructor();
 
-  public abstract CtxSelector ctxSelector();
+  public abstract ContextSelector contextSelector();
 
   /** Returns the set of objects pointed to by variable l. */
   @Override
   public PointsToSet reachingObjects(SootMethod m, Local l) {
     // find all context nodes, and collect their answers
     final PointsToSetInternal ret = new HybridPointsToSet();
-    pag.getVarNodes(m, l)
-        .forEach(
-            vn -> {
-              ret.addAll(vn.getP2Set(), null);
-            });
+    pag.getVarNodes(m, l).forEach(vn -> ret.addAll(vn.getP2Set(), null));
     return new UnmodifiablePointsToSet(this, ret);
   }
 
@@ -144,13 +152,11 @@ public abstract class PTA implements PointsToAnalysis {
    * pointed by n under every possible context. case 2: n is a context-sensitive node, return
    * objects pointed by n under the given context.
    */
-  public PointsToSet reachingObjects(Node n) {
+  public PointsToSet reachingObjects(PagNode n) {
     final PointsToSetInternal ret;
-    if (n instanceof ContextVarNode) {
-      ContextVarNode cvn = (ContextVarNode) n;
+    if (n instanceof ContextVarNode cvn) {
       ret = cvn.getP2Set();
-    } else if (n instanceof ContextField) {
-      ContextField cf = (ContextField) n;
+    } else if (n instanceof ContextField cf) {
       ret = cf.getP2Set();
     } else {
       VarNode varNode = (VarNode) n;
@@ -159,10 +165,7 @@ public abstract class PTA implements PointsToAnalysis {
         pag.getContextVarNodeMap()
             .get(varNode)
             .values()
-            .forEach(
-                vn -> {
-                  ret.addAll(vn.getP2Set(), null);
-                });
+            .forEach(vn -> ret.addAll(vn.getP2Set(), null));
       }
     }
     return new UnmodifiablePointsToSet(this, ret);
@@ -171,7 +174,7 @@ public abstract class PTA implements PointsToAnalysis {
   /** Returns the set of objects pointed to by elements of the arrays in the PointsToSet s. */
   @Override
   public PointsToSet reachingObjectsOfArrayElement(PointsToSet s) {
-    return reachingObjectsInternal(s, ArrayElement.v());
+    return reachingObjectsInternal(s, pag.getArrayElement());
   }
 
   /** Returns the set of objects pointed to by variable l in context c. */
@@ -180,7 +183,7 @@ public abstract class PTA implements PointsToAnalysis {
     VarNode n = pag.findContextVarNode(m, l, c);
     PointsToSetInternal pts;
     if (n == null) {
-      pts = HybridPointsToSet.getEmptySet();
+      pts = new HybridPointsToSet();
     } else {
       pts = n.getP2Set();
     }
@@ -201,7 +204,7 @@ public abstract class PTA implements PointsToAnalysis {
     if (f.isStatic()) {
       throw new RuntimeException("The parameter f must be an *instance* field.");
     }
-    return reachingObjectsInternal(s, new Field(f));
+    return reachingObjectsInternal(s, new ConcreteField(f));
   }
 
   /**
@@ -219,13 +222,13 @@ public abstract class PTA implements PointsToAnalysis {
     if (f.isStatic()) {
       VarNode n = pag.findGlobalVarNode(f);
       if (n == null) {
-        ret = HybridPointsToSet.getEmptySet();
+        ret = new HybridPointsToSet();
       } else {
         ret = n.getP2Set();
       }
     } else {
       ret = new HybridPointsToSet();
-      SparkField sparkField = new Field(f);
+      SparkField sparkField = new ConcreteField(f);
       pag.getContextFieldVarNodeMap().values().stream()
           .filter(map -> map.containsKey(sparkField))
           .forEach(
@@ -265,5 +268,51 @@ public abstract class PTA implements PointsToAnalysis {
               }
             });
     return new UnmodifiablePointsToSet(this, ret);
+  }
+
+  @Override
+  public boolean isMayAlias(SootMethod m, Value va, Value vb) {
+    if (va instanceof NullConstant && vb instanceof NullConstant) {
+      return true;
+    }
+    if (va instanceof NullConstant || vb instanceof NullConstant) {
+      return false;
+    }
+    if (va instanceof StringConstant && vb instanceof StringConstant) {
+      return va.equals(vb);
+    }
+    if (va instanceof StringConstant sc) {
+      return mayAliasWithStringConstant(m, sc, vb);
+    }
+    if (vb instanceof StringConstant sc) {
+      return mayAliasWithStringConstant(m, sc, va);
+    }
+    if (va instanceof ClassConstant cc) {
+      return mayAliasWithClassConstant(m, cc, vb);
+    }
+    if (vb instanceof ClassConstant cc) {
+      return mayAliasWithClassConstant(m, cc, va);
+    }
+    return mayAliasPts(m, va).hasNonEmptyIntersection(mayAliasPts(m, vb));
+  }
+
+  private boolean mayAliasWithStringConstant(SootMethod m, StringConstant constant, Value other) {
+    String s = getConfig().isStringConstants() ? constant.getValue() : PointsToAnalysis.STRING_NODE;
+    Set<String> possible = mayAliasPts(m, other).possibleStringConstants();
+    return possible != null && possible.contains(s);
+  }
+
+  private boolean mayAliasWithClassConstant(SootMethod m, ClassConstant constant, Value other) {
+    Set<ClassConstant> possible = mayAliasPts(m, other).possibleClassConstants();
+    return possible != null && possible.contains(constant);
+  }
+
+  private PointsToSet mayAliasPts(SootMethod m, Value v) {
+    if (!(v instanceof Local l)) {
+      throw new IllegalArgumentException(
+          "isMayAlias only supports Local references (plus null/String/class constants); got "
+              + v.getClass().getSimpleName());
+    }
+    return reachingObjects(m, l).toCIPointsToSet();
   }
 }
