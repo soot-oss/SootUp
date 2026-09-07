@@ -1,14 +1,14 @@
 # Android APK Call Graph — Implementation Plan
 
 **Status: all 10 steps implemented, plus post-completion fixes, a
-synthesized `dummyMain` addition, and dynamic-`BroadcastReceiver` entry
-points (see the "Post-completion" sections below).** Start at
-`AndroidApkAnalysis` (module root of `sootup.apk.frontend`) for the public
-entry point, or at any of this section's per-step notes for how a given
-piece works and why. The rest of this document is the design history, kept
-because the *why* behind each step's tradeoffs and limitations doesn't
-belong in code comments and is exactly what a future change to this area
-needs first.
+synthesized `dummyMain` addition, dynamic-`BroadcastReceiver` entry points,
+and precise `android:onClick`-to-activity resolution via `resources.arsc`
+(see the "Post-completion" sections below).** Start at `AndroidApkAnalysis`
+(module root of `sootup.apk.frontend`) for the public entry point, or at
+any of this section's per-step notes for how a given piece works and why.
+The rest of this document is the design history, kept because the *why*
+behind each step's tradeoffs and limitations doesn't belong in code
+comments and is exactly what a future change to this area needs first.
 
 ## Context
 
@@ -71,12 +71,16 @@ Everything Android-specific reduces to *what entry points get passed to
 4. **Layout XML parsing.** Parse `res/layout*/*.xml` (binary XML, same
    `axml` dependency) for `android:onClick` attributes — a widget wired
    straight to a `void method(View)` by name, with no `setOnClickListener`
-   call site for step 3 to find. Extraction only yields method *names*, not
-   which activity uses which layout (that needs a `resources.arsc` parser to
-   resolve `R.layout.*` constants back to file names, not implemented), so
-   every extracted name is checked against every manifest-declared activity
-   — an over-approximation in the same spirit as step 3. **[Implemented in
-   this pass.]**
+   call site for step 3 to find. Extraction yields method names per layout
+   file. **[Implemented in this pass.]**
+
+   **Update:** matching an extracted name to the *specific* activity that
+   inflates that layout — originally deferred for lack of a `resources.arsc`
+   parser — is now implemented too; see "Post-completion addition: precise
+   `android:onClick` resolution via `resources.arsc`" near the end of this
+   document. A layout this can't confidently attribute to one activity still
+   falls back to the original over-approximation described above, so nothing
+   regressed — precision is additive.
 
 5. **Entry-point generation.** Combine the manifest model (1) and lifecycle
    tables (2) into the actual `List<MethodSignature>` passed to
@@ -535,10 +539,13 @@ for later steps):
   step 3's, to avoid overlapping with `sootup.callgraph`'s existing
   `Thread#start()`→`run()` implicit-call handling. (Now implemented — see
   step 8 below.)
-- Step 4 extracts `android:onClick` method names but can't map a layout to
-  the specific activity that inflates it (no `resources.arsc`/`R.layout.*`
-  resolution), so it checks every name against every declared activity —
-  sound but imprecise, same tradeoff as step 3.
+- Step 4 extracts `android:onClick` method names and, since the
+  post-completion addition described near the end of this document, *can*
+  map most layouts to the specific activity that inflates them via
+  `resources.arsc`. A layout that resolution can't confidently attribute to
+  one activity still falls back to checking every name against every
+  declared activity — sound but imprecise, same tradeoff as step 3, just no
+  longer the only path.
 - Step 7's `Intent` target tracing is a single whole-method-body scan, not
   interprocedural or control-flow-sensitive: an `Intent` built in a helper
   method, assigned a different target down different branches, or targeted
@@ -767,3 +774,131 @@ against the filter passed to `registerReceiver`, the runtime dynamic-
 receiver analogue of step 7's manifest `<intent-filter>` matching) is not
 attempted — out of scope here, unchanged from step 7's own known
 limitations.
+
+### Post-completion addition: precise `android:onClick` resolution via `resources.arsc`
+
+Step 4's original design deliberately checked every extracted
+`android:onClick` name against *every* manifest-declared activity, since
+attributing a layout to the specific activity that inflates it needs
+resolving `R.layout.*` constants against the APK's compiled resource table
+(`resources.arsc`) — flagged from the start as future work, not a silent
+gap. This closes it, additively: the flat "check everything" behavior is
+now a fallback, used only where precise resolution can't fully account for
+an activity, not the only path.
+
+**Why not just call `de.upb.cs.swt:axml`'s own `pxb.android.arsc.ArscParser`,
+the library this module already depends on for manifest/layout XML
+parsing?** It looked like the obvious reuse, but it throws a bare
+`RuntimeException` on this module's own checked-in `Crypto.apk` — a real,
+if small, `aapt2`-built APK. Root cause, confirmed by instrumenting the
+library's own parser directly: `ArscParser#readPackage` assumes the
+package header's four offset fields (`typeStrings`/`lastPublicType`/
+`keyStrings`/`lastPublicKey`) are immediately followed by the type-name
+string pool, with zero gap. That held for the "gingerbread"-era format the
+library's own class doc references, but a modern `aapt2` (essentially any
+APK built with a current Android Gradle Plugin) inserts an additional
+`typeIdOffset` field into `ResTable_package` before the string pools, which
+the old parser doesn't know about — a fixed 4-byte position mismatch,
+verified directly against `Crypto.apk`'s actual bytes. Forking/vendoring a
+fix into third-party code was rejected in favor of `AndroidResourceTableParser`
+(new, in a new `resources/` package): it reads the same self-describing
+chunk structure, but always locates the type-name and key-name string pools
+via the package header's own byte offsets rather than assumed adjacency —
+robust to that extra field, or any other, without a version check. It
+reuses the library's own `pxb.android.StringItems#read` (the actual string
+pool decoder, unaffected by the package-header bug) and `pxb.android.ResConst`
+chunk-type constants rather than reimplementing those.
+
+Deliberately narrow, not a general resource-table model: only simple
+(`TYPE_STRING`-valued) entries of one caller-chosen type name are
+extracted — all a file-path lookup needs. Complex ("bag") entries, resource
+aliases (`TYPE_REFERENCE`), and a type/config chunk flagged `FLAG_SPARSE` or
+`FLAG_OFFSET16` (a more compact entry-offset encoding some `aapt2` builds
+use for large/sparse resource ID spaces) are skipped best-effort rather
+than mis-parsed, logged at debug level — the same "one bad chunk shouldn't
+sink the whole scan" posture `AndroidLayoutParser` already takes. Multiple
+config variants of the same resource ID (e.g. `layout/x.xml` vs
+`layout-land/x.xml`) are deliberately all returned as a set, not one
+arbitrarily picked — which variant a device inflates at runtime isn't
+statically known, so the union keeps this sound.
+
+**`AndroidLayoutEntryPointCreator`'s resolution chain**, per manifest-
+declared activity: scan every method declared directly on the activity's
+*own* class (not its superclass chain — `setContentView` is called by the
+concrete Activity itself, no shared-base-class case to walk up for) for
+`setContentView(int)` call sites, matched by method name/parameter shape
+only, not declaring class — real dex bytecode encodes a `this.setContentView(id)`
+call site's invoke target against `this`'s *static* type (the concrete
+Activity subclass), not necessarily whichever class actually defines the
+method (almost never overridden), confirmed directly against this module's
+own sample APKs (e.g. `virtualinvoke this.<de.ecspride.LocationLeak1: void
+setContentView(int)>(...)` even though `LocationLeak1` never overrides it).
+Each call site's single argument is traced to a constant via a small
+fixed-point local-constant scan — needed because real dex-derived Jimple
+for a literal argument showed up as `$u1 = (Object) 2130903040; local =
+(int) $u1` (an autoboxing-shaped double cast), not a single direct
+assignment, confirmed the same way. The resolved resource ID(s) are then
+looked up in `AndroidResourceTableParser`'s map to get the specific layout
+file(s), whose `android:onClick` names (now extracted per-file by
+`AndroidLayoutParser#parseOnClickMethodNamesByFileFromApk`, replacing the
+old flat-set-only extraction) are checked against that activity alone.
+
+**The fallback, and why it's per-activity rather than all-or-nothing:** if
+*any* part of that chain doesn't fully resolve for a given activity — no
+`setContentView(int)` call site found at all (e.g. inflated via a Fragment,
+`LayoutInflater#inflate`, or `setContentView(View)`), a call site whose
+argument isn't a traceable constant, or a traced resource ID absent from
+the parsed resource table (no `resources.arsc`, an aliased/non-layout
+resource, or — see below — actual drift between the dex and the packaged
+table) — that *specific* activity falls back to being checked against the
+full flat set of every extracted name, same as before this addition.
+Partial resolution isn't trusted: an activity with two `setContentView`
+call sites where only one resolves still falls back entirely, rather than
+risk silently dropping whatever the unresolved one actually wires up. This
+keeps the result sound exactly the way steps 3 and 7 stay sound by
+over-approximating whatever they can't precisely resolve — precision is
+opportunistic per activity, never at the cost of a missed real entry point.
+
+**Validated three ways:**
+
+- `AndroidResourceTableParserTest` — the resource-table parser itself,
+  against three real, checked-in `aapt2`-built APKs (`LocationLeak1.apk`,
+  `Crypto.apk`, `FlowSensitivity1.apk`'s 27 bundled layouts across many
+  config variants).
+- `LayoutResourcePrecisionFixtureTest` — a new real, hand-compiled,
+  two-activity fixture (`FixtureApkBuilder` extended with a `layoutResource`
+  method that writes a genuine `resources.arsc` via the same library's own
+  `pxb.android.arsc.ArscWriter`, round-tripped against
+  `AndroidResourceTableParser` to confirm both directions agree) built
+  specifically to prove this is a *real* precision gain, not just a safe
+  no-op: two activities that both happen to declare a same-named, same-
+  signature `onSaveClicked(View)` method (a realistic naming collision),
+  where only one activity's own real layout actually wires that name.
+  Precise resolution correctly excludes the other activity's same-named
+  method; a second test reproduces the pre-this-addition blanket behavior
+  (by passing an empty resource-ID map) to confirm the collision *would*
+  have leaked in without it — the precision gain is demonstrated, not just
+  asserted.
+- The full existing suite (`AndroidLayoutEntryPointCreatorTest`,
+  `OnClickFixtureTest`, `CombinedFixtureAnalysisTest`, and every other test
+  touching these two classes' now-changed signatures) still passes
+  unchanged in behavior — none of this module's existing sample/fixture
+  APKs happen to call `setContentView(int)` with a traceable literal
+  *and* declare `android:onClick` usage together, so they all continue
+  exercising the fallback path, now proven correct by construction rather
+  than by having no alternative.
+
+**A methodology note, the same shape as the `Button1.apk` finding earlier
+in this document:** `Crypto.apk`'s own `setContentView(2130837504)` call
+does *not* resolve to its layout resource at all — independently confirmed
+via `AndroidResourceTableParserTest`, that literal is actually the resource
+ID of a *string* resource (`"HelloWorld"`), one type ID away from the real
+layout resource (`2130771968`). This is real, pre-existing drift in that
+specific checked-in fixture between its compiled `R` constants and its
+packaged `resources.arsc` (plausible for an old, hand-assembled academic
+test APK, not a parser bug — confirmed by cross-checking what the literal
+actually resolves to). It doesn't affect correctness: this is exactly the
+"traced resource ID absent from the requested type's map" case the
+fallback exists for, so `Crypto.apk`'s `MainActivity` (which has no
+`android:onClick` usage anyway) is unaffected either way. Worth remembering
+for any future finding involving this fixture specifically.

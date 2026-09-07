@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.apk.frontend.layout.AndroidLayoutParser;
@@ -34,6 +35,7 @@ import sootup.apk.frontend.manifest.AndroidComponentType;
 import sootup.apk.frontend.manifest.AndroidManifest;
 import sootup.apk.frontend.manifest.AndroidManifestParser;
 import sootup.apk.frontend.manifest.ManifestComponent;
+import sootup.apk.frontend.resources.AndroidResourceTableParser;
 import sootup.core.signatures.MethodSignature;
 
 /**
@@ -73,7 +75,11 @@ public class AndroidLayoutEntryPointCreatorTest {
 
     List<MethodSignature> entryPoints =
         AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
-            ctx.view, manifest, ctx.appClassNames, Set.of("thisMethodDoesNotExistAnywhere"));
+            ctx.view,
+            manifest,
+            ctx.appClassNames,
+            Map.of("layout.xml", Set.of("thisMethodDoesNotExistAnywhere")),
+            Collections.emptyMap());
     assertTrue(entryPoints.isEmpty());
   }
 
@@ -85,7 +91,7 @@ public class AndroidLayoutEntryPointCreatorTest {
 
     List<MethodSignature> entryPoints =
         AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
-            ctx.view, manifest, ctx.appClassNames, Collections.emptySet());
+            ctx.view, manifest, ctx.appClassNames, Collections.emptyMap(), Collections.emptyMap());
     assertTrue(entryPoints.isEmpty());
   }
 
@@ -108,7 +114,11 @@ public class AndroidLayoutEntryPointCreatorTest {
 
     List<MethodSignature> entryPoints =
         AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
-            ctx.view, manifest, ctx.appClassNames, Set.of(REAL_ONCLICK_METHOD));
+            ctx.view,
+            manifest,
+            ctx.appClassNames,
+            Map.of("layout.xml", Set.of(REAL_ONCLICK_METHOD)),
+            Collections.emptyMap());
     assertTrue(entryPoints.isEmpty());
   }
 
@@ -122,12 +132,18 @@ public class AndroidLayoutEntryPointCreatorTest {
             "src/test/resources/FlowSensitivity1.apk")) {
       ApkTestContext ctx = ApkTestContext.forApk(apk);
       AndroidManifest manifest = AndroidManifestParser.parseFromApk(Paths.get(apk));
-      Set<String> onClickMethodNames =
-          AndroidLayoutParser.parseOnClickMethodNamesFromApk(Paths.get(apk));
+      Map<String, Set<String>> onClickMethodNamesByFile =
+          AndroidLayoutParser.parseOnClickMethodNamesByFileFromApk(Paths.get(apk));
+      Map<Integer, Set<String>> layoutFileNamesByResourceId =
+          AndroidResourceTableParser.parseFileNamesByResourceIdFromApk(Paths.get(apk), "layout");
 
       List<MethodSignature> entryPoints =
           AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
-              ctx.view, manifest, ctx.appClassNames, onClickMethodNames);
+              ctx.view,
+              manifest,
+              ctx.appClassNames,
+              onClickMethodNamesByFile,
+              layoutFileNamesByResourceId);
       assertTrue(entryPoints.isEmpty());
     }
   }

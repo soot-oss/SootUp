@@ -27,7 +27,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -45,11 +47,13 @@ import pxb.android.axml.NodeVisitor;
  * any {@code setOnClickListener} call site for {@link
  * sootup.apk.frontend.entrypoint.AndroidCallbackEntryPointCreator} (step 3) to find.
  *
- * <p>This only extracts the method names declared in the XML; matching a name to the Activity(s)
- * that actually inflate a given layout would require parsing the APK's compiled resource table
- * (`resources.arsc`) to resolve {@code R.layout.*} constants back to file names, which isn't
- * implemented. See {@code sootup.apk.frontend.entrypoint.AndroidLayoutEntryPointCreator} for how
- * the extracted names are turned into entry points despite that.
+ * <p>Extracted per zip entry name ({@link #parseOnClickMethodNamesByFileFromApk}), not just as one
+ * flat set, so {@code sootup.apk.frontend.entrypoint.AndroidLayoutEntryPointCreator} can match a
+ * name to the specific Activity(s) that actually inflate a given layout — resolved via {@code
+ * sootup.apk.frontend.resources.AndroidResourceTableParser} against the APK's compiled resource
+ * table ({@code resources.arsc}) — instead of checking every name against every declared activity.
+ * A caller that can't resolve a given file back to a specific activity still has the flat union of
+ * every name available as a sound fallback; see that class for how the two combine.
  */
 public final class AndroidLayoutParser {
 
@@ -60,11 +64,13 @@ public final class AndroidLayoutParser {
 
   /**
    * Extracts every {@code android:onClick} method name declared anywhere in {@code
-   * res/layout*}{@code /*.xml} entries of the given APK.
+   * res/layout*}{@code /*.xml} entries of the given APK, keyed by the zip entry name (e.g. {@code
+   * "res/layout/activity_main.xml"}) it was found in.
    */
   @NonNull
-  public static Set<String> parseOnClickMethodNamesFromApk(@NonNull Path apkPath) {
-    Set<String> onClickMethodNames = new LinkedHashSet<>();
+  public static Map<String, Set<String>> parseOnClickMethodNamesByFileFromApk(
+      @NonNull Path apkPath) {
+    Map<String, Set<String>> onClickMethodNamesByFile = new LinkedHashMap<>();
     try (ZipFile archive = new ZipFile(apkPath.toFile())) {
       Enumeration<? extends ZipEntry> entries = archive.entries();
       while (entries.hasMoreElements()) {
@@ -73,7 +79,10 @@ public final class AndroidLayoutParser {
           continue;
         }
         try (InputStream layoutStream = archive.getInputStream(entry)) {
-          onClickMethodNames.addAll(parseOnClickMethodNames(layoutStream));
+          Set<String> namesInFile = parseOnClickMethodNames(layoutStream);
+          if (!namesInFile.isEmpty()) {
+            onClickMethodNamesByFile.put(entry.getName(), namesInFile);
+          }
         } catch (Exception e) {
           // Best-effort: one unparsable/unexpected layout entry shouldn't stop the rest of the
           // app's layouts from being scanned (mirrors AndroidVersionInfo's manifest parsing,
@@ -84,7 +93,7 @@ public final class AndroidLayoutParser {
     } catch (IOException e) {
       throw new RuntimeException("Failed to read layout resources from " + apkPath, e);
     }
-    return onClickMethodNames;
+    return onClickMethodNamesByFile;
   }
 
   /** Extracts every {@code android:onClick} method name declared in a single layout XML stream. */

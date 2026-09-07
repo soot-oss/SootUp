@@ -27,7 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -56,7 +58,7 @@ public class OnClickFixtureTest {
 
   private static ApkTestContext ctx;
   private static AndroidManifest manifest;
-  private static Set<String> onClickMethodNames;
+  private static Map<String, Set<String>> onClickMethodNamesByFile;
 
   @BeforeAll
   public static void buildFixture() throws Exception {
@@ -96,19 +98,24 @@ public class OnClickFixtureTest {
 
     ctx = ApkTestContext.forApkPath(apkPath);
     manifest = AndroidManifestParser.parseFromApk(apkPath);
-    onClickMethodNames = AndroidLayoutParser.parseOnClickMethodNamesFromApk(apkPath);
+    onClickMethodNamesByFile = AndroidLayoutParser.parseOnClickMethodNamesByFileFromApk(apkPath);
   }
 
   @Test
   public void testOnClickMethodNameIsExtractedFromRealLayoutXml() {
-    assertTrue(onClickMethodNames.contains("onSaveClicked"));
+    assertTrue(
+        onClickMethodNamesByFile.values().stream().anyMatch(names -> names.contains("onSaveClicked")));
   }
 
   @Test
   public void testOnClickEntryPointResolvesToRealMethod() {
+    // This fixture's onCreate never calls setContentView(int) at all, so precise resolution can't
+    // apply - falls back to the blanket behavior (see AndroidLayoutEntryPointCreator's class doc),
+    // which is exactly what this test exercises: an empty resourceId map behaves the same as it
+    // did before precise resolution existed.
     List<MethodSignature> onClickEntryPoints =
         AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
-            ctx.view, manifest, ctx.appClassNames, onClickMethodNames);
+            ctx.view, manifest, ctx.appClassNames, onClickMethodNamesByFile, Collections.emptyMap());
 
     MethodSignature onSaveClicked =
         ctx.view
@@ -137,7 +144,11 @@ public class OnClickFixtureTest {
 
     List<MethodSignature> onClickEntryPoints =
         AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
-            ctx.view, syntheticManifest, ctx.appClassNames, Set.of("onSaveClicked"));
+            ctx.view,
+            syntheticManifest,
+            ctx.appClassNames,
+            Map.of("layout.xml", Set.of("onSaveClicked")),
+            Collections.emptyMap());
 
     MethodSignature onSaveClicked =
         ctx.view
@@ -165,7 +176,7 @@ public class OnClickFixtureTest {
 
     List<MethodSignature> onClickEntryPoints =
         AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
-            ctx.view, manifest, ctx.appClassNames, onClickMethodNames);
+            ctx.view, manifest, ctx.appClassNames, onClickMethodNamesByFile, Collections.emptyMap());
     List<MethodSignature> combined = new ArrayList<>(lifecycleOnly);
     combined.addAll(onClickEntryPoints);
     CallGraphAlgorithm combinedCha = new ClassHierarchyAnalysisAlgorithm(ctx.view);

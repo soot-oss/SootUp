@@ -117,9 +117,9 @@ public class AndroidLayoutParserTest {
             "src/test/resources/Crypto.apk",
             "src/test/resources/LocationLeak1.apk",
             "src/test/resources/FlowSensitivity1.apk")) {
-      Set<String> onClickMethodNames =
-          AndroidLayoutParser.parseOnClickMethodNamesFromApk(Paths.get(apk));
-      assertTrue(onClickMethodNames.isEmpty(), apk + " unexpectedly has onClick attributes");
+      java.util.Map<String, Set<String>> onClickMethodNamesByFile =
+          AndroidLayoutParser.parseOnClickMethodNamesByFileFromApk(Paths.get(apk));
+      assertTrue(onClickMethodNamesByFile.isEmpty(), apk + " unexpectedly has onClick attributes");
     }
   }
 }

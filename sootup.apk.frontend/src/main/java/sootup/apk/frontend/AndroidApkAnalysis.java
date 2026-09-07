@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
@@ -42,6 +43,7 @@ import sootup.apk.frontend.layout.AndroidLayoutParser;
 import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.apk.frontend.manifest.AndroidManifest;
 import sootup.apk.frontend.manifest.AndroidManifestParser;
+import sootup.apk.frontend.resources.AndroidResourceTableParser;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
@@ -185,10 +187,17 @@ public final class AndroidApkAnalysis {
     List<MethodSignature> coreEntryPoints = new ArrayList<>();
     coreEntryPoints.addAll(
         AndroidEntryPointCreator.getEntryPoints(view, manifest, applicationClassNames));
-    Set<String> onClickMethodNames = AndroidLayoutParser.parseOnClickMethodNamesFromApk(apkPath);
+    Map<String, Set<String>> onClickMethodNamesByLayoutFile =
+        AndroidLayoutParser.parseOnClickMethodNamesByFileFromApk(apkPath);
+    Map<Integer, Set<String>> layoutFileNamesByResourceId =
+        AndroidResourceTableParser.parseFileNamesByResourceIdFromApk(apkPath, "layout");
     coreEntryPoints.addAll(
         AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
-            view, manifest, applicationClassNames, onClickMethodNames));
+            view,
+            manifest,
+            applicationClassNames,
+            onClickMethodNamesByLayoutFile,
+            layoutFileNamesByResourceId));
 
     MutableCallGraph coreGraph =
         (MutableCallGraph)

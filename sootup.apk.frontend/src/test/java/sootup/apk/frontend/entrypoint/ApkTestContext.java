@@ -34,6 +34,7 @@ import sootup.apk.frontend.icc.AndroidIccResolver;
 import sootup.apk.frontend.layout.AndroidLayoutParser;
 import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.apk.frontend.manifest.AndroidManifest;
+import sootup.apk.frontend.resources.AndroidResourceTableParser;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.MutableCallGraph;
@@ -100,7 +101,8 @@ public final class ApkTestContext {
             view,
             manifest,
             appClassNames,
-            AndroidLayoutParser.parseOnClickMethodNamesFromApk(apkPath)));
+            AndroidLayoutParser.parseOnClickMethodNamesByFileFromApk(apkPath),
+            AndroidResourceTableParser.parseFileNamesByResourceIdFromApk(apkPath, "layout")));
 
     MutableCallGraph coreGraph =
         (MutableCallGraph) (CallGraph) new ClassHierarchyAnalysisAlgorithm(view).initialize(core);

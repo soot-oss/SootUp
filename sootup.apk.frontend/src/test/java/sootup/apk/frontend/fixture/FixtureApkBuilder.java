@@ -32,6 +32,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.jf.smali.Smali;
 import org.jf.smali.SmaliOptions;
+import pxb.android.arsc.ArscWriter;
+import pxb.android.arsc.Config;
+import pxb.android.arsc.Pkg;
+import pxb.android.arsc.ResEntry;
+import pxb.android.arsc.ResSpec;
+import pxb.android.arsc.Type;
+import pxb.android.arsc.Value;
 import pxb.android.axml.AxmlWriter;
 import pxb.android.axml.NodeVisitor;
 import sootup.apk.frontend.manifest.AndroidComponentType;
@@ -41,16 +48,18 @@ import sootup.apk.frontend.manifest.IntentFilter;
  * Builds a real, minimal {@code .apk} file for step 9 fixture tests: assembles hand-written {@code
  * .smali} sources into a genuine {@code classes.dex} via {@code org.smali:smali} (the same library
  * {@code dexlib2} — already a compile dependency of this module — belongs to), and packs it with a
- * hand-encoded binary {@code AndroidManifest.xml} (and optional {@code res/layout} entries) via the
- * same {@code axml} writer already exercised by {@code AndroidLayoutParserTest}.
+ * hand-encoded binary {@code AndroidManifest.xml} (optional {@code res/layout} entries, and an
+ * optional real {@code resources.arsc} — see {@link #layoutResource} — built via that same library's
+ * {@code pxb.android.arsc.ArscWriter}) via the same {@code axml}/{@code arsc} machinery already
+ * exercised by {@code AndroidLayoutParserTest}/{@code AndroidResourceTableParserTest}.
  *
- * <p>The result is a plain zip, not a signed/aligned/{@code resources.arsc}-bearing APK — that's
- * fine, since {@link sootup.apk.frontend.ApkAnalysisInputLocation} and this module's manifest/
- * layout parsers only ever read specific known zip entries directly, the same way they read the
- * checked-in DroidBench sample APKs. This exercises the real production pipeline end to end
- * (dexlib2's dex reader, this module's {@code instruction/*} Jimple translators, the real AXML
- * manifest/layout parsers) rather than the {@code JimpleStringAnalysisInputLocation} shortcut step
- * 7's tests use — deliberately, since step 9 exists to validate the actual APK ingestion path.
+ * <p>The result is a plain zip, not a signed/aligned APK — that's fine, since {@link
+ * sootup.apk.frontend.ApkAnalysisInputLocation} and this module's manifest/layout/resource-table
+ * parsers only ever read specific known zip entries directly, the same way they read the checked-in
+ * DroidBench sample APKs. This exercises the real production pipeline end to end (dexlib2's dex
+ * reader, this module's {@code instruction/*} Jimple translators, the real AXML/ARSC parsers) rather
+ * than the {@code JimpleStringAnalysisInputLocation} shortcut step 7's tests use — deliberately,
+ * since step 9 exists to validate the actual APK ingestion path.
  */
 final class FixtureApkBuilder {
 
@@ -58,6 +67,9 @@ final class FixtureApkBuilder {
   private static final int NAME_ATTR_RESOURCE_ID = 0x01010003;
   private static final int EXPORTED_ATTR_RESOURCE_ID = 0x01010010;
   private static final int ONCLICK_ATTR_RESOURCE_ID = 0x0101026c;
+
+  /** {@code Res_value::dataType} for a string/file-reference value - see {@link #buildArsc}. */
+  private static final int TYPE_STRING = 0x03;
 
   private static final class Component {
     final AndroidComponentType type;
@@ -74,10 +86,16 @@ final class FixtureApkBuilder {
     }
   }
 
+  /** Package/type IDs used for every fixture-generated {@code resources.arsc} - see {@link #buildArsc}. */
+  private static final int FIXTURE_PACKAGE_ID = 0x7f;
+
+  private static final int FIXTURE_LAYOUT_TYPE_ID = 0x01;
+
   private final List<String> smaliSources = new ArrayList<>();
   private final List<Component> components = new ArrayList<>();
   private final java.util.Map<String, String> layoutOnClickByFileName =
       new java.util.LinkedHashMap<>();
+  private final List<String> layoutResourceFileNames = new ArrayList<>();
 
   FixtureApkBuilder smali(String smaliSource) {
     smaliSources.add(smaliSource);
@@ -97,6 +115,32 @@ final class FixtureApkBuilder {
   FixtureApkBuilder layoutOnClick(String layoutFileName, String onClickMethodName) {
     layoutOnClickByFileName.put(layoutFileName, onClickMethodName);
     return this;
+  }
+
+  /**
+   * Registers a {@code res/layout/<layoutFileName>} entry in the fixture's generated {@code
+   * resources.arsc} (a real {@code layout}-type resource table entry, via {@code
+   * pxb.android.arsc.ArscWriter}). The resource ID smali source should embed in a literal {@code
+   * setContentView(int)} call is given by {@link #resourceIdFor} for the same file name - call this
+   * before {@link #build()}, then read the ID back to generate the smali.
+   */
+  FixtureApkBuilder layoutResource(String layoutFileName) {
+    layoutResourceFileNames.add(layoutFileName);
+    return this;
+  }
+
+  /**
+   * The resource ID {@link #build()} will assign a layout registered via {@link #layoutResource},
+   * so callers can embed it as a literal argument to {@code setContentView(int)} in their smali
+   * source before the fixture (and thus the ID) actually exists on disk.
+   */
+  int resourceIdFor(String layoutFileName) {
+    int index = layoutResourceFileNames.indexOf(layoutFileName);
+    if (index < 0) {
+      throw new IllegalArgumentException(
+          "layoutResource(\"" + layoutFileName + "\") was never called");
+    }
+    return (FIXTURE_PACKAGE_ID << 24) | (FIXTURE_LAYOUT_TYPE_ID << 16) | index;
   }
 
   /** Assembles the smali, writes the manifest/layouts, and zips everything into a real .apk. */
@@ -123,8 +167,16 @@ final class FixtureApkBuilder {
     try (ZipOutputStream zip = new ZipOutputStream(Files.newOutputStream(apkPath))) {
       writeEntry(zip, "classes.dex", Files.readAllBytes(dexOut));
       writeEntry(zip, "AndroidManifest.xml", buildManifestXml());
-      for (java.util.Map.Entry<String, String> layout : layoutOnClickByFileName.entrySet()) {
-        writeEntry(zip, "res/layout/" + layout.getKey(), buildLayoutXml(layout.getValue()));
+      java.util.Set<String> layoutFileNames = new java.util.LinkedHashSet<>(layoutResourceFileNames);
+      layoutFileNames.addAll(layoutOnClickByFileName.keySet());
+      for (String layoutFileName : layoutFileNames) {
+        writeEntry(
+            zip,
+            "res/layout/" + layoutFileName,
+            buildLayoutXml(layoutOnClickByFileName.get(layoutFileName)));
+      }
+      if (!layoutResourceFileNames.isEmpty()) {
+        writeEntry(zip, "resources.arsc", buildArsc());
       }
     }
     return apkPath;
@@ -172,13 +224,43 @@ final class FixtureApkBuilder {
     AxmlWriter writer = new AxmlWriter();
     NodeVisitor root = writer.child(null, "LinearLayout");
     NodeVisitor button = root.child(null, "Button");
-    button.attr(
-        ANDROID_NS,
-        "onClick",
-        ONCLICK_ATTR_RESOURCE_ID,
-        NodeVisitor.TYPE_STRING,
-        onClickMethodName);
+    if (onClickMethodName != null) {
+      button.attr(
+          ANDROID_NS,
+          "onClick",
+          ONCLICK_ATTR_RESOURCE_ID,
+          NodeVisitor.TYPE_STRING,
+          onClickMethodName);
+    }
     return writer.toByteArray();
+  }
+
+  /**
+   * Builds a real, minimal {@code resources.arsc} (one package, one {@code layout} type) declaring
+   * every file registered via {@link #layoutResource}, via {@code pxb.android.arsc.ArscWriter} - the
+   * write-side counterpart to {@code AndroidResourceTableParser}, which this round-trips against
+   * (confirmed directly: a synthetic table built exactly this way parses back to the expected
+   * resource-ID -> file-name mapping via that class's own reader).
+   */
+  private byte[] buildArsc() throws IOException {
+    Pkg pkg = new Pkg(FIXTURE_PACKAGE_ID, "test.fixture");
+    Type layoutType =
+        pkg.getType(FIXTURE_LAYOUT_TYPE_ID, "layout", layoutResourceFileNames.size());
+
+    byte[] configId = new byte[36]; // minimal ResTable_config: leading size field, no qualifiers
+    configId[0] = 36;
+    Config config = new Config(configId, layoutResourceFileNames.size());
+
+    for (int entryId = 0; entryId < layoutResourceFileNames.size(); entryId++) {
+      ResSpec spec = layoutType.getSpec(entryId);
+      spec.updateName("fixture_layout_" + entryId);
+      ResEntry entry = new ResEntry(0, spec);
+      entry.value = new Value(TYPE_STRING, 0, "res/layout/" + layoutResourceFileNames.get(entryId));
+      config.resources.put(entryId, entry);
+    }
+    layoutType.addConfig(config);
+
+    return new ArscWriter(java.util.List.of(pkg)).toByteArray();
   }
 
   private static String tagFor(AndroidComponentType type) {
