@@ -6,7 +6,11 @@ import java.util.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
@@ -20,7 +24,9 @@ import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
+import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.types.PrimitiveType;
 import sootup.interceptors.*;
 import sootup.java.bytecode.frontend.inputlocation.ClassFileBasedAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
@@ -300,5 +306,68 @@ public class StmtExceptionAnalyzerTest {
                     result.getExceptions().contains(ExceptionInferResult.ExceptionType.THROWABLE));
               }
             });
+  }
+
+  @Test
+  public void testNewArrayExprWithPrimitiveBaseType() {
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
+    Local arr = Jimple.newLocal("arr", new ArrayType(PrimitiveType.getInt(), 1));
+    Local size = Jimple.newLocal("size", PrimitiveType.getInt());
+    Set<ClassType> defaultExceptions =
+        new HashSet<>(
+            Arrays.asList(
+                ExceptionInferResult.ErrorType.VM_ERROR,
+                ExceptionInferResult.ErrorType.THREAD_DEATH));
+
+    // arr = new int[4]: a non-negative constant size cannot throw a NegativeArraySizeException and
+    // a primitive base type needs no class resolution, so only the default result remains.
+    Stmt constantSize =
+        Jimple.newAssignStmt(
+            arr,
+            new JNewArrayExpr(PrimitiveType.getInt(), IntConstant.getInstance(4), factory),
+            noPositionInfo);
+    Assertions.assertEquals(
+        defaultExceptions, exceptionAnalyser.mightThrowImplicitly(constantSize).getExceptions());
+
+    // arr = new int[-1]: a negative constant size always throws a NegativeArraySizeException.
+    Set<ClassType> withNegativeArraySize = new HashSet<>(defaultExceptions);
+    withNegativeArraySize.add(ExceptionInferResult.ExceptionType.NEGATIVE_ARRAY_SIZE_EXCEPTION);
+    Stmt negativeConstantSize =
+        Jimple.newAssignStmt(
+            arr,
+            new JNewArrayExpr(PrimitiveType.getInt(), IntConstant.getInstance(-1), factory),
+            noPositionInfo);
+    Assertions.assertEquals(
+        withNegativeArraySize,
+        exceptionAnalyser.mightThrowImplicitly(negativeConstantSize).getExceptions());
+
+    // arr = new int[size]: an unknown size might be negative.
+    Stmt localSize =
+        Jimple.newAssignStmt(
+            arr, new JNewArrayExpr(PrimitiveType.getInt(), size, factory), noPositionInfo);
+    Assertions.assertEquals(
+        withNegativeArraySize, exceptionAnalyser.mightThrowImplicitly(localSize).getExceptions());
+  }
+
+  @Test
+  public void testNewArrayExprWithReferenceBaseType() {
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
+    ClassType integerType = factory.getClassType("java.lang.Integer");
+    Local arr = Jimple.newLocal("arr", new ArrayType(integerType, 1));
+    Set<ClassType> expected =
+        new HashSet<>(
+            Arrays.asList(
+                ExceptionInferResult.ErrorType.VM_ERROR,
+                ExceptionInferResult.ErrorType.THREAD_DEATH,
+                ExceptionInferResult.ErrorType.RESOLVE_CLASS_ERROR));
+
+    // arr = new Integer[4]: a reference base type has to be resolved.
+    Stmt constantSize =
+        Jimple.newAssignStmt(
+            arr,
+            new JNewArrayExpr(integerType, IntConstant.getInstance(4), factory),
+            noPositionInfo);
+    Assertions.assertEquals(
+        expected, exceptionAnalyser.mightThrowImplicitly(constantSize).getExceptions());
   }
 }
