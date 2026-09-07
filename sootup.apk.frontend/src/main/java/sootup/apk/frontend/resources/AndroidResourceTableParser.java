@@ -77,14 +77,15 @@ import pxb.android.StringItems;
  * <p>Deliberately narrow, not a general-purpose resource table model: only simple ({@code
  * TYPE_STRING}-valued) entries of one caller-chosen type name are extracted, since that's all a
  * file-path lookup needs. Complex ("bag") entries, resource aliases ({@code TYPE_REFERENCE}), and
- * every other value type are skipped. A type's per-config entry chunk flagged {@code FLAG_SPARSE} or
- * {@code FLAG_OFFSET16} (a more compact entry-offset encoding some {@code aapt2} builds use for
+ * every other value type are skipped. A type's per-config entry chunk flagged {@code FLAG_SPARSE}
+ * or {@code FLAG_OFFSET16} (a more compact entry-offset encoding some {@code aapt2} builds use for
  * large/sparse resource ID spaces) is skipped too, best-effort, rather than mis-parsed — logged at
  * debug level, the same "one bad chunk shouldn't sink the whole scan" posture {@link
  * sootup.apk.frontend.layout.AndroidLayoutParser} already takes for unparsable layout entries.
  * Multiple configuration variants of the same resource ID (e.g. {@code layout/x.xml} vs {@code
- * layout-land/x.xml}) are deliberately all returned rather than picking one — which variant a device
- * actually inflates at runtime isn't statically known, so returning the union keeps this sound.
+ * layout-land/x.xml}) are deliberately all returned rather than picking one — which variant a
+ * device actually inflates at runtime isn't statically known, so returning the union keeps this
+ * sound.
  */
 public final class AndroidResourceTableParser {
 
@@ -102,9 +103,9 @@ public final class AndroidResourceTableParser {
 
   /**
    * Extracts {@code resources.arsc} from {@code apkPath} and resolves every resource ID of type
-   * {@code typeName} (e.g. {@code "layout"}) to the zip entry name(s) it points at. Returns an empty
-   * map, logging at debug level, if the APK has no {@code resources.arsc} entry or it can't be
-   * parsed — the caller's fallback is to treat every candidate as unresolved, the same posture
+   * {@code typeName} (e.g. {@code "layout"}) to the zip entry name(s) it points at. Returns an
+   * empty map, logging at debug level, if the APK has no {@code resources.arsc} entry or it can't
+   * be parsed — the caller's fallback is to treat every candidate as unresolved, the same posture
    * {@link sootup.apk.frontend.layout.AndroidLayoutParser} already takes.
    */
   @NonNull
@@ -136,7 +137,9 @@ public final class AndroidResourceTableParser {
     }
   }
 
-  /** One-shot, stateful chunk reader — mirrors the shape of the (buggy) library parser it replaces. */
+  /**
+   * One-shot, stateful chunk reader — mirrors the shape of the (buggy) library parser it replaces.
+   */
   private static final class Parser {
     private final ByteBuffer in;
     private final String targetTypeName;
@@ -235,7 +238,10 @@ public final class AndroidResourceTableParser {
     }
 
     private void readType(
-        @NonNull Chunk chunk, int packageId, @NonNull String[] typeNames, @NonNull String[] keyNames) {
+        @NonNull Chunk chunk,
+        int packageId,
+        @NonNull String[] typeNames,
+        @NonNull String[] keyNames) {
       int typeId = in.get() & 0xFF;
       int flags = in.get() & 0xFF;
       in.getShort(); // reserved
@@ -297,7 +303,9 @@ public final class AndroidResourceTableParser {
           .add(globalStrings[data]);
     }
 
-    /** A {@code ResChunk_header}: type/headerSize/size, plus the absolute position it started at. */
+    /**
+     * A {@code ResChunk_header}: type/headerSize/size, plus the absolute position it started at.
+     */
     private final class Chunk {
       final int location;
       final int type;

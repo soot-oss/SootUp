@@ -36,6 +36,7 @@ import sootup.apk.frontend.entrypoint.AndroidCallbackEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidDummyMainFactory;
 import sootup.apk.frontend.entrypoint.AndroidDynamicReceiverEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidEntryPointCreator;
+import sootup.apk.frontend.entrypoint.AndroidFragmentEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidLayoutEntryPointCreator;
 import sootup.apk.frontend.entrypoint.InstantiatedTypeCollector;
 import sootup.apk.frontend.icc.AndroidIccResolver;
@@ -167,10 +168,10 @@ public final class AndroidApkAnalysis {
    *   <li><b>Phase 2 — filtered discovery.</b> Scan that baseline for instantiated types ({@link
    *       InstantiatedTypeCollector}), then run steps 3/8's candidate scan (plus {@link
    *       AndroidDynamicReceiverEntryPointCreator}'s same-shaped scan for non-manifest {@code
-   *       BroadcastReceiver} subclasses) restricted to classes in that set — a listener/task/receiver
-   *       class can only ever run if something constructs and hands off a live instance of it, so
-   *       "never `new`'d in reachable code" is a sound, not just plausible, precondition for "can
-   *       never actually fire".
+   *       BroadcastReceiver} subclasses) restricted to classes in that set — a
+   *       listener/task/receiver class can only ever run if something constructs and hands off a
+   *       live instance of it, so "never `new`'d in reachable code" is a sound, not just plausible,
+   *       precondition for "can never actually fire".
    * </ul>
    *
    * <p>Deliberately not a fixed point: a class instantiated only inside another class that phase 2
@@ -215,6 +216,9 @@ public final class AndroidApkAnalysis {
             view, applicationClassNames, instantiatedClassNames));
     combined.addAll(
         AndroidDynamicReceiverEntryPointCreator.getDynamicReceiverEntryPoints(
+            view, applicationClassNames, instantiatedClassNames));
+    combined.addAll(
+        AndroidFragmentEntryPointCreator.getFragmentEntryPoints(
             view, applicationClassNames, instantiatedClassNames));
 
     return new ArrayList<>(combined);

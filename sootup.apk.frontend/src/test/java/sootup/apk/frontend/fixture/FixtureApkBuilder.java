@@ -49,17 +49,17 @@ import sootup.apk.frontend.manifest.IntentFilter;
  * .smali} sources into a genuine {@code classes.dex} via {@code org.smali:smali} (the same library
  * {@code dexlib2} — already a compile dependency of this module — belongs to), and packs it with a
  * hand-encoded binary {@code AndroidManifest.xml} (optional {@code res/layout} entries, and an
- * optional real {@code resources.arsc} — see {@link #layoutResource} — built via that same library's
- * {@code pxb.android.arsc.ArscWriter}) via the same {@code axml}/{@code arsc} machinery already
- * exercised by {@code AndroidLayoutParserTest}/{@code AndroidResourceTableParserTest}.
+ * optional real {@code resources.arsc} — see {@link #layoutResource} — built via that same
+ * library's {@code pxb.android.arsc.ArscWriter}) via the same {@code axml}/{@code arsc} machinery
+ * already exercised by {@code AndroidLayoutParserTest}/{@code AndroidResourceTableParserTest}.
  *
  * <p>The result is a plain zip, not a signed/aligned APK — that's fine, since {@link
  * sootup.apk.frontend.ApkAnalysisInputLocation} and this module's manifest/layout/resource-table
  * parsers only ever read specific known zip entries directly, the same way they read the checked-in
  * DroidBench sample APKs. This exercises the real production pipeline end to end (dexlib2's dex
- * reader, this module's {@code instruction/*} Jimple translators, the real AXML/ARSC parsers) rather
- * than the {@code JimpleStringAnalysisInputLocation} shortcut step 7's tests use — deliberately,
- * since step 9 exists to validate the actual APK ingestion path.
+ * reader, this module's {@code instruction/*} Jimple translators, the real AXML/ARSC parsers)
+ * rather than the {@code JimpleStringAnalysisInputLocation} shortcut step 7's tests use —
+ * deliberately, since step 9 exists to validate the actual APK ingestion path.
  */
 final class FixtureApkBuilder {
 
@@ -86,7 +86,10 @@ final class FixtureApkBuilder {
     }
   }
 
-  /** Package/type IDs used for every fixture-generated {@code resources.arsc} - see {@link #buildArsc}. */
+  /**
+   * Package/type IDs used for every fixture-generated {@code resources.arsc} - see {@link
+   * #buildArsc}.
+   */
   private static final int FIXTURE_PACKAGE_ID = 0x7f;
 
   private static final int FIXTURE_LAYOUT_TYPE_ID = 0x01;
@@ -167,7 +170,8 @@ final class FixtureApkBuilder {
     try (ZipOutputStream zip = new ZipOutputStream(Files.newOutputStream(apkPath))) {
       writeEntry(zip, "classes.dex", Files.readAllBytes(dexOut));
       writeEntry(zip, "AndroidManifest.xml", buildManifestXml());
-      java.util.Set<String> layoutFileNames = new java.util.LinkedHashSet<>(layoutResourceFileNames);
+      java.util.Set<String> layoutFileNames =
+          new java.util.LinkedHashSet<>(layoutResourceFileNames);
       layoutFileNames.addAll(layoutOnClickByFileName.keySet());
       for (String layoutFileName : layoutFileNames) {
         writeEntry(
@@ -237,15 +241,14 @@ final class FixtureApkBuilder {
 
   /**
    * Builds a real, minimal {@code resources.arsc} (one package, one {@code layout} type) declaring
-   * every file registered via {@link #layoutResource}, via {@code pxb.android.arsc.ArscWriter} - the
-   * write-side counterpart to {@code AndroidResourceTableParser}, which this round-trips against
-   * (confirmed directly: a synthetic table built exactly this way parses back to the expected
-   * resource-ID -> file-name mapping via that class's own reader).
+   * every file registered via {@link #layoutResource}, via {@code pxb.android.arsc.ArscWriter} -
+   * the write-side counterpart to {@code AndroidResourceTableParser}, which this round-trips
+   * against (confirmed directly: a synthetic table built exactly this way parses back to the
+   * expected resource-ID -> file-name mapping via that class's own reader).
    */
   private byte[] buildArsc() throws IOException {
     Pkg pkg = new Pkg(FIXTURE_PACKAGE_ID, "test.fixture");
-    Type layoutType =
-        pkg.getType(FIXTURE_LAYOUT_TYPE_ID, "layout", layoutResourceFileNames.size());
+    Type layoutType = pkg.getType(FIXTURE_LAYOUT_TYPE_ID, "layout", layoutResourceFileNames.size());
 
     byte[] configId = new byte[36]; // minimal ResTable_config: leading size field, no qualifiers
     configId[0] = 36;

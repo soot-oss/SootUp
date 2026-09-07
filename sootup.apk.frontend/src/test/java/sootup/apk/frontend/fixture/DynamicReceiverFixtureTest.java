@@ -44,9 +44,9 @@ import sootup.core.signatures.MethodSignature;
 /**
  * Isolates the dynamic-{@code BroadcastReceiver} follow-up to step 7 against a real, hand-built,
  * compiled APK: a {@code BroadcastReceiver} subclass that is constructed in reachable code (an
- * {@code Activity}'s {@code onCreate}, standing in for a real
- * {@code registerReceiver(new MyReceiver(), filter)} call site — the specific call site isn't
- * traced, only the construction, matching {@link AndroidDynamicReceiverEntryPointCreator}'s
+ * {@code Activity}'s {@code onCreate}, standing in for a real {@code registerReceiver(new
+ * MyReceiver(), filter)} call site — the specific call site isn't traced, only the construction,
+ * matching {@link AndroidDynamicReceiverEntryPointCreator}'s
  * blanket-scan-plus-instantiation-evidence design) and, critically, has <em>no</em> manifest {@code
  * <receiver>} declaration at all, so step 5 alone can never find it. {@code onReceive} is never
  * called from app code (no in-app call site — matching how the framework actually invokes it), so

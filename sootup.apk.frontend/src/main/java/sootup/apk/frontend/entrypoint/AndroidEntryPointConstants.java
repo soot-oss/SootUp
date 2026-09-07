@@ -48,7 +48,11 @@ public final class AndroidEntryPointConstants {
               new LifecycleMethod(
                   "onConfigurationChanged",
                   "void",
-                  Collections.singletonList("android.content.res.Configuration"))));
+                  Collections.singletonList("android.content.res.Configuration")),
+              new LifecycleMethod(
+                  "attachBaseContext",
+                  "void",
+                  Collections.singletonList("android.content.Context"))));
 
   private static final List<LifecycleMethod> ACTIVITY_METHODS =
       Collections.unmodifiableList(
@@ -81,7 +85,25 @@ public final class AndroidEntryPointConstants {
               new LifecycleMethod(
                   "onRequestPermissionsResult",
                   "void",
-                  Arrays.asList("int", "java.lang.String[]", "int[]"))));
+                  Arrays.asList("int", "java.lang.String[]", "int[]")),
+              // Activity extends ContextThemeWrapper -> ContextWrapper, so an override here is a
+              // legitimate framework callback (see DroidBench's MethodOverride1: the leak is
+              // entirely inside an overridden attachBaseContext, with no other entry point in the
+              // app calling it).
+              new LifecycleMethod(
+                  "attachBaseContext",
+                  "void",
+                  Collections.singletonList("android.content.Context")),
+              // Activity also implements ComponentCallbacks2 (onLowMemory/onTrimMemory) and
+              // ComponentCallbacks (onConfigurationChanged) directly, not just Application (see
+              // DroidBench's Lifecycle/EventOrdering1, which overrides onLowMemory on the Activity
+              // itself).
+              new LifecycleMethod("onLowMemory", "void", Collections.emptyList()),
+              new LifecycleMethod("onTrimMemory", "void", Collections.singletonList("int")),
+              new LifecycleMethod(
+                  "onConfigurationChanged",
+                  "void",
+                  Collections.singletonList("android.content.res.Configuration"))));
 
   private static final List<LifecycleMethod> SERVICE_METHODS =
       Collections.unmodifiableList(
@@ -99,7 +121,11 @@ public final class AndroidEntryPointConstants {
                   "onRebind", "void", Collections.singletonList("android.content.Intent")),
               new LifecycleMethod("onDestroy", "void", Collections.emptyList()),
               new LifecycleMethod("onLowMemory", "void", Collections.emptyList()),
-              new LifecycleMethod("onTrimMemory", "void", Collections.singletonList("int"))));
+              new LifecycleMethod("onTrimMemory", "void", Collections.singletonList("int")),
+              new LifecycleMethod(
+                  "attachBaseContext",
+                  "void",
+                  Collections.singletonList("android.content.Context"))));
 
   private static final List<LifecycleMethod> BROADCAST_RECEIVER_METHODS =
       Collections.unmodifiableList(

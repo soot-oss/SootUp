@@ -31,10 +31,10 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 /**
- * Validates {@link AndroidResourceTableParser} against real, checked-in {@code resources.arsc}
- * data — all built by a modern {@code aapt2}, the exact case that broke {@code
- * de.upb.cs.swt:axml}'s own {@code pxb.android.arsc.ArscParser} (see this class's own class doc for
- * the confirmed root cause) and motivated writing this parser instead of reusing it.
+ * Validates {@link AndroidResourceTableParser} against real, checked-in {@code resources.arsc} data
+ * — all built by a modern {@code aapt2}, the exact case that broke {@code de.upb.cs.swt:axml}'s own
+ * {@code pxb.android.arsc.ArscParser} (see this class's own class doc for the confirmed root cause)
+ * and motivated writing this parser instead of reusing it.
  */
 public class AndroidResourceTableParserTest {
 
@@ -63,8 +63,7 @@ public class AndroidResourceTableParserTest {
 
     assertEquals(1, result.size());
     Set<String> files = result.values().iterator().next();
-    assertEquals(
-        Set.of("res/layout/activity_main.xml", "res/layout-v1/activity_main.xml"), files);
+    assertEquals(Set.of("res/layout/activity_main.xml", "res/layout-v1/activity_main.xml"), files);
   }
 
   @Test
@@ -78,8 +77,7 @@ public class AndroidResourceTableParserTest {
 
     assertEquals(27, result.size());
     assertTrue(
-        result.values().stream()
-            .anyMatch(files -> files.contains("res/layout/activity_main.xml")));
+        result.values().stream().anyMatch(files -> files.contains("res/layout/activity_main.xml")));
   }
 
   @Test

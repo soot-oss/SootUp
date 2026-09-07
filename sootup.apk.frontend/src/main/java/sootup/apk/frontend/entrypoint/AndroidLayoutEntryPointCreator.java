@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import sootup.apk.frontend.layout.AndroidLayoutParser;
 import sootup.apk.frontend.manifest.AndroidComponentType;
 import sootup.apk.frontend.manifest.AndroidManifest;
@@ -65,17 +64,17 @@ import sootup.core.views.View;
  * <h2>Precise resolution, with a sound fallback</h2>
  *
  * A layout file's {@code android:onClick} names are only checked against the specific Activity(s)
- * that actually inflate it, resolved by tracing that Activity's own {@code
- * setContentView(int)} call site(s) back to a resource ID (a bounded, single-class constant scan —
- * see {@link #resolveOwnLayoutResourceIds}) and then to a file name via {@link
- * AndroidResourceTableParser}. This can fail for any number of reasons (no {@code resources.arsc},
- * an unresolvable/dynamically-computed resource ID, a layout inflated some other way — {@code
+ * that actually inflate it, resolved by tracing that Activity's own {@code setContentView(int)}
+ * call site(s) back to a resource ID (a bounded, single-class constant scan — see {@link
+ * #resolveOwnLayoutResourceIds}) and then to a file name via {@link AndroidResourceTableParser}.
+ * This can fail for any number of reasons (no {@code resources.arsc}, an
+ * unresolvable/dynamically-computed resource ID, a layout inflated some other way — {@code
  * LayoutInflater#inflate}, a Fragment, {@code setContentView(View)} — none of which are traced): if
  * <em>any</em> part of that chain doesn't resolve for a given Activity, that Activity falls back to
- * the old behavior of being checked against every {@code android:onClick} name found anywhere in the
- * APK, not just the ones from a layout it's confirmed to use. This keeps the overall result sound —
- * precision is opportunistic, never at the cost of missing a real entry point — the same way steps 3
- * and 7 stay sound by over-approximating whatever they can't precisely resolve.
+ * the old behavior of being checked against every {@code android:onClick} name found anywhere in
+ * the APK, not just the ones from a layout it's confirmed to use. This keeps the overall result
+ * sound — precision is opportunistic, never at the cost of missing a real entry point — the same
+ * way steps 3 and 7 stay sound by over-approximating whatever they can't precisely resolve.
  */
 public final class AndroidLayoutEntryPointCreator {
 
@@ -123,7 +122,7 @@ public final class AndroidLayoutEntryPointCreator {
       ClassType activityType = identifierFactory.getClassType(activity.getClassName());
       Set<String> onClickMethodNames =
           resolveOnClickNamesForActivity(
-              view, activityType, onClickMethodNamesByLayoutFile, layoutFileNamesByResourceId)
+                  view, activityType, onClickMethodNamesByLayoutFile, layoutFileNamesByResourceId)
               .orElse(allOnClickMethodNames);
 
       for (String onClickMethodName : onClickMethodNames) {
@@ -177,8 +176,8 @@ public final class AndroidLayoutEntryPointCreator {
    * Scans every method declared directly on {@code activityType}'s own class (not its superclass
    * chain - {@code setContentView} is called by the concrete Activity itself, not inherited
    * boilerplate, so unlike lifecycle-method resolution there's no shared-base-class case to walk up
-   * for) for {@code setContentView(int)} call sites, and traces each one's single argument back to a
-   * constant resource ID.
+   * for) for {@code setContentView(int)} call sites, and traces each one's single argument back to
+   * a constant resource ID.
    *
    * <p>Matches by method name and parameter shape only (not declaring class): real dex bytecode
    * encodes a {@code this.setContentView(id)} call site's invoke target against {@code this}'s
@@ -231,8 +230,9 @@ public final class AndroidLayoutEntryPointCreator {
     MethodSignature invoked = expr.getMethodSignature();
     return SET_CONTENT_VIEW.equals(invoked.getName())
         && invoked.getParameterTypes().size() == 1
-        && SET_CONTENT_VIEW_PARAMETER_TYPES.get(0).equals(
-            invoked.getParameterTypes().get(0).toString());
+        && SET_CONTENT_VIEW_PARAMETER_TYPES
+            .get(0)
+            .equals(invoked.getParameterTypes().get(0).toString());
   }
 
   @NonNull

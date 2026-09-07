@@ -104,7 +104,8 @@ public class OnClickFixtureTest {
   @Test
   public void testOnClickMethodNameIsExtractedFromRealLayoutXml() {
     assertTrue(
-        onClickMethodNamesByFile.values().stream().anyMatch(names -> names.contains("onSaveClicked")));
+        onClickMethodNamesByFile.values().stream()
+            .anyMatch(names -> names.contains("onSaveClicked")));
   }
 
   @Test
@@ -115,7 +116,11 @@ public class OnClickFixtureTest {
     // did before precise resolution existed.
     List<MethodSignature> onClickEntryPoints =
         AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
-            ctx.view, manifest, ctx.appClassNames, onClickMethodNamesByFile, Collections.emptyMap());
+            ctx.view,
+            manifest,
+            ctx.appClassNames,
+            onClickMethodNamesByFile,
+            Collections.emptyMap());
 
     MethodSignature onSaveClicked =
         ctx.view
@@ -176,7 +181,11 @@ public class OnClickFixtureTest {
 
     List<MethodSignature> onClickEntryPoints =
         AndroidLayoutEntryPointCreator.getOnClickEntryPoints(
-            ctx.view, manifest, ctx.appClassNames, onClickMethodNamesByFile, Collections.emptyMap());
+            ctx.view,
+            manifest,
+            ctx.appClassNames,
+            onClickMethodNamesByFile,
+            Collections.emptyMap());
     List<MethodSignature> combined = new ArrayList<>(lifecycleOnly);
     combined.addAll(onClickEntryPoints);
     CallGraphAlgorithm combinedCha = new ClassHierarchyAnalysisAlgorithm(ctx.view);

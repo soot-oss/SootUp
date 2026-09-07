@@ -43,9 +43,9 @@ import sootup.core.signatures.MethodSignature;
  * Proves the actual point of resource-table-based precise resolution ({@code
  * AndroidResourceTableParser} + {@code AndroidLayoutEntryPointCreator}'s per-activity tracing) is a
  * real precision gain, not just a safe no-op: two real, compiled activities that both happen to
- * declare a method named {@code onSaveClicked(View)} (a common naming collision in real apps), where
- * only {@code ActivityOne}'s own real, resources.arsc-resolved layout actually wires that name via
- * {@code android:onClick} - {@code ActivityTwo}'s layout wires a different name entirely.
+ * declare a method named {@code onSaveClicked(View)} (a common naming collision in real apps),
+ * where only {@code ActivityOne}'s own real, resources.arsc-resolved layout actually wires that
+ * name via {@code android:onClick} - {@code ActivityTwo}'s layout wires a different name entirely.
  *
  * <p>Under the old blanket behavior (every extracted {@code android:onClick} name checked against
  * every activity - reproduced here by feeding an empty resource-ID map, the fallback path's exact
@@ -166,8 +166,7 @@ public class LayoutResourcePrecisionFixtureTest {
   @Test
   public void testResourceTableResolvesBothLayoutsToTheirOwnFiles() {
     // Sanity check on the parser itself before trusting the entry-point-level assertions below.
-    int activityOneLayoutId =
-        (0x7f << 24) | (0x01 << 16); // first registered layoutResource() call
+    int activityOneLayoutId = (0x7f << 24) | (0x01 << 16); // first registered layoutResource() call
     int activityTwoLayoutId = (0x7f << 24) | (0x01 << 16) | 1;
     assertTrue(
         layoutFileNamesByResourceId

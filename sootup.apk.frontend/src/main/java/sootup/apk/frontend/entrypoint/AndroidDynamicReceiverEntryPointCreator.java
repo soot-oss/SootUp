@@ -37,9 +37,9 @@ import sootup.core.views.View;
 
 /**
  * Derives call-graph entry points for <em>dynamically</em> registered {@code BroadcastReceiver}s —
- * ones constructed and handed to {@code Context#registerReceiver(BroadcastReceiver,
- * IntentFilter)} at runtime, as opposed to declared with a manifest {@code <receiver>} element
- * (already covered by {@link AndroidEntryPointCreator}, which walks {@link
+ * ones constructed and handed to {@code Context#registerReceiver(BroadcastReceiver, IntentFilter)}
+ * at runtime, as opposed to declared with a manifest {@code <receiver>} element (already covered by
+ * {@link AndroidEntryPointCreator}, which walks {@link
  * sootup.apk.frontend.manifest.AndroidManifest}). Fills the gap flagged in {@code
  * ANDROID_CALL_GRAPH_PLAN.md} step 7's known limitations: "Dynamically registered
  * BroadcastReceivers ... aren't modeled at all."
@@ -48,10 +48,10 @@ import sootup.core.views.View;
  * one: {@code BroadcastReceiver} is an abstract class, so membership is checked via {@link
  * TypeHierarchy#superClassesOf}, not {@code implementedInterfacesOf}. Rather than tracing the
  * specific {@code registerReceiver} call site that hands off a given instance (more precise, but
- * the same complexity-for-precision tradeoff already declined for steps 3/8's own scans — see
- * their class docs), this takes the same broader, already-established approach: any app class
- * extending {@code android.content.BroadcastReceiver} has its {@code onReceive} callback treated
- * as reachable, restricted to classes actually instantiated in already-reachable code (see {@link
+ * the same complexity-for-precision tradeoff already declined for steps 3/8's own scans — see their
+ * class docs), this takes the same broader, already-established approach: any app class extending
+ * {@code android.content.BroadcastReceiver} has its {@code onReceive} callback treated as
+ * reachable, restricted to classes actually instantiated in already-reachable code (see {@link
  * InstantiatedTypeCollector}). That restriction is sound, not a heuristic, for the same reason it
  * is for steps 3/8: a receiver can only ever be registered if something first constructs a live
  * instance of it, so "never `new`'d in reachable code" is a valid precondition for "can never

@@ -30,8 +30,11 @@ import java.util.Map;
 import org.jspecify.annotations.NonNull;
 
 /**
- * The Android SDK's UI callback/listener interfaces, and the methods the framework invokes on an
- * implementation once it's registered on a widget (e.g. {@code View#setOnClickListener}).
+ * Android SDK callback/listener interfaces, and the methods the framework invokes on an
+ * implementation once it's registered (e.g. {@code View#setOnClickListener}, {@code
+ * LocationManager#requestLocationUpdates}, {@code Application#registerActivityLifecycleCallbacks}).
+ * Not limited to UI widgets — any interface the framework calls back on once an instance is handed
+ * to a registration API belongs here, whatever subsystem it belongs to.
  *
  * <p>An app class implementing one of these interfaces is reachable from the framework the same way
  * a lifecycle callback is: nothing in the app's own bytecode necessarily calls it directly. Unlike
@@ -183,6 +186,43 @@ public final class AndroidCallbackConstants {
                 Arrays.asList("java.lang.CharSequence", "int", "int", "int")),
             new LifecycleMethod(
                 "afterTextChanged", "void", Collections.singletonList("android.text.Editable"))));
+
+    table.put(
+        "android.location.LocationListener",
+        Arrays.asList(
+            new LifecycleMethod(
+                "onLocationChanged",
+                "void",
+                Collections.singletonList("android.location.Location")),
+            new LifecycleMethod(
+                "onStatusChanged",
+                "void",
+                Arrays.asList("java.lang.String", "int", "android.os.Bundle")),
+            new LifecycleMethod(
+                "onProviderEnabled", "void", Collections.singletonList("java.lang.String")),
+            new LifecycleMethod(
+                "onProviderDisabled", "void", Collections.singletonList("java.lang.String"))));
+    table.put(
+        "android.app.Application$ActivityLifecycleCallbacks",
+        Arrays.asList(
+            new LifecycleMethod(
+                "onActivityCreated",
+                "void",
+                Arrays.asList("android.app.Activity", "android.os.Bundle")),
+            new LifecycleMethod(
+                "onActivityStarted", "void", Collections.singletonList("android.app.Activity")),
+            new LifecycleMethod(
+                "onActivityResumed", "void", Collections.singletonList("android.app.Activity")),
+            new LifecycleMethod(
+                "onActivityPaused", "void", Collections.singletonList("android.app.Activity")),
+            new LifecycleMethod(
+                "onActivityStopped", "void", Collections.singletonList("android.app.Activity")),
+            new LifecycleMethod(
+                "onActivitySaveInstanceState",
+                "void",
+                Arrays.asList("android.app.Activity", "android.os.Bundle")),
+            new LifecycleMethod(
+                "onActivityDestroyed", "void", Collections.singletonList("android.app.Activity"))));
 
     return Collections.unmodifiableMap(table);
   }
