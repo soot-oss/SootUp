@@ -34,6 +34,7 @@ import org.jf.dexlib2.immutable.debug.ImmutableLineNumber;
 import org.jf.dexlib2.immutable.debug.ImmutableRestartLocal;
 import org.jf.dexlib2.immutable.debug.ImmutableStartLocal;
 import org.jf.dexlib2.util.MethodUtil;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
@@ -327,9 +328,6 @@ public class DexBody {
     jimplify();
     // All the statements are converted, it is time to create a mutable statement graph
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
-    // If the Nop Statements are not removed, graph.initializeWith throws a runtime exception
-    // It is only for the case where there is a JNop Statement after the return statement. Crazy
-    // android code :(
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature(
@@ -337,10 +335,6 @@ public class DexBody {
                 method.getName(),
                 DexUtil.toSootType(method.getReturnType(), 0),
                 parameterTypes);
-    while (stmtList.get(stmtList.size() - 1) instanceof JNopStmt) {
-      stmtList.remove(stmtList.size() - 1);
-    }
-    //    stmtList.removeIf(JNopStmt.class::isInstance);
     Map<BranchingStmt, List<Stmt>> branchingStmtListMap = convertMultimap(branchingMap);
     Set<Stmt> blockBegin = new HashSet<>();
     Set<Stmt> blockEnd = new HashSet<>();
@@ -356,6 +350,14 @@ public class DexBody {
           blockBegin.add(trap.getEndStmt());
           blockBegin.add(trap.getHandlerStmt());
         });
+
+    // A Stmt that does not fall through - a return, a throw, a goto - ends its block. Whatever dex
+    // placed behind it is only reachable by a jump and must not be chained onto it.
+    for (Stmt stmt : stmtList) {
+      if (!stmt.fallsThrough()) {
+        blockEnd.add(stmt);
+      }
+    }
 
     List<List<Stmt>> listList = new ArrayList<>();
     List<Stmt> currentList = new ArrayList<>();
@@ -376,10 +378,138 @@ public class DexBody {
     if (!currentList.isEmpty()) {
       listList.add(currentList);
     }
+    removeUnreachableBlocks(listList, branchingStmtListMap);
     graph.initializeWith(listList, branchingStmtListMap, traps);
     DexMethodSource dexMethodSource =
         new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
     return dexMethodSource.makeSootMethod();
+  }
+
+  private void removeUnreachableBlocks(
+      List<List<Stmt>> blocks, Map<BranchingStmt, List<Stmt>> successorMap) {
+    if (blocks.isEmpty()) {
+      return;
+    }
+
+    Map<Stmt, Integer> blockOfHead = new IdentityHashMap<>();
+    for (int i = 0; i < blocks.size(); i++) {
+      blockOfHead.put(blocks.get(i).get(0), i);
+    }
+
+    boolean[] reachable = new boolean[blocks.size()];
+    Deque<Integer> worklist = new ArrayDeque<>();
+    reachable[0] = true;
+    worklist.add(0);
+    // A handler is entered by an exceptional edge from the Stmts its Trap covers, so it becomes
+    // reachable as soon as any block of that range is.
+    boolean foundHandler = true;
+    while (foundHandler) {
+      followEdges(blocks, successorMap, blockOfHead, reachable, worklist);
+      foundHandler = false;
+      for (Trap trap : traps) {
+        Integer handler = blockOfHead.get(trap.getHandlerStmt());
+        if (handler != null
+            && !reachable[handler]
+            && isRangeReachable(trap, blockOfHead, reachable, blocks.size())) {
+          markReachable(handler, reachable, worklist);
+          foundHandler = true;
+        }
+      }
+    }
+
+    Set<Stmt> removedStmts = Collections.newSetFromMap(new IdentityHashMap<>());
+    for (int i = 0; i < blocks.size(); i++) {
+      if (!reachable[i]) {
+        removedStmts.addAll(blocks.get(i));
+      }
+    }
+    if (removedStmts.isEmpty()) {
+      return;
+    }
+
+    List<Trap> keptTraps = new ArrayList<>(traps.size());
+    for (Trap trap : traps) {
+      if (removedStmts.contains(trap.getBeginStmt())
+          || removedStmts.contains(trap.getHandlerStmt())) {
+        // nothing is left of the covered range, or of the handler that would catch for it
+        continue;
+      }
+      Stmt end = trap.getEndStmt();
+      if (removedStmts.contains(end)) {
+        // the end is exclusive, so with the Stmt behind the range gone, the range grows up to the
+        // next block that stayed; a range that would reach the end of the body cannot be expressed
+        end = null;
+        Integer endIndex = blockOfHead.get(trap.getEndStmt());
+        for (int i = endIndex == null ? blocks.size() : endIndex + 1; i < blocks.size(); i++) {
+          if (reachable[i]) {
+            end = blocks.get(i).get(0);
+            break;
+          }
+        }
+        if (end == null || end == trap.getBeginStmt()) {
+          continue;
+        }
+      }
+      keptTraps.add(
+          end == trap.getEndStmt()
+              ? trap
+              : Jimple.newTrap(
+                  trap.getExceptionType(), trap.getBeginStmt(), end, trap.getHandlerStmt()));
+    }
+    traps.clear();
+    traps.addAll(keptTraps);
+
+    successorMap.keySet().removeIf(removedStmts::contains);
+    stmtList.removeIf(removedStmts::contains);
+    blocks.removeIf(block -> removedStmts.contains(block.get(0)));
+  }
+
+  private static void followEdges(
+      List<List<Stmt>> blocks,
+      Map<BranchingStmt, List<Stmt>> successorMap,
+      Map<Stmt, Integer> blockOfHead,
+      boolean[] reachable,
+      Deque<Integer> worklist) {
+    while (!worklist.isEmpty()) {
+      int index = worklist.poll();
+      List<Stmt> block = blocks.get(index);
+      Stmt tail = block.get(block.size() - 1);
+      if (tail.fallsThrough()) {
+        markReachable(index + 1 < blocks.size() ? index + 1 : null, reachable, worklist);
+      }
+      if (tail.branches()) {
+        List<Stmt> targets = successorMap.get((BranchingStmt) tail);
+        if (targets != null) {
+          for (Stmt target : targets) {
+            markReachable(blockOfHead.get(target), reachable, worklist);
+          }
+        }
+      }
+    }
+  }
+
+  private static boolean isRangeReachable(
+      Trap trap, Map<Stmt, Integer> blockOfHead, boolean[] reachable, int blockCount) {
+    Integer begin = blockOfHead.get(trap.getBeginStmt());
+    if (begin == null) {
+      return false;
+    }
+    Integer end = blockOfHead.get(trap.getEndStmt());
+    // end is exclusive.
+    for (int i = begin, last = end == null ? blockCount : end; i < last; i++) {
+      if (reachable[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static void markReachable(
+      @Nullable Integer blockIndex, boolean[] reachable, Deque<Integer> worklist) {
+    if (blockIndex != null && !reachable[blockIndex]) {
+      reachable[blockIndex] = true;
+      worklist.add(blockIndex);
+    }
   }
 
   // Just a conversion code from LinkedListMultimap<BranchingStmt, List<Stmt>> to Map<BranchingStmt,
