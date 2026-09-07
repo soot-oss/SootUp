@@ -896,6 +896,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incorporate Pointer Analysis
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -912,6 +930,91 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-create-a-pointer-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to create a pointer analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resolving-reflection-native-methods-and-invokedynamic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolving reflection, native methods, and invokedynamic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-pointer-analysis-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use pointer analysis results
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-full-list-of-pointer-analyses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A Full list of Pointer Analyses
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qilin-pointer-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qilin Pointer Analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1144,6 +1247,80 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-create-a-pointer-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to create a pointer analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resolving-reflection-native-methods-and-invokedynamic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolving reflection, native methods, and invokedynamic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-pointer-analysis-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use pointer analysis results
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-full-list-of-pointer-analyses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A Full list of Pointer Analyses
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qilin-pointer-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qilin Pointer Analysis
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1163,7 +1340,6 @@
 
 
 <h1 id="incorporate-qilin-pointer-analysis">Incorporate Qilin Pointer Analysis</h1>
-<h1 id="wip-experimental">WIP! Experimental!</h1>
 <h3 id="dependencies">Dependencies</h3>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Maven</label><label for="__tabbed_1_2">Gradle</label></div>
 <div class="tabbed-content">
@@ -1186,27 +1362,49 @@
 </div>
 </div>
 <h3 id="how-to-create-a-pointer-analysis">How to create a pointer analysis</h3>
-<div class="admonition note">
-<p class="admonition-title">WIP: Beware most likely the API will change so you only need to specify SootUp objects!</p>
-</div>
-<p>One can create an Andersen's context-insensitive analysis with following code:</p>
+<p>For the core context-sensitivity variants (insensitive, call-site, object, type, and their
+hybrid variants), use the type-safe <code>PointerAnalysisFactory</code> - no singletons, no string patterns,
+and independent <code>View</code>s (or repeated calls against the same <code>View</code>) can be analyzed concurrently
+since nothing is cached on <code>View</code> or held in JVM-global state:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Java</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">entrypoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"dacapo.antlr.Main"</span><span class="p">;</span>
-<span class="n">PTAPattern</span><span class="w"> </span><span class="n">ptaPattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PTAPattern</span><span class="p">(</span><span class="s">"insens"</span><span class="p">);</span>
-<span class="n">PTA</span><span class="w"> </span><span class="n">pta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PTAFactory</span><span class="p">.</span><span class="na">createPTA</span><span class="p">(</span><span class="n">ptaPattern</span><span class="p">,</span><span class="w"> </span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">entrypoint</span><span class="p">);</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">entrypoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"dacapo.antlr.Main"</span><span class="p">);</span>
+<span class="n">PointerAnalysisConfig</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">contextSensitivity</span><span class="p">(</span><span class="n">ContextSensitivity</span><span class="p">.</span><span class="na">objectSensitive</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="c1">// 2-object-sensitive, 1-level heap ctx</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="n">PTA</span><span class="w"> </span><span class="n">pta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PointerAnalysisFactory</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">entrypoint</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">);</span>
 <span class="n">pta</span><span class="p">.</span><span class="na">run</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
 </div>
-<p>Users must specify the program's <code>View</code>, select a <code>PTAPattern</code>
-(indicating the desired types of pointer analyses to perform),
-and designate the <code>entrypoint</code> - which is serving as the entry point for the analysis.</p>
+<p>Other <code>ContextSensitivity</code> factory methods: <code>insensitive()</code>, <code>callSite(k[, hk])</code>,
+<code>objectSensitive(k[, hk])</code>, <code>typeSensitive(k, hk)</code>, <code>hybridObjectSensitive(k, hk)</code>,
+<code>hybridTypeSensitive(k, hk)</code>.</p>
+<p>The research-toolkit variants (bean, zipper, eagle, turner, mahjong, selectx, data-driven,
+tunneling, context debloating) go through the same <code>PointerAnalysisFactory</code>/<code>ContextSensitivity</code>
+pair - see the table below for their factory methods.</p>
+<h3 id="resolving-reflection-native-methods-and-invokedynamic">Resolving reflection, native methods, and invokedynamic</h3>
+<p>Some call targets can't be derived from a method's own bytecode. Qilin resolves these through a
+shared <code>qilin.core.effect.MethodEffectModel</code> hook, applied once per method just before its body is
+turned into constraints:</p>
+<ul>
+<li><strong>Reflection</strong> (<code>Class.forName</code>, <code>Method.invoke</code>, ...) - off by default; set
+  <code>PointerAnalysisConfig.builder().reflectionLogPath(path)</code> to a Tamiflex trace log to resolve it.</li>
+<li><strong>Native methods</strong> - a fixed table of simulated JDK natives (<code>Object.clone</code>, <code>Thread.start0</code>,
+  ...); unrecognized natives are left unmodeled.</li>
+<li><strong>invokedynamic (lambdas/method references)</strong> - on by default
+  (<code>PointerAnalysisConfig.isResolveDynamicInvoke()</code>). Resolves the common case - a lambda body or
+  method reference whose target is a plain static method - directly from the bootstrap's
+  <code>MethodHandle</code> constant, no log needed. Captured (closure) lambdas, constructor references
+  (<code>Foo::new</code>), and unbound instance method references are not yet resolved.</li>
+</ul>
 <h3 id="how-to-use-pointer-analysis-results">How to use pointer analysis results</h3>
 <p>First, we can use Qilin's pointer analysis to get a On-the-Fly constructed callgraph:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">OnFlyCallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">getCallGraph</span><span class="p">();</span>
@@ -1217,123 +1415,126 @@ and designate the <code>entrypoint</code> - which is serving as the entry point 
 <span class="n">PointsToSet</span><span class="w"> </span><span class="n">pts1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">reachingObjects</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span><span class="w"> </span><span class="c1">// PTS(v1.f)</span>
 </code></pre></div></td></tr></table></div>
 <p>Third, we can check whether two variables, <code>a</code> and <code>b</code>, are aliases by checking
-whether there is an object that exists in both of their points-to sets.</p>
-<p>Qilin does not currently offer a <code>isMayAlias</code> API within the PTA class.
-However, a similar functionality can be found in <code>qilin.test.util.AliasAssertion</code> with the method:
-<code>boolean isMayAlias(PTA pta, Value va, Value vb)</code>
-This method allows to check for potential aliasing between two values given a PTA instance.</p>
+whether there is an object that exists in both of their points-to sets:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">boolean</span><span class="w"> </span><span class="n">mayAlias</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">isMayAlias</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<p><code>isMayAlias</code> also special-cases <code>null</code>/String/class constants (e.g. two <code>null</code> constants always
+may-alias, a <code>null</code> never may-aliases a non-null value). It accepts <code>Local</code> references plus those
+constants; passing any other <code>Value</code> kind throws <code>IllegalArgumentException</code>.</p>
 <h3 id="a-full-list-of-pointer-analyses">A Full list of Pointer Analyses</h3>
 <p><a href="https://github.com/QilinPTA/Qilin">Qilin</a>'s toolbox includes a rich set of pointer analyses, which are given below:</p>
-<p>Note that the symbol <strong>k</strong> used in the table should be replaced with a concrete small constant like 1 or 2.</p>
+<p>Note that <strong>k</strong> used below is a concrete small constant like 1 or 2, and <code>hk</code> the heap-context
+depth (defaults vary by variant - see <code>ContextSensitivity</code>'s Javadoc for each factory method).</p>
 <table>
 <thead>
 <tr>
-<th>PTA patterns</th>
+<th><code>ContextSensitivity</code> factory method</th>
 <th>Description</th>
 <th>Reference</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>insens</strong></td>
+<td><code>insensitive()</code></td>
 <td>Andersen's context-insensitive analysis</td>
 <td><a href="https://link.springer.com/chapter/10.1007/3-540-36579-6_12">Paper</a></td>
 </tr>
 <tr>
-<td><strong>k</strong>c</td>
+<td><code>callSite(k[, hk])</code></td>
 <td><strong>k</strong>-callsite-sensitive pointer analysis (denoted <strong>k</strong>CFA).</td>
 <td><a href="https://www.cse.psu.edu/~trj1/cse598-f11/docs/sharir_pnueli1.pdf">Paper</a></td>
 </tr>
 <tr>
-<td><strong>k</strong>o</td>
+<td><code>objectSensitive(k[, hk])</code></td>
 <td><strong>k</strong>-object-sensitive pointer analysis (denoted <strong>k</strong>OBJ).</td>
 <td><a href="https://dl.acm.org/doi/abs/10.1145/1044834.1044835">Paper</a></td>
 </tr>
 <tr>
-<td><strong>k</strong>t</td>
+<td><code>typeSensitive(k, hk)</code></td>
 <td><strong>k</strong>-type-sensitive pointer analysis (denoted <strong>k</strong>TYPE).</td>
 <td><a href="https://dl.acm.org/doi/abs/10.1145/1926385.1926390">Paper</a></td>
 </tr>
 <tr>
-<td><strong>k</strong>h</td>
+<td><code>hybridObjectSensitive(k, hk)</code></td>
 <td>hybrid <strong>k</strong>-object-sensitive pointer analysis.</td>
 <td><a href="https://dl.acm.org/doi/10.1145/2499370.2462191">Paper</a></td>
 </tr>
 <tr>
-<td><strong>k</strong>ht</td>
+<td><code>hybridTypeSensitive(k, hk)</code></td>
 <td>hybrid <strong>k</strong>-type-sensitive pointer analysis.</td>
 <td><a href="https://dl.acm.org/doi/10.1145/2499370.2462191">Paper</a></td>
 </tr>
 <tr>
-<td>B-2o</td>
+<td><code>beanObjectSensitive()</code></td>
 <td>BEAN-guided 2OBJ. Only k=2 is supported.</td>
 <td><a href="https://link.springer.com/chapter/10.1007/978-3-662-53413-7_24">Paper</a></td>
 </tr>
 <tr>
-<td>D-2o</td>
+<td><code>dataDrivenObjectSensitive()</code></td>
 <td>Data-driven 2OBJ. Only k=2 is supported.</td>
 <td><a href="https://dl.acm.org/doi/10.1145/3133924">Paper</a></td>
 </tr>
 <tr>
-<td>D-2c</td>
+<td><code>dataDrivenCallSite()</code></td>
 <td>Data-driven 2CFA. Only k=2 is supported.</td>
 <td><a href="https://dl.acm.org/doi/10.1145/3133924">Paper</a></td>
 </tr>
 <tr>
-<td>M-<strong>k</strong>o</td>
+<td><code>dataDrivenHybridObjectSensitive()</code></td>
+<td>Data-driven hybrid-2OBJ. Only k=2 is supported.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3133924">Paper</a></td>
+</tr>
+<tr>
+<td><code>mahjongObjectSensitive(k, hk)</code></td>
 <td>MAHJONG-guided <strong>k</strong>OBJ.</td>
 <td><a href="https://dl.acm.org/doi/10.1145/3062341.3062360">Paper</a></td>
 </tr>
 <tr>
-<td>M-<strong>k</strong>c</td>
+<td><code>mahjongCallSite(k, hk)</code></td>
 <td>MAHJONG-guided <strong>k</strong>CFA.</td>
 <td><a href="https://dl.acm.org/doi/10.1145/3062341.3062360">Paper</a></td>
 </tr>
 <tr>
-<td>E-<strong>k</strong>o</td>
+<td><code>eagleObjectSensitive(k)</code></td>
 <td>EAGLE-guided <strong>k</strong>OBJ.</td>
 <td><a href="https://dl.acm.org/doi/10.1145/3360574">Paper</a></td>
 </tr>
 <tr>
-<td>T-<strong>k</strong>o</td>
+<td><code>turnerObjectSensitive(k)</code></td>
 <td>TURNER-guided <strong>k</strong>OBJ.</td>
 <td><a href="https://drops.dagstuhl.de/opus/volltexte/2021/14059/">Paper</a></td>
 </tr>
 <tr>
-<td>Z-<strong>k</strong>o</td>
+<td><code>zipperObjectSensitive(k, hk)</code></td>
 <td>ZIPPER-guided <strong>k</strong>OBJ.</td>
 <td><a href="https://dl.acm.org/doi/10.1145/3276511">Paper</a></td>
 </tr>
 <tr>
-<td>Z-<strong>k</strong>c</td>
+<td><code>zipperCallSite(k, hk)</code></td>
 <td>ZIPPER-guided <strong>k</strong>CFA.</td>
 <td><a href="https://dl.acm.org/doi/10.1145/3276511">Paper</a></td>
 </tr>
 <tr>
-<td>Z-<strong>k</strong>o -cd</td>
-<td>The context debloated version of ZIPPER-guided <strong>k</strong>OBJ.</td>
-<td><a href="https://doi.org/10.1109/ASE51524.2021.9678880">Paper</a></td>
+<td><code>tunnelingObjectSensitive/CallSite/TypeSensitive/HybridObjectSensitive(k, hk)</code></td>
+<td>Tunneling context sensitivity, per underlying variant.</td>
+<td></td>
 </tr>
 <tr>
-<td><strong>k</strong>o -cd -cda=CONCH</td>
-<td>The context debloated version of <strong>k</strong>OBJ using Conch.</td>
-<td><a href="https://doi.org/10.1109/ASE51524.2021.9678880">Paper</a></td>
-</tr>
-<tr>
-<td><strong>k</strong>o -cd -cda=DEBLOATERX</td>
-<td>The context debloated version of <strong>k</strong>OBJ using DebloaterX.</td>
-<td><a href="https://dl.acm.org/doi/10.1145/3622832">Paper</a></td>
-</tr>
-<tr>
-<td>s-<strong>k</strong>c</td>
+<td><code>selectxCallSite(k)</code></td>
 <td>SELECTX-guided <strong>k</strong>CFA.</td>
 <td><a href="https://doi.org/10.1007/978-3-030-88806-0_13">Paper</a></td>
 </tr>
 </tbody>
 </table>
+<p>Context debloating is a config toggle layered on top of an object-sensitive variant (the default
+k-obj, or <code>zipperObjectSensitive</code>/<code>mahjongObjectSensitive</code>/<code>eagleObjectSensitive</code>), not a separate
+factory method: set <code>PointerAnalysisConfig.builder().ctxDebloating(true)</code> and pick a
+<code>debloatApproach</code> (<code>CONCH</code>, <code>DEBLOATERX</code>, or <code>COLLECTION</code> for the Zipper-cd algorithm).
+<a href="https://doi.org/10.1109/ASE51524.2021.9678880">Debloating paper</a>,
+<a href="https://dl.acm.org/doi/10.1145/3622832">DebloaterX paper</a>.</p>
 <h2 id="qilin-pointer-analysis">Qilin Pointer Analysis</h2>
-<p>Qilin builds a call graph on the fly with the pointer analysis.
-You can construct a call graph with Qilin as follows:</p>
+<p>Qilin builds a call graph on the fly with the pointer analysis, for both core and toolkit
+context-sensitivity variants, through the same <code>PointerAnalysisFactory</code>:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">SootUp</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1341,11 +1542,15 @@ You can construct a call graph with Qilin as follows:</p>
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"dacapo.antlr.Main"</span><span class="p">;</span><span class="w"> </span><span class="c1">// just an example</span>
-<span class="n">PTAConfig</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getPtaConfig</span><span class="p">().</span><span class="na">ptaPattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PTAPattern</span><span class="p">(</span><span class="s">"insens"</span><span class="p">);</span><span class="w"> </span><span class="c1">// "2o"=&gt;2OBJ, "1c"=&gt;1CFA, etc.</span>
-<span class="n">PTA</span><span class="w"> </span><span class="n">pta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PTAFactory</span><span class="p">.</span><span class="na">createPTA</span><span class="p">(</span><span class="n">PTAConfig</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getPtaConfig</span><span class="p">().</span><span class="na">ptaPattern</span><span class="p">,</span><span class="w"> </span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="p">);</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"dacapo.antlr.Main"</span><span class="p">);</span><span class="w"> </span><span class="c1">// just an example</span>
+<span class="n">PointerAnalysisConfig</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">contextSensitivity</span><span class="p">(</span><span class="n">ContextSensitivity</span><span class="p">.</span><span class="na">zipperObjectSensitive</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="c1">// ZIPPER-guided 2OBJ, e.g.</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="n">PTA</span><span class="w"> </span><span class="n">pta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PointerAnalysisFactory</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">);</span>
 <span class="n">pta</span><span class="p">.</span><span class="na">run</span><span class="p">();</span>
-<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">getCallGraph</span><span class="p">();</span>
+<span class="n">OnFlyCallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">getCallGraph</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
