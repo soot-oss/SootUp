@@ -77,8 +77,8 @@ import sootup.java.core.types.JavaClassType;
  * entry-point list).
  *
  * <p>Since {@code CallGraphAlgorithm.initialize} already treats every element of a flat entry-point
- * list as an independent root (see {@link AndroidEntryPointCreator}'s own class doc), the body built
- * here doesn't need to model the OS's unpredictable invocation order the way Soot's classic
+ * list as an independent root (see {@link AndroidEntryPointCreator}'s own class doc), the body
+ * built here doesn't need to model the OS's unpredictable invocation order the way Soot's classic
  * dummy-main does (loops/conditionals around every call): for call-graph reachability, a
  * straight-line sequence that calls each entry point exactly once is equivalent. One receiver local
  * is allocated per distinct declaring class (via {@code new}, plus a {@code specialinvoke} of that
@@ -90,12 +90,14 @@ public final class AndroidDummyMainFactory {
 
   private AndroidDummyMainFactory() {}
 
-  private static final String DUMMY_MAIN_CLASS_NAME = "sootup.apk.frontend.dummyMain.AndroidDummyMain";
+  private static final String DUMMY_MAIN_CLASS_NAME =
+      "sootup.apk.frontend.dummyMain.AndroidDummyMain";
   private static final String DUMMY_MAIN_METHOD_NAME = "dummyMain";
 
   /** The signature {@link #createDummyMainClass} always gives the synthetic method it builds. */
   @NonNull
-  public static MethodSignature getDummyMainSignature(@NonNull IdentifierFactory identifierFactory) {
+  public static MethodSignature getDummyMainSignature(
+      @NonNull IdentifierFactory identifierFactory) {
     return identifierFactory.getMethodSignature(
         DUMMY_MAIN_CLASS_NAME, DUMMY_MAIN_METHOD_NAME, "void", Collections.emptyList());
   }

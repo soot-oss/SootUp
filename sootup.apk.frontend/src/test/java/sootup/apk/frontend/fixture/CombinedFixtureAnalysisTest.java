@@ -36,7 +36,6 @@ import sootup.apk.frontend.AndroidApkAnalysis;
 import sootup.apk.frontend.manifest.AndroidComponentType;
 import sootup.callgraph.CallGraph;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
-import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -410,8 +409,7 @@ public class CombinedFixtureAnalysisTest {
         reachableFromDummyMain.contains(sig("MyClickListener", "listenerHelper", "void")),
         "step 3 edge, reached through the dummy main");
     assertTrue(
-        reachableFromDummyMain.contains(
-            sig("MyTask", "backgroundHelper", "void")),
+        reachableFromDummyMain.contains(sig("MyTask", "backgroundHelper", "void")),
         "step 8 edge, reached through the dummy main");
   }
 

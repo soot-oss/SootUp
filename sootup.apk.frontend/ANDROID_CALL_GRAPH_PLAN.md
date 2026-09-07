@@ -1,11 +1,14 @@
 # Android APK Call Graph — Implementation Plan
 
-**Status: all 10 steps implemented.** Start at `AndroidApkAnalysis` (module
-root of `sootup.apk.frontend`) for the public entry point, or at any of
-this section's per-step notes for how a given piece works and why. The
-rest of this document is the design history, kept because the *why*
-behind each step's tradeoffs and limitations doesn't belong in code
-comments and is exactly what a future change to this area needs first.
+**Status: all 10 steps implemented, plus post-completion fixes, a
+synthesized `dummyMain` addition, and dynamic-`BroadcastReceiver` entry
+points (see the "Post-completion" sections below).** Start at
+`AndroidApkAnalysis` (module root of `sootup.apk.frontend`) for the public
+entry point, or at any of this section's per-step notes for how a given
+piece works and why. The rest of this document is the design history, kept
+because the *why* behind each step's tradeoffs and limitations doesn't
+belong in code comments and is exactly what a future change to this area
+needs first.
 
 ## Context
 
@@ -95,6 +98,12 @@ Everything Android-specific reduces to *what entry points get passed to
    graph) needs real control flow between entry points, a synthesized
    dummy-main can be added later as an additive change — the manifest model
    and lifecycle tables from steps 1–2 are reused either way.
+
+   **Update:** that later step happened — see "Post-completion addition: a
+   real synthesized `dummyMain` method, after all" near the end of this
+   document. The flat-list path described above remains the default; the
+   dummy-main is an additive alternative for callers that specifically need
+   the single-root shape.
 
    For each manifest component (and the `Application` class, if declared),
    walk the component's class upward through its Java superclasses (via the
@@ -547,7 +556,11 @@ for later steps):
   added. (This entry originally also said constant tracing only handled a
   constant inlined directly as an invoke argument — step 9's real-bytecode
   fixture caught that this is never how real dex-derived Jimple looks;
-  fixed, see the dedicated writeup above.)
+  fixed, see the dedicated writeup above. It also originally listed
+  dynamically registered `BroadcastReceiver`s as unmodeled entirely — fixed
+  by `AndroidDynamicReceiverEntryPointCreator`, see the dedicated writeup
+  near the end of this document; `IntentFilter`-based *targeting* of such a
+  receiver is still unmodeled, as noted there.)
 - Step 8's `Runnable`/`Callable`/`AsyncTask` scan (like step 3's listener
   scan) doesn't trace the specific call site that hands an instance to
   `Handler.post`/`View.post`/an executor/a registration API — it's still a
@@ -625,3 +638,132 @@ Validated two ways:
   `dummyMain` entry-point method and its `setDataIntent(Intent)`-style
   lifecycle modeling, which this module doesn't attempt to replicate —
   out of scope for this fix.
+
+### Post-completion addition: a real synthesized `dummyMain` method, after all
+
+Step 5's original design decision explicitly chose *not* to build a
+synthetic dummy-main body, on the grounds that `CallGraphAlgorithm.initialize`
+already treats a flat `List<MethodSignature>` as independent roots, making a
+single-root wrapper method call-graph-equivalent to the flat list — real
+engineering cost (hand-building `Body`/`Stmt`/`Local`/CFG objects and an
+`AnalysisInputLocation` to host a synthetic class) for no reachability
+benefit. That reasoning still holds for reachability alone. It stops holding
+the moment a caller downstream of the call graph is built around the
+classic single-entry-point convention instead — e.g. a taint/dataflow
+analysis that expects to seed its own supergraph from one concrete method
+with a real body, the shape FlowDroid and most Soot-based tooling assume.
+Rather than push every such caller to re-derive a synthetic root from
+`getEntryPoints()` itself, `AndroidDummyMainFactory` now builds one, as an
+additive option alongside the flat-list path (which remains the default and
+is unchanged) — exactly the "can be added later" escape hatch step 5's
+original writeup left open.
+
+**`AndroidDummyMainFactory.createDummyMainClass(view, entryPoints)`** builds
+a synthetic `sootup.apk.frontend.dummyMain.AndroidDummyMain#dummyMain()`
+class/method with a real Jimple `Body`: a straight-line sequence (no
+loops/conditionals — still not modeling the OS's unpredictable invocation
+order, since nothing downstream needs statement-order sensitivity for
+reachability) that calls every entry point in the combined list exactly
+once. One receiver local is allocated per distinct declaring class (via a
+Jimple `new` plus a `specialinvoke` of that class's own `<init>` entry point
+when present in the list) and reused across every other entry point
+declared on the same class, matching how the OS really does invoke
+lifecycle callbacks repeatedly on the one instance it constructed. Static
+entry points get a plain static invoke; instance entry points get a virtual
+or interface invoke depending on whether the declaring class resolves as an
+interface. Every parameter gets a placeholder immediate (`null` for
+reference/array types, zero for primitives) — the body is only ever
+traversed statically by call-graph construction, never executed, so actual
+argument values don't matter, only well-typed arity.
+
+`AndroidApkAnalysis.create()` now builds this class unconditionally and
+registers it via `view.addClass(...)` (the view is now a `MutableJavaView`,
+not a plain `JavaView`, to support this), exposing its signature through
+the new `getDummyMainSignature()`. Two new call-graph builders root at it
+instead of the flat list: `buildCallGraphFromDummyMain(CallGraphAlgorithm)`
+and its CHA/RTA convenience wrappers
+(`buildCallGraphFromDummyMainWithCHA()`/`buildCallGraphFromDummyMainWithRTA()`,
+seeded the same way as their flat-list counterparts). Both paths still layer
+step 7's ICC edges on top afterward. The original flat-list
+`buildCallGraph`/`buildCallGraphWithCHA`/`buildCallGraphWithRTA` are
+unchanged and remain the default — this is purely additive.
+
+Validated by `CombinedFixtureAnalysisTest` against the same six-class
+combined fixture APK used for step 10's own validation: one test asserts
+the dummy main's body contains a call to every entry point and nothing
+else, each exactly once; a second asserts `buildCallGraphFromDummyMainWithCHA()`
+still reaches step 5/3/8's helper methods (one extra hop through the dummy
+main, in place of being a direct root) — structurally equivalent to the
+flat-list version of the same check.
+
+Known limitation: like the flat entry-point list itself, the dummy main is
+built once, eagerly, in `create()` — it reflects whatever `getEntryPoints()`
+returned at that time. It is not usable as a general-purpose synthesis
+target for entry points discovered by a caller after the fact (e.g. if a
+future ICC or async fix runs a second pass and adds more entry points, the
+already-built dummy main's body won't include them).
+
+### Post-completion addition: dynamically-registered `BroadcastReceiver`s
+
+Step 7's known-limitations list flagged this from the start: "Dynamically
+registered `BroadcastReceiver`s (`registerReceiver(...)`, as opposed to a
+manifest `<receiver>`) aren't modeled at all; only manifest-declared
+components are considered." A receiver an app builds and hands to
+`Context#registerReceiver(BroadcastReceiver, IntentFilter)` at runtime has
+no `<receiver>` element for step 5's manifest walk to find at all, so its
+`onReceive` was invisible to every existing entry-point source.
+
+**`AndroidDynamicReceiverEntryPointCreator`**, new in `entrypoint/`, closes
+this the same way steps 3 and 8 already close their own equivalent gaps —
+deliberately *not* the "trace the `registerReceiver` call site" approach
+step 7's limitations note first suggested, since that's exactly the
+call-site-specific precision steps 3/8 already considered and declined in
+favor of a blanket scan (see their class docs): any app class extending
+`android.content.BroadcastReceiver` (a superclass relationship, checked via
+`TypeHierarchy#superClassesOf` the same way step 8 checks for `AsyncTask`,
+not `implementedInterfacesOf`) has its `onReceive(Context, Intent)` treated
+as reachable, restricted to classes actually instantiated in already-
+reachable code (`InstantiatedTypeCollector`, the same non-heuristic filter
+steps 3/8 use, for the same reason: a receiver can only ever be registered
+if something first constructs a live instance of it). The lifecycle-method
+table itself isn't duplicated — it reuses
+`AndroidEntryPointConstants.getLifecycleMethods(BROADCAST_RECEIVER)`, the
+same table step 5 already uses for manifest-declared receivers.
+
+A manifest-declared `<receiver>` also extends `BroadcastReceiver`, so this
+scan harmlessly rediscovers it whenever it's instantiated in reachable
+code too — `AndroidApkAnalysis`'s combined entry-point set is already
+deduplicated (a `LinkedHashSet`), so this doesn't produce duplicate work.
+The two sources stay conceptually distinct: a manifest receiver's
+constructor is added as an entry point unconditionally by step 5 (the OS
+instantiates it reflectively — no in-app construction site to find), while
+this creator is the *only* source for a receiver with no manifest
+declaration at all.
+
+Wired into `AndroidApkAnalysis.collectEntryPoints`'s phase 2 alongside
+steps 3/8, using the same phase-1 instantiated-type baseline.
+
+Validated by `AndroidDynamicReceiverEntryPointCreatorTest` (existing sample
+APKs: `Crypto.apk` has no `BroadcastReceiver` subclass at all, a
+deduplication check against `FlowSensitivity1.apk`) and a new
+`sootup.apk.frontend.fixture.DynamicReceiverFixtureTest` — like step 8's
+`AsyncTaskFixtureTest`, no checked-in sample APK happens to bundle a
+library with an unregistered receiver subclass, so this needed a real
+hand-built, compiled fixture: an `Activity` that constructs a receiver
+subclass in `onCreate` (standing in for the real `registerReceiver(...)`
+call site, which — matching this creator's design — is never itself
+traced) with no manifest `<receiver>` declaration anywhere, proving its
+`onReceive` (and a helper it calls) is unreachable from lifecycle entry
+points alone and reachable once this creator's entry points are added.
+
+Known limitation carried forward, same shape as steps 3/8: this remains a
+blanket "does this class extend the right thing" scan, not a trace of the
+specific `registerReceiver` call site — so, like an unregistered listener
+class, a `BroadcastReceiver` subclass that is constructed but genuinely
+never registered anywhere is still (soundly, over-approximately) treated
+as reachable once instantiated. `IntentFilter`-based *targeting* of a
+dynamically registered receiver (matching an implicit `Intent`'s action
+against the filter passed to `registerReceiver`, the runtime dynamic-
+receiver analogue of step 7's manifest `<intent-filter>` matching) is not
+attempted — out of scope here, unchanged from step 7's own known
+limitations.

@@ -33,6 +33,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.entrypoint.AndroidAsyncEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidCallbackEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidDummyMainFactory;
+import sootup.apk.frontend.entrypoint.AndroidDynamicReceiverEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidLayoutEntryPointCreator;
 import sootup.apk.frontend.entrypoint.InstantiatedTypeCollector;
@@ -70,8 +71,9 @@ import sootup.java.core.views.MutableJavaView;
  *       (the reliable app/platform boundary the rest of this module's entry-point resolution
  *       depends on — see {@link ApkAnalysisInputLocation#getApplicationClassNames()}).
  *   <li>Combine every entry-point source: manifest lifecycle callbacks (step 5), listener/callback
- *       interface implementations (step 3), {@code android:onClick} targets (step 4), and
- *       async/threading constructs (step 8).
+ *       interface implementations (step 3), {@code android:onClick} targets (step 4),
+ *       async/threading constructs (step 8), and dynamically-registered {@code BroadcastReceiver}s
+ *       ({@link AndroidDynamicReceiverEntryPointCreator}, the step 7 ICC-limitations follow-up).
  *   <li>Run a caller-chosen {@link CallGraphAlgorithm} (CHA or RTA) over that combined list, then
  *       layer step 7's ICC edges on top of the resulting graph.
  * </ol>
@@ -161,10 +163,12 @@ public final class AndroidApkAnalysis {
    *       component class, not a class discovered by scanning for interfaces. Expand these with CHA
    *       plus ICC edges (step 7) to get a reachable-code baseline.
    *   <li><b>Phase 2 — filtered discovery.</b> Scan that baseline for instantiated types ({@link
-   *       InstantiatedTypeCollector}), then run steps 3/8's candidate scan restricted to classes in
-   *       that set — a listener/task class can only ever run if something constructs and hands off
-   *       a live instance of it, so "never `new`'d in reachable code" is a sound, not just
-   *       plausible, precondition for "can never actually fire".
+   *       InstantiatedTypeCollector}), then run steps 3/8's candidate scan (plus {@link
+   *       AndroidDynamicReceiverEntryPointCreator}'s same-shaped scan for non-manifest {@code
+   *       BroadcastReceiver} subclasses) restricted to classes in that set — a listener/task/receiver
+   *       class can only ever run if something constructs and hands off a live instance of it, so
+   *       "never `new`'d in reachable code" is a sound, not just plausible, precondition for "can
+   *       never actually fire".
    * </ul>
    *
    * <p>Deliberately not a fixed point: a class instantiated only inside another class that phase 2
@@ -199,6 +203,9 @@ public final class AndroidApkAnalysis {
             view, applicationClassNames, instantiatedClassNames));
     combined.addAll(
         AndroidAsyncEntryPointCreator.getAsyncEntryPoints(
+            view, applicationClassNames, instantiatedClassNames));
+    combined.addAll(
+        AndroidDynamicReceiverEntryPointCreator.getDynamicReceiverEntryPoints(
             view, applicationClassNames, instantiatedClassNames));
 
     return new ArrayList<>(combined);
@@ -271,11 +278,12 @@ public final class AndroidApkAnalysis {
   }
 
   /**
-   * Like {@link #buildCallGraph(CallGraphAlgorithm)}, but rooted at {@link #getDummyMainSignature()}
-   * alone instead of the flat {@link #getEntryPoints()} list. Structurally equivalent (every entry
-   * point is one call away from the dummy main, which itself calls each exactly once) — use this
-   * only when a caller specifically needs the single-root shape, e.g. to hand {@link
-   * #getDummyMainSignature()}'s method to an analysis built around that convention.
+   * Like {@link #buildCallGraph(CallGraphAlgorithm)}, but rooted at {@link
+   * #getDummyMainSignature()} alone instead of the flat {@link #getEntryPoints()} list.
+   * Structurally equivalent (every entry point is one call away from the dummy main, which itself
+   * calls each exactly once) — use this only when a caller specifically needs the single-root
+   * shape, e.g. to hand {@link #getDummyMainSignature()}'s method to an analysis built around that
+   * convention.
    */
   @NonNull
   public CallGraph buildCallGraphFromDummyMain(@NonNull CallGraphAlgorithm algorithm) {
@@ -294,7 +302,10 @@ public final class AndroidApkAnalysis {
     return mutableCallGraph;
   }
 
-  /** Convenience for {@code buildCallGraphFromDummyMain(new ClassHierarchyAnalysisAlgorithm(getView()))}. */
+  /**
+   * Convenience for {@code buildCallGraphFromDummyMain(new
+   * ClassHierarchyAnalysisAlgorithm(getView()))}.
+   */
   @NonNull
   public CallGraph buildCallGraphFromDummyMainWithCHA() {
     return buildCallGraphFromDummyMain(new ClassHierarchyAnalysisAlgorithm(view));
@@ -333,7 +344,8 @@ public final class AndroidApkAnalysis {
    */
   @NonNull
   public CallGraph buildCallGraphFromDummyMainWithRTA() {
-    return buildCallGraphFromDummyMain(new RapidTypeAnalysisAlgorithm(view, applicationClassTypes()));
+    return buildCallGraphFromDummyMain(
+        new RapidTypeAnalysisAlgorithm(view, applicationClassTypes()));
   }
 
   @NonNull
