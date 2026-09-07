@@ -26,7 +26,6 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType.BooleanType;
 import sootup.core.types.PrimitiveType.IntType;
@@ -123,7 +122,7 @@ public class MutatingSootClassTest {
                     "main",
                     Collections.singletonList(
                         new ArrayType(
-                            new JavaClassType("String", new PackageName("java.lang")), 1)),
+                            identifierFactory.getClassType("String", "java.lang"), 1)),
                     VoidType.getInstance()))
             .orElse(null);
     assertNotNull(methodNew);
@@ -145,7 +144,7 @@ public class MutatingSootClassTest {
                     "main",
                     Collections.singletonList(
                         new ArrayType(
-                            new JavaClassType("String", new PackageName("java.lang")), 1)),
+                            identifierFactory.getClassType("String", "java.lang"), 1)),
                     VoidType.getInstance()))
             .orElse(null);
     assertNotNull(oldMethod);

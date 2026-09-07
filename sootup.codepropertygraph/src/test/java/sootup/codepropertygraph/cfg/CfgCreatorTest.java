@@ -18,9 +18,8 @@ import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.PrimitiveType;
-import sootup.java.core.types.JavaClassType;
+import sootup.java.core.JavaIdentifierFactory;
 
 public class CfgCreatorTest extends GraphTestSuiteBase {
   @Test
@@ -171,7 +170,7 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
     controlFlowGraph.setStartingStmt(throwStmt);
     controlFlowGraph.addExceptionalEdge(
         throwStmt,
-        new JavaClassType("CustomException", new PackageName("cfg.exceptions")),
+        JavaIdentifierFactory.getInstance().getClassType("CustomException", "cfg.exceptions"),
         returnStmt);
 
     return createSootMethod(controlFlowGraph, "exceptionalEdgesMethod");

@@ -24,6 +24,7 @@ package sootup.java.core;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -55,7 +56,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   @NonNull
   public static final MethodSubSignature STATIC_INITIALIZER =
-      new MethodSubSignature("<clinit>", Collections.emptyList(), VoidType.getInstance());
+      INSTANCE.getMethodSubSignature("<clinit>", VoidType.getInstance(), Collections.emptyList());
 
   @NonNull
   private static final Pattern SOOT_FIELD_SUB_SIGNATURE_PATTERN =
@@ -73,6 +74,26 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   /** Caches class types */
   @NonNull
   protected final Cache<String, JavaClassType> classTypeCache =
+      CacheBuilder.newBuilder().weakValues().build();
+
+  /** Caches method sub-signatures. */
+  @NonNull
+  protected final Cache<String, MethodSubSignature> methodSubSignatureCache =
+      CacheBuilder.newBuilder().weakValues().build();
+
+  /** Caches field sub-signatures. */
+  @NonNull
+  protected final Cache<String, FieldSubSignature> fieldSubSignatureCache =
+      CacheBuilder.newBuilder().weakValues().build();
+
+  /** Caches method signatures. */
+  @NonNull
+  protected final Cache<String, MethodSignature> methodSignatureCache =
+      CacheBuilder.newBuilder().weakValues().build();
+
+  /** Caches field signatures. */
+  @NonNull
+  protected final Cache<String, FieldSignature> fieldSignatureCache =
       CacheBuilder.newBuilder().weakValues().build();
 
   @NonNull
@@ -106,8 +127,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   /**
-   * Always creates a new ClassSignature. In opposite to PackageSignatures, ClassSignatures are not
-   * cached because the are unique per class, and thus reusing them does not make sense.
+   * Returns a unique ClassType. The method looks up a cache if it already contains a ClassType with
+   * the given name/package. If the cache lookup fails a new ClassType is created. This lets callers
+   * compare ClassTypes with {@code ==}.
    *
    * @param className the simple class name
    * @param packageName the Java package name; must not be null use empty string for the default
@@ -259,7 +281,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       Type parameterSignature = getType(fqParameterName);
       parameterSignatures.add(parameterSignature);
     }
-    return new MethodSignature(declaringClass, methodName, parameterSignatures, returnType);
+    return getMethodSignature(
+        declaringClass, getMethodSubSignature(methodName, returnType, parameterSignatures));
   }
 
   /**
@@ -283,8 +306,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       Type parameterSignature = getType(fqParameterName);
       parameterSignatures.add(parameterSignature);
     }
-    return new MethodSignature(
-        declaringClassSignature, methodName, parameterSignatures, returnType);
+    return getMethodSignature(
+        declaringClassSignature,
+        getMethodSubSignature(methodName, returnType, parameterSignatures));
   }
 
   @Override
@@ -293,15 +317,22 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       final String methodName,
       final Type fqReturnType,
       final List<Type> parameters) {
-
-    return new MethodSignature(declaringClassSignature, methodName, parameters, fqReturnType);
+    return getMethodSignature(
+        declaringClassSignature, getMethodSubSignature(methodName, fqReturnType, parameters));
   }
 
+  /**
+   * Always returns the same, hash-consed MethodSignature for equal (declaringClass, subSignature)
+   * pairs, so callers may compare MethodSignatures with {@code ==}.
+   */
   @Override
   @NonNull
   public MethodSignature getMethodSignature(
       @NonNull ClassType declaringClassSignature, @NonNull MethodSubSignature subSignature) {
-    return new MethodSignature(declaringClassSignature, subSignature);
+    String key = declaringClassSignature + " " + subSignature;
+    return methodSignatureCache
+        .asMap()
+        .computeIfAbsent(key, k -> new MethodSignature(declaringClassSignature, subSignature));
   }
 
   private static final class MethodSignatureParserPatternHolder {
@@ -405,7 +436,11 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       @NonNull String name,
       @NonNull Type returnType,
       @NonNull Iterable<? extends Type> parameterSignatures) {
-    return new MethodSubSignature(name, parameterSignatures, returnType);
+    List<Type> parameters = ImmutableList.copyOf(parameterSignatures);
+    String key = returnType + " " + name + "(" + parameters + ")";
+    return methodSubSignatureCache
+        .asMap()
+        .computeIfAbsent(key, k -> new MethodSubSignature(name, parameters, returnType));
   }
 
   @NonNull
@@ -562,26 +597,36 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   public FieldSignature getFieldSignature(
       final String fieldName, final ClassType declaringClassSignature, final String fieldType) {
     Type type = getType(fieldType);
-    return new FieldSignature(declaringClassSignature, fieldName, type);
+    return getFieldSignature(declaringClassSignature, getFieldSubSignature(fieldName, type));
   }
 
   @Override
   public FieldSignature getFieldSignature(
       final String fieldName, final ClassType declaringClassSignature, final Type fieldType) {
-    return new FieldSignature(declaringClassSignature, fieldName, fieldType);
+    return getFieldSignature(declaringClassSignature, getFieldSubSignature(fieldName, fieldType));
   }
 
+  /**
+   * Always returns the same, hash-consed FieldSignature for equal (declaringClass, subSignature)
+   * pairs, so callers may compare FieldSignatures with {@code ==}.
+   */
   @Override
   @NonNull
   public FieldSignature getFieldSignature(
       @NonNull ClassType declaringClassSignature, @NonNull FieldSubSignature subSignature) {
-    return new FieldSignature(declaringClassSignature, subSignature);
+    String key = declaringClassSignature + " " + subSignature;
+    return fieldSignatureCache
+        .asMap()
+        .computeIfAbsent(key, k -> new FieldSignature(declaringClassSignature, subSignature));
   }
 
   @NonNull
   @Override
   public FieldSubSignature getFieldSubSignature(@NonNull String name, @NonNull Type type) {
-    return new FieldSubSignature(name, type);
+    String key = name + ":" + type;
+    return fieldSubSignatureCache
+        .asMap()
+        .computeIfAbsent(key, k -> new FieldSubSignature(name, type));
   }
 
   @NonNull

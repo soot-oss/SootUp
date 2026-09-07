@@ -18,7 +18,6 @@ import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.util.ImmutableUtils;
 import sootup.core.util.Utils;
 import sootup.interceptors.ConditionalBranchFolder;
@@ -119,7 +118,7 @@ public class ConditionalBranchFolderTest {
         Local base =
             new Local(
                 "someObjectThatHasSomethingToString",
-                new JavaClassType("StringBuilder", new PackageName("java.lang")));
+                factory.getClassType("StringBuilder", "java.lang"));
         strToB =
             JavaJimple.newAssignStmt(
                 b, Jimple.newVirtualInvokeExpr(base, methodSignature), noPositionInfo);

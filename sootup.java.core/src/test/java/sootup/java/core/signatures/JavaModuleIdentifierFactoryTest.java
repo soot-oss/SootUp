@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.JavaModuleIdentifierFactory;
+import sootup.java.core.types.ModuleJavaClassType;
 
 /*-
  * #%L
@@ -78,6 +79,27 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
 
     assertSame(packageSignature1.getName(), packageSignature2.getName());
     assertNotEquals(packageSignature1, packageSignature2);
+  }
+
+  @Test
+  public void getSameClassTypeSameModule() {
+    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
+    ModuleJavaClassType classType1 =
+        identifierFactory.getClassType("Strawberry", "fruit.red", "food.fruit");
+    ModuleJavaClassType classType2 =
+        identifierFactory.getClassType("Strawberry", "fruit.red", "food.fruit");
+    assertSame(classType1, classType2);
+  }
+
+  @Test
+  public void getDiffClassTypeDiffModule() {
+    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
+    ModuleJavaClassType classType1 =
+        identifierFactory.getClassType("Strawberry", "fruit.red", "food.fruit");
+    ModuleJavaClassType classType2 =
+        identifierFactory.getClassType("Strawberry", "fruit.red", "food.other");
+    assertNotSame(classType1, classType2);
+    assertNotEquals(classType1, classType2);
   }
 
   @Test

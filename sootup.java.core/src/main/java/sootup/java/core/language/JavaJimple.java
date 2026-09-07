@@ -70,7 +70,7 @@ public class JavaJimple extends Jimple {
   }
 
   public static EnumConstant newEnumConstant(String value, String type) {
-    return new EnumConstant(value, javaIdentifierFactory.getClassType(type));
+    return new EnumConstant(value, javaIdentifierFactory.getClassType(type), javaIdentifierFactory);
   }
 
   public static StringConstant newStringConstant(String value) {

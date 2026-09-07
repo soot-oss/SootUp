@@ -34,6 +34,7 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.signatures.FieldSignature;
+import sootup.java.core.JavaIdentifierFactory;
 
 public abstract class FieldInstruction extends DexLibAbstractInstruction {
 
@@ -50,10 +51,11 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
   private JFieldRef getSootFieldRef(FieldReference fieldReference, boolean isStatic) {
     String className = DexUtil.dottedClassName(fieldReference.getDefiningClass());
     FieldSignature fieldSignature =
-        new FieldSignature(
-            DexUtil.getClassTypeFromClassName(className),
-            fieldReference.getName(),
-            DexUtil.toSootType(fieldReference.getType(), 0));
+        JavaIdentifierFactory.getInstance()
+            .getFieldSignature(
+                fieldReference.getName(),
+                DexUtil.getClassTypeFromClassName(className),
+                DexUtil.toSootType(fieldReference.getType(), 0));
     if (isStatic) {
       return new JStaticFieldRef(fieldSignature);
     } else {

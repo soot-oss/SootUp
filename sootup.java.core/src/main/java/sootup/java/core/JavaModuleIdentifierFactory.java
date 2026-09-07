@@ -114,9 +114,9 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   }
 
   /**
-   * Always creates a new ClassSignature. In opposite to PackageSignatures and ModuleSignatures,
-   * ClassSignatures are not cached because the are unique per class, and thus reusing them does not
-   * make sense.
+   * Returns a unique ClassType. The method looks up a cache if it already contains a ClassType with
+   * the given name/package/module. If the cache lookup fails a new ClassType is created. This lets
+   * callers compare ClassTypes with {@code ==}.
    *
    * @param className the simple name of the class
    * @param packageName the declaring package
@@ -130,7 +130,11 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
       final @NonNull String packageName,
       final @NonNull String moduleName) {
     ModulePackageName packageIdentifier = getPackageName(packageName, moduleName);
-    return new ModuleJavaClassType(className, packageIdentifier);
+    String key = className + packageName + moduleName;
+    return (ModuleJavaClassType)
+        classTypeCache
+            .asMap()
+            .computeIfAbsent(key, k -> new ModuleJavaClassType(className, packageIdentifier));
   }
 
   public ModuleJavaClassType getClassType(
@@ -138,7 +142,11 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
       final @NonNull String packageName,
       final @NonNull ModuleSignature moduleSignature) {
     ModulePackageName packageIdentifier = getPackageName(packageName, moduleSignature);
-    return new ModuleJavaClassType(className, packageIdentifier);
+    String key = className + packageName + moduleSignature.getModuleName();
+    return (ModuleJavaClassType)
+        classTypeCache
+            .asMap()
+            .computeIfAbsent(key, k -> new ModuleJavaClassType(className, packageIdentifier));
   }
 
   /**

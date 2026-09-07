@@ -30,7 +30,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.java.core.JavaIdentifierFactory;
@@ -208,6 +210,59 @@ public class JavaIdentifierFactoryTest {
   }
 
   @Test
+  public void getSameMethodSignature() {
+    List<String> parameters = Collections.singletonList("java.lang.Class");
+    MethodSignature methodSignature1 =
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "java.lang.A", parameters);
+    MethodSignature methodSignature2 =
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "java.lang.A", parameters);
+    assertSame(methodSignature1, methodSignature2);
+  }
+
+  @Test
+  public void getSameMethodSignatureViaSubSignature() {
+    ClassType declClass = identifierFactory.getClassType("java.lang.System");
+    MethodSubSignature subSignature =
+        identifierFactory.getMethodSubSignature(
+            "foo", VoidType.getInstance(), Collections.emptyList());
+    MethodSignature methodSignature1 =
+        identifierFactory.getMethodSignature(declClass, subSignature);
+    MethodSignature methodSignature2 =
+        identifierFactory.getMethodSignature(declClass, subSignature);
+    assertSame(methodSignature1, methodSignature2);
+  }
+
+  @Test
+  public void getSameFieldSignature() {
+    ClassType classSignature = identifierFactory.getClassType("java.lang.System");
+    FieldSignature fieldSignature1 =
+        identifierFactory.getFieldSignature("foo", classSignature, "int");
+    FieldSignature fieldSignature2 =
+        identifierFactory.getFieldSignature("foo", classSignature, "int");
+    assertSame(fieldSignature1, fieldSignature2);
+  }
+
+  @Test
+  public void getSameMethodSubSignature() {
+    MethodSubSignature subSignature1 =
+        identifierFactory.getMethodSubSignature(
+            "foo", VoidType.getInstance(), Collections.singletonList(PrimitiveType.getInt()));
+    MethodSubSignature subSignature2 =
+        identifierFactory.getMethodSubSignature(
+            "foo", VoidType.getInstance(), Collections.singletonList(PrimitiveType.getInt()));
+    assertSame(subSignature1, subSignature2);
+  }
+
+  @Test
+  public void getSameFieldSubSignature() {
+    FieldSubSignature subSignature1 =
+        identifierFactory.getFieldSubSignature("foo", PrimitiveType.getInt());
+    FieldSubSignature subSignature2 =
+        identifierFactory.getFieldSubSignature("foo", PrimitiveType.getInt());
+    assertSame(subSignature1, subSignature2);
+  }
+
+  @Test
   public void compMethodSignature2() {
     List<String> parameters = new ArrayList<>();
 
@@ -230,7 +285,8 @@ public class JavaIdentifierFactoryTest {
     MethodSignature methodSignature2 =
         identifierFactory.getMethodSignature("java.lang.System", "foo", "void", parameters);
 
-    assertEquals(methodSignature, methodSignature2);
+    // now hash-consed: equal MethodSignatures are the same instance
+    assertSame(methodSignature, methodSignature2);
     assertEquals(methodSignature.hashCode(), methodSignature2.hashCode());
   }
 

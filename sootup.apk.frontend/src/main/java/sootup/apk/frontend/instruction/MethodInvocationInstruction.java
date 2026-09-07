@@ -41,8 +41,8 @@ import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.Type;
+import sootup.java.core.JavaIdentifierFactory;
 
 public abstract class MethodInvocationInstruction extends DexLibAbstractInstruction
     implements DanglingInstruction {
@@ -76,12 +76,12 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     invocation =
         Jimple.newSpecialInvokeExpr(
             parameters.get(0),
-            new MethodSignature(
-                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
-                new MethodSubSignature(
+            JavaIdentifierFactory.getInstance()
+                .getMethodSignature(
+                    DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
                     item.getName(),
-                    convertParameterTypes(item.getParameterTypes()),
-                    DexUtil.toSootType(item.getReturnType(), 0))),
+                    DexUtil.toSootType(item.getReturnType(), 0),
+                    convertParameterTypes(item.getParameterTypes())),
             buildArgs(parameters.subList(1, parameters.size())));
     body.setDanglingInstruction(this);
   }
@@ -90,11 +90,12 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     MethodReference item = (MethodReference) ((ReferenceInstruction) instruction).getReference();
     List<Local> parameters = buildParameters(body, item.getParameterTypes(), true);
     MethodSignature methodSignature =
-        new MethodSignature(
-            DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
-            item.getName(),
-            convertParameterTypes(item.getParameterTypes()),
-            DexUtil.toSootType(item.getReturnType(), 0));
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature(
+                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
+                item.getName(),
+                DexUtil.toSootType(item.getReturnType(), 0),
+                convertParameterTypes(item.getParameterTypes()));
     invocation = Jimple.newStaticInvokeExpr(methodSignature, buildArgs(parameters));
     body.setDanglingInstruction(this);
   }
@@ -108,11 +109,12 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     //            return;
     //        }
     MethodSignature methodSignature =
-        new MethodSignature(
-            DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
-            item.getName(),
-            convertParameterTypes(item.getParameterTypes()),
-            DexUtil.toSootType(item.getReturnType(), 0));
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature(
+                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
+                item.getName(),
+                DexUtil.toSootType(item.getReturnType(), 0),
+                convertParameterTypes(item.getParameterTypes()));
     invocation =
         Jimple.newVirtualInvokeExpr(
             parameters.get(0),
@@ -130,11 +132,12 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     //            return;
     //        }
     MethodSignature methodSignature =
-        new MethodSignature(
-            DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
-            item.getName(),
-            convertParameterTypes(item.getParameterTypes()),
-            DexUtil.toSootType(item.getReturnType(), 0));
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature(
+                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
+                item.getName(),
+                DexUtil.toSootType(item.getReturnType(), 0),
+                convertParameterTypes(item.getParameterTypes()));
     invocation =
         Jimple.newInterfaceInvokeExpr(
             parameters.get(0),
