@@ -1382,7 +1382,7 @@ For this purpose Jimple was designed as a representation of JVM bytecode which i
     <span class="nv">r0</span> := <span class="k">@parameter0</span>: <span class="nc">java.lang.String</span>[];
     <span class="nv">r1</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
     <span class="k">virtualinvoke</span> <span class="nv">r1</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-    <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Hello world!&quot;</span>);
+    <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">"Hello world!"</span>);
     <span class="k">return</span>;
   }
 }
@@ -1406,7 +1406,7 @@ For this purpose Jimple was designed as a representation of JVM bytecode which i
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">var0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Hello World!&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"Hello World!"</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="p">}</span>
@@ -1472,7 +1472,7 @@ public static main([Ljava/lang/String;)V
   L0
     LINENUMBER 9 L0
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC &quot;Hello World!&quot;
+    LDC "Hello World!"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
   L1
     LINENUMBER 10 L1
@@ -1573,14 +1573,14 @@ Sidenote: Locals, do not have a signature, since they are referenced within meth
     <span class="nv">$stack3</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
 
     <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;pi : 3.14&quot;</span>);
+      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">"pi : 3.14"</span>);
     <span class="nv">$stack5</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
     <span class="nv">$stack4</span> = <span class="k">new</span> <span class="nc">java.lang.StringBuilder</span>;
 
     <span class="k">specialinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
     <span class="nv">$stack6</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
       <span class="nc">java.lang.StringBuilder</span> <span class="nf">append</span>(<span class="nc">java.lang.String</span>)&gt;
-        (<span class="nv">&quot;pi : &quot;</span>);
+        (<span class="nv">"pi : "</span>);
     <span class="nv">$stack7</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack6</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
       <span class="nc">java.lang.StringBuilder</span> <span class="nf">append</span>(<span class="nc">double</span>)&gt;(<span class="nv">3.1415</span>);
     <span class="nv">$stack8</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack7</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
@@ -1592,7 +1592,7 @@ Sidenote: Locals, do not have a signature, since they are referenced within meth
   }
 }
 /*
-  For JInstanceFieldRef &quot;this.&lt;target.exercise1.DemoClass: double pi&gt;&quot; 
+  For JInstanceFieldRef "this.&lt;target.exercise1.DemoClass: double pi&gt;" 
     signature is &lt;target.exercise1.DemoClass: double pi&gt;
   Similarly, we have other signatures like 
     &lt;java.lang.Object: void &lt;init&gt;()&gt;, 
@@ -1619,8 +1619,8 @@ Sidenote: Locals, do not have a signature, since they are referenced within meth
 
 <span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">demoMethod</span><span class="p">(){</span>
 <span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">localPi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.1415</span><span class="p">;</span>
-<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;pi : &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">pi</span><span class="p">);</span>
-<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;pi : &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">localPi</span><span class="p">);</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"pi : "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">pi</span><span class="p">);</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"pi : "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">localPi</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -1719,7 +1719,7 @@ public demoMethod()V
   L1
     LINENUMBER 7 L1
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC &quot;pi : 3.14&quot;
+    LDC "pi : 3.14"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
   L2
     LINENUMBER 8 L2
@@ -1727,7 +1727,7 @@ public demoMethod()V
     NEW java/lang/StringBuilder
     DUP
     INVOKESPECIAL java/lang/StringBuilder.&lt;init&gt; ()V
-    LDC &quot;pi : &quot;
+    LDC "pi : "
       INVOKEVIRTUAL java/lang/StringBuilder.append (Ljava/lang/String;)
         Ljava/lang/StringBuilder;
     DLOAD 1
@@ -1853,7 +1853,7 @@ It is referenced by its FieldSignature like <code>&lt;java.lang.String: int hash
   }
 }
 /*
-  &quot;this.&lt;target.exercise1.DemoClass: double pi&gt;&quot; is JInstanceFieldRef
+  "this.&lt;target.exercise1.DemoClass: double pi&gt;" is JInstanceFieldRef
 */
 </code></pre></div></td></tr></table></div>
 </div>
@@ -1981,13 +1981,13 @@ It is referenced by its MethodSignature like <code>&lt;java.lang.Object: java.la
     <span class="nv">$stack1</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
 
     <span class="k">virtualinvoke</span> <span class="nv">$stack1</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-    <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Inside method.&quot;</span>);
+    <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">"Inside method."</span>);
     <span class="k">return</span>;
   }
 }
 /*
-  &quot;&lt;target.exercise1.DemoClass: void demoMethod()&gt;&quot; 
-        and &quot;&lt;target.exercise1.DemoClass: void &lt;init&gt;()&gt;&quot; 
+  "&lt;target.exercise1.DemoClass: void demoMethod()&gt;" 
+        and "&lt;target.exercise1.DemoClass: void &lt;init&gt;()&gt;" 
         are instances of SootMethod 
 */
 </code></pre></div></td></tr></table></div>
@@ -2009,7 +2009,7 @@ It is referenced by its MethodSignature like <code>&lt;java.lang.Object: java.la
 <span class="w">    </span><span class="n">demoMethod</span><span class="p">();</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">demoMethod</span><span class="p">(){</span>
-<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Inside method.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"Inside method."</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -2082,7 +2082,7 @@ public demoMethod()V
   L0
     LINENUMBER 10 L0
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC &quot;Inside method.&quot;
+    LDC "Inside method."
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
   L1
     LINENUMBER 11 L1

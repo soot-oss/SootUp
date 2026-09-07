@@ -10,8 +10,8 @@ qilin.core.natives
 qilin.core.pag
 qilin.core.reflection
 qilin.core.solver
-qilin.parm.ctxcons
-qilin.parm.heapabst
+qilin.parm.contextconstruction
+qilin.parm.heapabstraction
 qilin.parm.select
 qilin.pta.toolkits.bean
 qilin.pta.toolkits.common

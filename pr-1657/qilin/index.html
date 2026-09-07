@@ -1356,7 +1356,7 @@
 </code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">compile</span><span class="w"> </span><span class="s2">&quot;org.soot-oss:sootup.qilin:2.0.0&quot;</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">compile</span><span class="w"> </span><span class="s2">"org.soot-oss:sootup.qilin:2.0.0"</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
@@ -1374,7 +1374,7 @@ since nothing is cached on <code>View</code> or held in JVM-global state:</p>
 <span class="normal">3</span>
 <span class="normal">4</span>
 <span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">entrypoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;dacapo.antlr.Main&quot;</span><span class="p">);</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">entrypoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"dacapo.antlr.Main"</span><span class="p">);</span>
 <span class="n">PointerAnalysisConfig</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">contextSensitivity</span><span class="p">(</span><span class="n">ContextSensitivity</span><span class="p">.</span><span class="na">objectSensitive</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="c1">// 2-object-sensitive, 1-level heap ctx</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
@@ -1415,11 +1415,12 @@ turned into constraints:</p>
 <span class="n">PointsToSet</span><span class="w"> </span><span class="n">pts1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">reachingObjects</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span><span class="w"> </span><span class="c1">// PTS(v1.f)</span>
 </code></pre></div></td></tr></table></div>
 <p>Third, we can check whether two variables, <code>a</code> and <code>b</code>, are aliases by checking
-whether there is an object that exists in both of their points-to sets.</p>
-<p>Qilin does not currently offer a <code>isMayAlias</code> API within the PTA class.
-However, a similar functionality can be found in <code>qilin.test.util.AliasAssertion</code> with the method:
-<code>boolean isMayAlias(PTA pta, Value va, Value vb)</code>
-This method allows to check for potential aliasing between two values given a PTA instance.</p>
+whether there is an object that exists in both of their points-to sets:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kt">boolean</span><span class="w"> </span><span class="n">mayAlias</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">isMayAlias</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<p><code>isMayAlias</code> also special-cases <code>null</code>/String/class constants (e.g. two <code>null</code> constants always
+may-alias, a <code>null</code> never may-aliases a non-null value). It accepts <code>Local</code> references plus those
+constants; passing any other <code>Value</code> kind throws <code>IllegalArgumentException</code>.</p>
 <h3 id="a-full-list-of-pointer-analyses">A Full list of Pointer Analyses</h3>
 <p><a href="https://github.com/QilinPTA/Qilin">Qilin</a>'s toolbox includes a rich set of pointer analyses, which are given below:</p>
 <p>Note that <strong>k</strong> used below is a concrete small constant like 1 or 2, and <code>hk</code> the heap-context
@@ -1543,7 +1544,7 @@ context-sensitivity variants, through the same <code>PointerAnalysisFactory</cod
 <span class="normal">4</span>
 <span class="normal">5</span>
 <span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;dacapo.antlr.Main&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// just an example</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"dacapo.antlr.Main"</span><span class="p">);</span><span class="w"> </span><span class="c1">// just an example</span>
 <span class="n">PointerAnalysisConfig</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PointerAnalysisConfig</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">contextSensitivity</span><span class="p">(</span><span class="n">ContextSensitivity</span><span class="p">.</span><span class="na">zipperObjectSensitive</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="c1">// ZIPPER-guided 2OBJ, e.g.</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>

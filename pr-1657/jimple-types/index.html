@@ -1470,7 +1470,7 @@
 <span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">display</span><span class="p">(){</span>
 <span class="w">    </span><span class="kt">boolean</span><span class="w"> </span><span class="n">varBoolean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">byte</span><span class="w"> </span><span class="n">varByte</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">127</span><span class="p">;</span>
-<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">varChar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">varChar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">'a'</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">short</span><span class="w"> </span><span class="n">varShort</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1123</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">varInt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">123456</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">varLong</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10L</span><span class="p">;</span>
@@ -1866,7 +1866,7 @@ public display()V
       <span class="nv">soot0</span> = <span class="k">new</span> <span class="nc">java.lang.NullPointerException</span>;
       <span class="k">specialinvoke</span> <span class="nv">soot0</span>.&lt;<span class="nv">java.lang.NullPointerException</span>: 
         <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>(<span class="nc">java.lang.String</span>)&gt;
-          (<span class="nv">&quot;This statement would have triggered an Exception: a[i#1] = r0&quot;</span>);
+          (<span class="nv">"This statement would have triggered an Exception: a[i#1] = r0"</span>);
       <span class="k">throw</span> <span class="nv">soot0</span>;
 
   label2:
@@ -2172,7 +2172,7 @@ public compute(Z)V
   <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
   <span class="nv">$stack1</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
   <span class="k">virtualinvoke</span> <span class="nv">$stack1</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;In voidMethod().&quot;</span>);
+      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">"In voidMethod()."</span>);
   <span class="k">return</span>;
   }
 }
@@ -2193,7 +2193,7 @@ public compute(Z)V
 
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">voidMethod</span><span class="p">(){</span>
-<span class="w">  </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;In voidMethod().&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"In voidMethod()."</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -2254,7 +2254,7 @@ public voidMethod()V
   L0
     LINENUMBER 5 L0
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC &quot;In voidMethod().&quot;
+    LDC "In voidMethod()."
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
   L1
     LINENUMBER 6 L1

@@ -1371,7 +1371,7 @@ In serialized(!) Jimple Labels are used to denote from,to and handler Stmts.</p>
       <span class="nv">$stack6</span> := <span class="k">@caughtexception</span>;
       <span class="nv">$stack7</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
       <span class="k">virtualinvoke</span> <span class="nv">$stack7</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Exception caught&quot;</span>);
+        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">"Exception caught"</span>);
 
    label4:
       <span class="k">return</span>;
@@ -1407,7 +1407,7 @@ In serialized(!) Jimple Labels are used to denote from,to and handler Stmts.</p>
 <span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">){</span>
-<span class="w">      </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Exception caught&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"Exception caught"</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -1503,7 +1503,7 @@ public divideExample(II)V
   L4
     LINENUMBER 8 L4
     GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC &quot;Exception caught&quot;
+    LDC "Exception caught"
     INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
   L3
     LINENUMBER 10 L3
