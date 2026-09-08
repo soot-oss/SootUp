@@ -84,14 +84,14 @@ public class ConditionalBranchFolderTest {
    * @return the generated {@link Body}
    */
   private static Body.BodyBuilder createBodyBuilder(int constantCondition) {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType stringType = factory.getClassType("java.lang.String");
     Local a = JavaJimple.newLocal("a", stringType);
     Local b = JavaJimple.newLocal("b", stringType);
 
-    StringConstant stringConstant = JavaJimple.newStringConstant("str");
+    StringConstant stringConstant = JavaJimple.newStringConstant("str", factory);
     FallsThroughStmt strToA = JavaJimple.newAssignStmt(a, stringConstant, noPositionInfo);
 
     FallsThroughStmt strToB;
@@ -99,20 +99,20 @@ public class ConditionalBranchFolderTest {
     JEqExpr jEqExpr;
     switch (constantCondition) {
       case 0:
-        anotherStringConstant = JavaJimple.newStringConstant("str");
+        anotherStringConstant = JavaJimple.newStringConstant("str", factory);
         strToB = JavaJimple.newAssignStmt(b, anotherStringConstant, noPositionInfo);
         jEqExpr = new JEqExpr(stringConstant, anotherStringConstant);
 
         break;
       case 1:
-        anotherStringConstant = JavaJimple.newStringConstant("different string");
+        anotherStringConstant = JavaJimple.newStringConstant("different string", factory);
         strToB = JavaJimple.newAssignStmt(b, anotherStringConstant, noPositionInfo);
         jEqExpr = new JEqExpr(stringConstant, anotherStringConstant);
 
         break;
       case 2:
         final MethodSignature methodSignature =
-            JavaIdentifierFactory.getInstance()
+            new JavaIdentifierFactory()
                 .getMethodSignature(
                     "java.lang.Object", "toString", "String", Collections.emptyList());
         Local base =
@@ -143,7 +143,7 @@ public class ConditionalBranchFolderTest {
     controlFlowGraph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, retb);
     controlFlowGraph.setStartingStmt(strToA);
     bodyBuilder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
+        new JavaIdentifierFactory()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     return bodyBuilder;
   }

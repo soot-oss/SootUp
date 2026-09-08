@@ -25,6 +25,7 @@ package sootup.apk.frontend.instruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import sootup.apk.frontend.Util.DexUtil;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.LValue;
@@ -34,7 +35,6 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.signatures.FieldSignature;
-import sootup.java.core.JavaIdentifierFactory;
 
 public abstract class FieldInstruction extends DexLibAbstractInstruction {
 
@@ -48,14 +48,14 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
     super(instruction, codeAddress);
   }
 
-  private JFieldRef getSootFieldRef(FieldReference fieldReference, boolean isStatic) {
+  private JFieldRef getSootFieldRef(
+      FieldReference fieldReference, boolean isStatic, IdentifierFactory identifierFactory) {
     String className = DexUtil.dottedClassName(fieldReference.getDefiningClass());
     FieldSignature fieldSignature =
-        JavaIdentifierFactory.getInstance()
-            .getFieldSignature(
-                fieldReference.getName(),
-                DexUtil.getClassTypeFromClassName(className),
-                DexUtil.toSootType(fieldReference.getType(), 0));
+        identifierFactory.getFieldSignature(
+            fieldReference.getName(),
+            DexUtil.getClassTypeFromClassName(className, identifierFactory),
+            DexUtil.toSootType(fieldReference.getType(), 0, identifierFactory));
     if (isStatic) {
       return new JStaticFieldRef(fieldSignature);
     } else {
@@ -72,8 +72,9 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
    * @param fref the dexlib FieldReference.
    * @return the JFieldRef for the given field Reference
    */
-  protected JFieldRef getStaticSootFieldRef(FieldReference fref) {
-    return getSootFieldRef(fref, true);
+  protected JFieldRef getStaticSootFieldRef(
+      FieldReference fref, IdentifierFactory identifierFactory) {
+    return getSootFieldRef(fref, true, identifierFactory);
   }
 
   /**
@@ -82,8 +83,8 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
    * @return the JFieldRef for the given field Reference
    * @param fref the dexlib FieldReference.
    */
-  protected JFieldRef getSootFieldRef(FieldReference fref) {
-    return getSootFieldRef(fref, false);
+  protected JFieldRef getSootFieldRef(FieldReference fref, IdentifierFactory identifierFactory) {
+    return getSootFieldRef(fref, false, identifierFactory);
   }
 
   /**

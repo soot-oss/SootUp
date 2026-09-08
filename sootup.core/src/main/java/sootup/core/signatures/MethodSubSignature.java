@@ -52,7 +52,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
    * @param parameterTypes The signatures of the method parameters.
    * @param type The return type signature.
    */
-  public MethodSubSignature(
+  MethodSubSignature(
       @NonNull String name, @NonNull Iterable<? extends Type> parameterTypes, @NonNull Type type) {
     super(name, type);
 

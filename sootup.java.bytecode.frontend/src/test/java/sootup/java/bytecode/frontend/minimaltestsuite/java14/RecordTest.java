@@ -68,14 +68,15 @@ public class RecordTest extends MinimalBytecodeTestSuiteBase {
 
     // test bootstrap args
     List<Immediate> bootTrapArgs = invoke.getBootstrapArgs();
-    assertTrue(bootTrapArgs.contains(JavaJimple.newClassConstant("LRecord;")));
-    assertTrue(bootTrapArgs.contains(JavaJimple.newStringConstant("a;b")));
+    assertTrue(bootTrapArgs.contains(JavaJimple.newClassConstant("LRecord;", identifierFactory)));
+    assertTrue(bootTrapArgs.contains(JavaJimple.newStringConstant("a;b", identifierFactory)));
     assertTrue(
         bootTrapArgs.contains(
             JavaJimple.newMethodHandle(
                 identifierFactory.getFieldSignature(
                     "a", identifierFactory.getClassType("Record"), PrimitiveType.getInt()),
-                1)));
+                1,
+                identifierFactory)));
     assertTrue(
         bootTrapArgs.contains(
             JavaJimple.newMethodHandle(
@@ -83,6 +84,7 @@ public class RecordTest extends MinimalBytecodeTestSuiteBase {
                     "b",
                     identifierFactory.getClassType("Record"),
                     identifierFactory.getClassType("String", "java.lang")),
-                1)));
+                1,
+                identifierFactory)));
   }
 }

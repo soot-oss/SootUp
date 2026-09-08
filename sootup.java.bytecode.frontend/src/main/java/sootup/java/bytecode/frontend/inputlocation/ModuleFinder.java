@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.interceptor.BodyInterceptor;
@@ -118,17 +119,18 @@ public class ModuleFinder {
   }
 
   @NonNull
-  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig) {
+  public Optional<JavaModuleInfo> getModuleInfo(
+      ModuleSignature sig, @NonNull IdentifierFactory identifierFactory) {
     if (hasMoreToResolve()) {
-      getAllModules();
+      getAllModules(identifierFactory);
     }
     return Optional.ofNullable(moduleInfoMap.get(sig));
   }
 
   @NonNull
-  public Set<ModuleSignature> getModules() {
+  public Set<ModuleSignature> getModules(@NonNull IdentifierFactory identifierFactory) {
     if (hasMoreToResolve()) {
-      getAllModules();
+      getAllModules(identifierFactory);
     }
     return Collections.unmodifiableSet(moduleInfoMap.keySet());
   }
@@ -140,7 +142,8 @@ public class ModuleFinder {
    * @return the input location that resolves classes contained in the module
    */
   @Nullable
-  public AnalysisInputLocation getModule(@NonNull ModuleSignature moduleName) {
+  public AnalysisInputLocation getModule(
+      @NonNull ModuleSignature moduleName, @NonNull IdentifierFactory identifierFactory) {
 
     // check if module is cached
     AnalysisInputLocation inputLocationForModule = moduleInputLocation.get(moduleName);
@@ -150,7 +153,7 @@ public class ModuleFinder {
 
     // search iterative on the remaining entries of the modulePath for the module
     while (hasMoreToResolve()) {
-      discoverModulesIn(modulePathEntries.get(next++));
+      discoverModulesIn(modulePathEntries.get(next++), identifierFactory);
       inputLocationForModule = moduleInputLocation.get(moduleName);
       if (inputLocationForModule != null) {
         return inputLocationForModule;
@@ -165,10 +168,10 @@ public class ModuleFinder {
    * @return the names of all modules found
    */
   @NonNull
-  public Collection<ModuleSignature> getAllModules() {
+  public Collection<ModuleSignature> getAllModules(@NonNull IdentifierFactory identifierFactory) {
 
     while (hasMoreToResolve()) {
-      discoverModulesIn(modulePathEntries.get(next++));
+      discoverModulesIn(modulePathEntries.get(next++), identifierFactory);
     }
     return Collections.unmodifiableCollection(moduleInputLocation.keySet());
   }
@@ -182,7 +185,7 @@ public class ModuleFinder {
    *
    * @param path the directory
    */
-  private void discoverModulesIn(@NonNull Path path) {
+  private void discoverModulesIn(@NonNull Path path, @NonNull IdentifierFactory identifierFactory) {
     BasicFileAttributes attrs;
     try {
       attrs = Files.readAttributes(path, BasicFileAttributes.class);
@@ -191,11 +194,11 @@ public class ModuleFinder {
     }
 
     if (PathUtils.isArchive(path)) {
-      buildModuleForJar(path);
+      buildModuleForJar(path, identifierFactory);
     } else if (attrs.isDirectory()) {
       Path mi = path.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
       if (Files.exists(mi)) {
-        buildModuleForExplodedModule(path);
+        buildModuleForExplodedModule(path, identifierFactory);
       }
 
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
@@ -209,10 +212,10 @@ public class ModuleFinder {
           if (attrs.isDirectory()) {
             mi = entry.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
             if (Files.exists(mi)) {
-              buildModuleForExplodedModule(entry);
+              buildModuleForExplodedModule(entry, identifierFactory);
             }
           } else if (PathUtils.isArchive(entry)) {
-            buildModuleForJar(entry);
+            buildModuleForJar(entry, identifierFactory);
           }
         }
       } catch (Exception e) {
@@ -221,7 +224,8 @@ public class ModuleFinder {
     }
   }
 
-  private void buildModuleForExplodedModule(@NonNull Path dir) throws ResolveException {
+  private void buildModuleForExplodedModule(
+      @NonNull Path dir, @NonNull IdentifierFactory identifierFactory) throws ResolveException {
     // create the input location for this module dir
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(dir, sourceType, bodyInterceptors);
@@ -231,7 +235,7 @@ public class ModuleFinder {
       return;
     }
 
-    JavaModuleInfo moduleInfo = new AsmModuleSource(moduleInfoFile);
+    JavaModuleInfo moduleInfo = new AsmModuleSource(moduleInfoFile, identifierFactory);
     JavaModuleInfo oldValue = moduleInfoMap.put(moduleInfo.getModuleSignature(), moduleInfo);
     moduleInputLocation.put(moduleInfo.getModuleSignature(), inputLocation);
     if (oldValue != null) {
@@ -245,7 +249,7 @@ public class ModuleFinder {
    *
    * @param jar the jar file
    */
-  private void buildModuleForJar(@NonNull Path jar) {
+  private void buildModuleForJar(@NonNull Path jar, @NonNull IdentifierFactory identifierFactory) {
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(jar, sourceType, bodyInterceptors);
     Path mi;
@@ -254,7 +258,7 @@ public class ModuleFinder {
       mi = archiveRoot.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
 
       if (Files.exists(mi)) {
-        JavaModuleInfo moduleInfo = new AsmModuleSource(mi);
+        JavaModuleInfo moduleInfo = new AsmModuleSource(mi, identifierFactory);
         moduleInfoMap.put(moduleInfo.getModuleSignature(), moduleInfo);
         moduleInputLocation.put(moduleInfo.getModuleSignature(), inputLocation);
       } else {

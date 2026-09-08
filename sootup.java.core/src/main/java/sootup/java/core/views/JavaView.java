@@ -72,10 +72,15 @@ public class JavaView extends AbstractView {
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull ClassCacheProvider cacheProvider,
       @NonNull LoadingStrategy loadingStrategy) {
-    this(inputLocations, cacheProvider, loadingStrategy, JavaIdentifierFactory.getInstance());
+    this(inputLocations, cacheProvider, loadingStrategy, new JavaIdentifierFactory());
   }
 
-  protected JavaView(
+  /**
+   * Creates a view that uses the given {@link JavaIdentifierFactory} instead of one of its own. The
+   * factory shares the lifetime of the views it is handed to, so passing the same instance to
+   * several views is the way to share it between them.
+   */
+  public JavaView(
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull ClassCacheProvider cacheProvider,
       @NonNull LoadingStrategy loadingStrategy,

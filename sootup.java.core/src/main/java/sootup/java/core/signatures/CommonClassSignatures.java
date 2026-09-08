@@ -23,7 +23,7 @@ package sootup.java.core.signatures;
  */
 
 import sootup.core.types.ClassType;
-import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.types.JavaClassType;
 
 /**
  * Features class signatures for commonly used standard classes from the JDK
@@ -32,6 +32,5 @@ import sootup.java.core.JavaIdentifierFactory;
  */
 public final class CommonClassSignatures {
 
-  public static final ClassType JavaLangObject =
-      JavaIdentifierFactory.getInstance().getClassType("Object", "java.lang");
+  public static final ClassType JavaLangObject = JavaClassType.of("java.lang.Object");
 }

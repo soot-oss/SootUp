@@ -34,12 +34,14 @@ import org.jf.dexlib2.immutable.debug.ImmutableLineNumber;
 import org.jf.dexlib2.immutable.debug.ImmutableRestartLocal;
 import org.jf.dexlib2.immutable.debug.ImmutableStartLocal;
 import org.jf.dexlib2.util.MethodUtil;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.dexpler.DexMethodSource;
 import sootup.apk.frontend.instruction.*;
+import sootup.core.IdentifierFactory;
 import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.Jimple;
@@ -55,7 +57,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
@@ -114,7 +115,7 @@ public class DexBody {
       this.endAddress = ea;
       this.register = reg;
       this.name = nam;
-      this.type = DexUtil.toSootType(ty, 0);
+      this.type = DexUtil.toSootType(ty, 0, identifierFactory);
       this.signature = sig;
     }
   }
@@ -129,7 +130,17 @@ public class DexBody {
 
   private final ArrayListMultimap<Integer, RegDbgEntry> localDebugs;
 
-  public DexBody(Method method, MultiDexContainer.DexEntry dexEntry, ClassType classType) {
+  @NonNull private final IdentifierFactory identifierFactory;
+
+  /** The {@link IdentifierFactory} of the view this body is converted for. */
+  @NonNull
+  public IdentifierFactory getIdentifierFactory() {
+    return identifierFactory;
+  }
+
+  public DexBody(
+      Method method, MultiDexContainer.DexEntry dexEntry, ClassType classType, @NonNull View view) {
+    this.identifierFactory = view.getIdentifierFactory();
     MethodImplementation code = method.getImplementation();
     if (code == null) {
       throw new RuntimeException("error: no code for method " + method.getName());
@@ -142,7 +153,7 @@ public class DexBody {
     parameterTypes = new ArrayList<Type>();
     for (MethodParameter param : method.getParameters()) {
       parameterNames.add(param.getName());
-      parameterTypes.add(DexUtil.toSootType(param.getType(), 0));
+      parameterTypes.add(DexUtil.toSootType(param.getType(), 0, identifierFactory));
     }
 
     takenLocalNames = new HashSet<>();
@@ -333,7 +344,7 @@ public class DexBody {
             .getMethodSignature(
                 classType,
                 method.getName(),
-                DexUtil.toSootType(method.getReturnType(), 0),
+                DexUtil.toSootType(method.getReturnType(), 0, identifierFactory),
                 parameterTypes);
     Map<BranchingStmt, List<Stmt>> branchingStmtListMap = convertMultimap(branchingMap);
     Set<Stmt> blockBegin = new HashSet<>();
@@ -712,11 +723,10 @@ public class DexBody {
           exceptionType = exceptionType + "$" + exceptionTypeList.size();
         }
         exceptionTypeList.add(exceptionType);
-        Type t = DexUtil.toSootType(exceptionType, 0);
+        Type t = DexUtil.toSootType(exceptionType, 0, identifierFactory);
         // exceptions can only be of ReferenceType
         if (t instanceof JavaClassType) {
-          JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-          JavaClassType type = identifierFactory.getClassType(((JavaClassType) t).getClassName());
+          ClassType type = identifierFactory.getClassType(((JavaClassType) t).getClassName());
           DexLibAbstractInstruction instruction =
               instructionAtAddress(handler.getHandlerCodeAddress());
           if (!(instruction instanceof MoveExceptionInstruction)) {
@@ -732,7 +742,7 @@ public class DexBody {
             Stmt caughtStmt =
                 Jimple.newIdentityStmt(
                     local,
-                    JavaJimple.newCaughtExceptionRef(),
+                    JavaJimple.newCaughtExceptionRef(identifierFactory),
                     StmtPositionInfo.getNoStmtPositionInfo());
             insertBefore(caughtStmt, instruction.getStmt());
             handlerStmt = caughtStmt;

@@ -29,7 +29,7 @@ import sootup.java.core.views.JavaView;
 
 public class TypeResolverTest extends TypeAssignerTestSuite {
 
-  JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
   String baseDir = "src/test/resources/TypeResolverTestSuite/";
   Type objectType = identifierFactory.getClassType("Object", "java.lang");
   Type stringType = identifierFactory.getClassType("String", "java.lang");

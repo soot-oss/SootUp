@@ -45,7 +45,7 @@ public abstract class GraphTestSuiteBase {
 
   protected SootMethod createSootMethod(
       MutableControlFlowGraph controlFlowGraph, String methodName) {
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("TestClass", "pkg"),

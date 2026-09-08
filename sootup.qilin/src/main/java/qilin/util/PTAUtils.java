@@ -60,14 +60,16 @@ import sootup.core.types.Type;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public final class PTAUtils {
   private static final Logger logger = LoggerFactory.getLogger(PTAUtils.class);
 
   public static ClassType getClassType(String fullyQualifiedClassName) {
-    return JavaIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
+    // Well-known JDK types used as constants throughout qilin; JavaClassType interns them, so this
+    // yields the same instances a view's IdentifierFactory would hand out.
+    return JavaClassType.of(fullyQualifiedClassName);
   }
 
   // TODO: use isStaticInitializer from the IdentifierFactory

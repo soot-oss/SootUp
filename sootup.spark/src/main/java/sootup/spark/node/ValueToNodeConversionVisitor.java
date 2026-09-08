@@ -29,6 +29,7 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.BooleanConstant;
@@ -76,7 +77,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.spark.Engine;
 import sootup.spark.SparkOptions;
 
@@ -93,22 +93,25 @@ import sootup.spark.SparkOptions;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
-  private static final MethodSignature GLOBAL_SCOPE =
-      JavaIdentifierFactory.getInstance()
-          .getMethodSignature(
-              JavaIdentifierFactory.getInstance().getClassType("GLOBAL", "sootup.global"),
-              "GLOBAL_SCOPE",
-              VoidType.getInstance(),
-              Collections.emptyList());
-
   final MethodSignature containingMethodSig;
   final SparkOptions sparkOptions;
+  final IdentifierFactory identifierFactory;
+  final MethodSignature globalScope;
   Node node;
 
   public ValueToNodeConversionVisitor(
-      MethodSignature containingMethodSig, SparkOptions sparkOptions) {
+      MethodSignature containingMethodSig,
+      SparkOptions sparkOptions,
+      @NonNull IdentifierFactory identifierFactory) {
     this.containingMethodSig = containingMethodSig;
     this.sparkOptions = sparkOptions;
+    this.identifierFactory = identifierFactory;
+    this.globalScope =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("GLOBAL", "sootup.global"),
+            "GLOBAL_SCOPE",
+            VoidType.getInstance(),
+            Collections.emptyList());
   }
 
   /**
@@ -334,7 +337,7 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   @Override
   public void caseInstanceFieldRef(@NonNull JInstanceFieldRef ref) {
     val fieldBasedScope = sparkOptions.isIgnoreBaseObjects();
-    val baseMethodSig = fieldBasedScope ? GLOBAL_SCOPE : containingMethodSig;
+    val baseMethodSig = fieldBasedScope ? globalScope : containingMethodSig;
     val baseName = fieldBasedScope ? ref.getBase().getType().toString() : ref.getBase().getName();
     val base =
         VariableNode.builder()
@@ -358,11 +361,10 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
       val baseType = arrayType.getBaseType();
       if (baseType instanceof ClassType declaringClassType) {
         val field =
-            JavaIdentifierFactory.getInstance()
-                .getFieldSignature(
-                    String.valueOf(ref.getIndex()), declaringClassType, ref.getType());
+            identifierFactory.getFieldSignature(
+                String.valueOf(ref.getIndex()), declaringClassType, ref.getType());
         val fieldBasedScope = sparkOptions.isIgnoreBaseObjects();
-        val baseMethodSig = fieldBasedScope ? GLOBAL_SCOPE : containingMethodSig;
+        val baseMethodSig = fieldBasedScope ? globalScope : containingMethodSig;
         val baseName =
             fieldBasedScope ? ref.getBase().getType().toString() : ref.getBase().getName();
         val base =

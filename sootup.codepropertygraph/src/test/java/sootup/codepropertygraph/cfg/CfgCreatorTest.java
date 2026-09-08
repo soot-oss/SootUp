@@ -170,7 +170,7 @@ public class CfgCreatorTest extends GraphTestSuiteBase {
     controlFlowGraph.setStartingStmt(throwStmt);
     controlFlowGraph.addExceptionalEdge(
         throwStmt,
-        JavaIdentifierFactory.getInstance().getClassType("CustomException", "cfg.exceptions"),
+        new JavaIdentifierFactory().getClassType("CustomException", "cfg.exceptions"),
         returnStmt);
 
     return createSootMethod(controlFlowGraph, "exceptionalEdgesMethod");

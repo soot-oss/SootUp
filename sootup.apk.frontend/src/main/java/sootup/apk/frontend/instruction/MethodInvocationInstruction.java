@@ -33,6 +33,7 @@ import org.jf.dexlib2.iface.instruction.formats.Instruction4rcc;
 import org.jf.dexlib2.iface.reference.MethodReference;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Immediate;
@@ -42,7 +43,6 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 
 public abstract class MethodInvocationInstruction extends DexLibAbstractInstruction
     implements DanglingInstruction {
@@ -71,36 +71,37 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
   }
 
   protected void jimplifySpecial(DexBody body) {
+    IdentifierFactory identifierFactory = body.getIdentifierFactory();
     MethodReference item = (MethodReference) ((ReferenceInstruction) instruction).getReference();
     List<Local> parameters = buildParameters(body, item.getParameterTypes(), false);
     invocation =
         Jimple.newSpecialInvokeExpr(
             parameters.get(0),
-            JavaIdentifierFactory.getInstance()
-                .getMethodSignature(
-                    DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
-                    item.getName(),
-                    DexUtil.toSootType(item.getReturnType(), 0),
-                    convertParameterTypes(item.getParameterTypes())),
+            identifierFactory.getMethodSignature(
+                DexUtil.getClassTypeFromClassName(item.getDefiningClass(), identifierFactory),
+                item.getName(),
+                DexUtil.toSootType(item.getReturnType(), 0, identifierFactory),
+                convertParameterTypes(item.getParameterTypes(), identifierFactory)),
             buildArgs(parameters.subList(1, parameters.size())));
     body.setDanglingInstruction(this);
   }
 
   protected void jimplifyStatic(DexBody body) {
+    IdentifierFactory identifierFactory = body.getIdentifierFactory();
     MethodReference item = (MethodReference) ((ReferenceInstruction) instruction).getReference();
     List<Local> parameters = buildParameters(body, item.getParameterTypes(), true);
     MethodSignature methodSignature =
-        JavaIdentifierFactory.getInstance()
-            .getMethodSignature(
-                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
-                item.getName(),
-                DexUtil.toSootType(item.getReturnType(), 0),
-                convertParameterTypes(item.getParameterTypes()));
+        identifierFactory.getMethodSignature(
+            DexUtil.getClassTypeFromClassName(item.getDefiningClass(), identifierFactory),
+            item.getName(),
+            DexUtil.toSootType(item.getReturnType(), 0, identifierFactory),
+            convertParameterTypes(item.getParameterTypes(), identifierFactory));
     invocation = Jimple.newStaticInvokeExpr(methodSignature, buildArgs(parameters));
     body.setDanglingInstruction(this);
   }
 
   protected void jimplifyVirtual(DexBody body) {
+    IdentifierFactory identifierFactory = body.getIdentifierFactory();
     MethodReference item = (MethodReference) ((ReferenceInstruction) instruction).getReference();
     List<Local> parameters = buildParameters(body, item.getParameterTypes(), false);
     // TODO check isIntertface by someother way
@@ -109,12 +110,11 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     //            return;
     //        }
     MethodSignature methodSignature =
-        JavaIdentifierFactory.getInstance()
-            .getMethodSignature(
-                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
-                item.getName(),
-                DexUtil.toSootType(item.getReturnType(), 0),
-                convertParameterTypes(item.getParameterTypes()));
+        identifierFactory.getMethodSignature(
+            DexUtil.getClassTypeFromClassName(item.getDefiningClass(), identifierFactory),
+            item.getName(),
+            DexUtil.toSootType(item.getReturnType(), 0, identifierFactory),
+            convertParameterTypes(item.getParameterTypes(), identifierFactory));
     invocation =
         Jimple.newVirtualInvokeExpr(
             parameters.get(0),
@@ -124,6 +124,7 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
   }
 
   protected void jimplifyInterface(DexBody body) {
+    IdentifierFactory identifierFactory = body.getIdentifierFactory();
     MethodReference item = (MethodReference) ((ReferenceInstruction) instruction).getReference();
     List<Local> parameters = buildParameters(body, item.getParameterTypes(), false);
     // TODO check isIntertface by someother way
@@ -132,12 +133,11 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     //            return;
     //        }
     MethodSignature methodSignature =
-        JavaIdentifierFactory.getInstance()
-            .getMethodSignature(
-                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
-                item.getName(),
-                DexUtil.toSootType(item.getReturnType(), 0),
-                convertParameterTypes(item.getParameterTypes()));
+        identifierFactory.getMethodSignature(
+            DexUtil.getClassTypeFromClassName(item.getDefiningClass(), identifierFactory),
+            item.getName(),
+            DexUtil.toSootType(item.getReturnType(), 0, identifierFactory),
+            convertParameterTypes(item.getParameterTypes(), identifierFactory));
     invocation =
         Jimple.newInterfaceInvokeExpr(
             parameters.get(0),
@@ -146,11 +146,12 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     body.setDanglingInstruction(this);
   }
 
-  protected List<Type> convertParameterTypes(List<? extends CharSequence> paramTypes) {
+  protected List<Type> convertParameterTypes(
+      List<? extends CharSequence> paramTypes, IdentifierFactory identifierFactory) {
     List<Type> parameterTypes = new ArrayList<Type>();
     if (paramTypes != null) {
       for (CharSequence type : paramTypes) {
-        parameterTypes.add(DexUtil.toSootType(type.toString(), 0));
+        parameterTypes.add(DexUtil.toSootType(type.toString(), 0, identifierFactory));
       }
     }
     return parameterTypes;

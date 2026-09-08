@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.types.ModuleJavaClassType;
 
@@ -34,14 +36,14 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
 
   @Test
   public void getPackageSignatureUnnamedModule() {
-    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
+    JavaModuleIdentifierFactory identifierFactory = new JavaModuleIdentifierFactory();
     ModulePackageName packageName1 = identifierFactory.getPackageName("java.lang");
     assertSame(packageName1.getModuleSignature(), ModuleSignature.UNNAMED_MODULE);
   }
 
   @Test
   public void getPackageSignatureNamedModule() {
-    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
+    JavaModuleIdentifierFactory identifierFactory = new JavaModuleIdentifierFactory();
     ModulePackageName packageName1 = identifierFactory.getPackageName("java.lang", "myModule");
     assertNotSame(packageName1.getModuleSignature(), ModuleSignature.UNNAMED_MODULE);
     assertEquals(packageName1.getModuleSignature().toString(), "myModule");
@@ -49,7 +51,7 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
 
   @Test
   public void getModulePackageSignature() {
-    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
+    JavaModuleIdentifierFactory identifierFactory = new JavaModuleIdentifierFactory();
     ModulePackageName packageSignature1 = identifierFactory.getPackageName("java.lang", "myModule");
     ModulePackageName packageSignature2 =
         identifierFactory.getPackageName("java.lang.invoke", "myModule");
@@ -58,7 +60,7 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
 
   @Test
   public void getModulePackageSignatureSameModule() {
-    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
+    JavaModuleIdentifierFactory identifierFactory = new JavaModuleIdentifierFactory();
     ModulePackageName packageSignature1 = identifierFactory.getPackageName("java.lang", "myModule");
     ModulePackageName packageSignature2 = identifierFactory.getPackageName("java.lang", "myModule");
 
@@ -68,7 +70,7 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
 
   @Test
   public void getModulePackageSignatureDiffModule() {
-    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
+    JavaModuleIdentifierFactory identifierFactory = new JavaModuleIdentifierFactory();
     ModulePackageName packageSignature1 =
         identifierFactory.getPackageName("java.lang", "myModule1");
     ModulePackageName packageSignature2 =
@@ -83,7 +85,7 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
 
   @Test
   public void getSameClassTypeSameModule() {
-    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
+    JavaModuleIdentifierFactory identifierFactory = new JavaModuleIdentifierFactory();
     ModuleJavaClassType classType1 =
         identifierFactory.getClassType("Strawberry", "fruit.red", "food.fruit");
     ModuleJavaClassType classType2 =
@@ -93,7 +95,7 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
 
   @Test
   public void getDiffClassTypeDiffModule() {
-    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
+    JavaModuleIdentifierFactory identifierFactory = new JavaModuleIdentifierFactory();
     ModuleJavaClassType classType1 =
         identifierFactory.getClassType("Strawberry", "fruit.red", "food.fruit");
     ModuleJavaClassType classType2 =
@@ -104,7 +106,7 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
 
   @Test
   public void testModuleInfoSignature() {
-    JavaModuleIdentifierFactory typeFactory = JavaModuleIdentifierFactory.getInstance();
+    JavaModuleIdentifierFactory typeFactory = new JavaModuleIdentifierFactory();
     assertThrows(IllegalArgumentException.class, () -> typeFactory.getClassType("module-info"));
   }
 
@@ -131,12 +133,12 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
   public void parseMethodnFieldSig() {
     String methodSignatureString = "<java.base/java.lang.String: boolean startsWith(String)>";
     MethodSignature methodSignature =
-        JavaModuleIdentifierFactory.getInstance().parseMethodSignature(methodSignatureString);
+        new JavaModuleIdentifierFactory().parseMethodSignature(methodSignatureString);
     assertEquals(methodSignatureString, methodSignature.toString());
 
     String fieldsSigStr = "<java.base/java.lang.String: char[] value>";
     FieldSignature fieldSignature =
-        JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr);
+        new JavaModuleIdentifierFactory().parseFieldSignature(fieldsSigStr);
     assertEquals(fieldsSigStr, fieldSignature.toString());
   }
 
@@ -144,7 +146,7 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
   public void wrapper_test() {
 
     ModuleSignature baseSig = JavaModuleIdentifierFactory.getModuleSignature("java.base");
-    JavaModuleIdentifierFactory wrapper = JavaModuleIdentifierFactory.getInstance(baseSig);
+    JavaModuleIdentifierFactory wrapper = new JavaModuleIdentifierFactory().forModule(baseSig);
     assertEquals(
         "java.base/fruit.red.Strawberry", wrapper.getClassType("fruit.red.Strawberry").toString());
     assertEquals(
@@ -200,7 +202,7 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
 
   @Test
   public void isMainMethod() {
-    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
+    JavaModuleIdentifierFactory identifierFactory = new JavaModuleIdentifierFactory();
     MethodSignature mainMethodSig =
         identifierFactory.parseMethodSignature(
             "<modmain/pkgmain.Main: void main(java.lang.String[])>");
@@ -210,5 +212,54 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
         identifierFactory.parseMethodSignature(
             "<modmain/pkgmain.Main: void main(java.base/java.lang.String[])>");
     assertTrue(identifierFactory.isMainSubSignature(mainMethodSigJ9.getSubSignature()));
+  }
+
+  @Test
+  public void modulePackageNamesWithAmbiguousSplitAreDistinct() {
+    // module "a" / package "b.c" and module "a.b" / package "c" would collide under a cache keyed
+    // on moduleName + "." + packageName.
+    JavaModuleIdentifierFactory identifierFactory = new JavaModuleIdentifierFactory();
+    ModulePackageName first = identifierFactory.getPackageName("b.c", "a");
+    ModulePackageName second = identifierFactory.getPackageName("c", "a.b");
+    assertNotSame(first, second);
+    assertNotEquals(first, second);
+    assertEquals("b.c", first.getName());
+    assertEquals("c", second.getName());
+    assertEquals("a", first.getModuleSignature().getModuleName());
+    assertEquals("a.b", second.getModuleSignature().getModuleName());
+  }
+
+  @Test
+  public void classTypeIsSharedAcrossModuleFactoryInstances() {
+    // every per-module wrapper used to keep its own caches, so the same class requested through
+    // two of them came back as two instances
+    ModuleSignature module = JavaModuleIdentifierFactory.getModuleSignature("myModule");
+    ModuleJavaClassType viaWrapper =
+        new JavaModuleIdentifierFactory().forModule(module).getClassType("some.Klass");
+    ModuleJavaClassType viaBaseFactory =
+        new JavaModuleIdentifierFactory().getClassType("Klass", "some", module);
+    assertSame(viaWrapper, viaBaseFactory);
+
+    ModuleJavaClassType viaOtherWrapper =
+        new JavaModuleIdentifierFactory()
+            .forModule("otherModule")
+            .getClassType("myModule/some.Klass");
+    assertSame(viaWrapper, viaOtherWrapper);
+  }
+
+  @Test
+  public void moduleClassTypeIsNotConflatedWithPlainClassType() {
+    ClassType plain = new JavaIdentifierFactory().getClassType("some.Klass");
+    ModuleJavaClassType moduleScoped = new JavaModuleIdentifierFactory().getClassType("some.Klass");
+    assertNotSame(plain, moduleScoped);
+    assertNotEquals(plain, moduleScoped);
+  }
+
+  @Test
+  public void moduleSignatureIsHashConsed() {
+    assertSame(
+        JavaModuleIdentifierFactory.getModuleSignature("myModule"),
+        JavaModuleIdentifierFactory.getModuleSignature("myModule"));
+    assertSame(ModuleSignature.UNNAMED_MODULE, JavaModuleIdentifierFactory.getModuleSignature(""));
   }
 }

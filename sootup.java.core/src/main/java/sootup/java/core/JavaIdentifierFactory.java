@@ -22,9 +22,6 @@ package sootup.java.core;
  * #L%
  */
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -38,6 +35,7 @@ import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
+import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.NullType;
@@ -52,11 +50,10 @@ import sootup.java.core.types.JavaClassType;
  */
 public class JavaIdentifierFactory implements IdentifierFactory {
 
-  @NonNull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
-
   @NonNull
   public static final MethodSubSignature STATIC_INITIALIZER =
-      INSTANCE.getMethodSubSignature("<clinit>", VoidType.getInstance(), Collections.emptyList());
+      SignatureInterner.getMethodSubSignature(
+          "<clinit>", VoidType.getInstance(), Collections.emptyList());
 
   @NonNull
   private static final Pattern SOOT_FIELD_SUB_SIGNATURE_PATTERN =
@@ -66,47 +63,15 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   private static final Pattern JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN =
       Pattern.compile("^#(?<field>[^(]+):(?<type>.+)$");
 
-  /** Caches the created PackageNames for packages. */
-  @NonNull
-  protected final Cache<String, PackageName> packageCache =
-      CacheBuilder.newBuilder().weakValues().build();
-
-  /** Caches class types */
-  @NonNull
-  protected final Cache<String, JavaClassType> classTypeCache =
-      CacheBuilder.newBuilder().weakValues().build();
-
-  /** Caches method sub-signatures. */
-  @NonNull
-  protected final Cache<String, MethodSubSignature> methodSubSignatureCache =
-      CacheBuilder.newBuilder().weakValues().build();
-
-  /** Caches field sub-signatures. */
-  @NonNull
-  protected final Cache<String, FieldSubSignature> fieldSubSignatureCache =
-      CacheBuilder.newBuilder().weakValues().build();
-
-  /** Caches method signatures. */
-  @NonNull
-  protected final Cache<String, MethodSignature> methodSignatureCache =
-      CacheBuilder.newBuilder().weakValues().build();
-
-  /** Caches field signatures. */
-  @NonNull
-  protected final Cache<String, FieldSignature> fieldSignatureCache =
-      CacheBuilder.newBuilder().weakValues().build();
-
   @NonNull
   protected final Map<String, PrimitiveType> primitiveTypeMap = Maps.newHashMapWithExpectedSize(8);
 
-  public static JavaIdentifierFactory getInstance() {
-    return INSTANCE;
-  }
-
-  JavaIdentifierFactory() {
-    /* Represents the default package. */
-    packageCache.put(PackageName.DEFAULT_PACKAGE.getName(), PackageName.DEFAULT_PACKAGE);
-
+  /**
+   * Creates an identifier factory. Obtain one from {@link
+   * sootup.core.views.View#getIdentifierFactory()} rather than constructing it directly, so that
+   * the factory shares the lifetime of the {@link sootup.java.core.views.JavaView} that uses it.
+   */
+  public JavaIdentifierFactory() {
     // initialize primitive map
     primitiveTypeMap.put(
         PrimitiveType.LongType.getInstance().getName(), PrimitiveType.LongType.getInstance());
@@ -140,11 +105,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    */
   @Override
   public JavaClassType getClassType(final String className, final String packageName) {
-    PackageName packageIdentifier = getPackageName(packageName);
-    return classTypeCache
-        .asMap()
-        .computeIfAbsent(
-            className + packageName, (k) -> new JavaClassType(className, packageIdentifier));
+    return JavaClassType.of(className, getPackageName(packageName));
   }
 
   /**
@@ -256,7 +217,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    */
   @Override
   public PackageName getPackageName(@NonNull final String packageName) {
-    return packageCache.asMap().computeIfAbsent(packageName, PackageName::new);
+    return SignatureInterner.getPackageName(packageName);
   }
 
   /**
@@ -329,10 +290,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @NonNull
   public MethodSignature getMethodSignature(
       @NonNull ClassType declaringClassSignature, @NonNull MethodSubSignature subSignature) {
-    String key = declaringClassSignature + " " + subSignature;
-    return methodSignatureCache
-        .asMap()
-        .computeIfAbsent(key, k -> new MethodSignature(declaringClassSignature, subSignature));
+    return SignatureInterner.getMethodSignature(declaringClassSignature, subSignature);
   }
 
   private static final class MethodSignatureParserPatternHolder {
@@ -436,11 +394,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       @NonNull String name,
       @NonNull Type returnType,
       @NonNull Iterable<? extends Type> parameterSignatures) {
-    List<Type> parameters = ImmutableList.copyOf(parameterSignatures);
-    String key = returnType + " " + name + "(" + parameters + ")";
-    return methodSubSignatureCache
-        .asMap()
-        .computeIfAbsent(key, k -> new MethodSubSignature(name, parameters, returnType));
+    return SignatureInterner.getMethodSubSignature(name, returnType, parameterSignatures);
   }
 
   @NonNull
@@ -614,19 +568,13 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @NonNull
   public FieldSignature getFieldSignature(
       @NonNull ClassType declaringClassSignature, @NonNull FieldSubSignature subSignature) {
-    String key = declaringClassSignature + " " + subSignature;
-    return fieldSignatureCache
-        .asMap()
-        .computeIfAbsent(key, k -> new FieldSignature(declaringClassSignature, subSignature));
+    return SignatureInterner.getFieldSignature(declaringClassSignature, subSignature);
   }
 
   @NonNull
   @Override
   public FieldSubSignature getFieldSubSignature(@NonNull String name, @NonNull Type type) {
-    String key = name + ":" + type;
-    return fieldSubSignatureCache
-        .asMap()
-        .computeIfAbsent(key, k -> new FieldSubSignature(name, type));
+    return SignatureInterner.getFieldSubSignature(name, type);
   }
 
   @NonNull

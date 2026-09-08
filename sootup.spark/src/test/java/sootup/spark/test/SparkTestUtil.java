@@ -25,7 +25,7 @@ import sootup.spark.node.VariableNode;
 @UtilityClass
 public class SparkTestUtil {
 
-  public static final JavaIdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
+  public static final JavaIdentifierFactory idFactory = new JavaIdentifierFactory();
   public static final JavaView view =
       new JavaView(new JavaClassPathAnalysisInputLocation("src/test/resources/pta/binary"));
   public static final MethodSignature GLOBAL_SCOPE =
@@ -49,7 +49,7 @@ public class SparkTestUtil {
 
       @Override
       public PackageName getPackageName() {
-        return new PackageName("");
+        return new JavaIdentifierFactory().getPackageName("");
       }
     };
   }

@@ -46,7 +46,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 
 public class Solver extends Propagator {
   private final TreeSet<ValNode> valNodeWorkList = new TreeSet<>();
@@ -234,7 +233,7 @@ public class Solver extends Propagator {
 
   private boolean supportFinalize(AllocNode heap) {
     MethodSubSignature sigFinalize =
-        JavaIdentifierFactory.getInstance().parseMethodSubSignature("void finalize()");
+        pta.getView().getIdentifierFactory().parseMethodSubSignature("void finalize()");
     Type type = heap.getType();
     if (type instanceof ClassType && type != PTAUtils.getClassType("java.lang.Object")) {
       ClassType refType = (ClassType) type;
