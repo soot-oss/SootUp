@@ -460,6 +460,27 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     stmtToInsn.put(stmt, insn);
   }
 
+  /**
+   * Updates the identity statement of an inline exception handler to use a new local variable. This
+   * is needed when operand merging assigns a common stack local to the caught exception operand.
+   *
+   * <p>Only inline exception handlers should call this method, since non-inline handlers create
+   * their identity statement directly in {@code convertLabel()} and never reach {@code
+   * changeStackLocal()} for their caught exception operand.
+   *
+   * @param insn the handler label node
+   * @param newLocal the new local to assign the caught exception to
+   */
+  void updateInlineExceptionHandler(@NonNull AbstractInsnNode insn, @NonNull Local newLocal) {
+    LabelNode labelNode = (LabelNode) insn;
+    JIdentityStmt oldStmt = inlineExceptionHandlers.get(labelNode);
+    assert oldStmt != null : "updateInlineExceptionHandler called for non-inline handler: " + insn;
+    JIdentityStmt newStmt =
+        Jimple.newIdentityStmt(
+            newLocal, (JCaughtExceptionRef) oldStmt.getRightOp(), oldStmt.getPositionInfo());
+    inlineExceptionHandlers.put(labelNode, newStmt);
+  }
+
   @NonNull Local newStackLocal() {
     return newStackLocal(UnknownType.getInstance());
   }

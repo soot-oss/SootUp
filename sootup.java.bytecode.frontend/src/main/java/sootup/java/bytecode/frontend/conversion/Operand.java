@@ -35,7 +35,6 @@ import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 import sootup.core.types.Type;
@@ -125,9 +124,12 @@ class Operand {
     if (!(stmt instanceof JAssignStmt assignStmt)) {
       // emit `$newStackLocal = value`
       if (value instanceof JCaughtExceptionRef) {
-        JIdentityStmt identityStmt =
-            Jimple.newIdentityStmt(newStackLocal, (JCaughtExceptionRef) value, positionInfo);
-        methodSource.setStmt(insn, identityStmt);
+        // During operand merging, only inline exception handlers reach this point
+        // because non-inline handlers are visited exactly once from the worklist and
+        // create their identity stmt in convertLabel() directly, never via changeStackLocal.
+        // Update the identity statement in the separate inline handler block instead of
+        // overwriting the NOP placeholder at the handler label.
+        methodSource.updateInlineExceptionHandler(insn, newStackLocal);
       } else {
         methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
       }
