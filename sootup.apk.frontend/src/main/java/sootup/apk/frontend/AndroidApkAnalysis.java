@@ -44,6 +44,7 @@ import sootup.apk.frontend.layout.AndroidLayoutParser;
 import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.apk.frontend.manifest.AndroidManifest;
 import sootup.apk.frontend.manifest.AndroidManifestParser;
+import sootup.apk.frontend.manifest.ManifestComponent;
 import sootup.apk.frontend.resources.AndroidResourceTableParser;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphAlgorithm;
@@ -205,7 +206,23 @@ public final class AndroidApkAnalysis {
             (CallGraph) new ClassHierarchyAnalysisAlgorithm(view).initialize(coreEntryPoints);
     AndroidIccResolver.addIccEdges(coreGraph, view, manifest, applicationClassNames);
     Set<String> instantiatedClassNames =
-        InstantiatedTypeCollector.collectInstantiatedClassNames(view, coreGraph);
+        new LinkedHashSet<>(
+            InstantiatedTypeCollector.collectInstantiatedClassNames(view, coreGraph));
+    // The OS instantiates every manifest-declared component itself, reflectively — never via a
+    // `new` in the app's own bytecode (that's exactly why AndroidEntryPointCreator adds each
+    // component's constructor as its own entry point, unconditionally, rather than gating it on
+    // this same instantiated-evidence check). InstantiatedTypeCollector, built purely from `new`
+    // expressions in reachable code, has no way to know that — so a component that implements a
+    // callback/listener interface *directly on itself* (DroidBench's Callbacks/LocationLeak2:
+    // `LocationLeak2 extends Activity implements LocationListener`, with no separate inner-class
+    // listener at all) would otherwise never pass steps 3/8's "was this ever instantiated" gate
+    // and lose every one of its own listener-interface methods. Folding the component class names
+    // in here, once, lets every consumer of instantiatedClassNames (steps 3/8/9 below) benefit
+    // uniformly instead of each needing its own copy of this same exemption.
+    manifest.getApplicationClassName().ifPresent(instantiatedClassNames::add);
+    for (ManifestComponent component : manifest.getComponents()) {
+      instantiatedClassNames.add(component.getClassName());
+    }
 
     Set<MethodSignature> combined = new LinkedHashSet<>(coreEntryPoints);
     combined.addAll(
