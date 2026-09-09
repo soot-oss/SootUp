@@ -28,6 +28,7 @@ import sootup.core.model.SootMethod;
 import sootup.core.types.NullType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
+import sootup.core.views.View;
 
 /**
  * Validates classes to make sure that all method signatures are valid and does not contain
@@ -38,7 +39,7 @@ import sootup.core.types.VoidType;
 public class MethodDeclarationValidator implements ClassValidator {
 
   @Override
-  public void validate(SootClass sc, List<ValidationException> exceptions) {
+  public void validate(SootClass sc, List<ValidationException> exceptions, View view) {
 
     for (SootMethod sm : sc.getMethods()) {
       if (sc.isConcrete()) {

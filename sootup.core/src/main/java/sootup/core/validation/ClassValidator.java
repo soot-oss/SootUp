@@ -24,15 +24,16 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.SootClass;
+import sootup.core.views.View;
 
 /** Implement this interface if you want to provide your own class validator */
-public interface ClassValidator {
+public interface ClassValidator extends Validator {
   /**
    * Validates the given class and saves all validation errors in the given list.
    *
    * @param sc the class to check
    */
-  void validate(SootClass sc, List<ValidationException> exceptions);
+  void validate(SootClass sc, List<ValidationException> exceptions, View view);
 
   /**
    * Basic validators run essential checks and are run always if validate is called.<br>

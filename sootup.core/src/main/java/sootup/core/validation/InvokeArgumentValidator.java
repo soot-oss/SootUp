@@ -22,8 +22,14 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
 /**
@@ -36,12 +42,29 @@ public class InvokeArgumentValidator implements BodyValidator {
 
   @Override
   public List<ValidationException> validate(Body body, View view) {
-    // TODO: check copied code from old soot
-    /*
-     * for (Unit u : body.getUnits()) { Stmt s = (Stmt) u; if (s.containsInvokeExpr()) { InvokeExpr iinvExpr =
-     * s.getInvokeExpr(); SootMethod callee = iinvExpr.getMethod(); if (callee != null && iinvExpr.getArgCount() !=
-     * callee.getParameterCount()) { exceptions.add(new ValidationException(s, "Invalid number of arguments")); } } }
-     */
-    return null;
+    List<ValidationException> exception = new ArrayList<>();
+    for (Stmt s : body.getStmts()) {
+      if (s.isInvokableStmt()) {
+        InvokableStmt invokableStmt = s.asInvokableStmt();
+        Optional<AbstractInvokeExpr> invokeExpr = invokableStmt.getInvokeExpr();
+        if (invokeExpr.isPresent()) {
+          AbstractInvokeExpr abstractInvokeExpr = invokeExpr.get();
+          Optional<? extends SootMethod> sootMethod =
+              view.getMethod(abstractInvokeExpr.getMethodSignature());
+          if (sootMethod.isPresent()) {
+            if (abstractInvokeExpr.getArgCount() != sootMethod.get().getParameterCount()) {
+              exception.add(
+                  new ValidationException(
+                      s,
+                      "Invalid number of arguments passed from "
+                          + abstractInvokeExpr
+                          + "to method "
+                          + sootMethod.get().getSignature()));
+            }
+          }
+        }
+      }
+    }
+    return exception;
   }
 }
