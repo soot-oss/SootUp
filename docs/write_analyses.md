@@ -182,10 +182,14 @@ linear constant analysis.
 
 ### Where to look
 
-SootUp integrates with [Heros](https://github.com/Sable/heros) for IFDS/IDE.
-Working examples — taint analysis, linear constant propagation, type-state analysis —
-are in the test suite of the `sootup.analysis.interprocedural` module.
-They are the most concrete starting point for writing your own inter-procedural analysis.
+SootUp integrates with [Heros](https://github.com/Sable/heros) for IFDS/IDE. Two worked
+examples exist:
+
+- [Typestate Analysis with Heros](analysis-typestate.md) — an IDE problem, explained step
+  by step: flow functions, edge functions, the zero fact, seeds and the meet lattice. Start
+  here.
+- A taint analysis as an IFDS problem, in `IFDSTaintAnalysisProblem` and
+  `IFDSTaintTestSetUp` in the test suite of the `sootup.analysis.interprocedural` module.
 
 For background on the algorithms themselves:
 

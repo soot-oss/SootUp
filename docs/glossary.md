@@ -38,12 +38,32 @@ Definitions for technical terms used throughout this documentation.
     and [meet operators](#meet-operator) until a [fixed point](#fixed-point) is reached.
     The word "dataflow" refers to facts "flowing" along CFG edges during iteration.
 
+**Edge function** {#edge-function}
+:   In [IDE](#ide), the function attached to one edge of the
+    [exploded supergraph](#exploded-supergraph); it describes how the *value* carried by a
+    [fact](#analysis-fact) changes when that fact flows along the edge. Edge functions must
+    support composition (apply one, then the next) and [meet](#meet-operator), and the solver
+    composes them repeatedly, so they have to be represented in a form that cannot grow without
+    bound — otherwise the analysis never reaches a [fixed point](#fixed-point).
+
+**Exploded supergraph** {#exploded-supergraph}
+:   The graph [IFDS](#ifds) and [IDE](#ide) actually solve on. Its nodes are pairs
+    *(statement, fact)* drawn from the whole program — the per-method [CFGs](#control-flow-graph)
+    stitched together at call sites, with every statement "exploded" into one node per fact.
+    A [flow function](#flow-function) is what decides which of these nodes are connected.
+
 **Fixed point** {#fixed-point}
 :   The state in which one more iteration of the [dataflow analysis](#dataflow-analysis)
     would change no [fact](#analysis-fact) anywhere in the [CFG](#control-flow-graph).
     At this point the analysis has converged to its final answer. The
     [worklist](#worklist) algorithm detects this implicitly: it terminates when the
     worklist is empty, which happens exactly when nothing changed.
+
+**Flow function** {#flow-function}
+:   In [IFDS](#ifds) and [IDE](#ide), the interprocedural counterpart of a
+    [transfer function](#transfer-function): it maps an incoming [fact](#analysis-fact) to the set
+    of facts that hold afterwards. Four of them are needed — for a normal statement, for entering
+    a callee, for leaving a callee, and for flowing around a call.
 
 **Forward analysis** {#forward-analysis}
 :   An analysis in which facts travel from predecessors to successors — that is, from
@@ -58,6 +78,19 @@ Definitions for technical terms used throughout this documentation.
     *invalidates* (e.g. a new definition of `x` kills any previous definition of `x`).
     Transfer for most analyses reduces to: `OUT = gen(S) ∪ (IN − kill(S))`.
 
+**IDE** {#ide}
+:   *Interprocedural Distributive Environment problems.* An extension of [IFDS](#ifds) in which
+    every [fact](#analysis-fact) additionally carries a *value* from a [lattice](#lattice), and
+    every edge of the [exploded supergraph](#exploded-supergraph) carries an
+    [edge function](#edge-function) transforming that value. IFDS answers "does this fact hold
+    here?"; IDE answers "and what value does it have?".
+
+**IFDS** {#ifds}
+:   *Interprocedural Finite Distributive Subset problems.* A framework that reduces an
+    interprocedural [dataflow analysis](#dataflow-analysis) to graph reachability on the
+    [exploded supergraph](#exploded-supergraph), so that calls and returns are matched up
+    correctly without the analysis having to manage a call stack itself.
+
 **Initial fact** {#initial-fact}
 :   The [analysis fact](#analysis-fact) assigned to every non-boundary node at the
     start of iteration. Typically the "bottom" element of the [lattice](#lattice) —
@@ -69,6 +102,11 @@ Definitions for technical terms used throughout this documentation.
 :   An internal form of a program that is easier to traverse and analyse than either
     source code or raw bytecode. SootUp's IR is [Jimple](jimple.md): a flat,
     three-address, register-machine representation derived from JVM bytecode.
+
+**Interprocedural CFG (ICFG)** {#interprocedural-cfg}
+:   A [CFG](#control-flow-graph) spanning the whole program: the CFGs of the individual methods,
+    connected at each call site to the CFGs of the methods a [call graph](callgraphs.md) says may
+    be invoked there. In SootUp, `JimpleBasedInterproceduralCFG`.
 
 **Join point** {#join-point}
 :   A [CFG](#control-flow-graph) node with more than one incoming edge — for example,
@@ -102,12 +140,23 @@ Definitions for technical terms used throughout this documentation.
     report it if it is true on all paths"). Must analyses have no false positives but
     may have false negatives. See also [May analysis](#may-analysis).
 
+**Seed** {#seed}
+:   The starting point of an [IFDS](#ifds) or [IDE](#ide) analysis: a set of
+    [facts](#analysis-fact), each paired with the statement at which it is assumed to hold.
+    Usually a single [zero fact](#zero-fact) at the first statement of the entry method.
+
 **Transfer function** {#transfer-function}
 :   A function that maps the [analysis fact](#analysis-fact) at one side of a statement
     to the fact at the other side, based on the semantics of that statement.
     For [forward analyses](#forward-analysis): `OUT[S] = f(IN[S])`.
     For [backward analyses](#backward-analysis): `IN[S] = f(OUT[S])`.
     See [Gen/Kill](#gen-kill) for the most common pattern.
+
+**Typestate** {#typestate}
+:   The state an object is in at a program point with respect to a protocol its API defines — for
+    example "open" or "closed" for a file handle. A typestate analysis attaches a finite automaton
+    to an API class and checks that every object of that class only sees call sequences the
+    automaton accepts. See [the worked example](analysis-typestate.md).
 
 **Worklist** {#worklist}
 :   The set of [CFG](#control-flow-graph) nodes whose [facts](#analysis-fact) may still
@@ -116,3 +165,10 @@ Definitions for technical terms used throughout this documentation.
     the [transfer function](#transfer-function) and [meet](#meet-operator), the affected
     neighbours are added back to the worklist. The algorithm terminates (reaches a
     [fixed point](#fixed-point)) when the worklist is empty.
+
+**Zero fact** {#zero-fact}
+:   An artificial [fact](#analysis-fact) in [IFDS](#ifds) and [IDE](#ide) that holds at every
+    statement by construction. Because these frameworks can only propagate facts and never invent
+    them, a genuinely new fact has to be generated out of a fact that already holds — and the zero
+    fact is the one that always does. Note that its *value* at a [seed](#seed) is the lattice's
+    bottom element, not top.

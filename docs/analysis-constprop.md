@@ -145,5 +145,7 @@ test before it can silently invalidate the docs.
   haven't seen it yet.
 - [Write your own interprocedural analysis](write_analyses.md) — extend analysis across
   method call boundaries using the IFDS/IDE framework.
+- [Typestate Analysis with Heros](analysis-typestate.md) — a worked IDE analysis that
+  follows an object across method call boundaries.
 - [Built-in Analyses](builtin-analyses.md) — liveness and dominance analyses that ship
   with SootUp, ready to use without implementing the solver yourself.

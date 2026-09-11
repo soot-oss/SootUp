@@ -154,4 +154,6 @@ caught before it reaches the docs site:
   analysis with a richer [lattice](glossary.md#lattice) instead of a plain set.
 - [Write your own interprocedural analysis](write_analyses.md) — extend analysis across
   method boundaries using the IFDS/IDE framework.
+- [Typestate Analysis with Heros](analysis-typestate.md) — the same idea applied across
+  method boundaries, with a worked IDE configuration.
 - [Core Concepts](concepts.md) — a non-code overview of CFG, IR, and analysis.
