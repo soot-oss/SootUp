@@ -202,6 +202,33 @@ public final class AndroidCallbackConstants {
                 "onProviderEnabled", "void", Collections.singletonList("java.lang.String")),
             new LifecycleMethod(
                 "onProviderDisabled", "void", Collections.singletonList("java.lang.String"))));
+    // ComponentCallbacks/ComponentCallbacks2 (registerComponentCallbacks): unlike Activity/
+    // Application overriding these directly (a manifest-rooted lifecycle callback, already
+    // covered by AndroidEntryPointConstants), a class handed to registerComponentCallbacks can
+    // be any standalone object — most commonly an anonymous inner class with no manifest
+    // presence at all (see DroidBench's Callbacks/RegisterGlobal2) — so it needs this
+    // interface-implementation-based discovery instead. Both interfaces are listed with their own
+    // complete method sets (ComponentCallbacks2 extends ComponentCallbacks and adds onTrimMemory)
+    // so a class is fully covered however TypeHierarchy#implementedInterfacesOf reports its
+    // interface set — whether or not it walks super-interfaces transitively.
+    table.put(
+        "android.content.ComponentCallbacks",
+        Arrays.asList(
+            new LifecycleMethod(
+                "onConfigurationChanged",
+                "void",
+                Collections.singletonList("android.content.res.Configuration")),
+            new LifecycleMethod("onLowMemory", "void", Collections.emptyList())));
+    table.put(
+        "android.content.ComponentCallbacks2",
+        Arrays.asList(
+            new LifecycleMethod(
+                "onConfigurationChanged",
+                "void",
+                Collections.singletonList("android.content.res.Configuration")),
+            new LifecycleMethod("onLowMemory", "void", Collections.emptyList()),
+            new LifecycleMethod("onTrimMemory", "void", Collections.singletonList("int"))));
+
     table.put(
         "android.app.Application$ActivityLifecycleCallbacks",
         Arrays.asList(
