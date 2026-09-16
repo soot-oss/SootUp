@@ -1,9 +1,8 @@
 package sootup.apk.backend;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import static sootup.apk.backend.Constants.JIMPLE_OBJECT_TYPE;
+
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.jimple.common.Immediate;
@@ -21,8 +20,13 @@ public class RegisterAllocator {
   private int nextRegisterNumber = 0;
   private final DexConstantVisitor dexConstantVisitor;
 
-  private HashMap<Local, Register> registerMap = new LinkedHashMap<>();
+  private Map<Local, Register> registerMap = new LinkedHashMap<>();
   private final List<Register> registerList = new LinkedList<>();
+
+  private final Map<Class<?>, List<Register>> constantRegisterPools = new HashMap<>();
+  private final Map<Class<?>, Integer> constantPoolIndices = new HashMap<>();
+
+  private final Set<Register> lockedRegisters = new HashSet<>();
 
   public RegisterAllocator(DexConstantVisitor dexConstantVisitor) {
     this.dexConstantVisitor = dexConstantVisitor;
@@ -71,18 +75,25 @@ public class RegisterAllocator {
   public Register getRegisterForConstant(Constant constant, Stmt currentStmt) {
     Type type;
     boolean guessed;
-    if (constant.getType().toString().equals("java.lang.Object")) {
+    boolean n = false;
+    if (constant.getType().toString().equals(JIMPLE_OBJECT_TYPE)) {
       guessed = true;
-      if (constant instanceof IntConstant) {
+      if (constant instanceof IntConstant intConstant) {
         type = PrimitiveType.getInt();
+        if (intConstant.getValue() == 0) {
+          n = true;
+        }
       } else if (constant instanceof FloatConstant) {
         type = PrimitiveType.getFloat();
       } else if (constant instanceof DoubleConstant) {
         type = PrimitiveType.getDouble();
       } else if (constant instanceof LongConstant) {
         type = PrimitiveType.getLong();
-      } else if (constant instanceof BooleanConstant) {
+      } else if (constant instanceof BooleanConstant booleanConstant) {
         type = PrimitiveType.getBoolean();
+        if (!booleanConstant.getValue()) {
+          n = true;
+        }
       } else {
         type = constant.getType();
       }
@@ -92,12 +103,17 @@ public class RegisterAllocator {
     }
 
     try {
-      Register register = allocateNewRegister(type, false, false);
+      Register register = getReusableConstantRegister(constant, type, guessed, n);
+
       register.setIsTypeGuessed(guessed);
+      register.setIsPotentialNullValue(n);
+
       dexConstantVisitor.setTargetRegister(register);
       dexConstantVisitor.setCurrentStmt(currentStmt);
       constant.accept(dexConstantVisitor);
+
       return register;
+
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -117,6 +133,55 @@ public class RegisterAllocator {
     return getRegisterForImmediate(immediate, true, null);
   }
 
+  private List<Register> getConstantPool(Constant constant) {
+    return constantRegisterPools.computeIfAbsent(constant.getClass(), key -> new LinkedList<>());
+  }
+
+  private Register getReusableConstantRegister(
+      Constant constant, Type type, boolean guessed, boolean potentialNull) {
+
+    List<Register> pool = getConstantPool(constant);
+
+    int index = constantPoolIndices.getOrDefault(constant.getClass(), 0);
+
+    while (true) {
+
+      if (index >= pool.size()) {
+        Register register = allocateNewRegister(type, false, false);
+
+        register.setIsTypeGuessed(guessed);
+        register.setIsPotentialNullValue(potentialNull);
+
+        pool.add(register);
+        constantPoolIndices.put(constant.getClass(), index + 1);
+
+        return register;
+      }
+
+      Register register = pool.get(index);
+      index++;
+
+      constantPoolIndices.put(constant.getClass(), index);
+
+      if (lockedRegisters.contains(register)) {
+        continue;
+      }
+
+      register.setIsTypeGuessed(guessed);
+      register.setIsPotentialNullValue(potentialNull);
+
+      return register;
+    }
+  }
+
+  public void lockRegister(Register register) {
+    lockedRegisters.add(register);
+  }
+
+  protected void resetConstantRegisterPools() {
+    constantPoolIndices.clear();
+  }
+
   protected void insertIntoRegisterMap(Local local, Register register) {
     registerMap.put(local, register);
   }
@@ -129,7 +194,7 @@ public class RegisterAllocator {
     return registerList;
   }
 
-  protected HashMap<Local, Register> getRegisterMap() {
+  protected Map<Local, Register> getRegisterMap() {
     return registerMap;
   }
 
@@ -137,7 +202,7 @@ public class RegisterAllocator {
     registerMap = new HashMap<>();
   }
 
-  protected void setRegisterMap(HashMap<Local, Register> registerMap) {
+  protected void setRegisterMap(Map<Local, Register> registerMap) {
     this.registerMap = registerMap;
   }
 }

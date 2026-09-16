@@ -1,5 +1,6 @@
 package sootup.apk.backend.instructions;
 
+import java.util.List;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction23x;
@@ -20,6 +21,16 @@ public class Instruction23x extends ThreeRegisterInstruction {
         getRegisterA().getNumber(),
         getRegisterB().getNumber(),
         getRegisterC().getNumber());
+  }
+
+  @Override
+  public List<Register> getDefRegisters() {
+    return List.of(getRegisterA());
+  }
+
+  @Override
+  public List<Register> getUseRegisters() {
+    return List.of(getRegisterB(), getRegisterC());
   }
 
   @Override

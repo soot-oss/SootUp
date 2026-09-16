@@ -31,6 +31,10 @@ public abstract class AbstractInstruction {
     return registers;
   }
 
+  public abstract List<Register> getDefRegisters();
+
+  public abstract List<Register> getUseRegisters();
+
   public void setRegisters(List<Register> registers) {
     this.registers = registers;
   }

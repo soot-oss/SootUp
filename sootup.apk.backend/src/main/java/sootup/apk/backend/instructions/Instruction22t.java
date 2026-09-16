@@ -1,5 +1,6 @@
 package sootup.apk.backend.instructions;
 
+import java.util.List;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction22t;
@@ -25,6 +26,16 @@ public class Instruction22t extends TwoRegisterInstruction {
             getLabelAssigner().getOrCreateLabel(targetStmt));
     logSmali();
     return builderInstruction;
+  }
+
+  @Override
+  public List<Register> getDefRegisters() {
+    return List.of();
+  }
+
+  @Override
+  public List<Register> getUseRegisters() {
+    return getRegisters();
   }
 
   @Override

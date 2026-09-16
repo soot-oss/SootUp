@@ -64,6 +64,7 @@ public class DexNumberTranformer extends DexTransformer {
 
       doBreak = false;
       for (Stmt stmt : defs) {
+        System.out.println(stmt.toString());
         // put correct local in l
         final Local l =
             stmt instanceof AbstractDefinitionStmt
@@ -214,15 +215,18 @@ public class DexNumberTranformer extends DexTransformer {
    * @param stmt the stmt where 0 will be replaced with null.
    */
   private void replaceWithFloatingPoint(Stmt stmt) {
+    System.out.println("Replace stmt " + stmt);
     if (stmt instanceof JAssignStmt) {
       JAssignStmt s = (JAssignStmt) stmt;
       Value v = s.getRightOp();
       if ((v instanceof IntConstant)) {
         int vVal = ((IntConstant) v).getValue();
         s.withRValue(FloatConstant.getInstance(Float.intBitsToFloat(vVal)));
+        System.out.println("New with float " + stmt);
       } else if (v instanceof LongConstant) {
         long vVal = ((LongConstant) v).getValue();
         s.withRValue(DoubleConstant.getInstance(Double.longBitsToDouble(vVal)));
+        System.out.println("New with double " + stmt);
       }
     }
   }

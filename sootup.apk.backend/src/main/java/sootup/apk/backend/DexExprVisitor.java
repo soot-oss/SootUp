@@ -1,5 +1,7 @@
 package sootup.apk.backend;
 
+import static sootup.apk.backend.Constants.JIMPLE_OBJECT_TYPE;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import org.jf.dexlib2.Opcode;
@@ -48,97 +50,97 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
   @Override
   public void caseAddExpr(@NonNull JAddExpr expr) {
-    generateBinopExpr(expr, "ADD");
+    generateBinopExpr(expr, BinopExprOperation.ADD);
   }
 
   @Override
   public void caseAndExpr(@NonNull JAndExpr expr) {
-    generateBinopExpr(expr, "AND");
+    generateBinopExpr(expr, BinopExprOperation.AND);
   }
 
   @Override
   public void caseCmpExpr(@NonNull JCmpExpr expr) {
-    generateIntBinopExpr(expr, "CMP");
+    generateIntBinopExpr(expr, IntBinopExprOperation.CMP);
   }
 
   @Override
   public void caseCmpgExpr(@NonNull JCmpgExpr expr) {
-    generateIntBinopExpr(expr, "CMPG");
+    generateIntBinopExpr(expr, IntBinopExprOperation.CMPG);
   }
 
   @Override
   public void caseCmplExpr(@NonNull JCmplExpr expr) {
-    generateIntBinopExpr(expr, "CMPL");
+    generateIntBinopExpr(expr, IntBinopExprOperation.CMPL);
   }
 
   @Override
   public void caseDivExpr(@NonNull JDivExpr expr) {
-    generateBinopExpr(expr, "DIV");
+    generateBinopExpr(expr, BinopExprOperation.DIV);
   }
 
   @Override
   public void caseEqExpr(@NonNull JEqExpr expr) {
-    generateConditionExpr(expr, "EQ");
+    generateConditionExpr(expr, ConditionExprOperation.EQ);
   }
 
   @Override
   public void caseNeExpr(@NonNull JNeExpr expr) {
-    generateConditionExpr(expr, "NE");
+    generateConditionExpr(expr, ConditionExprOperation.NE);
   }
 
   @Override
   public void caseGeExpr(@NonNull JGeExpr expr) {
-    generateConditionExpr(expr, "GE");
+    generateConditionExpr(expr, ConditionExprOperation.GE);
   }
 
   @Override
   public void caseGtExpr(@NonNull JGtExpr expr) {
-    generateConditionExpr(expr, "GT");
+    generateConditionExpr(expr, ConditionExprOperation.GT);
   }
 
   @Override
   public void caseLeExpr(@NonNull JLeExpr expr) {
-    generateConditionExpr(expr, "LE");
+    generateConditionExpr(expr, ConditionExprOperation.LE);
   }
 
   @Override
   public void caseLtExpr(@NonNull JLtExpr expr) {
-    generateConditionExpr(expr, "LT");
+    generateConditionExpr(expr, ConditionExprOperation.LT);
   }
 
   @Override
   public void caseMulExpr(@NonNull JMulExpr expr) {
-    generateBinopExpr(expr, "MUL");
+    generateBinopExpr(expr, BinopExprOperation.MUL);
   }
 
   @Override
   public void caseOrExpr(@NonNull JOrExpr expr) {
-    generateBinopExpr(expr, "OR");
+    generateBinopExpr(expr, BinopExprOperation.OR);
   }
 
   @Override
   public void caseRemExpr(@NonNull JRemExpr expr) {
-    generateBinopExpr(expr, "REM");
+    generateBinopExpr(expr, BinopExprOperation.REM);
   }
 
   @Override
   public void caseShlExpr(@NonNull JShlExpr expr) {
-    generateBinopExpr(expr, "SHL");
+    generateBinopExpr(expr, BinopExprOperation.SHL);
   }
 
   @Override
   public void caseShrExpr(@NonNull JShrExpr expr) {
-    generateBinopExpr(expr, "SHR");
+    generateBinopExpr(expr, BinopExprOperation.SHR);
   }
 
   @Override
   public void caseUshrExpr(@NonNull JUshrExpr expr) {
-    generateBinopExpr(expr, "USHR");
+    generateBinopExpr(expr, BinopExprOperation.USHR);
   }
 
   @Override
   public void caseSubExpr(@NonNull JSubExpr expr) {
-    generateBinopExpr(expr, "SUB");
+    generateBinopExpr(expr, BinopExprOperation.SUB);
   }
 
   @Override
@@ -147,11 +149,25 @@ public class DexExprVisitor extends AbstractExprVisitor {
         || expr.getOp2().equals(LongConstant.getInstance(-1))) {
       generateNotExpr(expr);
     } else {
-      generateBinopExpr(expr, "XOR");
+      generateBinopExpr(expr, BinopExprOperation.XOR);
     }
   }
 
-  private void generateBinopExpr(AbstractBinopExpr expr, String operation) {
+  private enum BinopExprOperation {
+    ADD,
+    AND,
+    DIV,
+    OR,
+    MUL,
+    REM,
+    SHL,
+    SHR,
+    SUB,
+    USHR,
+    XOR
+  }
+
+  private void generateBinopExpr(AbstractBinopExpr expr, BinopExprOperation operation) {
 
     // Get operands and ensure that they are primitive
     Immediate op1 = expr.getOp1();
@@ -171,6 +187,9 @@ public class DexExprVisitor extends AbstractExprVisitor {
       int op2Constant = ((IntConstant) op2).getValue();
       if (DexUtil.inSigned8Bit(op2Constant)) {
         Register op1Register = registerAllocator.getRegisterForImmediate(op1, false, currentStmt);
+        if (op1Register.isPotentialNullValue()) {
+          op1Register.setIsPotentialNullValue(false);
+        }
         fixObjectType(PrimitiveType.getInt());
         dexStmtVisitor.addInstruction(
             new Instruction22b(
@@ -182,6 +201,9 @@ public class DexExprVisitor extends AbstractExprVisitor {
           && !expr.isJShrExpr()
           && !expr.isJUshrExpr()) {
         Register op1Register = registerAllocator.getRegisterForImmediate(op1, false, currentStmt);
+        if (op1Register.isPotentialNullValue()) {
+          op1Register.setIsPotentialNullValue(false);
+        }
         fixObjectType(PrimitiveType.getInt());
         dexStmtVisitor.addInstruction(
             new Instruction22s(
@@ -195,6 +217,9 @@ public class DexExprVisitor extends AbstractExprVisitor {
       int op1Constant = ((IntConstant) op1).getValue();
       if (DexUtil.inSigned8Bit(op1Constant)) {
         Register op2Register = registerAllocator.getRegisterForImmediate(op2, false, currentStmt);
+        if (op2Register.isPotentialNullValue()) {
+          op2Register.setIsPotentialNullValue(false);
+        }
         fixObjectType(PrimitiveType.getInt());
         dexStmtVisitor.addInstruction(
             new Instruction22b(Opcode.RSUB_INT_LIT8, targetRegister, op2Register, op1Constant),
@@ -202,6 +227,9 @@ public class DexExprVisitor extends AbstractExprVisitor {
         return;
       } else if (DexUtil.inSigned16Bit(op1Constant)) {
         Register op2Register = registerAllocator.getRegisterForImmediate(op2, false, currentStmt);
+        if (op2Register.isPotentialNullValue()) {
+          op2Register.setIsPotentialNullValue(false);
+        }
         fixObjectType(PrimitiveType.getInt());
         dexStmtVisitor.addInstruction(
             new Instruction22s(Opcode.RSUB_INT, targetRegister, op2Register, op1Constant),
@@ -215,6 +243,12 @@ public class DexExprVisitor extends AbstractExprVisitor {
     Register op1Register = registerAllocator.getRegisterForImmediate(op1, false, currentStmt);
     Register op2Register = registerAllocator.getRegisterForImmediate(op2, false, currentStmt);
 
+    if (op1Register.isPotentialNullValue()) {
+      op1Register.setIsPotentialNullValue(false);
+    }
+    if (op2Register.isPotentialNullValue()) {
+      op2Register.setIsPotentialNullValue(false);
+    }
     if (!(op1Register.getType() instanceof PrimitiveType)
         || !(op2Register.getType() instanceof PrimitiveType)) {
       throw new IllegalArgumentException(
@@ -222,6 +256,26 @@ public class DexExprVisitor extends AbstractExprVisitor {
               + op1Register.getType()
               + "/"
               + op2Register.getType());
+    }
+
+    if (op1Register.getType().equals(PrimitiveType.getInt())
+        && op1Register.getUses().isEmpty()
+        && op2Register.getType().equals(PrimitiveType.getFloat())) {
+      op1Register.setType(PrimitiveType.getFloat());
+    } else if (op1Register.getType().equals(PrimitiveType.getLong())
+        && op1Register.getUses().isEmpty()
+        && op2Register.getType().equals(PrimitiveType.getDouble())) {
+      op1Register.setType(PrimitiveType.getDouble());
+    } else if (op1Register.getType().equals(PrimitiveType.getFloat())
+        && op2Register.getType().equals(PrimitiveType.getInt())
+        && op2Register.getUses().isEmpty()
+        && !List.of(BinopExprOperation.SHL, BinopExprOperation.SHR, BinopExprOperation.USHR)
+            .contains(operation)) {
+      op2Register.setType(PrimitiveType.getFloat());
+    } else if (op1Register.getType().equals(PrimitiveType.getDouble())
+        && op2Register.getType().equals(PrimitiveType.getLong())
+        && op2Register.getUses().isEmpty()) {
+      op2Register.setType(PrimitiveType.getDouble());
     }
 
     PrimitiveType calcType =
@@ -241,10 +295,12 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
     if (DexUtil.isTypeBiggerOrEqual(op2Register.getType(), PrimitiveType.getInt())
         && DexUtil.isTypeSmaller(op2Register.getType(), calcType)
-        && !List.of("SHL", "SHR", "USHR").contains(operation)) {
+        && !List.of(BinopExprOperation.SHL, BinopExprOperation.SHR, BinopExprOperation.USHR)
+            .contains(operation)) {
       op2CastRegister = registerAllocator.getRegisterForType(calcType);
       castPrimitive(op2Register, op2CastRegister, op2Register.getType(), calcType);
-    } else if (List.of("SHL", "SHR", "USHR").contains(operation)
+    } else if (List.of(BinopExprOperation.SHL, BinopExprOperation.SHR, BinopExprOperation.USHR)
+            .contains(operation)
         && !DexUtil.isTypeSmallerOrEqual(op2Register.getType(), PrimitiveType.getInt())) {
       op2CastRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
       castPrimitive(op2Register, op2CastRegister, op2Register.getType(), PrimitiveType.getInt());
@@ -252,6 +308,11 @@ public class DexExprVisitor extends AbstractExprVisitor {
       op2CastRegister = op2Register;
     }
 
+    log.info(
+        "Target register type: {} guessed: {}",
+        targetRegister.getType(),
+        targetRegister.isTypeGuessed());
+    log.info("Calc type: {}", calcType);
     fixObjectType(calcType);
 
     Register targetTmpRegister = getTargetTmpRegister(op1CastRegister.getType());
@@ -260,16 +321,23 @@ public class DexExprVisitor extends AbstractExprVisitor {
     // else use default opcode
     if (targetTmpRegister.equals(op1CastRegister)) {
       Opcode opcode =
-          Opcode.valueOf(operation + "_" + calcType.toString().toUpperCase() + "_2ADDR");
+          Opcode.valueOf(operation.name() + "_" + calcType.toString().toUpperCase() + "_2ADDR");
       dexStmtVisitor.addInstruction(
           new Instruction12x(opcode, targetTmpRegister, op2CastRegister), currentStmt);
-    } else if (targetTmpRegister.equals(op2CastRegister)) {
+    } else if (targetTmpRegister.equals(op2CastRegister)
+        && List.of(
+                BinopExprOperation.ADD,
+                BinopExprOperation.AND,
+                BinopExprOperation.OR,
+                BinopExprOperation.MUL,
+                BinopExprOperation.XOR)
+            .contains(operation)) {
       Opcode opcode =
-          Opcode.valueOf(operation + "_" + calcType.toString().toUpperCase() + "_2ADDR");
+          Opcode.valueOf(operation.name() + "_" + calcType.toString().toUpperCase() + "_2ADDR");
       dexStmtVisitor.addInstruction(
           new Instruction12x(opcode, targetTmpRegister, op1CastRegister), currentStmt);
     } else {
-      Opcode opcode = Opcode.valueOf(operation + "_" + calcType.toString().toUpperCase());
+      Opcode opcode = Opcode.valueOf(operation.name() + "_" + calcType.toString().toUpperCase());
       dexStmtVisitor.addInstruction(
           new Instruction23x(opcode, targetTmpRegister, op1CastRegister, op2CastRegister),
           currentStmt);
@@ -283,6 +351,10 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
     Register targetTmpRegister = getTargetTmpRegister(op2.getType());
     Register op1Register = registerAllocator.getRegisterForImmediate(op1, false, currentStmt);
+
+    if (op1Register.isPotentialNullValue()) {
+      op1Register.setIsPotentialNullValue(false);
+    }
 
     if (DexUtil.isTypeSmallerOrEqual(op1Register.getType(), PrimitiveType.getInt())) {
       fixObjectType(PrimitiveType.getInt());
@@ -302,8 +374,17 @@ public class DexExprVisitor extends AbstractExprVisitor {
     castTmpRegisterBackToTarget(targetTmpRegister);
   }
 
+  private enum ConditionExprOperation {
+    EQ,
+    NE,
+    GE,
+    GT,
+    LE,
+    LT
+  }
+
   private void generateConditionExpr(
-      AbstractConditionExpr abstractConditionExpr, String operation) {
+      AbstractConditionExpr abstractConditionExpr, ConditionExprOperation operation) {
     Immediate op1 = abstractConditionExpr.getOp1();
     Immediate op2 = abstractConditionExpr.getOp2();
 
@@ -316,22 +397,54 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
     Register op1Register = registerAllocator.getRegisterForImmediate(op1, false, currentStmt);
     if (op2 instanceof IntConstant && ((IntConstant) op2).getValue() == 0) {
-      Opcode opcode = Opcode.valueOf("IF_" + operation + "Z");
+      Opcode opcode = Opcode.valueOf("IF_" + operation.name() + "Z");
       dexStmtVisitor.addInstruction(
           new Instruction21t(opcode, op1Register, targetStmt), currentStmt);
     } else {
-      Opcode opcode = Opcode.valueOf("IF_" + operation);
+      Opcode opcode = Opcode.valueOf("IF_" + operation.name());
       Register op2Register = registerAllocator.getRegisterForImmediate(op2, false, currentStmt);
       dexStmtVisitor.addInstruction(
           new Instruction22t(opcode, op1Register, op2Register, targetStmt), currentStmt);
     }
   }
 
-  private void generateIntBinopExpr(AbstractIntBinopExpr abstractIntBinopExpr, String operation) {
+  private enum IntBinopExprOperation {
+    CMP,
+    CMPG,
+    CMPL
+  }
+
+  private void generateIntBinopExpr(
+      AbstractIntBinopExpr abstractIntBinopExpr, IntBinopExprOperation operation) {
     Immediate op1 = abstractIntBinopExpr.getOp1();
     Register op1Register = registerAllocator.getRegisterForImmediate(op1, false, currentStmt);
     Immediate op2 = abstractIntBinopExpr.getOp2();
     Register op2Register = registerAllocator.getRegisterForImmediate(op2, false, currentStmt);
+
+    if (op1Register.isPotentialNullValue()) {
+      op1Register.setIsPotentialNullValue(false);
+    }
+    if (op2Register.isPotentialNullValue()) {
+      op2Register.setIsPotentialNullValue(false);
+    }
+
+    if (op1Register.getType().equals(PrimitiveType.getInt())
+        && op1Register.getUses().isEmpty()
+        && op2Register.getType().equals(PrimitiveType.getFloat())) {
+      op1Register.setType(PrimitiveType.getFloat());
+    } else if (op1Register.getType().equals(PrimitiveType.getLong())
+        && op1Register.getUses().isEmpty()
+        && op2Register.getType().equals(PrimitiveType.getDouble())) {
+      op1Register.setType(PrimitiveType.getDouble());
+    } else if (op1Register.getType().equals(PrimitiveType.getFloat())
+        && op2Register.getType().equals(PrimitiveType.getInt())
+        && op2Register.getUses().isEmpty()) {
+      op2Register.setType(PrimitiveType.getFloat());
+    } else if (op1Register.getType().equals(PrimitiveType.getDouble())
+        && op2Register.getType().equals(PrimitiveType.getLong())
+        && op2Register.getUses().isEmpty()) {
+      op2Register.setType(PrimitiveType.getDouble());
+    }
 
     if (op1Register == targetRegister || op2Register == targetRegister) {
       if (currentStmt.isJAssignStmt()) {
@@ -355,36 +468,77 @@ public class DexExprVisitor extends AbstractExprVisitor {
               + op2Register.getType());
     }
 
+    log.info("Operation {}", operation);
+    log.info("Op 1 register type {}", op1Register.getType());
+    log.info("Op 2 register type {}", op1Register.getType());
+
+    Register op1PrepRegister = null;
+    Register op2PrepRegister = null;
+
+    if (!operation.equals(IntBinopExprOperation.CMP)) {
+      if (DexUtil.isTypeSmallerOrEqual(op1Register.getType(), PrimitiveType.getInt())
+          && op1Register.isTypeGuessed()) {
+        op1PrepRegister = registerAllocator.getRegisterForType(PrimitiveType.getFloat());
+        castPrimitive(
+            op1Register, op1PrepRegister, op1Register.getType(), PrimitiveType.getFloat());
+      } else if (op1Register.getType().equals(PrimitiveType.getLong())
+          && op1Register.isTypeGuessed()) {
+        op1PrepRegister = registerAllocator.getRegisterForType(PrimitiveType.getDouble());
+        castPrimitive(
+            op1Register, op1PrepRegister, op1Register.getType(), PrimitiveType.getDouble());
+      }
+
+      if (DexUtil.isTypeSmallerOrEqual(op2Register.getType(), PrimitiveType.getInt())
+          && op2Register.isTypeGuessed()) {
+        op2PrepRegister = registerAllocator.getRegisterForType(PrimitiveType.getFloat());
+        castPrimitive(
+            op2Register, op2PrepRegister, op2Register.getType(), PrimitiveType.getFloat());
+      } else if (op2Register.getType().equals(PrimitiveType.getLong())
+          && op2Register.isTypeGuessed()) {
+        op2PrepRegister = registerAllocator.getRegisterForType(PrimitiveType.getDouble());
+        castPrimitive(
+            op2Register, op2PrepRegister, op2Register.getType(), PrimitiveType.getDouble());
+      }
+    }
+
+    if (op1PrepRegister == null) {
+      log.info("op1Prep register is null");
+      op1PrepRegister = op1Register;
+    }
+    if (op2PrepRegister == null) {
+      op2PrepRegister = op2Register;
+    }
+
     PrimitiveType calcType =
         DexUtil.getArithmeticType(
-            (PrimitiveType) op1Register.getType(), (PrimitiveType) op2Register.getType());
+            (PrimitiveType) op1PrepRegister.getType(), (PrimitiveType) op2PrepRegister.getType());
+
+    log.info("Calc type: {}", calcType);
 
     Register op1CastRegister;
     Register op2CastRegister;
 
-    if (DexUtil.isTypeBiggerOrEqual(op1Register.getType(), PrimitiveType.getInt())
-        && DexUtil.isTypeSmaller(op1Register.getType(), calcType)) {
+    if (DexUtil.isTypeBiggerOrEqual(op1PrepRegister.getType(), PrimitiveType.getInt())
+        && DexUtil.isTypeSmaller(op1PrepRegister.getType(), calcType)) {
       op1CastRegister = registerAllocator.getRegisterForType(calcType);
-      castPrimitive(op1Register, op1CastRegister, op1Register.getType(), calcType);
+      castPrimitive(op1PrepRegister, op1CastRegister, op1PrepRegister.getType(), calcType);
     } else {
-      op1CastRegister = op1Register;
+      op1CastRegister = op1PrepRegister;
     }
 
-    if (DexUtil.isTypeBiggerOrEqual(op2Register.getType(), PrimitiveType.getInt())
-        && DexUtil.isTypeSmaller(op2Register.getType(), calcType)
-        && !List.of("SHL", "SHR", "USHR").contains(operation)) {
+    if (DexUtil.isTypeBiggerOrEqual(op2PrepRegister.getType(), PrimitiveType.getInt())
+        && DexUtil.isTypeSmaller(op2PrepRegister.getType(), calcType)) {
       op2CastRegister = registerAllocator.getRegisterForType(calcType);
-      castPrimitive(op2Register, op2CastRegister, op2Register.getType(), calcType);
-    } else if (List.of("SHL", "SHR", "USHR").contains(operation)
-        && !DexUtil.isTypeSmallerOrEqual(op2Register.getType(), PrimitiveType.getInt())) {
-      op2CastRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
-      castPrimitive(op2Register, op2CastRegister, op2Register.getType(), PrimitiveType.getInt());
+      castPrimitive(op2PrepRegister, op2CastRegister, op2PrepRegister.getType(), calcType);
     } else {
-      op2CastRegister = op2Register;
+      op2CastRegister = op2PrepRegister;
     }
+
+    log.info("Op 1 cast register type {}", op1CastRegister.getType());
+    log.info("Op 2 cast register type {}", op1CastRegister.getType());
 
     Opcode opcode;
-    if (operation.equals("CMP")) {
+    if (operation.equals(IntBinopExprOperation.CMP)) {
       if (op1CastRegister.getType() == PrimitiveType.getLong()) {
         opcode = Opcode.CMP_LONG;
       } else {
@@ -395,9 +549,9 @@ public class DexExprVisitor extends AbstractExprVisitor {
                 + op2CastRegister.getType());
       }
     } else if (op1CastRegister.getType() == PrimitiveType.getDouble()) {
-      opcode = Opcode.valueOf(operation + "_DOUBLE");
+      opcode = Opcode.valueOf(operation.name() + "_DOUBLE");
     } else if (op1CastRegister.getType() == PrimitiveType.getFloat()) {
-      opcode = Opcode.valueOf(operation + "_FLOAT");
+      opcode = Opcode.valueOf(operation.name() + "_FLOAT");
     } else {
       throw new IllegalArgumentException(
           "Operands in cmpg/cmpl expression are neither double nor float: "
@@ -405,6 +559,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
               + "/"
               + op2Register.getType());
     }
+    log.info("Opcode: {}", opcode);
     Register targetTmpRegister = getTargetTmpRegister(PrimitiveType.getInt());
     dexStmtVisitor.addInstruction(
         new Instruction23x(opcode, targetTmpRegister, op1CastRegister, op2CastRegister),
@@ -417,26 +572,28 @@ public class DexExprVisitor extends AbstractExprVisitor {
     ClassType targetClassType = expr.getMethodSignature().getDeclClassType();
     ClassType currentClassType = dexStmtVisitor.getSootMethod().getDeclClassType();
 
-    String opcode;
+    InvokeOpcode opcode;
     if (targetClassType.equals(currentClassType)
-        || expr.getMethodSignature().getName().equals("<init>")) { // constructor or private method
-      opcode = "INVOKE_DIRECT";
+        || expr.getMethodSignature()
+            .getName()
+            .equals(Constants.DEX_INIT_METHOD)) { // constructor or private method
+      opcode = InvokeOpcode.INVOKE_DIRECT;
     } else if (isCallToSuperClass(currentClassType, targetClassType)) {
-      opcode = "INVOKE_SUPER";
+      opcode = InvokeOpcode.INVOKE_SUPER;
     } else if (expr.getMethodSignature().getDeclClassType().getClass().isInterface()) {
-      opcode = "INVOKE_SUPER";
+      opcode = InvokeOpcode.INVOKE_SUPER;
     } else {
-      opcode = "INVOKE_VIRTUAL";
+      opcode = InvokeOpcode.INVOKE_VIRTUAL;
     }
 
     List<Register> argumentRegisters = getVirtualInvokeArgumentRegisters(expr);
     MethodReference methodReference = buildMethodReference(expr.getMethodSignature());
+
     buildInvokeInstruction(
         opcode, argumentRegisters, methodReference, expr.getMethodSignature().getType());
   }
 
   private boolean isCallToSuperClass(ClassType currentClassType, ClassType targetClassType) {
-
     ClassType current = currentClassType;
 
     while (dexStmtVisitor.getView().getClass(current).isPresent()) {
@@ -466,31 +623,92 @@ public class DexExprVisitor extends AbstractExprVisitor {
       }
       return;
     }
-    String invokeOpcode = "INVOKE_VIRTUAL";
     log.info("Return type: {}", expr.getMethodSignature().getType());
     List<Register> argumentRegisters = getVirtualInvokeArgumentRegisters(expr);
+
+    if (DexUtil.isObject(expr.getBase().getType())
+        && !(DexUtil.toDexType(expr.getBase().getType()).equals("Ljava/lang/Object;"))) {
+      TypeReference castTypeReference =
+          new ImmutableTypeReference(DexUtil.toDexType(expr.getBase().getType()));
+      dexStmtVisitor.addInstruction(
+          new Instruction21c(Opcode.CHECK_CAST, argumentRegisters.get(0), castTypeReference),
+          currentStmt);
+    }
+    var parameterTypes = methodReference.getParameterTypes();
+    for (int i = 0; i < parameterTypes.size(); i++) {
+      var parameterType = parameterTypes.get(i);
+      if (DexUtil.isObject(parameterType.toString())
+          && !(parameterType.toString().equals("Ljava/lang/Object;"))) {
+        TypeReference castTypeReference = new ImmutableTypeReference(parameterType.toString());
+        dexStmtVisitor.addInstruction(
+            new Instruction21c(Opcode.CHECK_CAST, argumentRegisters.get(i + 1), castTypeReference),
+            currentStmt);
+      }
+    }
+
     buildInvokeInstruction(
-        invokeOpcode, argumentRegisters, methodReference, expr.getMethodSignature().getType());
+        InvokeOpcode.INVOKE_VIRTUAL,
+        argumentRegisters,
+        methodReference,
+        expr.getMethodSignature().getType());
   }
 
   @Override
   public void caseInterfaceInvokeExpr(@NonNull JInterfaceInvokeExpr expr) {
     MethodSignature methodSignature = expr.getMethodSignature();
     MethodReference methodReference = buildMethodReference(methodSignature);
-    String invokeOpcode = "INVOKE_INTERFACE";
     List<Register> argumentRegisters = getVirtualInvokeArgumentRegisters(expr);
+
+    if (DexUtil.isObject(expr.getBase().getType())
+        && !(expr.getBase().getType().toString().startsWith(JIMPLE_OBJECT_TYPE))) {
+      TypeReference castTypeReference =
+          new ImmutableTypeReference(DexUtil.toDexType(expr.getBase().getType()));
+      dexStmtVisitor.addInstruction(
+          new Instruction21c(Opcode.CHECK_CAST, argumentRegisters.get(0), castTypeReference),
+          currentStmt);
+    }
+    var parameterTypes = methodReference.getParameterTypes();
+    for (int i = 0; i < parameterTypes.size(); i++) {
+      var parameterType = parameterTypes.get(i);
+      if (DexUtil.isObject(parameterType.toString())
+          && !(parameterType.toString().equals(Constants.DEX_OBJECT_TYPE))) {
+        TypeReference castTypeReference = new ImmutableTypeReference(parameterType.toString());
+        dexStmtVisitor.addInstruction(
+            new Instruction21c(Opcode.CHECK_CAST, argumentRegisters.get(i + 1), castTypeReference),
+            currentStmt);
+      }
+    }
+
     buildInvokeInstruction(
-        invokeOpcode, argumentRegisters, methodReference, expr.getMethodSignature().getType());
+        InvokeOpcode.INVOKE_INTERFACE,
+        argumentRegisters,
+        methodReference,
+        expr.getMethodSignature().getType());
   }
 
   @Override
   public void caseStaticInvokeExpr(@NonNull JStaticInvokeExpr expr) {
     MethodSignature methodSignature = expr.getMethodSignature();
     MethodReference methodReference = buildMethodReference(methodSignature);
-    String invokeOpcode = "INVOKE_STATIC";
     List<Register> argumentRegisters = getInvokeArgumentRegisters(expr);
+
+    var parameterTypes = methodReference.getParameterTypes();
+    for (int i = 0; i < parameterTypes.size(); i++) {
+      var parameterType = parameterTypes.get(i);
+      if (DexUtil.isObject(parameterType.toString())
+          && !(parameterType.toString().equals(Constants.DEX_OBJECT_TYPE))) {
+        TypeReference castTypeReference = new ImmutableTypeReference(parameterType.toString());
+        dexStmtVisitor.addInstruction(
+            new Instruction21c(Opcode.CHECK_CAST, argumentRegisters.get(i), castTypeReference),
+            currentStmt);
+      }
+    }
+
     buildInvokeInstruction(
-        invokeOpcode, argumentRegisters, methodReference, expr.getMethodSignature().getType());
+        InvokeOpcode.INVOKE_STATIC,
+        argumentRegisters,
+        methodReference,
+        expr.getMethodSignature().getType());
   }
 
   @Override
@@ -498,11 +716,20 @@ public class DexExprVisitor extends AbstractExprVisitor {
     // TODO
   }
 
+  private enum InvokeOpcode {
+    FILLED_NEW_ARRAY,
+    INVOKE_DIRECT,
+    INVOKE_INTERFACE,
+    INVOKE_STATIC,
+    INVOKE_SUPER,
+    INVOKE_VIRTUAL
+  }
+
   private void buildInvokeInstruction(
-      String opcode, List<Register> argumentRegisters, Reference reference, Type returnType) {
+      InvokeOpcode opcode, List<Register> argumentRegisters, Reference reference, Type returnType) {
     int argumentRegisterSize = DexUtil.getRegisterSizeCount(argumentRegisters);
     if (argumentRegisterSize <= 5) {
-      Opcode opc = Opcode.valueOf(opcode.toUpperCase());
+      Opcode opc = Opcode.valueOf(opcode.name().toUpperCase());
       Register[] argRegisterList = getInvokeFiveRegisters(argumentRegisters);
       dexStmtVisitor.addInstruction(
           new Instruction35c(
@@ -516,7 +743,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
               reference),
           currentStmt);
     } else if (argumentRegisterSize <= 255) {
-      Opcode opc = Opcode.valueOf(opcode.toUpperCase() + "_RANGE");
+      Opcode opc = Opcode.valueOf(opcode.name().toUpperCase() + "_RANGE");
       List<Register> argRegisterList = getRegisterNextToEachOther(argumentRegisters);
       dexStmtVisitor.addInstruction(
           new Instruction3rc(opc, argRegisterList, argumentRegisterSize, reference), currentStmt);
@@ -614,7 +841,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
               r -> {
                 Register reg = registerAllocator.getRegisterForType(r.getType());
                 log.info("Move instruction invoke");
-                generateMoveInstruction(reg, r, r.getType(), false);
+                generateMoveInstruction(reg, r, r.getType(), false, r.isPotentialNullValue());
                 return reg;
               })
           .toList();
@@ -664,6 +891,23 @@ public class DexExprVisitor extends AbstractExprVisitor {
     Type type = expr.getType();
     Register register = registerAllocator.getRegisterForImmediate(op, false, currentStmt);
 
+    if (register.getType().equals(PrimitiveType.getInt())
+        && type.equals(PrimitiveType.getFloat())
+        && register.getUses().isEmpty()) {
+      register.setType(PrimitiveType.getFloat());
+    }
+
+    if (register.getType().equals(PrimitiveType.getLong())
+        && type.equals(PrimitiveType.getDouble())
+        && register.getUses().isEmpty()) {
+      register.setType(PrimitiveType.getDouble());
+    }
+
+    log.info(
+        "Register {} of type {} is potential null {}",
+        register.getNumber(),
+        register.getType(),
+        register.isPotentialNullValue());
     log.info("Target register type guesssed: {}", targetRegister.isTypeGuessed());
     log.info("Target register type: {}", targetRegister.getType());
 
@@ -685,9 +929,14 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
     fixObjectType(type);
 
-    if (type.toString().equals("java.lang.Object")) {
+    if (register.isPotentialNullValue()) {
+      targetRegister.setIsPotentialNullValue(true);
+    }
+
+    if (type.toString().startsWith(JIMPLE_OBJECT_TYPE)) {
       log.info("Move instruction because of unnecessary cast");
-      generateMoveInstruction(targetRegister, register, register.getType(), true);
+      generateMoveInstruction(
+          targetRegister, register, register.getType(), true, register.isPotentialNullValue());
       return;
     }
 
@@ -701,7 +950,8 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
     if (register.getType().equals(type)) {
       log.info("Move instruction cast java.lang.Object");
-      generateMoveInstruction(targetRegister, register, register.getType(), true);
+      generateMoveInstruction(
+          targetRegister, register, register.getType(), true, register.isPotentialNullValue());
     } else if (register.getType() instanceof PrimitiveType && type instanceof PrimitiveType) {
       castPrimitive(register, targetRegister, register.getType(), type);
     } else {
@@ -719,12 +969,18 @@ public class DexExprVisitor extends AbstractExprVisitor {
     } else {
       Register tmpRegister = registerAllocator.getRegisterForType(sourceRegister.getType());
       log.info("Move instruction cast object");
-      generateMoveInstruction(tmpRegister, sourceRegister, sourceRegister.getType(), false);
+      generateMoveInstruction(
+          tmpRegister,
+          sourceRegister,
+          sourceRegister.getType(),
+          false,
+          sourceRegister.isPotentialNullValue());
       dexStmtVisitor.addInstruction(
           new Instruction21c(Opcode.CHECK_CAST, tmpRegister, castTypeReference), currentStmt);
       log.info("Check cast on tmp register type  {}", tmpRegister.getType());
       log.info("Move instruction cast object");
-      generateMoveInstruction(targetRegister, tmpRegister, castType, false);
+      generateMoveInstruction(
+          targetRegister, tmpRegister, castType, false, tmpRegister.isPotentialNullValue());
     }
   }
 
@@ -752,7 +1008,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
       castTypeP = PrimitiveType.getInt();
     }
 
-    if (targetR.getType().toString().equals("java.lang.Object") || targetR.isTypeGuessed()) {
+    if (targetR.getType().toString().startsWith(JIMPLE_OBJECT_TYPE) || targetR.isTypeGuessed()) {
       targetRegister.setType(castType);
       targetRegister.setIsTypeGuessed(true);
     }
@@ -760,7 +1016,8 @@ public class DexExprVisitor extends AbstractExprVisitor {
     if (sourceTypeP == castTypeP) {
       if (targetR.getNumber() != sourceRegister.getNumber()) {
         log.info("Move instruction cast primitive");
-        generateMoveInstruction(targetR, sourceRegister, sourceTypeP, false);
+        generateMoveInstruction(
+            targetR, sourceRegister, sourceTypeP, false, sourceRegister.isPotentialNullValue());
       } else {
         dexStmtVisitor.addInstruction(new Instruction10x(Opcode.NOP), currentStmt);
       }
@@ -852,7 +1109,8 @@ public class DexExprVisitor extends AbstractExprVisitor {
           registerAllocator.getRegisterForImmediate(currentSize, false, currentStmt);
       sizeRegister.add(currentRegister);
     }
-    buildInvokeInstruction("FILLED_NEW_ARRAY", sizeRegister, arrayTypeReference, baseType);
+    buildInvokeInstruction(
+        InvokeOpcode.FILLED_NEW_ARRAY, sizeRegister, arrayTypeReference, baseType);
   }
 
   @Override
@@ -880,6 +1138,9 @@ public class DexExprVisitor extends AbstractExprVisitor {
   public void caseNegExpr(@NonNull JNegExpr expr) {
     Immediate op = expr.getOp();
     Register register = registerAllocator.getRegisterForImmediate(op, false, currentStmt);
+    if (register.isPotentialNullValue()) {
+      register.setIsPotentialNullValue(false);
+    }
     Opcode opcode;
     Register targetTmpRegister;
     if (DexUtil.isTypeSmallerOrEqual(register.getType(), PrimitiveType.getInt())) {
@@ -917,7 +1178,11 @@ public class DexExprVisitor extends AbstractExprVisitor {
   }
 
   protected void generateMoveInstruction(
-      Register targetR, Register sourceRegister, Type valueType, boolean fixObjectType) {
+      Register targetR,
+      Register sourceRegister,
+      Type valueType,
+      boolean fixObjectType,
+      boolean potentialNullValue) {
     log.info("Move stmt: {}", currentStmt.toString());
 
     if (fixObjectType
@@ -929,6 +1194,9 @@ public class DexExprVisitor extends AbstractExprVisitor {
           sourceRegister.isTypeGuessed());
       targetR.setType(sourceRegister.getType());
       targetR.setIsTypeGuessed(true);
+    }
+    if (potentialNullValue) {
+      targetR.setIsPotentialNullValue(true);
     }
 
     log.info("Target register {} with type {}", targetR.getNumber(), targetR.getType());
@@ -972,7 +1240,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
   private Register getTargetTmpRegister(Type opType) {
     // if the target register has a smaller type than the operands
     // a tmp register is used and the result later cast back into the target register
-    if (opType.toString().equals("java.lang.Object")) {
+    if (opType.toString().startsWith(JIMPLE_OBJECT_TYPE)) {
       return targetRegister;
     }
 
@@ -998,7 +1266,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
   }
 
   private void fixObjectType(Type defaultType) {
-    if (targetRegister.getType().toString().equals("java.lang.Object")
+    if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
         || targetRegister.isTypeGuessed()) {
       log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
 

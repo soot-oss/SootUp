@@ -37,6 +37,16 @@ public class Instruction4rcc extends AbstractInstruction {
   }
 
   @Override
+  public List<Register> getDefRegisters() {
+    return List.of();
+  }
+
+  @Override
+  public List<Register> getUseRegisters() {
+    return registers;
+  }
+
+  @Override
   public void logSmali() {
     if (reference instanceof MethodReference methodReference) {
       log.info(

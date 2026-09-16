@@ -1,5 +1,6 @@
 package sootup.apk.backend.instructions;
 
+import java.util.List;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction22s;
@@ -20,6 +21,16 @@ public class Instruction22s extends TwoRegisterInstruction {
     logSmali();
     return new BuilderInstruction22s(
         getOpcode(), getRegisterA().getNumber(), getRegisterB().getNumber(), literal);
+  }
+
+  @Override
+  public List<Register> getDefRegisters() {
+    return List.of(getRegisterA());
+  }
+
+  @Override
+  public List<Register> getUseRegisters() {
+    return List.of(getRegisterB());
   }
 
   @Override

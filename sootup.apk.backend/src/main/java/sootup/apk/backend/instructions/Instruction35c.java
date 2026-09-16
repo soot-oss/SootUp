@@ -50,6 +50,16 @@ public class Instruction35c extends FiveRegisterInstruction {
   }
 
   @Override
+  public List<Register> getDefRegisters() {
+    return List.of();
+  }
+
+  @Override
+  public List<Register> getUseRegisters() {
+    return getRegisters();
+  }
+
+  @Override
   public void logSmali() {
     List<Register> registers =
         Stream.of(getRegisterA(), getRegisterB(), getRegisterC(), getRegisterD(), getRegisterE())

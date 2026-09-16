@@ -1,5 +1,8 @@
 package sootup.apk.backend;
 
+import java.util.ArrayList;
+import java.util.List;
+import sootup.apk.backend.instructions.AbstractInstruction;
 import sootup.core.types.Type;
 
 public class Register {
@@ -7,14 +10,20 @@ public class Register {
   private int number;
   private Type type;
   private boolean isTypeGuessed = false;
+  private boolean potentialNullValue = false;
   private final boolean isParameter;
   private final boolean isTmp;
+
+  private final List<AbstractInstruction> defs;
+  private final List<AbstractInstruction> uses;
 
   protected Register(int number, Type type, boolean isParameter, boolean isTmp) {
     this.number = number;
     this.type = type;
     this.isParameter = isParameter;
     this.isTmp = isTmp;
+    this.defs = new ArrayList<>();
+    this.uses = new ArrayList<>();
   }
 
   public int getNumber() {
@@ -35,6 +44,14 @@ public class Register {
 
   public void setIsTypeGuessed(boolean isTypeGuessed) {
     this.isTypeGuessed = isTypeGuessed;
+  }
+
+  public boolean isPotentialNullValue() {
+    return potentialNullValue;
+  }
+
+  public void setIsPotentialNullValue(boolean isPotentialNullValue) {
+    this.potentialNullValue = isPotentialNullValue;
   }
 
   public void setType(Type type) {
@@ -63,5 +80,21 @@ public class Register {
 
   public int getSize() {
     return DexUtil.getRegisterSizeCount(type);
+  }
+
+  public List<AbstractInstruction> getDefs() {
+    return defs;
+  }
+
+  public List<AbstractInstruction> getUses() {
+    return uses;
+  }
+
+  public void addDef(AbstractInstruction instruction) {
+    this.defs.add(instruction);
+  }
+
+  public void addUse(AbstractInstruction instruction) {
+    this.uses.add(instruction);
   }
 }

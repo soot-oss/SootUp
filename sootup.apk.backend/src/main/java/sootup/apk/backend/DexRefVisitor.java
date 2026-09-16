@@ -1,5 +1,7 @@
 package sootup.apk.backend;
 
+import static sootup.apk.backend.Constants.JIMPLE_OBJECT_TYPE;
+
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import org.jf.dexlib2.immutable.reference.ImmutableFieldReference;
@@ -26,8 +28,13 @@ public class DexRefVisitor extends AbstractRefVisitor {
   private final RegisterAllocator registerAllocator;
   private final DexStmtVisitor dexStmtVisitor;
 
+  enum RefOperation {
+    PUT,
+    GET
+  }
+
   private Stmt currentStmt;
-  private String operation;
+  private RefOperation operation;
   private Register targetRegister;
   private Immediate immediate;
 
@@ -40,7 +47,7 @@ public class DexRefVisitor extends AbstractRefVisitor {
     this.currentStmt = stmt;
   }
 
-  public void setOperation(String operation) {
+  public void setOperation(RefOperation operation) {
     this.operation = operation;
   }
 
@@ -62,7 +69,7 @@ public class DexRefVisitor extends AbstractRefVisitor {
             fieldSignature.getName(),
             dexType);
     Opcode opcode = getRefOpcode("S", operation, dexType);
-    if (operation.startsWith("GET")) {
+    if (operation.equals(RefOperation.GET)) {
       fixObjectType(ref.getType());
     }
     dexStmtVisitor.addInstruction(
@@ -82,7 +89,7 @@ public class DexRefVisitor extends AbstractRefVisitor {
     Register instanceRegister =
         registerAllocator.getRegisterForImmediate(instance, false, currentStmt);
     Opcode opcode = getRefOpcode("I", operation, dexType);
-    if (operation.startsWith("GET")) {
+    if (operation.equals(RefOperation.GET)) {
       fixObjectType(ref.getType());
     }
     dexStmtVisitor.addInstruction(
@@ -96,9 +103,9 @@ public class DexRefVisitor extends AbstractRefVisitor {
     Immediate index = ref.getIndex();
     Register indexRegister = registerAllocator.getRegisterForImmediate(index, false, currentStmt);
 
-    ArrayType arrayType = (ArrayType) array.getType();
-    if (operation.startsWith("GET")) {
-      fixObjectType(((ArrayType) array.getType()).getElementType());
+    ArrayType arrayType = (ArrayType) arrayRegister.getType();
+    if (operation.equals(RefOperation.GET)) {
+      fixObjectType(arrayType.getElementType());
     }
     String dexType =
         arrayType.getDimension() > 1
@@ -114,6 +121,9 @@ public class DexRefVisitor extends AbstractRefVisitor {
   public void caseParameterRef(@NonNull JParameterRef ref) {
     Register r = registerAllocator.allocateRegisterForParameter(immediate);
     r.setType(ref.getType());
+    if (immediate.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)) {
+      r.setIsTypeGuessed(true);
+    }
   }
 
   @Override
@@ -133,22 +143,22 @@ public class DexRefVisitor extends AbstractRefVisitor {
     throw new RuntimeException("Unknown ref: " + ref.getClass());
   }
 
-  private Opcode getRefOpcode(String scope, String operation, String dexType) {
+  private Opcode getRefOpcode(String scope, RefOperation operation, String dexType) {
     String checkType = dexType.startsWith("L") || dexType.startsWith("[") ? "L" : dexType;
     return switch (checkType) {
-      case "Z" -> Opcode.valueOf(scope + operation.toUpperCase() + "_BOOLEAN");
-      case "I", "F" -> Opcode.valueOf(scope + operation.toUpperCase());
-      case "B" -> Opcode.valueOf(scope + operation.toUpperCase() + "_BYTE");
-      case "C" -> Opcode.valueOf(scope + operation.toUpperCase() + "_CHAR");
-      case "S" -> Opcode.valueOf(scope + operation.toUpperCase() + "_SHORT");
-      case "J", "D" -> Opcode.valueOf(scope + operation.toUpperCase() + "_WIDE");
-      case "L" -> Opcode.valueOf(scope + operation.toUpperCase() + "_OBJECT");
+      case "Z" -> Opcode.valueOf(scope + operation.name() + "_BOOLEAN");
+      case "I", "F" -> Opcode.valueOf(scope + operation.name());
+      case "B" -> Opcode.valueOf(scope + operation.name() + "_BYTE");
+      case "C" -> Opcode.valueOf(scope + operation.name() + "_CHAR");
+      case "S" -> Opcode.valueOf(scope + operation.name() + "_SHORT");
+      case "J", "D" -> Opcode.valueOf(scope + operation.name() + "_WIDE");
+      case "L" -> Opcode.valueOf(scope + operation.name() + "_OBJECT");
       default -> throw new IllegalArgumentException("Unknown dex type: " + dexType);
     };
   }
 
   private void fixObjectType(Type defaultType) {
-    if (targetRegister.getType().toString().equals("java.lang.Object")
+    if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
         || targetRegister.isTypeGuessed()) {
       log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
 

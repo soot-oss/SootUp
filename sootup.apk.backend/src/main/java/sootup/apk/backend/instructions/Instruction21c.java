@@ -1,5 +1,6 @@
 package sootup.apk.backend.instructions;
 
+import java.util.List;
 import org.jf.dexlib2.MethodHandleType;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
@@ -25,6 +26,27 @@ public class Instruction21c extends OneRegisterInstruction {
   public BuilderInstruction getBuilderInstruction() {
     logSmali();
     return new BuilderInstruction21c(getOpcode(), getRegisterA().getNumber(), reference);
+  }
+
+  @Override
+  public List<Register> getDefRegisters() {
+    String opcodeLower = getOpcode().name.toLowerCase();
+    if (opcodeLower.startsWith("const")
+        || opcodeLower.equals("check-cast")
+        || opcodeLower.equals("new-instance")
+        || opcodeLower.startsWith("sget")) {
+      return List.of(getRegisterA());
+    }
+    return List.of();
+  }
+
+  @Override
+  public List<Register> getUseRegisters() {
+    String opcodeLower = getOpcode().name.toLowerCase();
+    if (opcodeLower.equals("check-cast") || opcodeLower.startsWith("sput")) {
+      return List.of(getRegisterA());
+    }
+    return List.of();
   }
 
   @Override

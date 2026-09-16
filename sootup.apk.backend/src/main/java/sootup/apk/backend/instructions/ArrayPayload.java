@@ -3,7 +3,6 @@ package sootup.apk.backend.instructions;
 import java.util.List;
 import org.jf.dexlib2.builder.BuilderInstruction;
 import org.jf.dexlib2.builder.instruction.BuilderArrayPayload;
-import sootup.apk.backend.Register;
 
 public class ArrayPayload extends AbstractPayload {
 
@@ -20,9 +19,6 @@ public class ArrayPayload extends AbstractPayload {
   public BuilderInstruction getBuilderInstruction() {
     return new BuilderArrayPayload(elementWidth, arrayElements);
   }
-
-  @Override
-  public void changeRegister(Register oldRegister, Register newRegister) {}
 
   @Override
   public void logSmali() {

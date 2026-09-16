@@ -50,6 +50,16 @@ public class Instruction45cc extends FiveRegisterInstruction {
   }
 
   @Override
+  public List<Register> getDefRegisters() {
+    return List.of();
+  }
+
+  @Override
+  public List<Register> getUseRegisters() {
+    return getRegisters();
+  }
+
+  @Override
   public void logSmali() {
     if (reference instanceof MethodReference methodReference) {
       List<Register> registers =

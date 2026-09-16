@@ -9,7 +9,6 @@ import org.jf.dexlib2.builder.Label;
 import org.jf.dexlib2.builder.SwitchLabelElement;
 import org.jf.dexlib2.builder.instruction.BuilderPackedSwitchPayload;
 import org.jf.dexlib2.builder.instruction.BuilderSparseSwitchPayload;
-import sootup.apk.backend.Register;
 import sootup.core.jimple.common.stmt.Stmt;
 
 public class SwitchPayload extends AbstractPayload {
@@ -48,9 +47,6 @@ public class SwitchPayload extends AbstractPayload {
       return new BuilderPackedSwitchPayload(keys[0], switchElements);
     }
   }
-
-  @Override
-  public void changeRegister(Register oldRegister, Register newRegister) {}
 
   @Override
   public void logSmali() {

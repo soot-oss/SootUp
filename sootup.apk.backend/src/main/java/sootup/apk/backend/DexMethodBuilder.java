@@ -1,5 +1,7 @@
 package sootup.apk.backend;
 
+import static sootup.apk.backend.Constants.JIMPLE_OBJECT_TYPE;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -68,8 +70,8 @@ public class DexMethodBuilder {
     String methodName = sootMethod.getName();
     log.info("Creating method {}", methodName);
     if ((methodName.indexOf('<') >= 0 || methodName.indexOf('>') >= 0)
-        && !"<init>".equals(methodName)
-        && !"<clinit>".equals(methodName)) {
+        && !methodName.equals(Constants.DEX_INIT_METHOD)
+        && !methodName.equals(Constants.DEX_CLINIT_METHOD)) {
       throw new RuntimeException("Invalid method name: " + sootMethod.getSignature());
     }
 
@@ -132,8 +134,8 @@ public class DexMethodBuilder {
       Set<BasicBlock<?>> inWorklist =
           new HashSet<>(List.of(controlFlowGraph.getStartingStmtBlock()));
       Set<BasicBlock<?>> visitedBlocks = new HashSet<>();
-      Map<BasicBlock<?>, HashMap<Local, Register>> blockRegisterMapAtStart = new HashMap<>();
-      Map<BasicBlock<?>, HashMap<Local, Register>> blockRegisterMapAtEnd = new HashMap<>();
+      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtStart = new HashMap<>();
+      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtEnd = new HashMap<>();
 
       while (!worklist.isEmpty()) {
         currentBlock = worklist.pollFirst();
@@ -166,8 +168,12 @@ public class DexMethodBuilder {
           List<BasicBlock<?>> predecessors = new ArrayList<>();
           predecessors.addAll(currentBlock.getPredecessors());
           predecessors.addAll(currentBlock.getExceptionalPredecessors().values());
-          HashMap<Local, Register> merged =
-              mergeIncomingRegisterMaps(new HashSet<>(predecessors), blockRegisterMapAtEnd);
+          Map<Local, Register> merged =
+              mergeIncomingRegisterMaps(
+                  new HashSet<>(predecessors),
+                  blockRegisterMapAtEnd,
+                  controlFlowGraph,
+                  currentBlock);
           registerAllocator.setRegisterMap(merged);
           log.info("Locals at start of block:");
           registerAllocator
@@ -179,7 +185,7 @@ public class DexMethodBuilder {
         }
 
         List<Stmt> stmts = new ArrayList<>(currentBlock.getStmts());
-        if (sootMethod.getName().equals("<init>")) {
+        if (sootMethod.getName().equals(Constants.DEX_INIT_METHOD)) {
           stmts = fixInitMethod(stmts);
         }
 
@@ -195,6 +201,7 @@ public class DexMethodBuilder {
         for (int i = 0; i < stmts.size(); i++) {
           Stmt stmt = stmts.get(i);
           log.info("Process stmt: {}", stmt);
+          dexStmtVisitor.newStmt();
 
           // insert a monitor-enter if method is synchronized
           // and method does not already begin with a JEnterMonitorStmt
@@ -314,10 +321,14 @@ public class DexMethodBuilder {
               .forEach(
                   (e, b) -> {
                     TryBlockStmts tryBlockStmts = new TryBlockStmts();
-                    tryBlockStmts.jimpleExceptionType = e.getFullyQualifiedName().matches(".*\\$\\d+$")
-                            //the current apk.frontend makes each Exception class unique by adding a $<number> to the class name
-                            //if this is the case, remove the number in oder to get the real fully qualified class name
-                            ? e.getFullyQualifiedName().substring(0, e.getFullyQualifiedName().lastIndexOf('$'))
+                    tryBlockStmts.jimpleExceptionType =
+                        e.getFullyQualifiedName().matches(".*\\$\\d+$")
+                            // the current apk.frontend makes each Exception class unique by adding
+                            // a $<number> to the class name
+                            // if this is the case, remove the number in oder to get the real fully
+                            // qualified class name
+                            ? e.getFullyQualifiedName()
+                                .substring(0, e.getFullyQualifiedName().lastIndexOf('$'))
                             : e.getFullyQualifiedName();
                     tryBlockStmts.startStmt = currentBlock.getHead();
                     tryBlockStmts.endStmt = finalStmts.get(finalStmts.size() - 1);
@@ -363,13 +374,15 @@ public class DexMethodBuilder {
   }
 
   // merge register maps at branching points
-  private HashMap<Local, Register> mergeIncomingRegisterMaps(
+  private Map<Local, Register> mergeIncomingRegisterMaps(
       Set<BasicBlock<?>> previousBlocks,
-      Map<BasicBlock<?>, HashMap<Local, Register>> blockRegisterMap) {
+      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtEnd,
+      ControlFlowGraph<?> controlFlowGraph,
+      BasicBlock<?> newBlock) {
 
-    Set<HashMap<Local, Register>> registerMaps =
+    Set<Map<Local, Register>> registerMaps =
         previousBlocks.stream()
-            .map(blockRegisterMap::get)
+            .map(blockRegisterMapAtEnd::get)
             .filter(Objects::nonNull)
             .collect(Collectors.toSet());
 
@@ -390,99 +403,89 @@ public class DexMethodBuilder {
 
     for (Local local : locals) {
 
-      if (local.getName().equals("$stack")) {
+      if (local.getName().equals(Constants.JIMPLE_STACK_LOCAL)) {
+        continue;
+      }
+
+      // if local is not used anywhere later in the control flow graph --> continue
+      if (!isUsedLater(controlFlowGraph, newBlock.getHead(), local)) {
         continue;
       }
 
       List<Register> regs =
           registerMaps.stream().map(m -> m.get(local)).filter(Objects::nonNull).toList();
 
-      Register first = regs.get(0);
-
       // if a local has the same register in all registerMaps, there is nothing to do
-      if (regs.stream().allMatch(r -> r.equals(first))) {
-        result.put(local, first);
+      if (regs.stream().allMatch(r -> r.equals(regs.get(0)))) {
+        result.put(local, regs.get(0));
         continue;
       }
 
       // a local has different types in different registerMap
-      Type objectType = view.getIdentifierFactory().getClassType("java.lang.Object");
+      Type objectType = view.getIdentifierFactory().getClassType(JIMPLE_OBJECT_TYPE);
 
-      Type type =
+      Register newRegister =
           regs.stream()
-              .map(Register::getType)
-              .filter(t -> !t.equals(objectType))
               .filter(
-                  t -> {
-                    if (t.equals(PrimitiveType.getInt())) {
-                      return regs.stream()
-                          .map(Register::getType)
-                          .noneMatch(other -> !other.equals(t) && other instanceof PrimitiveType);
-                    }
-                    return true;
-                  })
+                  reg ->
+                      !reg.getType().equals(PrimitiveType.getInt())
+                          && !reg.getType().equals(objectType))
               .findFirst()
-              .orElse(objectType);
+              .orElseGet(
+                  () -> {
+                    List<Register> intRegisters =
+                        regs.stream()
+                            .filter(reg -> reg.getType().equals(PrimitiveType.getInt()))
+                            .toList();
+                    if (!intRegisters.isEmpty()
+                        && intRegisters.stream().allMatch(Register::isPotentialNullValue)) {
+                      return regs.stream()
+                          .filter(reg -> reg.getType().equals(objectType))
+                          .findFirst()
+                          .orElseGet(() -> intRegisters.stream().findFirst().orElseThrow());
+                    }
+                    return intRegisters.stream()
+                        .findFirst()
+                        .orElseGet(
+                            () ->
+                                regs.stream()
+                                    .filter(reg -> reg.getType().equals(objectType))
+                                    .findFirst()
+                                    .orElseThrow());
+                  });
 
-      /*if (regs.stream()
-          .filter(
-              r ->
-                  !r.getType().equals(view.getIdentifierFactory().getClassType("java.lang.Object")))
-          .anyMatch(
-              r ->
-                  !r.getType().equals(type)
-                      && !(type instanceof PrimitiveType
-                          && r.getType().equals(PrimitiveType.getInt())))) {
+      log.info("Merge local {} with type {}", local.getName(), newRegister.getType());
 
-        log.error(
-            "Cannot merge {} because of conflicting type {} with new type {}",
-            local,
-            regs.stream()
-                .filter(
-                    r ->
-                        !r.getType()
-                            .equals(view.getIdentifierFactory().getClassType("java.lang.Object")))
-                .filter(
-                    r ->
-                        !r.getType().equals(type)
-                            && !(type instanceof PrimitiveType
-                                && r.getType().equals(PrimitiveType.getInt())))
-                .findFirst()
-                .get()
-                .getType(),
-            type);
-        continue;
-      }*/
-
-      log.info("Merge local {} with type {}", local.getName(), type);
-
-      if (first.getType().equals(view.getIdentifierFactory().getClassType("java.lang.Object"))) {
-        first.setType(type);
-      }
-      result.put(local, first);
+      result.put(local, newRegister);
 
       // move all previous register to a common register
       for (BasicBlock<?> block : previousBlocks) {
-        HashMap<Local, Register> localRegisterMap = blockRegisterMap.get(block);
+        Map<Local, Register> localRegisterMap = blockRegisterMapAtEnd.get(block);
         if (localRegisterMap == null) {
           log.info("local register map is null");
           continue;
         }
         Register old = localRegisterMap.get(local);
-        if (old != null && !first.equals(old)) {
+        if (old != null && !newRegister.equals(old)) {
           var i = instructions.get(block);
-          AbstractInstruction move = generateMoveInstruction(first, old, old.getType());
+          // change0ToNull(local, old, newRegister.getType(), block, blockRegisterMapAtStart);
+          AbstractInstruction moveInstruction;
+          if (old.isPotentialNullValue() && !(newRegister.getType() instanceof PrimitiveType)) {
+            moveInstruction = new Instruction11n(Opcode.CONST_4, newRegister, 0);
+          } else {
+            moveInstruction = generateMoveInstructionToSuccessor(old, newRegister);
+          }
           if (i.get(i.size() - 1).getOpcode().name.startsWith("goto")
               || i.get(i.size() - 1).getOpcode().name.startsWith("if")) {
             if (i.size() > 1
-                && (i.get(i.size() - 2).getOpcode().name.startsWith("packed-switch")
-                    || i.get(i.size() - 2).getOpcode().name.startsWith("sparse-switch"))) {
-              i.add(i.size() - 2, move);
+                && (i.get(i.size() - 2).getOpcode().equals(Opcode.PACKED_SWITCH)
+                    || i.get(i.size() - 2).getOpcode().equals(Opcode.SPARSE_SWITCH))) {
+              i.add(i.size() - 2, moveInstruction);
             } else {
-              i.add(i.size() - 1, move);
+              i.add(i.size() - 1, moveInstruction);
             }
           } else {
-            i.add(move);
+            i.add(moveInstruction);
           }
         }
       }
@@ -491,20 +494,43 @@ public class DexMethodBuilder {
     return result;
   }
 
+  boolean isUsedLater(ControlFlowGraph<?> controlFlowGraph, Stmt start, Local variable) {
+    Set<Stmt> visited = new HashSet<>();
+    Deque<Stmt> worklist = new ArrayDeque<>();
+    worklist.add(start);
+    worklist.addAll(controlFlowGraph.getAllSuccessors(start));
+
+    while (!worklist.isEmpty()) {
+      Stmt stmt = worklist.removeFirst();
+
+      if (!visited.add(stmt)) {
+        continue;
+      }
+
+      if (stmt.getUses().anyMatch(variable::equals)) {
+        return true;
+      }
+
+      worklist.addAll(controlFlowGraph.getAllSuccessors(stmt));
+    }
+
+    return false;
+  }
+
   private void mergeCurrentRegisterMapToSuccessor(
       BasicBlock<?> cBlock,
       BasicBlock<?> successorBlock,
-      Map<BasicBlock<?>, HashMap<Local, Register>> blockRegisterMapStart,
-      Map<BasicBlock<?>, HashMap<Local, Register>> blockRegisterMapEnd) {
+      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapStart,
+      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapEnd) {
 
-    HashMap<Local, Register> registerMapCurrent = blockRegisterMapEnd.get(cBlock);
-    HashMap<Local, Register> registerMapSuccessor = blockRegisterMapStart.get(successorBlock);
+    Map<Local, Register> registerMapCurrent = blockRegisterMapEnd.get(cBlock);
+    Map<Local, Register> registerMapSuccessor = blockRegisterMapStart.get(successorBlock);
 
     Set<Local> locals = registerMapCurrent.keySet();
 
     for (Local local : locals) {
 
-      if (local.getName().equals("$stack")) {
+      if (local.getName().equals(Constants.JIMPLE_STACK_LOCAL)) {
         continue;
       }
 
@@ -523,8 +549,8 @@ public class DexMethodBuilder {
       Type type = register.getType();
       Type successorType = registerSuccessor.getType();
 
-      if (!type.equals(view.getIdentifierFactory().getType("java.lang.Object"))
-          && !successorType.equals(view.getIdentifierFactory().getType("java.lang.Object"))
+      if (!type.equals(view.getIdentifierFactory().getType(JIMPLE_OBJECT_TYPE))
+          && !successorType.equals(view.getIdentifierFactory().getType(JIMPLE_OBJECT_TYPE))
           && !type.equals(successorType)) {
         if (type instanceof PrimitiveType.IntType && successorType instanceof PrimitiveType) {
 
@@ -537,26 +563,179 @@ public class DexMethodBuilder {
         }
       }
 
-      if (successorType.equals(view.getIdentifierFactory().getType("java.lang.Object"))) {
+      if (successorType.equals(view.getIdentifierFactory().getType(JIMPLE_OBJECT_TYPE))) {
         registerSuccessor.setType(type);
+      }
+
+      // Successor register is currently handled as int = 0. However, it turned out to be Object
+      // null
+      if (registerSuccessor.isPotentialNullValue()
+          && !(register.getType() instanceof PrimitiveType)) {
+        Register newRegister = registerAllocator.getRegisterForType(register.getType());
+        newRegister.setNumber(registerSuccessor.getNumber());
+        newRegister.setIsPotentialNullValue(true);
+        AbstractInstruction instruction = new Instruction11n(Opcode.CONST_4, newRegister, 0);
+        List<BasicBlock<?>> predecessors = new ArrayList<>();
+        predecessors.addAll(successorBlock.getPredecessors());
+        predecessors.addAll(successorBlock.getExceptionalPredecessors().values());
+        for (BasicBlock<?> p : predecessors) {
+          var i = instructions.get(p);
+          if (i != null && !i.isEmpty()) {
+            if (i.get(i.size() - 1).getOpcode().name.startsWith("goto")
+                || i.get(i.size() - 1).getOpcode().name.startsWith("if")) {
+              if (i.size() > 1
+                  && (i.get(i.size() - 2).getOpcode().equals(Opcode.PACKED_SWITCH)
+                      || i.get(i.size() - 2).getOpcode().equals(Opcode.SPARSE_SWITCH))) {
+                i.add(i.size() - 2, instruction);
+              } else {
+                i.add(i.size() - 1, instruction);
+              }
+            } else {
+              i.add(instruction);
+            }
+          }
+          registerSuccessor.setType(register.getType());
+          changeFollowingRegistersToNewType(
+              successorBlock,
+              local,
+              registerSuccessor,
+              null,
+              blockRegisterMapStart,
+              blockRegisterMapEnd);
+        }
       }
 
       // a local has different registers but same type --> move previous registers to a new register
       var i = instructions.get(currentBlock);
-      AbstractInstruction move =
-          generateMoveInstruction(registerSuccessor, register, register.getType());
+      AbstractInstruction moveInstruction =
+          generateMoveInstructionToSuccessor(register, registerSuccessor);
       if (i.get(i.size() - 1).getOpcode().name.startsWith("goto")
           || i.get(i.size() - 1).getOpcode().name.startsWith("if")) {
         if (i.size() > 1
-            && (i.get(i.size() - 2).getOpcode().name.startsWith("packed-switch")
-                || i.get(i.size() - 2).getOpcode().name.startsWith("sparse-switch"))) {
-          i.add(i.size() - 2, move);
+            && (i.get(i.size() - 2).getOpcode().equals(Opcode.PACKED_SWITCH)
+                || i.get(i.size() - 2).getOpcode().equals(Opcode.SPARSE_SWITCH))) {
+          i.add(i.size() - 2, moveInstruction);
         } else {
-          i.add(i.size() - 1, move);
+          i.add(i.size() - 1, moveInstruction);
         }
       } else {
-        i.add(move);
+        i.add(moveInstruction);
       }
+    }
+  }
+
+  public void changeFollowingRegistersToNewType(
+      BasicBlock<?> currentBlock,
+      Local local,
+      Register newRegister,
+      AbstractInstruction startAtIns,
+      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapStart,
+      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapEnd) {
+
+    Queue<BasicBlock<?>> successorsToChange = new LinkedList<>();
+    List<BasicBlock<?>> successorsChanged = new ArrayList<>();
+    successorsToChange.add(currentBlock);
+
+    outerLoop:
+    while (!successorsToChange.isEmpty()) {
+      BasicBlock<?> succ = successorsToChange.poll();
+
+      if (successorsChanged.contains(succ)) {
+        continue;
+      }
+      successorsChanged.add(succ);
+
+      if (startAtIns != null && local != null) {
+        blockRegisterMapStart.get(succ).put(local, newRegister);
+      }
+
+      boolean start = startAtIns == null;
+
+      List<AbstractInstruction> ins = instructions.get(succ);
+      ListIterator<AbstractInstruction> iterator = ins.listIterator();
+      while (iterator.hasNext()) {
+        AbstractInstruction in = iterator.next();
+        if (!start && in.equals(startAtIns)) {
+          start = true;
+        }
+        if (!start) {
+          continue;
+        }
+        if (in.getDefRegisters().contains(newRegister)) {
+          continue outerLoop;
+        }
+        if (in.getRegisters().contains(newRegister)) {
+          in.changeRegister(newRegister, newRegister);
+        }
+        if (in.getOpcode().name.toLowerCase().startsWith("move")
+            && in.getUseRegisters().contains(newRegister)) {
+          List<Register> reg = in.getRegisters();
+          Register targetRegister = reg.get(0);
+          targetRegister.setType(newRegister.getType());
+          AbstractInstruction moveInstruction =
+              generateMoveInstruction(targetRegister, newRegister, newRegister.getType());
+          iterator.set(moveInstruction);
+          changeFollowingRegistersToNewType(
+              currentBlock, null, targetRegister, in, blockRegisterMapStart, blockRegisterMapEnd);
+        }
+      }
+      if (local != null) {
+        if (blockRegisterMapEnd.get(succ).get(local).equals(newRegister)) {
+          blockRegisterMapEnd.get(succ).put(local, newRegister);
+          if (instructions != null && !instructions.isEmpty()) {
+            for (var successor : succ.getSuccessors()) {
+              if (blockRegisterMapStart.get(successor) != null
+                  && (blockRegisterMapStart.get(successor).containsKey(local)
+                      || blockRegisterMapStart.get(successor).get(local).equals(newRegister))) {
+                successorsToChange.add(successor);
+              }
+            }
+            for (var successor : succ.getExceptionalSuccessors().values()) {
+              if (blockRegisterMapStart.get(successor) != null
+                  && (blockRegisterMapStart.get(successor).containsKey(local)
+                      || blockRegisterMapStart.get(successor).get(local).equals(newRegister))) {
+                successorsToChange.add(successor);
+              }
+            }
+          }
+        }
+      } else if (blockRegisterMapEnd.get(currentBlock).containsValue(newRegister)) {
+        for (var successor : succ.getSuccessors()) {
+          if (blockRegisterMapStart.get(successor).containsValue(newRegister)) {
+            successorsToChange.add(successor);
+          }
+        }
+        for (var successor : succ.getExceptionalSuccessors().values()) {
+          if (blockRegisterMapStart.get(successor).containsValue(newRegister)) {
+            successorsToChange.add(successor);
+          }
+        }
+      }
+    }
+  }
+
+  private AbstractInstruction generateMoveInstructionToSuccessor(
+      Register previous, Register target) {
+    if (target.getType() instanceof PrimitiveType targetType
+        && previous.getType() instanceof PrimitiveType sourceType
+        && target.getType() != previous.getType()) {
+      if (DexUtil.isTypeSmaller(sourceType, PrimitiveType.getInt())) {
+        sourceType = PrimitiveType.getInt();
+      }
+      if (targetType == PrimitiveType.getBoolean()) {
+        targetType = PrimitiveType.getInt();
+      }
+      if (sourceType.equals(targetType)) {
+        return generateMoveInstruction(target, previous, previous.getType());
+      } else {
+        Opcode opcode =
+            Opcode.valueOf(
+                sourceType.getName().toUpperCase() + "_TO_" + targetType.getName().toUpperCase());
+        return new Instruction12x(opcode, target, previous);
+      }
+
+    } else {
+      return generateMoveInstruction(target, previous, previous.getType());
     }
   }
 
@@ -585,11 +764,11 @@ public class DexMethodBuilder {
               && jInvokeStmt.getInvokeExpr().isPresent()
               && jInvokeStmt.getInvokeExpr().get() instanceof JSpecialInvokeExpr expr
               && thisReferences.contains(expr.getBase())
-              && expr.getMethodSignature().getName().equals("<init>"))
+              && expr.getMethodSignature().getName().equals(Constants.DEX_INIT_METHOD))
           || (stmt instanceof JAssignStmt jAssignStmt
               && jAssignStmt.getRightOp() instanceof JSpecialInvokeExpr expr2
               && thisReferences.contains(expr2.getBase())
-              && expr2.getMethodSignature().getName().equals("<init>"))) {
+              && expr2.getMethodSignature().getName().equals(Constants.DEX_INIT_METHOD))) {
         targetIndex = i;
         break;
       }
@@ -621,7 +800,7 @@ public class DexMethodBuilder {
   public List<BuilderInstruction> addBuilderInstructions(
       MethodImplementationBuilder methodImplementationBuilder,
       LabelAssigner labelAssigner,
-      Map<BasicBlock<?>, HashMap<Local, Register>> blockRegisterMap) {
+      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMap) {
 
     log.info("ADD BUILDER INSTRUCTIONS");
 
@@ -678,8 +857,16 @@ public class DexMethodBuilder {
     List<BuilderInstruction> builderInstructions = new ArrayList<>();
     for (Map.Entry<BasicBlock<?>, List<AbstractInstruction>> entry : instructions.entrySet()) {
       currentBlock = entry.getKey();
-      Set<Register> usedRegisters =
-          new HashSet<>(blockRegisterMap.getOrDefault(currentBlock, new HashMap<>()).values());
+      Set<Integer> usedRegisterNumbers =
+          blockRegisterMap.getOrDefault(currentBlock, new HashMap<>()).values().stream()
+              .map(Register::getNumber)
+              .collect(Collectors.toSet());
+      log.info("Locals at start of block:");
+      blockRegisterMap
+          .getOrDefault(currentBlock, new HashMap<>())
+          .forEach(
+              (key, value) ->
+                  log.info("{}:{}:{}", key.getName(), value.getNumber(), value.getType()));
       List<AbstractInstruction> instructionsOfBlock = entry.getValue();
 
       for (int i = 0; i < instructionsOfBlock.size(); i++) {
@@ -704,13 +891,14 @@ public class DexMethodBuilder {
               || instruction instanceof Instruction22x
               || instruction instanceof Instruction32x
               || instruction instanceof Instruction21c
-                  && instruction.getOpcode().name.equals("check-cast"))) {
+                  && instruction.getOpcode().equals(Opcode.CHECK_CAST))) {
 
             LinkedHashMap<Register, Register> registerHashMap = new LinkedHashMap<>();
 
             log.info("Tmp registers needed: {}", registers.size());
             for (int index = 0; index < registers.size(); index++) {
               Register r = registers.get(index);
+              log.info("Register {} with type {}", r.getNumber(), r.getType());
               log.info("Tmp index: {}", tmpIndx);
               Register tmpRegister = tmpRegisters.get(tmpIndx);
               tmpRegister.setType(r.getType());
@@ -718,7 +906,7 @@ public class DexMethodBuilder {
               instruction.changeRegister(r, tmpRegister);
               if ((!(instruction.getOpcode().name.contains("get")) || index > 0)
                   && !(instruction.getOpcode().name.startsWith("move"))) {
-                if (usedRegisters.contains(r) || r.isParameter()) {
+                if (usedRegisterNumbers.contains(r.getNumber()) || r.isParameter()) {
                   AbstractInstruction move = generateMoveInstruction(tmpRegister, r, r.getType());
                   builderInstructions.add(move.getBuilderInstruction());
                   methodImplementationBuilder.addInstruction(move.getBuilderInstruction());
@@ -737,13 +925,16 @@ public class DexMethodBuilder {
 
             builderInstructions.add(instruction.getBuilderInstruction());
             methodImplementationBuilder.addInstruction(instruction.getBuilderInstruction());
-            usedRegisters.addAll(instruction.getRegisters());
+            usedRegisterNumbers.addAll(
+                instruction.getRegisters().stream()
+                    .map(Register::getNumber)
+                    .collect(Collectors.toSet()));
 
             if (instruction.getOpcode().name.startsWith("throw")
                 || instruction.getOpcode().name.startsWith("return")
                 || instruction.getOpcode().name.startsWith("if")
-                || instruction.getOpcode().name.startsWith("packed-switch")
-                || instruction.getOpcode().name.startsWith("sparse-switch")) {
+                || instruction.getOpcode().equals(Opcode.PACKED_SWITCH)
+                || instruction.getOpcode().equals(Opcode.SPARSE_SWITCH)) {
               registerHashMap.clear();
             }
 
@@ -773,12 +964,18 @@ public class DexMethodBuilder {
                           originalRegister, tmpRegister, originalRegister.getType());
                   builderInstructions.add(move.getBuilderInstruction());
                   methodImplementationBuilder.addInstruction(move.getBuilderInstruction());
-                  usedRegisters.addAll(move.getRegisters());
+                  usedRegisterNumbers.addAll(
+                      move.getRegisters().stream()
+                          .map(Register::getNumber)
+                          .collect(Collectors.toSet()));
                 });
-            usedRegisters.addAll(registerHashMap.values());
+            usedRegisterNumbers.addAll(
+                registerHashMap.values().stream()
+                    .map(Register::getNumber)
+                    .collect(Collectors.toSet()));
 
           } else if (instruction instanceof Instruction21c instruction21c
-              && instruction.getOpcode().name.equals("check-cast")) {
+              && instruction.getOpcode().equals(Opcode.CHECK_CAST)) {
             Register tmpRegister = tmpRegisters.get(tmpIndx);
             Register originalRegister = registers.get(0);
             tmpRegister.setType(originalRegister.getType());
@@ -790,7 +987,10 @@ public class DexMethodBuilder {
             methodImplementationBuilder.addInstruction(move.getBuilderInstruction());
             builderInstructions.add(instruction.getBuilderInstruction());
             methodImplementationBuilder.addInstruction(instruction.getBuilderInstruction());
-            usedRegisters.addAll(instruction.getRegisters());
+            usedRegisterNumbers.addAll(
+                instruction.getRegisters().stream()
+                    .map(Register::getNumber)
+                    .collect(Collectors.toSet()));
 
             TypeReference typeReference = (TypeReference) instruction21c.getReference();
             AbstractInstruction move2 =
@@ -800,7 +1000,8 @@ public class DexMethodBuilder {
                     sootup.apk.frontend.Util.DexUtil.toSootType(typeReference.getType(), 0));
             builderInstructions.add(move2.getBuilderInstruction());
             methodImplementationBuilder.addInstruction(move2.getBuilderInstruction());
-            usedRegisters.addAll(move2.getRegisters());
+            usedRegisterNumbers.addAll(
+                move2.getRegisters().stream().map(Register::getNumber).collect(Collectors.toSet()));
 
           } else if ((instruction instanceof Instruction12x
                   && instruction.getOpcode().name.startsWith("move"))
@@ -825,17 +1026,26 @@ public class DexMethodBuilder {
             log.info("New instruction opcode {}", instruction.getOpcode());
             builderInstructions.add(instruction.getBuilderInstruction());
             methodImplementationBuilder.addInstruction(instruction.getBuilderInstruction());
-            usedRegisters.addAll(instruction.getRegisters());
+            usedRegisterNumbers.addAll(
+                instruction.getRegisters().stream()
+                    .map(Register::getNumber)
+                    .collect(Collectors.toSet()));
           } else {
             builderInstructions.add(instruction.getBuilderInstruction());
             methodImplementationBuilder.addInstruction(instruction.getBuilderInstruction());
-            usedRegisters.addAll(instruction.getRegisters());
+            usedRegisterNumbers.addAll(
+                instruction.getRegisters().stream()
+                    .map(Register::getNumber)
+                    .collect(Collectors.toSet()));
           }
 
         } else {
           builderInstructions.add(instruction.getBuilderInstruction());
           methodImplementationBuilder.addInstruction(instruction.getBuilderInstruction());
-          usedRegisters.addAll(instruction.getRegisters());
+          usedRegisterNumbers.addAll(
+              instruction.getRegisters().stream()
+                  .map(Register::getNumber)
+                  .collect(Collectors.toSet()));
         }
 
         if (i + 1 >= instructionsOfBlock.size()
@@ -926,6 +1136,14 @@ public class DexMethodBuilder {
   }
 
   protected void addInstruction(AbstractInstruction instruction, Stmt stmt) {
+    List<Register> defRegisters = instruction.getDefRegisters();
+    for (Register reg : defRegisters) {
+      reg.addDef(instruction);
+    }
+    List<Register> useRegisters = instruction.getUseRegisters();
+    for (Register reg : useRegisters) {
+      reg.addUse(instruction);
+    }
     if (stmt != null) {
       log.info(
           "Add instruction {} of stmt {} to block {}", instruction.getOpcode(), stmt, currentBlock);

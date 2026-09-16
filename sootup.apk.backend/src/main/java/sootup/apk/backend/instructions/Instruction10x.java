@@ -20,6 +20,16 @@ public class Instruction10x extends AbstractInstruction {
   }
 
   @Override
+  public List<Register> getDefRegisters() {
+    return List.of();
+  }
+
+  @Override
+  public List<Register> getUseRegisters() {
+    return List.of();
+  }
+
+  @Override
   public void logSmali() {
     log.info(getOpcode().name);
   }

@@ -1,5 +1,6 @@
 package sootup.apk.backend.instructions;
 
+import java.util.List;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction12x;
@@ -17,6 +18,19 @@ public class Instruction12x extends TwoRegisterInstruction {
     logSmali();
     return new BuilderInstruction12x(
         getOpcode(), getRegisterA().getNumber(), getRegisterB().getNumber());
+  }
+
+  @Override
+  public List<Register> getDefRegisters() {
+    return List.of(getRegisterA());
+  }
+
+  @Override
+  public List<Register> getUseRegisters() {
+    if (getOpcode().name.toLowerCase().contains("2addr")) {
+      return getRegisters();
+    }
+    return List.of(getRegisterB());
   }
 
   @Override

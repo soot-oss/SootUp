@@ -1,5 +1,7 @@
 package sootup.apk.backend;
 
+import static sootup.apk.backend.Constants.JIMPLE_OBJECT_TYPE;
+
 import java.util.List;
 import org.jf.dexlib2.MethodHandleType;
 import org.jf.dexlib2.Opcode;
@@ -41,6 +43,7 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
   public void caseBooleanConstant(@NonNull BooleanConstant constant) {
     fixObjectType(PrimitiveType.getBoolean());
     int value = constant.getValue() ? 1 : 0;
+    targetRegister.setIsPotentialNullValue(value == 0);
     dexMethodBuilder.addInstruction(
         new Instruction11n(Opcode.CONST_4, targetRegister, value), currentStmt);
   }
@@ -65,8 +68,9 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
 
   @Override
   public void caseIntConstant(@NonNull IntConstant constant) {
-    fixObjectType(PrimitiveType.getInt());
     int value = constant.getValue();
+    targetRegister.setIsPotentialNullValue(value == 0);
+    fixObjectType(PrimitiveType.getInt());
     if (DexUtil.inSigned4Bit(value)) {
       dexMethodBuilder.addInstruction(
           new Instruction11n(Opcode.CONST_4, targetRegister, value), currentStmt);
@@ -82,8 +86,6 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
   @Override
   public void caseLongConstant(@NonNull LongConstant constant) {
     fixObjectType(PrimitiveType.getLong());
-    log.info("Generate long constant {}", constant.getValue());
-    log.info("TargetRegister type {}", targetRegister.getType());
     long value = constant.getValue();
     if (DexUtil.inSigned16Bit(value)) {
       dexMethodBuilder.addInstruction(
@@ -106,7 +108,7 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
 
   @Override
   public void caseStringConstant(@NonNull StringConstant constant) {
-    fixObjectType(JavaIdentifierFactory.getInstance().getClassType("java.lang.String"));
+    fixObjectType(JavaIdentifierFactory.getInstance().getClassType(Constants.JIMPLE_STRING_TYPE));
     dexMethodBuilder.addInstruction(
         new Instruction21c(
             Opcode.CONST_STRING, targetRegister, new ImmutableStringReference(constant.getValue())),
@@ -190,7 +192,7 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
   }
 
   private void fixObjectType(Type defaultType) {
-    if (targetRegister.getType().toString().equals("java.lang.Object")
+    if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
         || targetRegister.isTypeGuessed()) {
       log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
       targetRegister.setType(defaultType);

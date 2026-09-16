@@ -1,5 +1,7 @@
 package sootup.apk.backend;
 
+import static sootup.apk.backend.Constants.JIMPLE_OBJECT_TYPE;
+
 import java.util.*;
 import org.jf.dexlib2.Opcode;
 import org.jspecify.annotations.NonNull;
@@ -49,6 +51,10 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     this.sootMethod = sootMethod;
   }
 
+  public void newStmt() {
+    registerAllocator.resetConstantRegisterPools();
+  }
+
   @Override
   public void caseBreakpointStmt(@NonNull JBreakpointStmt stmt) {}
 
@@ -75,11 +81,17 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     if (leftOp instanceof Ref ref) {
       Register valueRegister;
       if (rightOp instanceof JCastExpr jCastExpr) {
-        dexExprVisitor.setCurrentStmt(stmt);
-        valueRegister = registerAllocator.getRegisterForType(jCastExpr.getType());
-        dexExprVisitor.setTargetRegister(valueRegister);
-        dexExprVisitor.setCurrentStmt(stmt);
-        jCastExpr.accept(dexExprVisitor);
+        if (jCastExpr.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)) {
+          valueRegister =
+              registerAllocator.getRegisterForImmediate(((JCastExpr) rightOp).getOp(), false, stmt);
+        } else {
+          dexExprVisitor.setCurrentStmt(stmt);
+          valueRegister = registerAllocator.getRegisterForType(jCastExpr.getType());
+          dexExprVisitor.setTargetRegister(valueRegister);
+          dexExprVisitor.setCurrentStmt(stmt);
+          jCastExpr.accept(dexExprVisitor);
+        }
+
       } else if (rightOp instanceof Immediate) {
         valueRegister = registerAllocator.getRegisterForImmediate((Immediate) rightOp, false, stmt);
       } else {
@@ -91,7 +103,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
       }
 
       dexRefVisitor.setCurrentStmt(stmt);
-      dexRefVisitor.setOperation("PUT");
+      dexRefVisitor.setOperation(DexRefVisitor.RefOperation.PUT);
       dexRefVisitor.setTargetRegister(valueRegister);
       ref.accept(dexRefVisitor);
 
@@ -99,10 +111,10 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
       Register targetRegister = registerAllocator.getRegisterForImmediate(leftOpLocal, false, stmt);
 
       if (rightOp instanceof Constant constant) {
-        if (targetRegister.getType().toString().equals("java.lang.Object")
+        if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
             || targetRegister.isTypeGuessed()) {
           if (targetRegister.getType() != constant.getType()
-              && !targetRegister.getType().toString().equals("java.lang.Object")) {
+              && !targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)) {
             targetRegister =
                 registerAllocator.getRegisterForValueWithNewType(
                     leftOpLocal, constant.getType(), false);
@@ -123,7 +135,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
 
       } else if (rightOp instanceof Ref ref) {
         dexRefVisitor.setCurrentStmt(stmt);
-        dexRefVisitor.setOperation("GET");
+        dexRefVisitor.setOperation(DexRefVisitor.RefOperation.GET);
         dexRefVisitor.setTargetRegister(targetRegister);
         ref.accept(dexRefVisitor);
 
@@ -135,7 +147,11 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
           targetRegister = fixObjectType(sourceRegister.getType(), stmt, targetRegister);
           dexExprVisitor.setCurrentStmt(stmt);
           dexExprVisitor.generateMoveInstruction(
-              targetRegister, sourceRegister, sourceRegister.getType(), true);
+              targetRegister,
+              sourceRegister,
+              sourceRegister.getType(),
+              true,
+              sourceRegister.isPotentialNullValue());
         }
 
       } else {
@@ -165,6 +181,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   public void caseEnterMonitorStmt(@NonNull JEnterMonitorStmt stmt) {
     Immediate op = stmt.getOp();
     Register register = registerAllocator.getRegisterForImmediate(op, false, stmt);
+    registerAllocator.lockRegister(register);
     dexMethodBuilder.addInstruction(new Instruction11x(Opcode.MONITOR_ENTER, register), stmt);
   }
 
@@ -423,7 +440,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   }
 
   private Register fixObjectType(Type defaultType, Stmt currentStmt, Register targetRegister) {
-    if (targetRegister.getType().toString().equals("java.lang.Object")
+    if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
         || targetRegister.isTypeGuessed()) {
       log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
 

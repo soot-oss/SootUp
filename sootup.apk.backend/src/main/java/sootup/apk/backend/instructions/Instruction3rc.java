@@ -36,6 +36,16 @@ public class Instruction3rc extends AbstractInstruction {
   }
 
   @Override
+  public List<Register> getDefRegisters() {
+    return List.of();
+  }
+
+  @Override
+  public List<Register> getUseRegisters() {
+    return registers;
+  }
+
+  @Override
   public void logSmali() {
     String var1 = null;
     String var2 = null;
