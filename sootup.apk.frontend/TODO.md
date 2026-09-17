@@ -217,13 +217,16 @@
   - **In progress:**
     - `LocalSplitter` runs; `DexSharedInitializationLocalSplitter` gives each use of a shared constant (and each repeated call argument) its own local; unused locals are removed; the null transformer resolves array element types via `findArrayType`.
     - Measured with `TypeAssigner` appended (not yet in the default chain), android.jar in the view: all locals get a type; invalid primitive<->reference casts dropped from 747 in 164 bodies to 117 in 34 (FlowSensitivity1) and from 198 in 43 to 31 in 9 (LocationLeak1).
-    - The remaining ones are float/double bit-pattern constants used in arithmetic, which need op-kind information (🟠2).
+    - Arithmetic, cast, negation and compare instructions now record their operand kind in `tag/OpTagPositionInfo` (a position info subclass, so it survives Stmt rewrites), and `DexNumberTranformer` uses it: invalid casts are down to 1 (FlowSensitivity1) and 0 (LocationLeak1).
+    - The last one comes from exceptional edges of statements that cannot throw (needs throw analysis, 🟠3).
+    - Next: add `TypeAssigner` to the default chain.
 
 - [ ] **2. Missing dex-specific passes and op-kind information.**
   - **Tags never attached:** Soot tags statements while translating: Int/Long/Float/Double op tags on binop, cast, unop and cmp; Object/Byte/Char/Short/Boolean/IntOrFloat/LongOrDouble tags on aget; ObjectOpTag on aput-object and filled-new-array. SootUp attaches none. The `tag/*OpTag` classes exist, but SootUp `Stmt`s can't carry tags. As a result, the number transformer's binop and cast branches are commented out (`interceptors/DexNumberTranformer.java:166-173`). `const/high16 v0,0x3f80; add-float …` stays `1065353216` instead of `1.0F`.
   - **Passes missing:** DexIfTransformer, DexNullThrowTransformer, DexNullArrayRefTransformer, DexNullInstanceofTransformer, DexNullIfTransformer, DexReturnInliner, SharedInitializationLocalSplitter, the post-typing constant and boolean fixups, and checkUnrealizableCasts.
   - **Ordering:** these passes (and the existing null/number ones) assume local splitting has already run. Before splitting, one piece of evidence decides every def of a register across the whole method, and the result depends on `HashSet<Stmt>` iteration order.
   - **Fix: Architectural.** Either carry a `Stmt → op-kind` side table through `DexMethodSource`, or run the tag-dependent passes inside `DexBody` on `stmtList` before the graph is built.
+  - **Partly done:** Int/Long/Float/Double op tags are attached via `OpTagPositionInfo` and used by `DexNumberTranformer`. Still open: aget/aput element kind tags (ObjectOpTag etc.) and the other Soot passes listed above.
 
 - [ ] **3. No throw analysis.**
   - **Impact:** traps aren't narrowed to statements that can throw, `SI/TrapTightener.java:57-60` throws `UnsupportedOperationException`, and TrapMinimizer can't be ported. Handlers receive flow from `const` and `move` statements that can't throw, so splitting and dataflow are less precise.

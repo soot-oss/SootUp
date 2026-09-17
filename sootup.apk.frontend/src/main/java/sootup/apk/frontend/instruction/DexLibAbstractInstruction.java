@@ -27,6 +27,8 @@ import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.RegisterRangeInstruction;
 import sootup.apk.frontend.main.DexBody;
+import sootup.apk.frontend.tag.OpTagPositionInfo;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.Stmt;
 
 /** This class represents a wrapper around dexlib instruction. */
@@ -93,6 +95,11 @@ public abstract class DexLibAbstractInstruction {
 
   public int getCodeAddress() {
     return codeAddress;
+  }
+
+  /** Position info carrying the operand kind of this instruction's opcode. */
+  protected StmtPositionInfo opTagPositionInfo() {
+    return new OpTagPositionInfo(lineNumber, OpTagPositionInfo.forOpcode(instruction.getOpcode()));
   }
 
   /**

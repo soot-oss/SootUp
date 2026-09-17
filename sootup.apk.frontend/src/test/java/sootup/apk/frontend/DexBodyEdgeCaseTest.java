@@ -43,6 +43,7 @@ import org.jf.dexlib2.builder.instruction.BuilderInstruction10t;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction10x;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction11n;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction11x;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction12x;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction21c;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction21t;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction22b;
@@ -675,6 +676,31 @@ public class DexBodyEdgeCaseTest {
             });
 
     assertEquals("$u0 = 1.0F", stmtsOf(body).get(0));
+  }
+
+  /** Constants used by float arithmetic or a float cast are floats; for int arithmetic ints. */
+  @Test
+  public void constantsInFloatingPointOperationsBecomeFloats() {
+    Body body =
+        convert(
+            "FloatArithmetic",
+            6,
+            b -> {
+              b.addInstruction(new BuilderInstruction31i(Opcode.CONST, 0, 0x42c80000));
+              b.addInstruction(new BuilderInstruction31i(Opcode.CONST, 1, 0x40000000));
+              b.addInstruction(new BuilderInstruction23x(Opcode.MUL_FLOAT, 2, 0, 1));
+              b.addInstruction(new BuilderInstruction31i(Opcode.CONST, 3, 0x3f800000));
+              b.addInstruction(new BuilderInstruction12x(Opcode.FLOAT_TO_INT, 4, 3));
+              b.addInstruction(new BuilderInstruction31i(Opcode.CONST, 5, 0x42c80000));
+              b.addInstruction(new BuilderInstruction23x(Opcode.MUL_INT, 5, 5, 4));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+            });
+
+    List<String> stmts = stmtsOf(body);
+    assertEquals("$u0 = 100.0F", stmts.get(0));
+    assertEquals("$u1 = 2.0F", stmts.get(1));
+    assertEquals("$u3 = 1.0F", stmts.get(3));
+    assertTrue(stmts.contains("$u5#0 = 1120403456"), stmts.toString());
   }
 
   /** One constant register used as a boolean and as an int gets a local per use. */

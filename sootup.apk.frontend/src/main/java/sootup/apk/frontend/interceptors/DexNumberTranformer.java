@@ -24,6 +24,7 @@ package sootup.apk.frontend.interceptors;
 
 import java.util.*;
 import org.jspecify.annotations.NonNull;
+import sootup.apk.frontend.tag.OpTagPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.DoubleConstant;
@@ -76,7 +77,10 @@ public class DexNumberTranformer extends DexTransformer {
               public void caseAssignStmt(@NonNull JAssignStmt stmt) {
                 {
                   Value rightOp = stmt.getRightOp();
-                  if (rightOp instanceof JFieldRef) {
+                  if (rightOp instanceof AbstractBinopExpr && !isCompare(rightOp)) {
+                    usedAsFloatingPoint = OpTagPositionInfo.isFloatingPointOp(stmt);
+                    doBreak = true;
+                  } else if (rightOp instanceof JFieldRef) {
                     usedAsFloatingPoint = isFloatingPointLike(rightOp.getType());
                     doBreak = true;
                   } else if (rightOp instanceof JNewArrayExpr) {
@@ -164,13 +168,11 @@ public class DexNumberTranformer extends DexTransformer {
                     } else if (r instanceof AbstractInvokeExpr) {
                       usedAsFloatingPoint = examineInvokeExpr((AbstractInvokeExpr) r, l);
                       doBreak = true;
-                    } else if (r instanceof AbstractBinopExpr) {
-                      //                                usedAsFloatingPoint =
-                      // examineBinopExpr(stmt);
-                      doBreak = true;
-                    } else if (r instanceof JCastExpr) {
-                      //                                usedAsFloatingPoint =
-                      // stmt.hasTag(FloatOpTag.NAME) || stmt.hasTag(DoubleOpTag.NAME);
+                    } else if (r instanceof AbstractBinopExpr
+                        || r instanceof JCastExpr
+                        || r instanceof JNegExpr) {
+                      // the tag holds the operand kind; for a cast the source type
+                      usedAsFloatingPoint = OpTagPositionInfo.isFloatingPointOp(stmt);
                       doBreak = true;
                     } else if (r instanceof Local && r == l) {
                       if (left instanceof JFieldRef) {
@@ -222,6 +224,10 @@ public class DexNumberTranformer extends DexTransformer {
         rewrites.put(stmt, s.withRValue(DoubleConstant.getInstance(Double.longBitsToDouble(vVal))));
       }
     }
+  }
+
+  private static boolean isCompare(Value value) {
+    return value instanceof JCmpExpr || value instanceof JCmplExpr || value instanceof JCmpgExpr;
   }
 
   /**
