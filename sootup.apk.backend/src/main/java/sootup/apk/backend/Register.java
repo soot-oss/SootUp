@@ -97,4 +97,36 @@ public class Register {
   public void addUse(AbstractInstruction instruction) {
     this.uses.add(instruction);
   }
+
+  private static boolean fitsInto(int regNumber, int maxNumber, boolean isWide) {
+    if (isWide) {
+      return regNumber >= 0 && regNumber < maxNumber;
+    }
+    return regNumber >= 0 && regNumber <= maxNumber;
+  }
+
+  private boolean fitsInto(int maxNumber) {
+    return fitsInto(number, maxNumber, isWide());
+  }
+
+  public boolean fitsUnconstrained() {
+    return fitsInto(65535);
+  }
+
+  public boolean fitsShort() {
+    return fitsInto(255);
+  }
+
+  public boolean fitsByte() {
+    return fitsInto(15);
+  }
+
+  public static boolean fitsUnconstrained(int regNumber, boolean isWide) {
+    return fitsInto(regNumber, 65535, isWide);
+  }
+
+  @Override
+  public Register clone() {
+    return new Register(this.number, this.type, this.isParameter, this.isTmp);
+  }
 }

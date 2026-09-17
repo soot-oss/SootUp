@@ -1,5 +1,6 @@
 package sootup.apk.backend.instructions;
 
+import java.util.BitSet;
 import java.util.List;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
@@ -39,6 +40,14 @@ public class Instruction22c extends TwoRegisterInstruction {
       return List.of(getRegisterB());
     }
     return getRegisters();
+  }
+
+  @Override
+  public BitSet getIncompatibleRegs() {
+    BitSet result = new BitSet(2);
+    if (!getRegisterA().fitsByte()) result.set(0);
+    if (!getRegisterB().fitsByte()) result.set(1);
+    return result;
   }
 
   @Override

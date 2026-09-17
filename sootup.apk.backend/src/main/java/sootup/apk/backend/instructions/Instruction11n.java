@@ -1,5 +1,6 @@
 package sootup.apk.backend.instructions;
 
+import java.util.BitSet;
 import java.util.List;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
@@ -16,6 +17,10 @@ public class Instruction11n extends OneRegisterInstruction {
     logSmali();
   }
 
+  public int getValue() {
+    return value;
+  }
+
   public BuilderInstruction getBuilderInstruction() {
     logSmali();
     return new BuilderInstruction11n(getOpcode(), getRegisterA().getNumber(), value);
@@ -29,6 +34,13 @@ public class Instruction11n extends OneRegisterInstruction {
   @Override
   public List<Register> getUseRegisters() {
     return List.of();
+  }
+
+  @Override
+  public BitSet getIncompatibleRegs() {
+    BitSet result = new BitSet(1);
+    if (!getRegisterA().fitsByte()) result.set(0);
+    return result;
   }
 
   @Override

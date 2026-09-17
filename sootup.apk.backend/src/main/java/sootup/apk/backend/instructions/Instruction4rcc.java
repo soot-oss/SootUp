@@ -1,11 +1,13 @@
 package sootup.apk.backend.instructions;
 
+import java.util.BitSet;
 import java.util.List;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction4rcc;
 import org.jf.dexlib2.iface.reference.MethodReference;
 import org.jf.dexlib2.iface.reference.Reference;
+import sootup.apk.backend.DexUtil;
 import sootup.apk.backend.Register;
 
 public class Instruction4rcc extends AbstractInstruction {
@@ -44,6 +46,56 @@ public class Instruction4rcc extends AbstractInstruction {
   @Override
   public List<Register> getUseRegisters() {
     return registers;
+  }
+
+  @Override
+  public BitSet getIncompatibleRegs() {
+    // if there is one problem -> all regs are incompatible (this could be optimized in reg
+    // allocation, probably)
+    int regCount = DexUtil.getRegisterSizeCount(registers);
+    if (hasHoleInRange()) {
+      return getAllIncompatible(regCount);
+    }
+    for (Register r : registers) {
+      if (!r.fitsUnconstrained()) {
+        return getAllIncompatible(regCount);
+      }
+      if (r.isWide()) {
+        boolean secondWideHalfFits = Register.fitsUnconstrained(r.getNumber() + 1, false);
+        if (!secondWideHalfFits) {
+          return getAllIncompatible(regCount);
+        }
+      }
+    }
+    return new BitSet(regCount);
+  }
+
+  private static BitSet getAllIncompatible(int regCount) {
+    BitSet incompatRegs = new BitSet(regCount);
+    incompatRegs.flip(0, regCount);
+    return incompatRegs;
+  }
+
+  private boolean hasHoleInRange() {
+    // the only "hole" that is allowed: if regN is wide -> regN+1 must not be there
+    Register startReg = registers.get(0);
+    int nextExpectedRegNum = startReg.getNumber() + 1;
+    if (startReg.isWide()) {
+      nextExpectedRegNum++;
+    }
+    // loop starts at 1, since the first reg alone cannot have a hole
+    for (int i = 1; i < registers.size(); i++) {
+      Register r = registers.get(i);
+      int regNum = r.getNumber();
+      if (regNum != nextExpectedRegNum) {
+        return true;
+      }
+      nextExpectedRegNum++;
+      if (r.isWide()) {
+        nextExpectedRegNum++;
+      }
+    }
+    return false;
   }
 
   @Override

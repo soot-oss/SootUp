@@ -145,13 +145,16 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
           Register sourceRegister =
               registerAllocator.getRegisterForImmediate(sourceLocal, false, stmt);
           targetRegister = fixObjectType(sourceRegister.getType(), stmt, targetRegister);
-          dexExprVisitor.setCurrentStmt(stmt);
-          dexExprVisitor.generateMoveInstruction(
-              targetRegister,
-              sourceRegister,
-              sourceRegister.getType(),
-              true,
-              sourceRegister.isPotentialNullValue());
+          log.info("{}", stmt);
+          this.addInstruction(
+              DexExprVisitor.generateMoveInstruction(
+                  targetRegister,
+                  sourceRegister,
+                  sourceRegister.getType(),
+                  true,
+                  leftOpLocal,
+                  registerAllocator),
+              stmt);
         }
 
       } else {

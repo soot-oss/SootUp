@@ -41,7 +41,11 @@ public class Instruction10t extends AbstractInstruction {
 
   @Override
   public void logSmali() {
-    log.info("{} :{}", getOpcode().name, getLabelAssigner().getLabelName(targetStmt));
+    if (getLabelAssigner() != null) {
+      log.info("{} :{}", getOpcode().name, getLabelAssigner().getLabelName(targetStmt));
+    } else {
+      log.info("{} :label", getOpcode().name);
+    }
   }
 
   @Override

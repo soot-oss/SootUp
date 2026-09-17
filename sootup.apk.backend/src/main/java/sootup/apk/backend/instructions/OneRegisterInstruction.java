@@ -9,7 +9,7 @@ public abstract class OneRegisterInstruction extends AbstractInstruction {
 
   private Register registerA;
 
-  protected Register getRegisterA() {
+  public Register getRegisterA() {
     return registerA;
   }
 

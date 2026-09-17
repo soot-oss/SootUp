@@ -1,5 +1,6 @@
 package sootup.apk.backend.instructions;
 
+import java.util.BitSet;
 import java.util.List;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
@@ -39,13 +40,29 @@ public class Instruction22t extends TwoRegisterInstruction {
   }
 
   @Override
+  public BitSet getIncompatibleRegs() {
+    BitSet result = new BitSet(2);
+    if (!getRegisterA().fitsByte()) result.set(0);
+    if (!getRegisterB().fitsByte()) result.set(1);
+    return result;
+  }
+
+  @Override
   public void logSmali() {
-    log.info(
-        "{} v{}, v{} :{}",
-        getOpcode().name,
-        getRegisterA().getNumber(),
-        getRegisterB().getNumber(),
-        getLabelAssigner().getLabelName(targetStmt));
+    if (getLabelAssigner() != null) {
+      log.info(
+          "{} v{}, v{} :{}",
+          getOpcode().name,
+          getRegisterA().getNumber(),
+          getRegisterB().getNumber(),
+          getLabelAssigner().getLabelName(targetStmt));
+    } else {
+      log.info(
+          "{} v{}, v{} :label",
+          getOpcode().name,
+          getRegisterA().getNumber(),
+          getRegisterB().getNumber());
+    }
   }
 
   public Stmt getTargetStmt() {

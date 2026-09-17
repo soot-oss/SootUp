@@ -28,7 +28,7 @@ public class DexRefVisitor extends AbstractRefVisitor {
   private final RegisterAllocator registerAllocator;
   private final DexStmtVisitor dexStmtVisitor;
 
-  enum RefOperation {
+  public enum RefOperation {
     PUT,
     GET
   }

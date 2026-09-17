@@ -1,5 +1,6 @@
 package sootup.apk.backend.instructions;
 
+import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -57,6 +58,17 @@ public class Instruction45cc extends FiveRegisterInstruction {
   @Override
   public List<Register> getUseRegisters() {
     return getRegisters();
+  }
+
+  @Override
+  public BitSet getIncompatibleRegs() {
+    BitSet incompatRegs = new BitSet(5);
+    for (int i = 0; i < getRegisters().size(); i++) {
+      if (!getRegisters().get(i).fitsByte()) {
+        incompatRegs.set(i);
+      }
+    }
+    return incompatRegs;
   }
 
   @Override

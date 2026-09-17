@@ -1,5 +1,6 @@
 package sootup.apk.backend.instructions;
 
+import java.util.BitSet;
 import java.util.List;
 import org.jf.dexlib2.MethodHandleType;
 import org.jf.dexlib2.Opcode;
@@ -31,12 +32,16 @@ public class Instruction21c extends OneRegisterInstruction {
   @Override
   public List<Register> getDefRegisters() {
     String opcodeLower = getOpcode().name.toLowerCase();
+    log.info("{}", opcodeLower);
     if (opcodeLower.startsWith("const")
         || opcodeLower.equals("check-cast")
         || opcodeLower.equals("new-instance")
         || opcodeLower.startsWith("sget")) {
+      log.info("true");
+      log.info("{}, with number {}", getRegisterA(), getRegisterA().getNumber());
       return List.of(getRegisterA());
     }
+    log.info("false");
     return List.of();
   }
 
@@ -47,6 +52,13 @@ public class Instruction21c extends OneRegisterInstruction {
       return List.of(getRegisterA());
     }
     return List.of();
+  }
+
+  @Override
+  public BitSet getIncompatibleRegs() {
+    BitSet result = new BitSet(1);
+    if (!getRegisterA().fitsByte()) result.set(0);
+    return result;
   }
 
   @Override

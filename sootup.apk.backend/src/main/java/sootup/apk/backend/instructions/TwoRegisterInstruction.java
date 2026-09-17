@@ -15,11 +15,11 @@ public abstract class TwoRegisterInstruction extends AbstractInstruction {
     this.registerB = registerB;
   }
 
-  protected Register getRegisterA() {
+  public Register getRegisterA() {
     return registerA;
   }
 
-  protected Register getRegisterB() {
+  public Register getRegisterB() {
     return registerB;
   }
 

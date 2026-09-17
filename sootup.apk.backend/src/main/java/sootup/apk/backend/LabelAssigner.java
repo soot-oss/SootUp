@@ -85,8 +85,14 @@ public class LabelAssigner {
 
   public void setLabel(Object object) {
     log.info("Set label at {}", object);
+    log.info("Want to set label: {}", labelNameMapBeforeStmt.get(object));
+    log.info("has key: {}", addedLabelsBeforeStmt.contains(labelNameMapBeforeStmt.get(object)));
+    log.info(
+        "label already set: {}",
+        addedLabelsBeforeStmt.contains(labelNameMapBeforeStmt.get(object)));
+    addedLabelsBeforeStmt.forEach(l -> log.info("{}", l));
     if (labelMapBeforeStmt.containsKey(object)
-        && !addedLabelsBeforeStmt.contains(labelNameMapBeforeStmt.get(object))) {
+        && (!addedLabelsBeforeStmt.contains(labelNameMapBeforeStmt.get(object)))) {
       String labelName = labelNameMapBeforeStmt.get(object);
       log.info(":{}", labelName);
       methodImplementationBuilder.addLabel(labelName);

@@ -20,6 +20,8 @@ public class RegisterAllocator {
   private int nextRegisterNumber = 0;
   private final DexConstantVisitor dexConstantVisitor;
 
+  private int reservedRegisters;
+
   private Map<Local, Register> registerMap = new LinkedHashMap<>();
   private final List<Register> registerList = new LinkedList<>();
 
@@ -30,6 +32,7 @@ public class RegisterAllocator {
 
   public RegisterAllocator(DexConstantVisitor dexConstantVisitor) {
     this.dexConstantVisitor = dexConstantVisitor;
+    this.reservedRegisters = 0;
   }
 
   private Register allocateNewRegister(Type type, boolean isParameter, boolean isTmp) {
@@ -46,10 +49,12 @@ public class RegisterAllocator {
   private Register getRegisterForLocal(Local local, boolean isParameter) {
     if (registerMap.containsKey(local)) {
       log.info(
-          "Local {} present in registerMap {} with type {}",
+          "Local {} present in registerMap {} with type {} and guessed {}",
           local.getName(),
           registerMap.get(local).getNumber(),
-          registerMap.get(local).getType());
+          registerMap.get(local).getType(),
+          registerMap.get(local).isTypeGuessed());
+
       return registerMap.get(local);
     } else {
       Register register = allocateNewRegister(local.getType(), isParameter, false);
@@ -187,7 +192,7 @@ public class RegisterAllocator {
   }
 
   protected int getRegisterCount() {
-    return registerList.stream().mapToInt(Register::getSize).sum();
+    return registerList.stream().mapToInt(Register::getSize).sum() + reservedRegisters;
   }
 
   protected List<Register> getRegisters() {
@@ -204,5 +209,9 @@ public class RegisterAllocator {
 
   protected void setRegisterMap(Map<Local, Register> registerMap) {
     this.registerMap = registerMap;
+  }
+
+  public void addReservedRegisters(int number) {
+    this.reservedRegisters += number;
   }
 }

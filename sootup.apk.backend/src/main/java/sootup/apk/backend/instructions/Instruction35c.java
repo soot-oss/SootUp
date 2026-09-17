@@ -60,6 +60,17 @@ public class Instruction35c extends FiveRegisterInstruction {
   }
 
   @Override
+  public BitSet getIncompatibleRegs() {
+    BitSet incompatRegs = new BitSet(5);
+    for (int i = 0; i < getRegisters().size(); i++) {
+      if (!getRegisters().get(i).fitsByte()) {
+        incompatRegs.set(i);
+      }
+    }
+    return incompatRegs;
+  }
+
+  @Override
   public void logSmali() {
     List<Register> registers =
         Stream.of(getRegisterA(), getRegisterB(), getRegisterC(), getRegisterD(), getRegisterE())
