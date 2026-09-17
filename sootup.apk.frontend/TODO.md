@@ -226,7 +226,7 @@
   - **Soot:** uses `DalvikThrowAnalysis` (`soot/dexpler/DalvikThrowAnalysis.java:160-341`).
   - **Fix: Architectural.** Needs a ThrowAnalysis API in SootUp.
 
-- [ ] **4. JVM-wide static singletons.**
+- [x] **4. JVM-wide static singletons.**
   - **Where:**
     - `DexFileProvider.getInstance()` (`dexpler/DexFileProvider.java:40-49,72,84`): lazy, unsynchronized, with a static `dexMap` and a mutable `api_version` field
     - `DexResolver.getInstance()` (`dexpler/DexResolver.java:30-49`)
@@ -238,6 +238,7 @@
     - under concurrency, one APK can be decoded with another's opcodes and cached permanently
   - **Soot:** scopes these to `G.v()` with a reset.
   - **Fix: Medium.** Make them instance state of `ApkAnalysisInputLocation`.
+  - **Done:** `DexResolver` and the static `DexUtil.androidVersionInfo` are gone, `DexFileProvider` keeps no state, and each `ApkAnalysisInputLocation` owns its `DexLibWrapper`. Test: `rewrittenDexFileIsNotStale`.
 
 - [ ] **5. dexlib2 2.5.2 only reads dex versions 035–039.**
   - **Impact:** dex entries with version 040+ inside an APK are silently skipped (`ZipDexContainer.isDex` catches `UnsupportedFile`), so their classes vanish without an error.
@@ -315,10 +316,11 @@
   - **Where:** `src/test/.../CallGraphTest.java:87-88,122-124,156-158` use `view.getClasses()`, which includes android.jar, instead of only the app classes.
   - **Fix: Easy.** Recompute the expected counts.
 
-- [ ] **`resolveSuperclass()` NPE.**
+- [x] **`resolveSuperclass()` NPE.**
   - **Where:** `dexpler/DexClassSource.java:137` calls `isEmpty()` on the `@Nullable` result of `ClassDef.getSuperclass()`. It crashes for `java.lang.Object` in framework or core-lib dex.
   - **Soot:** null-checks it (`soot/dexpler/DexClassLoader.java:82`).
   - **Fix: Easy.**
+  - **Done:** null-checked (with the singleton removal).
 
 - [ ] **Every `DexClassSource` from one APK compares equal.**
   - **Why:** `JavaSootClassSource.equals/hashCode` use only (input location, source path), and all classes share the APK path.
@@ -340,8 +342,8 @@
 - [ ] **Dead code to remove.**
   - `FieldInstruction.getSootFieldRef` builds `JInstanceFieldRef(null, …)` (`instruction/FieldInstruction.java:60-63`).
   - `DexFileProvider` has a hard-coded `multiple_dex = true` and an unreachable single-dex branch that tells users about a nonexistent `-process-multiple-dex` option (`:127,154-169`).
-  - The class-modifier map in `ApkAnalysisInputLocation.java:100-111` is computed but never read.
-  - The `classInformation == null` branches in `DexClassSource` are unreachable, because the provider already returns empty.
+  - ~~The class-modifier map in `ApkAnalysisInputLocation.java:100-111` is computed but never read.~~ Removed.
+  - ~~The `classInformation == null` branches in `DexClassSource` are unreachable, because the provider already returns empty.~~ Removed.
   - `DexUtil.getClassTypeFromClassName` prints to stdout and rethrows a bare `RuntimeException` with no cause (`Util/DexUtil.java:145-150`).
   - **Fix: Easy.**
 

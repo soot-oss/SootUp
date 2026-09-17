@@ -73,6 +73,17 @@ public class DexFileProviderTest {
         Set.of("fromClasses9"), methodsOfDuplicate(apkWith("WithoutClassesDex", dexToMethod)));
   }
 
+  /**
+   * Each input location reads its own dex files, so a rewritten file is not served from a cache.
+   */
+  @Test
+  public void rewrittenDexFileIsNotStale() throws IOException {
+    Map<String, String> first = Map.of("classes.dex", "first");
+    Map<String, String> second = Map.of("classes.dex", "second");
+    assertEquals(Set.of("first"), methodsOfDuplicate(apkWith("Rewritten", first)));
+    assertEquals(Set.of("second"), methodsOfDuplicate(apkWith("Rewritten", second)));
+  }
+
   /** The opcode set follows the dex header, not the newest android.jar that happens to exist. */
   @Test
   public void opcodesFollowTheDexVersion() throws IOException {
@@ -82,11 +93,7 @@ public class DexFileProviderTest {
 
     DexBackedDexFile loaded =
         (DexBackedDexFile)
-            DexFileProvider.getInstance()
-                .getDexFromSource(dex.toFile(), 19)
-                .get(0)
-                .getBase()
-                .getDexFile();
+            new DexFileProvider().getDexFromSource(dex.toFile(), 19).get(0).getBase().getDexFile();
     assertEquals(28, loaded.getOpcodes().api);
   }
 

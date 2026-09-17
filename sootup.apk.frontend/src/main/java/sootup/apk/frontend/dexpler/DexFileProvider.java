@@ -33,20 +33,10 @@ import org.jf.dexlib2.iface.MultiDexContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** Loads the dex files of a source. It keeps no state, so nothing outlives the caller. */
 public class DexFileProvider {
 
   private final Logger logger = LoggerFactory.getLogger(DexFileProvider.class);
-
-  private int api_version;
-
-  private static DexFileProvider instance;
-
-  public static DexFileProvider getInstance() {
-    if (instance == null) {
-      instance = new DexFileProvider();
-    }
-    return instance;
-  }
 
   public static final class DexContainer<T extends DexFile> {
     private final MultiDexContainer.DexEntry<T> base;
@@ -68,30 +58,25 @@ public class DexFileProvider {
     }
   }
 
-  /** Mapping of filesystem file (apk, dex, etc.) to mapping of dex name to dex file */
-  private final Map<String, Map<String, DexContainer<? extends DexFile>>> dexMap = new HashMap<>();
-
   /**
    * Returns all dex files found in dex source
    *
    * @param dexSource Path to a jar, apk, dex, odex or a directory containing multiple dex files
-   * @param api_version the version of the currently instrumenting APK
-   * @return List of dex files derived from source
+   * @param apiVersion the API level, only used for odex files
+   * @return List of dex files derived from source, lowest priority first
    * @throws IOException if the dex source is not parsed properly
    */
-  public List<DexContainer<? extends DexFile>> getDexFromSource(File dexSource, int api_version)
+  public List<DexContainer<? extends DexFile>> getDexFromSource(File dexSource, int apiVersion)
       throws IOException {
-    this.api_version = api_version;
-    return getDexFromSource(dexSource, DEFAULT_PRIORITIZER);
+    return getDexFromSource(dexSource, apiVersion, DEFAULT_PRIORITIZER);
   }
 
   public List<DexContainer<? extends DexFile>> getDexFromSource(
-      File dexSource, Comparator<DexContainer<? extends DexFile>> prioritizer) throws IOException {
+      File dexSource, int apiVersion, Comparator<DexContainer<? extends DexFile>> prioritizer)
+      throws IOException {
     ArrayList<DexContainer<? extends DexFile>> resultList = new ArrayList<>();
-    List<File> allSources = allSourcesFromFile(dexSource);
-    updateIndex(allSources);
-    for (File theSource : allSources) {
-      resultList.addAll(dexMap.get(theSource.getCanonicalPath()).values());
+    for (File theSource : allSourcesFromFile(dexSource)) {
+      resultList.addAll(mappingForFile(theSource, apiVersion).values());
     }
 
     // lowest priority first, because later dex files overwrite earlier ones when indexed
@@ -101,36 +86,17 @@ public class DexFileProvider {
     return resultList;
   }
 
-  private void updateIndex(List<File> dexSources) throws IOException {
-    for (File theSource : dexSources) {
-      String key = theSource.getCanonicalPath();
-      Map<String, DexContainer<? extends DexFile>> dexFiles = dexMap.get(key);
-      if (dexFiles == null) {
-        try {
-          dexFiles = mappingForFile(theSource);
-          dexMap.put(key, dexFiles);
-        } catch (IOException e) {
-          throw new IllegalStateException("Error parsing dex source", e);
-        }
-      }
-    }
-  }
-
   /**
    * @param dexSourceFile A file containing either one or multiple dex files (apk, zip, etc.) but no
    *     directory!
-   * @return
-   * @throws IOException
    */
-  private Map<String, DexContainer<? extends DexFile>> mappingForFile(File dexSourceFile)
-      throws IOException {
+  private Map<String, DexContainer<? extends DexFile>> mappingForFile(
+      File dexSourceFile, int apiVersion) throws IOException {
     // load dex files from apk/folder/file
     boolean multiple_dex = true;
     // dex files carry their version in the header; only odex needs the device API level
     Opcodes opcodes =
-        dexSourceFile.getName().toLowerCase().endsWith(".odex")
-            ? Opcodes.forApi(api_version)
-            : null;
+        dexSourceFile.getName().toLowerCase().endsWith(".odex") ? Opcodes.forApi(apiVersion) : null;
     MultiDexContainer<? extends DexBackedDexFile> dexContainer =
         DexFileFactory.loadDexContainer(dexSourceFile, opcodes);
 

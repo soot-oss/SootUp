@@ -29,7 +29,6 @@ import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import org.jf.dexlib2.iface.value.*;
 import org.jspecify.annotations.NonNull;
-import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.types.*;
 import sootup.core.views.View;
@@ -39,8 +38,6 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
 public class DexUtil {
-
-  private static AndroidVersionInfo androidVersionInfo;
 
   public static Type toSootType(String typeDescriptor, int pos) {
     Type type = null;
@@ -205,13 +202,5 @@ public class DexUtil {
     }
 
     return javaClassType;
-  }
-
-  public static void setAndroidVersionInfo(AndroidVersionInfo androidVersionInfo) {
-    DexUtil.androidVersionInfo = androidVersionInfo;
-  }
-
-  public static AndroidVersionInfo getAndroidVersionInfo() {
-    return androidVersionInfo;
   }
 }

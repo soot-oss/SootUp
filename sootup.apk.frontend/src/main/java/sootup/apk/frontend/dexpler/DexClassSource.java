@@ -22,7 +22,6 @@ package sootup.apk.frontend.dexpler;
  * #L%
  */
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,9 +50,7 @@ public class DexClassSource extends JavaSootClassSource {
 
   private static final Logger logger = LoggerFactory.getLogger(DexClassSource.class);
 
-  DexLibWrapper wrapper;
-
-  DexLibWrapper.ClassInformation classInformation;
+  final DexLibWrapper.@NonNull ClassInformation classInformation;
 
   List<BodyInterceptor> bodyInterceptors;
 
@@ -68,37 +65,26 @@ public class DexClassSource extends JavaSootClassSource {
       @NonNull View view,
       @NonNull AnalysisInputLocation analysisInputLocation,
       @NonNull ClassType classSignature,
-      @NonNull Path sourcePath) {
+      @NonNull Path sourcePath,
+      DexLibWrapper.@NonNull ClassInformation classInformation) {
     super(analysisInputLocation, classSignature, sourcePath);
-    // Initialize only for the first time.
     this.view = view;
     this.bodyInterceptors = analysisInputLocation.getBodyInterceptors();
-    if (this.wrapper == null) {
-      this.wrapper = DexResolver.getInstance().initializeDexFile(new File(sourcePath.toString()));
-    }
-    this.classInformation = wrapper.getClassInformation(classSignature);
+    this.classInformation = classInformation;
   }
 
   @NonNull
   @Override
   public Collection<? extends JavaSootMethod> resolveMethods() throws ResolveException {
-    if (classInformation != null) {
-      DexMethod dexMethod = createDexMethodFactory(classInformation.dexEntry, classSignature);
-      return StreamSupport.stream(
-              classInformation.classDefinition.getMethods().spliterator(), false)
-          .map(method -> loadMethod(method, dexMethod))
-          .collect(Collectors.toSet());
-    } else {
-      return Collections.emptySet();
-    }
+    DexMethod dexMethod = createDexMethodFactory(classInformation.dexEntry, classSignature);
+    return StreamSupport.stream(classInformation.classDefinition.getMethods().spliterator(), false)
+        .map(method -> loadMethod(method, dexMethod))
+        .collect(Collectors.toSet());
   }
 
   @NonNull
   @Override
   public Collection<? extends SootField> resolveFields() throws ResolveException {
-    if (classInformation == null) {
-      return Collections.emptySet();
-    }
     return resolveFields(
         classInformation.classDefinition.getFields(), view.getIdentifierFactory(), classSignature);
   }
@@ -106,18 +92,12 @@ public class DexClassSource extends JavaSootClassSource {
   @NonNull
   @Override
   public Set<ClassModifier> resolveModifiers() {
-    if (classInformation == null) {
-      return Collections.emptySet();
-    }
     return Modifiers.getClassModifiers(classInformation.classDefinition.getAccessFlags());
   }
 
   @NonNull
   @Override
   public Set<? extends ClassType> resolveInterfaces() {
-    if (classInformation == null) {
-      return Collections.emptySet();
-    }
     List<String> interfaces = classInformation.classDefinition.getInterfaces();
     if (interfaces.isEmpty()) {
       return new HashSet<>();
@@ -130,16 +110,11 @@ public class DexClassSource extends JavaSootClassSource {
   @NonNull
   @Override
   public Optional<? extends ClassType> resolveSuperclass() {
-    if (classInformation != null) {
-      String superclass = classInformation.classDefinition.getSuperclass();
-      if (superclass.isEmpty()) {
-        return Optional.empty();
-      } else {
-        return Optional.ofNullable(DexUtil.stringToJimpleType(view, superclass));
-      }
-    } else {
+    String superclass = classInformation.classDefinition.getSuperclass();
+    if (superclass == null || superclass.isEmpty()) {
       return Optional.empty();
     }
+    return Optional.of(DexUtil.stringToJimpleType(view, superclass));
   }
 
   @NonNull
@@ -158,18 +133,12 @@ public class DexClassSource extends JavaSootClassSource {
    * @return The source file for this class as specified in the dex file.
    */
   public Optional<String> getSourceFile() {
-    if (classInformation == null) {
-      return Optional.empty();
-    }
     return Optional.ofNullable(classInformation.classDefinition.getSourceFile());
   }
 
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
-    if (classInformation != null) {
-      return DexUtil.createAnnotationUsage(classInformation.classDefinition.getAnnotations());
-    }
-    return Collections.emptyList();
+    return DexUtil.createAnnotationUsage(classInformation.classDefinition.getAnnotations());
   }
 
   private DexMethod createDexMethodFactory(
