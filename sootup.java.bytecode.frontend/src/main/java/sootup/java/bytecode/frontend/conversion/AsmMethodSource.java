@@ -59,17 +59,17 @@ import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.Body;
-import sootup.core.model.FullPosition;
-import sootup.core.model.MethodModifier;
-import sootup.core.model.Position;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.PolymorphicMethodSignature;
+import sootup.core.signatures.PolymorphicMethodSubSignature;
 import sootup.core.types.*;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.jimple.basic.JavaLocal;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
@@ -1191,8 +1191,53 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     JavaClassType cls = identifierFactory.getClassType(AsmUtil.toQualifiedName(clsName));
     List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(insn.desc);
     Type returnType = sigTypes.remove((sigTypes.size() - 1));
-    MethodSignature methodSignature =
-        identifierFactory.getMethodSignature(cls, insn.name, returnType, sigTypes);
+    // Methods with polymorphic signatures from the classes {@link java.lang.invoke.MethodHandle}
+    // and
+    // {@link java.lang.invoke.VarHandle}, require special treatment. Those methods can operate with
+    // any of
+    // a wide range of argument and return types. Instead of using the provided method signature,
+    // these methods
+    // are resolved as the original method signature from MethodHandle and VarHandle, because those
+    // methods exist
+    // while analyzing!
+    String methodSignatureName = insn.name;
+    JavaClassType methodHandleType =
+        identifierFactory.getClassType("java.lang.invoke.MethodHandle");
+    JavaClassType varHandleType = identifierFactory.getClassType("java.lang.invoke.VarHandle");
+    JavaClassType polyAnnotationType =
+        identifierFactory.getClassType("java.lang.invoke.MethodHandle$PolymorphicSignature");
+    // temp variable to hold the polymorphic signature match if we find one
+    PolymorphicMethodSignature polyMethodSignature = null;
+    if (cls.equals(methodHandleType) || cls.equals(varHandleType)) {
+      Set<? extends SootMethod> matchingMethods =
+          view.getClassOrThrow(cls).getMethodsByName(methodSignatureName);
+      // method name matching exactly one method signature name from Method/VarHandle
+      if (matchingMethods.size() == 1) {
+        MethodSignature possiblePolyMethodSig = matchingMethods.iterator().next().getSignature();
+        JavaSootMethod sootMethod =
+            (JavaSootMethod) view.getMethod(possiblePolyMethodSig).orElse(null);
+        if (sootMethod != null) {
+          for (AnnotationUsage annotations : sootMethod.getAnnotations()) {
+            // method is annotated with MethodHandle$PolymorphicSignature
+            if (annotations.getAnnotation().equals(polyAnnotationType)) {
+              polyMethodSignature =
+                  new PolymorphicMethodSignature(
+                      cls,
+                      new PolymorphicMethodSubSignature(
+                          possiblePolyMethodSig.getName(),
+                          possiblePolyMethodSig.getParameterTypes(),
+                          possiblePolyMethodSig.getType()));
+              break;
+            }
+          }
+        }
+      }
+    }
+    final MethodSignature methodSignature =
+        polyMethodSignature != null
+            ? polyMethodSignature
+            // standard: method not annotated with MethodHandle$PolymorphicSignature
+            : identifierFactory.getMethodSignature(cls, methodSignatureName, returnType, sigTypes);
     int nrArgs = sigTypes.size();
     final Operand[] operands;
     Immediate[] argList = new Immediate[nrArgs];
