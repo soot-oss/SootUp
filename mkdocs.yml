@@ -6,6 +6,8 @@ edit_uri: edit/develop/docs/
 nav:
   - Getting Started:
       - Installation: installation.md
+      - Core Concepts: concepts.md
+      - Glossary: glossary.md
       - First Steps: getting-started.md
       - Analysis Input: analysisinput.md
       - Examples: examples.md
@@ -25,13 +27,15 @@ nav:
       - Code Property Graphs: codepropertygraphs.md
 
   - How to..:
-      - Write a Dataflow analysis: write_analyses.md
+      - Write a Dataflow Analysis: write_analyses.md
+      - "Example: Live Variables (backward)": analysis-liveness.md
+      - "Example: Constant Propagation (forward)": analysis-constprop.md
+      - "From Prototype to Tool": tool_setup.md
       - Incorporate Pointer Analysis: qilin.md
   #  - Modify a ControlFlowGraph: mutable_controlflowgraph.md
   #  - Modify a View: mutable_view.md
   #  - Implement a BodyInterceptor: body_interceptor.md
   #  - Implement an AnalysisTool: write_analysis_tool.md
-  #  - From Prototype to Tool: tool_setup.md
 
   - Misc & More:
       - Announcements: announcement.md
@@ -73,12 +77,16 @@ markdown_extensions:
             lspcommand: "java -jar ./jimplelsp.jar"
 
   - pymdownx.inlinehilite
-  - pymdownx.snippets
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
   - pymdownx.superfences
   - pymdownx.details
   - admonition
   - pymdownx.tabbed:
       alternate_style: true
+  - attr_list
+  - def_list
 
 extra:
   version:
