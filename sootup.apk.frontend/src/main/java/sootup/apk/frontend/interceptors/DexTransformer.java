@@ -22,6 +22,7 @@ package sootup.apk.frontend.interceptors;
  * #L%
  */
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.core.types.UnknownType;
 
 public abstract class DexTransformer implements BodyInterceptor {
   protected Type findArrayType(
@@ -228,6 +230,16 @@ public abstract class DexTransformer implements BodyInterceptor {
       }
     } else {
       return aType;
+    }
+  }
+
+  /** The element type of the array accessed in the stmt, or UnknownType if it cannot be found. */
+  protected Type arrayElementType(DexDefUseAnalysis dexDefUseAnalysis, Stmt arrayStmt) {
+    try {
+      Type type = findArrayType(dexDefUseAnalysis, arrayStmt, 0, Collections.emptySet());
+      return type == null ? UnknownType.getInstance() : type;
+    } catch (RuntimeException e) {
+      return UnknownType.getInstance();
     }
   }
 

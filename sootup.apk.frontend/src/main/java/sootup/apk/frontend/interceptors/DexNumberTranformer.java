@@ -88,7 +88,7 @@ public class DexNumberTranformer extends DexTransformer {
                     JArrayRef ar = (JArrayRef) rightOp;
                     Type arType = ar.getType();
                     if (arType instanceof UnknownType) {
-                      Type t = findArrayType(localDefs, stmt, 0, Collections.emptySet());
+                      Type t = arrayElementType(localDefs, stmt);
                       usedAsFloatingPoint = isFloatingPointLike(t);
                     } else {
                       usedAsFloatingPoint = isFloatingPointLike(ar.getType());
@@ -183,7 +183,7 @@ public class DexNumberTranformer extends DexTransformer {
                         JArrayRef jArrayRef = (JArrayRef) left;
                         Type arType = jArrayRef.getType();
                         if (arType instanceof UnknownType) {
-                          arType = findArrayType(localDefs, stmt, 0, Collections.emptySet());
+                          arType = arrayElementType(localDefs, stmt);
                         }
                         usedAsFloatingPoint = isFloatingPointLike(arType);
                         doBreak = true;

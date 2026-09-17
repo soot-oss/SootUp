@@ -70,9 +70,11 @@ public class DexNullTransformer extends AbstractNullTransformer {
               usedAsObject = isObject(r.getType());
               doBreak = true;
             } else if (r instanceof JArrayRef ar) {
-              if (!(ar.getType() instanceof UnknownType)) {
-                usedAsObject = isObject(ar.getType());
-              }
+              Type elementType =
+                  ar.getType() instanceof UnknownType
+                      ? arrayElementType(localDefs, stmt)
+                      : ar.getType();
+              usedAsObject = isObject(elementType);
               doBreak = true;
             } else if (r instanceof StringConstant
                 || r instanceof JNewExpr
@@ -168,9 +170,10 @@ public class DexNullTransformer extends AbstractNullTransformer {
                 return;
               } else if (l instanceof JArrayRef) {
                 Type aType = l.getType();
-                if (!(aType instanceof UnknownType)) {
-                  usedAsObject = isObject(aType);
+                if (aType instanceof UnknownType) {
+                  aType = arrayElementType(localDefs, stmt);
                 }
+                usedAsObject = isObject(aType);
                 doBreak = true;
                 return;
               }

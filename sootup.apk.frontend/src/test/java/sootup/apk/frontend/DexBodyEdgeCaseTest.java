@@ -677,6 +677,93 @@ public class DexBodyEdgeCaseTest {
     assertEquals("$u0 = 1.0F", stmtsOf(body).get(0));
   }
 
+  /** One constant register used as a boolean and as an int gets a local per use. */
+  @Test
+  public void sharedConstantIsSplitPerUse() {
+    Body body =
+        convert(
+            "SharedConstant",
+            1,
+            b -> {
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 1));
+              b.addInstruction(invokeStatic("takeBoolean", "Z", 0));
+              b.addInstruction(invokeStatic("takeInt", "I", 0));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+            });
+
+    assertEquals(
+        List.of(
+            "$u0_1 = 1",
+            "$u0_2 = 1",
+            "staticinvoke <dex.Callee: void takeBoolean(boolean)>($u0_1)",
+            "staticinvoke <dex.Callee: void takeInt(int)>($u0_2)",
+            "return"),
+        stmtsOf(body));
+  }
+
+  /** The same constant passed twice to one call gets a local per argument. */
+  @Test
+  public void repeatedConstantArgumentIsSplit() {
+    Body body =
+        convert(
+            "RepeatedArgument",
+            1,
+            b -> {
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addInstruction(
+                  new BuilderInstruction35c(
+                      Opcode.INVOKE_STATIC,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      new ImmutableMethodReference(
+                          "Ldex/Callee;", "take", List.of("I", "Z"), "V")));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+            });
+
+    assertEquals(
+        List.of(
+            "$u0 = 0",
+            "$u0_1 = 0",
+            "staticinvoke <dex.Callee: void take(int,boolean)>($u0, $u0_1)",
+            "return"),
+        stmtsOf(body));
+  }
+
+  /** A loop counter's uses share its non-constant definition, so it stays one local. */
+  @Test
+  public void loopCounterIsNotSplit() {
+    Body body =
+        convert(
+            "LoopCounter",
+            1,
+            b -> {
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("loop");
+              b.addInstruction(new BuilderInstruction22b(Opcode.ADD_INT_LIT8, 0, 0, 1));
+              b.addInstruction(new BuilderInstruction21t(Opcode.IF_NEZ, 0, b.getLabel("loop")));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+            });
+
+    assertTrue(
+        stmtsOf(body).stream().noneMatch(stmt -> stmt.contains("_")), stmtsOf(body).toString());
+  }
+
+  private static BuilderInstruction35c invokeStatic(String name, String parameter, int register) {
+    return new BuilderInstruction35c(
+        Opcode.INVOKE_STATIC,
+        1,
+        register,
+        0,
+        0,
+        0,
+        0,
+        new ImmutableMethodReference("Ldex/Callee;", name, List.of(parameter), "V"));
+  }
+
   private static void assertValidTraps(Body body) {
     List<ValidationException> violations = new JimpleTrapValidator().validate(body, null);
     assertTrue(violations.isEmpty(), violations.toString());

@@ -214,6 +214,10 @@
     - Run it after splitting and the null/number passes.
     - Require android.jar in the View (see the android.jar section).
     - Check whether this can run during eager class loading (🔴7).
+  - **In progress:**
+    - `LocalSplitter` runs; `DexSharedInitializationLocalSplitter` gives each use of a shared constant (and each repeated call argument) its own local; unused locals are removed; the null transformer resolves array element types via `findArrayType`.
+    - Measured with `TypeAssigner` appended (not yet in the default chain), android.jar in the view: all locals get a type; invalid primitive<->reference casts dropped from 747 in 164 bodies to 117 in 34 (FlowSensitivity1) and from 198 in 43 to 31 in 9 (LocationLeak1).
+    - The remaining ones are float/double bit-pattern constants used in arithmetic, which need op-kind information (🟠2).
 
 - [ ] **2. Missing dex-specific passes and op-kind information.**
   - **Tags never attached:** Soot tags statements while translating: Int/Long/Float/Double op tags on binop, cast, unop and cmp; Object/Byte/Char/Short/Boolean/IntOrFloat/LongOrDouble tags on aget; ObjectOpTag on aput-object and filled-new-array. SootUp attaches none. The `tag/*OpTag` classes exist, but SootUp `Stmt`s can't carry tags. As a result, the number transformer's binop and cast branches are commented out (`interceptors/DexNumberTranformer.java:166-173`). `const/high16 v0,0x3f80; add-float …` stays `1065353216` instead of `1.0F`.

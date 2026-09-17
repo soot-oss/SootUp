@@ -28,12 +28,19 @@ import java.util.List;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.interceptors.DexNullTransformer;
 import sootup.apk.frontend.interceptors.DexNumberTranformer;
+import sootup.apk.frontend.interceptors.DexSharedInitializationLocalSplitter;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.interceptors.LocalSplitter;
+import sootup.interceptors.UnusedLocalEliminator;
 
 public enum DexBodyInterceptors {
   // the number and null passes need one local per value, since Dalvik reuses registers
-  Default(new LocalSplitter(), new DexNumberTranformer(), new DexNullTransformer());
+  Default(
+      new LocalSplitter(),
+      new DexSharedInitializationLocalSplitter(),
+      new DexNumberTranformer(),
+      new DexNullTransformer(),
+      new UnusedLocalEliminator());
 
   @NonNull private final List<BodyInterceptor> bodyInterceptors;
 
