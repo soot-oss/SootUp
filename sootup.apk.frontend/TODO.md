@@ -272,20 +272,23 @@
 
 ## 🟢 Low Risk / High Reward — quick wins
 
-- [ ] **Method `throws` and method annotations are always empty.**
+- [x] **Method `throws` and method annotations are always empty.**
   - **Where:** `dexpler/DexMethodSource.java:101-102` pass `Collections.emptyList()` and `emptySet()`.
   - **Soot:** reads `dalvik.annotation.Throws` (`soot/dexpler/DexMethod.java:148-173`) and handles method annotations.
   - **Fix: Easy** (after 🔴6).
+  - **Done:** `DexMethodSource` reads `dalvik.annotation.Throws` and the method annotations. Test: `methodAndFieldMetadataIsConverted`.
 
 - [ ] **Field and parameter annotations are dropped.**
   - **Where:** field annotations at `dexpler/DexClassSource.java:237` (`Collections.emptySet() // TODO`). Parameter annotations and names are never read.
   - **Soot:** `soot/dexpler/DexAnnotation.java:336-443`.
   - **Fix: Easy–Medium.**
+  - **Partly done:** field annotations are converted. Parameter annotations are still dropped; `JavaSootMethod` has no model for them.
 
 - [ ] **`JavaSootMethod.getDefaultValue()` throws a NullPointerException.**
   - **Why:** the method is wrapped in `OverridingBodySource` with a null delegate, so the `UnsupportedOperationException("TODO")` in `DexMethodSource.java:111-113` is never even reached.
   - **Soot:** redistributes `AnnotationDefault` to methods.
   - **Fix: Medium.**
+  - **Partly done:** no longer throws (returns empty since the lazy body source); the `AnnotationDefault` values are still not read.
 
 - [ ] **`resolveOuterClass()` always returns `Optional.empty()`.**
   - **Where:** `dexpler/DexClassSource.java:150-152`.

@@ -23,7 +23,6 @@ package sootup.apk.frontend.dexpler;
  */
 
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +32,7 @@ import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MultiDexContainer;
 import org.jspecify.annotations.NonNull;
+import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.ResolveException;
@@ -98,8 +98,8 @@ public class DexMethodSource implements BodySource {
         this,
         methodSignature,
         methodModifiers,
-        Collections.emptyList(),
-        Collections.emptySet(),
+        DexUtil.getThrownExceptions(method.getAnnotations()),
+        DexUtil.createAnnotationUsage(method.getAnnotations()),
         NoPositionInformation.getInstance());
   }
 

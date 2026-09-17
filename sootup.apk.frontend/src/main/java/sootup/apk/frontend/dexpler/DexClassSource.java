@@ -167,7 +167,7 @@ public class DexClassSource extends JavaSootClassSource {
               return new JavaSootField(
                   fieldSignature,
                   modifiers,
-                  Collections.emptySet(), // TODO Fix this annotations [PM]
+                  DexUtil.createAnnotationUsage(field.getAnnotations()),
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());

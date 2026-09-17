@@ -38,6 +38,8 @@ import org.jf.dexlib2.immutable.ImmutableAnnotation;
 import org.jf.dexlib2.immutable.ImmutableAnnotationElement;
 import org.jf.dexlib2.immutable.ImmutableClassDef;
 import org.jf.dexlib2.immutable.ImmutableDexFile;
+import org.jf.dexlib2.immutable.ImmutableField;
+import org.jf.dexlib2.immutable.ImmutableMethod;
 import org.jf.dexlib2.immutable.reference.ImmutableFieldReference;
 import org.jf.dexlib2.immutable.value.ImmutableArrayEncodedValue;
 import org.jf.dexlib2.immutable.value.ImmutableEnumEncodedValue;
@@ -47,8 +49,12 @@ import org.jf.dexlib2.immutable.value.ImmutableTypeEncodedValue;
 import org.jf.dexlib2.writer.pool.DexPool;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.AndroidVersionInfo;
+import sootup.core.types.ClassType;
 import sootup.java.core.AnnotationUsage;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
 
 public class DexAnnotationTest {
@@ -99,25 +105,95 @@ public class DexAnnotationTest {
     assertEquals("{s=\"other\"}", sorted(usages.get("dex.Bar").getValues()));
   }
 
+  /** Methods keep their throws clause and annotations, fields their annotations. */
+  @Test
+  public void methodAndFieldMetadataIsConverted() throws IOException {
+    ImmutableAnnotation throwsIo =
+        new ImmutableAnnotation(
+            AnnotationVisibility.SYSTEM,
+            "Ldalvik/annotation/Throws;",
+            Set.of(
+                new ImmutableAnnotationElement(
+                    "value",
+                    new ImmutableArrayEncodedValue(
+                        List.of(new ImmutableTypeEncodedValue("Ljava/io/IOException;"))))));
+    ImmutableAnnotation jsInterface =
+        new ImmutableAnnotation(
+            AnnotationVisibility.RUNTIME, "Landroid/webkit/JavascriptInterface;", Set.of());
+    ImmutableMethod method =
+        new ImmutableMethod(
+            "Ldex/Members;",
+            "read",
+            null,
+            "V",
+            AccessFlags.PUBLIC.getValue() | AccessFlags.ABSTRACT.getValue(),
+            Set.of(throwsIo, jsInterface),
+            null,
+            null);
+    ImmutableField field =
+        new ImmutableField(
+            "Ldex/Members;",
+            "name",
+            "Ljava/lang/String;",
+            AccessFlags.PUBLIC.getValue(),
+            null,
+            Set.of(new ImmutableAnnotation(AnnotationVisibility.RUNTIME, "Ldex/Marked;", Set.of())),
+            null);
+    JavaSootClass clazz =
+        load(
+            new ImmutableClassDef(
+                "Ldex/Members;",
+                AccessFlags.PUBLIC.getValue() | AccessFlags.ABSTRACT.getValue(),
+                "Ljava/lang/Object;",
+                null,
+                null,
+                null,
+                List.of(field),
+                List.of(method)));
+
+    JavaSootMethod read = clazz.getMethodsByName("read").iterator().next();
+    assertEquals(
+        List.of("java.io.IOException"),
+        read.getExceptionSignatures().stream()
+            .map(ClassType::getFullyQualifiedName)
+            .collect(Collectors.toList()));
+    assertEquals(
+        Set.of("android.webkit.JavascriptInterface"), annotationNames(read.getAnnotations()));
+    assertEquals(
+        Set.of("dex.Marked"), annotationNames(clazz.getField("name").get().getAnnotations()));
+  }
+
+  private static Set<String> annotationNames(Iterable<AnnotationUsage> usages) {
+    return StreamSupport.stream(usages.spliterator(), false)
+        .map(usage -> usage.getAnnotation().getFullyQualifiedName())
+        .collect(Collectors.toSet());
+  }
+
   private static String sorted(Map<String, Object> values) {
     return new java.util.TreeMap<>(values).toString();
   }
 
   private static Map<String, AnnotationUsage> annotationsOf(Set<ImmutableAnnotation> annotations)
       throws IOException {
-    ImmutableClassDef classDef =
-        new ImmutableClassDef(
-            "Ldex/Annotated;",
-            AccessFlags.PUBLIC.getValue(),
-            "Ljava/lang/Object;",
-            null,
-            null,
-            annotations,
-            null,
-            null);
-    Path dex = tempDir.resolve("Annotated.dex");
-    DexPool.writeTo(dex.toString(), new ImmutableDexFile(Opcodes.forApi(15), List.of(classDef)));
+    JavaSootClass clazz =
+        load(
+            new ImmutableClassDef(
+                "Ldex/Annotated;",
+                AccessFlags.PUBLIC.getValue(),
+                "Ljava/lang/Object;",
+                null,
+                null,
+                annotations,
+                null,
+                null));
+    return StreamSupport.stream(clazz.getAnnotations().spliterator(), false)
+        .collect(Collectors.toMap(usage -> usage.getAnnotation().getFullyQualifiedName(), u -> u));
+  }
 
+  private static JavaSootClass load(ImmutableClassDef classDef) throws IOException {
+    String name = DexUtil.toQualifiedName(classDef.getType());
+    Path dex = tempDir.resolve(name + ".dex");
+    DexPool.writeTo(dex.toString(), new ImmutableDexFile(Opcodes.forApi(15), List.of(classDef)));
     JavaView view =
         new JavaView(
             List.of(
@@ -125,11 +201,6 @@ public class DexAnnotationTest {
                     dex,
                     new AndroidVersionInfo(dex, ""),
                     DexBodyInterceptors.Default.bodyInterceptors())));
-    Iterable<AnnotationUsage> usages =
-        view.getClass(view.getIdentifierFactory().getClassType("dex.Annotated"))
-            .get()
-            .getAnnotations();
-    return StreamSupport.stream(usages.spliterator(), false)
-        .collect(Collectors.toMap(usage -> usage.getAnnotation().getFullyQualifiedName(), u -> u));
+    return view.getClass(view.getIdentifierFactory().getClassType(name)).get();
   }
 }

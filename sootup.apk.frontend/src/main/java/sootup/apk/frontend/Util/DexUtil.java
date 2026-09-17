@@ -111,6 +111,28 @@ public class DexUtil {
     return usages;
   }
 
+  /** The exceptions of a method, which dex stores in its dalvik.annotation.Throws annotation. */
+  public static List<ClassType> getThrownExceptions(Set<? extends Annotation> annotations) {
+    List<ClassType> exceptions = new ArrayList<>();
+    for (Annotation annotation : annotations) {
+      if (!annotation.getType().equals("Ldalvik/annotation/Throws;")) {
+        continue;
+      }
+      for (AnnotationElement element : annotation.getElements()) {
+        if (element.getName().equals("value") && element.getValue() instanceof ArrayEncodedValue) {
+          for (EncodedValue value : ((ArrayEncodedValue) element.getValue()).getValue()) {
+            if (value instanceof TypeEncodedValue) {
+              exceptions.add(
+                  JavaIdentifierFactory.getInstance()
+                      .getClassType(toQualifiedName(((TypeEncodedValue) value).getValue())));
+            }
+          }
+        }
+      }
+    }
+    return exceptions;
+  }
+
   private static AnnotationUsage createAnnotationUsage(
       String type, Set<? extends AnnotationElement> elements) {
     Map<String, Object> values = new HashMap<>();
