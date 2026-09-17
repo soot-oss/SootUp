@@ -823,7 +823,8 @@ public class DexBodyEdgeCaseTest {
               b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
             });
 
-    assertEquals(List.of("$u0 = null", "throw $u0"), stmtsOf(body));
+    assertEquals(
+        List.of("$u0 = null", "#l0 = (java.lang.Throwable) $u0", "throw #l0"), stmtsOf(body));
   }
 
   /** Unreachable code that is not a nop is legal in dex too, and goes the same way. */

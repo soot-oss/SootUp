@@ -199,7 +199,7 @@
 
 ## 🟠 High Risk / Lower Reward — architectural, tackle deliberately
 
-- [ ] **1. No local splitting and no type inference.**
+- [x] **1. No local splitting and no type inference.**
   - **Where:** `main/DexBody.java:529-610` creates one `UnknownType` local per Dalvik register for the whole method, plus one shared `$stack` local that receives every invoke and filled-new-array result.
   - **Impact:** nothing splits or types these locals. Reused registers (a String and an int loop counter in `v0`) collapse into one local, and parameter or `this` registers can be reassigned.
   - **What can be reused:** `SI/LocalSplitter` works on untyped locals.
@@ -214,12 +214,12 @@
     - Run it after splitting and the null/number passes.
     - Require android.jar in the View (see the android.jar section).
     - Check whether this can run during eager class loading (🔴7).
-  - **In progress:**
+  - **Done:**
     - `LocalSplitter` runs; `DexSharedInitializationLocalSplitter` gives each use of a shared constant (and each repeated call argument) its own local; unused locals are removed; the null transformer resolves array element types via `findArrayType`.
     - Measured with `TypeAssigner` appended (not yet in the default chain), android.jar in the view: all locals get a type; invalid primitive<->reference casts dropped from 747 in 164 bodies to 117 in 34 (FlowSensitivity1) and from 198 in 43 to 31 in 9 (LocationLeak1).
     - Arithmetic, cast, negation and compare instructions now record their operand kind in `tag/OpTagPositionInfo` (a position info subclass, so it survives Stmt rewrites), and `DexNumberTranformer` uses it: invalid casts are down to 1 (FlowSensitivity1) and 0 (LocationLeak1).
     - The last one comes from exceptional edges of statements that cannot throw (needs throw analysis, 🟠3).
-    - Next: add `TypeAssigner` to the default chain.
+    - `TypeAssigner` is now part of `DexBodyInterceptors.Default`: every local of the sample APKs gets a type, with one invalid cast left in FlowSensitivity1 and none in LocationLeak1. Conversion costs roughly 50% more time. Types are best with the android.jar in the view (without it, unresolvable supertypes fall back to Object), but conversion does not fail without it.
 
 - [ ] **2. Missing dex-specific passes and op-kind information.**
   - **Tags never attached:** Soot tags statements while translating: Int/Long/Float/Double op tags on binop, cast, unop and cmp; Object/Byte/Char/Short/Boolean/IntOrFloat/LongOrDouble tags on aget; ObjectOpTag on aput-object and filled-new-array. SootUp attaches none. The `tag/*OpTag` classes exist, but SootUp `Stmt`s can't carry tags. As a result, the number transformer's binop and cast branches are commented out (`interceptors/DexNumberTranformer.java:166-173`). `const/high16 v0,0x3f80; add-float …` stays `1065353216` instead of `1.0F`.

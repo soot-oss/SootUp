@@ -31,6 +31,7 @@ import sootup.apk.frontend.interceptors.DexNumberTranformer;
 import sootup.apk.frontend.interceptors.DexSharedInitializationLocalSplitter;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.interceptors.LocalSplitter;
+import sootup.interceptors.TypeAssigner;
 import sootup.interceptors.UnusedLocalEliminator;
 
 public enum DexBodyInterceptors {
@@ -40,7 +41,8 @@ public enum DexBodyInterceptors {
       new DexSharedInitializationLocalSplitter(),
       new DexNumberTranformer(),
       new DexNullTransformer(),
-      new UnusedLocalEliminator());
+      new UnusedLocalEliminator(),
+      new TypeAssigner());
 
   @NonNull private final List<BodyInterceptor> bodyInterceptors;
 
