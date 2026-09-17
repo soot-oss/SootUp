@@ -324,9 +324,10 @@
   - **Done:** `AndroidVersionInfo.androidJarInputLocation()` builds it as `SourceType.Library` in one call, using the already-resolved API version; `CallGraphTest` uses it now instead of hand-building the path with the wrong SourceType.
   - Measured the effect on type precision (android.jar in the view vs. not, `TypeAssigner` in the chain): 1.3-4.4% of locals get a more specific type instead of `java.lang.Object` across the sample APKs, mostly caught-exception locals (`IllegalStateException`, `PackageManager$NameNotFoundException`, ...) and locals typed from a field/method whose own type needs the framework hierarchy to resolve (e.g. `javax.crypto.SecretKey`). Invalid casts are unaffected either way, and catch-block locals are still under-typed even with the jar in ~85-90% of cases (the throw-analysis gap, 🟠3), so this is worth doing but isn't a soundness fix on its own.
 
-- [ ] **`CallGraphTest` seeds RTA with the whole view.**
+- [x] **`CallGraphTest` seeds RTA with the whole view.**
   - **Where:** `src/test/.../CallGraphTest.java:87-88,122-124,156-158` use `view.getClasses()`, which includes android.jar, instead of only the app classes.
   - **Fix: Easy.** Recompute the expected counts.
+  - **Done:** all three RTA tests now seed from an `appClasses(view)` helper (classes whose input location is `SourceType.Application`) instead of `view.getClasses()`. `testLocationLeakRTACallGraphAlgorithm`'s expected count dropped from 5 to 4: android.jar classes have no bodies, so RTA has no real evidence they were ever instantiated, and the dropped edge (`LocationManager#requestLocationUpdates`) was only resolving because every framework stub used to be seeded as pre-instantiated. This is RTA doing its job now, not a regression, but it's a real scoping limit worth remembering: RTA restricted to app classes cannot resolve calls on objects obtained from the framework (e.g. via `getSystemService()`) unless something else marks the receiver type reachable.
 
 - [x] **`resolveSuperclass()` NPE.**
   - **Where:** `dexpler/DexClassSource.java:137` calls `isEmpty()` on the `@Nullable` result of `ClassDef.getSuperclass()`. It crashes for `java.lang.Object` in framework or core-lib dex.

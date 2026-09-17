@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,9 @@ import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.RapidTypeAnalysisAlgorithm;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
@@ -51,6 +54,21 @@ public class CallGraphTest {
         List.of(sootClassApkAnalysisInputLocation, androidVersionInfo.androidJarInputLocation()));
   }
 
+  /**
+   * RTA seeds its instantiated-classes set from classes it already knows are reachable; android.jar
+   * is a stub with no bodies to observe instantiations in, so only the APK's own classes are
+   * seeded. Seeding with the whole view (including every framework class) degenerates RTA to CHA.
+   */
+  private static Set<ClassType> appClasses(JavaView view) {
+    return view.getClasses()
+        .filter(
+            c ->
+                c.getClassSource().getAnalysisInputLocation().getSourceType()
+                    == SourceType.Application)
+        .map(JavaSootClass::getType)
+        .collect(Collectors.toSet());
+  }
+
   @Test
   public void testCHACallGraphAlgorithm() {
 
@@ -74,9 +92,7 @@ public class CallGraphTest {
             .getMethodSignature(
                 flowSensitivityClassName, methodName, methodReturnType, methodParameters);
 
-    CallGraphAlgorithm rta =
-        new RapidTypeAnalysisAlgorithm(
-            view, view.getClasses().map(JavaSootClass::getType).collect(Collectors.toSet()));
+    CallGraphAlgorithm rta = new RapidTypeAnalysisAlgorithm(view, appClasses(view));
 
     CallGraph cg = rta.initialize(List.of(onCreateMethodSignature));
 
@@ -110,14 +126,16 @@ public class CallGraphTest {
                 locationLeakClassName, methodName, methodReturnType, methodParameters);
 
     CallGraphAlgorithm rta =
-        new RapidTypeAnalysisAlgorithm(
-            locationLeakView,
-            locationLeakView.getClasses().map(JavaSootClass::getType).collect(Collectors.toSet()));
+        new RapidTypeAnalysisAlgorithm(locationLeakView, appClasses(locationLeakView));
 
     CallGraph cg = rta.initialize(List.of(onCreateMethodSignature));
 
     assertTrue(cg.containsMethod(onCreateMethodSignature));
-    assertEquals(5, cg.callsFrom(onCreateMethodSignature).size());
+    // one less than CHA's 5: onCreate calls LocationManager#requestLocationUpdates on a
+    // LocationManager obtained from getSystemService(), and app-only seeding has no evidence that
+    // LocationManager (an android.jar stub class the app never itself instantiates) was
+    // instantiated, so RTA does not resolve that virtual call.
+    assertEquals(4, cg.callsFrom(onCreateMethodSignature).size());
   }
 
   @Test
@@ -143,10 +161,7 @@ public class CallGraphTest {
             .getIdentifierFactory()
             .getMethodSignature(cryptoClassName, methodName, methodReturnType, methodParameters);
 
-    CallGraphAlgorithm rta =
-        new RapidTypeAnalysisAlgorithm(
-            cryptoView,
-            cryptoView.getClasses().map(JavaSootClass::getType).collect(Collectors.toSet()));
+    CallGraphAlgorithm rta = new RapidTypeAnalysisAlgorithm(cryptoView, appClasses(cryptoView));
 
     CallGraph cg = rta.initialize(List.of(onCreateMethodSignature));
 
