@@ -1,6 +1,7 @@
 package sootup.tests.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +37,7 @@ public class FieldModifiersValidatorTest {
   @BeforeEach
   public void setUp() {
     view = new JavaView(Collections.singletonList(new EagerInputLocation()));
-    fieldModifiersValidator = new FieldModifiersValidator();
+    fieldModifiersValidator = new FieldModifiersValidator(EnumSet.noneOf(FieldModifier.class));
   }
 
   public JavaSootClass testClassCreatorWithModifiers(
@@ -120,7 +121,7 @@ public class FieldModifiersValidatorTest {
             EnumSet.of(ClassModifier.INTERFACE),
             EnumSet.of(FieldModifier.PUBLIC, FieldModifier.STATIC, FieldModifier.FINAL));
 
-    fieldModifiersValidator.validate(javaSootClass, validationExceptions_success);
+    fieldModifiersValidator.validate(javaSootClass, validationExceptions_success, view);
 
     assertEquals(0, validationExceptions_success.size());
   }
@@ -134,9 +135,39 @@ public class FieldModifiersValidatorTest {
             EnumSet.of(ClassModifier.PUBLIC),
             EnumSet.of(FieldModifier.PUBLIC, FieldModifier.PRIVATE));
 
-    fieldModifiersValidator.validate(javaSootClass, validationExceptions_fail1);
+    fieldModifiersValidator.validate(javaSootClass, validationExceptions_fail1, view);
 
     assertEquals(1, validationExceptions_fail1.size());
+  }
+
+  @Test
+  void testInvalidAccessModifiers() {
+    IllegalArgumentException ex =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> FieldModifiersValidator.of(FieldModifier.PUBLIC, FieldModifier.PRIVATE));
+    assertEquals("Only one of public, protected, private is allowed.", ex.getMessage());
+  }
+
+  @Test
+  void testInvalidModifiers2() {
+    IllegalArgumentException ex =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> {
+              EnumSet<FieldModifier> invalidFieldModifiers =
+                  EnumSet.of(FieldModifier.PRIVATE, FieldModifier.PROTECTED);
+              JavaSootField dummyField =
+                  new JavaSootField(
+                      new FieldSignature(
+                          new JavaClassType("FieldModifiersValidator", PackageName.DEFAULT_PACKAGE),
+                          "i",
+                          PrimitiveType.IntType.getInstance()),
+                      new FieldModifiersValidator(invalidFieldModifiers).asSet(),
+                      Collections.emptyList(),
+                      NoPositionInformation.getInstance());
+            });
+    assertEquals("Only one of public, protected, private is allowed.", ex.getMessage());
   }
 
   @Test
@@ -147,7 +178,7 @@ public class FieldModifiersValidatorTest {
         testClassCreatorWithModifiers(
             EnumSet.of(ClassModifier.INTERFACE), EnumSet.of(FieldModifier.PRIVATE));
 
-    fieldModifiersValidator.validate(javaSootClass, validationExceptions_fail1);
+    fieldModifiersValidator.validate(javaSootClass, validationExceptions_fail1, view);
 
     assertEquals(3, validationExceptions_fail1.size());
   }
