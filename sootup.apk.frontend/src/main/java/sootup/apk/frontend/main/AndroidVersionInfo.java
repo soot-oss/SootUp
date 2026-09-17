@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
 import pxb.android.axml.AxmlReader;
 import pxb.android.axml.AxmlVisitor;
 import pxb.android.axml.NodeVisitor;
+import sootup.core.model.SourceType;
+import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 
 /**
  * Manages Android SDK version information for APK analysis.
@@ -319,5 +321,30 @@ public class AndroidVersionInfo {
 
   public int getMax_api() {
     return max_api;
+  }
+
+  /**
+   * The android.jar path for this APK's resolved API level, under the platforms directory given at
+   * construction. Existence is not checked here; {@link #getApi_version()} already logs a warning
+   * if it is missing.
+   */
+  public String androidJarPath() {
+    return androidPlatformsPath
+        + File.separatorChar
+        + "android-"
+        + getApi_version()
+        + File.separatorChar
+        + "android.jar";
+  }
+
+  /**
+   * A library input location for the android.jar matching this APK, so framework classes referenced
+   * but not defined in the APK resolve. Type inference in particular needs it: without it, any
+   * local whose type can only be found by walking the class hierarchy (not just read off a field,
+   * method or catch signature) falls back to {@code java.lang.Object}. Add it to the {@link
+   * sootup.core.views.View} next to the {@code ApkAnalysisInputLocation}.
+   */
+  public JavaClassPathAnalysisInputLocation androidJarInputLocation() {
+    return new JavaClassPathAnalysisInputLocation(androidJarPath(), SourceType.Library);
   }
 }

@@ -3,7 +3,6 @@ package sootup.apk.frontend;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -16,7 +15,6 @@ import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.RapidTypeAnalysisAlgorithm;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
@@ -42,22 +40,15 @@ public class CallGraphTest {
 
   private static JavaView createViewForApk(String apkPathString) {
     Path apkPath = Paths.get(apkPathString);
-    String androidPlatformsPath = "src/test/resources/platforms";
-    AndroidVersionInfo androidVersionInfo = new AndroidVersionInfo(apkPath, androidPlatformsPath);
+    AndroidVersionInfo androidVersionInfo =
+        new AndroidVersionInfo(apkPath, "src/test/resources/platforms");
 
     ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation(
             apkPath, androidVersionInfo, DexBodyInterceptors.Default.bodyInterceptors());
-    JavaClassPathAnalysisInputLocation classPathAnalysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(
-            androidPlatformsPath
-                + File.separator
-                + "android-"
-                + androidVersionInfo.getApi_version()
-                + File.separator
-                + "android.jar");
 
-    return new JavaView(List.of(sootClassApkAnalysisInputLocation, classPathAnalysisInputLocation));
+    return new JavaView(
+        List.of(sootClassApkAnalysisInputLocation, androidVersionInfo.androidJarInputLocation()));
   }
 
   @Test

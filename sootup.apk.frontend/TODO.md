@@ -317,10 +317,12 @@
   - **Silent empty inputs:** `.jar`/`.zip` inputs return no sources at all (`:179-182`).
   - **Fix: Easy.**
 
-- [ ] **Misleading android.jar documentation and test setup.**
+- [x] **Misleading android.jar documentation and test setup.**
   - Fix the Javadoc described in the android.jar section.
   - Tests should add android.jar with `SourceType.Library`.
   - **Fix: Easy.**
+  - **Done:** `AndroidVersionInfo.androidJarInputLocation()` builds it as `SourceType.Library` in one call, using the already-resolved API version; `CallGraphTest` uses it now instead of hand-building the path with the wrong SourceType.
+  - Measured the effect on type precision (android.jar in the view vs. not, `TypeAssigner` in the chain): 1.3-4.4% of locals get a more specific type instead of `java.lang.Object` across the sample APKs, mostly caught-exception locals (`IllegalStateException`, `PackageManager$NameNotFoundException`, ...) and locals typed from a field/method whose own type needs the framework hierarchy to resolve (e.g. `javax.crypto.SecretKey`). Invalid casts are unaffected either way, and catch-block locals are still under-typed even with the jar in ~85-90% of cases (the throw-analysis gap, 🟠3), so this is worth doing but isn't a soundness fix on its own.
 
 - [ ] **`CallGraphTest` seeds RTA with the whole view.**
   - **Where:** `src/test/.../CallGraphTest.java:87-88,122-124,156-158` use `view.getClasses()`, which includes android.jar, instead of only the app classes.
