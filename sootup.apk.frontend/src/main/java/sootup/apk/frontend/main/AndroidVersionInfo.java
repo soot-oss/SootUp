@@ -60,12 +60,9 @@ public class AndroidVersionInfo {
    * Creates a new AndroidVersionInfo instance.
    *
    * @param apkPath the path to the APK file to analyze
-   * @param androidPlatformsPath the path to the Android platforms directory containing Android
-   *     system libraries (android.jar files) for different API levels. This directory is required
-   *     to resolve method calls and class references that are not defined in the APK itself, but
-   *     are part of the Android system libraries. The Android platforms directory can be obtained
-   *     from <a
-   *     href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a>
+   * @param androidPlatformsPath the Android platforms directory (android-N/android.jar), used to
+   *     pick an available API level. It is not added to the View: add the android.jar as a library
+   *     input location to resolve framework classes.
    */
   public AndroidVersionInfo(Path apkPath, String androidPlatformsPath) {
     this.apk_path = apkPath;
@@ -96,16 +93,16 @@ public class AndroidVersionInfo {
             if (nodeName != null && name != null) {
               if (nodeName.equals("manifest")) {
                 if (name.equals("platformBuildVersionCode")) {
-                  platformBuildVersionCode = Integer.parseInt("" + obj);
+                  platformBuildVersionCode = parseSdkVersion(name, obj);
                 }
               } else if (nodeName.equals("uses-sdk")) {
                 // Obfuscated APKs often remove the attribute names and use the resourceId instead
                 // Therefore it is better to check for both variants
                 if (name.equals("targetSdkVersion") || (name.isEmpty() && resourceId == 16843376)) {
-                  sdkTargetVersion = Integer.parseInt(String.valueOf(obj));
+                  sdkTargetVersion = parseSdkVersion(name, obj);
                 } else if (name.equals("minSdkVersion")
                     || (name.isEmpty() && resourceId == 16843276)) {
-                  minSdkVersion = Integer.parseInt(String.valueOf(obj));
+                  minSdkVersion = parseSdkVersion(name, obj);
                 }
               }
             }
@@ -121,6 +118,17 @@ public class AndroidVersionInfo {
       AxmlReader xmlReader = new AxmlReader(ByteStreams.toByteArray(manifestIS));
       xmlReader.accept(axmlVisitor);
     } catch (Exception e) {
+      logger.warn("Could not parse the Android manifest, the SDK version may be wrong", e);
+    }
+  }
+
+  /** Codename SDK values such as "S" are not numbers; those are skipped. */
+  private int parseSdkVersion(String attribute, Object value) {
+    try {
+      return Integer.parseInt(String.valueOf(value));
+    } catch (NumberFormatException e) {
+      logger.warn("Ignoring non-numeric manifest attribute {}='{}'", attribute, value);
+      return -1;
     }
   }
 
@@ -129,12 +137,8 @@ public class AndroidVersionInfo {
 
     String jarPath =
         jars + File.separatorChar + "android-" + APIVersion + File.separatorChar + "android.jar";
-
-    // check that jar exists
-    File f = newFile(jarPath);
-    if (!f.isFile()) {
-      //      throw new RuntimeException(
-      //          String.format("error: target android.jar %s does not exist.", jarPath));
+    if (!jars.isEmpty() && !newFile(jarPath).isFile()) {
+      logger.warn("android.jar for API level {} does not exist: {}", APIVersion, jarPath);
     }
   }
 
@@ -143,12 +147,8 @@ public class AndroidVersionInfo {
       return api_version;
     }
 
-    // get path to appropriate android.jar
-    File jarsF = newFile(jars);
-    if (!jarsF.exists()) {
-      //      throw new RuntimeException(
-      //          String.format(
-      //              "Android platform directory '%s' does not exist!", jarsF.getAbsolutePath()));
+    if (!jars.isEmpty() && !newFile(jars).exists()) {
+      logger.warn("Android platforms directory does not exist: {}", jars);
     }
     if (apk != null && !apk.toFile().exists()) {
       throw new RuntimeException("file '" + apk + "' does not exist!");
@@ -157,10 +157,11 @@ public class AndroidVersionInfo {
     // Use the default if we don't have any other information
     api_version = defaultSdkVersion;
 
-    if (apk != null) {
-      if (apk.endsWith(".apk") || apk.toString().contains(".apk")) {
-        api_version = getTargetSDKVersion(apk, jars);
-      }
+    if (apk != null
+        && apk.getFileName() != null
+        && apk.getFileName().toString().toLowerCase().endsWith(".apk")
+        && apk.toFile().isFile()) {
+      api_version = getTargetSDKVersion(apk, jars);
     }
 
     // If we don't have that API version installed, we take the most recent one we have
@@ -274,16 +275,7 @@ public class AndroidVersionInfo {
       return mapi;
     }
 
-    File d = newFile(dir);
-    if (!d.exists()) {
-      //      throw new RuntimeException(
-      //          String.format(
-      //              "The Android platform directory you have specified (%s) does not exist. Please
-      // check.",
-      //              dir));
-    }
-
-    File[] files = d.listFiles();
+    File[] files = newFile(dir).listFiles();
     if (files == null) {
       return -1;
     }

@@ -23,15 +23,19 @@ package sootup.apk.frontend.Util;
  */
 
 import java.util.*;
+import org.jf.dexlib2.AnnotationVisibility;
 import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.AnnotationElement;
-import org.jf.dexlib2.iface.value.EncodedValue;
+import org.jf.dexlib2.iface.reference.FieldReference;
+import org.jf.dexlib2.iface.value.*;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.main.AndroidVersionInfo;
+import sootup.core.jimple.common.constant.*;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
 public class DexUtil {
@@ -95,19 +99,70 @@ public class DexUtil {
     return str.replace('/', '.');
   }
 
-  public static Iterable<AnnotationUsage> createAnnotationUsage(
-      Set<? extends Annotation> annotations) {
-    if (annotations.isEmpty()) {
-      return Collections.emptyList();
-    }
-    Map<String, Object> paramMap = new HashMap<>();
+  /**
+   * Converts dex annotations like {@code AsmUtil.createAnnotationUsage}. System annotations
+   * (dalvik.annotation.*) describe class metadata such as inner classes or throws, so they are left
+   * out.
+   */
+  public static List<AnnotationUsage> createAnnotationUsage(Set<? extends Annotation> annotations) {
+    List<AnnotationUsage> usages = new ArrayList<>();
     for (Annotation annotation : annotations) {
-      for (AnnotationElement element : annotation.getElements()) {
-        final String annotationName = element.getName();
-        EncodedValue value = element.getValue();
+      if (annotation.getVisibility() != AnnotationVisibility.SYSTEM) {
+        usages.add(createAnnotationUsage(annotation.getType(), annotation.getElements()));
       }
     }
-    return null;
+    return usages;
+  }
+
+  private static AnnotationUsage createAnnotationUsage(
+      String type, Set<? extends AnnotationElement> elements) {
+    Map<String, Object> values = new HashMap<>();
+    for (AnnotationElement element : elements) {
+      values.put(element.getName(), convertAnnotationValue(element.getValue()));
+    }
+    return new AnnotationUsage(
+        JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(type)), values);
+  }
+
+  private static Object convertAnnotationValue(EncodedValue value) {
+    if (value instanceof BooleanEncodedValue) {
+      return BooleanConstant.getInstance(((BooleanEncodedValue) value).getValue());
+    } else if (value instanceof ByteEncodedValue) {
+      return IntConstant.getInstance(((ByteEncodedValue) value).getValue());
+    } else if (value instanceof ShortEncodedValue) {
+      return IntConstant.getInstance(((ShortEncodedValue) value).getValue());
+    } else if (value instanceof CharEncodedValue) {
+      return IntConstant.getInstance(((CharEncodedValue) value).getValue());
+    } else if (value instanceof IntEncodedValue) {
+      return IntConstant.getInstance(((IntEncodedValue) value).getValue());
+    } else if (value instanceof LongEncodedValue) {
+      return LongConstant.getInstance(((LongEncodedValue) value).getValue());
+    } else if (value instanceof FloatEncodedValue) {
+      return FloatConstant.getInstance(((FloatEncodedValue) value).getValue());
+    } else if (value instanceof DoubleEncodedValue) {
+      return DoubleConstant.getInstance(((DoubleEncodedValue) value).getValue());
+    } else if (value instanceof StringEncodedValue) {
+      return JavaJimple.newStringConstant(((StringEncodedValue) value).getValue());
+    } else if (value instanceof TypeEncodedValue) {
+      return JavaJimple.newClassConstant(((TypeEncodedValue) value).getValue());
+    } else if (value instanceof EnumEncodedValue) {
+      FieldReference constant = ((EnumEncodedValue) value).getValue();
+      return JavaJimple.newEnumConstant(
+          constant.getName(), toQualifiedName(constant.getDefiningClass()));
+    } else if (value instanceof AnnotationEncodedValue) {
+      AnnotationEncodedValue nested = (AnnotationEncodedValue) value;
+      return createAnnotationUsage(nested.getType(), nested.getElements());
+    } else if (value instanceof ArrayEncodedValue) {
+      List<Object> elements = new ArrayList<>();
+      for (EncodedValue element : ((ArrayEncodedValue) value).getValue()) {
+        elements.add(convertAnnotationValue(element));
+      }
+      return elements;
+    } else if (value instanceof NullEncodedValue) {
+      return NullConstant.getInstance();
+    }
+    // method, field, method type and method handle values only occur in system annotations
+    return JavaJimple.newStringConstant(value.toString());
   }
 
   public static ClassType stringToJimpleType(View view, String className) {

@@ -52,15 +52,6 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
 
   Path apk_path;
 
-  /**
-   * Path to the Android platforms directory containing Android system libraries (android.jar files)
-   * for different API levels. This directory is required to resolve method calls and class
-   * references that are not defined in the APK itself, but are part of the Android system
-   * libraries.
-   *
-   * <p>The Android platforms directory can be obtained from: <a
-   * href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a>
-   */
   private final AndroidVersionInfo androidSDKVersionInfo;
 
   private final List<BodyInterceptor> bodyInterceptors;
@@ -70,11 +61,11 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
   /**
    * Creates a new ApkAnalysisInputLocation.
    *
-   * @param apkPath the path to the APK file to analyze system libraries (android.jar files) for
-   *     different API levels. This directory is required to resolve method calls and class
-   *     references that are not defined in the APK itself, but are part of the Android system
-   *     libraries. The Android platforms directory can be obtained from <a
-   *     href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a>
+   * <p>Only classes defined in the APK are provided. Framework classes (android.*) need the
+   * android.jar as a separate library input location.
+   *
+   * @param apkPath the APK, dex or odex file, or a directory of dex files
+   * @param androidSDKVersionInfo API level information of the APK
    * @param bodyInterceptors the list of body interceptors to apply during analysis
    */
   public ApkAnalysisInputLocation(

@@ -94,6 +94,7 @@ public class DexFileProvider {
       resultList.addAll(dexMap.get(theSource.getCanonicalPath()).values());
     }
 
+    // lowest priority first, because later dex files overwrite earlier ones when indexed
     if (resultList.size() > 1) {
       resultList.sort(Collections.reverseOrder(prioritizer));
     }
@@ -125,8 +126,13 @@ public class DexFileProvider {
       throws IOException {
     // load dex files from apk/folder/file
     boolean multiple_dex = true;
+    // dex files carry their version in the header; only odex needs the device API level
+    Opcodes opcodes =
+        dexSourceFile.getName().toLowerCase().endsWith(".odex")
+            ? Opcodes.forApi(api_version)
+            : null;
     MultiDexContainer<? extends DexBackedDexFile> dexContainer =
-        DexFileFactory.loadDexContainer(dexSourceFile, Opcodes.forApi(api_version));
+        DexFileFactory.loadDexContainer(dexSourceFile, opcodes);
 
     List<String> dexEntryNameList = dexContainer.getDexEntryNames();
     int dexFileCount = dexEntryNameList.size();
@@ -209,28 +215,38 @@ public class DexFileProvider {
     return new File(entryName).getName();
   }
 
-  private static final Comparator<DexContainer<? extends DexFile>> DEFAULT_PRIORITIZER =
+  /**
+   * Orders dex files like Android's class loader: classes.dex, classes2.dex, classes3.dex, ... and
+   * then everything else. A smaller value means a higher priority.
+   */
+  static final Comparator<DexContainer<? extends DexFile>> DEFAULT_PRIORITIZER =
       (o1, o2) -> {
         String s1 = o1.getDexName(), s2 = o2.getDexName();
-
-        // "classes.dex" has highest priority
         if (s1.equals("classes.dex")) {
-          return 1;
+          return s2.equals("classes.dex") ? 0 : -1;
         } else if (s2.equals("classes.dex")) {
-          return -1;
-        }
-
-        // if one of the strings starts with "classes", we give it the edge right here
-        boolean s1StartsClasses = s1.startsWith("classes");
-        boolean s2StartsClasses = s2.startsWith("classes");
-
-        if (s1StartsClasses && !s2StartsClasses) {
           return 1;
-        } else if (s2StartsClasses && !s1StartsClasses) {
-          return -1;
         }
 
-        // otherwise, use natural string ordering
+        boolean s1IsMultiDex = isSecondaryDexName(s1);
+        boolean s2IsMultiDex = isSecondaryDexName(s2);
+        if (s1IsMultiDex && s2IsMultiDex) {
+          // numeric, so classes9.dex comes before classes10.dex
+          return Long.compare(secondaryDexNumber(s1), secondaryDexNumber(s2));
+        } else if (s1IsMultiDex) {
+          return -1;
+        } else if (s2IsMultiDex) {
+          return 1;
+        }
         return s1.compareTo(s2);
       };
+
+  private static boolean isSecondaryDexName(String name) {
+    // Android skips classes1.dex
+    return name.matches("classes([2-9]|[1-9]\\d+)\\.dex");
+  }
+
+  private static long secondaryDexNumber(String name) {
+    return Long.parseLong(name.substring("classes".length(), name.length() - ".dex".length()));
+  }
 }

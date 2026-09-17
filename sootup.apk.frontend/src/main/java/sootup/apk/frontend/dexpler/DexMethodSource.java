@@ -22,22 +22,22 @@ package sootup.apk.frontend.dexpler;
  * #L%
  */
 
-import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Method;
+import org.jf.dexlib2.iface.MultiDexContainer;
 import org.jspecify.annotations.NonNull;
+import sootup.apk.frontend.main.DexBody;
 import sootup.core.frontend.BodySource;
-import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
-import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
@@ -45,71 +45,68 @@ import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootMethod;
 
+/** Converts the dex code of a method lazily, so a failing method does not affect its class. */
 public class DexMethodSource implements BodySource {
 
-  private final Set<Local> locals;
-  private final MutableControlFlowGraph mutableControlFlowGraph;
-  private final Method method;
-
-  private final List<BodyInterceptor> bodyInterceptors;
-
-  @NonNull private final View view;
   private final MethodSignature methodSignature;
+  private final Method method;
+  private final MultiDexContainer.DexEntry<? extends DexFile> dexEntry;
+  private final List<BodyInterceptor> bodyInterceptors;
+  @NonNull private final View view;
 
   public DexMethodSource(
-      Set<Local> locals,
       MethodSignature methodSignature,
-      MutableControlFlowGraph mutableControlFlowGraph,
       Method method,
+      MultiDexContainer.DexEntry<? extends DexFile> dexEntry,
       List<BodyInterceptor> bodyInterceptors,
       @NonNull View view) {
     this.methodSignature = methodSignature;
-    this.view = view;
-    this.locals = locals;
-    this.bodyInterceptors = bodyInterceptors;
-    this.mutableControlFlowGraph = mutableControlFlowGraph;
     this.method = method;
+    this.dexEntry = dexEntry;
+    this.bodyInterceptors = bodyInterceptors;
+    this.view = view;
   }
 
   @NonNull
   @Override
-  public Body resolveBody(@NonNull Iterable<MethodModifier> modifiers)
-      throws ResolveException, IOException {
+  public Body resolveBody(@NonNull Iterable<MethodModifier> modifiers) throws ResolveException {
     Set<MethodModifier> modifiersSet =
         StreamSupport.stream(modifiers.spliterator(), false).collect(Collectors.toSet());
-    Body.BodyBuilder bodyBuilder =
-        Body.builder(mutableControlFlowGraph)
-            .setModifiers(modifiersSet)
-            .setMethodSignature(getSignature())
-            .setPosition(NoPositionInformation.getInstance())
-            .setLocals(locals);
-    for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
-      bodyInterceptor.interceptBody(bodyBuilder, view);
+    try {
+      DexBody dexBody = new DexBody(method, dexEntry, methodSignature.getDeclClassType());
+      Body.BodyBuilder bodyBuilder =
+          Body.builder(dexBody.buildControlFlowGraph())
+              .setModifiers(modifiersSet)
+              .setMethodSignature(methodSignature)
+              .setPosition(NoPositionInformation.getInstance())
+              .setLocals(dexBody.getLocals());
+      for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
+        bodyInterceptor.interceptBody(bodyBuilder, view);
+      }
+      return bodyBuilder.build();
+    } catch (RuntimeException e) {
+      throw new ResolveException(
+          "Could not convert the dex code of " + methodSignature,
+          Paths.get(dexEntry.getEntryName()),
+          e);
     }
-    return bodyBuilder.build();
   }
 
   public JavaSootMethod makeSootMethod() {
-    JavaSootMethod sootMethod;
     EnumSet<MethodModifier> methodModifiers = Modifiers.getMethodModifiers(method.getAccessFlags());
-    try {
-      sootMethod =
-          new JavaSootMethod(
-              new OverridingBodySource(getSignature(), resolveBody(methodModifiers)),
-              getSignature(),
-              methodModifiers,
-              Collections.emptyList(),
-              Collections.emptySet(),
-              NoPositionInformation.getInstance());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return sootMethod;
+    return new JavaSootMethod(
+        this,
+        methodSignature,
+        methodModifiers,
+        Collections.emptyList(),
+        Collections.emptySet(),
+        NoPositionInformation.getInstance());
   }
 
+  // annotation default values (dalvik.annotation.AnnotationDefault) are not read yet
   @Override
   public Object resolveAnnotationsDefaultValue() {
-    throw new UnsupportedOperationException("TODO");
+    return null;
   }
 
   @NonNull

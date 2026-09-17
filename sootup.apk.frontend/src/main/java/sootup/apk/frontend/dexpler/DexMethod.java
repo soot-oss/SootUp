@@ -22,8 +22,6 @@ package sootup.apk.frontend.dexpler;
  * #L%
  */
 
-import java.lang.reflect.Modifier;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jf.dexlib2.iface.DexFile;
@@ -31,8 +29,6 @@ import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MultiDexContainer;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.Util.DexUtil;
-import sootup.apk.frontend.main.DexBody;
-import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -51,33 +47,21 @@ public class DexMethod {
     this.declaringclassType = declaringClass;
   }
 
+  /** Creates the method; its body is converted on the first {@code getBody()}. */
   public JavaSootMethod makeSootMethod(
       final Method method, List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
-    int modifierFlags = method.getAccessFlags();
-    if (Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)) {
-      List<Type> parameters =
-          method.getParameters().stream()
-              .map(methodParameter -> DexUtil.toSootType(methodParameter.getType(), 0))
-              .collect(Collectors.toList());
-      MethodSignature methodSignature =
-          view.getIdentifierFactory()
-              .getMethodSignature(
-                  declaringclassType,
-                  method.getName(),
-                  DexUtil.toSootType(method.getReturnType(), 0),
-                  parameters);
-      DexMethodSource dexMethodSource =
-          new DexMethodSource(
-              Collections.emptySet(),
-              methodSignature,
-              new MutableBlockControlFlowGraph(),
-              method,
-              bodyInterceptors,
-              view);
-      return dexMethodSource.makeSootMethod();
-    } else {
-      DexBody dexBody = new DexBody(method, dexEntry, declaringclassType);
-      return dexBody.makeSootMethod(method, declaringclassType, bodyInterceptors, view);
-    }
+    List<Type> parameters =
+        method.getParameters().stream()
+            .map(methodParameter -> DexUtil.toSootType(methodParameter.getType(), 0))
+            .collect(Collectors.toList());
+    MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                declaringclassType,
+                method.getName(),
+                DexUtil.toSootType(method.getReturnType(), 0),
+                parameters);
+    return new DexMethodSource(methodSignature, method, dexEntry, bodyInterceptors, view)
+        .makeSootMethod();
   }
 }

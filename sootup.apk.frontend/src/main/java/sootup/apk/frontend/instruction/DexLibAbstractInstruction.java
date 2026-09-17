@@ -91,6 +91,10 @@ public abstract class DexLibAbstractInstruction {
     return stmt;
   }
 
+  public int getCodeAddress() {
+    return codeAddress;
+  }
+
   /**
    * Return the indices used in the given instruction.
    *

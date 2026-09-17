@@ -38,7 +38,6 @@ import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.model.Body;
-import sootup.core.model.MethodModifier;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
@@ -60,6 +59,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
+    final Map<Stmt, Stmt> rewrites = new IdentityHashMap<>();
 
     AbstractStmtVisitor checkDef =
         new AbstractStmtVisitor() {
@@ -114,10 +114,8 @@ public class DexNullTransformer extends AbstractNullTransformer {
                 return true;
               }
             }
-            // check for base
-
-            if (!MethodModifier.isStatic(builder.getModifiers())
-                && e instanceof AbstractInstanceInvokeExpr) {
+            // the base of an instance invoke is always used as an object
+            if (e instanceof AbstractInstanceInvokeExpr) {
               AbstractInstanceInvokeExpr aiiexpr = (AbstractInstanceInvokeExpr) e;
               Value b = aiiexpr.getBase();
               return b == l;
@@ -188,7 +186,8 @@ public class DexNullTransformer extends AbstractNullTransformer {
               usedAsObject = ar.getBase() == l;
               doBreak = true;
             } else if (r instanceof StringConstant || r instanceof JNewExpr) {
-              throw new RuntimeException("NOT POSSIBLE StringConstant or NewExpr at " + stmt);
+              usedAsObject = true;
+              doBreak = true;
             } else if (r instanceof JNewArrayExpr) {
               usedAsObject = false;
               doBreak = true;
@@ -280,14 +279,14 @@ public class DexNullTransformer extends AbstractNullTransformer {
       // change values
       if (usedAsObject) {
         for (Stmt u : defs) {
-          replaceWithNull(u);
+          replaceWithNull(u, rewrites);
           Set<Value> defLocals = new HashSet<>(u.getUsesAndDefs());
 
           Local l = (Local) ((AbstractDefinitionStmt) u).getLeftOp();
           for (Stmt uuse : localDefs.getUsesOf(l)) {
             // If we have a[x] = 0 and a is an object, we may not conclude 0 -> null
             if (!uuse.containsArrayRef() || !defLocals.contains(uuse.getArrayRef().getBase())) {
-              replaceWithNull(uuse);
+              replaceWithNull(uuse, rewrites);
             }
           }
         }
@@ -305,14 +304,14 @@ public class DexNullTransformer extends AbstractNullTransformer {
           @Override
           public void caseAssignStmt(@NonNull JAssignStmt stmt) {
             if (isObject(stmt.getLeftOp().getType()) && isConstZero(stmt.getRightOp())) {
-              stmt.withRValue(nullConstant);
+              assignNull(stmt);
               return;
             }
 
             // Case a = (Object) 0
             if (stmt.getRightOp() instanceof JCastExpr ce) {
               if (isObject(ce.getType()) && isConstZero(ce.getOp())) {
-                stmt.withRValue(nullConstant);
+                assignNull(stmt);
               }
             }
 
@@ -322,9 +321,13 @@ public class DexNullTransformer extends AbstractNullTransformer {
                 objects = getObjectArray(builder);
               }
               if (objects.contains(ar.getBase())) {
-                stmt.withRValue(nullConstant);
+                assignNull(stmt);
               }
             }
+          }
+
+          private void assignNull(JAssignStmt stmt) {
+            rewrites.put(stmt, ((JAssignStmt) current(rewrites, stmt)).withRValue(nullConstant));
           }
 
           private boolean isConstZero(Value rightOp) {
@@ -334,28 +337,23 @@ public class DexNullTransformer extends AbstractNullTransformer {
 
           @Override
           public void caseEnterMonitorStmt(@NonNull JEnterMonitorStmt stmt) {
-            if (stmt.getOp() instanceof IntConstant
-                && ((IntConstant) stmt.getOp()).getValue() == 0) {
-              stmt.withOp(nullConstant);
+            if (isConstZero(stmt.getOp())) {
+              rewrites.put(stmt, stmt.withOp(nullConstant));
             }
           }
 
           @Override
           public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
-            if (stmt.getOp() instanceof IntConstant
-                && ((IntConstant) stmt.getOp()).getValue() == 0) {
-              stmt.withOp(nullConstant);
+            if (isConstZero(stmt.getOp())) {
+              rewrites.put(stmt, stmt.withOp(nullConstant));
             }
           }
 
           @Override
           public void caseReturnStmt(@NonNull JReturnStmt stmt) {
-            if (stmt.getOp() instanceof IntConstant iconst) {
-              assert builder.getMethodSignature() != null;
-              if (isObject(builder.getMethodSignature().getType())) {
-                assert iconst.getValue() == 0;
-                stmt.withReturnValue(nullConstant);
-              }
+            if (isConstZero(stmt.getOp())
+                && isObject(Objects.requireNonNull(builder.getMethodSignature()).getType())) {
+              rewrites.put(stmt, stmt.withReturnValue(nullConstant));
             }
           }
         };
@@ -363,25 +361,39 @@ public class DexNullTransformer extends AbstractNullTransformer {
     final NullConstant nullConstant = NullConstant.getInstance();
     for (Stmt stmt : builder.getStmts()) {
       stmt.accept(inlinedZeroValues);
-      if (stmt.isInvokableStmt()) {
-        InvokableStmt invokableStmt = stmt.asInvokableStmt();
-        if (invokableStmt.getInvokeExpr().isPresent()) {
-          AbstractInvokeExpr invExpr = invokableStmt.getInvokeExpr().get();
-          for (int i = 0; i < invExpr.getArgCount(); i++) {
-            if (isObject(invExpr.getMethodSignature().getParameterTypes().get(i))) {
-              if (invExpr.getArg(i) instanceof IntConstant iconst) {
-                assert iconst.getValue() == 0;
-                if (invExpr instanceof AbstractInstanceInvokeExpr) {
-                  invExpr =
-                      ((AbstractInstanceInvokeExpr) invExpr)
-                          .withArgs(Collections.singletonList(nullConstant));
-                }
-              }
-            }
-          }
+      Stmt current = current(rewrites, stmt);
+      if (!current.isInvokableStmt() || current.asInvokableStmt().getInvokeExpr().isEmpty()) {
+        continue;
+      }
+      AbstractInvokeExpr invExpr = current.asInvokableStmt().getInvokeExpr().get();
+      List<Immediate> args = new ArrayList<>(invExpr.getArgs());
+      boolean changed = false;
+      for (int i = 0; i < args.size(); i++) {
+        if (isObject(invExpr.getMethodSignature().getParameterTypes().get(i))
+            && args.get(i) instanceof IntConstant
+            && ((IntConstant) args.get(i)).getValue() == 0) {
+          args.set(i, nullConstant);
+          changed = true;
         }
       }
+      if (!changed) {
+        continue;
+      }
+      AbstractInvokeExpr newExpr;
+      if (invExpr instanceof JStaticInvokeExpr) {
+        newExpr = ((JStaticInvokeExpr) invExpr).withArgs(args);
+      } else if (invExpr instanceof AbstractInstanceInvokeExpr) {
+        newExpr = ((AbstractInstanceInvokeExpr) invExpr).withArgs(args);
+      } else {
+        continue;
+      }
+      if (current instanceof JInvokeStmt) {
+        rewrites.put(stmt, ((JInvokeStmt) current).withInvokeExpr(newExpr));
+      } else if (current instanceof JAssignStmt) {
+        rewrites.put(stmt, ((JAssignStmt) current).withRValue(newExpr));
+      }
     }
+    applyRewrites(builder, rewrites);
   }
 
   private static Set<Value> getObjectArray(Body.BodyBuilder bodyBuilder) {

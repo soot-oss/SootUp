@@ -43,22 +43,33 @@ import org.jf.dexlib2.builder.instruction.BuilderInstruction10t;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction10x;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction11n;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction11x;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction21c;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction21t;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction22b;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction22c;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction23x;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction31i;
 import org.jf.dexlib2.builder.instruction.BuilderInstruction31t;
+import org.jf.dexlib2.builder.instruction.BuilderInstruction35c;
 import org.jf.dexlib2.builder.instruction.BuilderPackedSwitchPayload;
 import org.jf.dexlib2.builder.instruction.BuilderSparseSwitchPayload;
 import org.jf.dexlib2.immutable.ImmutableClassDef;
 import org.jf.dexlib2.immutable.ImmutableDexFile;
 import org.jf.dexlib2.immutable.ImmutableMethod;
+import org.jf.dexlib2.immutable.reference.ImmutableFieldReference;
+import org.jf.dexlib2.immutable.reference.ImmutableMethodReference;
 import org.jf.dexlib2.immutable.reference.ImmutableTypeReference;
 import org.jf.dexlib2.writer.pool.DexPool;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import sootup.apk.frontend.main.AndroidVersionInfo;
+import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.common.Trap;
 import sootup.core.model.Body;
 import sootup.core.util.printer.BriefStmtPrinter;
+import sootup.core.validation.JimpleTrapValidator;
+import sootup.core.validation.ValidationException;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -208,7 +219,7 @@ public class DexBodyEdgeCaseTest {
             });
 
     assertEquals(
-        List.of("$u0 = 0", "if $u0 == 0", "return", "nop", "nop", "$u0 = 1", "return"),
+        List.of("$u0#0 = 0", "if $u0#0 == 0", "return", "nop", "nop", "$u0#1 = 1", "return"),
         stmtsOf(body));
     // the second successor of the if is the branch target, which is the first of the two nops
     assertEquals(
@@ -455,12 +466,220 @@ public class DexBodyEdgeCaseTest {
                   b.getLabel("handler"));
             });
 
-    // addTraps() answers a Trap that ends on a nop by inserting a caught exception Stmt of its own
-    // and ending the Trap there, so the body holds that Stmt next to the move-exception it covers
-    assertEquals(
-        List.of("$u0 = 0", "goto", "r0 := @caughtexception", "$u1 := @caughtexception", "return"),
-        stmtsOf(body));
+    // the trailing nops are dropped, so the range ends before the return, which cannot throw
+    assertEquals(List.of("$u0 = 0", "goto", "$u1 := @caughtexception", "return"), stmtsOf(body));
     assertEquals(1, trapsOf(body).size());
+    assertEquals("return", trapsOf(body).get(0).getEndStmt().toString());
+    assertValidTraps(body);
+  }
+
+  /** The same without padding: the try range ends with the code itself. */
+  @Test
+  public void trapReachingTheEndOfTheCode() {
+    Body body =
+        convert(
+            "TrapToEndOfCode",
+            2,
+            b -> {
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addInstruction(new BuilderInstruction10t(Opcode.GOTO, b.getLabel("out")));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 1));
+              b.addLabel("out");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("end");
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    assertEquals(List.of("$u0 = 0", "goto", "$u1 := @caughtexception", "return"), stmtsOf(body));
+    assertEquals(1, trapsOf(body).size());
+    assertEquals("return", trapsOf(body).get(0).getEndStmt().toString());
+    assertValidTraps(body);
+  }
+
+  /** A catch-all handler catches java.lang.Throwable, and a repeated type keeps its name. */
+  @Test
+  public void catchAllAndRepeatedExceptionTypes() {
+    Body body =
+        convert(
+            "CatchAllAndRepeatedTypes",
+            2,
+            b -> {
+              b.addLabel("try1");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end1");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 1));
+              b.addLabel("try2");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 2));
+              b.addLabel("end2");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/io/IOException;"),
+                  b.getLabel("try1"),
+                  b.getLabel("end1"),
+                  b.getLabel("handler"));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/io/IOException;"),
+                  b.getLabel("try2"),
+                  b.getLabel("end2"),
+                  b.getLabel("handler"));
+              b.addCatch(b.getLabel("try2"), b.getLabel("end2"), b.getLabel("handler"));
+            });
+
+    assertEquals(
+        List.of("java.io.IOException", "java.io.IOException", "java.lang.Throwable"),
+        trapsOf(body).stream()
+            .map(trap -> trap.getExceptionType().getFullyQualifiedName())
+            .sorted()
+            .collect(Collectors.toList()));
+    assertValidTraps(body);
+  }
+
+  /** A handler that ignores the exception has no move-exception; it still gets @caughtexception. */
+  @Test
+  public void handlerWithoutMoveException() {
+    Body body =
+        convert(
+            "HandlerWithoutMoveException",
+            1,
+            b -> {
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    assertEquals(
+        List.of(
+            "$u0#0 = 0", "return", "$exception := @caughtexception", "goto", "$u0#1 = 1", "return"),
+        stmtsOf(body));
+    assertEquals(
+        "$exception := @caughtexception", trapsOf(body).get(0).getHandlerStmt().toString());
+    assertValidTraps(body);
+  }
+
+  /** cmpl and cmpg differ only for NaN, so they must not collapse into cmp. */
+  @Test
+  public void floatingPointComparisons() {
+    Body body =
+        convert(
+            "FloatingPointComparisons",
+            3,
+            b -> {
+              b.addInstruction(new BuilderInstruction23x(Opcode.CMPL_FLOAT, 0, 1, 2));
+              b.addInstruction(new BuilderInstruction23x(Opcode.CMPG_DOUBLE, 0, 1, 2));
+              b.addInstruction(new BuilderInstruction23x(Opcode.CMP_LONG, 0, 1, 2));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+            });
+
+    assertEquals(
+        List.of("$u0#0 = $u1 cmpl $u2", "$u0#1 = $u1 cmpg $u2", "$u0#2 = $u1 cmp $u2", "return"),
+        stmtsOf(body));
+  }
+
+  /** A zero register used as an object becomes null, also as the base of an invoke. */
+  @Test
+  public void zeroUsedAsObjectBecomesNull() {
+    Body body =
+        convert(
+            "ZeroAsObject",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addInstruction(
+                  new BuilderInstruction35c(
+                      Opcode.INVOKE_VIRTUAL,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      new ImmutableMethodReference(
+                          "Ljava/lang/Object;", "hashCode", List.of(), "I")));
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 0));
+              b.addInstruction(
+                  new BuilderInstruction21c(
+                      Opcode.SPUT_OBJECT,
+                      1,
+                      new ImmutableFieldReference(
+                          "Ldex/ZeroAsObject;", "s", "Ljava/lang/String;")));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+            });
+
+    assertEquals("$u0 = null", stmtsOf(body).get(0));
+    assertEquals("$u1 = null", stmtsOf(body).get(2));
+  }
+
+  /** A register reused for an int and for an object is split first, so only the object is null. */
+  @Test
+  public void reusedRegisterOnlyObjectBecomesNull() {
+    Body body =
+        convert(
+            "ReusedRegister",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addInstruction(new BuilderInstruction22b(Opcode.ADD_INT_LIT8, 1, 0, 1));
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addInstruction(
+                  new BuilderInstruction21c(
+                      Opcode.SPUT_OBJECT,
+                      0,
+                      new ImmutableFieldReference(
+                          "Ldex/ReusedRegister;", "s", "Ljava/lang/String;")));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+            });
+
+    assertEquals("$u0#0 = 0", stmtsOf(body).get(0));
+    assertEquals("$u0#1 = null", stmtsOf(body).get(2));
+  }
+
+  /** An int bit pattern passed as a float argument is the float it encodes. */
+  @Test
+  public void intBitsUsedAsFloatBecomeAFloatConstant() {
+    Body body =
+        convert(
+            "IntBitsAsFloat",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction31i(Opcode.CONST, 0, 0x3f800000));
+              b.addInstruction(
+                  new BuilderInstruction35c(
+                      Opcode.INVOKE_STATIC,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      new ImmutableMethodReference(
+                          "Ljava/lang/Math;", "round", List.of("F"), "I")));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+            });
+
+    assertEquals("$u0 = 1.0F", stmtsOf(body).get(0));
+  }
+
+  private static void assertValidTraps(Body body) {
+    List<ValidationException> violations = new JimpleTrapValidator().validate(body, null);
+    assertTrue(violations.isEmpty(), violations.toString());
   }
 
   /** An endless loop, which is a body without any return at all. */
@@ -491,7 +710,7 @@ public class DexBodyEdgeCaseTest {
               b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
             });
 
-    assertEquals(List.of("$u0 = 0", "throw $u0"), stmtsOf(body));
+    assertEquals(List.of("$u0 = null", "throw $u0"), stmtsOf(body));
   }
 
   /** Unreachable code that is not a nop is legal in dex too, and goes the same way. */
@@ -558,6 +777,63 @@ public class DexBodyEdgeCaseTest {
     assertTrue(
         messagesOf(e).stream().anyMatch(m -> m.contains("falls into the abyss")),
         messagesOf(e).toString());
+  }
+
+  /** A method that cannot be converted fails on its own; the rest of its class stays usable. */
+  @Test
+  public void brokenMethodDoesNotBreakItsClass() throws IOException {
+    MethodImplementationBuilder broken = new MethodImplementationBuilder(1);
+    broken.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+    MethodImplementationBuilder fine = new MethodImplementationBuilder(1);
+    fine.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+    int flags = AccessFlags.PUBLIC.getValue() | AccessFlags.STATIC.getValue();
+    ImmutableClassDef classDef =
+        new ImmutableClassDef(
+            "Ldex/PartlyBroken;",
+            AccessFlags.PUBLIC.getValue(),
+            "Ljava/lang/Object;",
+            null,
+            null,
+            null,
+            null,
+            null,
+            List.of(
+                new ImmutableMethod(
+                    "Ldex/PartlyBroken;",
+                    "broken",
+                    null,
+                    "V",
+                    flags,
+                    null,
+                    null,
+                    broken.getMethodImplementation()),
+                new ImmutableMethod(
+                    "Ldex/PartlyBroken;",
+                    "fine",
+                    null,
+                    "V",
+                    flags,
+                    null,
+                    null,
+                    fine.getMethodImplementation())),
+            null);
+    Path dex = tempDir.resolve("PartlyBroken.dex");
+    DexPool.writeTo(dex.toString(), new ImmutableDexFile(Opcodes.forApi(15), List.of(classDef)));
+    JavaView view =
+        new JavaView(
+            List.of(
+                new ApkAnalysisInputLocation(
+                    dex,
+                    new AndroidVersionInfo(dex, ""),
+                    DexBodyInterceptors.Default.bodyInterceptors())));
+    JavaSootClass clazz =
+        view.getClass(view.getIdentifierFactory().getClassType("dex.PartlyBroken")).get();
+
+    assertEquals(2, clazz.getMethods().size());
+    assertEquals(
+        List.of("return"), stmtsOf(clazz.getMethodsByName("fine").iterator().next().getBody()));
+    assertThrows(
+        ResolveException.class, () -> clazz.getMethodsByName("broken").iterator().next().getBody());
   }
 
   /** Every message along the cause chain, so a test can look for the one it cares about. */

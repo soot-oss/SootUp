@@ -57,6 +57,7 @@ public class DexNumberTranformer extends DexTransformer {
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
+    final Map<Stmt, Stmt> rewrites = new IdentityHashMap<>();
 
     for (Local local : getNumCandidates(builder)) {
       usedAsFloatingPoint = false;
@@ -202,27 +203,23 @@ public class DexNumberTranformer extends DexTransformer {
 
       if (usedAsFloatingPoint) {
         for (Stmt defStmt : defs) {
-          replaceWithFloatingPoint(defStmt);
+          replaceWithFloatingPoint(defStmt, rewrites);
         }
       }
     }
+    applyRewrites(builder, rewrites);
   }
 
-  /**
-   * Replace 0 with null in the given unit.
-   *
-   * @param stmt the stmt where 0 will be replaced with null.
-   */
-  private void replaceWithFloatingPoint(Stmt stmt) {
-    if (stmt instanceof JAssignStmt) {
-      JAssignStmt s = (JAssignStmt) stmt;
+  /** Reinterpret the int/long constant assigned in the given stmt as float/double bits. */
+  private void replaceWithFloatingPoint(Stmt stmt, Map<Stmt, Stmt> rewrites) {
+    if (current(rewrites, stmt) instanceof JAssignStmt s) {
       Value v = s.getRightOp();
       if ((v instanceof IntConstant)) {
         int vVal = ((IntConstant) v).getValue();
-        s.withRValue(FloatConstant.getInstance(Float.intBitsToFloat(vVal)));
+        rewrites.put(stmt, s.withRValue(FloatConstant.getInstance(Float.intBitsToFloat(vVal))));
       } else if (v instanceof LongConstant) {
         long vVal = ((LongConstant) v).getValue();
-        s.withRValue(DoubleConstant.getInstance(Double.longBitsToDouble(vVal)));
+        rewrites.put(stmt, s.withRValue(DoubleConstant.getInstance(Double.longBitsToDouble(vVal))));
       }
     }
   }
