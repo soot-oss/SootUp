@@ -172,4 +172,23 @@ public class DexClassSource extends JavaSootClassSource {
             })
         .collect(Collectors.toSet());
   }
+
+  // JavaSootClassSource#equals/hashCode compare only (input location, source path): fine for
+  // one-class-per-file frontends, but every class in an APK shares the same sourcePath (the apk
+  // itself), which would make every DexClassSource from one APK equal. Include the class type too.
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof DexClassSource) || !super.equals(o)) {
+      return false;
+    }
+    return classSignature.equals(((DexClassSource) o).classSignature);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), classSignature);
+  }
 }

@@ -67,6 +67,29 @@ public class ApkAnalysisInputLocationTest {
     assertFalse(clazz.getMethods().isEmpty());
   }
 
+  /**
+   * Two classes from the same APK must compare unequal: their class sources share the APK path as
+   * sourcePath, and the base equals/hashCode compares only (input location, sourcePath).
+   */
+  @Test
+  public void classSourcesOfDifferentClassesAreNotEqual() {
+    ApkAnalysisInputLocation apkLocation =
+        new ApkAnalysisInputLocation(
+            APK, new AndroidVersionInfo(APK, ""), DexBodyInterceptors.Default.bodyInterceptors());
+    JavaView view = new JavaView(List.of(apkLocation));
+
+    ClassType mainActivity = view.getIdentifierFactory().getClassType("de.ecspride.MainActivity");
+    ClassType buildConfig = view.getIdentifierFactory().getClassType("de.ecspride.BuildConfig");
+
+    var sourceA = apkLocation.getClassSource(mainActivity, view).get();
+    var sourceB = apkLocation.getClassSource(buildConfig, view).get();
+    var sourceASecondLookup = apkLocation.getClassSource(mainActivity, view).get();
+
+    assertFalse(sourceA.equals(sourceB));
+    assertTrue(sourceA.equals(sourceASecondLookup));
+    assertEquals(sourceA.hashCode(), sourceASecondLookup.hashCode());
+  }
+
   /** Every class defined in the dex files resolves through the APK location. */
   @Test
   public void everyApkClassResolves() {

@@ -22,8 +22,9 @@ package sootup.apk.frontend.instruction;
  * #L%
  */
 
-import org.jf.dexlib2.dexbacked.instruction.DexBackedInstruction35c;
+import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
+import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
 import org.jf.dexlib2.iface.reference.TypeReference;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
@@ -42,7 +43,7 @@ import sootup.java.core.language.JavaJimple;
 public class FilledNewArrayInstruction extends FilledArrayInstruction {
   @Override
   public void jimplify(DexBody body) {
-    DexBackedInstruction35c filledNewArrayInstr = (DexBackedInstruction35c) instruction;
+    FiveRegisterInstruction filledNewArrayInstr = (FiveRegisterInstruction) instruction;
     int[] regs = {
       filledNewArrayInstr.getRegisterC(),
       filledNewArrayInstr.getRegisterD(),
@@ -52,7 +53,8 @@ public class FilledNewArrayInstruction extends FilledArrayInstruction {
     };
     int usedRegister = filledNewArrayInstr.getRegisterCount();
 
-    Type t = DexUtil.toSootType(((TypeReference) filledNewArrayInstr.getReference()).getType(), 0);
+    TypeReference reference = (TypeReference) ((ReferenceInstruction) instruction).getReference();
+    Type t = DexUtil.toSootType(reference.getType(), 0);
     // NewArrayExpr needs the ElementType as it increases the array dimension by 1
     Type arrayType = ((ArrayType) t).getElementType();
     JNewArrayExpr arrayExpr =

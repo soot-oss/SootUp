@@ -336,17 +336,20 @@
   - **Fix: Easy.**
   - **Done:** null-checked (with the singleton removal).
 
-- [ ] **Every `DexClassSource` from one APK compares equal.**
+- [x] **Every `DexClassSource` from one APK compares equal.**
   - **Why:** `JavaSootClassSource.equals/hashCode` use only (input location, source path), and all classes share the APK path.
   - **Fix: Easy.** Override to include the class signature.
+  - **Done:** overrode `equals`/`hashCode` in `DexClassSource` to also compare the class type, on top of the base `(input location, sourcePath)` comparison. Test: `classSourcesOfDifferentClassesAreNotEqual`.
 
-- [ ] **Abstract and native methods run interceptors on empty graphs.**
+- [x] **Abstract and native methods run interceptors on empty graphs.**
   - **Where:** `dexpler/DexMethod.java:57-77`.
   - **Fix: Easy.** Skip them.
+  - **Done:** already fixed as a side effect of making bodies lazy (🔴7): `JavaSootMethod.lazyBodyInitializer` throws before calling `resolveBody()` for any non-concrete method, and `DexMethod` no longer special-cases abstract/native at all, so `DexMethodSource.resolveBody()` (and the interceptor chain) is never invoked for them.
 
-- [ ] **`DexBacked*` casts crash on immutable dexlib2 instructions.**
+- [x] **`DexBacked*` casts crash on immutable dexlib2 instructions.**
   - **Where:** `instruction/FilledNewArrayInstruction.java:45` casts to `DexBackedInstruction35c`, and `instruction/SwitchInstruction.java:76-81,107-112` only handle `DexBacked*Payload` (it relies on an `assert`).
   - **Fix: Easy.** Use the interfaces, as Soot does.
+  - **Done:** `FilledNewArrayInstruction` now casts to the `FiveRegisterInstruction`/`ReferenceInstruction` interfaces instead of `DexBackedInstruction35c`, and `SwitchInstruction` checks `instanceof PackedSwitchPayload`/`SparseSwitchPayload` instead of the `DexBacked*` variants. Not currently reachable through this module's own entry points (`ApkAnalysisInputLocation` always loads from a file, so dexlib2 always hands back `DexBacked*` instances) - this is defensive/future-proofing rather than a fix to an observed crash, e.g. it protects a future in-memory-dex or deodexed-instruction code path.
 
 - [x] **The move-exception local is never retyped.**
   - **Where:** `realType` and `stmtToRetype` in `instruction/MoveExceptionInstruction.java` are unused.
