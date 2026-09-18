@@ -220,6 +220,7 @@
     - Arithmetic, cast, negation and compare instructions now record their operand kind in `tag/OpTagPositionInfo` (a position info subclass, so it survives Stmt rewrites), and `DexNumberTranformer` uses it: invalid casts are down to 1 (FlowSensitivity1) and 0 (LocationLeak1).
     - The last one comes from exceptional edges of statements that cannot throw (needs throw analysis, 🟠3).
     - `TypeAssigner` is now part of `DexBodyInterceptors.Default`: every local of the sample APKs gets a type, with one invalid cast left in FlowSensitivity1 and none in LocationLeak1. Conversion costs roughly 50% more time. Types are best with the android.jar in the view (without it, unresolvable supertypes fall back to Object), but conversion does not fail without it.
+    - Move-exception locals are now retyped to their real exception type instead of `java.lang.Throwable` (see "The move-exception local is never retyped" below). The android.jar section's note that "catch-block locals are still under-typed... (the throw-analysis gap, 🟠3)" was a wrong diagnosis — this was the actual, unrelated cause, and it's now fixed: all 418 traps' handlers across the sample APKs carry the exact declared exception type.
 
 - [ ] **2. Missing dex-specific passes and op-kind information.**
   - **Tags never attached:** Soot tags statements while translating: Int/Long/Float/Double op tags on binop, cast, unop and cmp; Object/Byte/Char/Short/Boolean/IntOrFloat/LongOrDouble tags on aget; ObjectOpTag on aput-object and filled-new-array. SootUp attaches none. The `tag/*OpTag` classes exist, but SootUp `Stmt`s can't carry tags. As a result, the number transformer's binop and cast branches are commented out (`interceptors/DexNumberTranformer.java:166-173`). `const/high16 v0,0x3f80; add-float …` stays `1065353216` instead of `1.0F`.
@@ -347,10 +348,12 @@
   - **Where:** `instruction/FilledNewArrayInstruction.java:45` casts to `DexBackedInstruction35c`, and `instruction/SwitchInstruction.java:76-81,107-112` only handle `DexBacked*Payload` (it relies on an `assert`).
   - **Fix: Easy.** Use the interfaces, as Soot does.
 
-- [ ] **The move-exception local is never retyped.**
+- [x] **The move-exception local is never retyped.**
   - **Where:** `realType` and `stmtToRetype` in `instruction/MoveExceptionInstruction.java` are unused.
   - **Soot:** retypes it after splitting (`soot/dexpler/DexBody.java:746-748,1758`).
   - **Fix: Easy.**
+  - **Done:** `DexBody` precomputes a handler-address -> exception-type map from the try blocks before any instruction is jimplified (first handler wins for an address shared by several catch types), and both `MoveExceptionInstruction` and the handler-stub path in `addTraps()` read it, so the caught-exception ref carries the real type from the start. (An earlier version of this fix retyped the statement in place after the fact via `replaceStmt`; that broke `MutableBlockControlFlowGraph.initializeWith` whenever another trap's begin/end address coincided with an already-retyped handler, because the owning instruction's own cached `Stmt` reference went stale. Precomputing avoids ever having two live versions of the same statement.)
+  - Measured on the sample APKs: all 418 traps' handler locals now carry exactly the declared exception type. Tests: `moveExceptionGetsTheRealExceptionType`, `handlerStubGetsTheRealExceptionType`.
 
 - [ ] **Dead code to remove.**
   - `FieldInstruction.getSootFieldRef` builds `JInstanceFieldRef(null, …)` (`instruction/FieldInstruction.java:60-63`).

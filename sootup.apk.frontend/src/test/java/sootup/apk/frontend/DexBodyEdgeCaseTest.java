@@ -66,6 +66,7 @@ import org.junit.jupiter.api.io.TempDir;
 import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.common.Trap;
+import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.model.Body;
 import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.core.validation.JimpleTrapValidator;
@@ -573,6 +574,58 @@ public class DexBodyEdgeCaseTest {
     assertEquals(
         "$exception := @caughtexception", trapsOf(body).get(0).getHandlerStmt().toString());
     assertValidTraps(body);
+  }
+
+  /** The move-exception local's identity ref carries the handler's real exception type. */
+  @Test
+  public void moveExceptionGetsTheRealExceptionType() {
+    Body body =
+        convert(
+            "MoveExceptionRealType",
+            2,
+            b -> {
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/io/IOException;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    JIdentityStmt handlerStmt = (JIdentityStmt) trapsOf(body).get(0).getHandlerStmt();
+    assertEquals("java.io.IOException", handlerStmt.getRightOp().getType().toString());
+  }
+
+  /** A handler stub built for a handler with no move-exception is typed the same way. */
+  @Test
+  public void handlerStubGetsTheRealExceptionType() {
+    Body body =
+        convert(
+            "HandlerStubRealType",
+            1,
+            b -> {
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/io/IOException;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    JIdentityStmt handlerStmt = (JIdentityStmt) trapsOf(body).get(0).getHandlerStmt();
+    assertEquals("java.io.IOException", handlerStmt.getRightOp().getType().toString());
   }
 
   /** cmpl and cmpg differ only for NaN, so they must not collapse into cmp. */

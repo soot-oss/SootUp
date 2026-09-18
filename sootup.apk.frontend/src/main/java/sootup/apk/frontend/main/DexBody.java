@@ -52,7 +52,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.language.JavaJimple;
 
 public class DexBody {
 
@@ -96,6 +95,10 @@ public class DexBody {
   // end of try ranges that reach the end of the code; resolved in removeUnreachableBlocks
   @Nullable private Stmt endOfBody;
 
+  // the exception type of the try block reaching each handler address, so move-exception
+  // instructions can be jimplified with their real type instead of always java.lang.Throwable
+  private final Map<Integer, ClassType> handlerExceptionTypes = new HashMap<>();
+
   LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap = LinkedListMultimap.create();
 
   protected class RegDbgEntry {
@@ -133,6 +136,14 @@ public class DexBody {
     }
 
     tries = code.getTryBlocks();
+    // a handler shared by several catch types (multi-catch compiles to one handler per type)
+    // keeps whichever type is encountered first
+    for (TryBlock<? extends ExceptionHandler> tryItem : tries) {
+      for (ExceptionHandler handler : tryItem.getExceptionHandlers()) {
+        handlerExceptionTypes.putIfAbsent(
+            handler.getHandlerCodeAddress(), exceptionClassType(handler.getExceptionType()));
+      }
+    }
     locals = new LinkedHashSet<>();
 
     parameterNames = new ArrayList<String>();
@@ -232,6 +243,20 @@ public class DexBody {
 
   public Local getStoreResultLocal() {
     return storeResultLocal;
+  }
+
+  /** The exception type a move-exception at this code address should be typed with. */
+  public ClassType exceptionTypeAt(int codeAddress) {
+    ClassType type = handlerExceptionTypes.get(codeAddress);
+    return type != null ? type : exceptionClassType(null);
+  }
+
+  private static ClassType exceptionClassType(@Nullable String dexExceptionType) {
+    return JavaIdentifierFactory.getInstance()
+        .getClassType(
+            dexExceptionType == null
+                ? "java.lang.Throwable"
+                : DexUtil.dottedClassName(dexExceptionType));
   }
 
   public void add(Stmt stmt) {
@@ -707,15 +732,9 @@ public class DexBody {
         endStmt = endOfBody;
       }
       for (ExceptionHandler handler : tryItem.getExceptionHandlers()) {
-        String exceptionType = handler.getExceptionType();
-        ClassType type =
-            JavaIdentifierFactory.getInstance()
-                .getClassType(
-                    exceptionType == null
-                        ? "java.lang.Throwable"
-                        : DexUtil.dottedClassName(exceptionType));
-        Stmt handlerStmt =
-            firstStmtAtOrAfter(handler.getHandlerCodeAddress(), Integer.MAX_VALUE, emitted);
+        ClassType type = exceptionClassType(handler.getExceptionType());
+        int handlerAddress = handler.getHandlerCodeAddress();
+        Stmt handlerStmt = firstStmtAtOrAfter(handlerAddress, Integer.MAX_VALUE, emitted);
         if (handlerStmt == null) {
           continue;
         }
@@ -732,7 +751,7 @@ public class DexBody {
                     Stmt caught =
                         Jimple.newIdentityStmt(
                             local,
-                            JavaJimple.newCaughtExceptionRef(),
+                            new JCaughtExceptionRef(exceptionTypeAt(handlerAddress)),
                             StmtPositionInfo.getNoStmtPositionInfo());
                     JGotoStmt jump = Jimple.newGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
                     branchingMap.put(jump, Collections.singletonList(t));
