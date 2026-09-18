@@ -37,6 +37,7 @@ import java.util.zip.ZipOutputStream;
 import org.jf.dexlib2.AccessFlags;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
+import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.immutable.ImmutableClassDef;
 import org.jf.dexlib2.immutable.ImmutableDexFile;
 import org.jf.dexlib2.immutable.ImmutableMethod;
@@ -71,6 +72,43 @@ public class DexFileProviderTest {
     dexToMethod.put("classes9.dex", "fromClasses9");
     assertEquals(
         Set.of("fromClasses9"), methodsOfDuplicate(apkWith("WithoutClassesDex", dexToMethod)));
+  }
+
+  /**
+   * Two dex entries whose basenames collide (a root {@code classes.dex} and a nested {@code
+   * assets/x/classes.dex}) must not make one silently disappear.
+   */
+  @Test
+  public void dexEntriesWithCollidingBasenamesBothSurvive() throws IOException {
+    Map<String, String> dexToMethod = new LinkedHashMap<>();
+    dexToMethod.put("classes.dex", "fromRoot");
+    dexToMethod.put("assets/x/classes.dex", "fromAssets");
+    Path apk = apkWith("CollidingBasenames", dexToMethod);
+
+    List<DexFileProvider.DexContainer<? extends DexFile>> containers =
+        new DexFileProvider().getDexFromSource(apk.toFile(), 15);
+    assertEquals(2, containers.size());
+  }
+
+  /**
+   * A .zip source is treated like any other archive dexlib2 can read, not excluded by extension.
+   */
+  @Test
+  public void zipExtensionIsNotExcluded() throws IOException {
+    Path zip = tempDir.resolve("Payload.zip");
+    Map<String, String> dexToMethod = Map.of("classes.dex", "fromZip");
+    try (ZipOutputStream out = new ZipOutputStream(Files.newOutputStream(zip))) {
+      Path dex = tempDir.resolve("zip-payload.dex");
+      DexPool.writeTo(
+          dex.toString(), new ImmutableDexFile(Opcodes.forApi(15), List.of(dupClass("fromZip"))));
+      out.putNextEntry(new ZipEntry("classes.dex"));
+      Files.copy(dex, out);
+      out.closeEntry();
+    }
+
+    List<DexFileProvider.DexContainer<? extends DexFile>> containers =
+        new DexFileProvider().getDexFromSource(zip.toFile(), 15);
+    assertEquals(1, containers.size());
   }
 
   /**

@@ -99,32 +99,31 @@ public class DexFileProvider {
         DexFileFactory.loadDexContainer(dexSourceFile, opcodes);
 
     List<String> dexEntryNameList = dexContainer.getDexEntryNames();
+    // keyed by the full entry path, not just its basename: an archive can hold two dex entries
+    // whose basenames collide (e.g. "classes.dex" and "assets/x/classes.dex"), and keying by
+    // basename would silently drop one of them instead of just ranking it behind the other
     Map<String, DexContainer<? extends DexFile>> dexMap = new HashMap<>(dexEntryNameList.size());
     for (String entryName : dexEntryNameList) {
       MultiDexContainer.DexEntry<? extends DexFile> entry = dexContainer.getEntry(entryName);
       String name = deriveDexName(entryName);
       logger.debug(
           "Found dex file '{}' with {} classes in '{}'",
-          name,
+          entryName,
           entry.getDexFile().getClasses().size(),
           dexSourceFile.getCanonicalPath());
-      dexMap.put(name, new DexContainer<>(entry, name, dexSourceFile));
+      dexMap.put(entryName, new DexContainer<>(entry, name, dexSourceFile));
     }
     return Collections.unmodifiableMap(dexMap);
   }
 
   public List<File> allSourcesFromFile(File dexSource) {
     if (dexSource.isDirectory()) {
-      List<File> dexFiles = getAllDexFilesInDirectory(dexSource);
-      return dexFiles;
-    } else {
-      String ext = com.google.common.io.Files.getFileExtension(dexSource.getName()).toLowerCase();
-      if ((ext.equals("jar") || ext.equals("zip"))) {
-        return Collections.emptyList();
-      } else {
-        return Collections.singletonList(dexSource);
-      }
+      return getAllDexFilesInDirectory(dexSource);
     }
+    // dexlib2 sniffs the actual format (zip/apk, dex, odex, oat) itself and throws
+    // UnsupportedFileTypeException for anything else, so no extension needs special-casing here;
+    // a .jar or .zip with no dex entries inside just yields nothing, the same as today
+    return Collections.singletonList(dexSource);
   }
 
   private List<File> getAllDexFilesInDirectory(File path) {

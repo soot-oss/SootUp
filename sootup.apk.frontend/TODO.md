@@ -313,10 +313,14 @@
   - **Soot:** default exclusions downgrade `java.*`, `javax.*` and similar to library (`soot/Scene.java:184-212`).
   - **Fix: Medium.** Add a constructor parameter and a package-based classifier.
 
-- [ ] **Dex entry handling.**
+- [x] **Dex entry handling.**
   - **Name collisions:** dex entries are keyed by basename (`dexpler/DexFileProvider.java:208-210`), so `assets/x/classes.dex` collides with the root `classes.dex` and one is silently dropped.
   - **Silent empty inputs:** `.jar`/`.zip` inputs return no sources at all (`:179-182`).
   - **Fix: Easy.**
+  - **Done:**
+    - `mappingForFile`'s per-file map is now keyed by the full dex entry path instead of its basename, so a root `classes.dex` and a nested `assets/x/classes.dex` in the same archive no longer collide and silently drop one. `getDexName()` (used only for priority ordering) is unaffected. Test: `dexEntriesWithCollidingBasenamesBothSurvive`.
+    - `allSourcesFromFile` no longer special-cases `.jar`/`.zip` to `emptyList()`. `DexFileFactory.loadDexContainer` already sniffs the real format (zip/apk, dex, odex, oat) itself and throws `UnsupportedFileTypeException` for anything else, so any archive with dex entries inside is now found regardless of its extension; one with none still yields nothing, same as before. Test: `zipExtensionIsNotExcluded`.
+    - Verified both tests actually catch the bugs by reverting the fix and re-running: `dexEntriesWithCollidingBasenamesBothSurvive` failed `2` vs `1`, `zipExtensionIsNotExcluded` failed `1` vs `0`.
 
 - [x] **Misleading android.jar documentation and test setup.**
   - Fix the Javadoc described in the android.jar section.
