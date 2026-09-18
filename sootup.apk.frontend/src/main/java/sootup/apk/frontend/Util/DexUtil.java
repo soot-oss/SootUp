@@ -29,15 +29,18 @@ import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import org.jf.dexlib2.iface.value.*;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
-import sootup.java.core.types.JavaClassType;
 
 public class DexUtil {
+
+  private static final Logger logger = LoggerFactory.getLogger(DexUtil.class);
 
   public static Type toSootType(String typeDescriptor, int pos) {
     Type type = null;
@@ -215,14 +218,11 @@ public class DexUtil {
     } else if (isByteCodeClassName(name)) {
       name = dottedClassName(name);
     }
-    JavaClassType javaClassType;
     try {
-      javaClassType = JavaIdentifierFactory.getInstance().getClassType(name);
-    } catch (Exception exception) {
-      System.out.println("Exception when substring with className " + name);
-      throw new RuntimeException();
+      return JavaIdentifierFactory.getInstance().getClassType(name);
+    } catch (RuntimeException e) {
+      logger.warn("Could not build a class type from '{}'", name, e);
+      throw e;
     }
-
-    return javaClassType;
   }
 }

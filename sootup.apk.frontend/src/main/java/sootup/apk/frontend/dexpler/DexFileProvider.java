@@ -92,8 +92,6 @@ public class DexFileProvider {
    */
   private Map<String, DexContainer<? extends DexFile>> mappingForFile(
       File dexSourceFile, int apiVersion) throws IOException {
-    // load dex files from apk/folder/file
-    boolean multiple_dex = true;
     // dex files carry their version in the header; only odex needs the device API level
     Opcodes opcodes =
         dexSourceFile.getName().toLowerCase().endsWith(".odex") ? Opcodes.forApi(apiVersion) : null;
@@ -101,44 +99,16 @@ public class DexFileProvider {
         DexFileFactory.loadDexContainer(dexSourceFile, opcodes);
 
     List<String> dexEntryNameList = dexContainer.getDexEntryNames();
-    int dexFileCount = dexEntryNameList.size();
-
-    if (dexFileCount < 1) {
-      return Collections.emptyMap();
-    }
-
-    Map<String, DexContainer<? extends DexFile>> dexMap = new HashMap<>(dexFileCount);
-
-    // report found dex files and add to list.
-    // We do this in reverse order to make sure that we add the first entry if there is no
-    // classes.dex file in single dex
-    // mode
-    ListIterator<String> entryNameIterator = dexEntryNameList.listIterator(dexFileCount);
-    while (entryNameIterator.hasPrevious()) {
-      String entryName = entryNameIterator.previous();
+    Map<String, DexContainer<? extends DexFile>> dexMap = new HashMap<>(dexEntryNameList.size());
+    for (String entryName : dexEntryNameList) {
       MultiDexContainer.DexEntry<? extends DexFile> entry = dexContainer.getEntry(entryName);
-      entryName = deriveDexName(entryName);
+      String name = deriveDexName(entryName);
       logger.debug(
-          String.format(
-              "Found dex file '%s' with %d classes in '%s'",
-              entryName, entry.getDexFile().getClasses().size(), dexSourceFile.getCanonicalPath()));
-
-      if (multiple_dex) {
-        dexMap.put(entryName, new DexContainer<>(entry, entryName, dexSourceFile));
-      } else if (dexMap.isEmpty()
-          && (entryName.equals("classes.dex") || !entryNameIterator.hasPrevious())) {
-        // We prefer to have classes.dex in single dex mode.
-        // If we haven't found a classes.dex until the last element, take the last!
-        dexMap =
-            Collections.singletonMap(
-                entryName, new DexContainer<>(entry, entryName, dexSourceFile));
-        if (dexFileCount > 1) {
-          logger.warn(
-              "Multiple dex files detected, only processing '"
-                  + entryName
-                  + "'. Use '-process-multiple-dex' option to process them all.");
-        }
-      }
+          "Found dex file '{}' with {} classes in '{}'",
+          name,
+          entry.getDexFile().getClasses().size(),
+          dexSourceFile.getCanonicalPath());
+      dexMap.put(name, new DexContainer<>(entry, name, dexSourceFile));
     }
     return Collections.unmodifiableMap(dexMap);
   }

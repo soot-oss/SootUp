@@ -358,13 +358,17 @@
   - **Done:** `DexBody` precomputes a handler-address -> exception-type map from the try blocks before any instruction is jimplified (first handler wins for an address shared by several catch types), and both `MoveExceptionInstruction` and the handler-stub path in `addTraps()` read it, so the caught-exception ref carries the real type from the start. (An earlier version of this fix retyped the statement in place after the fact via `replaceStmt`; that broke `MutableBlockControlFlowGraph.initializeWith` whenever another trap's begin/end address coincided with an already-retyped handler, because the owning instruction's own cached `Stmt` reference went stale. Precomputing avoids ever having two live versions of the same statement.)
   - Measured on the sample APKs: all 418 traps' handler locals now carry exactly the declared exception type. Tests: `moveExceptionGetsTheRealExceptionType`, `handlerStubGetsTheRealExceptionType`.
 
-- [ ] **Dead code to remove.**
+- [x] **Dead code to remove.**
   - `FieldInstruction.getSootFieldRef` builds `JInstanceFieldRef(null, …)` (`instruction/FieldInstruction.java:60-63`).
   - `DexFileProvider` has a hard-coded `multiple_dex = true` and an unreachable single-dex branch that tells users about a nonexistent `-process-multiple-dex` option (`:127,154-169`).
   - ~~The class-modifier map in `ApkAnalysisInputLocation.java:100-111` is computed but never read.~~ Removed.
   - ~~The `classInformation == null` branches in `DexClassSource` are unreachable, because the provider already returns empty.~~ Removed.
   - `DexUtil.getClassTypeFromClassName` prints to stdout and rethrows a bare `RuntimeException` with no cause (`Util/DexUtil.java:145-150`).
   - **Fix: Easy.**
+  - **Done:**
+    - `FieldInstruction.getSootFieldRef`/`getStaticSootFieldRef` (which built a throwaway `JFieldRef` just to read `.getFieldSignature()` off it, including the `JInstanceFieldRef(null, ...)` that would throw if used directly) replaced with a single `getFieldSignature(FieldReference)` helper, used by `Iget`/`Iput`/`Sget`/`Sput`. Also removed an unused `fieldReference` field.
+    - `DexFileProvider`'s dead `multiple_dex`/single-dex-mode branch and its warning about the nonexistent `-process-multiple-dex` option are gone; `mappingForFile` just maps every dex entry (final priority ordering is already handled by `DEFAULT_PRIORITIZER` in `getDexFromSource`, unaffected by this).
+    - `DexUtil.getClassTypeFromClassName` logs via SLF4J with the real exception attached and rethrows it, instead of printing to stdout and throwing a bare, causeless `RuntimeException`.
 
 - [ ] **Correction to the previous TODO: don't delete `tag/*OpTag`.**
   - They look unused because the op-kind mechanism they belong to was never wired up (🟠2). Keep them, or replace them with a side table, when porting that.
