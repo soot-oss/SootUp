@@ -111,6 +111,11 @@ public final class AndroidEntryPointConstants {
               new LifecycleMethod("onCreate", "void", Collections.emptyList()),
               new LifecycleMethod(
                   "onStartCommand", "int", Arrays.asList("android.content.Intent", "int", "int")),
+              // Deprecated since API 5 (superseded by onStartCommand above) but still a real
+              // override the framework dispatches to on any app that hasn't migrated off it —
+              // DroidBench's InterAppCommunication/DeviceId_Service1 relies on exactly this.
+              new LifecycleMethod(
+                  "onStart", "void", Arrays.asList("android.content.Intent", "int")),
               new LifecycleMethod(
                   "onBind",
                   "android.os.IBinder",
