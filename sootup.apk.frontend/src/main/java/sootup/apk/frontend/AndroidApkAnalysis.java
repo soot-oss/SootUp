@@ -38,6 +38,7 @@ import sootup.apk.frontend.entrypoint.AndroidDynamicReceiverEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidFragmentEntryPointCreator;
 import sootup.apk.frontend.entrypoint.AndroidLayoutEntryPointCreator;
+import sootup.apk.frontend.entrypoint.AndroidViewEntryPointCreator;
 import sootup.apk.frontend.entrypoint.InstantiatedTypeCollector;
 import sootup.apk.frontend.icc.AndroidIccResolver;
 import sootup.apk.frontend.layout.AndroidLayoutParser;
@@ -231,6 +232,11 @@ public final class AndroidApkAnalysis {
       }
       instantiatedClassNames.add(component.getClassName());
     }
+    // A custom View subclass used only as a layout-XML tag (e.g. <de.ecspride.MyView>) is
+    // instantiated reflectively by the layout inflater — never via a `new` in the app's own
+    // bytecode — so InstantiatedTypeCollector can't see it either, same reasoning as the manifest
+    // components above. DroidBench's AndroidSpecific/View1 relies on exactly this.
+    instantiatedClassNames.addAll(AndroidLayoutParser.parseCustomViewClassNamesFromApk(apkPath));
 
     Set<MethodSignature> combined = new LinkedHashSet<>(coreEntryPoints);
     combined.addAll(
@@ -244,6 +250,9 @@ public final class AndroidApkAnalysis {
             view, applicationClassNames, instantiatedClassNames));
     combined.addAll(
         AndroidFragmentEntryPointCreator.getFragmentEntryPoints(
+            view, applicationClassNames, instantiatedClassNames));
+    combined.addAll(
+        AndroidViewEntryPointCreator.getViewEntryPoints(
             view, applicationClassNames, instantiatedClassNames));
 
     return new ArrayList<>(combined);

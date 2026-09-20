@@ -110,6 +110,57 @@ public final class AndroidLayoutParser {
   }
 
   /**
+   * Extracts every custom-view class name declared as an XML tag anywhere in {@code
+   * res/layout*}{@code /*.xml} entries of the given APK — the fully qualified class name used
+   * directly as a tag (e.g. {@code <de.ecspride.MyView>}), Android's XML-declared way of putting a
+   * custom {@code android.view.View} subclass into the view hierarchy without any {@code new} call
+   * site in the app's own bytecode for {@code
+   * sootup.apk.frontend.entrypoint.InstantiatedTypeCollector} to find — the layout inflater
+   * instantiates it reflectively when the layout is inflated, the same way the OS instantiates a
+   * manifest-declared component. A built-in widget tag (e.g. {@code <TextView>}, no package) is
+   * resolved by the inflater against {@code android.widget}/{@code android.view} instead and is
+   * never returned here, since simple (no-dot) tag names are skipped; a fully qualified
+   * platform/support-library tag (e.g. {@code <android.webkit.WebView>}) is returned like any other
+   * but is harmless — callers only act on names that also appear in the APK's own dex-declared
+   * class set.
+   */
+  @NonNull
+  public static Set<String> parseCustomViewClassNamesFromApk(@NonNull Path apkPath) {
+    Set<String> classNames = new LinkedHashSet<>();
+    try (ZipFile archive = new ZipFile(apkPath.toFile())) {
+      Enumeration<? extends ZipEntry> entries = archive.entries();
+      while (entries.hasMoreElements()) {
+        ZipEntry entry = entries.nextElement();
+        if (!isLayoutXmlEntry(entry.getName())) {
+          continue;
+        }
+        try (InputStream layoutStream = archive.getInputStream(entry)) {
+          classNames.addAll(parseCustomViewClassNames(layoutStream));
+        } catch (Exception e) {
+          // Best-effort, same rationale as parseOnClickMethodNamesByFileFromApk above.
+          logger.debug("Could not parse layout resource '{}': {}", entry.getName(), e.toString());
+        }
+      }
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to read layout resources from " + apkPath, e);
+    }
+    return classNames;
+  }
+
+  /** Extracts every custom-view class name declared as a tag in a single layout XML stream. */
+  @NonNull
+  public static Set<String> parseCustomViewClassNames(@NonNull InputStream layoutStream) {
+    try {
+      byte[] data = ByteStreams.toByteArray(layoutStream);
+      CustomViewCollectingVisitor visitor = new CustomViewCollectingVisitor();
+      new AxmlReader(data).accept(visitor);
+      return visitor.classNames;
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to parse layout XML", e);
+    }
+  }
+
+  /**
    * Whether a zip entry name is a compiled layout XML resource. Resource directory names (unlike
    * file names) aren't affected by identifier/resource-name obfuscation, since the platform relies
    * on the {@code layout(-<qualifier>)} directory itself to pick a configuration-specific variant
@@ -136,6 +187,24 @@ public final class AndroidLayoutParser {
 
     @Override
     public NodeVisitor child(String ns, String name) {
+      return this;
+    }
+  }
+
+  /**
+   * A single flat, self-recursive visitor (same shape as {@link OnClickCollectingVisitor}):
+   * collects every child tag name containing a "." — the fully qualified class name of a custom
+   * view — regardless of nesting depth. A tag with no "." is a built-in widget resolved by the
+   * inflater against a default package and is never a custom view class name.
+   */
+  private static final class CustomViewCollectingVisitor extends AxmlVisitor {
+    @NonNull private final Set<String> classNames = new LinkedHashSet<>();
+
+    @Override
+    public NodeVisitor child(String ns, String name) {
+      if (name != null && name.indexOf('.') >= 0) {
+        classNames.add(name);
+      }
       return this;
     }
   }
