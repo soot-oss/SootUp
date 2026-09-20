@@ -221,6 +221,14 @@ public final class AndroidApkAnalysis {
     // uniformly instead of each needing its own copy of this same exemption.
     manifest.getApplicationClassName().ifPresent(instantiatedClassNames::add);
     for (ManifestComponent component : manifest.getComponents()) {
+      // Same android:enabled="false" exemption as AndroidEntryPointCreator: the OS never
+      // instantiates a disabled component, so it must not be folded into instantiatedClassNames
+      // either — otherwise a disabled component that also happens to implement a
+      // callback/listener interface directly on itself would still get that interface's methods
+      // treated as reachable entry points, defeating the whole point of the enabled check.
+      if (!component.isEnabled()) {
+        continue;
+      }
       instantiatedClassNames.add(component.getClassName());
     }
 

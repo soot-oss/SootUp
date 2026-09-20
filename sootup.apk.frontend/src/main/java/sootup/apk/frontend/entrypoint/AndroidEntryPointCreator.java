@@ -85,6 +85,14 @@ public final class AndroidEntryPointCreator {
                     entryPoints));
 
     for (ManifestComponent component : manifest.getComponents()) {
+      // android:enabled="false" tells the OS never to instantiate this component at all (no
+      // constructor call, no lifecycle callback, ever) — regardless of whatever intent-filters it
+      // declares (e.g. a MAIN/LAUNCHER activity that's disabled is simply not launchable).
+      // DroidBench's AndroidSpecific/InactiveActivity relies on exactly this: a leak inside a
+      // disabled activity's onCreate must not be reported at all.
+      if (!component.isEnabled()) {
+        continue;
+      }
       collectEntryPoints(
           view,
           identifierFactory,
