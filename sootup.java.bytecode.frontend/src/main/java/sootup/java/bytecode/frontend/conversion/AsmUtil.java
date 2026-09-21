@@ -284,7 +284,7 @@ public final class AsmUtil {
     List<AnnotationUsage> annotationUsages = new ArrayList<>();
     for (AnnotationNode e : invisibleParameterAnnotation) {
 
-      Map<String, Object> paramMap = new HashMap<>();
+      Map<String, Object> paramMap = new LinkedHashMap<>();
 
       if (e.values != null) {
         for (int j = 0; j < e.values.size(); j++) {
