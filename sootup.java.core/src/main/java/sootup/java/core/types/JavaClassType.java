@@ -49,13 +49,6 @@ public class JavaClassType extends ClassType {
   private final int hashCode;
 
   /**
-   * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
-   * {@link IdentifierFactory}
-   *
-   * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
-   * @param packageName the corresponding package
-   */
-  /**
    * Hash-conses every {@link JavaClassType} and its subclasses. Interning happens on the
    * constructed object, so identity follows {@link #equals}, which compares the exact class - a
    * {@link sootup.java.core.types.ModuleJavaClassType} therefore never aliases a plain {@link
@@ -98,6 +91,14 @@ public class JavaClassType extends ClassType {
     return interned;
   }
 
+  /**
+   * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created via
+   * {@link #of(String, PackageName)} or an {@link sootup.core.IdentifierFactory}, so that they stay
+   * hash-consed.
+   *
+   * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
+   * @param packageName the corresponding package
+   */
   protected JavaClassType(@NonNull final String className, @NonNull final PackageName packageName) {
     String realClassName = className;
     // TODO: [ms] we shouldnt do that inner class conversion here? -> IdentifierFactory

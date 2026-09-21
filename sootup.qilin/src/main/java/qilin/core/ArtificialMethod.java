@@ -21,7 +21,6 @@ package qilin.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import qilin.util.JavaTypes;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
@@ -128,7 +127,7 @@ public abstract class ArtificialMethod {
   }
 
   protected JStaticFieldRef getStaticFieldRef(String className, String name) {
-    ClassType classType = JavaTypes.getClassType(className);
+    ClassType classType = identifierFactory.getClassType(className);
     SootClass sc = view.getClass(classType).get();
     SootField field = sc.getField(name).get();
     return Jimple.newStaticFieldRef(field.getSignature());

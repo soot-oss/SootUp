@@ -88,6 +88,10 @@
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <!-- Test JVM knobs, overridable on machines with less memory than CI,
+             e.g. -Dsurefire.threadCount=1 -Dsurefire.maxHeap=3072M -->
+        <surefire.maxHeap>8192M</surefire.maxHeap>
+        <surefire.threadCount>4</surefire.threadCount>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
         <reactorRootsTarget>${basedir}/target</reactorRootsTarget>
         <junit.version>6.1.3</junit.version>
