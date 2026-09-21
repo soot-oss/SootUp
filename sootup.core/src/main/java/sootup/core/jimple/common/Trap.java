@@ -47,16 +47,17 @@ public final class Trap {
   /** The stmt to which execution flows after the caught exception is triggered. */
   @NonNull private final Stmt handlerStmt;
 
-  /** Creates a Trap with the given exception, handler, begin and end stmts. */
+  /**
+   * Creates a Trap with the given exception, handler, begin and end stmts.
+   *
+   * An empty range is retained as declared metadata. Removal transforms can
+   * redirect both endpoints to the same successor
+   */
   public Trap(
       @NonNull ClassType exception,
       @NonNull Stmt beginStmt, // inclusive
       @NonNull Stmt endStmt, // exclusive!
       @NonNull Stmt handlerStmt) {
-
-    if (beginStmt == endStmt) {
-      throw new IllegalArgumentException("The covered Trap range is empty. Trap is of no use.");
-    }
 
     this.exception = exception;
     this.beginStmt = beginStmt;
