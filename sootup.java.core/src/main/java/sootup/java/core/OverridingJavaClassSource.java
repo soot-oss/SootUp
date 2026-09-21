@@ -300,7 +300,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   @NonNull
   public OverridingJavaClassSource withReplacedMethod(
       @NonNull JavaSootMethod toReplace, @NonNull JavaSootMethod replacement) {
-    Set<JavaSootMethod> newMethods = new HashSet<>((Collection<JavaSootMethod>) resolveMethods());
+    Set<JavaSootMethod> newMethods =
+        new LinkedHashSet<>((Collection<JavaSootMethod>) resolveMethods());
     CollectionUtils.replace(newMethods, toReplace, replacement);
     return withMethods(newMethods);
   }
@@ -325,7 +326,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   @NonNull
   public OverridingJavaClassSource withReplacedField(
       @NonNull JavaSootField toReplace, @NonNull JavaSootField replacement) {
-    Set<JavaSootField> newFields = new HashSet<>((Collection<JavaSootField>) resolveFields());
+    Set<JavaSootField> newFields = new LinkedHashSet<>((Collection<JavaSootField>) resolveFields());
     CollectionUtils.replace(newFields, toReplace, replacement);
     return withFields(newFields);
   }
@@ -434,13 +435,13 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   public static class OverridingJavaClassSourceBuilder {
 
     @Nullable private JavaSootClassSource delegate;
-    @Nullable private Set<JavaSootMethod> overriddenSootMethods = new HashSet<>();
-    @Nullable private Set<JavaSootField> overriddenSootFields = new HashSet<>();
+    @Nullable private Set<JavaSootMethod> overriddenSootMethods = new LinkedHashSet<>();
+    @Nullable private Set<JavaSootField> overriddenSootFields = new LinkedHashSet<>();
 
     @Nullable
     private EnumSet<ClassModifier> overriddenModifiers = EnumSet.noneOf(ClassModifier.class);
 
-    @Nullable private Set<JavaClassType> overriddenInterfaces = new HashSet<>();
+    @Nullable private Set<JavaClassType> overriddenInterfaces = new LinkedHashSet<>();
     @Nullable private Optional<JavaClassType> overriddenSuperclass = Optional.empty();
     @Nullable private Optional<JavaClassType> overriddenOuterClass = Optional.empty();
     @Nullable private Position position;
@@ -562,7 +563,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       @Override
       public CompleteStep withMethods(@NonNull Set<JavaSootMethod> methods) {
         if (instance.overriddenSootMethods == null) {
-          instance.overriddenSootMethods = new HashSet<>(methods);
+          instance.overriddenSootMethods = new LinkedHashSet<>(methods);
           return this;
         }
         instance.overriddenSootMethods.addAll(methods);
@@ -578,7 +579,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       @Override
       public CompleteStep withFields(@NonNull Set<JavaSootField> fields) {
         if (instance.overriddenSootFields == null) {
-          instance.overriddenSootFields = new HashSet<>(fields);
+          instance.overriddenSootFields = new LinkedHashSet<>(fields);
           return this;
         }
         instance.overriddenSootFields.addAll(fields);
@@ -610,7 +611,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       @Override
       public CompleteStep withInterfaces(@NonNull Set<JavaClassType> interfaces) {
         if (instance.overriddenInterfaces == null) {
-          instance.overriddenInterfaces = new HashSet<>(interfaces);
+          instance.overriddenInterfaces = new LinkedHashSet<>(interfaces);
           return this;
         }
         instance.overriddenInterfaces.addAll(interfaces);
