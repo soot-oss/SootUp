@@ -22,10 +22,9 @@ import java.util.*;
 import qilin.core.PTA;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
-import qilin.core.sets.P2SetVisitor;
-import qilin.core.sets.PointsToSetInternal;
-import qilin.util.DataFactory;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
+import qilin.util.sets.P2SetVisitor;
+import qilin.util.sets.PointsToSetInternal;
 import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -33,30 +32,30 @@ import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
 public class ExceptionHandler {
-  protected final Map<Node, Collection<ExceptionThrowSite>> throwNodeToSites;
+  protected final Map<PagNode, Collection<ExceptionThrowSite>> throwNodeToSites;
   protected PTA pta;
   protected PAG pag;
 
   public ExceptionHandler(PTA pta) {
     this.pta = pta;
     this.pag = pta.getPag();
-    this.throwNodeToSites = DataFactory.createMap((int) pta.getView().getClasses().count());
+    this.throwNodeToSites = new HashMap<>((int) pta.getView().getClasses().count());
   }
 
   public Collection<ExceptionThrowSite> throwSitesLookUp(VarNode throwNode) {
     return throwNodeToSites.getOrDefault(throwNode, Collections.emptySet());
   }
 
-  public boolean addThrowSite(Node throwNode, ExceptionThrowSite ets) {
+  public boolean addThrowSite(PagNode throwNode, ExceptionThrowSite ets) {
     Collection<ExceptionThrowSite> throwSites =
-        throwNodeToSites.computeIfAbsent(throwNode, k -> DataFactory.createSet());
+        throwNodeToSites.computeIfAbsent(throwNode, k -> new HashSet<>());
     return throwSites.add(ets);
   }
 
   public void exceptionDispatch(PointsToSetInternal p2set, ExceptionThrowSite site) {
     p2set.forall(
         new P2SetVisitor(pta) {
-          public void visit(Node n) {
+          public void visit(PagNode n) {
             dispatch((AllocNode) n, site);
           }
         });
@@ -76,12 +75,12 @@ public class ExceptionHandler {
     List<Trap> trapList =
         mpag.stmt2wrapperedTraps.getOrDefault(site.getUnit(), Collections.emptyList());
     for (Trap trap : trapList) {
-      if (PTAUtils.canStoreType(pta.getView(), type, trap.getExceptionType())) {
+      if (JavaTypes.canStoreType(pta.getView(), type, trap.getExceptionType())) {
         Stmt handler = trap.getHandlerStmt();
         assert handler instanceof JIdentityStmt;
         JIdentityStmt handlerStmt = (JIdentityStmt) handler;
-        Node caughtParam = nodeFactory.getNode(handlerStmt.getRightOp());
-        Node dst = pta.parameterize(caughtParam, context);
+        PagNode caughtParam = nodeFactory.getNode(handlerStmt.getRightOp());
+        PagNode dst = pta.parameterize(caughtParam, context);
         pag.addEdge(throwObj, dst);
         // record an edge from base --> caughtParam on the methodPag.
         recordImplictEdge(throwNode, caughtParam, mpag);
@@ -89,14 +88,14 @@ public class ExceptionHandler {
       }
     }
     // No trap handle the throwable object in the method.
-    Node methodThrowNode = nodeFactory.caseMethodThrow();
-    Node dst = pta.parameterize(methodThrowNode, context);
+    PagNode methodThrowNode = nodeFactory.caseMethodThrow();
+    PagNode dst = pta.parameterize(methodThrowNode, context);
     pag.addEdge(throwObj, dst);
     // record an edge from base --> methodThrowNode on the methodPag.
     recordImplictEdge(throwNode, methodThrowNode, mpag);
   }
 
-  private void recordImplictEdge(Node src, Node dst, MethodPAG mpag) {
+  private void recordImplictEdge(PagNode src, PagNode dst, MethodPAG mpag) {
     if (src instanceof ContextVarNode) {
       src = ((ContextVarNode) src).base();
     }

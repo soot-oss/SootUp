@@ -18,13 +18,11 @@
 
 package qilin.test.core;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import qilin.core.PTA;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-@Disabled
-public class ReflogTests extends JunitTests {
+public class ReflogTests extends QilinFrameworkTests {
   @Test
   public void testFieldGetStatic() {
     checkAssertions(run("qilin.microben.core.reflog.FieldGetStatic"));

@@ -18,13 +18,9 @@
 
 package qilin.core.reflection;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import qilin.core.PTAScene;
-import qilin.util.DataFactory;
-import qilin.util.PTAUtils;
+import qilin.core.pag.PAG;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
@@ -37,6 +33,7 @@ import sootup.core.model.SootMethod;
 
 public abstract class ReflectionModel {
   protected final PTAScene ptaScene;
+  protected final PAG pag;
   protected final String sigForName =
       "<java.lang.Class: java.lang.Class forName(java.lang.String)>";
   protected final String sigForName2 =
@@ -73,22 +70,23 @@ public abstract class ReflectionModel {
   protected final String sigReifiedDeclaredMethodArray =
       "<java.lang.Class: java.lang.reflect.Method[] getDeclaredMethods()>";
 
-  protected ReflectionModel(PTAScene ptaScene) {
+  protected ReflectionModel(PTAScene ptaScene, PAG pag) {
     this.ptaScene = ptaScene;
+    this.pag = pag;
   }
 
-  private Collection<Stmt> transform(InvokableStmt s) {
+  private Collection<Stmt> transform(Body.BodyBuilder builder, InvokableStmt s) {
     if (s.getInvokeExpr().isEmpty()) return Collections.emptyList();
     AbstractInvokeExpr ie = s.getInvokeExpr().get();
     return switch (ie.getMethodSignature().toString()) {
       case sigForName, sigForName2 -> transformClassForName(s);
       case sigClassNewInstance -> transformClassNewInstance(s);
-      case sigConstructorNewInstance -> transformConstructorNewInstance(s);
-      case sigMethodInvoke -> transformMethodInvoke(s);
+      case sigConstructorNewInstance -> transformConstructorNewInstance(builder, s);
+      case sigMethodInvoke -> transformMethodInvoke(builder, s);
       case sigFieldSet -> transformFieldSet(s);
       case sigFieldGet -> transformFieldGet(s);
       case sigArrayNewInstance -> transformArrayNewInstance(s);
-      case sigArrayGet -> transformArrayGet(s);
+      case sigArrayGet -> transformArrayGet(builder, s);
       case sigArraySet -> transformArraySet(s);
       default -> Collections.emptySet();
     };
@@ -99,15 +97,15 @@ public abstract class ReflectionModel {
     if (!ptaScene.reflectionBuilt.add(m)) {
       return;
     }
-    Map<Stmt, Collection<Stmt>> newUnits = DataFactory.createMap();
-    Body body = PTAUtils.getMethodBody(m);
+    Map<Stmt, Collection<Stmt>> newUnits = new HashMap<>();
+    Body body = pag.getMethodBody(m);
     List<Stmt> units = body.getStmts();
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     for (final Stmt u : units) {
       if (u.isInvokableStmt() && u.asInvokableStmt().getInvokeExpr().isPresent()) {
-        newUnits.put(u, transform(u.asInvokableStmt()));
+        newUnits.put(u, transform(builder, u.asInvokableStmt()));
       }
     }
-    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     for (Stmt unit : newUnits.keySet()) {
       for (Stmt succ : newUnits.get(unit)) {
@@ -122,16 +120,17 @@ public abstract class ReflectionModel {
         }
       }
     }
-    PTAUtils.updateMethodBody(m, builder.build());
+    pag.updateMethodBody(m, builder.build());
   }
 
   abstract Collection<Stmt> transformClassForName(InvokableStmt s);
 
   abstract Collection<Stmt> transformClassNewInstance(InvokableStmt s);
 
-  abstract Collection<Stmt> transformConstructorNewInstance(InvokableStmt s);
+  abstract Collection<Stmt> transformConstructorNewInstance(
+      Body.BodyBuilder builder, InvokableStmt s);
 
-  abstract Collection<Stmt> transformMethodInvoke(InvokableStmt s);
+  abstract Collection<Stmt> transformMethodInvoke(Body.BodyBuilder builder, InvokableStmt s);
 
   abstract Collection<Stmt> transformFieldSet(InvokableStmt s);
 
@@ -139,7 +138,7 @@ public abstract class ReflectionModel {
 
   abstract Collection<Stmt> transformArrayNewInstance(InvokableStmt s);
 
-  abstract Collection<Stmt> transformArrayGet(InvokableStmt s);
+  abstract Collection<Stmt> transformArrayGet(Body.BodyBuilder builder, InvokableStmt s);
 
   abstract Collection<Stmt> transformArraySet(InvokableStmt s);
 }

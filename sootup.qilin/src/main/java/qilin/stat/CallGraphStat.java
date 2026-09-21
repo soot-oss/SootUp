@@ -21,10 +21,8 @@ package qilin.stat;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
-import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.ContextMethod;
@@ -181,10 +179,13 @@ public class CallGraphStat implements AbstractStat {
     exporter.collectMetric(
         "#Reachable App Method (CS):", String.valueOf(reachableAppParameterizedMethods.size()));
     exporter.collectMetric(
-        "#Call Edge(CI):", String.valueOf(CICallEdges - FakeMainFactory.implicitCallEdges));
+        "#Call Edge(CI):",
+        String.valueOf(
+            CICallEdges - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric(
         "\t#Static-Static Call Edge(CI):",
-        String.valueOf(CIStaticToStatic - FakeMainFactory.implicitCallEdges));
+        String.valueOf(
+            CIStaticToStatic - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric("\t#Static-Instance Call Edge(CI):", String.valueOf(CIStaticToInstance));
     exporter.collectMetric("\t#Instance-Static Call Edge(CI):", String.valueOf(CIInstanceToStatic));
     exporter.collectMetric(
@@ -194,10 +195,13 @@ public class CallGraphStat implements AbstractStat {
     exporter.collectMetric("\t#Library-Application Call Edge(CI):", String.valueOf(CILib2app));
     exporter.collectMetric("\t#Library-Library Call Edge(CI):", String.valueOf(CILib2lib));
     exporter.collectMetric(
-        "#Call Edge(CS):", String.valueOf(CSCallEdges - FakeMainFactory.implicitCallEdges));
+        "#Call Edge(CS):",
+        String.valueOf(
+            CSCallEdges - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric(
         "\t#Static-Static Call Edge(CS):",
-        String.valueOf(CSStaticToStatic - FakeMainFactory.implicitCallEdges));
+        String.valueOf(
+            CSStaticToStatic - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric("\t#Static-Instance Call Edge(CS):", String.valueOf(CSStaticToInstance));
     exporter.collectMetric("\t#Instance-Static Call Edge(CS):", String.valueOf(CSInstanceToStatic));
     exporter.collectMetric(
@@ -215,7 +219,7 @@ public class CallGraphStat implements AbstractStat {
             (CSCallEdges - CSStaticToStatic - CSInstanceToStatic)
                 * 1.0
                 / pta.getCgb().getReceiverToSitesMap().size()));
-    if (CoreConfig.v().getOutConfig().dumpStats) {
+    if (pta.getConfig().isDumpStats()) {
       exporter.dumpReachableMethods(reachableMethods);
       exporter.dumpAppReachableMethods(reachableAppMethods);
       exporter.dumpInsensCallGraph(pta.getCallGraph());

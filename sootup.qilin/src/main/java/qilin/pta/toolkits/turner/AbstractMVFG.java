@@ -20,12 +20,11 @@ package qilin.pta.toolkits.turner;
 
 import java.util.*;
 import qilin.core.PTA;
-import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.Pair;
 import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
@@ -124,9 +123,9 @@ public abstract class AbstractMVFG {
     MethodPAG srcmpag = pag.getMethodPAG(method);
     MethodNodeFactory srcnf = srcmpag.nodeFactory();
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
-    QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+    QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
     while (reader.hasNext()) {
-      Node from = reader.next(), to = reader.next();
+      PagNode from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
         if (to instanceof LocalVarNode) this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
         else if (to instanceof FieldRefNode) {
@@ -151,7 +150,7 @@ public abstract class AbstractMVFG {
         .getExceptionEdges()
         .forEach(
             (k, vs) -> {
-              for (Node v : vs) {
+              for (PagNode v : vs) {
                 this.addAssignEdge((LocalVarNode) k, (LocalVarNode) v);
               }
             });
@@ -193,7 +192,7 @@ public abstract class AbstractMVFG {
         for (int i = 0; i < numArgs; i++) {
           if (args[i] == null) continue;
           ValNode argNode = pag.findValNode(args[i], method);
-          if (argNode instanceof LocalVarNode && satisfyAddingStoreCondition(i, targets)) {
+          if (argNode instanceof LocalVarNode && satisfyAddingStoreConditionForParam(i, targets)) {
             this.addStoreEdge((LocalVarNode) argNode, receiver);
           }
         }
@@ -206,7 +205,7 @@ public abstract class AbstractMVFG {
           LocalVarNode stmtThrowNode = srcnf.makeInvokeStmtThrowVarNode(s, method);
           this.addLoadEdge(receiver, stmtThrowNode);
         }
-        if (satisfyAddingStoreCondition(PointsToAnalysis.THIS_NODE, targets)) {
+        if (satisfyAddingStoreConditionForThis(targets)) {
           this.addStoreEdge(receiver, receiver);
         }
       }
@@ -229,10 +228,7 @@ public abstract class AbstractMVFG {
       addStoreEdge(mret, thisRef);
     }
     LocalVarNode mThrow =
-        pag.findLocalVarNode(
-            method,
-            new Parm(method, PointsToAnalysis.THROW_NODE),
-            PTAUtils.getClassType("java.lang.Exception"));
+        pag.findLocalVarNode(method, MethodParameter.ofThrow(method), JavaTypes.EXCEPTION);
     if (mThrow != null) {
       addStoreEdge(mThrow, thisRef);
     }
@@ -240,7 +236,10 @@ public abstract class AbstractMVFG {
 
   protected abstract boolean statisfyAddingLoadCondition(Set<SootMethod> targets);
 
-  protected abstract boolean satisfyAddingStoreCondition(int paramIndex, Set<SootMethod> targets);
+  protected abstract boolean satisfyAddingStoreConditionForThis(Set<SootMethod> targets);
+
+  protected abstract boolean satisfyAddingStoreConditionForParam(
+      int paramIndex, Set<SootMethod> targets);
 
   /*
    * Algorithm1: x \in R(flow) \cap R(iflow).
@@ -278,8 +277,8 @@ public abstract class AbstractMVFG {
     // propagate
     while (!workList.isEmpty()) {
       Pair<Object, DFA.State> pair = workList.poll();
-      Object currNode = pair.getFirst();
-      DFA.State currState = pair.getSecond();
+      Object currNode = pair.first();
+      DFA.State currState = pair.second();
       for (TranEdge e : outEdges.getOrDefault(currNode, Collections.emptySet())) {
         Object target = e.getTarget();
         DFA.TranCond tranCond = e.getTranCond();

@@ -19,7 +19,6 @@
 package qilin.pta.tools;
 
 import qilin.core.PTAScene;
-import qilin.pta.PTAConfig;
 
 /*
  * Many recent pointer analyses are two-staged analyses with a preanalysis and a main analysis.
@@ -39,7 +38,7 @@ public abstract class StagedPTA extends BasePTA {
   protected abstract void preAnalysis();
 
   protected void mainAnalysis() {
-    if (!PTAConfig.v().getPtaConfig().preAnalysisOnly) {
+    if (!getConfig().isPreAnalysisOnly()) {
       System.out.println("selective pta starts!");
       super.run();
     }

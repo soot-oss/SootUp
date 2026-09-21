@@ -18,11 +18,10 @@
 
 package qilin.core.pag;
 
-import qilin.CoreConfig;
 import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
 
@@ -30,22 +29,22 @@ public class ContextField extends ValNode {
   protected Context context;
   protected SparkField field;
 
-  public ContextField(Context context, SparkField field) {
-    super(refineFieldType(context, field));
+  public ContextField(Context context, SparkField field, boolean preciseArrayElement) {
+    super(refineFieldType(context, field, preciseArrayElement));
     this.context = context;
     this.field = field;
   }
 
-  private static Type refineFieldType(Context context, SparkField field) {
-    if (!CoreConfig.v().getPtaConfig().preciseArrayElement) {
-      return PTAUtils.getClassType("java.lang.Object");
+  private static Type refineFieldType(
+      Context context, SparkField field, boolean preciseArrayElement) {
+    if (!preciseArrayElement) {
+      return JavaTypes.OBJECT;
     }
     if (field instanceof ArrayElement) {
       ContextElement[] contextElements = ((ContextElements) context).getElements();
       if (contextElements.length > 0) {
         Type baseHeapType = ((AllocNode) ((ContextElements) context).getElements()[0]).getType();
-        if (baseHeapType instanceof ArrayType) {
-          ArrayType arrayType = (ArrayType) baseHeapType;
+        if (baseHeapType instanceof ArrayType arrayType) {
           return arrayType.getElementType();
         } else {
           throw new RuntimeException(baseHeapType + " is not an array type.");
@@ -64,7 +63,7 @@ public class ContextField extends ValNode {
 
   public boolean hasBase() {
     ContextElements ctxs = (ContextElements) context;
-    return ctxs.size() > 0;
+    return !ctxs.isEmpty();
   }
 
   public AllocNode getBase() {

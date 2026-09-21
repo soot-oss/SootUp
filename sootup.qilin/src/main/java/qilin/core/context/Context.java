@@ -21,6 +21,7 @@ package qilin.core.context;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+// Retained (mostly) verbatim from Soot/Spark; part of qilin's ported pointer-analysis core.
 
 /**
  * A context in a context-sensitive all graph. May be a unit (in a 1CFA call graph) or a Spark

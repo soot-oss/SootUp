@@ -23,10 +23,10 @@ import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
-import qilin.parm.ctxcons.CtxConstructor;
+import qilin.parm.contextconstruction.ContextConstructor;
 import sootup.core.model.SootMethod;
 
-public class DebloatingSelector extends CtxSelector {
+public class DebloatingSelector extends ContextSelector {
 
   protected final Set<Object> ctxDepHeaps;
 
@@ -55,7 +55,7 @@ public class DebloatingSelector extends CtxSelector {
     if (ctxDepHeaps.contains(ir)) {
       return context;
     } else {
-      return CtxConstructor.emptyContext;
+      return ContextConstructor.emptyContext;
     }
   }
 }
