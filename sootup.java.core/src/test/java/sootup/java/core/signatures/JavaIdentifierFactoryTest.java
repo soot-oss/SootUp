@@ -30,7 +30,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.java.core.JavaIdentifierFactory;
@@ -342,5 +344,38 @@ public class JavaIdentifierFactoryTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr));
+  }
+
+  /**
+   * Reproduces failure when parsing quoted Jimple keyword method and field signatures:
+   *
+   * <p>Subject pattern: Java or Kotlin classes with method/field names that match Jimple reserved
+   * keywords: public class Test { public long from() { return 0; } public long to() { return 1; }
+   * public int default; }
+   *
+   * <p>1. Printed signatures must quote reserved keywords (e.g. long 'from'(), int 'default') so
+   * that Jimple parser does not treat them as syntax tokens. 2. When parsed by
+   * JavaIdentifierFactory, quotes must be unescaped so getName() returns "from", "to", and
+   * "default", matching the declared class member identifiers.
+   */
+  @Test
+  public void testParseQuotedKeywordMethodAndFieldSignatures() {
+    MethodSubSignature subSig = identifierFactory.parseMethodSubSignature("long 'from'()");
+    assertEquals("from", subSig.getName());
+    assertEquals("long 'from'()", subSig.toString());
+
+    MethodSignature methodSig =
+        identifierFactory.parseMethodSignature("<com.example.Test: long 'to'()>");
+    assertEquals("to", methodSig.getName());
+    assertEquals("<com.example.Test: long 'to'()>", methodSig.toString());
+
+    FieldSubSignature fieldSubSig = identifierFactory.parseFieldSubSignature("int 'default'");
+    assertEquals("default", fieldSubSig.getName());
+    assertEquals("int 'default'", fieldSubSig.toString());
+
+    FieldSignature fieldSig =
+        identifierFactory.parseFieldSignature("<com.example.Test: int 'default'>");
+    assertEquals("default", fieldSig.getName());
+    assertEquals("<com.example.Test: int 'default'>", fieldSig.toString());
   }
 }

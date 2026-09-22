@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.ClassUtils;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
@@ -370,7 +371,12 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     }
 
     String className = matcher.group("class").trim();
-    String methodName = matcher.group("method").trim();
+    // Unescape quotes from parsed method name.
+    // Reserved Jimple keyword names (e.g. 'from', 'to', 'default') are printed with single quotes
+    // in signatures to satisfy Jimple grammar. When parsing back into a MethodSignature, the quotes
+    // must be stripped so that getName() returns the actual member name ("from") matching class
+    // declarations.
+    String methodName = JimpleUtils.unescape(matcher.group("method").trim());
     String returnName = matcher.group("return").trim();
 
     if (className.isEmpty() || methodName.isEmpty() || returnName.isEmpty()) {
@@ -466,7 +472,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       }
     }
 
-    String methodName = matcher.group("method").trim();
+    String methodName = JimpleUtils.unescape(matcher.group("method").trim());
     String returnName = matcher.group("return").trim();
 
     if (methodName.isEmpty() || returnName.isEmpty()) {
@@ -548,7 +554,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     }
 
     String className = matcher.group("class").trim();
-    String fieldName = matcher.group("field").trim();
+    String fieldName = JimpleUtils.unescape(matcher.group("field").trim());
     String typeName = matcher.group("type").trim();
 
     if (className.isEmpty() || fieldName.isEmpty() || typeName.isEmpty()) {
@@ -628,7 +634,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       }
     }
 
-    String fieldName = matcher.group("field").trim();
+    String fieldName = JimpleUtils.unescape(matcher.group("field").trim());
     String typeName = matcher.group("type").trim();
 
     if (fieldName.isEmpty() || typeName.isEmpty()) {
