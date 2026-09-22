@@ -25,6 +25,7 @@ package sootup.apk.frontend.instruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import sootup.apk.frontend.Util.DexUtil;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.LValue;
@@ -47,13 +48,14 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
     super(instruction, codeAddress);
   }
 
-  private JFieldRef getSootFieldRef(FieldReference fieldReference, boolean isStatic) {
+  private JFieldRef getSootFieldRef(
+      FieldReference fieldReference, boolean isStatic, IdentifierFactory identifierFactory) {
     String className = DexUtil.dottedClassName(fieldReference.getDefiningClass());
     FieldSignature fieldSignature =
-        new FieldSignature(
-            DexUtil.getClassTypeFromClassName(className),
+        identifierFactory.getFieldSignature(
             fieldReference.getName(),
-            DexUtil.toSootType(fieldReference.getType(), 0));
+            DexUtil.getClassTypeFromClassName(className, identifierFactory),
+            DexUtil.toSootType(fieldReference.getType(), 0, identifierFactory));
     if (isStatic) {
       return new JStaticFieldRef(fieldSignature);
     } else {
@@ -68,20 +70,23 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
    * Return a static SootFieldRef for a dexlib FieldReference.
    *
    * @param fref the dexlib FieldReference.
+   * @param identifierFactory the factory that creates the field signature
    * @return the JFieldRef for the given field Reference
    */
-  protected JFieldRef getStaticSootFieldRef(FieldReference fref) {
-    return getSootFieldRef(fref, true);
+  protected JFieldRef getStaticSootFieldRef(
+      FieldReference fref, IdentifierFactory identifierFactory) {
+    return getSootFieldRef(fref, true, identifierFactory);
   }
 
   /**
    * Return a SootFieldRef for a dexlib FieldReference.
    *
-   * @return the JFieldRef for the given field Reference
    * @param fref the dexlib FieldReference.
+   * @param identifierFactory the factory that creates the field signature
+   * @return the JFieldRef for the given field Reference
    */
-  protected JFieldRef getSootFieldRef(FieldReference fref) {
-    return getSootFieldRef(fref, false);
+  protected JFieldRef getSootFieldRef(FieldReference fref, IdentifierFactory identifierFactory) {
+    return getSootFieldRef(fref, false, identifierFactory);
   }
 
   /**

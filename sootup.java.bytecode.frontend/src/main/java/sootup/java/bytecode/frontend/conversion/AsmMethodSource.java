@@ -157,7 +157,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     lazyMethodSignature =
         Suppliers.memoize(
             () -> {
-              List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(desc);
+              List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(desc, identifierFactory);
               Type retType = sigTypes.remove(sigTypes.size() - 1);
 
               return identifierFactory.getMethodSignature(declaringClass, name, retType, sigTypes);
@@ -279,7 +279,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private Object resolveAnnotationsInDefaultValue(Object a) {
     if (a instanceof AnnotationNode) {
-      return AsmUtil.createAnnotationUsage((AnnotationNode) a);
+      return AsmUtil.createAnnotationUsage((AnnotationNode) a, identifierFactory);
     }
 
     if (a instanceof ArrayList) {
@@ -287,7 +287,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       ((ArrayList<?>) a).forEach(e -> list.add(resolveAnnotationsInDefaultValue(e)));
       return list;
     }
-    return AsmUtil.convertAnnotationValue(a);
+    return AsmUtil.convertAnnotationValue(a, identifierFactory);
   }
 
   @NonNull
@@ -421,7 +421,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
     for (LocalVariableAnnotationNode node : nodes) {
       // Note: node.typePath (nested-type position) is not represented by AnnotationUsage.
-      AnnotationUsage usage = AsmUtil.createAnnotationUsage(node);
+      AnnotationUsage usage = AsmUtil.createAnnotationUsage(node, identifierFactory);
       // index/start/end are parallel lists: entry k is one scope range for the annotation.
       for (int k = 0; k < node.index.size(); k++) {
         int startIdx = insnIndex(node.start.get(k));
@@ -522,7 +522,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private void convertGetFieldInsn(@NonNull FieldInsnNode insn) {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
-    Type type = AsmUtil.toJimpleType(insn.desc);
+    Type type = AsmUtil.toJimpleType(insn.desc, identifierFactory);
     JavaClassType declClass = identifierFactory.getClassType(AsmUtil.toQualifiedName(insn.owner));
     FieldSignature ref;
     JFieldRef val;
@@ -545,7 +545,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     boolean notInstance = insn.getOpcode() != PUTFIELD;
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     JavaClassType declClass = identifierFactory.getClassType(AsmUtil.toQualifiedName(insn.owner));
-    Type type = AsmUtil.toJimpleType(insn.desc);
+    Type type = AsmUtil.toJimpleType(insn.desc, identifierFactory);
 
     Operand rvalue = operandStack.pop(type);
     JFieldRef val;
@@ -970,7 +970,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
       Operand size = operandStack.pop();
       merging.mergeInputs(size);
-      v = JavaJimple.newNewArrayExpr(type, size.toImmediate(), JavaIdentifierFactory.getInstance());
+      v = JavaJimple.newNewArrayExpr(type, size.toImmediate(), identifierFactory);
     }
     Operand opr = new Operand(insn, v, this);
     merging.mergeOutput(opr);
@@ -1090,34 +1090,45 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else if (val instanceof Double) {
       v = DoubleConstant.getInstance((Double) val);
     } else if (val instanceof String) {
-      v = JavaJimple.newStringConstant(val.toString());
+      v = JavaJimple.newStringConstant(val.toString(), identifierFactory);
     } else if (val instanceof org.objectweb.asm.Type) {
       org.objectweb.asm.Type t = (org.objectweb.asm.Type) val;
       if (t.getSort() == org.objectweb.asm.Type.METHOD) {
         List<Type> paramTypes =
-            AsmUtil.toJimpleSignatureDesc(((org.objectweb.asm.Type) val).getDescriptor());
+            AsmUtil.toJimpleSignatureDesc(
+                ((org.objectweb.asm.Type) val).getDescriptor(), identifierFactory);
         Type returnType = paramTypes.remove(paramTypes.size() - 1);
-        v = JavaJimple.newMethodType(paramTypes, returnType);
+        v = JavaJimple.newMethodType(paramTypes, returnType, identifierFactory);
       } else {
-        v = JavaJimple.newClassConstant(((org.objectweb.asm.Type) val).getDescriptor());
+        v =
+            JavaJimple.newClassConstant(
+                ((org.objectweb.asm.Type) val).getDescriptor(), identifierFactory);
       }
     } else if (val instanceof Handle) {
       Handle h = (Handle) val;
       if (MethodHandle.isMethodRef(h.getTag())) {
-        v = JavaJimple.newMethodHandle(toMethodSignature((Handle) val), ((Handle) val).getTag());
+        v =
+            JavaJimple.newMethodHandle(
+                toMethodSignature((Handle) val), ((Handle) val).getTag(), identifierFactory);
       } else {
-        v = JavaJimple.newMethodHandle(toSootFieldSignature((Handle) val), ((Handle) val).getTag());
+        v =
+            JavaJimple.newMethodHandle(
+                toSootFieldSignature((Handle) val), ((Handle) val).getTag(), identifierFactory);
       }
     } else if (val instanceof ConstantDynamic) {
       ConstantDynamic cd = (ConstantDynamic) val;
       if (MethodHandle.isMethodRef(cd.getBootstrapMethod().getTag())) {
         v =
             JavaJimple.newMethodHandle(
-                toMethodSignature(cd.getBootstrapMethod()), cd.getBootstrapMethod().getTag());
+                toMethodSignature(cd.getBootstrapMethod()),
+                cd.getBootstrapMethod().getTag(),
+                identifierFactory);
       } else {
         v =
             JavaJimple.newMethodHandle(
-                toSootFieldSignature(cd.getBootstrapMethod()), cd.getBootstrapMethod().getTag());
+                toSootFieldSignature(cd.getBootstrapMethod()),
+                cd.getBootstrapMethod().getTag(),
+                identifierFactory);
       }
     } else {
       throw new UnsupportedOperationException("Unknown constant type: " + val.getClass());
@@ -1128,7 +1139,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private JFieldRef toSootFieldRef(Handle methodHandle) {
     String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
     JavaClassType bsmCls = identifierFactory.getClassType(bsmClsName);
-    Type t = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc()).get(0);
+    Type t = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc(), identifierFactory).get(0);
     int kind = methodHandle.getTag();
     FieldSignature fieldSignature =
         identifierFactory.getFieldSignature(methodHandle.getName(), bsmCls, t);
@@ -1144,14 +1155,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private FieldSignature toSootFieldSignature(Handle methodHandle) {
     String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
     JavaClassType bsmCls = identifierFactory.getClassType(bsmClsName);
-    Type t = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc()).get(0);
+    Type t = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc(), identifierFactory).get(0);
     return identifierFactory.getFieldSignature(methodHandle.getName(), bsmCls, t);
   }
 
   private MethodSignature toMethodSignature(Handle methodHandle) {
     String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
     JavaClassType bsmCls = identifierFactory.getClassType(bsmClsName);
-    List<Type> bsmSigTypes = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc());
+    List<Type> bsmSigTypes =
+        AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc(), identifierFactory);
     Type returnType = bsmSigTypes.remove(bsmSigTypes.size() - 1);
     return identifierFactory.getMethodSignature(
         bsmCls, methodHandle.getName(), returnType, bsmSigTypes);
@@ -1189,7 +1201,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       clsName = "java.lang.Object";
     }
     JavaClassType cls = identifierFactory.getClassType(AsmUtil.toQualifiedName(clsName));
-    List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(insn.desc);
+    List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(insn.desc, identifierFactory);
     Type returnType = sigTypes.remove((sigTypes.size() - 1));
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(cls, insn.name, returnType, sigTypes);
@@ -1269,7 +1281,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         identifierFactory.getClassType(JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME);
 
     // Generate parameters & returnType & parameterTypes
-    List<Type> types = AsmUtil.toJimpleSignatureDesc(insn.desc);
+    List<Type> types = AsmUtil.toJimpleSignatureDesc(insn.desc, identifierFactory);
     int nrArgs = types.size() - 1;
     Type[] parameterTypes = new Type[nrArgs];
     Immediate[] methodArgs = new Immediate[nrArgs];
@@ -1317,7 +1329,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private void convertMultiANewArrayInsn(@NonNull MultiANewArrayInsnNode insn) {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
-    ArrayType t = (ArrayType) AsmUtil.toJimpleType(insn.desc);
+    ArrayType t = (ArrayType) AsmUtil.toJimpleType(insn.desc, identifierFactory);
     int dims = insn.dims;
     Operand[] sizes = new Operand[dims];
     Immediate[] sizeVals = new Immediate[dims];
@@ -1358,7 +1370,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     Expr val;
     if (op == NEW) {
-      val = Jimple.newNewExpr(AsmUtil.toJimpleClassType(insn.desc));
+      val = Jimple.newNewExpr(AsmUtil.toJimpleClassType(insn.desc, identifierFactory));
     } else {
       Operand op1 = operandStack.pop();
       merging.mergeInputs(op1);
@@ -1367,14 +1379,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           {
             val =
                 JavaJimple.newNewArrayExpr(
-                    AsmUtil.arrayTypetoJimpleType(insn.desc),
+                    AsmUtil.arrayTypetoJimpleType(insn.desc, identifierFactory),
                     op1.toImmediate(),
-                    JavaIdentifierFactory.getInstance());
+                    identifierFactory);
             break;
           }
         case CHECKCAST:
           {
-            val = Jimple.newCastExpr(op1.toImmediate(), AsmUtil.arrayTypetoJimpleType(insn.desc));
+            val =
+                Jimple.newCastExpr(
+                    op1.toImmediate(), AsmUtil.arrayTypetoJimpleType(insn.desc, identifierFactory));
             break;
           }
         case INSTANCEOF:
@@ -1386,7 +1400,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             // corrupting the Jimple AST type hierarchy and subsequent analyses.
             val =
                 Jimple.newInstanceOfExpr(
-                    op1.toImmediate(), AsmUtil.arrayTypetoJimpleType(insn.desc));
+                    op1.toImmediate(), AsmUtil.arrayTypetoJimpleType(insn.desc, identifierFactory));
             break;
           }
         default:
@@ -1485,7 +1499,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     OperandMerging merging = operandStack.getOrCreateMerging(ln);
-    JCaughtExceptionRef ref = JavaJimple.newCaughtExceptionRef();
+    JCaughtExceptionRef ref = JavaJimple.newCaughtExceptionRef(identifierFactory);
     Operand opr = new Operand(ln, ref, this);
     merging.mergeOutput(opr);
     if (opr.stackLocal == null) {
@@ -1563,7 +1577,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     for (LabelNode handlerNode : trapHandler.keySet()) {
       if (inlineExceptionLabels.contains(handlerNode)) {
         // Catch the exception
-        JCaughtExceptionRef ref = JavaJimple.newCaughtExceptionRef();
+        JCaughtExceptionRef ref = JavaJimple.newCaughtExceptionRef(identifierFactory);
         Local local = newStackLocal();
         JIdentityStmt as = Jimple.newIdentityStmt(local, ref, getStmtPositionInfo());
 
@@ -1770,7 +1784,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         out, invisibleTypeAnnotations, TypeReference.METHOD_FORMAL_PARAMETER, formalParameterIndex);
   }
 
-  private static void collectMethodTypeAnnotations(
+  private void collectMethodTypeAnnotations(
       @NonNull List<AnnotationUsage> out,
       List<TypeAnnotationNode> nodes,
       int sort,
@@ -1789,7 +1803,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
       // Note: node.typePath (the position of the annotation within a nested/generic type) is not
       // represented by AnnotationUsage; the annotation is attached to the parameter/return target.
-      out.add(AsmUtil.createAnnotationUsage(node));
+      out.add(AsmUtil.createAnnotationUsage(node, identifierFactory));
     }
   }
 
@@ -1821,11 +1835,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // METHOD_FORMAL_PARAMETER target) and attach all of them to the parameter Local.
       List<AnnotationUsage> parameterAnnotations = new ArrayList<>();
       if (visibleParameterAnnotations != null) {
-        AsmUtil.createAnnotationUsage(visibleParameterAnnotations[i])
+        AsmUtil.createAnnotationUsage(visibleParameterAnnotations[i], identifierFactory)
             .forEach(parameterAnnotations::add);
       }
       if (invisibleParameterAnnotations != null) {
-        AsmUtil.createAnnotationUsage(invisibleParameterAnnotations[i])
+        AsmUtil.createAnnotationUsage(invisibleParameterAnnotations[i], identifierFactory)
             .forEach(parameterAnnotations::add);
       }
       collectFormalParameterTypeAnnotations(parameterAnnotations, i);

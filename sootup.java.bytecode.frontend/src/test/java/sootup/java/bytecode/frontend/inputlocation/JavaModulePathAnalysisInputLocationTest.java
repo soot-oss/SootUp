@@ -35,7 +35,7 @@ public class JavaModulePathAnalysisInputLocationTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
 
@@ -55,7 +55,7 @@ public class JavaModulePathAnalysisInputLocationTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     JavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
 
@@ -75,11 +75,9 @@ public class JavaModulePathAnalysisInputLocationTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModulePackageName modMain =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
-    ModulePackageName modB =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
-    ModulePackageName modC =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgc", "modc");
+        new JavaModuleIdentifierFactory().getPackageName("pkgmain", "modmain");
+    ModulePackageName modB = new JavaModuleIdentifierFactory().getPackageName("pkgb", "modb");
+    ModulePackageName modC = new JavaModuleIdentifierFactory().getPackageName("pkgc", "modc");
 
     Optional<JavaModuleInfo> moduleInfoMain = view.getModuleInfo(modMain.getModuleSignature());
     assertTrue(moduleInfoMain.isPresent());
@@ -101,7 +99,7 @@ public class JavaModulePathAnalysisInputLocationTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     final ClassType sig =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("String", "java.lang", "java.base");
 
     final Optional<? extends SootClassSource> clazzOpt = inputLocation.getClassSource(sig, view);
     assertTrue(clazzOpt.isPresent());

@@ -115,7 +115,7 @@ public class ApkToDexTest {
             .filter(javaSootMethod -> javaSootMethod.getName().equals(interestedMethodName))
             .toList();
     assert abstractMethods.size() == 1;
-    Type sootType = DexUtil.toSootType("Ljava/lang/CharSequence;", 0);
+    Type sootType = DexUtil.toSootType("Ljava/lang/CharSequence;", 0, view.getIdentifierFactory());
     Type paramType = abstractMethods.get(0).getParameterTypes().get(0);
     assert paramType.equals(sootType);
   }

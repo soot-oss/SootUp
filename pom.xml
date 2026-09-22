@@ -88,6 +88,10 @@
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <!-- Test JVM knobs, overridable on machines with less memory than CI,
+             e.g. -Dsurefire.threadCount=1 -Dsurefire.maxHeap=3072M -->
+        <surefire.maxHeap>8192M</surefire.maxHeap>
+        <surefire.threadCount>4</surefire.threadCount>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
         <reactorRootsTarget>${basedir}/target</reactorRootsTarget>
         <junit.version>6.1.3</junit.version>
@@ -313,10 +317,19 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
-                    <argLine>-Xmx8192M ${surefireArgLine}</argLine>
+                    <argLine>-Xmx${surefire.maxHeap} ${surefireArgLine}</argLine>
                     <trimStackTrace>false</trimStackTrace>
-                    <parallel>all</parallel>
-                    <useUnlimitedThreads>true</useUnlimitedThreads>
+                    <!-- Parallelise whole test classes only. "all" additionally ran the methods of
+                         a single class concurrently, which requires every test class to be thread
+                         safe within itself; combined with unlimited threads it started as many
+                         threads as there were test classes, so the peak memory of a run was
+                         bounded by nothing but the size of the suite. Both knobs are properties so
+                         a machine with less memory than CI can dial them down without editing this
+                         file, e.g. -Dsurefire.threadCount=1 -Dsurefire.maxHeap=3072M -->
+                    <parallel>classes</parallel>
+                    <useUnlimitedThreads>false</useUnlimitedThreads>
+                    <threadCount>${surefire.threadCount}</threadCount>
+                    <perCoreThreadCount>false</perCoreThreadCount>
                 </configuration>
             </plugin>
             <plugin>

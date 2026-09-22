@@ -57,7 +57,7 @@ public class UnusedLocalEliminatorTest {
 
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
+        new JavaIdentifierFactory()
             .getMethodSignature("com.example.Test", "foo", "void", Collections.emptyList()));
     builder.setLocals(initialLocals);
 
@@ -92,7 +92,7 @@ public class UnusedLocalEliminatorTest {
 
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
+        new JavaIdentifierFactory()
             .getMethodSignature("com.example.Test", "bar", "void", Collections.emptyList()));
     builder.setLocals(initialLocals);
 

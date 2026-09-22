@@ -67,7 +67,7 @@ class LocalLivenessAnalyserTest {
 
   @Test
   void propagatesLivenessAcrossExceptionalEdges() {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
     var objectType = factory.getClassType("java.lang.Object");
     var throwableType = factory.getClassType("java.lang.Throwable");
     var sourceType = factory.getClassType("example.Source");
@@ -75,12 +75,12 @@ class LocalLivenessAnalyserTest {
     Local caught = JavaJimple.newLocal("caught", throwableType);
 
     MethodSignature read =
-        new MethodSignature(sourceType, "read", Collections.emptyList(), objectType);
+        factory.getMethodSignature(sourceType, "read", objectType, Collections.emptyList());
     var throwingStmt =
         JavaJimple.newAssignStmt(value, Jimple.newStaticInvokeExpr(read), NO_POSITION);
     var normalReturn = JavaJimple.newReturnVoidStmt(NO_POSITION);
     var handler =
-        JavaJimple.newIdentityStmt(caught, JavaJimple.newCaughtExceptionRef(), NO_POSITION);
+        JavaJimple.newIdentityStmt(caught, JavaJimple.newCaughtExceptionRef(factory), NO_POSITION);
     var exceptionalReturn = JavaJimple.newReturnStmt(value, NO_POSITION);
 
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();

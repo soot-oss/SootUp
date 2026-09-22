@@ -12,7 +12,6 @@ import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.spark.PAGEdge;
 import sootup.spark.PAGVisualizer;
@@ -26,15 +25,15 @@ import sootup.spark.node.VariableNode;
 @UtilityClass
 public class SparkTestUtil {
 
-  public static final JavaIdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
+  public static final JavaIdentifierFactory idFactory = new JavaIdentifierFactory();
   public static final JavaView view =
       new JavaView(new JavaClassPathAnalysisInputLocation("src/test/resources/pta/binary"));
   public static final MethodSignature GLOBAL_SCOPE =
-      new MethodSignature(
-          new JavaClassType("GLOBAL", new PackageName("sootup.global")),
+      idFactory.getMethodSignature(
+          idFactory.getClassType("GLOBAL", "sootup.global"),
           "GLOBAL_SCOPE",
-          Collections.emptyList(),
-          VoidType.getInstance());
+          VoidType.getInstance(),
+          Collections.emptyList());
 
   public static ClassType simpleType(String name) {
     return new ClassType() {
@@ -50,7 +49,7 @@ public class SparkTestUtil {
 
       @Override
       public PackageName getPackageName() {
-        return new PackageName("");
+        return new JavaIdentifierFactory().getPackageName("");
       }
     };
   }
