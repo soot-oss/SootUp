@@ -1090,6 +1090,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#version-302" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version 3.0.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#version-130" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1221,6 +1232,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#version-302" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version 3.0.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#version-130" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1274,6 +1296,21 @@
 
 
 <h1 id="migration-help">Migration Help</h1>
+<h3 id="version-302">Version 3.0.2</h3>
+<ul>
+<li>Identifiers are hash-consed: the <code>IdentifierFactory</code> hands out the same instance for equal <code>ClassType</code>s, <code>MethodSignature</code>s, <code>FieldSignature</code>s, their sub signatures and <code>PackageName</code>s. They can therefore be compared with <code>==</code> and used as keys of an <code>IdentityHashMap</code>.</li>
+<li>As a consequence the constructors of these classes are not public anymore. Obtain them from the <code>IdentifierFactory</code> of the <code>View</code> that the identifiers are used with:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">classType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"example.HelloWorld"</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div></li>
+<li><code>JavaIdentifierFactory.getInstance()</code> and <code>JavaModuleIdentifierFactory.getInstance()</code> were removed - the factory belongs to a <code>View</code> now. Use <code>view.getIdentifierFactory()</code>; if there is no <code>View</code> at hand (e.g. while setting one up), instantiate it with <code>new JavaIdentifierFactory()</code>.</li>
+<li><code>JavaModuleIdentifierFactory.getInstance(module)</code> was replaced by the instance method <code>forModule(module)</code>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaModuleIdentifierFactory</span><span class="w"> </span><span class="n">factory</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="p">(</span><span class="n">JavaModuleIdentifierFactory</span><span class="p">)</span><span class="w"> </span><span class="n">moduleView</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">();</span>
+<span class="n">JavaModuleIdentifierFactory</span><span class="w"> </span><span class="n">factoryOfModule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factory</span><span class="p">.</span><span class="na">forModule</span><span class="p">(</span><span class="s">"mymodule"</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div></li>
+</ul>
 <h3 id="version-130">Version 1.3.0</h3>
 <ul>
 <li>The Typehierarchy API is now returning <code>Stream&lt;ClassType&gt;</code> instead of <code>Collection&lt;ClassType&gt;</code>. The simplest fix to have the same behaviour as before would be to collect the Stream on your own ( e.g. via <code>.collect(Collectors.toList())</code> ).</li>
