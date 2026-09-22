@@ -1393,9 +1393,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           }
         case INSTANCEOF:
           {
+            // In bytecode, the descriptor for an instanceof check can be an array type (e.g. "[B",
+            // "[[I", "[Ljava/lang/Object;").
+            // Using toJimpleClassType incorrectly treats "[B" as a class name rather than an
+            // ArrayType with dimension and base type,
+            // corrupting the Jimple AST type hierarchy and subsequent analyses.
             val =
                 Jimple.newInstanceOfExpr(
-                    op1.toImmediate(), AsmUtil.toJimpleClassType(insn.desc, identifierFactory));
+                    op1.toImmediate(), AsmUtil.arrayTypetoJimpleType(insn.desc, identifierFactory));
             break;
           }
         default:

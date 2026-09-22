@@ -41,6 +41,12 @@ public class ConstantUtil {
     if (obj instanceof Boolean) {
       return BooleanConstant.getInstance((Boolean) obj);
     }
+    if (obj instanceof Byte) {
+      return IntConstant.getInstance(((Byte) obj).intValue());
+    }
+    if (obj instanceof Character) {
+      return IntConstant.getInstance((Character) obj);
+    }
     if (obj instanceof Float) {
       return FloatConstant.getInstance((Float) obj);
     }
@@ -73,6 +79,7 @@ public class ConstantUtil {
     }
     // TODO: [bh] implement MethodHandle, MethodType?
 
-    throw new IllegalArgumentException("cannot convert Object to (Soot-)Constant.");
+    throw new IllegalArgumentException(
+        "cannot convert Object to (Soot-)Constant: " + obj.getClass());
   }
 }

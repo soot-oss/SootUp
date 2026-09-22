@@ -53,7 +53,8 @@ public class FieldSubSignature extends SootClassMemberSubSignature
   }
 
   private final Supplier<String> _cachedToString =
-      Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));
+      Suppliers.memoize(
+          () -> String.format("%s %s", getType(), JimpleUtils.quotedNameOf(getName())));
 
   @Override
   @NonNull
@@ -65,6 +66,6 @@ public class FieldSubSignature extends SootClassMemberSubSignature
   public void toString(StmtPrinter printer) {
     printer.typeSignature(getType());
     printer.literal(" ");
-    printer.literal(JimpleUtils.escape(getName()));
+    printer.literal(JimpleUtils.quotedNameOf(getName()));
   }
 }
