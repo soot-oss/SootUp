@@ -1,8 +1,8 @@
 package sootup.interceptors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Duration;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockControlFlowGraph;
@@ -10,7 +10,10 @@ import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.expr.JEqExpr;
 import sootup.core.jimple.common.stmt.JIfStmt;
+import sootup.core.jimple.common.stmt.JNopStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.PrimitiveType;
 import sootup.java.core.JavaIdentifierFactory;
@@ -96,5 +99,65 @@ class LocalLivenessAnalyserTest {
     LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(graph);
     assertEquals(Collections.singleton(value), analyser.getLiveLocalsAfterStmt(throwingStmt));
     assertEquals(Collections.singleton(value), analyser.getLiveLocalsBeforeStmt(exceptionalReturn));
+  }
+
+  /**
+   * Reproduces the exponential worklist path explosion bug.
+   *
+   * <p>Subject pattern: A method containing sequential if-else diamond merge points (e.g. 42
+   * sequential conditions, matching patterns found in Kotlin data class copy() methods or UI
+   * builders).
+   *
+   * <p>Under naive queueing, each merge point unconditionally enqueued predecessors, multiplying
+   * queue entries by 2^N. With N=42, 2^42 queue operations resulted in thread hangs and OOM.
+   *
+   * <p>With the worklist membership set and delta-gated propagation, this completes in
+   * milliseconds.
+   */
+  @Test
+  void handlesFortyTwoSequentialDiamondsWithoutWorklistExplosion() {
+    Local condition = JavaJimple.newLocal("condition", PrimitiveType.IntType.getInstance());
+    var returnStmt = JavaJimple.newReturnVoidStmt(NO_POSITION);
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+
+    Stmt next = returnStmt;
+    for (int i = 0; i < 42; i++) {
+      var branch = new JIfStmt(new JEqExpr(condition, IntConstant.getInstance(i)), NO_POSITION);
+      var truePath = new JNopStmt(NO_POSITION);
+      var merge = new JNopStmt(NO_POSITION);
+      graph.putEdge(branch, JIfStmt.FALSE_BRANCH_IDX, merge);
+      graph.putEdge(branch, JIfStmt.TRUE_BRANCH_IDX, truePath);
+      graph.putEdge(truePath, merge);
+      graph.putEdge(merge, next);
+      next = branch;
+    }
+    graph.setStartingStmt(next);
+
+    LocalLivenessAnalyser analyser =
+        assertTimeoutPreemptively(Duration.ofSeconds(2), () -> new LocalLivenessAnalyser(graph));
+
+    assertEquals(Collections.singleton(condition), analyser.getLiveLocalsBeforeStmt(next));
+    assertTrue(analyser.getLiveLocalsAfterStmt(returnStmt).isEmpty());
+  }
+
+  @Test
+  void analyzesAnExitlessDisconnectedComponent() {
+    Local value = JavaJimple.newLocal("value", PrimitiveType.IntType.getInstance());
+    var entry = JavaJimple.newReturnVoidStmt(NO_POSITION);
+    var increment =
+        JavaJimple.newAssignStmt(
+            value, JavaJimple.newAddExpr(value, IntConstant.getInstance(1)), NO_POSITION);
+    var loop = JavaJimple.newGotoStmt(NO_POSITION);
+
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+    graph.addNode(entry);
+    graph.putEdge(increment, loop);
+    graph.putEdge(loop, 0, increment);
+    graph.setStartingStmt(entry);
+
+    LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(graph);
+
+    assertEquals(Collections.singleton(value), analyser.getLiveLocalsBeforeStmt(increment));
+    assertEquals(Collections.singleton(value), analyser.getLiveLocalsAfterStmt(loop));
   }
 }
