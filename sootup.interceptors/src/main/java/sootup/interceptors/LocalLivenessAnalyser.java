@@ -62,16 +62,23 @@ public class LocalLivenessAnalyser {
         Stmt stmt = queue.removeFirst();
         visitedStmts.add(stmt);
 
-        Set<Local> out = new HashSet<>(liveOut.get(stmt));
+        // Compute OUT[stmt] by taking a fresh union of successors' liveIn sets.
+        Set<Local> out = new HashSet<>();
         for (Stmt succ : graph.successors(stmt)) {
-          out = merge(out, liveIn.get(succ));
+          Set<Local> succIn = liveIn.get(succ);
+          if (succIn != null) {
+            out.addAll(succIn);
+          }
         }
         for (Stmt esucc : graph.exceptionalSuccessors(stmt).values()) {
-          out = merge(out, liveIn.get(esucc));
+          Set<Local> esuccIn = liveIn.get(esucc);
+          if (esuccIn != null) {
+            out.addAll(esuccIn);
+          }
         }
         if (isNotEqual(out, liveOut.get(stmt))) {
           fixed = false;
-          liveOut.put(stmt, new HashSet<>(out));
+          liveOut.put(stmt, out);
         }
 
         Set<Local> in = new HashSet<>();
@@ -81,14 +88,17 @@ public class LocalLivenessAnalyser {
             in.add((Local) use);
           }
         }
+        // Clone OUT into a fresh set before removing DEFs.
+        // This ensures out and succ.liveIn are never mutated in-place when computing (OUT - DEF).
+        Set<Local> outMinusDef = new HashSet<>(out);
         final Optional<LValue> def = stmt.getDef();
         if (def.isPresent()) {
           final Value value = def.get();
           if (value instanceof Local) {
-            out.remove(value);
+            outMinusDef.remove(value);
           }
         }
-        in = merge(in, out);
+        in.addAll(outMinusDef);
         if (isNotEqual(in, liveIn.get(stmt))) {
           fixed = false;
           liveIn.put(stmt, in);
@@ -123,21 +133,6 @@ public class LocalLivenessAnalyser {
       throw new RuntimeException("Stmt: " + stmt + " is not in ControlFlowGraph!");
     }
     return liveOut.get(stmt);
-  }
-
-  /**
-   * Merge two local sets into one set.
-   *
-   * @return a merged local set
-   */
-  @NonNull
-  private Set<Local> merge(@NonNull Set<Local> set1, @NonNull Set<Local> set2) {
-    if (set1.isEmpty()) {
-      return set2;
-    } else {
-      set1.addAll(set2);
-      return set1;
-    }
   }
 
   /**
