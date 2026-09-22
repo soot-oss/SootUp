@@ -185,7 +185,13 @@ public final class AsmUtil {
     };
   }
 
-  /** Converts n types contained in desc to a list of Jimple Types */
+  /**
+   * Converts n types contained in desc to a list of Jimple Types
+   *
+   * @param desc the bytecode descriptor holding the types
+   * @param identifierFactory the factory that creates the reference types
+   * @return the converted types in the order they occur in {@code desc}
+   */
   @NonNull
   public static List<Type> toJimpleSignatureDesc(
       @NonNull String desc, @NonNull IdentifierFactory identifierFactory) {

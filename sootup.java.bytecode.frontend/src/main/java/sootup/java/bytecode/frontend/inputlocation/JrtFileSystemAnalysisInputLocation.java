@@ -192,6 +192,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   /**
    * Discover and return all modules contained in the jrt filesystem.
    *
+   * @param identifierFactory the factory that creates the module signatures
    * @return Collection of found module names.
    */
   @NonNull

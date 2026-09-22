@@ -139,6 +139,7 @@ public class ModuleFinder {
    * Returns the input location that manages the module.
    *
    * @param moduleName the module name
+   * @param identifierFactory the factory that creates the signatures of discovered modules
    * @return the input location that resolves classes contained in the module
    */
   @Nullable
@@ -165,6 +166,7 @@ public class ModuleFinder {
   /**
    * Discover all modules in the module path.
    *
+   * @param identifierFactory the factory that creates the signatures of discovered modules
    * @return the names of all modules found
    */
   @NonNull

@@ -59,6 +59,10 @@ public class JavaClassType extends ClassType {
   /**
    * Returns the unique {@link JavaClassType} for the given class and package, so that equal class
    * types are the same instance and may be compared with {@code ==}.
+   *
+   * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
+   * @param packageName the package the class is contained in
+   * @return the hash-consed class type for {@code packageName.className}
    */
   @NonNull
   public static JavaClassType of(
@@ -72,6 +76,9 @@ public class JavaClassType extends ClassType {
    * <p>Prefer {@link sootup.core.IdentifierFactory#getClassType(String)} obtained from a {@link
    * sootup.core.views.View}; this overload exists for the few well-known JDK types that are needed
    * as {@code static final} constants, where no view is available.
+   *
+   * @param fullyQualifiedClassName the fully-qualified class name, e.g., my.package.ClassA
+   * @return the hash-consed class type for the given name
    */
   @NonNull
   public static JavaClassType of(@NonNull final String fullyQualifiedClassName) {
@@ -83,6 +90,10 @@ public class JavaClassType extends ClassType {
   /**
    * Interns an already constructed class type. Subclasses construct themselves and pass the result
    * through here so that they share the interning invariant.
+   *
+   * @param <T> the concrete class type that is interned
+   * @param classType the freshly constructed class type
+   * @return the canonical instance that is equal to {@code classType}
    */
   @NonNull
   protected static <T extends JavaClassType> T intern(@NonNull T classType) {

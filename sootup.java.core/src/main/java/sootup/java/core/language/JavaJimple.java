@@ -59,7 +59,12 @@ public class JavaJimple extends Jimple {
     return new JavaLocal(name, t, annotations);
   }
 
-  /** Constructs a CaughtExceptionRef() grammar chunk. */
+  /**
+   * Constructs a CaughtExceptionRef() grammar chunk.
+   *
+   * @param identifierFactory the factory that provides the {@code java.lang.Throwable} type
+   * @return the created caught exception reference
+   */
   public static JCaughtExceptionRef newCaughtExceptionRef(
       @NonNull IdentifierFactory identifierFactory) {
     return new JCaughtExceptionRef(identifierFactory.getType("java.lang.Throwable"));

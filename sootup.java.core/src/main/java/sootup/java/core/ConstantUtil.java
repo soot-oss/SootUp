@@ -33,7 +33,18 @@ import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.java.core.language.JavaJimple;
 
+/** Converts plain Java objects - e.g. annotation values - into their Jimple {@link Constant}. */
 public class ConstantUtil {
+
+  private ConstantUtil() {}
+
+  /**
+   * Converts the given object into the Jimple constant that represents it.
+   *
+   * @param obj the value to convert, may be {@code null}
+   * @param identifierFactory the factory that provides the types of reference constants
+   * @return the constant representing {@code obj}
+   */
   public static Constant fromObject(Object obj, @NonNull IdentifierFactory identifierFactory) {
     if (obj == null) {
       return NullConstant.getInstance();

@@ -46,6 +46,9 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
    * Returns a view on this factory that resolves class names without an explicit module to {@code
    * module}. The wrappers are cached per factory instance, so they are released together with the
    * {@link sootup.java.core.views.JavaModuleView} this factory belongs to.
+   *
+   * @param module the name of the default module
+   * @return a factory that resolves module-less class names to {@code module}
    */
   @NonNull
   public JavaModuleIdentifierFactory forModule(@NonNull String module) {
@@ -55,6 +58,9 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   /**
    * Returns a view on this factory that resolves class names without an explicit module to {@code
    * moduleSignature}.
+   *
+   * @param moduleSignature the signature of the default module
+   * @return a factory that resolves module-less class names to {@code moduleSignature}
    */
   @NonNull
   public JavaModuleIdentifierFactory forModule(@NonNull ModuleSignature moduleSignature) {

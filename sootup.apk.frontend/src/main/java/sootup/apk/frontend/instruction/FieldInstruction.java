@@ -70,6 +70,7 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
    * Return a static SootFieldRef for a dexlib FieldReference.
    *
    * @param fref the dexlib FieldReference.
+   * @param identifierFactory the factory that creates the field signature
    * @return the JFieldRef for the given field Reference
    */
   protected JFieldRef getStaticSootFieldRef(
@@ -80,8 +81,9 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
   /**
    * Return a SootFieldRef for a dexlib FieldReference.
    *
-   * @return the JFieldRef for the given field Reference
    * @param fref the dexlib FieldReference.
+   * @param identifierFactory the factory that creates the field signature
+   * @return the JFieldRef for the given field Reference
    */
   protected JFieldRef getSootFieldRef(FieldReference fref, IdentifierFactory identifierFactory) {
     return getSootFieldRef(fref, false, identifierFactory);
