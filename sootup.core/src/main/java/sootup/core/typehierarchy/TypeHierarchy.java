@@ -126,9 +126,6 @@ public interface TypeHierarchy {
       return true;
     }
 
-    final String jlObject = "java.lang.Object";
-    final String jiSerializable = "java.io.Serializable";
-    final String jlCloneable = "java.lang.Cloneable";
     if (supertype instanceof ArrayType superArrayType) {
       if (!(potentialSubtype instanceof ArrayType potentialSubArrayType)) {
         return false;
@@ -145,28 +142,19 @@ public interface TypeHierarchy {
           && potentialSubArrayType.getDimension() == superArrayType.getDimension()) {
         // Arrays are covariant: Object[] x = new String[0];
         return true;
-      } else if (superArrayType.getBaseType() instanceof ClassType
-          && (((ClassType) superArrayType.getBaseType()).getFullyQualifiedName().equals(jlObject)
-              || ((ClassType) superArrayType.getBaseType())
-                  .getFullyQualifiedName()
-                  .equals(jiSerializable)
-              || ((ClassType) superArrayType.getBaseType())
-                  .getFullyQualifiedName()
-                  .equals(jlCloneable))) {
+      } else if (superArrayType.getBaseType() instanceof ClassType baseClassType
+          && isArraySupertype(baseClassType)) {
         // Special case: Object[] x = new double[0][0], Object[][] y = new double[0][0][0], ...
         return potentialSubArrayType.getDimension() > superArrayType.getDimension();
       } else {
         return false;
       }
-    } else if (supertype instanceof ClassType) {
-      String supertypeName = ((ClassType) supertype).getFullyQualifiedName();
+    } else if (supertype instanceof ClassType supertypeClassType) {
       if (potentialSubtype instanceof ClassType) {
-        return isClassSubtype((ClassType) supertype, (ClassType) potentialSubtype);
+        return isClassSubtype(supertypeClassType, (ClassType) potentialSubtype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
-        return supertypeName.equals(jlObject)
-            || supertypeName.equals(jiSerializable)
-            || supertypeName.equals(jlCloneable);
+        return isArraySupertype(supertypeClassType);
       } else {
         throw new AssertionError("potentialSubtype has unexpected type");
       }
@@ -200,14 +188,36 @@ public interface TypeHierarchy {
    */
   default boolean isClassSubtype(
       @NonNull ClassType supertype, @NonNull ClassType potentialSubtype) {
-    String supertypeName = supertype.getFullyQualifiedName();
-    String potentialSubtypeName = potentialSubtype.getFullyQualifiedName();
-    final String jlObject = "java.lang.Object";
     // any potential subtype is a subtype of java.lang.Object except java.lang.Object itself
     // superClassOf() check is a fast path
-    return (supertypeName.equals(jlObject) && !potentialSubtypeName.equals(jlObject))
+    return (isJavaLangObject(supertype) && !isJavaLangObject(potentialSubtype))
         || superClassesOf(potentialSubtype).anyMatch(t -> t == supertype)
         || implementedInterfacesOf(potentialSubtype).anyMatch(t -> t == supertype);
+  }
+
+  /**
+   * Returns whether the given type is one of the three types every array is a subtype of: {@code
+   * java.lang.Object}, {@code java.io.Serializable} and {@code java.lang.Cloneable}.
+   */
+  private static boolean isArraySupertype(@NonNull ClassType type) {
+    return isJavaLangObject(type)
+        || hasName(type, "java.io", "Serializable")
+        || hasName(type, "java.lang", "Cloneable");
+  }
+
+  private static boolean isJavaLangObject(@NonNull ClassType type) {
+    return hasName(type, "java.lang", "Object");
+  }
+
+  /**
+   * Compares the class and package name separately instead of going through {@link
+   * ClassType#getFullyQualifiedName()}, which builds a new String on every call - this runs per
+   * subtype query.
+   */
+  private static boolean hasName(
+      @NonNull ClassType type, @NonNull String packageName, @NonNull String className) {
+    return type.getClassName().equals(className)
+        && type.getPackageName().getName().equals(packageName);
   }
 
   Stream<ClassType> directlyImplementedInterfacesOf(@NonNull ClassType type);

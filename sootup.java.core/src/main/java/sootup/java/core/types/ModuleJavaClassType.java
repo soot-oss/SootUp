@@ -29,9 +29,19 @@ import sootup.java.core.signatures.ModulePackageName;
 
 public class ModuleJavaClassType extends JavaClassType {
 
-  public ModuleJavaClassType(
+  protected ModuleJavaClassType(
       @NonNull final String className, @NonNull final ModulePackageName packageName) {
     super(className, packageName);
+  }
+
+  /**
+   * Returns the unique {@link ModuleJavaClassType} for the given class and module-scoped package,
+   * so that equal class types are the same instance and may be compared with {@code ==}.
+   */
+  @NonNull
+  public static ModuleJavaClassType of(
+      @NonNull final String className, @NonNull final ModulePackageName packageName) {
+    return intern(new ModuleJavaClassType(className, packageName));
   }
 
   @NonNull

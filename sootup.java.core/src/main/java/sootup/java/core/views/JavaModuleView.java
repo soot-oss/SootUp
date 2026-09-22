@@ -62,7 +62,7 @@ public class JavaModuleView extends JavaView {
         inputLocations,
         cacheProvider,
         LoadingStrategy.onDemand(),
-        JavaModuleIdentifierFactory.getInstance());
+        new JavaModuleIdentifierFactory());
     this.moduleInfoAnalysisInputLocations = moduleInputLocations;
     JavaModuleInfo unnamedModuleInfo = JavaModuleInfo.getUnnamedModuleInfo();
     moduleInfoMap.put(unnamedModuleInfo.getModuleSignature(), unnamedModuleInfo);

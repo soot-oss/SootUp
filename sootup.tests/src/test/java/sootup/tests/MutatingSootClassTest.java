@@ -22,17 +22,14 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
-import sootup.core.signatures.FieldSignature;
-import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType.BooleanType;
 import sootup.core.types.PrimitiveType.IntType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.*;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootField.JavaSootFieldBuilder;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
@@ -103,8 +100,10 @@ public class MutatingSootClassTest {
             .withModifier(Collections.singletonList(FieldModifier.PUBLIC))
             .withPosition(NoPositionInformation.getInstance())
             .withSignature(
-                new FieldSignature(
-                    sootClass.getType(), new FieldSubSignature("g", IntType.getInt())))
+                new JavaIdentifierFactory()
+                    .getFieldSignature(
+                        sootClass.getType(),
+                        new JavaIdentifierFactory().getFieldSubSignature("g", IntType.getInt())))
             .build();
 
     OverridingJavaClassSource newClassSource =
@@ -119,12 +118,13 @@ public class MutatingSootClassTest {
     SootMethod methodNew =
         newClass
             .getMethod(
-                new MethodSubSignature(
-                    "main",
-                    Collections.singletonList(
-                        new ArrayType(
-                            new JavaClassType("String", new PackageName("java.lang")), 1)),
-                    VoidType.getInstance()))
+                new JavaIdentifierFactory()
+                    .getMethodSubSignature(
+                        "main",
+                        VoidType.getInstance(),
+                        Collections.singletonList(
+                            new ArrayType(
+                                identifierFactory.getClassType("String", "java.lang"), 1))))
             .orElse(null);
     assertNotNull(methodNew);
     assertEquals(newLocal, methodNew.getBody().getLocals().stream().findFirst().orElse(null));
@@ -133,7 +133,9 @@ public class MutatingSootClassTest {
     SootMethod constructorNew =
         sootClass
             .getMethod(
-                new MethodSubSignature("<init>", Collections.emptyList(), VoidType.getInstance()))
+                new JavaIdentifierFactory()
+                    .getMethodSubSignature(
+                        "<init>", VoidType.getInstance(), Collections.emptyList()))
             .orElse(null);
     assertNotNull(constructorNew);
     assertFalse(constructorNew.getBody().getLocals().isEmpty());
@@ -141,12 +143,13 @@ public class MutatingSootClassTest {
     SootMethod oldMethod =
         sootClass
             .getMethod(
-                new MethodSubSignature(
-                    "main",
-                    Collections.singletonList(
-                        new ArrayType(
-                            new JavaClassType("String", new PackageName("java.lang")), 1)),
-                    VoidType.getInstance()))
+                new JavaIdentifierFactory()
+                    .getMethodSubSignature(
+                        "main",
+                        VoidType.getInstance(),
+                        Collections.singletonList(
+                            new ArrayType(
+                                identifierFactory.getClassType("String", "java.lang"), 1))))
             .orElse(null);
     assertNotNull(oldMethod);
     assertTrue(oldMethod.getBody().getLocals().stream().noneMatch(local -> local.equals(newLocal)));
@@ -155,9 +158,11 @@ public class MutatingSootClassTest {
         newField
             .withModifiers(Collections.singletonList(FieldModifier.PRIVATE))
             .withSignature(
-                new FieldSignature(
-                    newField.getDeclaringClassType(),
-                    new FieldSubSignature(newField.getName(), BooleanType.getInstance())));
+                new JavaIdentifierFactory()
+                    .getFieldSignature(
+                        newField.getDeclaringClassType(),
+                        new JavaIdentifierFactory()
+                            .getFieldSubSignature(newField.getName(), BooleanType.getInstance())));
     OverridingJavaClassSource newerClassSource =
         overridingJavaClassSource
             .withReplacedField(newField, replacedField)
