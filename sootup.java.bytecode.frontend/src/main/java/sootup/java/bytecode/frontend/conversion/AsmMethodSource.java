@@ -124,8 +124,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   /** Keeps track of all trap handlers that are active at the current instruction */
   Set<TryCatchBlockNode> activeTrapHandlers = new HashSet<>();
 
-  private int currentLineNumber = -1;
   private int maxLineNumber = 0;
+
+  /**
+   * Tracks the bytecode instruction currently being converted in {@link #convert()}.
+   *
+   * <p>Used by {@link #getStmtPositionInfo()} to dynamically resolve the line number from the
+   * instruction's sequential bytecode context (via preceding {@link LineNumberNode}s)
+   */
+  @Nullable private AbstractInsnNode currentConversionInsn;
 
   @Nullable private JavaClassType declaringClass;
 
@@ -175,9 +182,19 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   StmtPositionInfo getStmtPositionInfo() {
-    return currentLineNumber > 0
-        ? new SimpleStmtPositionInfo(currentLineNumber)
-        : StmtPositionInfo.getNoStmtPositionInfo();
+    if (currentConversionInsn != null) {
+      return getStmtPositionInfo(currentConversionInsn);
+    }
+    return StmtPositionInfo.getNoStmtPositionInfo();
+  }
+
+  StmtPositionInfo getStmtPositionInfo(@NonNull AbstractInsnNode insn) {
+    for (AbstractInsnNode node = insn; node != null; node = node.getPrevious()) {
+      if (node instanceof LineNumberNode) {
+        return new SimpleStmtPositionInfo(((LineNumberNode) node).line);
+      }
+    }
+    return StmtPositionInfo.getNoStmtPositionInfo();
   }
 
   @Override
@@ -1441,7 +1458,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     if (opr.stackLocal == null) {
       // Can skip creating a new stack local for the operand
       // and store the value in the local directly.
-      as = Jimple.newAssignStmt(local, opr.value, getStmtPositionInfo());
+      as = Jimple.newAssignStmt(local, opr.value, opr.getPositionInfo());
       // TODO check that this works correctly with the merging
       opr.stackLocal = local;
       setStmt(opr.insn, as);
@@ -1511,9 +1528,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   private void convertLine(@NonNull LineNumberNode ln) {
-    currentLineNumber = ln.line;
-    if (currentLineNumber > maxLineNumber) {
-      maxLineNumber = currentLineNumber;
+    if (ln.line > maxLineNumber) {
+      maxLineNumber = ln.line;
+    }
+    if (ln.start != null) {
+      Stmt stmt = insnToStmt.get(ln.start);
+      if (stmt instanceof JIdentityStmt identityStmt
+          && identityStmt.getRightOp() instanceof JCaughtExceptionRef) {
+        setStmt(ln.start, identityStmt.withPositionInfo(new SimpleStmtPositionInfo(ln.line)));
+      }
+      JIdentityStmt inlineHandler = inlineExceptionHandlers.get(ln.start);
+      if (inlineHandler != null) {
+        inlineExceptionHandlers.put(
+            ln.start, inlineHandler.withPositionInfo(new SimpleStmtPositionInfo(ln.line)));
+      }
     }
   }
 
@@ -1534,9 +1562,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       BranchedInsnInfo edge = edges.get(branchingInsn, tgt);
       if (edge == null) {
         // [ms] check why this edge could be already there
-        edge =
-            new BranchedInsnInfo(
-                tgt, operandStack.getStack(), currentLineNumber, activeTrapHandlers);
+        edge = new BranchedInsnInfo(tgt, operandStack.getStack(), activeTrapHandlers);
         edge.addToPrevStack(stackss);
         edges.put(branchingInsn, tgt, edge);
         conversionWorklist.add(edge);
@@ -1585,36 +1611,26 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         opr.stackLocal = local;
 
         worklist.add(
-            new BranchedInsnInfo(
-                handlerNode,
-                Collections.singletonList(opr),
-                currentLineNumber,
-                activeTrapHandlers));
+            new BranchedInsnInfo(handlerNode, Collections.singletonList(opr), activeTrapHandlers));
 
         // Save the statements
         inlineExceptionHandlers.put(handlerNode, as);
       } else {
-        worklist.add(
-            new BranchedInsnInfo(
-                handlerNode, new ArrayList<>(), currentLineNumber, activeTrapHandlers));
+        worklist.add(new BranchedInsnInfo(handlerNode, new ArrayList<>(), activeTrapHandlers));
       }
     }
     worklist.add(
-        new BranchedInsnInfo(
-            instructions.getFirst(),
-            Collections.emptyList(),
-            currentLineNumber,
-            activeTrapHandlers));
+        new BranchedInsnInfo(instructions.getFirst(), Collections.emptyList(), activeTrapHandlers));
     Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges = HashBasedTable.create(1, 1);
 
     do {
       BranchedInsnInfo edge = worklist.pollLast();
       AbstractInsnNode insn = edge.getInsn();
-      currentLineNumber = edge.getLineNumber();
       operandStack.setOperandStack(
           new ArrayList<>(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1)));
       activeTrapHandlers = edge.getActiveTrapHandlers();
       do {
+        currentConversionInsn = insn;
         int type = insn.getType();
         if (type == FIELD_INSN) {
           convertFieldInsn((FieldInsnNode) insn);
@@ -1683,6 +1699,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         }
       } while ((insn = insn.getNext()) != null);
     } while (!worklist.isEmpty());
+    currentConversionInsn = null;
   }
 
   // inline exceptionhandler := exceptionhandler thats reachable through unexceptional "normal" flow
@@ -1752,6 +1769,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @NonNull
   private StmtPositionInfo getFirstLineOfMethod() {
+    for (AbstractInsnNode node : instructions) {
+      if (node.getOpcode() >= 0) {
+        return getStmtPositionInfo(node);
+      }
+    }
     for (AbstractInsnNode node : instructions) {
       if (node instanceof LineNumberNode) {
         return new SimpleStmtPositionInfo(((LineNumberNode) node).line);
