@@ -1458,7 +1458,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     if (opr.stackLocal == null) {
       // Can skip creating a new stack local for the operand
       // and store the value in the local directly.
-      as = Jimple.newAssignStmt(local, opr.value, getStmtPositionInfo());
+      as = Jimple.newAssignStmt(local, opr.value, opr.getPositionInfo());
       // TODO check that this works correctly with the merging
       opr.stackLocal = local;
       setStmt(opr.insn, as);

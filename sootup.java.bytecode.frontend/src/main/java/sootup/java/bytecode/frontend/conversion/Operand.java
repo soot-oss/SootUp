@@ -94,6 +94,10 @@ class Operand {
     this.activeTrapHandlers = new HashSet<>(methodSource.activeTrapHandlers);
   }
 
+  @NonNull StmtPositionInfo getPositionInfo() {
+    return positionInfo;
+  }
+
   Local getOrAssignValueToStackLocal() {
     if (stackLocal == null) {
       Type type = value.getType();

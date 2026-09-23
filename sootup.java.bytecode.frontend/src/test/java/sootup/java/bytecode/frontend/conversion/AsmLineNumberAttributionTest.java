@@ -261,4 +261,72 @@ class AsmLineNumberAttributionTest {
     writer.visitEnd();
     return writer.toByteArray();
   }
+
+  @Test
+  void attributesProducingInstructionLineNumberWhenDirectlyStoringToLocal() throws Exception {
+    Files.write(tempDir.resolve("LineDirectStore.class"), makeDirectStoreClass());
+
+    JavaClassPathAnalysisInputLocation location =
+        new JavaClassPathAnalysisInputLocation(
+            tempDir.toString(), SourceType.Application, Collections.emptyList());
+    JavaView view = new JavaView(location);
+    JavaSootClass clazz =
+        view.getClass(view.getIdentifierFactory().getClassType("LineDirectStore")).orElseThrow();
+
+    List<Stmt> stmts =
+        clazz.getMethods().stream()
+            .filter(method -> method.getName().equals("callAndStore"))
+            .findFirst()
+            .orElseThrow()
+            .getBody()
+            .getStmts();
+
+    // Verify the assignment of the method call result retains line 92 (the call's line number),
+    // rather than line 95 (where the store instruction is located).
+    Stmt callAssignStmt =
+        stmts.stream()
+            .filter(s -> s instanceof JAssignStmt assign && assign.isInvokableStmt())
+            .findFirst()
+            .orElseThrow();
+
+    assertNotNull(callAssignStmt);
+    assertEquals(92, callAssignStmt.getPositionInfo().getStmtPosition().getFirstLine());
+  }
+
+  private static byte[] makeDirectStoreClass() {
+    ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+    writer.visit(
+        Opcodes.V1_8, Opcodes.ACC_PUBLIC, "LineDirectStore", null, "java/lang/Object", null);
+
+    MethodVisitor target =
+        writer.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "dummyCall", "()I", null, null);
+    target.visitCode();
+    target.visitInsn(Opcodes.ICONST_0);
+    target.visitInsn(Opcodes.IRETURN);
+    target.visitMaxs(1, 0);
+    target.visitEnd();
+
+    MethodVisitor method =
+        writer.visitMethod(
+            Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "callAndStore", "()I", null, null);
+    method.visitCode();
+
+    Label l0 = new Label();
+    method.visitLabel(l0);
+    method.visitLineNumber(92, l0);
+    method.visitMethodInsn(Opcodes.INVOKESTATIC, "LineDirectStore", "dummyCall", "()I", false);
+
+    Label l1 = new Label();
+    method.visitLabel(l1);
+    method.visitLineNumber(95, l1);
+    method.visitVarInsn(Opcodes.ISTORE, 0);
+    method.visitVarInsn(Opcodes.ILOAD, 0);
+    method.visitInsn(Opcodes.IRETURN);
+
+    method.visitMaxs(1, 1);
+    method.visitEnd();
+
+    writer.visitEnd();
+    return writer.toByteArray();
+  }
 }
