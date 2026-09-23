@@ -43,7 +43,7 @@ public class FieldSubSignature extends SootClassMemberSubSignature
    * @param name The method name.
    * @param type The type signature.
    */
-  public FieldSubSignature(@NonNull String name, @NonNull Type type) {
+  FieldSubSignature(@NonNull String name, @NonNull Type type) {
     super(name, type);
   }
 

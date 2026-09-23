@@ -33,21 +33,20 @@ public class JavaModuleViewTest {
     JavaModuleView view =
         new JavaModuleView(analysisInputLocations, moduleInfoAnalysisInputLocations);
     ModuleJavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
 
     ModuleJavaClassType notExistingClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Panty", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("Panty", "java.lang", "java.base");
     assertFalse(view.getClass(notExistingClass).isPresent());
 
     ModuleJavaClassType notExistingPackage =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.kurz", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("String", "java.kurz", "java.base");
     assertFalse(view.getClass(notExistingPackage).isPresent());
 
     ModuleJavaClassType notExistingModule =
-        JavaModuleIdentifierFactory.getInstance()
-            .getClassType("String", "java.lang", "non.existent");
+        new JavaModuleIdentifierFactory().getClassType("String", "java.lang", "non.existent");
     assertFalse(view.getClass(notExistingModule).isPresent());
 
     Optional<JavaModuleInfo> moduleDescriptor =
@@ -73,8 +72,7 @@ public class JavaModuleViewTest {
         Collections.emptyList();
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
-    ModuleJavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("A", "", "");
+    ModuleJavaClassType targetClass = new JavaModuleIdentifierFactory().getClassType("A", "", "");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
     assertSame(
@@ -82,7 +80,7 @@ public class JavaModuleViewTest {
         JavaModuleInfo.getUnnamedModuleInfo().getModuleSignature());
 
     ModuleJavaClassType targetClassWOModuleSig =
-        JavaModuleIdentifierFactory.getInstance().getClassType("A", "");
+        new JavaModuleIdentifierFactory().getClassType("A", "");
     Optional<JavaSootClass> bClass = view.getClass(targetClassWOModuleSig);
     assertTrue(bClass.isPresent());
     assertSame(
@@ -109,25 +107,23 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModulePackageName modMain =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
-    ModulePackageName modB =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
+        new JavaModuleIdentifierFactory().getPackageName("pkgmain", "modmain");
+    ModulePackageName modB = new JavaModuleIdentifierFactory().getPackageName("pkgb", "modb");
     ModulePackageName modAnnotations =
-        JavaModuleIdentifierFactory.getInstance()
-            .getPackageName("pkgannotations", "mod.annotations");
+        new JavaModuleIdentifierFactory().getPackageName("pkgannotations", "mod.annotations");
 
     assertTrue(view.getModuleInfo(modMain.getModuleSignature()).isPresent());
     assertTrue(view.getModuleInfo(modB.getModuleSignature()).isPresent());
     assertTrue(view.getModuleInfo(modAnnotations.getModuleSignature()).isPresent());
 
     ModuleJavaClassType ctAnno =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("CompileTimeAnnotation", "pkgannotations", "mod.annotations");
     ModuleJavaClassType customAnno =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("ReallyCoolModule", "pkgannotations", "mod.annotations");
     ModuleJavaClassType rtAnno =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("RunTimeAnnotation", "pkgannotations", "mod.annotations");
 
     assertTrue(view.getClass(ctAnno).isPresent());
@@ -152,18 +148,16 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModulePackageName modMain =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
-    ModulePackageName modB =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
-    ModulePackageName modC =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgc", "modc");
+        new JavaModuleIdentifierFactory().getPackageName("pkgmain", "modmain");
+    ModulePackageName modB = new JavaModuleIdentifierFactory().getPackageName("pkgb", "modb");
+    ModulePackageName modC = new JavaModuleIdentifierFactory().getPackageName("pkgc", "modc");
 
     assertTrue(view.getModuleInfo(modMain.getModuleSignature()).isPresent());
     assertTrue(view.getModuleInfo(modB.getModuleSignature()).isPresent());
     assertTrue(view.getModuleInfo(modC.getModuleSignature()).isPresent());
 
     ModuleJavaClassType cClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("C", "pkgc", "modc");
+        new JavaModuleIdentifierFactory().getClassType("C", "pkgc", "modc");
 
     assertTrue(view.getClass(cClass).isPresent());
 
@@ -172,7 +166,7 @@ public class JavaModuleViewTest {
     assertTrue(view.getClass(modMain, cClass).isPresent());
 
     ModuleJavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("String", "java.lang", "java.base");
     assertTrue(view.getClass(targetClass).isPresent());
     assertTrue(view.getClass(modMain, targetClass).isPresent());
     assertTrue(view.getClass(modB, targetClass).isPresent());
@@ -191,11 +185,9 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModulePackageName modMain =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
-    ModulePackageName modB =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
-    ModulePackageName modC =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgc", "modc");
+        new JavaModuleIdentifierFactory().getPackageName("pkgmain", "modmain");
+    ModulePackageName modB = new JavaModuleIdentifierFactory().getPackageName("pkgb", "modb");
+    ModulePackageName modC = new JavaModuleIdentifierFactory().getPackageName("pkgc", "modc");
 
     Optional<JavaModuleInfo> moduleInfoMain = view.getModuleInfo(modMain.getModuleSignature());
     assertTrue(moduleInfoMain.isPresent());
@@ -209,7 +201,7 @@ public class JavaModuleViewTest {
             .anyMatch(reqs -> reqs.getModuleSignature().equals(modB.getModuleSignature())));
 
     ModuleJavaClassType targetClassMain =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     assertTrue(view.getClass(modMain, targetClassMain).isPresent());
 
     // ModB
@@ -219,13 +211,13 @@ public class JavaModuleViewTest {
             .anyMatch(reqs -> reqs.getModuleSignature().equals(modC.getModuleSignature())));
 
     ModuleJavaClassType targetClassB =
-        JavaModuleIdentifierFactory.getInstance().getClassType("B", "pkgb", "modb");
+        new JavaModuleIdentifierFactory().getClassType("B", "pkgb", "modb");
     assertTrue(view.getClass(modB, targetClassB).isPresent());
     assertTrue(view.getClass(modMain, targetClassB).isPresent());
 
     // ModC
     ModuleJavaClassType targetClassC =
-        JavaModuleIdentifierFactory.getInstance().getClassType("C", "pkgc", "modc");
+        new JavaModuleIdentifierFactory().getClassType("C", "pkgc", "modc");
     assertTrue(view.getClass(modC, targetClassC).isPresent());
   }
 
@@ -242,11 +234,9 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModulePackageName modMain =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
-    ModulePackageName modA =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkga", "moda");
-    ModulePackageName modC =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgc", "modc");
+        new JavaModuleIdentifierFactory().getPackageName("pkgmain", "modmain");
+    ModulePackageName modA = new JavaModuleIdentifierFactory().getPackageName("pkga", "moda");
+    ModulePackageName modC = new JavaModuleIdentifierFactory().getPackageName("pkgc", "modc");
 
     // ModMain
     Optional<JavaModuleInfo> moduleInfoMain = view.getModuleInfo(modMain.getModuleSignature());
@@ -257,19 +247,19 @@ public class JavaModuleViewTest {
             .anyMatch(reqs -> reqs.getModuleSignature().equals(modA.getModuleSignature())));
 
     ModuleJavaClassType targetClassMain =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     assertTrue(view.getClass(modMain, targetClassMain).isPresent());
 
     // ModC
     ModuleJavaClassType targetClassC =
-        JavaModuleIdentifierFactory.getInstance().getClassType("C", "pkgc", "modc");
+        new JavaModuleIdentifierFactory().getClassType("C", "pkgc", "modc");
     assertTrue(view.getClass(modC, targetClassC).isPresent());
     // A -> C
     assertTrue(view.getClass(modA, targetClassC).isPresent());
 
     // modmain -> moda
     ModuleJavaClassType mainToAClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("A1", "pkga1", "moda");
+        new JavaModuleIdentifierFactory().getClassType("A1", "pkga1", "moda");
     assertTrue(view.getClass(modA, mainToAClass).isPresent());
     assertTrue(view.getClass(modMain, mainToAClass).isPresent());
 
@@ -277,7 +267,7 @@ public class JavaModuleViewTest {
     assertTrue(view.getClass(modMain, targetClassC).isPresent());
 
     ModuleJavaClassType targetClassFromJavaBase =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("String", "java.lang", "java.base");
     assertTrue(view.getClass(modMain, targetClassFromJavaBase).isPresent());
   }
 
@@ -290,22 +280,22 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     Optional<JavaSootClass> mainClassOpt = view.getClass(mainClass);
     assertTrue(mainClassOpt.isPresent());
 
     ModuleJavaClassType bClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("B", "pkgb", "modb");
+        new JavaModuleIdentifierFactory().getClassType("B", "pkgb", "modb");
     Optional<JavaSootClass> bClassOpt = view.getClass(bClass);
     assertTrue(bClassOpt.isPresent());
 
     ModuleJavaClassType b1Class =
-        JavaModuleIdentifierFactory.getInstance().getClassType("B1", "pkgb1", "modb");
+        new JavaModuleIdentifierFactory().getClassType("B1", "pkgb1", "modb");
     Optional<JavaSootClass> b1ClassOpt = view.getClass(b1Class);
     assertTrue(b1ClassOpt.isPresent());
 
     ModuleJavaClassType biClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("InternalB", "pkgbinternal", "modb");
+        new JavaModuleIdentifierFactory().getClassType("InternalB", "pkgbinternal", "modb");
     Optional<JavaSootClass> biClassOpt = view.getClass(biClass);
     assertTrue(biClassOpt.isPresent());
 
@@ -343,12 +333,12 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainModmainSig =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     Optional<JavaSootClass> mainModmainClass = view.getClass(mainModmainSig);
     assertTrue(mainModmainClass.isPresent());
 
     ModuleJavaClassType serviceDefSig =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("IService", "myservice", "modservicedefinition");
     Optional<JavaSootClass> serviceDefClass = view.getClass(serviceDefSig);
     assertTrue(serviceDefClass.isPresent());
@@ -358,7 +348,7 @@ public class JavaModuleViewTest {
     assertEquals(serviceDefAccessClass.get(), serviceDefClass.get());
 
     ModuleJavaClassType serviceImplSig =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("ServiceImpl", "com.service.impl", "modservice.impl.com");
     Optional<JavaSootClass> serviceImplClass = view.getClass(serviceImplSig);
     assertTrue(serviceImplClass.isPresent());
@@ -368,7 +358,7 @@ public class JavaModuleViewTest {
     assertEquals(serviceImplAccessClass.get(), serviceImplClass.get());
 
     ModuleJavaClassType serviceImplNetSig =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("ServiceImpl", "net.service.impl", "modservice.impl.net");
     Optional<JavaSootClass> serviceImplNetClass = view.getClass(serviceImplNetSig);
     assertTrue(serviceImplNetClass.isPresent());
@@ -391,12 +381,12 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainModmainSig =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     Optional<JavaSootClass> mainModmainClass = view.getClass(mainModmainSig);
     assertTrue(mainModmainClass.isPresent());
 
     ModuleJavaClassType serviceDefSig =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("IService", "myservice", "modservicedefinition");
     Optional<JavaSootClass> serviceDefClass = view.getClass(serviceDefSig);
     assertTrue(serviceDefClass.isPresent());
@@ -406,7 +396,7 @@ public class JavaModuleViewTest {
     assertEquals(serviceDefAccessClass.get(), serviceDefClass.get());
 
     ModuleJavaClassType serviceImplSig =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("ServiceImpl", "com.service.impl", "modservice.impl.com");
     Optional<JavaSootClass> serviceImplClass = view.getClass(serviceImplSig);
     assertTrue(serviceImplClass.isPresent());
@@ -416,7 +406,7 @@ public class JavaModuleViewTest {
     assertEquals(serviceImplAccessClass.get(), serviceImplClass.get());
 
     ModuleJavaClassType serviceImplNetSig =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("ServiceImpl", "net.service.impl", "modservice.impl.net");
     Optional<JavaSootClass> serviceImplNetClass = view.getClass(serviceImplNetSig);
     assertTrue(serviceImplNetClass.isPresent());
@@ -441,39 +431,37 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     assertTrue(view.getClass(mainClass).isPresent());
 
     ModuleJavaClassType bClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("B", "pkgb", "modb");
+        new JavaModuleIdentifierFactory().getClassType("B", "pkgb", "modb");
     assertTrue(view.getClass(bClass).isPresent());
     assertTrue(view.getClass(mainClass.getPackageName(), bClass).isPresent());
 
     ModuleJavaClassType dataClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Data", "pkgb", "modb");
+        new JavaModuleIdentifierFactory().getClassType("Data", "pkgb", "modb");
     assertTrue(view.getClass(dataClass).isPresent());
     assertTrue(view.getClass(mainClass.getPackageName(), dataClass).isPresent());
 
     ModuleJavaClassType dataFactoryClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("DataFactory", "pkgb", "modb");
+        new JavaModuleIdentifierFactory().getClassType("DataFactory", "pkgb", "modb");
     assertTrue(view.getClass(dataFactoryClass).isPresent());
     assertTrue(view.getClass(mainClass.getPackageName(), dataFactoryClass).isPresent());
 
     ModuleJavaClassType internalBHelperClass =
-        JavaModuleIdentifierFactory.getInstance()
-            .getClassType("InternalBHelper", "pkgbinternal", "modb");
+        new JavaModuleIdentifierFactory().getClassType("InternalBHelper", "pkgbinternal", "modb");
     assertTrue(view.getClass(internalBHelperClass).isPresent());
     assertFalse(view.getClass(mainClass.getPackageName(), internalBHelperClass).isPresent());
 
     ModuleJavaClassType internalBSuperClass =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("InternalBSuperClass", "pkgbinternal", "modb");
     assertTrue(view.getClass(internalBSuperClass).isPresent());
     assertFalse(view.getClass(mainClass.getPackageName(), internalBSuperClass).isPresent());
 
     ModuleJavaClassType InternalDataClass =
-        JavaModuleIdentifierFactory.getInstance()
-            .getClassType("InternalData", "pkgbinternal", "modb");
+        new JavaModuleIdentifierFactory().getClassType("InternalData", "pkgbinternal", "modb");
     assertTrue(view.getClass(InternalDataClass).isPresent());
     assertFalse(view.getClass(mainClass.getPackageName(), InternalDataClass).isPresent());
   }
@@ -488,28 +476,27 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     assertTrue(view.getClass(mainClass).isPresent());
 
     ModuleJavaClassType exceptionClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("MyException", "pkgb", "modb");
+        new JavaModuleIdentifierFactory().getClassType("MyException", "pkgb", "modb");
     assertTrue(view.getClass(exceptionClass).isPresent());
     assertTrue(view.getClass(mainClass.getPackageName(), exceptionClass).isPresent());
 
     ModuleJavaClassType internalExceptionClass =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("MyInternalException", "pkgbinternal", "modb");
     assertTrue(view.getClass(internalExceptionClass).isPresent());
     assertFalse(view.getClass(mainClass.getPackageName(), internalExceptionClass).isPresent());
 
     ModuleJavaClassType runtimeExceptionClass =
-        JavaModuleIdentifierFactory.getInstance()
-            .getClassType("MyRuntimeException", "pkgb", "modb");
+        new JavaModuleIdentifierFactory().getClassType("MyRuntimeException", "pkgb", "modb");
     assertTrue(view.getClass(runtimeExceptionClass).isPresent());
     assertTrue(view.getClass(mainClass.getPackageName(), runtimeExceptionClass).isPresent());
 
     ModuleJavaClassType internalRuntimeExceptionClass =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("MyInternalRuntimeException", "pkgbinternal", "modb");
     assertTrue(view.getClass(internalRuntimeExceptionClass).isPresent());
     assertFalse(
@@ -526,23 +513,22 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     assertTrue(view.getClass(mainClass).isPresent());
 
     ModuleJavaClassType calleeClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Callee", "pkgcallee", "modcallee");
+        new JavaModuleIdentifierFactory().getClassType("Callee", "pkgcallee", "modcallee");
     assertTrue(view.getClass(calleeClass).isPresent());
     assertTrue(view.getClass(mainClass.getPackageName(), calleeClass).isPresent());
 
     ModuleJavaClassType iCallbackClass =
-        JavaModuleIdentifierFactory.getInstance()
-            .getClassType("ICallback", "pkgcallee", "modcallee");
+        new JavaModuleIdentifierFactory().getClassType("ICallback", "pkgcallee", "modcallee");
     assertTrue(view.getClass(iCallbackClass).isPresent());
     assertTrue(view.getClass(mainClass.getPackageName(), iCallbackClass).isPresent());
     assertTrue(view.getClass(calleeClass.getPackageName(), iCallbackClass).isPresent());
 
     ModuleJavaClassType handlerClass =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("MyCallbackImpl", "pkgcallbackhandler", "modcallbackhandler");
     assertTrue(view.getClass(handlerClass).isPresent());
     assertTrue(view.getClass(mainClass.getPackageName(), handlerClass).isPresent());
@@ -566,19 +552,17 @@ public class JavaModuleViewTest {
     assertEquals(3, view.getNamedModules().size());
 
     ModulePackageName modmain =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getPackageName("pkgmain", "modmain");
     ModuleJavaClassType mainClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     assertTrue(view.getClass(mainClass).isPresent());
 
     ModuleJavaClassType v1Class =
-        JavaModuleIdentifierFactory.getInstance()
-            .getClassType("Version1", "pkgsplitted", "modauto1");
+        new JavaModuleIdentifierFactory().getClassType("Version1", "pkgsplitted", "modauto1");
     assertTrue(view.getClass(v1Class).isPresent());
 
     ModuleJavaClassType v2Class =
-        JavaModuleIdentifierFactory.getInstance()
-            .getClassType("Version2", "pkgsplitted", "modauto2");
+        new JavaModuleIdentifierFactory().getClassType("Version2", "pkgsplitted", "modauto2");
     assertTrue(view.getClass(v2Class).isPresent());
 
     assertTrue(view.getClass(modmain, v1Class).isPresent());
@@ -600,7 +584,7 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
+        new JavaModuleIdentifierFactory().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
     assertTrue(aClass.isPresent());
     fail("test module descriptor/rights");
@@ -617,12 +601,11 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     assertTrue(view.getClass(targetClass).isPresent());
 
     ModuleJavaClassType hiddenMain =
-        JavaModuleIdentifierFactory.getInstance()
-            .getClassType("HiddenMain", "pkgmainhidden", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("HiddenMain", "pkgmainhidden", "modmain");
     assertTrue(view.getClass(hiddenMain).isPresent());
   }
 
@@ -642,11 +625,10 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain.auto");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain.auto");
     assertTrue(view.getClass(mainClass).isPresent());
 
-    ModuleJavaClassType aClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("A", "pkga", "");
+    ModuleJavaClassType aClass = new JavaModuleIdentifierFactory().getClassType("A", "pkga", "");
     assertTrue(view.getClass(aClass).isPresent());
 
     assertTrue(view.getClass(mainClass.getPackageName(), aClass).isPresent());
@@ -672,23 +654,22 @@ public class JavaModuleViewTest {
             Paths.get(testPath + "unnamed-module_access-from-explicit-module/jar/modmain.jar")));
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
-    ModulePackageName cpb = JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "");
+    ModulePackageName cpb = new JavaModuleIdentifierFactory().getPackageName("pkgb", "");
     JavaModuleInfo moduleInfo_cpb = view.getModuleInfo(cpb.getModuleSignature()).get();
     assertTrue(moduleInfo_cpb.isUnnamedModule());
 
-    ModulePackageName pkgbModb =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
+    ModulePackageName pkgbModb = new JavaModuleIdentifierFactory().getPackageName("pkgb", "modb");
     JavaModuleInfo moduleInfo_pkgbModb = view.getModuleInfo(pkgbModb.getModuleSignature()).get();
 
     assertFalse(moduleInfo_pkgbModb.isUnnamedModule());
 
     ModulePackageName modmain =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgcpmain", "modmain");
+        new JavaModuleIdentifierFactory().getPackageName("pkgcpmain", "modmain");
     JavaModuleInfo moduleInfo_cpmain = view.getModuleInfo(modmain.getModuleSignature()).get();
     assertFalse(moduleInfo_cpmain.isUnnamedModule());
 
     ModuleJavaClassType BFromClasspath =
-        JavaModuleIdentifierFactory.getInstance().getClassType("BFromClasspath", "pkgb", "");
+        new JavaModuleIdentifierFactory().getClassType("BFromClasspath", "pkgb", "");
     assertTrue(view.getClass(BFromClasspath).isPresent());
     assertFalse(view.getClass(modmain, BFromClasspath).isPresent());
 
@@ -720,58 +701,56 @@ public class JavaModuleViewTest {
 
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
-    ModulePackageName pkgbModb =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
+    ModulePackageName pkgbModb = new JavaModuleIdentifierFactory().getPackageName("pkgb", "modb");
     JavaModuleInfo moduleInfo_pkgbModb = view.getModuleInfo(pkgbModb.getModuleSignature()).get();
 
     assertFalse(moduleInfo_pkgbModb.isUnnamedModule());
 
-    ModulePackageName cpb = JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "");
+    ModulePackageName cpb = new JavaModuleIdentifierFactory().getPackageName("pkgb", "");
     JavaModuleInfo moduleInfo_cpb = view.getModuleInfo(cpb.getModuleSignature()).get();
     assertTrue(moduleInfo_cpb.isUnnamedModule());
 
-    ModulePackageName cpmain =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgcpmain", "");
+    ModulePackageName cpmain = new JavaModuleIdentifierFactory().getPackageName("pkgcpmain", "");
     JavaModuleInfo moduleInfo_cpmain = view.getModuleInfo(cpmain.getModuleSignature()).get();
     assertTrue(moduleInfo_cpmain.isUnnamedModule());
 
     ModuleJavaClassType main =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgcpmain", "");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgcpmain", "");
     assertTrue(view.getClass(main).isPresent());
     assertTrue(view.getClass(cpmain, main).isPresent());
     assertTrue(view.getClass(cpb, main).isPresent());
     assertFalse(view.getClass(pkgbModb, main).isPresent());
 
     ModuleJavaClassType BOnClasspath =
-        JavaModuleIdentifierFactory.getInstance().getClassType("BFromClasspath", "pkgboncp", "");
+        new JavaModuleIdentifierFactory().getClassType("BFromClasspath", "pkgboncp", "");
     assertTrue(view.getClass(BOnClasspath).isPresent());
     assertTrue(view.getClass(cpb, BOnClasspath).isPresent());
     assertTrue(view.getClass(cpmain, BOnClasspath).isPresent());
     assertFalse(view.getClass(pkgbModb, BOnClasspath).isPresent());
 
     ModuleJavaClassType BFromClasspath =
-        JavaModuleIdentifierFactory.getInstance().getClassType("BFromClasspath", "pkgb", "");
+        new JavaModuleIdentifierFactory().getClassType("BFromClasspath", "pkgb", "");
     assertTrue(view.getClass(BFromClasspath).isPresent());
     assertTrue(view.getClass(cpb, BFromClasspath).isPresent());
     assertTrue(view.getClass(cpmain, BFromClasspath).isPresent());
     assertFalse(view.getClass(pkgbModb, BFromClasspath).isPresent());
 
     ModuleJavaClassType BFromModule =
-        JavaModuleIdentifierFactory.getInstance().getClassType("BFromModule", "pkgb", "modb");
+        new JavaModuleIdentifierFactory().getClassType("BFromModule", "pkgb", "modb");
     assertTrue(view.getClass(BFromModule).isPresent());
     assertTrue(view.getClass(pkgbModb, BFromModule).isPresent());
     assertTrue(view.getClass(cpb, BFromModule).isPresent());
     assertTrue(view.getClass(cpmain, BFromModule).isPresent());
 
     ModuleJavaClassType BModuleB =
-        JavaModuleIdentifierFactory.getInstance().getClassType("B", "pkgb", "modb");
+        new JavaModuleIdentifierFactory().getClassType("B", "pkgb", "modb");
     assertTrue(view.getClass(BModuleB).isPresent());
     assertTrue(view.getClass(pkgbModb, BModuleB).isPresent());
     assertTrue(view.getClass(cpb, BModuleB).isPresent());
     assertTrue(view.getClass(cpmain, BModuleB).isPresent());
 
     ModuleJavaClassType BFromModuleButInternal =
-        JavaModuleIdentifierFactory.getInstance()
+        new JavaModuleIdentifierFactory()
             .getClassType("BFromModuleButInternal", "pkgbinternal", "modb");
     assertTrue(view.getClass(BFromModuleButInternal).isPresent());
     assertTrue(view.getClass(pkgbModb, BFromModuleButInternal).isPresent());
@@ -811,9 +790,9 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModulePackageName modMain =
-        JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getPackageName("pkgmain", "modmain");
     ModuleJavaClassType targetClassMain =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     assertTrue(view.getClass(modMain, targetClassMain).isPresent());
     // should we detect that in general? it doenst lead to errors.. just unnecessary overhead while
     // resolving..
@@ -830,12 +809,12 @@ public class JavaModuleViewTest {
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType targetClass =
-        JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
+        new JavaModuleIdentifierFactory().getClassType("Main", "pkgmain", "modmain");
     assertTrue(view.getClass(targetClass).isPresent());
 
     long mainMethodCount =
         view.getClass(targetClass).get().getMethods().stream()
-            .filter(m -> m.isMain(JavaModuleIdentifierFactory.getInstance()))
+            .filter(m -> m.isMain(new JavaModuleIdentifierFactory()))
             .count();
     assertEquals(1, mainMethodCount);
   }

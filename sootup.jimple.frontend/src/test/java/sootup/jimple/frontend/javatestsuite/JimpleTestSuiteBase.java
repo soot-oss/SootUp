@@ -24,7 +24,7 @@ import sootup.jimple.frontend.JimpleAnalysisInputLocation;
 public abstract class JimpleTestSuiteBase {
 
   static final String baseDir = "src/test/java/resources/jimple/";
-  protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+  protected JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
   private JavaView view;
 
   @BeforeEach

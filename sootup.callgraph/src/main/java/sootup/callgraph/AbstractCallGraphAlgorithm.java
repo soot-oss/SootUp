@@ -516,11 +516,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         continue;
       }
       MethodSignature implicitRunMethodSig =
-          new MethodSignature(
-              methodSig.getDeclClassType(),
-              "run",
-              methodSig.getParameterTypes(),
-              methodSig.getType());
+          view.getIdentifierFactory()
+              .getMethodSignature(
+                  methodSig.getDeclClassType(),
+                  "run",
+                  methodSig.getType(),
+                  methodSig.getParameterTypes());
       JVirtualInvokeExpr runInvokeExpr =
           sourceMethodInvokeExpr.asJVirtualInvokeExpr().withMethodSignature(implicitRunMethodSig);
       InvokableStmt runInvokableStmt = new JInvokeStmt(runInvokeExpr, getNoStmtPositionInfo());

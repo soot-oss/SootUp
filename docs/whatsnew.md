@@ -23,6 +23,24 @@ Singletons offer a single view of a single program version, which makes it impos
 SootUp does not make use of singletons such the `Scene` class in the old Soot any more. It enables analyzing multiple programs simultaneously.
 
 
+### Hash-Consed Identifiers
+
+Identifiers such as `ClassType`, `MethodSignature`, `FieldSignature`, their sub signatures and `PackageName` are hash-consed:
+for a given name the `IdentifierFactory` always returns the very same instance.
+This keeps the memory footprint of an analysis low and allows comparing identifiers with `==` as well as using them in an `IdentityHashMap`.
+Because this invariant only holds if every identifier is created in one place, their constructors are not public - identifiers are created via the `IdentifierFactory` that belongs to the `View`:
+
+!!! example
+
+    ```java
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+
+    ClassType classType = identifierFactory.getClassType("example.HelloWorld");
+    MethodSignature methodSignature =
+        identifierFactory.getMethodSignature(
+            classType, "main", "void", Collections.singletonList("java.lang.String[]"));
+    ```
+
 ### Immutable by Design
 
 SootUp has been designed with the goal of immutability in mind.

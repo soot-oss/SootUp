@@ -111,7 +111,7 @@ public class DebloaterX {
     Map<SootMethod, Set<AllocNode>> m2o = new HashMap<>();
     for (AllocNode heap : pag.getAllocNodes()) {
       SootMethod method = heap.getMethod();
-      if (method == null || JavaTypes.isStaticInitializer(method)) {
+      if (method == null || JavaTypes.isStaticInitializer(pta.getView(), method)) {
         continue;
       }
       m2o.computeIfAbsent(method, k -> new HashSet<>()).add(heap);

@@ -55,7 +55,6 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -82,7 +81,9 @@ public class TamiflexModel extends ReflectionModel {
       Collection<String> fornames = classForNames.get(s);
       for (String clazz : fornames) {
         // !TODO potential bug
-        ClassConstant cc = JavaJimple.newClassConstant(dot2slashStyle(clazz));
+        ClassConstant cc =
+            JavaJimple.newClassConstant(
+                dot2slashStyle(clazz), ptaScene.getView().getIdentifierFactory());
         if (s instanceof JAssignStmt) {
           LValue lvalue = ((JAssignStmt) s).getLeftOp();
           ret.add(new JAssignStmt(lvalue, cc, StmtPositionInfo.getNoStmtPositionInfo()));
@@ -296,7 +297,9 @@ public class TamiflexModel extends ReflectionModel {
       ArrayType at = (ArrayType) ptaScene.getView().getIdentifierFactory().getType(arrayType);
       JNewArrayExpr newExpr =
           JavaJimple.newNewArrayExpr(
-              at.getElementType(), IntConstant.getInstance(1), JavaIdentifierFactory.getInstance());
+              at.getElementType(),
+              IntConstant.getInstance(1),
+              ptaScene.getView().getIdentifierFactory());
       if (s instanceof JAssignStmt) {
         LValue lvalue = ((JAssignStmt) s).getLeftOp();
         ret.add(new JAssignStmt(lvalue, newExpr, StmtPositionInfo.getNoStmtPositionInfo()));
