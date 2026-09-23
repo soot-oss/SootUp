@@ -31,7 +31,7 @@ import sootup.java.core.views.JavaView;
  */
 public class LocalPackerTest {
   // Preparation
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
   JavaClassType classType = factory.getClassType("Test");
@@ -42,7 +42,7 @@ public class LocalPackerTest {
 
   IdentityRef identityRef0 = JavaJimple.newParameterRef(intType, 0);
   IdentityRef identityRef1 = JavaJimple.newParameterRef(intType, 1);
-  IdentityRef caughtExceptionRef = JavaJimple.newCaughtExceptionRef();
+  IdentityRef caughtExceptionRef = JavaJimple.newCaughtExceptionRef(factory);
 
   // build locals
   Local l0 = JavaJimple.newLocal("l0", classType);
@@ -240,7 +240,8 @@ public class LocalPackerTest {
     parameters.add(intType);
     // parameters.add(doubleType);
     MethodSignature methodSignature =
-        new MethodSignature(classType, "test", parameters, VoidType.getInstance());
+        new JavaIdentifierFactory()
+            .getMethodSignature(classType, "test", VoidType.getInstance(), parameters);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -275,7 +276,8 @@ public class LocalPackerTest {
     parameters.add(intType);
     // parameters.add(doubleType);
     MethodSignature methodSignature =
-        new MethodSignature(classType, "test", parameters, VoidType.getInstance());
+        new JavaIdentifierFactory()
+            .getMethodSignature(classType, "test", VoidType.getInstance(), parameters);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -313,7 +315,8 @@ public class LocalPackerTest {
     parameters.add(intType);
     // parameters.add(doubleType);
     MethodSignature methodSignature =
-        new MethodSignature(classType, "test", parameters, VoidType.getInstance());
+        new JavaIdentifierFactory()
+            .getMethodSignature(classType, "test", VoidType.getInstance(), parameters);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -352,7 +355,8 @@ public class LocalPackerTest {
     parameters.add(intType);
 
     MethodSignature methodSignature =
-        new MethodSignature(classType, "test", parameters, VoidType.getInstance());
+        new JavaIdentifierFactory()
+            .getMethodSignature(classType, "test", VoidType.getInstance(), parameters);
     builder.setMethodSignature(methodSignature);
 
     // build set locals

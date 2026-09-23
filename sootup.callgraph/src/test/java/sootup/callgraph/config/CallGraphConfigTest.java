@@ -47,7 +47,7 @@ import sootup.java.core.views.JavaView;
  */
 public class CallGraphConfigTest {
 
-  private final JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+  private final JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
 
   private JavaView createView(String classPath) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();

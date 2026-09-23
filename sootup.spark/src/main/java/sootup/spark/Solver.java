@@ -122,7 +122,7 @@ class Solver {
             .PAG(pag)
             .callGraph(callGraph)
             .view(view)
-            .nodeFactory(new NodeFactory(sparkOptions))
+            .nodeFactory(new NodeFactory(sparkOptions, view.getIdentifierFactory()))
             .build();
     method.getBody().getStmts().forEach(stmt -> stmt.accept(stmtVisitor));
   }
@@ -135,7 +135,7 @@ class Solver {
    */
   private void solveOnTheFly() {
     MutableCallGraph cg = (MutableCallGraph) callGraph;
-    NodeFactory nodeFactory = new NodeFactory(sparkOptions);
+    NodeFactory nodeFactory = new NodeFactory(sparkOptions, view.getIdentifierFactory());
     Deque<MethodSignature> worklist = new ArrayDeque<>(entryPoints);
     Set<MethodSignature> processed = new HashSet<>();
     Map<MethodSignature, MethodPAGStmtVisitor> visitors = new HashMap<>();
