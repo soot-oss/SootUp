@@ -383,7 +383,9 @@ public class PAG {
   public AllocNode makeStringConstantNode(StringConstant sc) {
     StringConstant stringConstant = sc;
     if (!pta.getConfig().isStringConstants()) {
-      stringConstant = JavaJimple.newStringConstant(PointsToAnalysis.STRING_NODE);
+      stringConstant =
+          JavaJimple.newStringConstant(
+              PointsToAnalysis.STRING_NODE, pta.getView().getIdentifierFactory());
     }
     AllocNode ret = valToAllocNode.get(stringConstant);
     if (ret == null) {

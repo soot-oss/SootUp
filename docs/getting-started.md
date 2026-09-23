@@ -17,6 +17,14 @@ handles the representation of the code you configured it to analyze.
 
 You can use bytecode analysis typically when you do not have access to the source code of the target program. Following example shows how to create a view for analyzing Java bytecode.
 
+When you compile the program yourself, use `javac -g` so the class file keeps
+local variable names. Jimple then uses those names instead of `l0`, `l1`, which
+is easier to follow as a beginner.
+
+```
+javac -g Main.java
+```
+
 !!! example "Create a view to analyze Java bytecode"
 
     ~~~java

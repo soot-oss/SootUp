@@ -14,6 +14,7 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.core.validation.TrapsValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 import sootup.jimple.frontend.JimpleAnalysisInputLocation;
@@ -42,7 +43,7 @@ public class TrapsValidatorTest {
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("jimple");
+            return new JavaIdentifierFactory().getPackageName("jimple");
           }
         };
 

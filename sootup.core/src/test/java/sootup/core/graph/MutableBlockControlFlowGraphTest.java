@@ -15,6 +15,7 @@ import sootup.core.jimple.common.expr.JNeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.PackageName;
+import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.*;
 import sootup.core.util.printer.BriefStmtPrinter;
 
@@ -47,7 +48,7 @@ public class MutableBlockControlFlowGraphTest {
 
         @Override
         public PackageName getPackageName() {
-          return new PackageName("java.lang");
+          return SignatureInterner.getPackageName("java.lang");
         }
       };
 
@@ -66,7 +67,7 @@ public class MutableBlockControlFlowGraphTest {
 
         @Override
         public PackageName getPackageName() {
-          return new PackageName("java.io");
+          return SignatureInterner.getPackageName("java.io");
         }
       };
 
@@ -568,7 +569,7 @@ public class MutableBlockControlFlowGraphTest {
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("some.object");
+            return SignatureInterner.getPackageName("some.object");
           }
         };
 
@@ -587,7 +588,7 @@ public class MutableBlockControlFlowGraphTest {
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("some.object");
+            return SignatureInterner.getPackageName("some.object");
           }
         };
 

@@ -39,8 +39,7 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             "void",
             Collections.emptyList());
 
-    JavaClassType newClass =
-        new JavaClassType("AdderA", identifierFactory.getPackageName("update.operation.cg"));
+    JavaClassType newClass = identifierFactory.getClassType("AdderA", "update.operation.cg");
     CallGraph newCallGraph = algorithm.addClass(cg, newClass);
 
     assertEquals(0, cg.callsTo(mainMethodSignature).size());
