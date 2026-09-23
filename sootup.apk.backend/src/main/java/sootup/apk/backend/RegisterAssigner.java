@@ -116,7 +116,8 @@ public class RegisterAssigner {
           oldInsn.getIncompatibleRegs());
 
       if (oldInsn.hasIncompatibleRegs()) {
-        AbstractInstruction fittingInsn = findFittingInsn(oldInsn);
+        // AbstractInstruction fittingInsn = findFittingInsn(oldInsn);
+        AbstractInstruction fittingInsn = null;
 
         if (fittingInsn != null) {
           insnIter.set(fittingInsn, oldInsn);
@@ -175,8 +176,8 @@ public class RegisterAssigner {
       AbstractInstruction insn = insns.get(i);
       Stmt stmt = insnsStmtMap.get(insn);
       // first try to find a better opcode
-      AbstractInstruction fittingInsn = findFittingInsn(insn);
-      // AbstractInstruction fittingInsn = null;
+      // AbstractInstruction fittingInsn = findFittingInsn(insn);
+      AbstractInstruction fittingInsn = null;
       if (fittingInsn != null) {
         // use the fitting instruction and continue with next one
         insns.set(i, fittingInsn);

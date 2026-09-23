@@ -124,6 +124,7 @@ public class DexMethodBuilder {
           new DexStmtVisitor(view, registerAllocator, dexConstantVisitor, this, sootMethod);
 
       ControlFlowGraph<?> controlFlowGraph = sootMethod.getBody().getControlFlowGraph();
+
       Collection<? extends BasicBlock<?>> blocks = controlFlowGraph.getBlocks();
 
       log.info("BLOCKS: {}", blocks.size());
@@ -350,6 +351,11 @@ public class DexMethodBuilder {
           DexUtil.getRegisterSizeCount(sootMethod.getParameterTypes())
               + (sootMethod.isStatic() ? 0 : 1);
 
+      for (AbstractInstruction ins :
+          instructions.values().stream().flatMap(Collection::stream).toList()) {
+        log.info("Instruction {} of stmt {}", ins.getOpcode(), instructionMap.get(ins));
+      }
+
       RegisterAssigner registerAssigner = new RegisterAssigner(registerAllocator);
       for (AbstractInstruction ins :
           instructions.values().stream().flatMap(Collection::stream).toList()) {
@@ -479,7 +485,6 @@ public class DexMethodBuilder {
         Register old = localRegisterMap.get(local);
         if (old != null && !newRegister.equals(old)) {
           var i = instructions.get(block);
-          // change0ToNull(local, old, newRegister.getType(), block, blockRegisterMapAtStart);
           AbstractInstruction moveInstruction;
           if (old.isPotentialNullValue() && !(newRegister.getType() instanceof PrimitiveType)) {
             moveInstruction = new Instruction11n(Opcode.CONST_4, newRegister, 0);
@@ -491,11 +496,16 @@ public class DexMethodBuilder {
             if (i.size() > 1
                 && (i.get(i.size() - 2).getOpcode().equals(Opcode.PACKED_SWITCH)
                     || i.get(i.size() - 2).getOpcode().equals(Opcode.SPARSE_SWITCH))) {
+              instructionMap.put(
+                  moveInstruction, instructionMap.get(instructions.get(i.size() - 3)));
               i.add(i.size() - 2, moveInstruction);
             } else {
+              instructionMap.put(
+                  moveInstruction, instructionMap.get(instructions.get(i.size() - 2)));
               i.add(i.size() - 1, moveInstruction);
             }
           } else {
+            instructionMap.put(moveInstruction, instructionMap.get(instructions.get(i.size() - 1)));
             i.add(moveInstruction);
           }
         }
@@ -625,11 +635,14 @@ public class DexMethodBuilder {
         if (i.size() > 1
             && (i.get(i.size() - 2).getOpcode().equals(Opcode.PACKED_SWITCH)
                 || i.get(i.size() - 2).getOpcode().equals(Opcode.SPARSE_SWITCH))) {
+          instructionMap.put(moveInstruction, instructionMap.get(instructions.get(i.size() - 3)));
           i.add(i.size() - 2, moveInstruction);
         } else {
+          instructionMap.put(moveInstruction, instructionMap.get(instructions.get(i.size() - 2)));
           i.add(i.size() - 1, moveInstruction);
         }
       } else {
+        instructionMap.put(moveInstruction, instructionMap.get(instructions.get(i.size() - 1)));
         i.add(moveInstruction);
       }
     }
@@ -668,6 +681,7 @@ public class DexMethodBuilder {
       ListIterator<AbstractInstruction> iterator = ins.listIterator();
       while (iterator.hasNext()) {
         AbstractInstruction in = iterator.next();
+        Stmt in_stmt = instructionMap.get(in);
         if (!start && in.equals(startAtIns)) {
           start = true;
         }
@@ -689,6 +703,7 @@ public class DexMethodBuilder {
               DexExprVisitor.generateMoveInstruction(
                   targetRegister, newRegister, newRegister.getType(), false, null, null);
           iterator.set(moveInstruction);
+          instructionMap.put(moveInstruction, in_stmt);
           changeFollowingRegistersToNewType(
               currentBlock, null, targetRegister, in, blockRegisterMapStart, blockRegisterMapEnd);
         }
