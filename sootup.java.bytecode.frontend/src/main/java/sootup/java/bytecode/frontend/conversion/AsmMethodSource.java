@@ -2126,14 +2126,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (visibleParameterAnnotations != null
           && paramIndex < visibleParameterAnnotations.length
           && visibleParameterAnnotations[paramIndex] != null) {
-        AsmUtil.createAnnotationUsage(visibleParameterAnnotations[paramIndex]).forEach(list::add);
+        AsmUtil.createAnnotationUsage(visibleParameterAnnotations[paramIndex], identifierFactory)
+            .forEach(list::add);
       }
     }
     if (invis) {
       if (invisibleParameterAnnotations != null
           && paramIndex < invisibleParameterAnnotations.length
           && invisibleParameterAnnotations[paramIndex] != null) {
-        AsmUtil.createAnnotationUsage(invisibleParameterAnnotations[paramIndex]).forEach(list::add);
+        AsmUtil.createAnnotationUsage(invisibleParameterAnnotations[paramIndex], identifierFactory)
+            .forEach(list::add);
       }
     }
     return list;
