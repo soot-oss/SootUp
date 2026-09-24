@@ -18,17 +18,12 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
-import sootup.core.signatures.PackageName;
-import sootup.core.types.Type;
-import sootup.core.types.VoidType;
 import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaModulePathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -57,13 +52,6 @@ public class SootUpConfiguration {
   @NonNull private JavaView view;
   @NonNull private MethodSignature entrypoint;
   @NonNull private List<String> arguments;
-
-  private static final MethodSubSignature MAIN_SIGNATURE =
-      new MethodSubSignature(
-          "main",
-          List.of(
-              Type.createArrayType(new JavaClassType("String", new PackageName("java.lang")), 1)),
-          VoidType.getInstance());
 
   // --8<-- [start:constructor]
   public SootUpConfiguration(@NonNull String... args) throws ParseException, IOException {
@@ -157,6 +145,7 @@ public class SootUpConfiguration {
 
     // --8<-- [start:entrypoint]
     List<String> positional = cmd.getArgList();
+    String mainClass;
 
     if (cmd.hasOption("jar")) {
       String jarFile = cmd.getOptionValue("jar");
@@ -170,25 +159,16 @@ public class SootUpConfiguration {
       try (JarInputStream jis = new JarInputStream(new FileInputStream(jarFile))) {
         Manifest manifest = jis.getManifest();
         Attributes attrs = manifest.getMainAttributes();
-        String mainClass = attrs.getValue("Main-Class");
-        this.entrypoint =
-            new MethodSignature(
-                JavaIdentifierFactory.getInstance().getClassType(mainClass), MAIN_SIGNATURE);
+        mainClass = attrs.getValue("Main-Class");
       }
     } else if (cmd.hasOption("module")) {
-      this.entrypoint =
-          new MethodSignature(
-              JavaModuleIdentifierFactory.getInstance().getClassType(cmd.getOptionValue("module")),
-              MAIN_SIGNATURE);
+      mainClass = cmd.getOptionValue("module");
     } else {
       if (positional.isEmpty()) {
         throw new IllegalArgumentException("No main class specified and no --jar/--module given.");
       }
       // First positional argument is the main class; the rest are forwarded to main(String[]).
-      String mainClass = positional.remove(0);
-      this.entrypoint =
-          new MethodSignature(
-              JavaIdentifierFactory.getInstance().getClassType(mainClass), MAIN_SIGNATURE);
+      mainClass = positional.remove(0);
     }
     // --8<-- [end:entrypoint]
 
@@ -199,6 +179,18 @@ public class SootUpConfiguration {
 
     this.view = new JavaView(locations);
     this.arguments = positional;
+
+    // --8<-- [start:entrypoint-signature]
+    // Types and signatures are always obtained from an IdentifierFactory - usually the view's.
+    JavaIdentifierFactory identifierFactory =
+        cmd.hasOption("module") ? new JavaModuleIdentifierFactory() : view.getIdentifierFactory();
+    this.entrypoint =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType(mainClass),
+            "main",
+            "void",
+            List.of("java.lang.String[]"));
+    // --8<-- [end:entrypoint-signature]
   }
 
   // --8<-- [end:constructor]

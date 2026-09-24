@@ -188,8 +188,8 @@ examples exist:
 - [Typestate Analysis with Heros](analysis-typestate.md) — an IDE problem, explained step
   by step: flow functions, edge functions, the zero fact, seeds and the meet lattice. Start
   here.
-- A taint analysis as an IFDS problem, in `IFDSTaintAnalysisProblem` and
-  `IFDSTaintTestSetUp` in the test suite of the `sootup.analysis.interprocedural` module.
+- [Taint Analysis with Heros](taint-analysis-example.md) — an IFDS problem, explained step
+  by step: sources, sinks, the four flow functions and how to query the solver for leaks.
 
 For background on the algorithms themselves:
 

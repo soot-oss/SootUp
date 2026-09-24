@@ -8,14 +8,14 @@ import java.util.Arrays;
 /**
  * An edge function over {@link TypestateFact}s, represented as an explicit transfer table.
  *
- * <p>Heros requires edge functions to support composition and meet, and it composes them
- * repeatedly while building method summaries. Representing a function as "apply this list of
- * events" would let the representation grow without bound inside loops, and the solver would never
- * reach a fixed point. Because the automaton has finitely many states, every function {@code
- * TypestateFact -> TypestateFact} can instead be written down as a table: one entry per state, plus
- * one entry for each of the three special values. Composition and meet then work entry by entry and
- * {@link #equalTo} is a table comparison — so only finitely many distinct edge functions exist and
- * the solver terminates.
+ * <p>Heros requires edge functions to support composition and meet, and it composes them repeatedly
+ * while building method summaries. Representing a function as "apply this list of events" would let
+ * the representation grow without bound inside loops, and the solver would never reach a fixed
+ * point. Because the automaton has finitely many states, every function {@code TypestateFact ->
+ * TypestateFact} can instead be written down as a table: one entry per state, plus one entry for
+ * each of the three special values. Composition and meet then work entry by entry and {@link
+ * #equalTo} is a table comparison — so only finitely many distinct edge functions exist and the
+ * solver terminates.
  */
 public final class TypestateEdgeFunction implements EdgeFunction<TypestateFact> {
 
@@ -62,6 +62,7 @@ public final class TypestateEdgeFunction implements EdgeFunction<TypestateFact> 
   private int apply(int incomingCode) {
     return table[slotOf(incomingCode)];
   }
+
   // --8<-- [end:edge-function-table]
 
   private TypestateEdgeFunction(Typestate automaton, int[] table) {
@@ -96,6 +97,7 @@ public final class TypestateEdgeFunction implements EdgeFunction<TypestateFact> 
     }
     return new TypestateEdgeFunction(automaton, table);
   }
+
   // --8<-- [end:edge-function-factories]
 
   /** The meet of two encoded values; mirrors {@link TypestateProblem}'s meet lattice. */
@@ -176,6 +178,7 @@ public final class TypestateEdgeFunction implements EdgeFunction<TypestateFact> 
     TypestateEdgeFunction that = (TypestateEdgeFunction) other;
     return automaton == that.automaton && Arrays.equals(table, that.table);
   }
+
   // --8<-- [end:edge-function-ops]
 
   @Override

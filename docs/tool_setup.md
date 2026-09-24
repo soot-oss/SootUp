@@ -74,6 +74,13 @@ simulate passing `String[]` to `main`:
 --8<-- "sootup.examples/src/test/java/sootup/examples/toolsetup/SootUpConfiguration.java:entrypoint"
 ```
 
+Once the `JavaView` is created, the main class name is turned into the `MethodSignature` of
+`main(String[])`. Like all identifiers in SootUp, it is obtained from an `IdentifierFactory`:
+
+```java
+--8<-- "sootup.examples/src/test/java/sootup/examples/toolsetup/SootUpConfiguration.java:entrypoint-signature"
+```
+
 ---
 
 ## Using it in your tool
