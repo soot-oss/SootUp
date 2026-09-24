@@ -28,17 +28,17 @@ import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.value.EncodedValue;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.main.AndroidVersionInfo;
+import sootup.core.IdentifierFactory;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.types.JavaClassType;
 
 public class DexUtil {
 
   private static AndroidVersionInfo androidVersionInfo;
 
-  public static Type toSootType(String typeDescriptor, int pos) {
+  public static Type toSootType(
+      String typeDescriptor, int pos, @NonNull IdentifierFactory identifierFactory) {
     Type type = null;
     char typeDesignator = typeDescriptor.charAt(pos);
     switch (typeDesignator) {
@@ -70,13 +70,13 @@ public class DexUtil {
         if (isByteCodeClassName(typeDescriptor)) {
           typeDescriptor = dottedClassName(typeDescriptor);
         }
-        type = getClassTypeFromClassName(typeDescriptor);
+        type = getClassTypeFromClassName(typeDescriptor, identifierFactory);
         break;
       case 'V': // void
         type = VoidType.getInstance();
         break;
       case '[': // array
-        Type sootType = toSootType(typeDescriptor, pos + 1);
+        Type sootType = toSootType(typeDescriptor, pos + 1, identifierFactory);
         if (sootType != null) {
           type = Type.createArrayType(sootType, 1);
         }
@@ -135,15 +135,16 @@ public class DexUtil {
         && ((className.indexOf('/') != -1 || className.indexOf('.') == -1)));
   }
 
-  public static ClassType getClassTypeFromClassName(String name) {
+  public static ClassType getClassTypeFromClassName(
+      String name, @NonNull IdentifierFactory identifierFactory) {
     if (name.startsWith("[")) {
       name = "java.lang.Object";
     } else if (isByteCodeClassName(name)) {
       name = dottedClassName(name);
     }
-    JavaClassType javaClassType;
+    ClassType javaClassType;
     try {
-      javaClassType = JavaIdentifierFactory.getInstance().getClassType(name);
+      javaClassType = identifierFactory.getClassType(name);
     } catch (Exception exception) {
       System.out.println("Exception when substring with className " + name);
       throw new RuntimeException();

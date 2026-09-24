@@ -44,10 +44,6 @@ public class JavaEagerView extends JavaView {
   public JavaEagerView(
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull ClassCacheProvider cacheProvider) {
-    super(
-        inputLocations,
-        cacheProvider,
-        LoadingStrategy.eager(),
-        JavaIdentifierFactory.getInstance());
+    super(inputLocations, cacheProvider, LoadingStrategy.eager(), new JavaIdentifierFactory());
   }
 }

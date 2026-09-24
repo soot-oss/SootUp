@@ -63,7 +63,7 @@ public class JInvokeStmtTest {
   public void test() {
     StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
 
-    JavaIdentifierFactory dif = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory dif = new JavaIdentifierFactory();
 
     Path dummyPath = Paths.get(URI.create("file:/nonexistent.java"));
     JavaClassType superClassSignature = dif.getClassType("java.lang.Object");
@@ -94,7 +94,8 @@ public class JInvokeStmtTest {
     Stmt staticInvokeStmt =
         new JInvokeStmt(
             new JStaticInvokeExpr(
-                statMethodSig, Collections.singletonList(JavaJimple.newStringConstant("Towel"))),
+                statMethodSig,
+                Collections.singletonList(JavaJimple.newStringConstant("Towel", dif))),
             nop);
 
     // toString

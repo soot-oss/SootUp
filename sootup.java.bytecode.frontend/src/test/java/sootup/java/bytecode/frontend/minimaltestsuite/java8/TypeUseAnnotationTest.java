@@ -138,4 +138,35 @@ public class TypeUseAnnotationTest extends MinimalBytecodeTestSuiteBase {
     }
     assertEquals(Collections.singletonList(annotation("TypeUseCls")), annotationsOnLocals);
   }
+
+  /**
+   * Reproduces method parameter annotation retrieval and prevents JSR 308 type-use annotation
+   * leakage.
+   *
+   * <p>Subject pattern: Method signatures with parameter declaration annotations (@ParamDecl) vs
+   * type-use annotations (@TypeUseCls): public int paramDeclAndType(@ParamDecl @TypeUseCls int p,
+   * int q)
+   *
+   * <p>1. SootMethod/BodySource lacked an API to query method parameter declaration annotations. 2.
+   * JSR 308 METHOD_FORMAL_PARAMETER type annotations (JVMS §4.7.20) attached to parameter types
+   * must not leak into parameter declaration annotations (JVMS §4.7.18/§4.7.19). 3.
+   * getParameterAnnotations(0) must return [@ParamDecl], while parameter 1 returns empty list.
+   */
+  @Test
+  public void testMethodParameterAnnotationsExcludeTypeUseAnnotations() {
+    JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
+
+    assertEquals(
+        Collections.emptyList(),
+        methodWithIntParams(sootClass, "paramTypeCls", 1).getParameterAnnotations(0));
+    assertEquals(
+        Collections.emptyList(),
+        methodWithIntParams(sootClass, "paramTypeRt", 1).getParameterAnnotations(0));
+    assertEquals(
+        Collections.singletonList(annotation("ParamDecl")),
+        methodWithIntParams(sootClass, "paramDeclAndType", 2).getParameterAnnotations(0));
+    assertEquals(
+        Collections.emptyList(),
+        methodWithIntParams(sootClass, "paramDeclAndType", 2).getParameterAnnotations(1));
+  }
 }
