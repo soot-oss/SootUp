@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1112,6 +1112,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tool_setup/" class="md-nav__link">
         
   
@@ -1566,13 +1622,18 @@ handles the representation of the code you configured it to analyze.</p>
 </ul>
 <h2 id="creating-a-view">Creating a View</h2>
 <p>You can use bytecode analysis typically when you do not have access to the source code of the target program. Following example shows how to create a view for analyzing Java bytecode.</p>
+<p>When you compile the program yourself, use <code>javac -g</code> so the class file keeps
+local variable names. Jimple then uses those names instead of <code>l0</code>, <code>l1</code>, which
+is easier to follow as a beginner.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>javac -g Main.java
+</code></pre></div></td></tr></table></div>
 <div class="admonition example">
 <p class="admonition-title">Create a view to analyze Java bytecode</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
-<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span><span class="s">&quot;path2Binary&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span><span class="s">"path2Binary"</span><span class="p">);</span>
 
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
@@ -1586,7 +1647,7 @@ Usually you should compile the code for analysis first and use the bytecode fron
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
-<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">JavaSourcePathAnalysisInputLocation</span><span class="p">(</span><span class="s">&quot;path2Source&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">JavaSourcePathAnalysisInputLocation</span><span class="p">(</span><span class="s">"path2Source"</span><span class="p">);</span>
 
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
@@ -1599,7 +1660,7 @@ Usually you should compile the code for analysis first and use the bytecode fron
 <span class="normal">3</span>
 <span class="normal">4</span>
 <span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Path</span><span class="w"> </span><span class="n">pathToJimple</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;path2Jimple&quot;</span><span class="p">);</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Path</span><span class="w"> </span><span class="n">pathToJimple</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">"path2Jimple"</span><span class="p">);</span>
 
 <span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
 <span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">JimpleAnalysisInputLocation</span><span class="p">(</span><span class="n">pathToJimple</span><span class="p">);</span>
@@ -1665,7 +1726,7 @@ To for example use an <code>LRUCache</code> instead, which stores at most e.g. 5
 <p class="admonition-title">Defining a ClassType</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaClassType</span><span class="w"> </span><span class="n">classType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
-<span class="w">        </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;example.HelloWorld&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"example.HelloWorld"</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
 </div>
 <p>Once we have a <code>ClassType</code> that identifies the <code>HelloWorld</code> class, we can use it to retrieve the corresponding <code>SootClass</code> object from the <code>view</code> as shown below:</p>
@@ -1693,9 +1754,9 @@ To for example use an <code>LRUCache</code> instead, which stores at most e.g. 5
 <span class="w">        </span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="na">getMethodSignature</span><span class="p">(</span>
 <span class="w">            </span><span class="n">classType</span><span class="p">,</span>
-<span class="w">            </span><span class="s">&quot;main&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">// method name</span>
-<span class="w">            </span><span class="s">&quot;void&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">// return type</span>
-<span class="w">            </span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="s">&quot;java.lang.String[]&quot;</span><span class="p">));</span><span class="w"> </span><span class="c1">// args</span>
+<span class="w">            </span><span class="s">"main"</span><span class="p">,</span><span class="w"> </span><span class="c1">// method name</span>
+<span class="w">            </span><span class="s">"void"</span><span class="p">,</span><span class="w"> </span><span class="c1">// return type</span>
+<span class="w">            </span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="s">"java.lang.String[]"</span><span class="p">));</span><span class="w"> </span><span class="c1">// args</span>
 </code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
@@ -1707,7 +1768,7 @@ To for example use an <code>LRUCache</code> instead, which stores at most e.g. 5
 <span class="w">    </span><span class="n">view</span>
 <span class="w">        </span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="na">parseMethodSignature</span><span class="p">(</span>
-<span class="w">            </span><span class="s">&quot;&lt;packageName.classType: void main(java.lang.String[])&gt;&quot;</span><span class="p">);</span>
+<span class="w">            </span><span class="s">"&lt;packageName.classType: void main(java.lang.String[])&gt;"</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
@@ -1914,7 +1975,7 @@ To for example use an <code>LRUCache</code> instead, which stores at most e.g. 5
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

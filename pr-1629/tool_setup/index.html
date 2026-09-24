@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://soot-oss.github.io/SootUp/pr-1629/tool_setup/">
       
       
-        <link rel="prev" href="../analysis-constprop/">
+        <link rel="prev" href="../taint-analysis-example/">
       
       
         <link rel="next" href="../qilin/">
@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -996,6 +996,62 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -1507,7 +1563,7 @@ This page walks through <code>SootUpConfiguration</code> you can copy it directl
 </code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">implementation</span><span class="o">(</span><span class="s2">&quot;commons-cli:commons-cli:1.11.0&quot;</span><span class="o">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">implementation</span><span class="o">(</span><span class="s2">"commons-cli:commons-cli:1.11.0"</span><span class="o">)</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
@@ -1564,54 +1620,54 @@ JAR, and a module-style entry point. Every flag that <code>java</code> accepts f
 <span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
-<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">Options</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Options</span><span class="p">();</span>
-<span class="w">    </span><span class="c1">// Long-only options: Option.builder() without opt() gives a long-only flag (no -x short form).</span>
-<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="na">addOption</span><span class="p">(</span>
-<span class="w">        </span><span class="n">Option</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">            </span><span class="p">.</span><span class="na">longOpt</span><span class="p">(</span><span class="s">&quot;jar&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">hasArg</span><span class="p">()</span>
-<span class="w">            </span><span class="p">.</span><span class="na">argName</span><span class="p">(</span><span class="s">&quot;file&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">desc</span><span class="p">(</span><span class="s">&quot;Executable JAR; Main-Class is read from its manifest.&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
-<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="na">addOption</span><span class="p">(</span>
-<span class="w">        </span><span class="n">Option</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">            </span><span class="p">.</span><span class="na">longOpt</span><span class="p">(</span><span class="s">&quot;class-path&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">hasArg</span><span class="p">()</span>
-<span class="w">            </span><span class="p">.</span><span class="na">argName</span><span class="p">(</span><span class="s">&quot;path&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">desc</span><span class="p">(</span>
-<span class="w">                </span><span class="s">&quot;Application classpath (directories or JARs, separated by &#39;&quot;</span>
-<span class="w">                    </span><span class="o">+</span><span class="w"> </span><span class="n">java</span><span class="p">.</span><span class="na">io</span><span class="p">.</span><span class="na">File</span><span class="p">.</span><span class="na">pathSeparator</span>
-<span class="w">                    </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;&#39;).&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
-<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="na">addOption</span><span class="p">(</span>
-<span class="w">        </span><span class="n">Option</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">            </span><span class="p">.</span><span class="na">longOpt</span><span class="p">(</span><span class="s">&quot;classpath&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">hasArg</span><span class="p">()</span>
-<span class="w">            </span><span class="p">.</span><span class="na">argName</span><span class="p">(</span><span class="s">&quot;path&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">desc</span><span class="p">(</span><span class="s">&quot;Application classpath (alias for --class-path).&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
-<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="na">addOption</span><span class="p">(</span>
-<span class="w">        </span><span class="n">Option</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">            </span><span class="p">.</span><span class="na">longOpt</span><span class="p">(</span><span class="s">&quot;cp&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">hasArg</span><span class="p">()</span>
-<span class="w">            </span><span class="p">.</span><span class="na">argName</span><span class="p">(</span><span class="s">&quot;path&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">desc</span><span class="p">(</span><span class="s">&quot;Application classpath (short alias).&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
-<span class="w">    </span><span class="c1">// Options with both a short and a long name (mirrors java/javac flags).</span>
-<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="na">addOption</span><span class="p">(</span>
-<span class="w">        </span><span class="n">Option</span><span class="p">.</span><span class="na">builder</span><span class="p">(</span><span class="s">&quot;m&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">longOpt</span><span class="p">(</span><span class="s">&quot;module&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">hasArg</span><span class="p">()</span>
-<span class="w">            </span><span class="p">.</span><span class="na">argName</span><span class="p">(</span><span class="s">&quot;module&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">desc</span><span class="p">(</span><span class="s">&quot;Module entry point, e.g. com.example/com.example.Main.&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
-<span class="w">    </span><span class="n">options</span><span class="p">.</span><span class="na">addOption</span><span class="p">(</span>
-<span class="w">        </span><span class="n">Option</span><span class="p">.</span><span class="na">builder</span><span class="p">(</span><span class="s">&quot;p&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">longOpt</span><span class="p">(</span><span class="s">&quot;module-path&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">hasArg</span><span class="p">()</span>
-<span class="w">            </span><span class="p">.</span><span class="na">argName</span><span class="p">(</span><span class="s">&quot;path&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">desc</span><span class="p">(</span><span class="s">&quot;Module path.&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Options</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Options</span><span class="p">();</span>
+<span class="c1">// Long-only options: Option.builder() without opt() gives a long-only flag (no -x short form).</span>
+<span class="n">options</span><span class="p">.</span><span class="na">addOption</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Option</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">longOpt</span><span class="p">(</span><span class="s">"jar"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">hasArg</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">argName</span><span class="p">(</span><span class="s">"file"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">desc</span><span class="p">(</span><span class="s">"Executable JAR; Main-Class is read from its manifest."</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+<span class="n">options</span><span class="p">.</span><span class="na">addOption</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Option</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">longOpt</span><span class="p">(</span><span class="s">"class-path"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">hasArg</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">argName</span><span class="p">(</span><span class="s">"path"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">desc</span><span class="p">(</span>
+<span class="w">            </span><span class="s">"Application classpath (directories or JARs, separated by '"</span>
+<span class="w">                </span><span class="o">+</span><span class="w"> </span><span class="n">java</span><span class="p">.</span><span class="na">io</span><span class="p">.</span><span class="na">File</span><span class="p">.</span><span class="na">pathSeparator</span>
+<span class="w">                </span><span class="o">+</span><span class="w"> </span><span class="s">"')."</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+<span class="n">options</span><span class="p">.</span><span class="na">addOption</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Option</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">longOpt</span><span class="p">(</span><span class="s">"classpath"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">hasArg</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">argName</span><span class="p">(</span><span class="s">"path"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">desc</span><span class="p">(</span><span class="s">"Application classpath (alias for --class-path)."</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+<span class="n">options</span><span class="p">.</span><span class="na">addOption</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Option</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">longOpt</span><span class="p">(</span><span class="s">"cp"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">hasArg</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">argName</span><span class="p">(</span><span class="s">"path"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">desc</span><span class="p">(</span><span class="s">"Application classpath (short alias)."</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+<span class="c1">// Options with both a short and a long name (mirrors java/javac flags).</span>
+<span class="n">options</span><span class="p">.</span><span class="na">addOption</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Option</span><span class="p">.</span><span class="na">builder</span><span class="p">(</span><span class="s">"m"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">longOpt</span><span class="p">(</span><span class="s">"module"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">hasArg</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">argName</span><span class="p">(</span><span class="s">"module"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">desc</span><span class="p">(</span><span class="s">"Module entry point, e.g. com.example/com.example.Main."</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+<span class="n">options</span><span class="p">.</span><span class="na">addOption</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Option</span><span class="p">.</span><span class="na">builder</span><span class="p">(</span><span class="s">"p"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">longOpt</span><span class="p">(</span><span class="s">"module-path"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">hasArg</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">argName</span><span class="p">(</span><span class="s">"path"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">desc</span><span class="p">(</span><span class="s">"Module path."</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Why mirror the <code>java</code> flags?</strong><br />
 Muscle memory. Anyone who has ever run <code>javac</code>, <code>java</code>, or <code>jar</code> already knows that
@@ -1642,26 +1698,26 @@ Muscle memory. Anyone who has ever run <code>javac</code>, <code>java</code>, or
 <span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
-<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="c1">// Collect all --cp / --classpath / --class-path values (all three are accepted, just like</span>
-<span class="w">    </span><span class="c1">// java).</span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">opt</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;cp&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;classpath&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;class-path&quot;</span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cmd</span><span class="p">.</span><span class="na">hasOption</span><span class="p">(</span><span class="n">opt</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">locations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span>
-<span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span>
-<span class="w">                </span><span class="n">cmd</span><span class="p">.</span><span class="na">getOptionValue</span><span class="p">(</span><span class="n">opt</span><span class="p">),</span>
-<span class="w">                </span><span class="n">SourceType</span><span class="p">.</span><span class="na">Application</span><span class="p">,</span>
-<span class="w">                </span><span class="n">BytecodeBodyInterceptors</span><span class="p">.</span><span class="na">Default</span><span class="p">.</span><span class="na">getBodyInterceptors</span><span class="p">()));</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// Collect all --cp / --classpath / --class-path values (all three are accepted, just like</span>
+<span class="c1">// java).</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">opt</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="p">{</span><span class="s">"cp"</span><span class="p">,</span><span class="w"> </span><span class="s">"classpath"</span><span class="p">,</span><span class="w"> </span><span class="s">"class-path"</span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cmd</span><span class="p">.</span><span class="na">hasOption</span><span class="p">(</span><span class="n">opt</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">locations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span>
+<span class="w">            </span><span class="n">cmd</span><span class="p">.</span><span class="na">getOptionValue</span><span class="p">(</span><span class="n">opt</span><span class="p">),</span>
+<span class="w">            </span><span class="n">SourceType</span><span class="p">.</span><span class="na">Application</span><span class="p">,</span>
+<span class="w">            </span><span class="n">BytecodeBodyInterceptors</span><span class="p">.</span><span class="na">Default</span><span class="p">.</span><span class="na">getBodyInterceptors</span><span class="p">()));</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">locations</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="c1">// Fall back to the current working directory when nothing is specified.</span>
-<span class="w">      </span><span class="n">locations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span>
-<span class="w">          </span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span>
-<span class="w">              </span><span class="n">System</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span><span class="s">&quot;user.dir&quot;</span><span class="p">),</span>
-<span class="w">              </span><span class="n">SourceType</span><span class="p">.</span><span class="na">Application</span><span class="p">,</span>
-<span class="w">              </span><span class="n">BytecodeBodyInterceptors</span><span class="p">.</span><span class="na">Default</span><span class="p">.</span><span class="na">getBodyInterceptors</span><span class="p">()));</span>
-<span class="w">    </span><span class="p">}</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">locations</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Fall back to the current working directory when nothing is specified.</span>
+<span class="w">  </span><span class="n">locations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span>
+<span class="w">      </span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span>
+<span class="w">          </span><span class="n">System</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span><span class="s">"user.dir"</span><span class="p">),</span>
+<span class="w">          </span><span class="n">SourceType</span><span class="p">.</span><span class="na">Application</span><span class="p">,</span>
+<span class="w">          </span><span class="n">BytecodeBodyInterceptors</span><span class="p">.</span><span class="na">Default</span><span class="p">.</span><span class="na">getBodyInterceptors</span><span class="p">()));</span>
+<span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>The entry point is resolved from three sources in order of precedence: <code>--jar</code> (reads
 <code>Main-Class</code> from the manifest), <code>--module</code>, or the first positional argument (the main
@@ -1692,48 +1748,52 @@ simulate passing <code>String[]</code> to <code>main</code>:</p>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">positional</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cmd</span><span class="p">.</span><span class="na">getArgList</span><span class="p">();</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">positional</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cmd</span><span class="p">.</span><span class="na">getArgList</span><span class="p">();</span>
+<span class="n">String</span><span class="w"> </span><span class="n">mainClass</span><span class="p">;</span>
 
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cmd</span><span class="p">.</span><span class="na">hasOption</span><span class="p">(</span><span class="s">&quot;jar&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">String</span><span class="w"> </span><span class="n">jarFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cmd</span><span class="p">.</span><span class="na">getOptionValue</span><span class="p">(</span><span class="s">&quot;jar&quot;</span><span class="p">);</span>
-<span class="w">      </span><span class="n">locations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span>
-<span class="w">          </span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span>
-<span class="w">              </span><span class="n">jarFile</span><span class="p">,</span>
-<span class="w">              </span><span class="n">SourceType</span><span class="p">.</span><span class="na">Application</span><span class="p">,</span>
-<span class="w">              </span><span class="n">BytecodeBodyInterceptors</span><span class="p">.</span><span class="na">Default</span><span class="p">.</span><span class="na">getBodyInterceptors</span><span class="p">()));</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cmd</span><span class="p">.</span><span class="na">hasOption</span><span class="p">(</span><span class="s">"jar"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">String</span><span class="w"> </span><span class="n">jarFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cmd</span><span class="p">.</span><span class="na">getOptionValue</span><span class="p">(</span><span class="s">"jar"</span><span class="p">);</span>
+<span class="w">  </span><span class="n">locations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span>
+<span class="w">      </span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span>
+<span class="w">          </span><span class="n">jarFile</span><span class="p">,</span>
+<span class="w">          </span><span class="n">SourceType</span><span class="p">.</span><span class="na">Application</span><span class="p">,</span>
+<span class="w">          </span><span class="n">BytecodeBodyInterceptors</span><span class="p">.</span><span class="na">Default</span><span class="p">.</span><span class="na">getBodyInterceptors</span><span class="p">()));</span>
 
-<span class="w">      </span><span class="c1">// Read Main-Class from the JAR manifest — no need to specify it separately.</span>
-<span class="w">      </span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">JarInputStream</span><span class="w"> </span><span class="n">jis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JarInputStream</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">FileInputStream</span><span class="p">(</span><span class="n">jarFile</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">Manifest</span><span class="w"> </span><span class="n">manifest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jis</span><span class="p">.</span><span class="na">getManifest</span><span class="p">();</span>
-<span class="w">        </span><span class="n">Attributes</span><span class="w"> </span><span class="n">attrs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">manifest</span><span class="p">.</span><span class="na">getMainAttributes</span><span class="p">();</span>
-<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">mainClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">attrs</span><span class="p">.</span><span class="na">getValue</span><span class="p">(</span><span class="s">&quot;Main-Class&quot;</span><span class="p">);</span>
-<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">entrypoint</span><span class="w"> </span><span class="o">=</span>
-<span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">MethodSignature</span><span class="p">(</span>
-<span class="w">                </span><span class="n">JavaIdentifierFactory</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="n">mainClass</span><span class="p">),</span><span class="w"> </span><span class="n">MAIN_SIGNATURE</span><span class="p">);</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cmd</span><span class="p">.</span><span class="na">hasOption</span><span class="p">(</span><span class="s">&quot;module&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="na">entrypoint</span><span class="w"> </span><span class="o">=</span>
-<span class="w">          </span><span class="k">new</span><span class="w"> </span><span class="n">MethodSignature</span><span class="p">(</span>
-<span class="w">              </span><span class="n">JavaModuleIdentifierFactory</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="n">cmd</span><span class="p">.</span><span class="na">getOptionValue</span><span class="p">(</span><span class="s">&quot;module&quot;</span><span class="p">)),</span>
-<span class="w">              </span><span class="n">MAIN_SIGNATURE</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">positional</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s">&quot;No main class specified and no --jar/--module given.&quot;</span><span class="p">);</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">      </span><span class="c1">// First positional argument is the main class; the rest are forwarded to main(String[]).</span>
-<span class="w">      </span><span class="n">String</span><span class="w"> </span><span class="n">mainClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">positional</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="na">entrypoint</span><span class="w"> </span><span class="o">=</span>
-<span class="w">          </span><span class="k">new</span><span class="w"> </span><span class="n">MethodSignature</span><span class="p">(</span>
-<span class="w">              </span><span class="n">JavaIdentifierFactory</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="n">mainClass</span><span class="p">),</span><span class="w"> </span><span class="n">MAIN_SIGNATURE</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// Read Main-Class from the JAR manifest — no need to specify it separately.</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">JarInputStream</span><span class="w"> </span><span class="n">jis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JarInputStream</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">FileInputStream</span><span class="p">(</span><span class="n">jarFile</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Manifest</span><span class="w"> </span><span class="n">manifest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jis</span><span class="p">.</span><span class="na">getManifest</span><span class="p">();</span>
+<span class="w">    </span><span class="n">Attributes</span><span class="w"> </span><span class="n">attrs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">manifest</span><span class="p">.</span><span class="na">getMainAttributes</span><span class="p">();</span>
+<span class="w">    </span><span class="n">mainClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">attrs</span><span class="p">.</span><span class="na">getValue</span><span class="p">(</span><span class="s">"Main-Class"</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cmd</span><span class="p">.</span><span class="na">hasOption</span><span class="p">(</span><span class="s">"module"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">mainClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cmd</span><span class="p">.</span><span class="na">getOptionValue</span><span class="p">(</span><span class="s">"module"</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">positional</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s">"No main class specified and no --jar/--module given."</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// First positional argument is the main class; the rest are forwarded to main(String[]).</span>
+<span class="w">  </span><span class="n">mainClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">positional</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Once the <code>JavaView</code> is created, the main class name is turned into the <code>MethodSignature</code> of
+<code>main(String[])</code>. Like all identifiers in SootUp, it is obtained from an <code>IdentifierFactory</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// Types and signatures are always obtained from an IdentifierFactory - usually the view's.</span>
+<span class="n">JavaIdentifierFactory</span><span class="w"> </span><span class="n">identifierFactory</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cmd</span><span class="p">.</span><span class="na">hasOption</span><span class="p">(</span><span class="s">"module"</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaModuleIdentifierFactory</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">();</span>
+<span class="k">this</span><span class="p">.</span><span class="na">entrypoint</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">identifierFactory</span><span class="p">.</span><span class="na">getMethodSignature</span><span class="p">(</span>
+<span class="w">        </span><span class="n">identifierFactory</span><span class="p">.</span><span class="na">getClassType</span><span class="p">(</span><span class="n">mainClass</span><span class="p">),</span>
+<span class="w">        </span><span class="s">"main"</span><span class="p">,</span>
+<span class="w">        </span><span class="s">"void"</span><span class="p">,</span>
+<span class="w">        </span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"java.lang.String[]"</span><span class="p">));</span>
 </code></pre></div></td></tr></table></div>
 <hr />
 <h2 id="using-it-in-your-tool">Using it in your tool</h2>
@@ -1882,7 +1942,7 @@ below them stays the same.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

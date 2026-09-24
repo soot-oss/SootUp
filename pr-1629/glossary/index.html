@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1009,6 +1009,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tool_setup/" class="md-nav__link">
         
   
@@ -1335,12 +1391,29 @@ the adjacent nodes.</dd>
 <a href="#control-flow-graph">CFG</a> by repeatedly applying <a href="#transfer-function">transfer functions</a>
 and <a href="#meet-operator">meet operators</a> until a <a href="#fixed-point">fixed point</a> is reached.
 The word "dataflow" refers to facts "flowing" along CFG edges during iteration.</dd>
+<dt id="edge-function"><strong>Edge function</strong></dt>
+<dd>In <a href="#ide">IDE</a>, the function attached to one edge of the
+<a href="#exploded-supergraph">exploded supergraph</a>; it describes how the <em>value</em> carried by a
+<a href="#analysis-fact">fact</a> changes when that fact flows along the edge. Edge functions must
+support composition (apply one, then the next) and <a href="#meet-operator">meet</a>, and the solver
+composes them repeatedly, so they have to be represented in a form that cannot grow without
+bound — otherwise the analysis never reaches a <a href="#fixed-point">fixed point</a>.</dd>
+<dt id="exploded-supergraph"><strong>Exploded supergraph</strong></dt>
+<dd>The graph <a href="#ifds">IFDS</a> and <a href="#ide">IDE</a> actually solve on. Its nodes are pairs
+<em>(statement, fact)</em> drawn from the whole program — the per-method <a href="#control-flow-graph">CFGs</a>
+stitched together at call sites, with every statement "exploded" into one node per fact.
+A <a href="#flow-function">flow function</a> is what decides which of these nodes are connected.</dd>
 <dt id="fixed-point"><strong>Fixed point</strong></dt>
 <dd>The state in which one more iteration of the <a href="#dataflow-analysis">dataflow analysis</a>
 would change no <a href="#analysis-fact">fact</a> anywhere in the <a href="#control-flow-graph">CFG</a>.
 At this point the analysis has converged to its final answer. The
 <a href="#worklist">worklist</a> algorithm detects this implicitly: it terminates when the
 worklist is empty, which happens exactly when nothing changed.</dd>
+<dt id="flow-function"><strong>Flow function</strong></dt>
+<dd>In <a href="#ifds">IFDS</a> and <a href="#ide">IDE</a>, the interprocedural counterpart of a
+<a href="#transfer-function">transfer function</a>: it maps an incoming <a href="#analysis-fact">fact</a> to the set
+of facts that hold afterwards. Four of them are needed — for a normal statement, for entering
+a callee, for leaving a callee, and for flowing around a call.</dd>
 <dt id="forward-analysis"><strong>Forward analysis</strong></dt>
 <dd>An analysis in which facts travel from predecessors to successors — that is, from
 the method entry toward the method exit. Forward analyses answer questions about the
@@ -1352,6 +1425,17 @@ The <em>gen</em> set contains facts that the statement <em>produces</em> (e.g. a
 variable is "generated"). The <em>kill</em> set contains facts that the statement
 <em>invalidates</em> (e.g. a new definition of <code>x</code> kills any previous definition of <code>x</code>).
 Transfer for most analyses reduces to: <code>OUT = gen(S) ∪ (IN − kill(S))</code>.</dd>
+<dt id="ide"><strong>IDE</strong></dt>
+<dd><em>Interprocedural Distributive Environment problems.</em> An extension of <a href="#ifds">IFDS</a> in which
+every <a href="#analysis-fact">fact</a> additionally carries a <em>value</em> from a <a href="#lattice">lattice</a>, and
+every edge of the <a href="#exploded-supergraph">exploded supergraph</a> carries an
+<a href="#edge-function">edge function</a> transforming that value. IFDS answers "does this fact hold
+here?"; IDE answers "and what value does it have?".</dd>
+<dt id="ifds"><strong>IFDS</strong></dt>
+<dd><em>Interprocedural Finite Distributive Subset problems.</em> A framework that reduces an
+interprocedural <a href="#dataflow-analysis">dataflow analysis</a> to graph reachability on the
+<a href="#exploded-supergraph">exploded supergraph</a>, so that calls and returns are matched up
+correctly without the analysis having to manage a call stack itself.</dd>
 <dt id="initial-fact"><strong>Initial fact</strong></dt>
 <dd>The <a href="#analysis-fact">analysis fact</a> assigned to every non-boundary node at the
 start of iteration. Typically the "bottom" element of the <a href="#lattice">lattice</a> —
@@ -1362,6 +1446,10 @@ never shrink back below the initial value.</dd>
 <dd>An internal form of a program that is easier to traverse and analyse than either
 source code or raw bytecode. SootUp's IR is <a href="../jimple/">Jimple</a>: a flat,
 three-address, register-machine representation derived from JVM bytecode.</dd>
+<dt id="interprocedural-cfg"><strong>Interprocedural CFG (ICFG)</strong></dt>
+<dd>A <a href="#control-flow-graph">CFG</a> spanning the whole program: the CFGs of the individual methods,
+connected at each call site to the CFGs of the methods a <a href="../callgraphs/">call graph</a> says may
+be invoked there. In SootUp, <code>JimpleBasedInterproceduralCFG</code>.</dd>
 <dt id="join-point"><strong>Join point</strong></dt>
 <dd>A <a href="#control-flow-graph">CFG</a> node with more than one incoming edge — for example,
 the first statement after an <code>if/else</code> or the header of a loop. At a join point,
@@ -1389,12 +1477,21 @@ SootUp educational framework, <code>meetInto(fact, target)</code> applies the me
 execution path. <a href="#meet-operator">Intersection</a> at <a href="#join-point">join points</a> ("only
 report it if it is true on all paths"). Must analyses have no false positives but
 may have false negatives. See also <a href="#may-analysis">May analysis</a>.</dd>
+<dt id="seed"><strong>Seed</strong></dt>
+<dd>The starting point of an <a href="#ifds">IFDS</a> or <a href="#ide">IDE</a> analysis: a set of
+<a href="#analysis-fact">facts</a>, each paired with the statement at which it is assumed to hold.
+Usually a single <a href="#zero-fact">zero fact</a> at the first statement of the entry method.</dd>
 <dt id="transfer-function"><strong>Transfer function</strong></dt>
 <dd>A function that maps the <a href="#analysis-fact">analysis fact</a> at one side of a statement
 to the fact at the other side, based on the semantics of that statement.
 For <a href="#forward-analysis">forward analyses</a>: <code>OUT[S] = f(IN[S])</code>.
 For <a href="#backward-analysis">backward analyses</a>: <code>IN[S] = f(OUT[S])</code>.
 See <a href="#gen-kill">Gen/Kill</a> for the most common pattern.</dd>
+<dt id="typestate"><strong>Typestate</strong></dt>
+<dd>The state an object is in at a program point with respect to a protocol its API defines — for
+example "open" or "closed" for a file handle. A typestate analysis attaches a finite automaton
+to an API class and checks that every object of that class only sees call sequences the
+automaton accepts. See <a href="../analysis-typestate/">the worked example</a>.</dd>
 <dt id="worklist"><strong>Worklist</strong></dt>
 <dd>The set of <a href="#control-flow-graph">CFG</a> nodes whose <a href="#analysis-fact">facts</a> may still
 change and therefore need to be re-processed. The solver initialises the worklist
@@ -1402,6 +1499,12 @@ with all nodes, then picks one at a time: if the node's fact changes after apply
 the <a href="#transfer-function">transfer function</a> and <a href="#meet-operator">meet</a>, the affected
 neighbours are added back to the worklist. The algorithm terminates (reaches a
 <a href="#fixed-point">fixed point</a>) when the worklist is empty.</dd>
+<dt id="zero-fact"><strong>Zero fact</strong></dt>
+<dd>An artificial <a href="#analysis-fact">fact</a> in <a href="#ifds">IFDS</a> and <a href="#ide">IDE</a> that holds at every
+statement by construction. Because these frameworks can only propagate facts and never invent
+them, a genuinely new fact has to be generated out of a fact that already holds — and the zero
+fact is the one that always does. Note that its <em>value</em> at a <a href="#seed">seed</a> is the lattice's
+bottom element, not top.</dd>
 </dl>
 
 
@@ -1494,7 +1597,7 @@ neighbours are added back to the worklist. The algorithm terminates (reaches a
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

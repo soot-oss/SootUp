@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -997,6 +997,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tool_setup/" class="md-nav__link">
         
   
@@ -1235,6 +1291,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#hash-consed-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hash-Consed Identifiers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#immutable-by-design" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1433,6 +1500,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#hash-consed-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hash-Consed Identifiers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#immutable-by-design" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1509,6 +1587,26 @@ It can be extended with a command-line interface, included in other software pro
 <h3 id="no-more-singletons">No More Singletons</h3>
 <p>Singletons offer a single view of a single program version, which makes it impossible to analyze multiple programs or multiple versions of the same program.
 SootUp does not make use of singletons such the <code>Scene</code> class in the old Soot any more. It enables analyzing multiple programs simultaneously.</p>
+<h3 id="hash-consed-identifiers">Hash-Consed Identifiers</h3>
+<p>Identifiers such as <code>ClassType</code>, <code>MethodSignature</code>, <code>FieldSignature</code>, their sub signatures and <code>PackageName</code> are hash-consed:
+for a given name the <code>IdentifierFactory</code> always returns the very same instance.
+This keeps the memory footprint of an analysis low and allows comparing identifiers with <code>==</code> as well as using them in an <code>IdentityHashMap</code>.
+Because this invariant only holds if every identifier is created in one place, their constructors are not public - identifiers are created via the <code>IdentifierFactory</code> that belongs to the <code>View</code>:</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">IdentifierFactory</span><span class="w"> </span><span class="n">identifierFactory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">();</span>
+
+<span class="n">ClassType</span><span class="w"> </span><span class="n">classType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">identifierFactory</span><span class="p">.</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"example.HelloWorld"</span><span class="p">);</span>
+<span class="n">MethodSignature</span><span class="w"> </span><span class="n">methodSignature</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">identifierFactory</span><span class="p">.</span><span class="na">getMethodSignature</span><span class="p">(</span>
+<span class="w">        </span><span class="n">classType</span><span class="p">,</span><span class="w"> </span><span class="s">"main"</span><span class="p">,</span><span class="w"> </span><span class="s">"void"</span><span class="p">,</span><span class="w"> </span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="s">"java.lang.String[]"</span><span class="p">));</span>
+</code></pre></div></td></tr></table></div>
+</div>
 <h3 id="immutable-by-design">Immutable by Design</h3>
 <p>SootUp has been designed with the goal of immutability in mind.
 This makes sharing objects between several entities easier, because there is no need to worry about unintended changes to other entities.</p>
@@ -1638,7 +1736,7 @@ This concept of so-called <code>with</code>-ers can be found all throughout Soot
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

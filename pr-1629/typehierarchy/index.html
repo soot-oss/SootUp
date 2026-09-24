@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1107,6 +1107,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tool_setup/" class="md-nav__link">
         
   
@@ -1481,7 +1537,7 @@
 <span class="normal">4</span>
 <span class="normal">5</span>
 <span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">cpString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;src/test/resources/Callgraph/binary&quot;</span><span class="p">;</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">cpString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"src/test/resources/Callgraph/binary"</span><span class="p">;</span>
 <span class="n">List</span><span class="o">&lt;</span><span class="n">AnalysisInputLocation</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="p">();</span>
 <span class="n">inputLocations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span><span class="n">cpStr</span><span class="p">));</span>
 <span class="n">inputLocations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DefaultRuntimeAnalysisInputLocation</span><span class="p">());</span>
@@ -1508,8 +1564,8 @@
 <span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
-<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span><span class="s">&quot;user.dir&quot;</span><span class="p">);</span>
-<span class="n">String</span><span class="w"> </span><span class="n">sootCp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;target&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;test-classes&quot;</span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">pathSeparator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;lib&quot;</span><span class="o">+</span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="o">+</span><span class="s">&quot;rt.jar&quot;</span><span class="p">;</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span><span class="s">"user.dir"</span><span class="p">);</span>
+<span class="n">String</span><span class="w"> </span><span class="n">sootCp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"target"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"test-classes"</span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">pathSeparator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"lib"</span><span class="o">+</span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="o">+</span><span class="s">"rt.jar"</span><span class="p">;</span>
 
 <span class="n">String</span><span class="w"> </span><span class="n">targetTestClassName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="na">exercise1</span><span class="p">.</span><span class="na">Hierarchy</span><span class="p">.</span><span class="na">class</span><span class="p">.</span><span class="na">getName</span><span class="p">();</span>
 <span class="n">G</span><span class="p">.</span><span class="na">reset</span><span class="p">();</span>
@@ -1518,7 +1574,7 @@
 <span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_no_bodies_for_excluded</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
 <span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">process_dir</span><span class="p">();</span>
 <span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_allow_phantom_refs</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="s">&quot;jb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;use-original-names:true&quot;</span><span class="p">);</span>
+<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="s">"jb"</span><span class="p">,</span><span class="w"> </span><span class="s">"use-original-names:true"</span><span class="p">);</span>
 <span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_prepend_classpath</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
 <span class="n">SootClass</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">forceResolve</span><span class="p">(</span><span class="n">targetTestClassName</span><span class="p">,</span><span class="w"> </span><span class="n">SootClass</span><span class="p">.</span><span class="na">BODIES</span><span class="p">);</span>
 <span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span>
@@ -1536,14 +1592,14 @@
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;packageName.A&quot;</span><span class="p">);</span>
-<span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;packageName.B&quot;</span><span class="p">);</span>
-<span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;packageName.C&quot;</span><span class="p">);</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"packageName.A"</span><span class="p">);</span>
+<span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"packageName.B"</span><span class="p">);</span>
+<span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"packageName.C"</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">targetTestClassName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;packageNameA.A&quot;</span><span class="p">;</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">targetTestClassName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"packageNameA.A"</span><span class="p">;</span>
 <span class="n">SootClass</span><span class="w"> </span><span class="n">methodA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getSootClass</span><span class="p">(</span><span class="n">targetTestClassName</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
 </div>
@@ -1558,7 +1614,7 @@
 <span class="normal">5</span>
 <span class="normal">6</span>
 <span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="c1">// if the assertion fails, the following methods will throw an Exception (you don&#39;t have to call it - it&#39;s just to illustrate the assumption)</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="c1">// if the assertion fails, the following methods will throw an Exception (you don't have to call it - it's just to illustrate the assumption)</span>
 <span class="w">    </span><span class="k">assert</span><span class="w"> </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">classTypeA</span><span class="p">);</span>
 
 <span class="w">    </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">superclassOf</span><span class="p">(</span><span class="n">classTypeA</span><span class="p">);</span>
@@ -1580,9 +1636,9 @@
 <span class="normal">10</span>
 <span class="normal">11</span>
 <span class="normal">12</span>
-<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">JavaClassType</span><span class="w"> </span><span class="n">iterableInterface</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;java.lang.Iterable&quot;</span><span class="p">);</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">JavaClassType</span><span class="w"> </span><span class="n">iterableInterface</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"java.lang.Iterable"</span><span class="p">);</span>
 
-<span class="w">    </span><span class="c1">// if any of the assertions fail, the following methods will throw an Exception (you don&#39;t have to call these - it&#39;s just to illustrate the assumptions)</span>
+<span class="w">    </span><span class="c1">// if any of the assertions fail, the following methods will throw an Exception (you don't have to call these - it's just to illustrate the assumptions)</span>
 <span class="w">    </span><span class="k">assert</span><span class="w"> </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">iterableInterface</span><span class="p">);</span>
 <span class="w">    </span><span class="k">assert</span><span class="w"> </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">isInterface</span><span class="p">(</span><span class="n">iterableInterface</span><span class="p">);</span>
 
@@ -1685,7 +1741,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

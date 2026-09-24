@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -997,6 +997,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tool_setup/" class="md-nav__link">
         
   
@@ -1230,6 +1286,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#version-302" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version 3.0.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#version-130" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1361,6 +1428,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#version-302" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version 3.0.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#version-130" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1414,6 +1492,21 @@
 
 
 <h1 id="migration-help">Migration Help</h1>
+<h3 id="version-302">Version 3.0.2</h3>
+<ul>
+<li>Identifiers are hash-consed: the <code>IdentifierFactory</code> hands out the same instance for equal <code>ClassType</code>s, <code>MethodSignature</code>s, <code>FieldSignature</code>s, their sub signatures and <code>PackageName</code>s. They can therefore be compared with <code>==</code> and used as keys of an <code>IdentityHashMap</code>.</li>
+<li>As a consequence the constructors of these classes are not public anymore. Obtain them from the <code>IdentifierFactory</code> of the <code>View</code> that the identifiers are used with:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">classType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"example.HelloWorld"</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div></li>
+<li><code>JavaIdentifierFactory.getInstance()</code> and <code>JavaModuleIdentifierFactory.getInstance()</code> were removed - the factory belongs to a <code>View</code> now. Use <code>view.getIdentifierFactory()</code>; if there is no <code>View</code> at hand (e.g. while setting one up), instantiate it with <code>new JavaIdentifierFactory()</code>.</li>
+<li><code>JavaModuleIdentifierFactory.getInstance(module)</code> was replaced by the instance method <code>forModule(module)</code>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaModuleIdentifierFactory</span><span class="w"> </span><span class="n">factory</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="p">(</span><span class="n">JavaModuleIdentifierFactory</span><span class="p">)</span><span class="w"> </span><span class="n">moduleView</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">();</span>
+<span class="n">JavaModuleIdentifierFactory</span><span class="w"> </span><span class="n">factoryOfModule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factory</span><span class="p">.</span><span class="na">forModule</span><span class="p">(</span><span class="s">"mymodule"</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div></li>
+</ul>
 <h3 id="version-130">Version 1.3.0</h3>
 <ul>
 <li>The Typehierarchy API is now returning <code>Stream&lt;ClassType&gt;</code> instead of <code>Collection&lt;ClassType&gt;</code>. The simplest fix to have the same behaviour as before would be to collect the Stream on your own ( e.g. via <code>.collect(Collectors.toList())</code> ).</li>
@@ -1455,19 +1548,19 @@
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="o">&lt;</span><span class="n">JavaSootClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span>
-<span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span><span class="s">&quot;path2Binary&quot;</span><span class="p">);</span>
+<span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span><span class="s">"path2Binary"</span><span class="p">);</span>
 
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
 
 <span class="n">JavaClassType</span><span class="w"> </span><span class="n">classType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
-<span class="w">        </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;HelloWorld&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"HelloWorld"</span><span class="p">);</span>
 
 <span class="n">MethodSignature</span><span class="w"> </span><span class="n">methodSignature</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">view</span>
 <span class="w">        </span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="na">getMethodSignature</span><span class="p">(</span>
-<span class="w">            </span><span class="s">&quot;main&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">classType</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;void&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="s">&quot;java.lang.String[]&quot;</span><span class="p">));</span>
+<span class="w">            </span><span class="s">"main"</span><span class="p">,</span><span class="w"> </span><span class="n">classType</span><span class="p">,</span><span class="w"> </span><span class="s">"void"</span><span class="p">,</span>
+<span class="w">            </span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="s">"java.lang.String[]"</span><span class="p">));</span>
 
 <span class="n">JavaSootClass</span><span class="w"> </span><span class="n">sootClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getClass</span><span class="p">(</span><span class="n">classType</span><span class="p">).</span><span class="na">get</span><span class="p">();</span>
 
@@ -1521,25 +1614,25 @@
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">G</span><span class="p">.</span><span class="na">reset</span><span class="p">();</span>
-<span class="n">String</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span><span class="s">&quot;user.dir&quot;</span><span class="p">);</span>
+<span class="n">String</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span><span class="s">"user.dir"</span><span class="p">);</span>
 <span class="n">String</span><span class="w"> </span><span class="n">sootCp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
 <span class="w">        </span><span class="n">userdir</span><span class="w"> </span>
 <span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span>
-<span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;target&quot;</span><span class="w"> </span>
+<span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="s">"target"</span><span class="w"> </span>
 <span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span>
-<span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;test-classes&quot;</span>
-<span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">pathSeparator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;lib&quot;</span><span class="o">+</span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="o">+</span><span class="s">&quot;rt.jar&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="s">"test-classes"</span>
+<span class="w">        </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">pathSeparator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"lib"</span><span class="o">+</span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="o">+</span><span class="s">"rt.jar"</span><span class="p">;</span>
 
 <span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_soot_classpath</span><span class="p">(</span><span class="n">sootCp</span><span class="p">);</span>
 <span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_whole_program</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="s">&quot;cg.cha&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;on&quot;</span><span class="p">);</span>
-<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="s">&quot;cg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;all-reachable:true&quot;</span><span class="p">);</span>
+<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="s">"cg.cha"</span><span class="p">,</span><span class="w"> </span><span class="s">"on"</span><span class="p">);</span>
+<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="s">"cg"</span><span class="p">,</span><span class="w"> </span><span class="s">"all-reachable:true"</span><span class="p">);</span>
 <span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_no_bodies_for_excluded</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
 <span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_allow_phantom_refs</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="s">&quot;jb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;use-original-names:true&quot;</span><span class="p">);</span>
+<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="s">"jb"</span><span class="p">,</span><span class="w"> </span><span class="s">"use-original-names:true"</span><span class="p">);</span>
 <span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_prepend_classpath</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
 
-<span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">addBasicClass</span><span class="p">(</span><span class="s">&quot;java.lang.StringBuilder&quot;</span><span class="p">);</span>
+<span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">addBasicClass</span><span class="p">(</span><span class="s">"java.lang.StringBuilder"</span><span class="p">);</span>
 <span class="n">SootClass</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
 <span class="w">    </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">forceResolve</span><span class="p">(</span><span class="n">targetTestClassName</span><span class="p">,</span><span class="w"> </span><span class="n">SootClass</span><span class="p">.</span><span class="na">BODIES</span><span class="p">);</span>
 <span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -1549,12 +1642,12 @@
 
 <span class="n">SootMethod</span><span class="w"> </span><span class="n">method</span><span class="p">;</span>
 <span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">SootClass</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getApplicationClasses</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="na">getName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">&quot;example.HelloWorld&quot;</span><span class="p">)){</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="na">getName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">"example.HelloWorld"</span><span class="p">)){</span>
 <span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">SootMethod</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">getMethods</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">m</span><span class="p">.</span><span class="na">hasActiveBody</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                </span><span class="k">continue</span><span class="p">;</span>
 <span class="w">            </span><span class="p">}</span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="na">getName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">&quot;entryPoint&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="na">getName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">"entryPoint"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">;</span>
 <span class="w">                </span><span class="k">break</span><span class="p">;</span>
 <span class="w">            </span><span class="p">}</span>
@@ -1679,7 +1772,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

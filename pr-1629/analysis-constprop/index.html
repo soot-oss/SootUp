@@ -14,14 +14,14 @@
         <link rel="prev" href="../analysis-liveness/">
       
       
-        <link rel="next" href="../tool_setup/">
+        <link rel="next" href="../analysis-typestate/">
       
       
         
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1184,6 +1184,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tool_setup/" class="md-nav__link">
         
   
@@ -1841,7 +1897,7 @@ sit in between:</p>
 
 <span class="w">  </span><span class="cm">/** Precondition: {@link #isConstant()} must be true. */</span>
 <span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getConstant</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">isConstant</span><span class="p">())</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalStateException</span><span class="p">(</span><span class="s">&quot;Not a constant: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">this</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">isConstant</span><span class="p">())</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalStateException</span><span class="p">(</span><span class="s">"Not a constant: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">this</span><span class="p">);</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">constant</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 
@@ -1869,8 +1925,8 @@ sit in between:</p>
 <span class="w">  </span><span class="nd">@Override</span>
 <span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">toString</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">kind</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="n">UNDEF</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;UNDEF&quot;</span><span class="p">;</span>
-<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="n">NAC</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;NAC&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="n">UNDEF</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">"UNDEF"</span><span class="p">;</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="n">NAC</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">"NAC"</span><span class="p">;</span>
 <span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="n">CONSTANT</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">valueOf</span><span class="p">(</span><span class="n">constant</span><span class="p">);</span>
 <span class="w">    </span><span class="p">};</span>
 <span class="w">  </span><span class="p">}</span>
@@ -1893,21 +1949,21 @@ sit in between:</p>
 <span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nd">@Override</span>
-<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">newBoundaryFact</span><span class="p">(</span><span class="n">Body</span><span class="w"> </span><span class="n">body</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="c1">// Parameters are unknown at the call site → NAC.</span>
-<span class="w">    </span><span class="c1">// All other locals are absent from the map, which means UNDEF.</span>
-<span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Local</span><span class="w"> </span><span class="n">param</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">body</span><span class="p">.</span><span class="na">getParameterLocals</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">fact</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">param</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="p">.</span><span class="na">getNAC</span><span class="p">());</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">fact</span><span class="p">;</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@Override</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">newBoundaryFact</span><span class="p">(</span><span class="n">Body</span><span class="w"> </span><span class="n">body</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Parameters are unknown at the call site → NAC.</span>
+<span class="w">  </span><span class="c1">// All other locals are absent from the map, which means UNDEF.</span>
+<span class="w">  </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Local</span><span class="w"> </span><span class="n">param</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">body</span><span class="p">.</span><span class="na">getParameterLocals</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">fact</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">param</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="p">.</span><span class="na">getNAC</span><span class="p">());</span>
 <span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">fact</span><span class="p">;</span>
+<span class="p">}</span>
 
-<span class="w">  </span><span class="nd">@Override</span>
-<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">newInitialFact</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// empty map = all variables UNDEF</span>
-<span class="w">  </span><span class="p">}</span>
+<span class="nd">@Override</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">newInitialFact</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// empty map = all variables UNDEF</span>
+<span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <h3 id="meet-operator">Meet operator</h3>
 <p>At a <a href="../glossary/#join-point">join point</a> the facts from both paths are merged per
@@ -1926,19 +1982,19 @@ disagree, the result is <code>NAC</code>:</p>
 <span class="normal">10</span>
 <span class="normal">11</span>
 <span class="normal">12</span>
-<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nd">@Override</span>
-<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">meetInto</span><span class="p">(</span>
-<span class="w">      </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fact</span><span class="p">,</span>
-<span class="w">      </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">target</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="c1">// For every variable in fact, meet its value into target.</span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">entry</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">fact</span><span class="p">.</span><span class="na">entrySet</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">Local</span><span class="w"> </span><span class="n">local</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entry</span><span class="p">.</span><span class="na">getKey</span><span class="p">();</span>
-<span class="w">      </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="w"> </span><span class="n">incoming</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entry</span><span class="p">.</span><span class="na">getValue</span><span class="p">();</span>
-<span class="w">      </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="w"> </span><span class="n">existing</span><span class="w"> </span><span class="o">=</span>
-<span class="w">          </span><span class="n">target</span><span class="p">.</span><span class="na">getOrDefault</span><span class="p">(</span><span class="n">local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="p">.</span><span class="na">getUndef</span><span class="p">());</span>
-<span class="w">      </span><span class="n">target</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">local</span><span class="p">,</span><span class="w"> </span><span class="n">existing</span><span class="p">.</span><span class="na">meet</span><span class="p">(</span><span class="n">incoming</span><span class="p">));</span>
-<span class="w">    </span><span class="p">}</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@Override</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">meetInto</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fact</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">target</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// For every variable in fact, meet its value into target.</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">entry</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">fact</span><span class="p">.</span><span class="na">entrySet</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Local</span><span class="w"> </span><span class="n">local</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entry</span><span class="p">.</span><span class="na">getKey</span><span class="p">();</span>
+<span class="w">    </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="w"> </span><span class="n">incoming</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entry</span><span class="p">.</span><span class="na">getValue</span><span class="p">();</span>
+<span class="w">    </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="w"> </span><span class="n">existing</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">target</span><span class="p">.</span><span class="na">getOrDefault</span><span class="p">(</span><span class="n">local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="p">.</span><span class="na">getUndef</span><span class="p">());</span>
+<span class="w">    </span><span class="n">target</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">local</span><span class="p">,</span><span class="w"> </span><span class="n">existing</span><span class="p">.</span><span class="na">meet</span><span class="p">(</span><span class="n">incoming</span><span class="p">));</span>
 <span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <h3 id="transfer-function">Transfer function</h3>
 <p>For assignment statements we evaluate the right-hand side expression and update the
@@ -1971,35 +2027,35 @@ left-hand side. For all other statements the transfer is the identity (OUT = IN)
 <span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nd">@Override</span>
-<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">transferNode</span><span class="p">(</span>
-<span class="w">      </span><span class="n">Stmt</span><span class="w"> </span><span class="n">stmt</span><span class="p">,</span>
-<span class="w">      </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">in</span><span class="p">,</span>
-<span class="w">      </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@Override</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">transferNode</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Stmt</span><span class="w"> </span><span class="n">stmt</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">in</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 
-<span class="w">    </span><span class="c1">// Copy IN into OUT as the default (identity for non-assignment statements).</span>
-<span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">newOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">in</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// Copy IN into OUT as the default (identity for non-assignment statements).</span>
+<span class="w">  </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">newOut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">in</span><span class="p">);</span>
 
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">stmt</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">JAssignStmt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">JAssignStmt</span><span class="w"> </span><span class="n">assign</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">JAssignStmt</span><span class="p">)</span><span class="w"> </span><span class="n">stmt</span><span class="p">;</span>
-<span class="w">      </span><span class="n">Value</span><span class="w"> </span><span class="n">lhs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">assign</span><span class="p">.</span><span class="na">getLeftOp</span><span class="p">();</span>
-<span class="w">      </span><span class="n">Value</span><span class="w"> </span><span class="n">rhs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">assign</span><span class="p">.</span><span class="na">getRightOp</span><span class="p">();</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">stmt</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">JAssignStmt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">JAssignStmt</span><span class="w"> </span><span class="n">assign</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">JAssignStmt</span><span class="p">)</span><span class="w"> </span><span class="n">stmt</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Value</span><span class="w"> </span><span class="n">lhs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">assign</span><span class="p">.</span><span class="na">getLeftOp</span><span class="p">();</span>
+<span class="w">    </span><span class="n">Value</span><span class="w"> </span><span class="n">rhs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">assign</span><span class="p">.</span><span class="na">getRightOp</span><span class="p">();</span>
 
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lhs</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Local</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">Local</span><span class="w"> </span><span class="n">lhsLocal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Local</span><span class="p">)</span><span class="w"> </span><span class="n">lhs</span><span class="p">;</span>
-<span class="w">        </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">evaluate</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span><span class="w"> </span><span class="n">in</span><span class="p">);</span>
-<span class="w">        </span><span class="n">newOut</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">lhsLocal</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">);</span>
-<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lhs</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Local</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">Local</span><span class="w"> </span><span class="n">lhsLocal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Local</span><span class="p">)</span><span class="w"> </span><span class="n">lhs</span><span class="p">;</span>
+<span class="w">      </span><span class="n">sootup</span><span class="p">.</span><span class="na">examples</span><span class="p">.</span><span class="na">constprop</span><span class="p">.</span><span class="na">Value</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">evaluate</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span><span class="w"> </span><span class="n">in</span><span class="p">);</span>
+<span class="w">      </span><span class="n">newOut</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">lhsLocal</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="c1">// (Other statement types: identity — OUT = IN, already handled by the copy above.)</span>
-
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">newOut</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">out</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span>
-<span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="na">putAll</span><span class="p">(</span><span class="n">newOut</span><span class="p">);</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// (Other statement types: identity — OUT = IN, already handled by the copy above.)</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">newOut</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">out</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">out</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span>
+<span class="w">  </span><span class="n">out</span><span class="p">.</span><span class="na">putAll</span><span class="p">(</span><span class="n">newOut</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <hr />
 <h2 id="step-5-the-worklist-solver">Step 5 — The worklist solver</h2>
@@ -2035,36 +2091,36 @@ transfer, and re-schedules successors when <code>OUT</code> changed:</p>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
-<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="c1">// Seed the worklist with all nodes (conservative: assume every fact may change).</span>
-<span class="w">    </span><span class="n">Deque</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">worklist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayDeque</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">nodes</span><span class="p">);</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// Seed the worklist with all nodes (conservative: assume every fact may change).</span>
+<span class="n">Deque</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">worklist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayDeque</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">nodes</span><span class="p">);</span>
 
-<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">worklist</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">Stmt</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">worklist</span><span class="p">.</span><span class="na">poll</span><span class="p">();</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">worklist</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Stmt</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">worklist</span><span class="p">.</span><span class="na">poll</span><span class="p">();</span>
 
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">analysis</span><span class="p">.</span><span class="na">isForward</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="c1">// Forward: meet all predecessor OUT facts into this node&#39;s IN fact.</span>
-<span class="w">        </span><span class="n">F</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">inFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Stmt</span><span class="w"> </span><span class="n">pred</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">predecessors</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="n">analysis</span><span class="p">.</span><span class="na">meetInto</span><span class="p">(</span><span class="n">outFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">pred</span><span class="p">),</span><span class="w"> </span><span class="n">in</span><span class="p">);</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="c1">// Apply the transfer function; if OUT changed, schedule successors.</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">analysis</span><span class="p">.</span><span class="na">transferNode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">outFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="n">worklist</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="na">successors</span><span class="p">(</span><span class="n">node</span><span class="p">));</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="c1">// Backward: meet all successor IN facts into this node&#39;s OUT fact.</span>
-<span class="w">        </span><span class="n">F</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">outFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
-<span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">succs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">successors</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
-<span class="w">        </span><span class="n">succs</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="na">exceptionalSuccessors</span><span class="p">(</span><span class="n">node</span><span class="p">).</span><span class="na">values</span><span class="p">());</span>
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Stmt</span><span class="w"> </span><span class="n">succ</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">succs</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="n">analysis</span><span class="p">.</span><span class="na">meetInto</span><span class="p">(</span><span class="n">inFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">succ</span><span class="p">),</span><span class="w"> </span><span class="n">out</span><span class="p">);</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="c1">// Apply the transfer function; if IN changed, schedule predecessors.</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">analysis</span><span class="p">.</span><span class="na">transferNode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">inFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">),</span><span class="w"> </span><span class="n">out</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="n">worklist</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="na">predecessors</span><span class="p">(</span><span class="n">node</span><span class="p">));</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">      </span><span class="p">}</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">analysis</span><span class="p">.</span><span class="na">isForward</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Forward: meet all predecessor OUT facts into this node's IN fact.</span>
+<span class="w">    </span><span class="n">F</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">inFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Stmt</span><span class="w"> </span><span class="n">pred</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">predecessors</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">analysis</span><span class="p">.</span><span class="na">meetInto</span><span class="p">(</span><span class="n">outFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">pred</span><span class="p">),</span><span class="w"> </span><span class="n">in</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// Apply the transfer function; if OUT changed, schedule successors.</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">analysis</span><span class="p">.</span><span class="na">transferNode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">outFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">worklist</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="na">successors</span><span class="p">(</span><span class="n">node</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Backward: meet all successor IN facts into this node's OUT fact.</span>
+<span class="w">    </span><span class="n">F</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">outFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+<span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">succs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">successors</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+<span class="w">    </span><span class="n">succs</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="na">exceptionalSuccessors</span><span class="p">(</span><span class="n">node</span><span class="p">).</span><span class="na">values</span><span class="p">());</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Stmt</span><span class="w"> </span><span class="n">succ</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">succs</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">analysis</span><span class="p">.</span><span class="na">meetInto</span><span class="p">(</span><span class="n">inFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">succ</span><span class="p">),</span><span class="w"> </span><span class="n">out</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// Apply the transfer function; if IN changed, schedule predecessors.</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">analysis</span><span class="p">.</span><span class="na">transferNode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">inFacts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">),</span><span class="w"> </span><span class="n">out</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">worklist</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="na">predecessors</span><span class="p">(</span><span class="n">node</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Hand trace on <code>Example.assign</code></strong> (no branches, so a single pass suffices):</p>
 <table>
@@ -2124,21 +2180,21 @@ transfer, and re-schedules successors when <code>OUT</code> changed:</p>
 <span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span>
-<span class="w">        </span><span class="n">PathBasedAnalysisInputLocation</span><span class="p">.</span><span class="na">create</span><span class="p">(</span>
-<span class="w">            </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;src/test/resources/ConstProp/binary&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">SourceType</span><span class="p">.</span><span class="na">Application</span><span class="p">);</span>
-<span class="w">    </span><span class="n">View</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">PathBasedAnalysisInputLocation</span><span class="p">.</span><span class="na">create</span><span class="p">(</span>
+<span class="w">        </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">"src/test/resources/ConstProp/binary"</span><span class="p">),</span><span class="w"> </span><span class="n">SourceType</span><span class="p">.</span><span class="na">Application</span><span class="p">);</span>
+<span class="n">View</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
 
-<span class="w">    </span><span class="n">ClassType</span><span class="w"> </span><span class="n">classType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;Example&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="n">SootClass</span><span class="w"> </span><span class="n">sootClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getClass</span><span class="p">(</span><span class="n">classType</span><span class="p">).</span><span class="na">get</span><span class="p">();</span>
+<span class="n">ClassType</span><span class="w"> </span><span class="n">classType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">"Example"</span><span class="p">);</span>
+<span class="n">SootClass</span><span class="w"> </span><span class="n">sootClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getClass</span><span class="p">(</span><span class="n">classType</span><span class="p">).</span><span class="na">get</span><span class="p">();</span>
 
-<span class="w">    </span><span class="n">MethodSignature</span><span class="w"> </span><span class="n">methodSignature</span><span class="w"> </span><span class="o">=</span>
-<span class="w">        </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">parseMethodSignature</span><span class="p">(</span><span class="s">&quot;&lt;Example: void assign()&gt;&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="n">SootMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sootClass</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="n">methodSignature</span><span class="p">.</span><span class="na">getSubSignature</span><span class="p">()).</span><span class="na">get</span><span class="p">();</span>
-<span class="w">    </span><span class="n">Body</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">getBody</span><span class="p">();</span>
+<span class="n">MethodSignature</span><span class="w"> </span><span class="n">methodSignature</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">parseMethodSignature</span><span class="p">(</span><span class="s">"&lt;Example: void assign()&gt;"</span><span class="p">);</span>
+<span class="n">SootMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sootClass</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="n">methodSignature</span><span class="p">.</span><span class="na">getSubSignature</span><span class="p">()).</span><span class="na">get</span><span class="p">();</span>
+<span class="n">Body</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">getBody</span><span class="p">();</span>
 
-<span class="w">    </span><span class="c1">// Run constant propagation and retrieve the solver for querying results.</span>
-<span class="w">    </span><span class="n">DataflowSolver</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">Value</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConstantPropagation</span><span class="p">.</span><span class="na">analyze</span><span class="p">(</span><span class="n">body</span><span class="p">);</span>
+<span class="c1">// Run constant propagation and retrieve the solver for querying results.</span>
+<span class="n">DataflowSolver</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">Value</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConstantPropagation</span><span class="p">.</span><span class="na">analyze</span><span class="p">(</span><span class="n">body</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
 <hr />
 <h2 id="step-7-verifying-the-result">Step 7 — Verifying the result</h2>
@@ -2156,21 +2212,21 @@ transfer, and re-schedules successors when <code>OUT</code> changed:</p>
 <span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="c1">// At the last assignment (y = x), OUT must contain {x=4, y=4}.</span>
-<span class="w">    </span><span class="c1">// The exact last assignment stmt is the final &quot;non-return&quot; stmt, but we check</span>
-<span class="w">    </span><span class="c1">// the return stmt&#39;s IN fact, which equals the OUT of the preceding assignment.</span>
-<span class="w">    </span><span class="n">Stmt</span><span class="w"> </span><span class="n">lastAssign</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stmts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">stmts</span><span class="p">.</span><span class="na">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"> </span><span class="c1">// last stmt before return</span>
-<span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solver</span><span class="p">.</span><span class="na">getOutFact</span><span class="p">(</span><span class="n">lastAssign</span><span class="p">);</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// At the last assignment (y = x), OUT must contain {x=4, y=4}.</span>
+<span class="c1">// The exact last assignment stmt is the final "non-return" stmt, but we check</span>
+<span class="c1">// the return stmt's IN fact, which equals the OUT of the preceding assignment.</span>
+<span class="n">Stmt</span><span class="w"> </span><span class="n">lastAssign</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stmts</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">stmts</span><span class="p">.</span><span class="na">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"> </span><span class="c1">// last stmt before return</span>
+<span class="n">Map</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">solver</span><span class="p">.</span><span class="na">getOutFact</span><span class="p">(</span><span class="n">lastAssign</span><span class="p">);</span>
 
-<span class="w">    </span><span class="c1">// Every local with a constant value must equal the expected constant.</span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">entry</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="na">entrySet</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">Local</span><span class="w"> </span><span class="n">local</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entry</span><span class="p">.</span><span class="na">getKey</span><span class="p">();</span>
-<span class="w">      </span><span class="n">Value</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entry</span><span class="p">.</span><span class="na">getValue</span><span class="p">();</span>
-<span class="w">      </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">value</span><span class="p">.</span><span class="na">isConstant</span><span class="p">(),</span><span class="w"> </span><span class="n">local</span><span class="p">.</span><span class="na">getName</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; should be a constant but was &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">local</span><span class="p">.</span><span class="na">getName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">local</span><span class="p">.</span><span class="na">getName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">assertEquals</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">getConstant</span><span class="p">(),</span><span class="w"> </span><span class="n">local</span><span class="p">.</span><span class="na">getName</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; should equal 4&quot;</span><span class="p">);</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
+<span class="c1">// Every local with a constant value must equal the expected constant.</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">Local</span><span class="p">,</span><span class="w"> </span><span class="n">Value</span><span class="o">&gt;</span><span class="w"> </span><span class="n">entry</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="na">entrySet</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Local</span><span class="w"> </span><span class="n">local</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entry</span><span class="p">.</span><span class="na">getKey</span><span class="p">();</span>
+<span class="w">  </span><span class="n">Value</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">entry</span><span class="p">.</span><span class="na">getValue</span><span class="p">();</span>
+<span class="w">  </span><span class="n">assertTrue</span><span class="p">(</span><span class="n">value</span><span class="p">.</span><span class="na">isConstant</span><span class="p">(),</span><span class="w"> </span><span class="n">local</span><span class="p">.</span><span class="na">getName</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" should be a constant but was "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">local</span><span class="p">.</span><span class="na">getName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">local</span><span class="p">.</span><span class="na">getName</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">"y"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">assertEquals</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">getConstant</span><span class="p">(),</span><span class="w"> </span><span class="n">local</span><span class="p">.</span><span class="na">getName</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" should equal 4"</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>The test asserts that at the final assignment, every local with a known value holds the
 constant <code>4</code>. CI runs this on every pull request; a breaking API change will fail this
@@ -2182,6 +2238,8 @@ test before it can silently invalidate the docs.</p>
   haven't seen it yet.</li>
 <li><a href="../write_analyses/">Write your own interprocedural analysis</a> — extend analysis across
   method call boundaries using the IFDS/IDE framework.</li>
+<li><a href="../analysis-typestate/">Typestate Analysis with Heros</a> — a worked IDE analysis that
+  follows an object across method call boundaries.</li>
 <li><a href="../builtin-analyses/">Built-in Analyses</a> — liveness and dominance analyses that ship
   with SootUp, ready to use without implementing the solver yourself.</li>
 </ul>
@@ -2276,7 +2334,7 @@ test before it can silently invalidate the docs.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

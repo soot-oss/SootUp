@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1157,6 +1157,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tool_setup/" class="md-nav__link">
         
   
@@ -1604,7 +1660,7 @@ hold <code>null</code> at that point.</p>
 </code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">implementation</span><span class="w"> </span><span class="s2">&quot;org.soot-oss:sootup.core:2.0.0&quot;</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">implementation</span><span class="w"> </span><span class="s2">"org.soot-oss:sootup.core:2.0.0"</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
@@ -1734,7 +1790,7 @@ hold <code>null</code> at that point.</p>
 <span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Stmt</span><span class="w"> </span><span class="n">successor</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="na">successors</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">successorFact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factsBeforeStmt</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">successor</span><span class="p">);</span>
 <span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">successorFact</span><span class="p">.</span><span class="na">addAll</span><span class="p">(</span><span class="n">after</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="c1">// The successor&#39;s fact grew — re-process it.</span>
+<span class="w">                    </span><span class="c1">// The successor's fact grew — re-process it.</span>
 <span class="w">                    </span><span class="n">worklist</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">successor</span><span class="p">);</span>
 <span class="w">                </span><span class="p">}</span>
 <span class="w">            </span><span class="p">}</span>
@@ -1781,7 +1837,7 @@ hold <code>null</code> at that point.</p>
 <span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Stmt</span><span class="w"> </span><span class="n">stmt</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">body</span><span class="p">.</span><span class="na">getControlFlowGraph</span><span class="p">().</span><span class="na">getNodes</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">analysis</span><span class="p">.</span><span class="na">getNullableLocalsBefore</span><span class="p">(</span><span class="n">stmt</span><span class="p">);</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">nullable</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Before &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">stmt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; — may be null: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nullable</span><span class="p">);</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"Before "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">stmt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" — may be null: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nullable</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -1826,16 +1882,21 @@ linear constant analysis.</p>
 </code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">implementation</span><span class="w"> </span><span class="s2">&quot;org.soot-oss:sootup.analysis.interprocedural:2.0.0&quot;</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">implementation</span><span class="w"> </span><span class="s2">"org.soot-oss:sootup.analysis.interprocedural:2.0.0"</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
 </div>
 <h3 id="where-to-look">Where to look</h3>
-<p>SootUp integrates with <a href="https://github.com/Sable/heros">Heros</a> for IFDS/IDE.
-Working examples — taint analysis, linear constant propagation, type-state analysis —
-are in the test suite of the <code>sootup.analysis.interprocedural</code> module.
-They are the most concrete starting point for writing your own inter-procedural analysis.</p>
+<p>SootUp integrates with <a href="https://github.com/Sable/heros">Heros</a> for IFDS/IDE. Two worked
+examples exist:</p>
+<ul>
+<li><a href="../analysis-typestate/">Typestate Analysis with Heros</a> — an IDE problem, explained step
+  by step: flow functions, edge functions, the zero fact, seeds and the meet lattice. Start
+  here.</li>
+<li><a href="../taint-analysis-example/">Taint Analysis with Heros</a> — an IFDS problem, explained step
+  by step: sources, sinks, the four flow functions and how to query the solver for leaks.</li>
+</ul>
 <p>For background on the algorithms themselves:</p>
 <ul>
 <li><a href="https://www.youtube.com/watch?v=QkK79fT0TFU&amp;ab_channel=SecureSoftwareEngineering">IFDS lecture (YouTube)</a></li>
@@ -1939,7 +2000,7 @@ They are the most concrete starting point for writing your own inter-procedural 
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
