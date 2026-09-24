@@ -44,13 +44,14 @@ import sootup.java.core.views.JavaView;
 public class CopyPropagatorTest {
 
   // Preparation
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
   JavaClassType intType = factory.getClassType("int");
   JavaClassType refType = factory.getClassType("ref");
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
-      new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
+      new JavaIdentifierFactory()
+          .getMethodSignature(classType, "test", VoidType.getInstance(), Collections.emptyList());
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
 
   // build locals
@@ -108,9 +109,9 @@ public class CopyPropagatorTest {
   // if i2 > 5 goto
   AbstractConditionExpr econdition = JavaJimple.newGtExpr(i2, IntConstant.getInstance(5));
   BranchingStmt eifstmt7 = JavaJimple.newIfStmt(econdition, noStmtPositionInfo);
-  // i3 = 5 + 1
-  Expr eadd1 = JavaJimple.newAddExpr(IntConstant.getInstance(5), IntConstant.getInstance(1));
-  FallsThroughStmt estmt8 = JavaJimple.newAssignStmt(i3, eadd1, noStmtPositionInfo);
+  // i3 = 6
+  FallsThroughStmt estmt8 =
+      JavaJimple.newAssignStmt(i3, IntConstant.getInstance(6), noStmtPositionInfo);
 
   // r0 := @this Test; r1 = (ref) 0; r2 = (ref) 0L; r3 = (ref) 1; r4 = r1, r5 = r2
   // r1 = (ref) 0

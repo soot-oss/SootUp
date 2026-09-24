@@ -21,15 +21,15 @@ package qilin.stat;
 import com.google.common.collect.Sets;
 import java.util.*;
 import qilin.core.PTA;
-import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
-import qilin.util.PTAUtils;
+import qilin.util.FakeMainMethods;
+import qilin.util.JavaTypes;
 import qilin.util.Stopwatch;
 import qilin.util.Triple;
+import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -64,7 +64,9 @@ public class SimplifiedEvaluator implements IEvaluator {
         "#Reachable Method (CI):", String.valueOf(pta.getNakedReachableMethods().size() - 1));
     OnFlyCallGraph ciCallGraph = pta.getCallGraph();
     exporter.collectMetric(
-        "#Call Edge(CI):", String.valueOf(ciCallGraph.size() - FakeMainFactory.implicitCallEdges));
+        "#Call Edge(CI):",
+        String.valueOf(
+            ciCallGraph.size() - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
 
     OnFlyCallGraph callGraph = pta.getCallGraph();
 
@@ -79,7 +81,7 @@ public class SimplifiedEvaluator implements IEvaluator {
     int totalCastsMayFail = 0;
     for (SootMethod sm : reachableMethods) {
       // All the statements in the method
-      for (Stmt st : PTAUtils.getMethodBody(sm).getStmts()) {
+      for (Stmt st : pta.getPag().getMethodBody(sm).getStmts()) {
         // virtual calls
         if (st.isInvokableStmt() && st.asInvokableStmt().getInvokeExpr().isPresent()) {
           AbstractInvokeExpr ie = st.asInvokableStmt().getInvokeExpr().get();
@@ -105,11 +107,11 @@ public class SimplifiedEvaluator implements IEvaluator {
             }
             boolean fails = false;
             Collection<AllocNode> pts = pta.reachingObjects(sm, (Local) v).toCollection();
-            for (Node n : pts) {
+            for (PagNode n : pts) {
               if (fails) {
                 break;
               }
-              fails = !PTAUtils.castNeverFails(pta.getView(), n.getType(), targetType);
+              fails = !JavaTypes.castNeverFails(pta.getView(), n.getType(), targetType);
             }
             if (fails) {
               totalCastsMayFail++;
@@ -134,9 +136,9 @@ public class SimplifiedEvaluator implements IEvaluator {
     // locals exclude Exceptions
     for (Triple<SootMethod, Local, Type> localTriple : pag.getLocalPointers()) {
       try {
-        SootMethod method = localTriple.getFirst();
-        Local local = localTriple.getSecond();
-        Type type = localTriple.getThird();
+        SootMethod method = localTriple.first();
+        Local local = localTriple.second();
+        Type type = localTriple.third();
         LocalVarNode lvn = pag.findLocalVarNode(method, local, type);
         if (local.toString().contains("intermediate/")) {
           continue;
@@ -164,7 +166,7 @@ public class SimplifiedEvaluator implements IEvaluator {
     Set<LocalVarNode> tmp = new HashSet<>();
     for (LocalVarNode lvn : mLocalVarNodes) {
       SootMethod sm = lvn.getMethod();
-      if (PTAUtils.isFakeMainMethod(sm)) {
+      if (FakeMainMethods.isFakeMainMethod(sm)) {
         tmp.add(lvn);
         continue;
       }

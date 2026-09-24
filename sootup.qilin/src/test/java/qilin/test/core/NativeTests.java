@@ -20,10 +20,48 @@ package qilin.test.core;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import qilin.test.util.JunitTests;
+import qilin.core.PTA;
+import qilin.core.PointerAnalysisFactory;
+import qilin.core.config.ContextSensitivity;
+import qilin.core.config.PointerAnalysisConfig;
+import qilin.test.util.QilinFrameworkTests;
+import qilin.util.ViewFactory;
+import sootup.callgraph.scope.AppOnlyClinitCallResolver;
+import sootup.core.types.ClassType;
+import sootup.core.views.View;
 
-@Disabled
-public class NativeTests extends JunitTests {
+/**
+ * Overrides {@code run} to use {@link AppOnlyClinitCallResolver} - drops {@code <clinit>}
+ * candidates for library classes (everything from the current JVM runtime, {@link
+ * qilin.test.util.QilinFrameworkTests}'s default) while still triggering app classes' own clinits.
+ * Without it, analyzing this suite's native-modeling-heavy microbenchmarks against the full modern
+ * JDK runtime image reaches into java.base's own unrelated internals (Character's Unicode tables,
+ * sun.security.* policy/X.509/OID machinery, java.lang.invoke, BigInteger, java.time/locale - none
+ * of it related to what these tests actually exercise, all of it reached purely because qilin
+ * recursively triggers every reached class's superclass/interface chain's clinits) - ~13000
+ * reachable methods for a single test, OOMs the shared 4GB surefire JVM. With app-only clinit
+ * resolution, the same test measures well under jre1.6.0_45's own baseline.
+ */
+public class NativeTests extends QilinFrameworkTests {
+
+  @Override
+  public PTA run(String mainClass, ContextSensitivity contextSensitivity) {
+    View view = ViewFactory.createView(appPath, null);
+    ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
+    PointerAnalysisConfig config =
+        QilinFrameworkTests.configBuilder(contextSensitivity, refLogPath)
+            .clinitVirtualCallResolver(new AppOnlyClinitCallResolver(view))
+            .build();
+    PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
+    pta.run();
+    return pta;
+  }
+
+  @Override
+  public PTA run(String mainClass) {
+    return run(mainClass, ContextSensitivity.insensitive());
+  }
+
   @Test
   public void testArrayCopy() {
     checkAssertions(run("qilin.microben.core.natives.ArrayCopy"));
@@ -46,7 +84,10 @@ public class NativeTests extends JunitTests {
 
   @Test
   public void testPrivilegedActions2() {
-    checkAssertions(run("qilin.microben.core.natives.PrivilegedActions2", "2o"));
+    checkAssertions(
+        run(
+            "qilin.microben.core.natives.PrivilegedActions2",
+            ContextSensitivity.objectSensitive(2, 1)));
   }
 
   @Test

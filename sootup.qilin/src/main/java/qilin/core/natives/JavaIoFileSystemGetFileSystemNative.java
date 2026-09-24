@@ -18,14 +18,15 @@
 
 package qilin.core.natives;
 
-import qilin.util.PTAUtils;
+import qilin.core.pag.PAG;
+import qilin.util.JavaTypes;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
 public class JavaIoFileSystemGetFileSystemNative extends NativeMethod {
-  public JavaIoFileSystemGetFileSystemNative(View view, SootMethod method) {
-    super(view, method);
+  public JavaIoFileSystemGetFileSystemNative(View view, SootMethod method, PAG pag) {
+    super(view, method, pag);
   }
 
   /** ********************** java.io.FileSystem ********************** */
@@ -36,7 +37,7 @@ public class JavaIoFileSystemGetFileSystemNative extends NativeMethod {
    * JDK(e.g., JDK6).
    */
   protected void simulateImpl() {
-    Local newLocal0 = getNew(PTAUtils.getClassType("java.io.UnixFileSystem"));
+    Local newLocal0 = getNew(JavaTypes.UNIX_FILE_SYSTEM);
     addInvoke(newLocal0, "<java.io.UnixFileSystem: void <init>()>");
     addReturn(newLocal0);
   }

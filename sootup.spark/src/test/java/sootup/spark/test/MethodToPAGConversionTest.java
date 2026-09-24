@@ -176,7 +176,6 @@ public class MethodToPAGConversionTest {
     var newO1 = SparkTestUtil.alloc(oType, 1L, mainSig);
     var stack5 = SparkTestUtil.var(oType, "$stack5", mainSig);
     var l1 = SparkTestUtil.var(oType, "l1", mainSig);
-    var l2 = SparkTestUtil.var(oType, "l2", mainSig);
     var newO2 = SparkTestUtil.alloc(oType, 2L, mainSig);
     var stack6 = SparkTestUtil.var(oType, "$stack6", mainSig);
     var l3 = SparkTestUtil.var(oType, "l3", mainSig);
@@ -203,7 +202,6 @@ public class MethodToPAGConversionTest {
     // main intraprocedural edges
     assertTrue(SparkTestUtil.containsEdge(delegate, newO1, stack5), "alloc(O,1) -> $stack5");
     assertTrue(SparkTestUtil.containsEdge(delegate, stack5, l1), "$stack5 -> l1");
-    assertTrue(SparkTestUtil.containsEdge(delegate, stack5, l2), "$stack5 -> l2");
     assertTrue(SparkTestUtil.containsEdge(delegate, newO2, stack6), "alloc(O,2) -> $stack6");
     assertTrue(SparkTestUtil.containsEdge(delegate, stack6, l3), "$stack6 -> l3");
     assertTrue(

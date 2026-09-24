@@ -22,7 +22,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import qilin.core.pag.LocalVarNode;
-import qilin.util.Util;
 
 /** locals */
 public class L extends I {
@@ -63,11 +62,11 @@ public class L extends I {
   }
 
   public boolean addOutEntryEdge(int i, L toE) {
-    return Util.addToMap(outEntryEdges, i, toE);
+    return outEntryEdges.computeIfAbsent(i, k -> new HashSet<>()).add(toE);
   }
 
   public boolean addOutExitEdge(int i, L toE) {
-    return Util.addToMap(outExitEdges, i, toE);
+    return outExitEdges.computeIfAbsent(i, k -> new HashSet<>()).add(toE);
   }
 
   public Set<L> getOutEntryEdges() {
@@ -79,7 +78,7 @@ public class L extends I {
   }
 
   public boolean addInEntryEdge(int i, L fromE) {
-    return Util.addToMap(inEntryEdges, i, fromE);
+    return inEntryEdges.computeIfAbsent(i, k -> new HashSet<>()).add(fromE);
   }
 
   public Set<L> getInEntryEdges(int i) {

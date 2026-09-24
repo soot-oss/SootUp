@@ -15,6 +15,7 @@ import sootup.core.jimple.common.expr.JNeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.PackageName;
+import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.*;
 import sootup.core.util.printer.BriefStmtPrinter;
 
@@ -47,7 +48,7 @@ public class MutableBlockControlFlowGraphTest {
 
         @Override
         public PackageName getPackageName() {
-          return new PackageName("java.lang");
+          return SignatureInterner.getPackageName("java.lang");
         }
       };
 
@@ -66,7 +67,7 @@ public class MutableBlockControlFlowGraphTest {
 
         @Override
         public PackageName getPackageName() {
-          return new PackageName("java.io");
+          return SignatureInterner.getPackageName("java.io");
         }
       };
 
@@ -568,7 +569,7 @@ public class MutableBlockControlFlowGraphTest {
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("some.object");
+            return SignatureInterner.getPackageName("some.object");
           }
         };
 
@@ -587,7 +588,7 @@ public class MutableBlockControlFlowGraphTest {
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("some.object");
+            return SignatureInterner.getPackageName("some.object");
           }
         };
 
@@ -1157,5 +1158,71 @@ public class MutableBlockControlFlowGraphTest {
     assertTrue(entrypoints.contains(stmt1));
     assertTrue(entrypoints.contains(handlerStmt1));
     assertTrue(entrypoints.contains(handlerStmt2));
+  }
+
+  /** Inserting before a Trap handler must not strand its exceptional edges on a dropped block. */
+  @Test
+  public void insertBeforeAHandlerKeepsExceptionalEdgesOnALiveBlock() {
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+
+    JNopStmt handlerHead = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt handlerTail = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt thrower = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt inserted = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+
+    graph.addBlock(Arrays.asList(handlerHead, handlerTail), Collections.emptyMap());
+    // an exceptional edge into the handler, no normal one
+    graph.addBlock(
+        Collections.singletonList(thrower), Collections.singletonMap(ioExceptionSig, handlerHead));
+    graph.setStartingStmt(thrower);
+    // and an ordinary path into the same handler head
+    graph.putEdge(firstNop, handlerHead);
+
+    graph.insertBefore(handlerHead, inserted);
+
+    assertExceptionalEdgesPointAtLiveBlocks(graph);
+  }
+
+  /** The same for a handler nothing reaches by ordinary flow: the inserted Stmt must still run. */
+  @Test
+  public void insertBeforeAHandlerReachedOnlyExceptionallyKeepsTheInsertedStmtReachable() {
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+
+    JNopStmt handlerHead = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt handlerTail = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt thrower = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JNopStmt inserted = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+
+    graph.addBlock(Arrays.asList(handlerHead, handlerTail), Collections.emptyMap());
+    graph.addBlock(
+        Collections.singletonList(thrower), Collections.singletonMap(ioExceptionSig, handlerHead));
+    graph.setStartingStmt(thrower);
+
+    graph.insertBefore(handlerHead, inserted);
+
+    assertExceptionalEdgesPointAtLiveBlocks(graph);
+
+    BasicBlock<?> insertedBlock = graph.getBlockOf(inserted);
+    boolean reached =
+        graph.getBlocks().stream()
+            .anyMatch(
+                b ->
+                    b != insertedBlock
+                        && (b.getSuccessors().contains(insertedBlock)
+                            || b.getExceptionalSuccessors().containsValue(insertedBlock)));
+    assertTrue(reached, "nothing reaches the inserted Stmt: " + inserted);
+  }
+
+  /** Every exceptional edge has to land on a block this graph still holds. */
+  private static void assertExceptionalEdgesPointAtLiveBlocks(MutableBlockControlFlowGraph graph) {
+    final Collection<? extends BasicBlock<?>> blocks = graph.getBlocks();
+    for (BasicBlock<?> block : blocks) {
+      for (BasicBlock<?> handler : block.getExceptionalSuccessors().values()) {
+        assertTrue(
+            blocks.contains(handler),
+            "an exceptional edge points at a block the graph does not hold anymore: "
+                + handler.getStmts());
+      }
+    }
   }
 }

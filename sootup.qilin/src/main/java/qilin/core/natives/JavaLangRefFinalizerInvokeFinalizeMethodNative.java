@@ -18,6 +18,7 @@
 
 package qilin.core.natives;
 
+import qilin.core.pag.PAG;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
@@ -25,8 +26,8 @@ import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
 public class JavaLangRefFinalizerInvokeFinalizeMethodNative extends NativeMethod {
-  public JavaLangRefFinalizerInvokeFinalizeMethodNative(View view, SootMethod method) {
-    super(view, method);
+  public JavaLangRefFinalizerInvokeFinalizeMethodNative(View view, SootMethod method, PAG pag) {
+    super(view, method, pag);
   }
 
   /** "&lt;java.lang.ref.Finalizer: void invokeFinalizeMethod(java.lang.Object)&gt;" */

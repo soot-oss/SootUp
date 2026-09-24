@@ -26,31 +26,57 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.*;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.JavaModuleInfo;
 import sootup.java.core.ModuleModifier;
+import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
 
 public class AsmModuleSource extends JavaModuleInfo {
 
   @NonNull private final Path sourcePath;
+  @NonNull private final IdentifierFactory identifierFactory;
   @NonNull private final Supplier<ModuleNode> _lazyModule = Suppliers.memoize(this::_lazyModule);
 
-  public AsmModuleSource(@NonNull Path sourcePath) {
+  public AsmModuleSource(@NonNull Path sourcePath, @NonNull IdentifierFactory identifierFactory) {
 
     // if it would be an automatic module there would be no module-info.class
     super();
     this.sourcePath = sourcePath;
+    this.identifierFactory = identifierFactory;
+  }
+
+  public static EnumSet<ModuleModifier> getModuleModifiers(int access) {
+    EnumSet<ModuleModifier> modifierEnumSet = EnumSet.noneOf(ModuleModifier.class);
+
+    // add all modifiers for which (access & ABSTRACT) =! 0
+    for (ModuleModifier modifier : ModuleModifier.values()) {
+      if ((access & modifier.getBytecode()) != 0) {
+        modifierEnumSet.add(modifier);
+      }
+    }
+    return modifierEnumSet;
+  }
+
+  @NonNull
+  public static ClassNode getModuleDescriptor(Path moduleInfoFile) {
+    ClassNode moduleDescriptor;
+    try (InputStream sourceFileInputStream = Files.newInputStream(moduleInfoFile)) {
+      ClassReader clsr = new ClassReader(sourceFileInputStream);
+      moduleDescriptor = new ClassNode(AsmUtil.SUPPORTED_ASM_OPCODE);
+      clsr.accept(moduleDescriptor, ClassReader.SKIP_FRAMES);
+    } catch (IOException e) {
+      throw new ResolveException("Error loading the module-descriptor", moduleInfoFile, e);
+    }
+    return moduleDescriptor;
   }
 
   // make loading lazy
@@ -86,7 +112,7 @@ public class AsmModuleSource extends JavaModuleInfo {
           JavaModuleIdentifierFactory.getModuleSignature(moduleRequireNode.module);
       JavaModuleInfo.ModuleReference reference =
           new JavaModuleInfo.ModuleReference(
-              moduleSignature, AsmUtil.getModuleModifiers(moduleRequireNode.access));
+              moduleSignature, getModuleModifiers(moduleRequireNode.access));
       requires.add(reference);
     }
     return requires;
@@ -99,7 +125,6 @@ public class AsmModuleSource extends JavaModuleInfo {
       return Collections.emptyList();
     }
     ArrayList<JavaModuleInfo.PackageReference> exports = new ArrayList<>(module.exports.size());
-    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
     for (ModuleExportNode exportNode : module.exports) {
       ArrayList<ModuleSignature> modules = new ArrayList<>(exportNode.modules.size());
       for (String moduleName : exportNode.modules) {
@@ -107,9 +132,8 @@ public class AsmModuleSource extends JavaModuleInfo {
       }
       JavaModuleInfo.PackageReference reference =
           new JavaModuleInfo.PackageReference(
-              identifierFactory.getPackageName(
-                  exportNode.packaze.replace('/', '.'), getModuleSignature().toString()),
-              AsmUtil.getModuleModifiers(exportNode.access),
+              ModulePackageName.of(exportNode.packaze.replace('/', '.'), getModuleSignature()),
+              getModuleModifiers(exportNode.access),
               modules);
       exports.add(reference);
     }
@@ -123,7 +147,6 @@ public class AsmModuleSource extends JavaModuleInfo {
       return Collections.emptyList();
     }
     ArrayList<JavaModuleInfo.PackageReference> opens = new ArrayList<>(module.opens.size());
-    JavaModuleIdentifierFactory identifierFactory = JavaModuleIdentifierFactory.getInstance();
     for (ModuleOpenNode openNode : module.opens) {
       ArrayList<ModuleSignature> modules = new ArrayList<>(openNode.modules.size());
       for (String moduleName : openNode.modules) {
@@ -131,9 +154,8 @@ public class AsmModuleSource extends JavaModuleInfo {
       }
       JavaModuleInfo.PackageReference reference =
           new JavaModuleInfo.PackageReference(
-              identifierFactory.getPackageName(
-                  openNode.packaze.replace('/', '.'), getModuleSignature().toString()),
-              AsmUtil.getModuleModifiers(openNode.access),
+              ModulePackageName.of(openNode.packaze.replace('/', '.'), getModuleSignature()),
+              getModuleModifiers(openNode.access),
               modules);
       opens.add(reference);
     }
@@ -149,12 +171,13 @@ public class AsmModuleSource extends JavaModuleInfo {
     ArrayList<InterfaceReference> providers = new ArrayList<>(module.provides.size());
     // add provides
     for (ModuleProvideNode moduleProvideNode : module.provides) {
-      JavaClassType serviceSignature = AsmUtil.toJimpleClassType(moduleProvideNode.service);
+      JavaClassType serviceSignature =
+          AsmUtil.toJimpleClassType(moduleProvideNode.service, identifierFactory);
       if (serviceSignature == null) {
         throw new IllegalStateException("provides entry without 'with' .");
       }
       Iterable<JavaClassType> providersSignatures =
-          AsmUtil.asmIdToSignature(moduleProvideNode.providers);
+          AsmUtil.asmIdToSignatures(moduleProvideNode.providers, identifierFactory);
       for (JavaClassType sootClassSignature : providersSignatures) {
         providers.add(new InterfaceReference(sootClassSignature, serviceSignature));
       }
@@ -172,7 +195,7 @@ public class AsmModuleSource extends JavaModuleInfo {
     ArrayList<JavaClassType> uses = new ArrayList<>(module.uses.size());
     // add uses
     for (String usedService : module.uses) {
-      JavaClassType serviceSignature = AsmUtil.toJimpleClassType(usedService);
+      JavaClassType serviceSignature = AsmUtil.toJimpleClassType(usedService, identifierFactory);
       uses.add(serviceSignature);
     }
 
@@ -187,6 +210,6 @@ public class AsmModuleSource extends JavaModuleInfo {
   @Override
   public Set<ModuleModifier> getModifiers() {
     ModuleNode module = _lazyModule.get();
-    return AsmUtil.getModuleModifiers(module.access);
+    return getModuleModifiers(module.access);
   }
 }

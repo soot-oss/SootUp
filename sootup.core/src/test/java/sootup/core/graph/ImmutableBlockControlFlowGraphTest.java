@@ -11,6 +11,7 @@ import sootup.core.jimple.common.expr.JLeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.PackageName;
+import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 
@@ -32,7 +33,7 @@ public class ImmutableBlockControlFlowGraphTest {
 
         @Override
         public PackageName getPackageName() {
-          return new PackageName("java.lang");
+          return SignatureInterner.getPackageName("java.lang");
         }
       };
 

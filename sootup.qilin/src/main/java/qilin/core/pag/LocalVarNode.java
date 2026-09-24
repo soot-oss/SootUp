@@ -18,6 +18,7 @@
 
 package qilin.core.pag;
 
+import qilin.core.context.Context;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
@@ -42,23 +43,22 @@ public class LocalVarNode extends VarNode {
 
   /** Returns true if this VarNode represents the THIS pointer */
   public boolean isThis() {
-    if (variable instanceof Parm) {
-      Parm parm = (Parm) variable;
-      return parm.isThis();
-    }
-    return false;
+    MethodParameter mp = getMethodParameter();
+    return mp != null && mp.isThis();
   }
 
   public boolean isReturn() {
-    if (variable instanceof Parm) {
-      Parm parm = (Parm) variable;
-      return parm.isReturn();
-    }
-    return false;
+    MethodParameter mp = getMethodParameter();
+    return mp != null && mp.isReturn();
   }
 
   @Override
   public VarNode base() {
     return this;
+  }
+
+  @Override
+  public PagNode parameterize(Parameterizer parameterizer, Context context) {
+    return parameterizer.parameterize(this, context);
   }
 }

@@ -21,6 +21,7 @@ package qilin.util.queue;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+// Retained (mostly) verbatim from Soot/Spark; part of qilin's ported pointer-analysis core.
 
 /**
  * A queue of Object's. One can add objects to the queue, and they are later read by a QueueReader.
@@ -87,7 +88,7 @@ public class ChunkedQueue<E> {
         curArray = (Object[]) curObj;
         idx = 0;
       } else {
-        sb.append(curObj.toString());
+        sb.append(curObj);
         idx++;
       }
     }

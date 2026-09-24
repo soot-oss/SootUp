@@ -21,10 +21,10 @@ package qilin.pta.toolkits.turner;
 import java.util.*;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
-import qilin.pta.PTAConfig;
-import qilin.util.PTAUtils;
+import qilin.util.StaticThisPointsTo;
+import qilin.util.sets.PointsToSet;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
@@ -41,7 +41,7 @@ public class OCG {
 
   public OCG(PTA pta) {
     this.pta = pta;
-    this.pts = PTAUtils.calcStaticThisPTS(pta);
+    this.pts = StaticThisPointsTo.calcStaticThisPTS(pta);
     this.nodes = new HashMap<>();
     buildGraph();
   }
@@ -180,10 +180,10 @@ public class OCG {
 
   public void run() {
     int[] a = new int[2];
-    System.out.println(PTAConfig.v().turnerConfig);
+    System.out.println(pta.getConfig().getTurnerConfig());
     for (OCGNode node : nodes.values()) {
-      PTAConfig.TurnerConfig hgConfig = PTAConfig.v().turnerConfig;
-      if (hgConfig == PTAConfig.TurnerConfig.PHASE_TWO) {
+      PointerAnalysisConfig.TurnerConfig hgConfig = pta.getConfig().getTurnerConfig();
+      if (hgConfig == PointerAnalysisConfig.TurnerConfig.PHASE_TWO) {
         node.cslikely = true;
       } else {
         node.cslikely = isNotTopAndBottom(node);
@@ -254,7 +254,7 @@ public class OCG {
     }
     MethodPAG methodPAG = pta.getPag().getMethodPAG(method);
     MethodNodeFactory factory = methodPAG.nodeFactory();
-    Node retNode = factory.caseRet();
+    PagNode retNode = factory.caseRet();
     PointsToSet pts = pta.reachingObjects(retNode).toCIPointsToSet();
     return pts.contains(heap);
   }

@@ -18,28 +18,24 @@
 
 package qilin.core.pag;
 
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.types.Type;
 
 /**
- * Represents an array element.
+ * A pseudo-field standing in for "any element of any array", used to model array stores/loads
+ * field-insensitively: {@link PAG} holds exactly one {@code ArrayElement} instance (see {@link
+ * PAG#getArrayElement()}), shared across every array type in the program. Because a single,
+ * parameterless {@code ArrayElement} represents cells of {@code int[]}, {@code String[]}, {@code
+ * Foo[]}, ... all merged together, there is no single real element type it could report -- {@link
+ * #getType()} deliberately returns {@link JavaTypes#OBJECT} rather than picking one array's element
+ * type arbitrarily. This is an intentional precision/scalability trade-off (the same one Spark
+ * made), not information lost by accident; a genuinely array-type-sensitive analysis would need
+ * per-(allocation-site-or-type) elements instead of this shared singleton.
  *
  * @author Ondrej Lhotak
  */
 public class ArrayElement implements SparkField {
-  private static ArrayElement instance = null;
   private int number = 0;
-
-  public static ArrayElement v() {
-    if (instance == null) {
-      synchronized (ArrayElement.class) {
-        if (instance == null) {
-          instance = new ArrayElement();
-        }
-      }
-    }
-    return instance;
-  }
 
   public final int getNumber() {
     return number;
@@ -49,7 +45,8 @@ public class ArrayElement implements SparkField {
     this.number = number;
   }
 
+  @Override
   public Type getType() {
-    return PTAUtils.getClassType("java.lang.Object");
+    return JavaTypes.OBJECT;
   }
 }

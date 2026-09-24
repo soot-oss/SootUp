@@ -11,6 +11,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
+import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.interceptors.DeadAssignmentEliminator;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
@@ -57,5 +58,40 @@ public class BodyInterceptorTest {
                 stmt ->
                     stmt instanceof JAssignStmt
                         && ((JAssignStmt) stmt).getRightOp().equivTo(IntConstant.getInstance(3))));
+  }
+
+  @Test
+  public void test2() {
+    AnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            "src/test/resources/BodyInterceptor/binary",
+            null,
+            BytecodeBodyInterceptors.Default.getBodyInterceptors());
+    // Create a new JavaView based on the input location
+    JavaView view = new JavaView(inputLocation);
+
+    // Create a signature for the class we want to analyze
+    ClassType classType = view.getIdentifierFactory().getClassType("File2");
+
+    // Create a signature for the method we want to analyze
+    MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(classType, "someMethod", "int", Collections.emptyList());
+
+    // Assert that class is present
+    assertTrue(view.getClass(classType).isPresent());
+
+    // Retrieve class
+    SootClass sootClass = view.getClass(classType).get();
+
+    // Retrieve method
+    assertTrue(view.getMethod(methodSignature).isPresent());
+    SootMethod method = view.getMethod(methodSignature).get();
+
+    System.out.println(method.getBody());
+
+    // After copy propagation: a=37, b=42, c=(37*42)-(37*42)=0.
+    // The return statement 'return c' becomes 'return 0'.
+    assertTrue(method.getBody().toString().contains("return 0"));
   }
 }

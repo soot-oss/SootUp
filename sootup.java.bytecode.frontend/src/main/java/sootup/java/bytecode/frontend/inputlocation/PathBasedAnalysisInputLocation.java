@@ -8,12 +8,12 @@ import java.util.stream.Stream;
 import org.apache.commons.io.FilenameUtils;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.java.core.*;
@@ -95,6 +95,9 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     return bodyInterceptors;
   }
 
+  @Override
+  public void close() {}
+
   @NonNull
   public static PathBasedAnalysisInputLocation create(
       @NonNull Path path, @NonNull SourceType sourceType) {
@@ -146,7 +149,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
   protected Stream<JavaSootClassSource> walkDirectory(
       @NonNull Path dirPath,
       @NonNull IdentifierFactory factory,
-      @NonNull ClassProvider classProvider) {
+      @NonNull PathbasedClassProvider classProvider) {
 
     final FileType handledFileType = classProvider.getHandledFileType();
     final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
@@ -183,7 +186,9 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
   @NonNull
   protected Optional<JavaSootClassSource> getClassSourceInternal(
-      @NonNull JavaClassType signature, @NonNull Path path, @NonNull ClassProvider classProvider) {
+      @NonNull JavaClassType signature,
+      @NonNull Path path,
+      @NonNull PathbasedClassProvider classProvider) {
 
     Path pathToClass =
         path.resolve(
@@ -203,7 +208,9 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
   }
 
   protected Optional<JavaSootClassSource> getSingleClass(
-      @NonNull JavaClassType signature, @NonNull Path path, @NonNull ClassProvider classProvider) {
+      @NonNull JavaClassType signature,
+      @NonNull Path path,
+      @NonNull PathbasedClassProvider classProvider) {
 
     Path pathToClass = Paths.get(path.toString());
 

@@ -31,6 +31,7 @@ nav:
       - "Example: Live Variables (backward)": analysis-liveness.md
       - "Example: Constant Propagation (forward)": analysis-constprop.md
       - "Example: Typestate (interprocedural, IDE)": analysis-typestate.md
+      - "Example: Taint Analysis (interprocedural, IFDS)": taint-analysis-example.md
       - "From Prototype to Tool": tool_setup.md
       - Incorporate Pointer Analysis: qilin.md
   #  - Modify a ControlFlowGraph: mutable_controlflowgraph.md
@@ -81,6 +82,7 @@ markdown_extensions:
   - pymdownx.snippets:
       base_path: ["."]
       check_paths: true
+      dedent_subsections: true
   - pymdownx.superfences
   - pymdownx.details
   - admonition

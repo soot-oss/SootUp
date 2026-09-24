@@ -25,7 +25,7 @@ package sootup.jimple.frontend;
 import java.nio.file.Path;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootMethod;
 

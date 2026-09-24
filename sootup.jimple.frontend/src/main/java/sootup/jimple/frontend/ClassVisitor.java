@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.ClassModifier;
@@ -35,7 +36,6 @@ import sootup.core.model.FieldModifier;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.Position;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootField;
@@ -64,10 +64,10 @@ public abstract class ClassVisitor extends JimpleBaseVisitor<Boolean> {
   public ClassVisitor(
       @NonNull Path path, @NonNull List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
     this.path = path;
-    util = new JimpleConverterUtil(path);
     this.bodyInterceptors = bodyInterceptors;
     this.view = view;
     this.identifierFactory = view.getIdentifierFactory();
+    util = new JimpleConverterUtil(path, identifierFactory);
   }
 
   protected abstract MethodVisitor createMethodVisitor();

@@ -34,7 +34,7 @@ import sootup.core.IdentifierFactory;
 public class PackageName {
 
   /** Represents the default package. */
-  public static final PackageName DEFAULT_PACKAGE = new PackageName("");
+  public static final PackageName DEFAULT_PACKAGE = SignatureInterner.getPackageName("");
 
   public static final String PACKAGE_INFO = "package-info";
 
@@ -46,7 +46,7 @@ public class PackageName {
    *
    * @param packageName the package's name
    */
-  public PackageName(final String packageName) {
+  protected PackageName(final String packageName) {
     this.packageName = packageName;
   }
 
@@ -60,7 +60,7 @@ public class PackageName {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof PackageName)) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
     PackageName that = (PackageName) o;

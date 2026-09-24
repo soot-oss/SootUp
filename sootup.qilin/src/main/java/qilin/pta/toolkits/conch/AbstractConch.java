@@ -22,9 +22,10 @@ import java.util.*;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
-import qilin.util.PTAUtils;
+import qilin.util.PagQueries;
 import qilin.util.Pair;
+import qilin.util.StaticThisPointsTo;
+import qilin.util.sets.PointsToSet;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
@@ -70,9 +71,9 @@ public class AbstractConch {
      * thus, inherit its most recent instance methods' contexts (which is standard in the literature).
      * The following line computes the receiver objects for the this_ptr of static methods.
      * */
-    Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(pta);
+    Map<LocalVarNode, Set<AllocNode>> pts = StaticThisPointsTo.calcStaticThisPTS(pta);
     pta.getNakedReachableMethods().stream()
-        .filter(PTAUtils::hasBody)
+        .filter(pag::hasBody)
         .forEach(
             method -> {
               collectStoresIn(method);
@@ -134,14 +135,14 @@ public class AbstractConch {
     MethodNodeFactory srcnf = srcmpag.nodeFactory();
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
     SMPAG smpag = getSMAPG(srcmpag);
-    for (Pair<Node, Node> ld : smpag.getLoads()) {
-      FieldRefNode fr = (FieldRefNode) ld.getSecond();
+    for (Pair<PagNode, PagNode> ld : smpag.getLoads()) {
+      FieldRefNode fr = (FieldRefNode) ld.second();
       LocalVarNode loadBase = (LocalVarNode) fr.getBase();
       SparkField field = fr.getField();
       if (primitiveField(field)) {
         continue;
       }
-      if (PTAUtils.mustAlias(pta, thisRef, loadBase)) { // handle THIS LOAD, i.e., ... = this.f
+      if (PagQueries.mustAlias(pta, thisRef, loadBase)) { // handle THIS LOAD, i.e., ... = this.f
         Map<SparkField, Set<VarNode>> f2bs =
             m2thisFLoads.computeIfAbsent(method, k -> new HashMap<>());
         f2bs.computeIfAbsent(field, k -> new HashSet<>()).add(loadBase);
@@ -165,15 +166,15 @@ public class AbstractConch {
     MethodNodeFactory srcnf = srcmpag.nodeFactory();
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
     SMPAG smpag = getSMAPG(srcmpag);
-    for (Pair<Node, Node> st : smpag.getStores()) {
-      LocalVarNode from = (LocalVarNode) st.getSecond();
-      FieldRefNode fr = (FieldRefNode) st.getFirst();
+    for (Pair<PagNode, PagNode> st : smpag.getStores()) {
+      LocalVarNode from = (LocalVarNode) st.second();
+      FieldRefNode fr = (FieldRefNode) st.first();
       LocalVarNode storeBase = (LocalVarNode) fr.getBase();
       SparkField field = fr.getField();
       if (primitiveField(field)) {
         continue;
       }
-      if (PTAUtils.mustAlias(pta, thisRef, storeBase)) { // handle this STORE, i.e., this.f = ...
+      if (PagQueries.mustAlias(pta, thisRef, storeBase)) { // handle this STORE, i.e., this.f = ...
         Map<SparkField, Set<Pair<VarNode, VarNode>>> m2s =
             m2thisFStores.computeIfAbsent(method, k -> new HashMap<>());
         m2s.computeIfAbsent(field, k -> new HashSet<>()).add(new Pair<>(storeBase, from));

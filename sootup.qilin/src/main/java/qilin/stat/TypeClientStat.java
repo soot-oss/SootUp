@@ -19,14 +19,12 @@
 package qilin.stat;
 
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTA;
-import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.ContextMethod;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -83,7 +81,7 @@ public class TypeClientStat implements AbstractStat {
       boolean app = sc.isApplicationClass();
 
       // All the statements in the method
-      for (Stmt st : PTAUtils.getMethodBody(sm).getStmts()) {
+      for (Stmt st : pta.getPag().getMethodBody(sm).getStmts()) {
         // virtual calls
         if (st.isInvokableStmt() && st.asInvokableStmt().getInvokeExpr().isPresent()) {
           AbstractInvokeExpr ie = st.asInvokableStmt().getInvokeExpr().get();
@@ -131,7 +129,7 @@ public class TypeClientStat implements AbstractStat {
               if (fails) {
                 break;
               }
-              fails = !PTAUtils.castNeverFails(pta.getView(), n.getType(), targetType);
+              fails = !JavaTypes.castNeverFails(pta.getView(), n.getType(), targetType);
             }
 
             if (fails) {
@@ -155,7 +153,8 @@ public class TypeClientStat implements AbstractStat {
     exporter.collectMetric("#May Fail Cast (AppOnly):", String.valueOf(appCastsMayFail));
     exporter.collectMetric(
         "#Static Call Site(Total):",
-        String.valueOf(totalStaticCalls - FakeMainFactory.implicitCallEdges));
+        String.valueOf(
+            totalStaticCalls - pta.getScene().getFakeMainFactory().getImplicitCallEdgeCount()));
     exporter.collectMetric("#Virtual Call Site(Total):", String.valueOf(totalVirtualCalls));
     exporter.collectMetric("#Virtual Call Site(AppOnly):", String.valueOf(appVirtualCalls));
     exporter.collectMetric("#Virtual Call Site(Polymorphic):", String.valueOf(totalPolyCalls));
@@ -165,7 +164,7 @@ public class TypeClientStat implements AbstractStat {
     exporter.collectMetric(
         "#Avg Poly Call Targets:", String.valueOf(1.0 * totalPolyCallTargets / totalPolyCalls));
 
-    if (CoreConfig.v().getOutConfig().dumpStats) {
+    if (pta.getConfig().isDumpStats()) {
       exporter.dumpPolyCalls(polyCalls);
       exporter.dumpMayFailCasts(mayFailCasts);
     }

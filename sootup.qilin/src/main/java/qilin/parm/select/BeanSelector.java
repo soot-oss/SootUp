@@ -28,17 +28,17 @@ import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.PAG;
 import sootup.core.model.SootMethod;
 
-public class BeanSelector extends CtxSelector {
+public class BeanSelector extends ContextSelector {
   private final PAG pag;
-  private final Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap;
+  private final Map<Object, Map<Object, Map<Object, Object>>> beanNexContextMap;
   // currently, we only support k = 2 and hk = 1;
   // we will generalize Bean in future.
   private final int k = 2;
   private final int hk = 1;
 
-  public BeanSelector(PAG pag, Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap) {
+  public BeanSelector(PAG pag, Map<Object, Map<Object, Map<Object, Object>>> beanNexContextMap) {
     this.pag = pag;
-    this.beanNexCtxMap = beanNexCtxMap;
+    this.beanNexContextMap = beanNexContextMap;
   }
 
   @Override
@@ -64,17 +64,17 @@ public class BeanSelector extends CtxSelector {
     if (s > 1) {
       ContextElement[] cxtAllocs = ctxElems.getElements();
       AllocNode allocator = (AllocNode) cxtAllocs[0];
-      if (beanNexCtxMap.containsKey(heap.getNewExpr())) {
-        Map<Object, Map<Object, Object>> mMap1 = beanNexCtxMap.get(heap.getNewExpr());
+      if (beanNexContextMap.containsKey(heap.getNewExpr())) {
+        Map<Object, Map<Object, Object>> mMap1 = beanNexContextMap.get(heap.getNewExpr());
         if (mMap1.containsKey(allocator.getNewExpr())) {
           Map<Object, Object> mMap2 = mMap1.get(allocator.getNewExpr());
           AllocNode allocAllocNode = (AllocNode) cxtAllocs[1];
           if (allocAllocNode != null && mMap2.containsKey(allocAllocNode.getNewExpr())) {
-            Object newCtxNode = mMap2.get(allocAllocNode.getNewExpr());
-            AllocNode newCtxAllocNode = pag.getAllocNode(newCtxNode);
+            Object newContextNode = mMap2.get(allocAllocNode.getNewExpr());
+            AllocNode newContextAllocNode = pag.getAllocNode(newContextNode);
             ContextElement[] array = new ContextElement[s];
             System.arraycopy(cxtAllocs, 0, array, 0, s);
-            array[0] = newCtxAllocNode;
+            array[0] = newContextAllocNode;
             context = new ContextElements(array, s);
           }
         }

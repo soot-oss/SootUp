@@ -22,38 +22,68 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
-import qilin.util.DataFactory;
-import qilin.util.PTAUtils;
+import qilin.core.config.PointerAnalysisConfig;
+import qilin.util.CallDetails;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 public class PTAScene {
   private final View view;
+  private final ClassType mainClass;
+  private final PointerAnalysisConfig config;
   private OnFlyCallGraph callgraph;
   private final FakeMainFactory fakeMainFactory;
+  private final CallDetails callDetails;
 
+  // Thread-safe: guard the corresponding effect model's one-time-per-method work
+  // (PAG.getMethodPAG()'s effect-model dispatch and arraycopy handling), which is reached from
+  // toolkit parallelStream() passes run after the main solve (e.g.
+  // qilin.pta.toolkits.conch.AbstractPAG, qilin.pta.toolkits.debloaterx.XPAG), not just the
+  // single-threaded Solver. add()'s atomicity is what makes "build it once" hold under that.
   public final Set<SootMethod> nativeBuilt;
   public final Set<SootMethod> reflectionBuilt;
   public final Set<SootMethod> arraycopyBuilt;
+  public final Set<SootMethod> dynamicInvokeBuilt;
 
-  public PTAScene(View view, String mainClassSig) {
-    this.nativeBuilt = DataFactory.createSet();
-    this.reflectionBuilt = DataFactory.createSet();
-    this.arraycopyBuilt = DataFactory.createSet();
+  public PTAScene(View view, ClassType mainClass, PointerAnalysisConfig config) {
+    this.nativeBuilt = ConcurrentHashMap.newKeySet();
+    this.reflectionBuilt = ConcurrentHashMap.newKeySet();
+    this.arraycopyBuilt = ConcurrentHashMap.newKeySet();
+    this.dynamicInvokeBuilt = ConcurrentHashMap.newKeySet();
     this.view = view;
-    SootClass mainClass = getSootClass(mainClassSig);
+    this.mainClass = mainClass;
+    this.config = config;
+    SootClass mainSootClass =
+        view.getClass(mainClass)
+            .orElseThrow(
+                () -> new IllegalArgumentException("Main class not found in view: " + mainClass));
     // setup fakemain
-    this.fakeMainFactory = new FakeMainFactory(view, mainClass);
+    this.fakeMainFactory = new FakeMainFactory(view, mainSootClass, config);
+    this.callDetails = new CallDetails();
+  }
+
+  public PointerAnalysisConfig getConfig() {
+    return config;
+  }
+
+  public ClassType getMainClass() {
+    return mainClass;
+  }
+
+  public FakeMainFactory getFakeMainFactory() {
+    return fakeMainFactory;
+  }
+
+  public CallDetails getCallDetails() {
+    return callDetails;
   }
 
   /*
@@ -72,8 +102,11 @@ public class PTAScene {
   }
 
   /*
-   *  wrapper methods of Soot Scene. Note, we do not allow you to use Soot Scene directly in qilin.qilin.pta subproject
-   * to avoid confusing.
+   * getView() is the escape hatch to the underlying sootup View for everything View already does
+   * directly (getClasses(), getMethod(...).isPresent(), ...). The methods below only exist because
+   * they add something View doesn't: getMethod()/getSootClass() turn a raw Optional.get() into a
+   * descriptive exception, and isApplicationMethod() is qilin-specific derived logic, not a plain
+   * View lookup.
    * */
   public void setCallGraph(OnFlyCallGraph cg) {
     this.callgraph = cg;
@@ -87,51 +120,19 @@ public class PTAScene {
     return this.callgraph;
   }
 
-  public SootMethod getMethod(String methodSignature) {
-    MethodSignature mthdSig = view.getIdentifierFactory().parseMethodSignature(methodSignature);
-    return view.getMethod(mthdSig).get();
-  }
-
-  public Collection<SootClass> getApplicationClasses() {
-    return view.getClasses().filter(SootClass::isApplicationClass).collect(Collectors.toSet());
-  }
-
-  public Collection<SootClass> getLibraryClasses() {
-    return view.getClasses().filter(SootClass::isLibraryClass).collect(Collectors.toSet());
-  }
-
-  public boolean containsMethod(String methodSignature) {
-    MethodSignature mthdSig = view.getIdentifierFactory().parseMethodSignature(methodSignature);
-    return view.getMethod(mthdSig).isPresent();
-  }
-
-  public boolean containsField(String fieldSignature) {
-    FieldSignature fieldSig = view.getIdentifierFactory().parseFieldSignature(fieldSignature);
-    return view.getField(fieldSig).isPresent();
-  }
-
-  public Collection<? extends SootClass> getClasses() {
-    return view.getClasses().collect(Collectors.toList());
+  public SootMethod getMethod(MethodSignature methodSignature) {
+    return view.getMethod(methodSignature)
+        .orElseThrow(
+            () -> new IllegalArgumentException("Method not found in view: " + methodSignature));
   }
 
   public Collection<SootClass> getPhantomClasses() {
     return Collections.emptySet();
   }
 
-  public SootClass getSootClass(String className) {
-    ClassType classType = PTAUtils.getClassType(className);
-    return view.getClass(classType).get();
-  }
-
-  public boolean containsClass(String className) {
-    ClassType classType = PTAUtils.getClassType(className);
-    Optional<? extends SootClass> oclazz = view.getClass(classType);
-    return oclazz.isPresent();
-  }
-
-  public SootField getField(String fieldSignature) {
-    FieldSignature fieldSig = view.getIdentifierFactory().parseFieldSignature(fieldSignature);
-    return view.getField(fieldSig).get();
+  public SootClass getSootClass(ClassType classType) {
+    return view.getClass(classType)
+        .orElseThrow(() -> new IllegalArgumentException("Class not found in view: " + classType));
   }
 
   public boolean isApplicationMethod(SootMethod sm) {

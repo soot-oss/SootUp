@@ -26,6 +26,7 @@ import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.analysis.intraprocedural.reachingdefs.ReachingDefs;
 import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
@@ -40,7 +41,6 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
 

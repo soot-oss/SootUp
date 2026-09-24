@@ -18,7 +18,8 @@
 
 package qilin.core.natives;
 
-import qilin.util.PTAUtils;
+import qilin.core.pag.PAG;
+import qilin.util.JavaTypes;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.model.SootMethod;
@@ -31,13 +32,13 @@ import sootup.core.views.View;
  * */
 
 public class JavaLangReflectArrayGet extends NativeMethod {
-  JavaLangReflectArrayGet(View view, SootMethod method) {
-    super(view, method);
+  JavaLangReflectArrayGet(View view, SootMethod method, PAG pag) {
+    super(view, method, pag);
   }
 
   @Override
   protected void simulateImpl() {
-    ClassType objType = PTAUtils.getClassType("java.lang.Object");
+    ClassType objType = JavaTypes.OBJECT;
     Value arrayBase = getPara(0, new ArrayType(objType, 1));
     Value arrayRef = getArrayRef(arrayBase);
     Local ret = getNextLocal(objType);

@@ -24,48 +24,51 @@ import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
-import qilin.parm.ctxcons.CallsiteCtxConstructor;
-import qilin.parm.ctxcons.HybObjCtxConstructor;
-import qilin.parm.ctxcons.ObjCtxConstructor;
-import qilin.parm.ctxcons.TypeCtxConstructor;
-import qilin.parm.select.CtxSelector;
+import qilin.core.pag.PAG;
+import qilin.parm.contextconstruction.CallSiteContextConstructor;
+import qilin.parm.contextconstruction.HybridObjectContextConstructor;
+import qilin.parm.contextconstruction.ObjectContextConstructor;
+import qilin.parm.contextconstruction.TypeContextConstructor;
+import qilin.parm.select.ContextSelector;
 import sootup.core.model.SootMethod;
 
-public class DataDrivenSelector extends CtxSelector {
+public class DataDrivenSelector extends ContextSelector {
   private final Map<SootMethod, FeaturesTrueTable> m2ftt = new HashMap<>();
   private final Class mClass;
+  private final PAG pag;
 
-  public DataDrivenSelector(Class mClass) {
+  public DataDrivenSelector(Class mClass, PAG pag) {
     this.mClass = mClass;
+    this.pag = pag;
   }
 
   private FeaturesTrueTable findOrCreateFeaturesTrueTable(SootMethod sm) {
-    return m2ftt.computeIfAbsent(sm, k -> new FeaturesTrueTable(sm));
+    return m2ftt.computeIfAbsent(sm, k -> new FeaturesTrueTable(sm, pag));
   }
 
   @Override
   public Context select(SootMethod m, Context context) {
     FeaturesTrueTable ftt = findOrCreateFeaturesTrueTable(m);
     int i = 0;
-    if (mClass == HybObjCtxConstructor.class) {
+    if (mClass == HybridObjectContextConstructor.class) {
       if (ftt.hybrid2objFormula2()) {
         i = 2;
       } else if (ftt.hybrid2objFormula1()) {
         i = 1;
       }
-    } else if (mClass == ObjCtxConstructor.class) {
+    } else if (mClass == ObjectContextConstructor.class) {
       if (ftt.twoObjFormula2()) {
         i = 2;
       } else if (ftt.twoObjFormula1()) {
         i = 1;
       }
-    } else if (mClass == CallsiteCtxConstructor.class) {
+    } else if (mClass == CallSiteContextConstructor.class) {
       if (ftt.twoCFAFormula2()) {
         i = 2;
       } else if (ftt.twoCFAFormula1()) {
         i = 1;
       }
-    } else if (mClass == TypeCtxConstructor.class) {
+    } else if (mClass == TypeContextConstructor.class) {
       if (ftt.twoTypeFormula2()) {
         i = 2;
       } else if (ftt.twoTypeFormula1()) {

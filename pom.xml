@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <groupId>org.soot-oss</groupId>
     <artifactId>sootup</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>3.0.2-SNAPSHOT</version>
     <name>SootUp</name>
     <description>A new version of Soot with a completely overhauled architecture</description>
     <url>https://soot-oss.github.io/SootUp</url>
@@ -82,16 +82,20 @@
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-        <maven-central-publishing-plugin.version>0.10.0</maven-central-publishing-plugin.version>
+        <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <!-- Test JVM knobs, overridable on machines with less memory than CI,
+             e.g. -Dsurefire.threadCount=1 -Dsurefire.maxHeap=3072M -->
+        <surefire.maxHeap>8192M</surefire.maxHeap>
+        <surefire.threadCount>4</surefire.threadCount>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
         <reactorRootsTarget>${basedir}/target</reactorRootsTarget>
-        <junit.version>6.1.0</junit.version>
-        <lombok.version>1.18.46</lombok.version>
+        <junit.version>6.1.3</junit.version>
+        <lombok.version>1.18.48</lombok.version>
     </properties>
 
     <profiles>
@@ -232,7 +236,7 @@
                 <!-- just define the Java version to be used for compiling and plugins -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.15.0</version>
+                <version>3.16.0</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.source}</target>
@@ -313,16 +317,25 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
-                    <argLine>-Xmx4096M ${surefireArgLine}</argLine>
+                    <argLine>-Xmx${surefire.maxHeap} ${surefireArgLine}</argLine>
                     <trimStackTrace>false</trimStackTrace>
-                    <parallel>all</parallel>
-                    <useUnlimitedThreads>true</useUnlimitedThreads>
+                    <!-- Parallelise whole test classes only. "all" additionally ran the methods of
+                         a single class concurrently, which requires every test class to be thread
+                         safe within itself; combined with unlimited threads it started as many
+                         threads as there were test classes, so the peak memory of a run was
+                         bounded by nothing but the size of the suite. Both knobs are properties so
+                         a machine with less memory than CI can dial them down without editing this
+                         file, e.g. -Dsurefire.threadCount=1 -Dsurefire.maxHeap=3072M -->
+                    <parallel>classes</parallel>
+                    <useUnlimitedThreads>false</useUnlimitedThreads>
+                    <threadCount>${surefire.threadCount}</threadCount>
+                    <perCoreThreadCount>false</perCoreThreadCount>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>3.5.6</version>
+                <version>3.6.0</version>
                 <configuration>
                     <showSuccess>false</showSuccess>
                 </configuration>
@@ -382,7 +395,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.18</version>
+            <version>2.0.19</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -402,7 +415,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>33.6.0-jre</version>
+            <version>33.7.1-jre</version>
         </dependency>
         <dependency>
             <groupId>org.graph4j</groupId>
@@ -449,17 +462,11 @@
             <artifactId>antlr4-runtime</artifactId>
             <version>4.13.2</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
-        <dependency>
-            <groupId>commons-cli</groupId>
-            <artifactId>commons-cli</artifactId>
-            <version>1.11.0</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.oshi/oshi-core -->
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>7.2.1</version>
+            <version>7.6.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -495,7 +502,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>2.0.18</version>
+            <version>2.0.19</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -514,7 +521,7 @@
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.soot-oss</groupId>
