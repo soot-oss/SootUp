@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
-import sootup.java.bytecode.frontend.FileUtil;
+import sootup.java.bytecode.frontend.conversion.FileUtil;
 import sootup.java.core.views.JavaView;
 
 public class DownloadJarInputLocationTest {

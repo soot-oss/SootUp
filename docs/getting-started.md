@@ -11,11 +11,19 @@ handles the representation of the code you configured it to analyze.
 - `SootMethod`: represents a method of a class - loaded from the View via a `MethodSignature` identifier.
 - `SootField`: represents a field of a class - loaded from the View via a `FieldSignature` identifier.
 - `Body`: represents a method body of a `SootMethod`.
-- `StmtGraph`: represents the control flow graph of a `Body`. `Stmt`'s represent actual Instructions.
+- `ControlFlowGraph`: represents the control flow graph of a `Body`. `Stmt`'s represent actual Instructions.
 
 ## Creating a View
 
 You can use bytecode analysis typically when you do not have access to the source code of the target program. Following example shows how to create a view for analyzing Java bytecode.
+
+When you compile the program yourself, use `javac -g` so the class file keeps
+local variable names. Jimple then uses those names instead of `l0`, `l1`, which
+is easier to follow as a beginner.
+
+```
+javac -g Main.java
+```
 
 !!! example "Create a view to analyze Java bytecode"
 
@@ -166,18 +174,18 @@ Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contain
 
 ## Retrieving the Control-Flow Graph of a Method
 
-Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via the `StmtGraph`. This structure is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
+Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via the `ControlFlowGraph`. This structure is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
 
 !!! example "Retrieving the CFG of a SootMethod"
 
     ```java
-    StmtGraph<?> graph = sootMethod.getBody().getStmtGraph();
+    ControlFlowGraph<?> graph = sootMethod.getBody().getControlFlowGraph();
     ```
 
 
-## Using the StmtGraph
+## Using the ControlFlowGraph
 
-=== "StmtGraph Stmts"
+=== "ControlFlowGraph Stmts"
     ```java
     for( Stmt stmt : graph.nodes()){
         // pseudo topological order as Stmts would be serialized to a Jimple file.
@@ -187,7 +195,7 @@ Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via t
         // Stmts are unordered!
     }
     ```
-=== "StmtGraph Blocks"
+=== "ControlFlowGraph Blocks"
     ```java
     List<BasicBlock<?>> blocks = graph.getBlocks();
     for( BasicBlock<?> block : blocks){
@@ -208,7 +216,7 @@ Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via t
         }
     }
     ```
-=== "StmtGraph DotExport"
+=== "ControlFlowGraph DotExport"
     ```java
     String urlToWebeditor = DotExporter.createUrlToWebeditor(this);
     System.out.println(urlToWebeditor);

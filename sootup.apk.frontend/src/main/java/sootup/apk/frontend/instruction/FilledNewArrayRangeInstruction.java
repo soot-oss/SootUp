@@ -28,7 +28,7 @@ import org.jf.dexlib2.iface.reference.TypeReference;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
@@ -36,7 +36,6 @@ import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 public class FilledNewArrayRangeInstruction extends FilledArrayInstruction {
@@ -46,15 +45,19 @@ public class FilledNewArrayRangeInstruction extends FilledArrayInstruction {
     Instruction3rc filledNewArrayInstr = (Instruction3rc) instruction;
 
     int usedRegister = filledNewArrayInstr.getRegisterCount();
-    Type t = DexUtil.toSootType(((TypeReference) filledNewArrayInstr.getReference()).getType(), 0);
+    Type t =
+        DexUtil.toSootType(
+            ((TypeReference) filledNewArrayInstr.getReference()).getType(),
+            0,
+            body.getIdentifierFactory());
     // NewArrayExpr needs the ElementType as it increases the array dimension by 1
     Type arrayType = ((ArrayType) t).getElementType();
     JNewArrayExpr arrayExpr =
         JavaJimple.newNewArrayExpr(
-            arrayType, IntConstant.getInstance(usedRegister), JavaIdentifierFactory.getInstance());
+            arrayType, IntConstant.getInstance(usedRegister), body.getIdentifierFactory());
     Local arrayLocal = body.getStoreResultLocal();
     JAssignStmt assignStmt =
-        Jimple.newAssignStmt(arrayLocal, arrayExpr, StmtPositionInfo.getNoStmtPositionInfo());
+        Jimple.newAssignStmt(arrayLocal, arrayExpr, new SimpleStmtPositionInfo(lineNumber));
     body.add(assignStmt);
 
     for (int i = 0; i < usedRegister; i++) {
@@ -64,7 +67,7 @@ public class FilledNewArrayRangeInstruction extends FilledArrayInstruction {
           Jimple.newAssignStmt(
               arrayRef,
               body.getRegisterLocal(i + filledNewArrayInstr.getStartRegister()),
-              StmtPositionInfo.getNoStmtPositionInfo());
+              new SimpleStmtPositionInfo(lineNumber));
       body.add(assign);
     }
     setStmt(assignStmt);

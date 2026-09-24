@@ -50,7 +50,7 @@ public class LocalsValidator implements BodyValidator {
                 exception.add(
                     new ValidationException(
                         value,
-                        "Local is not in the StmtGraph : "
+                        "Local is not in the ControlFlowGraph : "
                             + value
                             + " in "
                             + body.getMethodSignature())));
@@ -62,7 +62,7 @@ public class LocalsValidator implements BodyValidator {
                 exception.add(
                     new ValidationException(
                         value,
-                        "Local is not in the StmtGraph : "
+                        "Local is not in the ControlFlowGraph : "
                             + value
                             + " in "
                             + body.getMethodSignature())));

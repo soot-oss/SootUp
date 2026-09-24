@@ -63,7 +63,7 @@ class OTFCompileAnalysisInputLocationTest {
 
   @Test
   void testSingleInputfile() {
-    String str = "../shared-test-resources/TypeResolverTestSuite/Misc/FieldAssignment.java";
+    String str = "src/test/resources/TypeResolverTestSuite/Misc/FieldAssignment.java";
     OTFCompileAnalysisInputLocation inputLocation =
         new OTFCompileAnalysisInputLocation(Paths.get(str));
     JavaView javaView = new JavaView(inputLocation);
@@ -78,10 +78,8 @@ class OTFCompileAnalysisInputLocationTest {
 
   @Test
   void testMultipleDependedFiles() {
-    Path super2 =
-        Paths.get("../shared-test-resources/TypeResolverTestSuite/CastCounterTest/Super2.java");
-    Path sub2 =
-        Paths.get("../shared-test-resources/TypeResolverTestSuite/CastCounterTest/Sub2.java");
+    Path super2 = Paths.get("src/test/resources/TypeResolverTestSuite/CastCounterTest/Super2.java");
+    Path sub2 = Paths.get("src/test/resources/TypeResolverTestSuite/CastCounterTest/Sub2.java");
 
     OTFCompileAnalysisInputLocation inputLocation =
         new OTFCompileAnalysisInputLocation(Arrays.asList(super2, sub2));

@@ -26,7 +26,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.util.ImmutableUtils;
-import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.types.JavaClassType;
 
 public class ExceptionInferResult {
 
@@ -122,39 +122,35 @@ public class ExceptionInferResult {
   }
 
   public static class ExceptionType {
-    public static final JavaIdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
-    public static final ClassType THROWABLE = idFactory.getClassType("java.lang.Throwable");
+    public static final ClassType THROWABLE = JavaClassType.of("java.lang.Throwable");
     public static final ClassType NUll_POINTER_EXCEPTION =
-        idFactory.getClassType("java.lang.NullPointerException");
+        JavaClassType.of("java.lang.NullPointerException");
     public static final ClassType ARRAY_STORE_EXCEPTION =
-        idFactory.getClassType("java.lang.ArrayStoreException");
+        JavaClassType.of("java.lang.ArrayStoreException");
     public static final ClassType INDEX_OUT_OF_BOUNDS_EXCEPTION =
-        idFactory.getClassType("java.lang.IndexOutOfBoundsException");
+        JavaClassType.of("java.lang.IndexOutOfBoundsException");
     public static final ClassType ARITHMETIC_EXCEPTION =
-        idFactory.getClassType("java.lang.ArithmeticException");
+        JavaClassType.of("java.lang.ArithmeticException");
     public static final ClassType NEGATIVE_ARRAY_SIZE_EXCEPTION =
-        idFactory.getClassType("java.lang.NegativeArraySizeException");
+        JavaClassType.of("java.lang.NegativeArraySizeException");
     public static final ClassType CLASS_CAST_EXCEPTION =
-        idFactory.getClassType("java.lang.ClassCastException");
+        JavaClassType.of("java.lang.ClassCastException");
     public static final ClassType ILLEGAL_MONITOR_STATE_EXCEPTION =
-        idFactory.getClassType("java.lang.IllegalMonitorStateException");
+        JavaClassType.of("java.lang.IllegalMonitorStateException");
   }
 
   public static class ErrorType {
-    public static final JavaIdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
-    public static final ClassType INITIALIZATION_ERROR = idFactory.getClassType("java.lang.Error");
-    public static final ClassType VM_ERROR =
-        idFactory.getClassType("java.lang.VirtualMachineError");
-    public static final ClassType THREAD_DEATH = idFactory.getClassType("java.lang.ThreadDeath");
+    public static final ClassType INITIALIZATION_ERROR = JavaClassType.of("java.lang.Error");
+    public static final ClassType VM_ERROR = JavaClassType.of("java.lang.VirtualMachineError");
+    public static final ClassType THREAD_DEATH = JavaClassType.of("java.lang.ThreadDeath");
     public static final ClassType RESOLVE_FIELD_ERROR =
-        idFactory.getClassType("java.lang.NoSuchFieldError");
-    public static final ClassType RESOLVE_CLASS_ERROR =
-        idFactory.getClassType("java.lang.LinkageError");
+        JavaClassType.of("java.lang.NoSuchFieldError");
+    public static final ClassType RESOLVE_CLASS_ERROR = JavaClassType.of("java.lang.LinkageError");
     public static final ClassType ABSTRACT_METHOD_ERROR =
-        idFactory.getClassType("java.lang.AbstractMethodError");
+        JavaClassType.of("java.lang.AbstractMethodError");
     public static final ClassType NO_SUCH_METHOD_ERROR =
-        idFactory.getClassType("java.lang.NoSuchMethodError");
+        JavaClassType.of("java.lang.NoSuchMethodError");
     public static final ClassType UNSATISFIED_LINK_ERROR =
-        idFactory.getClassType("java.lang.UnsatisfiedLinkError");
+        JavaClassType.of("java.lang.UnsatisfiedLinkError");
   }
 }

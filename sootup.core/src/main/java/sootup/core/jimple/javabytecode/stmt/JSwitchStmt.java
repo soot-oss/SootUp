@@ -23,7 +23,6 @@ package sootup.core.jimple.javabytecode.stmt;
  */
 
 import java.util.*;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -90,9 +89,9 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(getKey().getUses(), Stream.of(getKey()));
+  public void collectUses(List<Value> collector) {
+    getKey().collectUses(collector);
+    collector.add(getKey());
   }
 
   @Override
@@ -227,6 +226,11 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
 
   @NonNull
   public JSwitchStmt withKey(@NonNull Immediate key) {
+    // Preserve tableswitch type when cloning with a new key.
+    // The List<IntConstant> constructor unconditionally marks isTableSwitch = false (lookupswitch).
+    if (isTableSwitch()) {
+      return new JSwitchStmt(key, getValue(0), getValue(getValues().size() - 1), getPositionInfo());
+    }
     return new JSwitchStmt(key, getValues(), getPositionInfo());
   }
 
@@ -237,6 +241,10 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
 
   @NonNull
   public JSwitchStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
+    // Preserve tableswitch type when cloning with updated position information.
+    if (isTableSwitch()) {
+      return new JSwitchStmt(getKey(), getValue(0), getValue(getValues().size() - 1), positionInfo);
+    }
     return new JSwitchStmt(getKey(), getValues(), positionInfo);
   }
 

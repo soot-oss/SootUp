@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>org.soot-oss</groupId>
 		<artifactId>sootup</artifactId>
-		<version>2.0.0-SNAPSHOT</version>
+		<version>3.0.2-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
@@ -18,8 +18,8 @@
 			<artifactId>sootup.core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jgrapht</groupId>
-			<artifactId>jgrapht-core</artifactId>
+			<groupId>org.graph4j</groupId>
+			<artifactId>graph4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jspecify</groupId>
@@ -39,16 +39,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
+			<artifactId>junit-jupiter</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jgrapht</groupId>
-			<artifactId>jgrapht-io</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>

@@ -16,16 +16,12 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType.IntType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootClassSource;
-import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.*;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -51,13 +47,12 @@ public class MutatingTest {
     JavaView view = new JavaView(inputLocation);
 
     // Create a signature for the class we want to analyze
-    JavaClassType classType = view.getIdentifierFactory().getClassType("HelloWorld");
+    JavaIdentifierFactory identifierFactory = view.getIdentifierFactory();
+    JavaClassType classType = identifierFactory.getClassType("HelloWorld");
 
     // Create a signature for the method we want to analyze
     MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature(
-                classType, "main", "void", Collections.singletonList("java.lang.String[]"));
+        identifierFactory.getMethodSignature(classType, identifierFactory.getMainSubSignature());
 
     // Assert that class is present
     assertTrue(view.getClass(classType).isPresent());
@@ -99,12 +94,13 @@ public class MutatingTest {
     SootMethod main =
         newClass
             .getMethod(
-                new MethodSubSignature(
-                    "main",
-                    Collections.singletonList(
-                        new ArrayType(
-                            new JavaClassType("String", new PackageName("java.lang")), 1)),
-                    VoidType.getInstance()))
+                new JavaIdentifierFactory()
+                    .getMethodSubSignature(
+                        "main",
+                        VoidType.getInstance(),
+                        Collections.singletonList(
+                            new ArrayType(
+                                identifierFactory.getClassType("String", "java.lang"), 1))))
             .orElse(null);
 
     assertNotNull(main);
@@ -114,19 +110,22 @@ public class MutatingTest {
     SootMethod constructor =
         sootClass
             .getMethod(
-                new MethodSubSignature("<init>", Collections.emptyList(), VoidType.getInstance()))
+                new JavaIdentifierFactory()
+                    .getMethodSubSignature(
+                        "<init>", VoidType.getInstance(), Collections.emptyList()))
             .orElse(null);
     assertNotNull(constructor);
     assertFalse(constructor.getBody().getLocals().isEmpty());
     SootMethod olderMain =
         sootClass
             .getMethod(
-                new MethodSubSignature(
-                    "main",
-                    Collections.singletonList(
-                        new ArrayType(
-                            new JavaClassType("String", new PackageName("java.lang")), 1)),
-                    VoidType.getInstance()))
+                new JavaIdentifierFactory()
+                    .getMethodSubSignature(
+                        "main",
+                        VoidType.getInstance(),
+                        Collections.singletonList(
+                            new ArrayType(
+                                identifierFactory.getClassType("String", "java.lang"), 1))))
             .orElse(null);
     assertNotNull(olderMain);
     assertTrue(olderMain.getBody().getLocals().stream().noneMatch(local -> local.equals(newLocal)));

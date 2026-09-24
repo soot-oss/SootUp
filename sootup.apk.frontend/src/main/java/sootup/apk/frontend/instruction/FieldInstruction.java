@@ -25,10 +25,11 @@ package sootup.apk.frontend.instruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import sootup.apk.frontend.Util.DexUtil;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.Local;
-import sootup.core.jimple.common.ref.ConcreteRef;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
+import sootup.core.jimple.common.LValue;
+import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
@@ -47,13 +48,14 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
     super(instruction, codeAddress);
   }
 
-  private JFieldRef getSootFieldRef(FieldReference fieldReference, boolean isStatic) {
+  private JFieldRef getSootFieldRef(
+      FieldReference fieldReference, boolean isStatic, IdentifierFactory identifierFactory) {
     String className = DexUtil.dottedClassName(fieldReference.getDefiningClass());
     FieldSignature fieldSignature =
-        new FieldSignature(
-            DexUtil.getClassTypeFromClassName(className),
+        identifierFactory.getFieldSignature(
             fieldReference.getName(),
-            DexUtil.toSootType(fieldReference.getType(), 0));
+            DexUtil.getClassTypeFromClassName(className, identifierFactory),
+            DexUtil.toSootType(fieldReference.getType(), 0, identifierFactory));
     if (isStatic) {
       return new JStaticFieldRef(fieldSignature);
     } else {
@@ -68,34 +70,36 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
    * Return a static SootFieldRef for a dexlib FieldReference.
    *
    * @param fref the dexlib FieldReference.
+   * @param identifierFactory the factory that creates the field signature
    * @return the JFieldRef for the given field Reference
    */
-  protected JFieldRef getStaticSootFieldRef(FieldReference fref) {
-    return getSootFieldRef(fref, true);
+  protected JFieldRef getStaticSootFieldRef(
+      FieldReference fref, IdentifierFactory identifierFactory) {
+    return getSootFieldRef(fref, true, identifierFactory);
   }
 
   /**
    * Return a SootFieldRef for a dexlib FieldReference.
    *
-   * @return the JFieldRef for the given field Reference
    * @param fref the dexlib FieldReference.
+   * @param identifierFactory the factory that creates the field signature
+   * @return the JFieldRef for the given field Reference
    */
-  protected JFieldRef getSootFieldRef(FieldReference fref) {
-    return getSootFieldRef(fref, false);
+  protected JFieldRef getSootFieldRef(FieldReference fref, IdentifierFactory identifierFactory) {
+    return getSootFieldRef(fref, false, identifierFactory);
   }
 
   /**
    * Check if the field type equals the type of the value that will be stored in the field. A cast
    * expression has to be introduced for the unequal case.
    *
-   * @param sourceValue the local (left value) to be used in the assign statement
-   * @param instanceField the reference (right value) to be used in the assign statement
-   * @return assignment statement which hold a cast or not depending on the types of the operation
+   * @param left the local (left value) to be used in the assign statement
+   * @param right the reference (right value) to be used in the assign statement
+   * @return assignment statement that holds a cast or not depending on the types of the operation
    */
-  protected JAssignStmt getAssignStmt(Local sourceValue, ConcreteRef instanceField) {
+  protected JAssignStmt getAssignStmt(LValue left, Value right) {
     JAssignStmt assign;
-    assign =
-        Jimple.newAssignStmt(sourceValue, instanceField, StmtPositionInfo.getNoStmtPositionInfo());
+    assign = Jimple.newAssignStmt(left, right, new SimpleStmtPositionInfo(lineNumber));
     return assign;
   }
 }

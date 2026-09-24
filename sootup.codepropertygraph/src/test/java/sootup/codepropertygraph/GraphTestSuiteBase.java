@@ -10,16 +10,15 @@ import sootup.codepropertygraph.cfg.CfgCreator;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.edges.PropertyGraphEdge;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.VoidType;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.types.JavaClassType;
 
 public abstract class GraphTestSuiteBase {
 
@@ -44,17 +43,20 @@ public abstract class GraphTestSuiteBase {
     }
   }
 
-  protected SootMethod createSootMethod(MutableStmtGraph stmtGraph, String methodName) {
+  protected SootMethod createSootMethod(
+      MutableControlFlowGraph controlFlowGraph, String methodName) {
+    JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
     MethodSignature methodSignature =
-        new MethodSignature(
-            new JavaClassType("TestClass", new PackageName("pkg")),
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("TestClass", "pkg"),
             methodName,
-            Collections.emptyList(),
-            VoidType.getInstance());
+            VoidType.getInstance(),
+            Collections.emptyList());
 
     return new JavaSootMethod(
         new OverridingBodySource(
-            methodSignature, Body.builder(stmtGraph).setMethodSignature(methodSignature).build()),
+            methodSignature,
+            Body.builder(controlFlowGraph).setMethodSignature(methodSignature).build()),
         methodSignature,
         Collections.singletonList(MethodModifier.PUBLIC),
         Collections.emptyList(),

@@ -21,7 +21,7 @@ import sootup.java.core.views.JavaView;
  * testing.
  */
 public class CacheTest {
-  static Path pathToJar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+  static Path pathToJar = Paths.get("src/test/resources/java-miniapps/MiniApp.jar");
   static List<AnalysisInputLocation> inputLocations;
 
   /** Load the jar file for analysis as input location. */

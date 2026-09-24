@@ -1,0 +1,43 @@
+name: Deploy SNAPSHOT versions
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-snapshot:
+    runs-on: ubuntu-latest
+    name: Deploy SNAPSHOT version
+    environment: deployment
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Java 17
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: adopt
+          java-package: jdk
+          java-version: 17
+
+      - name: Get project version
+        run: |
+          echo "PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout 2>/dev/null | grep -v '^\[' | tail -1)" >> $GITHUB_ENV
+
+      - name: Deploy SNAPSHOT version
+        if: endsWith(env.PROJECT_VERSION, '-SNAPSHOT')
+        uses: secure-software-engineering/actions/deployment/maven-deployment@7a286175a5ce134571e0228fc4da41885f2821e3 # develop
+        with:
+          java-distribution: adopt
+          java-version: 17
+          server-id: central
+          server-username: ${{ secrets.MAVEN_USERNAME }}
+          server-password: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+          mvn-cli-args: '-DskipTests -Drelease'
+          deploy-mode: snapshot

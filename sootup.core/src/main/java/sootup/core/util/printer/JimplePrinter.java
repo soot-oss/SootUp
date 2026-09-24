@@ -287,11 +287,11 @@ public class JimplePrinter {
     out.print(printer);
   }
 
-  public void printTo(StmtGraph<?> graph, PrintWriter out) {
+  public void printTo(ControlFlowGraph<?> graph, PrintWriter out) {
     printTo(graph, out, determinePrinter());
   }
 
-  public void printTo(StmtGraph<?> graph, PrintWriter out, LabeledStmtPrinter printer) {
+  public void printTo(ControlFlowGraph<?> graph, PrintWriter out, LabeledStmtPrinter printer) {
     printStmts(graph, printer);
     out.print(printer);
   }
@@ -330,17 +330,17 @@ public class JimplePrinter {
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
   private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
-    final StmtGraph<?> stmtGraph = body.getStmtGraph();
-    printStmts(stmtGraph, printer);
+    final ControlFlowGraph<?> controlFlowGraph = body.getControlFlowGraph();
+    printStmts(controlFlowGraph, printer);
   }
 
-  private void printStmts(StmtGraph<?> stmtGraph, LabeledStmtPrinter printer) {
-    Iterable<Stmt> linearizedStmtGraph = printer.initializeSootMethod(stmtGraph);
+  private void printStmts(ControlFlowGraph<?> controlFlowGraph, LabeledStmtPrinter printer) {
+    Iterable<Stmt> linearizedControlFlowGraph = printer.initializeSootMethod(controlFlowGraph);
 
     Stmt previousStmt;
 
     final Map<Stmt, String> labels = printer.getLabels();
-    for (Stmt currentStmt : linearizedStmtGraph) {
+    for (Stmt currentStmt : linearizedControlFlowGraph) {
       previousStmt = currentStmt;
 
       // Print appropriate header.
@@ -355,7 +355,7 @@ public class JimplePrinter {
         final boolean currentStmtHasLabel = labels.get(currentStmt) != null;
         if (currentStmtHasLabel
             || previousStmt.branches()
-            || stmtGraph.predecessors(currentStmt).size() != 1
+            || controlFlowGraph.predecessors(currentStmt).size() != 1
             || previousStmt.getExpectedSuccessorCount() == 0) {
           printer.newline();
         }

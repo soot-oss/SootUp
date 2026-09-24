@@ -20,8 +20,8 @@ package qilin.core.natives;
 
 import java.util.Collections;
 import qilin.core.ArtificialMethod;
-import qilin.util.PTAUtils;
-import sootup.core.graph.MutableStmtGraph;
+import qilin.core.pag.PAG;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -29,10 +29,13 @@ import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
 public abstract class NativeMethod extends ArtificialMethod {
-  NativeMethod(View view, SootMethod method) {
+  private final PAG pag;
+
+  NativeMethod(View view, SootMethod method, PAG pag) {
     super(view);
     this.method = method;
-    Body body = PTAUtils.getMethodBody(method);
+    this.pag = pag;
+    Body body = pag.getMethodBody(method);
     this.bodyBuilder = Body.builder(body, Collections.emptySet());
     int paraCount = method.getParameterCount();
     paraLocals = new Local[paraCount];
@@ -44,10 +47,10 @@ public abstract class NativeMethod extends ArtificialMethod {
 
   public void simulate() {
     simulateImpl();
-    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.addBlock(stmtList);
+    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.addBlock(stmtList);
     Stmt curr = stmtList.get(0);
-    stmtGraph.setStartingStmt(curr);
-    PTAUtils.updateMethodBody(method, bodyBuilder.build());
+    controlFlowGraph.setStartingStmt(curr);
+    pag.updateMethodBody(method, bodyBuilder.build());
   }
 }

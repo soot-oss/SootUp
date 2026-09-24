@@ -28,7 +28,7 @@ import sootup.java.core.views.MutableJavaView;
  * uses the MiniApp.jar for testing.
  */
 public class MutableSootClientTest {
-  static Path pathToJar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
+  static Path pathToJar = Paths.get("src/test/resources/java-miniapps/MiniApp.jar");
   static AnalysisInputLocation location;
   MutableJavaView mv;
 
@@ -88,6 +88,42 @@ public class MutableSootClientTest {
     long classesAfterSize = mv.getClasses().count();
 
     assertEquals(classesBeforeSize, classesAfterSize - 1);
+  }
+
+  /**
+   * Adding a class that was already looked up - and found to be absent - must make it resolvable.
+   * {@link sootup.java.core.views.JavaView#getClass} memoizes absence, and this pins the invariant
+   * that a failed lookup cannot poison a later addition.
+   *
+   * <p>Note this passes with or without the {@code forgetAbsence} call in {@link
+   * MutableJavaView#addClass}, because {@code getClass} checks the class cache before the absence
+   * record. It is an invariant test, not a regression test for that call.
+   */
+  @Test
+  public void classAdditionAfterFailedLookupTest() {
+    JavaClassType addedClassType = mv.getIdentifierFactory().getClassType("LateAddedClass");
+
+    // the failed lookup is what records the type as absent
+    assertFalse(mv.getClass(addedClassType).isPresent());
+
+    OverridingJavaClassSource newClass =
+        new OverridingJavaClassSource(
+            location,
+            pathToJar,
+            addedClassType,
+            null,
+            Collections.emptySet(),
+            null,
+            Collections.emptySet(),
+            Collections.emptySet(),
+            new FullPosition(0, 0, 0, 0),
+            EnumSet.noneOf(ClassModifier.class),
+            Collections.emptySet(),
+            Collections.emptySet(),
+            Collections.emptySet());
+    mv.addClass(newClass.buildClass(SourceType.Application));
+
+    assertTrue(mv.getClass(addedClassType).isPresent());
   }
 
   /**

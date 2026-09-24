@@ -22,7 +22,8 @@ package sootup.core.jimple.common;
  * #L%
  */
 
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.JimpleIR;
 import sootup.core.jimple.basic.EquivTo;
@@ -42,16 +43,29 @@ import sootup.core.util.printer.StmtPrinter;
 public interface Value extends EquivTo, JimpleIR {
 
   /**
-   * Returns a List of Locals,FieldRefs,ArrayRefs which are used by (ie contained within) this
+   * Returns a List of Locals, FieldRefs, ArrayRefs which are used by (i.e. contained within) this
    * Expression or Reference.
    *
-   * @return
+   * @return the list of values used by this value
    */
-  @NonNull Stream<Value> getUses();
+  @NonNull
+  default List<Value> getUses() {
+    ArrayList<Value> collector = new ArrayList<>();
+    collectUses(collector);
+    return collector;
+  }
 
-  /** Returns the Soot type of this Value. */
+  /** Collects all values used by this value into the given list. */
+  void collectUses(List<Value> collector);
+
+  /**
+   * Returns the Soot type of this Value.
+   *
+   * @return the type of this value
+   */
   @NonNull Type getType();
 
+  /** Appends a string representation of this value to the given printer. */
   void toString(@NonNull StmtPrinter up);
 
   default void accept(@NonNull ValueVisitor v) {

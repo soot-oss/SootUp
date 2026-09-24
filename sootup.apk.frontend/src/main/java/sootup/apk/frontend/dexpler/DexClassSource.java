@@ -32,15 +32,17 @@ import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.util.Modifiers;
@@ -49,6 +51,8 @@ import sootup.java.core.*;
 import sootup.java.core.language.JavaJimple;
 
 public class DexClassSource extends JavaSootClassSource {
+
+  private static final Logger logger = LoggerFactory.getLogger(DexClassSource.class);
 
   DexLibWrapper wrapper;
 
@@ -88,13 +92,16 @@ public class DexClassSource extends JavaSootClassSource {
           .map(method -> loadMethod(method, dexMethod))
           .collect(Collectors.toSet());
     } else {
-      throw new IllegalStateException("Class Information Should not be null");
+      return Collections.emptySet();
     }
   }
 
   @NonNull
   @Override
   public Collection<? extends SootField> resolveFields() throws ResolveException {
+    if (classInformation == null) {
+      return Collections.emptySet();
+    }
     return resolveFields(
         classInformation.classDefinition.getFields(), view.getIdentifierFactory(), classSignature);
   }
@@ -102,12 +109,18 @@ public class DexClassSource extends JavaSootClassSource {
   @NonNull
   @Override
   public Set<ClassModifier> resolveModifiers() {
+    if (classInformation == null) {
+      return Collections.emptySet();
+    }
     return Modifiers.getClassModifiers(classInformation.classDefinition.getAccessFlags());
   }
 
   @NonNull
   @Override
   public Set<? extends ClassType> resolveInterfaces() {
+    if (classInformation == null) {
+      return Collections.emptySet();
+    }
     List<String> interfaces = classInformation.classDefinition.getInterfaces();
     if (interfaces.isEmpty()) {
       return new HashSet<>();
@@ -128,7 +141,7 @@ public class DexClassSource extends JavaSootClassSource {
         return Optional.ofNullable(DexUtil.stringToJimpleType(view, superclass));
       }
     } else {
-      throw new IllegalStateException("Class Information Should not be null");
+      return Optional.empty();
     }
   }
 
@@ -142,6 +155,16 @@ public class DexClassSource extends JavaSootClassSource {
   @Override
   public Position resolvePosition() {
     return NoPositionInformation.getInstance();
+  }
+
+  /**
+   * @return The source file for this class as specified in the dex file.
+   */
+  public Optional<String> getSourceFile() {
+    if (classInformation == null) {
+      return Optional.empty();
+    }
+    return Optional.ofNullable(classInformation.classDefinition.getSourceFile());
   }
 
   @Override
@@ -175,7 +198,10 @@ public class DexClassSource extends JavaSootClassSource {
     for (Annotation annotation : annotations) {
       for (AnnotationElement element : annotation.getElements()) {
         String name = element.getName();
-        paramMap.put(name, convertAnnotationValue(element.getValue().getValueType()));
+        paramMap.put(
+            name,
+            convertAnnotationValue(
+                element.getValue().getValueType(), getView().getIdentifierFactory()));
       }
       ClassType at =
           getView()
@@ -186,12 +212,14 @@ public class DexClassSource extends JavaSootClassSource {
     return annotationUsage;
   }
 
-  private static Object convertAnnotationValue(Object annotationValue) {
+  private static Object convertAnnotationValue(
+      Object annotationValue, IdentifierFactory identifierFactory) {
     if (annotationValue instanceof EncodedValue) {
-      ClassConstant classConstant = JavaJimple.newClassConstant(annotationValue.toString());
-      return ConstantUtil.fromObject(classConstant);
+      ClassConstant classConstant =
+          JavaJimple.newClassConstant(annotationValue.toString(), identifierFactory);
+      return ConstantUtil.fromObject(classConstant, identifierFactory);
     }
-    return ConstantUtil.fromObject(annotationValue);
+    return ConstantUtil.fromObject(annotationValue, identifierFactory);
   }
 
   private static Set<JavaSootField> resolveFields(
@@ -202,7 +230,7 @@ public class DexClassSource extends JavaSootClassSource {
         .map(
             field -> {
               String fieldName = field.getName();
-              Type fieldType = DexUtil.toSootType(field.getType(), 0);
+              Type fieldType = DexUtil.toSootType(field.getType(), 0, signatureFactory);
               FieldSignature fieldSignature =
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<FieldModifier> modifiers =

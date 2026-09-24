@@ -22,8 +22,8 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -34,7 +34,7 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A statement that ends the method, returning a value. */
-public final class JReturnStmt extends AbstractStmt {
+public final class JReturnStmt extends AbstractStmt implements ReturnStmt {
 
   private final Immediate op;
 
@@ -97,9 +97,9 @@ public final class JReturnStmt extends AbstractStmt {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(op.getUses(), Stream.of(op));
+  public void collectUses(List<Value> collector) {
+    op.collectUses(collector);
+    collector.add(op);
   }
 
   @Override

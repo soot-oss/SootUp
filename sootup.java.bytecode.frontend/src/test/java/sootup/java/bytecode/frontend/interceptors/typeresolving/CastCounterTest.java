@@ -33,7 +33,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
   @BeforeEach
   public void setup() {
-    String baseDir = "../shared-test-resources/TypeResolverTestSuite/CastCounterTest/";
+    String baseDir = "src/test/resources/TypeResolverTestSuite/CastCounterTest/";
     String className = "CastCounterDemos";
     buildView(baseDir, className);
     function = new AugEvalFunction(view);
@@ -146,8 +146,9 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     List<String> variant1 =
         Stream.of(
                 "CastCounterDemos this",
-                "Super1[] #l0, #l1",
-                "unknown $stack3, l1, l2",
+                "Sub1 $stack3",
+                "Super1 l2",
+                "Super1[] #l0, #l1, l1",
                 "this := @this: CastCounterDemos",
                 "l1 = newarray (Super1)[10]",
                 "$stack3 = new Sub1",
@@ -161,8 +162,9 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     List<String> variant2 =
         Stream.of(
                 "CastCounterDemos this",
-                "Super1[] #l0, #l1",
-                "unknown $stack3, l1, l2",
+                "Sub1 $stack3",
+                "Super1 l2",
+                "Super1[] #l0, #l1, l1",
                 "this := @this: CastCounterDemos",
                 "l1 = newarray (Super1)[10]",
                 "$stack3 = new Sub1",

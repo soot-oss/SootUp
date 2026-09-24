@@ -21,9 +21,9 @@ package sootup.java.bytecode.frontend.conversion;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -39,6 +39,8 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
+import sootup.core.types.Type;
+import sootup.core.types.UnknownType;
 
 /**
  * Stack operand.
@@ -47,8 +49,7 @@ import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
  */
 class Operand {
 
-  @SuppressWarnings("ConstantConditions")
-  static final Operand DWORD_DUMMY = new Operand(null, null, null);
+  static final Operand DWORD_DUMMY = new Operand();
 
   @NonNull protected AbstractInsnNode insn;
   @NonNull protected final Value value;
@@ -67,6 +68,18 @@ class Operand {
   private final Set<TryCatchBlockNode> activeTrapHandlers;
 
   /**
+   * special constructor for the {@link #DWORD_DUMMY} sentinel that operates with null arguments.
+   */
+  @SuppressWarnings("ConstantConditions")
+  private Operand() {
+    this.insn = null;
+    this.value = null;
+    this.methodSource = null;
+    this.positionInfo = StmtPositionInfo.getNoStmtPositionInfo();
+    this.activeTrapHandlers = Collections.emptySet();
+  }
+
+  /**
    * Constructs a new stack operand.
    *
    * @param insn the instruction that produced this operand.
@@ -77,14 +90,21 @@ class Operand {
     this.insn = insn;
     this.value = value;
     this.methodSource = methodSource;
-    this.positionInfo = methodSource == null ? null : methodSource.getStmtPositionInfo();
-    this.activeTrapHandlers =
-        methodSource == null ? new HashSet<>() : new HashSet<>(methodSource.activeTrapHandlers);
+    this.positionInfo = methodSource.getStmtPositionInfo(insn);
+    this.activeTrapHandlers = new HashSet<>(methodSource.activeTrapHandlers);
+  }
+
+  @NonNull StmtPositionInfo getPositionInfo() {
+    return positionInfo;
   }
 
   Local getOrAssignValueToStackLocal() {
     if (stackLocal == null) {
-      changeStackLocal(methodSource.newStackLocal());
+      Type type = value.getType();
+      if (type instanceof UnknownType) {
+        type = AsmUtil.primitiveTypeFromOpcode(insn.getOpcode());
+      }
+      changeStackLocal(methodSource.newStackLocal(type));
     }
 
     return stackLocal;
@@ -117,7 +137,7 @@ class Operand {
     }
 
     Stmt stmt = methodSource.getStmt(insn);
-    if (!(stmt instanceof JAssignStmt)) {
+    if (!(stmt instanceof JAssignStmt assignStmt)) {
       // emit `$newStackLocal = value`
       if (value instanceof JCaughtExceptionRef) {
         JIdentityStmt identityStmt =
@@ -127,7 +147,6 @@ class Operand {
         methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
       }
     } else {
-      JAssignStmt assignStmt = (JAssignStmt) stmt;
       assert assignStmt.getLeftOp() == oldStackLocal || assignStmt.getLeftOp() == newStackLocal;
       // replace `$oldStackLocal = value` with `$newStackLocal = value`
       methodSource.replaceStmt(assignStmt, assignStmt.withVariable(newStackLocal));
@@ -137,8 +156,7 @@ class Operand {
     if (oldStackLocal != null) {
       ReplaceUseStmtVisitor replaceStmtVisitor =
           new ReplaceUseStmtVisitor(oldStackLocal, newStackLocal);
-      for (Stmt oldUsage :
-          methodSource.getStmtsThatUse(oldStackLocal).collect(Collectors.toList())) {
+      for (Stmt oldUsage : methodSource.getStmtsThatUse(oldStackLocal).toList()) {
         oldUsage.accept(replaceStmtVisitor);
         Stmt newUsage = replaceStmtVisitor.getResult();
 

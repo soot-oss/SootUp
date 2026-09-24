@@ -24,7 +24,7 @@ package sootup.interceptors;
 
 import java.util.*;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -42,65 +42,79 @@ public class LocalLivenessAnalyser {
   // e.g: a = b + c; live-in={b,c}  live-out={a,b,c}
   private final Map<Stmt, Set<Local>> liveOut = new HashMap<>();
 
-  public LocalLivenessAnalyser(@NonNull StmtGraph<?> graph) {
-    // initial liveIn and liveOut
-    List<Stmt> startingStmts = new ArrayList<>();
+  public LocalLivenessAnalyser(@NonNull ControlFlowGraph<?> graph) {
+    // Standard worklist-based backwards dataflow analysis.
+    // 1. track pending nodes using 'inWorklist' (Set<Stmt>) to prevent duplicate entries in
+    //    'worklist'.
+    //    Without membership tracking, merge points in sequential conditional branches (e.g. 40+
+    //    chained if-else diamonds) cause predecessors to be enqueued exponentially (2^N), leading
+    //    to severe performance degradation and OutOfMemoryError.
+    // 2. initialize the worklist with all CFG nodes up front. This guarantees that all
+    //    subgraphs, including exitless infinite loops or disconnected components, are visited and
+    //    analyzed.
+    // 3. Predecessors are only re-enqueued when a statement's live-in set actually changes
+    //    (!in.equals(liveIn.get(stmt))), ensuring monotonic convergence to a fixed point in
+    //    O(|V| + |E|).
+    Deque<Stmt> worklist = new ArrayDeque<>();
+    Set<Stmt> inWorklist = new HashSet<>();
     for (Stmt stmt : graph.getNodes()) {
       liveIn.put(stmt, Collections.emptySet());
       liveOut.put(stmt, Collections.emptySet());
-      if (graph.successors(stmt).isEmpty() && graph.exceptionalSuccessors(stmt).isEmpty()) {
-        startingStmts.add(stmt);
-      }
+      worklist.addLast(stmt);
+      inWorklist.add(stmt);
     }
 
-    boolean fixed = false;
-    while (!fixed) {
-      fixed = true;
-      Deque<Stmt> queue = new ArrayDeque<>(startingStmts);
-      HashSet<Stmt> visitedStmts = new HashSet<>();
-      while (!queue.isEmpty()) {
-        Stmt stmt = queue.removeFirst();
-        visitedStmts.add(stmt);
+    while (!worklist.isEmpty()) {
+      Stmt stmt = worklist.removeFirst();
+      inWorklist.remove(stmt);
 
-        Set<Local> out = new HashSet<>(liveOut.get(stmt));
-        for (Stmt succ : graph.successors(stmt)) {
-          out = merge(out, liveIn.get(succ));
+      // Compute OUT[stmt] by taking a fresh union of successors' liveIn sets.
+      Set<Local> out = new HashSet<>();
+      for (Stmt succ : graph.successors(stmt)) {
+        Set<Local> succIn = liveIn.get(succ);
+        if (succIn != null) {
+          out.addAll(succIn);
         }
-        for (Stmt esucc : graph.exceptionalSuccessors(stmt).values()) {
-          out = merge(out, liveIn.get(esucc));
+      }
+      for (Stmt esucc : graph.exceptionalSuccessors(stmt).values()) {
+        Set<Local> esuccIn = liveIn.get(esucc);
+        if (esuccIn != null) {
+          out.addAll(esuccIn);
         }
-        if (isNotEqual(out, liveOut.get(stmt))) {
-          fixed = false;
-          liveOut.put(stmt, new HashSet<>(out));
-        }
+      }
+      liveOut.put(stmt, out);
 
-        Set<Local> in = new HashSet<>();
-        for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
-          Value use = iterator.next();
-          if (use instanceof Local) {
-            in.add((Local) use);
-          }
+      // IN[s] = USE[s] Union (OUT[s] - DEF[s])
+      Set<Local> in = new HashSet<>();
+      for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+        Value use = iterator.next();
+        if (use instanceof Local) {
+          in.add((Local) use);
         }
-        final Optional<LValue> def = stmt.getDef();
-        if (def.isPresent()) {
-          final Value value = def.get();
-          if (value instanceof Local) {
-            out.remove(value);
-          }
+      }
+      // Clone OUT into a fresh set before removing DEFs.
+      // This ensures out and succ.liveIn are never mutated in-place when computing (OUT - DEF).
+      Set<Local> outMinusDef = new HashSet<>(out);
+      final Optional<LValue> def = stmt.getDef();
+      if (def.isPresent()) {
+        final Value value = def.get();
+        if (value instanceof Local) {
+          outMinusDef.remove(value);
         }
-        in = merge(in, out);
-        if (isNotEqual(in, liveIn.get(stmt))) {
-          fixed = false;
-          liveIn.put(stmt, in);
-        }
+      }
+      in.addAll(outMinusDef);
+
+      // Only propagate backwards if the live-in set changed
+      if (!in.equals(liveIn.get(stmt))) {
+        liveIn.put(stmt, in);
         for (Stmt pred : graph.predecessors(stmt)) {
-          if (!visitedStmts.contains(pred)) {
-            queue.addLast(pred);
+          if (inWorklist.add(pred)) {
+            worklist.addLast(pred);
           }
         }
         for (Stmt epred : graph.exceptionalPredecessors(stmt)) {
-          if (!visitedStmts.contains(epred)) {
-            queue.addLast(epred);
+          if (inWorklist.add(epred)) {
+            worklist.addLast(epred);
           }
         }
       }
@@ -111,7 +125,7 @@ public class LocalLivenessAnalyser {
   @NonNull
   public Set<Local> getLiveLocalsBeforeStmt(@NonNull Stmt stmt) {
     if (!liveIn.containsKey(stmt)) {
-      throw new RuntimeException("Stmt: " + stmt + " is not in StmtGraph!");
+      throw new RuntimeException("Stmt: " + stmt + " is not in ControlFlowGraph!");
     }
     return liveIn.get(stmt);
   }
@@ -120,41 +134,8 @@ public class LocalLivenessAnalyser {
   @NonNull
   public Set<Local> getLiveLocalsAfterStmt(@NonNull Stmt stmt) {
     if (!liveOut.containsKey(stmt)) {
-      throw new RuntimeException("Stmt: " + stmt + " is not in StmtGraph!");
+      throw new RuntimeException("Stmt: " + stmt + " is not in ControlFlowGraph!");
     }
     return liveOut.get(stmt);
-  }
-
-  /**
-   * Merge two local sets into one set.
-   *
-   * @return a merged local set
-   */
-  @NonNull
-  private Set<Local> merge(@NonNull Set<Local> set1, @NonNull Set<Local> set2) {
-    if (set1.isEmpty()) {
-      return set2;
-    } else {
-      set1.addAll(set2);
-      return set1;
-    }
-  }
-
-  /**
-   * Check whether two sets contains same locals.
-   *
-   * @return if same return true, else return false;
-   */
-  private boolean isNotEqual(@NonNull Set<Local> set1, @NonNull Set<Local> set2) {
-    if (set1.size() != set2.size()) {
-      return true;
-    } else {
-      for (Local local : set1) {
-        if (!set2.contains(local)) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 }

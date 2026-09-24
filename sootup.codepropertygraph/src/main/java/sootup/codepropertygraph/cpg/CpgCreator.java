@@ -37,6 +37,14 @@ public class CpgCreator {
   private final CdgCreator cdgCreator;
   private final DdgCreator ddgCreator;
 
+  /** Default constructor that initializes all creators with their default implementations. */
+  public CpgCreator() {
+    this.astCreator = new AstCreator();
+    this.cfgCreator = new CfgCreator();
+    this.cdgCreator = new CdgCreator();
+    this.ddgCreator = new DdgCreator();
+  }
+
   /**
    * Constructs a CPG creator with the specified creators for AST, CFG, CDG, and DDG.
    *

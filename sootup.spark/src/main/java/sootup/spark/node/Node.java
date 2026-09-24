@@ -4,7 +4,7 @@ package sootup.spark.node;
  * #%L
  * SootUp
  * %%
- * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya, Palaniappan Muthuraman
+ * Copyright (C) 2002-2025 Ondrej Lhotak, Kadiray Karakaya and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,6 +28,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
 
 /** Models a PAG node */
@@ -37,4 +38,5 @@ import sootup.core.types.Type;
 @EqualsAndHashCode
 public class Node {
   @NonNull Type type;
+  @NonNull MethodSignature containingMethodSig;
 }

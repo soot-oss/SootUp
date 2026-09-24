@@ -25,14 +25,14 @@ package sootup.analysis.interprocedural.icfg;
 import java.util.*;
 import java.util.stream.Collectors;
 import sootup.callgraph.CallGraph;
+import sootup.core.IdentifierFactory;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.VoidType;
 import sootup.core.util.DotExporter;
 import sootup.core.views.View;
@@ -40,12 +40,15 @@ import sootup.core.views.View;
 public class ICFGDotExporter {
 
   public static String buildICFGGraph(
-      Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph, View view, CallGraph callGraph) {
+      Map<MethodSignature, ControlFlowGraph<?>> signatureToControlFlowGraph,
+      View view,
+      CallGraph callGraph) {
     final StringBuilder sb = new StringBuilder();
     DotExporter.buildDiGraphObject(sb);
     Map<Integer, MethodSignature> calls;
-    calls = computeCalls(signatureToStmtGraph, view, callGraph);
-    for (Map.Entry<MethodSignature, StmtGraph<?>> entry : signatureToStmtGraph.entrySet()) {
+    calls = computeCalls(signatureToControlFlowGraph, view, callGraph);
+    for (Map.Entry<MethodSignature, ControlFlowGraph<?>> entry :
+        signatureToControlFlowGraph.entrySet()) {
       String graph = DotExporter.buildGraph(entry.getValue(), true, calls, entry.getKey());
       sb.append(graph).append("\n");
     }
@@ -54,20 +57,22 @@ public class ICFGDotExporter {
   }
 
   /**
-   * This method finds out all the calls made in the given StmtGraphs, so it can be edged to other
-   * methods.
+   * This method finds out all the calls made in the given signatureToControlFlowGraphs, so it can
+   * be edged to other methods.
    */
   public static Map<Integer, MethodSignature> computeCalls(
-      Map<MethodSignature, StmtGraph<?>> stmtGraphSet, View view, CallGraph callgraph) {
+      Map<MethodSignature, ControlFlowGraph<?>> controlFlowGraphSet,
+      View view,
+      CallGraph callgraph) {
     Map<Integer, MethodSignature> calls = new HashMap<>();
-    for (Map.Entry<MethodSignature, StmtGraph<?>> entry : stmtGraphSet.entrySet()) {
-      StmtGraph<?> stmtGraph = entry.getValue();
+    for (Map.Entry<MethodSignature, ControlFlowGraph<?>> entry : controlFlowGraphSet.entrySet()) {
+      ControlFlowGraph<?> controlFlowGraph = entry.getValue();
       MethodSignature source = entry.getKey();
       Collection<? extends BasicBlock<?>> blocks;
       try {
-        blocks = stmtGraph.getBlocksSorted();
+        blocks = controlFlowGraph.getBlocksSorted();
       } catch (Exception e) {
-        blocks = stmtGraph.getBlocks();
+        blocks = controlFlowGraph.getBlocks();
       }
       for (BasicBlock<?> block : blocks) {
         List<Stmt> stmts = block.getStmts();
@@ -84,7 +89,7 @@ public class ICFGDotExporter {
             if (jAssignStmt.getRightOp() instanceof JNewExpr) {
               // if the statement is a new expression, then there will be calls to its static
               // initializers (init and clinit), so need to compute calls to them as well
-              for (MethodSignature methodSignature : stmtGraphSet.keySet()) {
+              for (MethodSignature methodSignature : controlFlowGraphSet.keySet()) {
                 SootMethod clintMethod =
                     view.getMethod(
                             view.getIdentifierFactory()
@@ -96,7 +101,10 @@ public class ICFGDotExporter {
                   } else {
                     MethodSignature secondInitMethodSignature = calls.get(currentHashCode);
                     currentHashCode =
-                        stmtGraphSet.get(secondInitMethodSignature).getStartingStmt().hashCode();
+                        controlFlowGraphSet
+                            .get(secondInitMethodSignature)
+                            .getStartingStmt()
+                            .hashCode();
                     calls.put(currentHashCode, methodSignature);
                   }
                 }
@@ -133,16 +141,17 @@ public class ICFGDotExporter {
     methodSignatureInSubClass.forEach(
         subclassmethodSignature -> {
           Optional<? extends SootMethod> method = view.getMethod(target);
+          IdentifierFactory identifierFactory = view.getIdentifierFactory();
           MethodSignature initMethod =
-              new MethodSignature(
+              identifierFactory.getMethodSignature(
                   subclassmethodSignature.getDeclClassType(),
-                  new MethodSubSignature(
-                      "<init>", Collections.emptyList(), VoidType.getInstance()));
+                  identifierFactory.getMethodSubSignature(
+                      "<init>", VoidType.getInstance(), Collections.emptyList()));
           if (method.isPresent()
               && !subclassmethodSignature.toString().equals(initMethod.toString())) {
             if (method.get().hasBody()) {
               calls.put(
-                  method.get().getBody().getStmtGraph().getStartingStmt().hashCode(),
+                  method.get().getBody().getControlFlowGraph().getStartingStmt().hashCode(),
                   subclassmethodSignature);
             }
           }

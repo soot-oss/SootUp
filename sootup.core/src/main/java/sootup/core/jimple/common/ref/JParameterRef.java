@@ -22,7 +22,7 @@ package sootup.core.jimple.common.ref;
  * #L%
  */
 
-import java.util.stream.Stream;
+import java.util.List;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.common.Value;
@@ -78,10 +78,7 @@ public final class JParameterRef implements IdentityRef {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.empty();
-  }
+  public void collectUses(List<Value> collector) {}
 
   /** Returns the type of this ParameterRef. */
   @NonNull

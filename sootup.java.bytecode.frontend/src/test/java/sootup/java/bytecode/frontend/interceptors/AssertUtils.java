@@ -6,7 +6,7 @@ import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -31,10 +31,10 @@ public class AssertUtils {
     }
   }
 
-  // assert whether two bodies have the same stmtGraphs
-  public static void assertStmtGraphEquiv(Body expected, Body actual) {
-    StmtGraph<?> expected_SG = expected.getStmtGraph();
-    StmtGraph<?> actual_SG = actual.getStmtGraph();
+  // assert whether two bodies have the same ControlFlowGraphs
+  public static void assertControlFlowGraphEquiv(Body expected, Body actual) {
+    ControlFlowGraph<?> expected_SG = expected.getControlFlowGraph();
+    ControlFlowGraph<?> actual_SG = actual.getControlFlowGraph();
     assertNotNull(expected_SG);
     assertNotNull(actual_SG);
     final String expectedStr = expected.toString();

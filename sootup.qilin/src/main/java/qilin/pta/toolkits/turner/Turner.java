@@ -21,11 +21,10 @@ package qilin.pta.toolkits.turner;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import qilin.core.PTA;
+import qilin.core.config.PointerAnalysisConfig;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.PAG;
 import qilin.core.pag.SparkField;
-import qilin.pta.PTAConfig;
-import qilin.util.PTAUtils;
 import qilin.util.graph.MergedNode;
 import qilin.util.graph.SCCMergedGraph;
 import qilin.util.graph.TopologicalSorter;
@@ -65,17 +64,17 @@ public class Turner {
       mystat(mg);
       final TopologicalSorter<MergedNode<SootMethod>> topoSorter = new TopologicalSorter<>();
       topoSorter
-          .sort(mg, true)
+          .reverse_sort(mg)
           .forEach(
               node -> {
                 for (SootMethod method : node.getContent()) {
-                  nodes.addAll(computeCtxLevelForVariables(method, node));
+                  nodes.addAll(computeContextLevelForVariables(method, node));
                 }
               });
     } else {
       reachables.forEach(
           method -> {
-            nodes.addAll(computeCtxLevelForVariables(method));
+            nodes.addAll(computeContextLevelForVariables(method));
           });
     }
     // collect nodes and their level
@@ -123,7 +122,7 @@ public class Turner {
       ret1.put(f, x);
     }
     Map<Object, Integer> ret = new HashMap<>(ret1);
-    if (PTAConfig.v().turnerConfig == PTAConfig.TurnerConfig.PHASE_ONE) {
+    if (prePTA.getConfig().getTurnerConfig() == PointerAnalysisConfig.TurnerConfig.PHASE_ONE) {
       Map<Object, Integer> ret2 = new HashMap<>();
       ret1.forEach(
           (w, v) -> {
@@ -174,8 +173,8 @@ public class Turner {
     System.out.println("#CITOPBOT:" + topandbottoms);
   }
 
-  private Collection<Object> computeCtxLevelForVariables(SootMethod method) {
-    if (!PTAUtils.hasBody(method)) {
+  private Collection<Object> computeContextLevelForVariables(SootMethod method) {
+    if (!prePTA.getPag().hasBody(method)) {
       return Collections.emptySet();
     } else {
       AbstractMVFG mvfg = MethodVFG.findOrCreateMethodVFG(prePTA, method, ocg);
@@ -185,9 +184,9 @@ public class Turner {
     }
   }
 
-  private Collection<Object> computeCtxLevelForVariables(
+  private Collection<Object> computeContextLevelForVariables(
       SootMethod method, MergedNode<SootMethod> sccNode) {
-    if (!PTAUtils.hasBody(method)) {
+    if (!prePTA.getPag().hasBody(method)) {
       return Collections.emptySet();
     } else {
       AbstractMVFG mvfg = ModularMVFG.findOrCreateMethodVFG(prePTA, method, ocg, sccNode);

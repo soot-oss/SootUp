@@ -22,7 +22,7 @@ package sootup.core.util.printer;
  * #L%
  */
 
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
@@ -38,8 +38,8 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
     super();
   }
 
-  public BriefStmtPrinter(StmtGraph stmtGraph) {
-    buildTraps(stmtGraph);
+  public BriefStmtPrinter(ControlFlowGraph controlFlowGraph) {
+    buildTraps(controlFlowGraph);
   }
 
   @Override

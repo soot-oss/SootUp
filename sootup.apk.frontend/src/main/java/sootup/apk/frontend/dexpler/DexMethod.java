@@ -32,9 +32,9 @@ import org.jf.dexlib2.iface.MultiDexContainer;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
-import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableBlockControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
@@ -57,26 +57,28 @@ public class DexMethod {
     if (Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)) {
       List<Type> parameters =
           method.getParameters().stream()
-              .map(methodParameter -> DexUtil.toSootType(methodParameter.getType(), 0))
+              .map(
+                  methodParameter ->
+                      DexUtil.toSootType(methodParameter.getType(), 0, view.getIdentifierFactory()))
               .collect(Collectors.toList());
       MethodSignature methodSignature =
           view.getIdentifierFactory()
               .getMethodSignature(
                   declaringclassType,
                   method.getName(),
-                  DexUtil.toSootType(method.getReturnType(), 0),
+                  DexUtil.toSootType(method.getReturnType(), 0, view.getIdentifierFactory()),
                   parameters);
       DexMethodSource dexMethodSource =
           new DexMethodSource(
               Collections.emptySet(),
               methodSignature,
-              new MutableBlockStmtGraph(),
+              new MutableBlockControlFlowGraph(),
               method,
               bodyInterceptors,
               view);
       return dexMethodSource.makeSootMethod();
     } else {
-      DexBody dexBody = new DexBody(method, dexEntry, declaringclassType);
+      DexBody dexBody = new DexBody(method, dexEntry, declaringclassType, view);
       return dexBody.makeSootMethod(method, declaringclassType, bodyInterceptors, view);
     }
   }

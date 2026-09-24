@@ -22,11 +22,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import qilin.core.PTA;
-import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -250,13 +249,13 @@ public class Selectx {
 
   private void buildGraph() {
     for (SootMethod method : prePTA.getNakedReachableMethods()) {
-      if (!PTAUtils.hasBody(method)) {
+      if (!prePAG.hasBody(method)) {
         continue;
       }
       MethodPAG srcmpag = prePAG.getMethodPAG(method);
-      QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+      QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
       while (reader.hasNext()) {
-        Node from = reader.next(), to = reader.next();
+        PagNode from = reader.next(), to = reader.next();
         if (from instanceof LocalVarNode) {
           if (to instanceof LocalVarNode) {
             this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
@@ -288,7 +287,7 @@ public class Selectx {
           .getExceptionEdges()
           .forEach(
               (k, vs) -> {
-                for (Node v : vs) {
+                for (PagNode v : vs) {
                   this.addAssignEdge((LocalVarNode) k, (LocalVarNode) v);
                 }
               });
@@ -338,10 +337,7 @@ public class Selectx {
           }
           LocalVarNode stmtThrowNode = srcnf.makeInvokeStmtThrowVarNode(s, method);
           LocalVarNode throwFinal =
-              prePAG.findLocalVarNode(
-                  method,
-                  new Parm(tgtmtd, PointsToAnalysis.THROW_NODE),
-                  PTAUtils.getClassType("java.lang.Throwable"));
+              prePAG.findLocalVarNode(method, MethodParameter.ofThrow(tgtmtd), JavaTypes.THROWABLE);
           if (throwFinal != null) {
             this.addExitEdge(throwFinal, stmtThrowNode, callSite);
           }

@@ -26,7 +26,7 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction12x;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.JLengthExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -47,7 +47,7 @@ public class ArrayLengthInstruction extends DexLibAbstractInstruction {
     JLengthExpr jLengthExpr = Jimple.newLengthExpr(arrayReference);
     JAssignStmt assignStmt =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), jLengthExpr, StmtPositionInfo.getNoStmtPositionInfo());
+            body.getRegisterLocal(dest), jLengthExpr, new SimpleStmtPositionInfo(lineNumber));
     setStmt(assignStmt);
     body.add(assignStmt);
   }

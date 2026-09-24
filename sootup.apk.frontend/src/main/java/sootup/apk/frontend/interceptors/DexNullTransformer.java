@@ -23,7 +23,6 @@ package sootup.apk.frontend.interceptors;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
@@ -117,7 +116,8 @@ public class DexNullTransformer extends AbstractNullTransformer {
             }
             // check for base
 
-            if (!MethodModifier.isStatic(builder.getModifiers())) {
+            if (!MethodModifier.isStatic(builder.getModifiers())
+                && e instanceof AbstractInstanceInvokeExpr) {
               AbstractInstanceInvokeExpr aiiexpr = (AbstractInstanceInvokeExpr) e;
               Value b = aiiexpr.getBase();
               return b == l;
@@ -281,7 +281,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
       if (usedAsObject) {
         for (Stmt u : defs) {
           replaceWithNull(u);
-          Set<Value> defLocals = u.getUsesAndDefs().collect(Collectors.toSet());
+          Set<Value> defLocals = new HashSet<>(u.getUsesAndDefs());
 
           Local l = (Local) ((AbstractDefinitionStmt) u).getLeftOp();
           for (Stmt uuse : localDefs.getUsesOf(l)) {

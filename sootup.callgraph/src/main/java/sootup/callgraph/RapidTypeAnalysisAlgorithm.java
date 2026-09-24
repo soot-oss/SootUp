@@ -27,6 +27,8 @@ import java.util.*;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.scope.CallResolver;
+import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -73,6 +75,97 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   public RapidTypeAnalysisAlgorithm(
       @NonNull View view, @NonNull Set<ClassType> preInstantiatedClasses) {
     super(view);
+    this.instantiatedClasses = new HashSet<>(preInstantiatedClasses);
+  }
+
+  /**
+   * The constructor of the RTA algorithm that allows restricting which statements' calls are
+   * resolved during call graph construction.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param callResolver decides which statements' calls are excluded from the call graph
+   */
+  public RapidTypeAnalysisAlgorithm(@NonNull View view, @NonNull CallResolver callResolver) {
+    super(view, callResolver);
+    this.instantiatedClasses = new HashSet<>();
+  }
+
+  /**
+   * The constructor of the RTA algorithm that allows restricting which resolved dynamic-dispatch
+   * candidates are admitted/expanded during call graph construction.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param virtualCallResolver decides which resolved call candidates are excluded from the call
+   *     graph
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view, @NonNull VirtualCallResolver virtualCallResolver) {
+    super(view, virtualCallResolver);
+    this.instantiatedClasses = new HashSet<>();
+  }
+
+  /**
+   * The constructor of the RTA algorithm that allows restricting which calls are expanded during
+   * call graph construction.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param callResolver decides which statements' calls are excluded from the call graph
+   * @param virtualCallResolver decides which resolved call candidates are excluded from the call
+   *     graph
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver) {
+    super(view, callResolver, virtualCallResolver);
+    this.instantiatedClasses = new HashSet<>();
+  }
+
+  /**
+   * The constructor of the RTA algorithm that allows restricting which calls are expanded during
+   * call graph construction, and whether entry points' declaring-class {@code <clinit>}s are
+   * eagerly seeded as roots. See {@link AbstractCallGraphAlgorithm#AbstractCallGraphAlgorithm(View,
+   * CallResolver, VirtualCallResolver, boolean)} for the four classic static-initializer handling
+   * modes this enables.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param callResolver decides which statements' calls are excluded from the call graph
+   * @param virtualCallResolver decides which resolved call candidates are excluded from the call
+   *     graph
+   * @param seedEntryPointClinits whether entry points' declaring-class {@code <clinit>}s are
+   *     eagerly seeded as roots before traversal starts
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits) {
+    super(view, callResolver, virtualCallResolver, seedEntryPointClinits);
+    this.instantiatedClasses = new HashSet<>();
+  }
+
+  /**
+   * The constructor of the RTA algorithm that combines a predefined set of already-instantiated
+   * classes with restricting which calls are expanded and whether entry points' declaring-class
+   * {@code <clinit>}s are eagerly seeded as roots. See {@link
+   * AbstractCallGraphAlgorithm#AbstractCallGraphAlgorithm(View, CallResolver, VirtualCallResolver,
+   * boolean)} for the four classic static-initializer handling modes this enables.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param preInstantiatedClasses predefined set of instantiated classes
+   * @param callResolver decides which statements' calls are excluded from the call graph
+   * @param virtualCallResolver decides which resolved call candidates are excluded from the call
+   *     graph
+   * @param seedEntryPointClinits whether entry points' declaring-class {@code <clinit>}s are
+   *     eagerly seeded as roots before traversal starts
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull Set<ClassType> preInstantiatedClasses,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits) {
+    super(view, callResolver, virtualCallResolver, seedEntryPointClinits);
     this.instantiatedClasses = new HashSet<>(preInstantiatedClasses);
   }
 
@@ -159,10 +252,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     // get all instantiated subclasses
     // the target method is used since this is the type of the invoke
     List<? extends SootClass> subclasses =
-        typeHierarchy
-            .subtypesOf(targetMethodSignature.getDeclClassType())
-            .flatMap(classType -> view.getClass(classType).stream())
-            .toList();
+        typeHierarchy.subtypeClassesOf(targetMethodSignature.getDeclClassType()).toList();
 
     // get all targets of these subtypes
     Stream<MethodSignature> targets =

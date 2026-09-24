@@ -29,11 +29,11 @@ import java.util.*;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.interceptors.BytecodeBodyInterceptors;
@@ -61,8 +61,8 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module
    * path.
    *
-   * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
-   *     SootClassSource}es for the files found on the class path
+   * @param modulePath The class path to search in The {@link PathbasedClassProvider} for generating
+   *     {@link SootClassSource}es for the files found on the class path
    */
   public JavaModulePathAnalysisInputLocation(@NonNull Path modulePath) {
     this(modulePath, SourceType.Application);
@@ -83,8 +83,8 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module
    * path.
    *
-   * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
-   *     SootClassSource}es for the files found on the class path
+   * @param modulePath The class path to search in The {@link PathbasedClassProvider} for generating
+   *     {@link SootClassSource}es for the files found on the class path
    * @param fileSystem filesystem for the path
    */
   public JavaModulePathAnalysisInputLocation(
@@ -99,23 +99,32 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
 
   @NonNull
   public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View view) {
-    return moduleFinder.getModuleInfo(sig);
+    return moduleFinder.getModuleInfo(sig, view.getIdentifierFactory());
   }
 
   @NonNull
   public Set<ModuleSignature> getModules(View view) {
-    return moduleFinder.getModules();
+    return moduleFinder.getModules(view.getIdentifierFactory());
+  }
+
+  /**
+   * Returns the view's {@link IdentifierFactory}, which has to be module aware to name the classes
+   * found on a module path.
+   */
+  @NonNull
+  private static IdentifierFactory moduleIdentifierFactory(@NonNull View view) {
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+    Preconditions.checkArgument(
+        identifierFactory instanceof JavaModuleIdentifierFactory,
+        "Factory must be a JavaModuleSignatureFactory");
+    return identifierFactory;
   }
 
   @Override
   @NonNull
   public Stream<JavaSootClassSource> getClassSources(@NonNull View view) {
-    IdentifierFactory identifierFactory = view.getIdentifierFactory();
-    Preconditions.checkArgument(
-        identifierFactory instanceof JavaModuleIdentifierFactory,
-        "Factory must be a JavaModuleSignatureFactory");
-
-    Collection<ModuleSignature> allModules = moduleFinder.getAllModules();
+    Collection<ModuleSignature> allModules =
+        moduleFinder.getAllModules(moduleIdentifierFactory(view));
     return allModules.stream().flatMap(sig -> getClassSourcesInternal(sig, view));
   }
 
@@ -135,17 +144,15 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
   @NonNull
   public Stream<JavaSootClassSource> getModulesClassSources(
       @NonNull ModuleSignature moduleSignature, @NonNull View view) {
-    IdentifierFactory identifierFactory = view.getIdentifierFactory();
-    Preconditions.checkArgument(
-        identifierFactory instanceof JavaModuleIdentifierFactory,
-        "Factory must be a JavaModuleSignatureFactory");
+    moduleIdentifierFactory(view); // checks that the view can name module classes
     return getClassSourcesInternal(moduleSignature, view);
   }
 
   protected Stream<JavaSootClassSource> getClassSourcesInternal(
       @NonNull ModuleSignature moduleSignature, @NonNull View view) {
 
-    AnalysisInputLocation inputLocation = moduleFinder.getModule(moduleSignature);
+    AnalysisInputLocation inputLocation =
+        moduleFinder.getModule(moduleSignature, moduleIdentifierFactory(view));
     if (inputLocation == null) {
       return Stream.empty();
     }
@@ -162,7 +169,8 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
     ModuleSignature modulename =
         ((ModulePackageName) klassType.getPackageName()).getModuleSignature();
     // get inputlocation from cache
-    AnalysisInputLocation inputLocation = moduleFinder.getModule(modulename);
+    AnalysisInputLocation inputLocation =
+        moduleFinder.getModule(modulename, moduleIdentifierFactory(view));
 
     if (inputLocation == null) {
       return Optional.empty();

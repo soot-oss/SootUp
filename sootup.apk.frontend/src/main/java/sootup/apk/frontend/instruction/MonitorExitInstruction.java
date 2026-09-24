@@ -26,7 +26,7 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 
@@ -36,7 +36,7 @@ public class MonitorExitInstruction extends DexLibAbstractInstruction {
     int reg = ((OneRegisterInstruction) instruction).getRegisterA();
     Local object = body.getRegisterLocal(reg);
     JExitMonitorStmt exitMonitorStmt =
-        Jimple.newExitMonitorStmt(object, StmtPositionInfo.getNoStmtPositionInfo());
+        Jimple.newExitMonitorStmt(object, new SimpleStmtPositionInfo(lineNumber));
     setStmt(exitMonitorStmt);
     body.add(exitMonitorStmt);
   }

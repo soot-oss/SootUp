@@ -29,10 +29,10 @@ import qilin.util.queue.UniqueQueue;
 /*
  * a simplified method PAG with the effects of static load and store being eliminated.
  * */
-public class SMPAG extends DirectedGraphImpl<Node> {
+public class SMPAG extends DirectedGraphImpl<PagNode> {
   MethodPAG srcmpag;
-  Set<Pair<Node, Node>> loads;
-  Set<Pair<Node, Node>> stores;
+  Set<Pair<PagNode, PagNode>> loads;
+  Set<Pair<PagNode, PagNode>> stores;
 
   public SMPAG(MethodPAG srcmpag) {
     this.srcmpag = srcmpag;
@@ -42,11 +42,11 @@ public class SMPAG extends DirectedGraphImpl<Node> {
   private void init() {
     loads = new HashSet<>();
     stores = new HashSet<>();
-    QueueReader<Node> reader = srcmpag.getInternalReader().clone();
-    UniqueQueue<Node> workList = new UniqueQueue<>();
-    Set<Node> visit = new HashSet<>();
+    QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
+    UniqueQueue<PagNode> workList = new UniqueQueue<>();
+    Set<PagNode> visit = new HashSet<>();
     while (reader.hasNext()) {
-      qilin.core.pag.Node from = reader.next(), to = reader.next();
+      PagNode from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
         if (to instanceof LocalVarNode) {
           this.addEdge(from, to); // ASSIGN
@@ -63,10 +63,10 @@ public class SMPAG extends DirectedGraphImpl<Node> {
       }
     }
     while (!workList.isEmpty()) {
-      Node curr = workList.poll();
+      PagNode curr = workList.poll();
       visit.add(curr);
       if (this.predsOf(curr).isEmpty()) {
-        for (Node next : this.succsOf(curr)) {
+        for (PagNode next : this.succsOf(curr)) {
           if (!visit.contains(next)) {
             workList.add(next);
           }
@@ -79,12 +79,12 @@ public class SMPAG extends DirectedGraphImpl<Node> {
     }
 
     // initialize stores and loads
-    for (Node node : this.allNodes()) {
+    for (PagNode node : this.allNodes()) {
       if (node instanceof FieldRefNode) {
-        for (Node from : this.predsOf(node)) {
+        for (PagNode from : this.predsOf(node)) {
           stores.add(new Pair<>(node, from));
         }
-        for (Node to : this.succsOf(node)) {
+        for (PagNode to : this.succsOf(node)) {
           loads.add(new Pair<>(to, node));
         }
       }
@@ -92,12 +92,12 @@ public class SMPAG extends DirectedGraphImpl<Node> {
   }
 
   // <FieldRefNode, from>
-  public Set<Pair<Node, Node>> getStores() {
+  public Set<Pair<PagNode, PagNode>> getStores() {
     return stores;
   }
 
   // <to, FieldRefNode>
-  public Set<Pair<Node, Node>> getLoads() {
+  public Set<Pair<PagNode, PagNode>> getLoads() {
     return loads;
   }
 }

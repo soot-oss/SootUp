@@ -1,0 +1,6 @@
+Mark 10000 Accounting
+Bill 23000 Marketing
+Jones 10000  Accounting
+Stacey 30000 Administration
+Susy 56980 IT
+Bobby 96660 IT

@@ -23,7 +23,6 @@ package sootup.core.jimple.common.expr;
  */
 
 import java.util.*;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.graph.BasicBlock;
@@ -130,13 +129,9 @@ public final class JPhiExpr implements Expr {
     return new HashMap<>(this.argToBlock);
   }
 
-  @NonNull
   @Override
-  public Stream<Value> getUses() {
-    if (args == null) {
-      return Stream.empty();
-    }
-    return getArgs().stream().map(v -> v);
+  public void collectUses(List<Value> collector) {
+    collector.addAll(args);
   }
 
   @Override

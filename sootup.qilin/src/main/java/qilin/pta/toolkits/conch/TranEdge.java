@@ -19,27 +19,27 @@
 package qilin.pta.toolkits.conch;
 
 import java.util.Objects;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 
 /*
  * Transition edges used in define our DFAs.
  * */
 public class TranEdge {
-  private final Node src;
-  private final Node dst;
+  private final PagNode src;
+  private final PagNode dst;
   private final DFA.TranCond tranCond;
 
-  public TranEdge(Node s, Node d, DFA.TranCond tran) {
+  public TranEdge(PagNode s, PagNode d, DFA.TranCond tran) {
     this.src = s;
     this.dst = d;
     this.tranCond = tran;
   }
 
-  public Node getSource() {
+  public PagNode getSource() {
     return src;
   }
 
-  public Node getTarget() {
+  public PagNode getTarget() {
     return dst;
   }
 

@@ -23,10 +23,8 @@ package sootup.core.jimple.common;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.LocalGenerator;
@@ -108,10 +106,7 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.empty();
-  }
+  public void collectUses(List<Value> collector) {}
 
   /** returns a List that can contain: Locals, JFieldRefs, JArrayRefs */
   public List<AbstractDefinitionStmt> getDefs(Collection<Stmt> defs) {
@@ -131,8 +126,8 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
    * @param graph a stmt graph which contains the given stmts.
    * @param stmt a stmt which uses the given local.
    */
-  public List<Stmt> getDefsForLocalUse(StmtGraph<?> graph, Stmt stmt) {
-    if (stmt.getUses().noneMatch(v -> v == this)) {
+  public List<Stmt> getDefsForLocalUse(ControlFlowGraph<?> graph, Stmt stmt) {
+    if (stmt.getUses().stream().noneMatch(v -> v == this)) {
       throw new RuntimeException(stmt + " doesn't use the local " + this);
     }
     List<Stmt> defStmts = new ArrayList<>();
@@ -160,7 +155,7 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
     List<Stmt> localOccurrences = new ArrayList<>();
     for (Stmt stmt : stmts) {
       if (stmt.equivTo(removedStmt)) continue;
-      List<Value> stmtUsesAndDefs = stmt.getUsesAndDefs().collect(Collectors.toList());
+      List<Value> stmtUsesAndDefs = stmt.getUsesAndDefs();
       for (Value stmtUse : stmtUsesAndDefs) {
         if (stmtUse instanceof Local && stmtUse.equivTo(this)) {
           localOccurrences.add(stmt);

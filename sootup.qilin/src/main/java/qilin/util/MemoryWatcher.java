@@ -46,7 +46,7 @@ public class MemoryWatcher extends Timer {
             SystemInfo si = new SystemInfo();
             OperatingSystem os = si.getOperatingSystem();
             OSProcess process = os.getProcess((int) pid);
-            long mem = process.getResidentSetSize();
+            long mem = process.getResidentMemory();
             if (mem > maxMemory[0]) {
               maxMemory[0] = mem;
             }

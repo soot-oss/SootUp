@@ -100,7 +100,7 @@ public class CastCounter extends TypeChecker {
       return;
     }
 
-    if (stmt.getUses().noneMatch(v -> v == value)) {
+    if (stmt.getUses().stream().noneMatch(v -> v == value)) {
       return;
     }
 

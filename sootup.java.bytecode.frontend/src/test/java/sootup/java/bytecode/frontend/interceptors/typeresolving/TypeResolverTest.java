@@ -23,24 +23,24 @@ import sootup.interceptors.TypeAssigner;
 import sootup.interceptors.typeresolving.TypeResolver;
 import sootup.interceptors.typeresolving.types.TopType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaPackageName;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public class TypeResolverTest extends TypeAssignerTestSuite {
 
-  String baseDir = "../shared-test-resources/TypeResolverTestSuite/";
-  Type objectType = new JavaClassType("Object", new JavaPackageName("java.lang"));
-  Type stringType = new JavaClassType("String", new JavaPackageName("java.lang"));
-  Type charSequenceType = new JavaClassType("CharSequence", new JavaPackageName("java.lang"));
-  Type numberType = new JavaClassType("Number", new JavaPackageName("java.lang"));
-  Type dateType = new JavaClassType("Date", new JavaPackageName("java.util"));
-  Type miscType = new JavaClassType("Misc", new JavaPackageName(""));
-  Type sysoutType = new JavaClassType("PrintStream", new JavaPackageName("java.io"));
-  Type throwableType = new JavaClassType("Throwable", new JavaPackageName("java.lang"));
+  JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
+  String baseDir = "src/test/resources/TypeResolverTestSuite/";
+  Type objectType = identifierFactory.getClassType("Object", "java.lang");
+  Type stringType = identifierFactory.getClassType("String", "java.lang");
+  Type charSequenceType = identifierFactory.getClassType("CharSequence", "java.lang");
+  Type numberType = identifierFactory.getClassType("Number", "java.lang");
+  Type dateType = identifierFactory.getClassType("Date", "java.util");
+  Type miscType = identifierFactory.getClassType("Misc", "");
+  Type sysoutType = identifierFactory.getClassType("PrintStream", "java.io");
+  Type throwableType = identifierFactory.getClassType("Throwable", "java.lang");
   Type illegalArgumentType =
-      new JavaClassType("IllegalArgumentException", new JavaPackageName("java.lang"));
+      identifierFactory.getClassType("IllegalArgumentException", "java.lang");
 
   @BeforeEach
   public void setup() {
@@ -195,8 +195,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
         body,
         new Local(
             "l0",
-            ArrayType.createArrayType(
-                new JavaClassType("String", new JavaPackageName("java.lang")), 1)),
+            ArrayType.createArrayType(identifierFactory.getClassType("String", "java.lang"), 1)),
         new Local("$stack1", PrimitiveType.getDouble()),
         new Local("$stack2", PrimitiveType.getByte()));
   }

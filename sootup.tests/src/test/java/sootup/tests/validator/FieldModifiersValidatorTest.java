@@ -6,7 +6,7 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.LocalGenerator;
@@ -17,7 +17,6 @@ import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.validation.FieldModifiersValidator;
@@ -26,7 +25,6 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public class FieldModifiersValidatorTest {
@@ -59,19 +57,20 @@ public class FieldModifiersValidatorTest {
     final JReturnVoidStmt returnVoidStmt =
         new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
-    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.setStartingStmt(firstStmt);
-    stmtGraph.putEdge(firstStmt, returnVoidStmt);
+    MutableControlFlowGraph controlFlowGraph = bodyBuilder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(firstStmt);
+    controlFlowGraph.putEdge(firstStmt, returnVoidStmt);
 
     Body body =
         bodyBuilder.setMethodSignature(methodSignature).setLocals(generator.getLocals()).build();
     assertEquals(1, body.getLocalCount());
 
     FieldSignature fieldSignature =
-        new FieldSignature(
-            new JavaClassType("FieldModifiersValidator", PackageName.DEFAULT_PACKAGE),
-            "i",
-            PrimitiveType.IntType.getInstance());
+        view.getIdentifierFactory()
+            .getFieldSignature(
+                "i",
+                view.getIdentifierFactory().getClassType("FieldModifiersValidator"),
+                PrimitiveType.IntType.getInstance());
     JavaSootField dummyField =
         JavaSootField.JavaSootFieldBuilder.builder()
             .withSignature(fieldSignature)

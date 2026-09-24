@@ -22,14 +22,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.ContextMethod;
-import qilin.core.sets.PointsToSet;
-import qilin.util.PTAUtils;
+import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -69,7 +67,7 @@ public class YummyStat implements AbstractStat {
     Set<SootMethod> instanceReachables = new HashSet<>();
     for (final ContextMethod momc : pta.getReachableMethods()) {
       SootMethod method = momc.method();
-      if (PTAUtils.hasBody(method) && !method.isStatic()) {
+      if (pta.getPag().hasBody(method) && !method.isStatic()) {
         instanceReachables.add(method);
       }
     }
@@ -95,7 +93,7 @@ public class YummyStat implements AbstractStat {
     exporter.collectMetric("#Single-Receiver Methods:", String.valueOf(singleReceiverCnt));
     exporter.collectMetric(
         "#Single-Call-Single-Receiver Methods:", String.valueOf(singleCallSingleReceiverCnt));
-    if (CoreConfig.v().getOutConfig().dumpStats) {
+    if (pta.getConfig().isDumpStats()) {
       exporter.dumpSingleCallMethods(singleCalls);
       exporter.dumpSingleReceiverMethods(singleReceivers);
       exporter.dumpSingleCallSingleReceiverMethods(singleCallSingleReceivers);

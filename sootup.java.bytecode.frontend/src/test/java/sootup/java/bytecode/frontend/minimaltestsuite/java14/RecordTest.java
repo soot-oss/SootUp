@@ -13,9 +13,7 @@ import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.PrimitiveType;
 import sootup.java.bytecode.frontend.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.language.JavaJimple;
@@ -28,7 +26,7 @@ public class RecordTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
   public JavaClassType getDeclaredClassSignature() {
-    return identifierFactory.getClassType("RecordTest");
+    return identifierFactory.getClassType("Record");
   }
 
   @Override
@@ -44,9 +42,9 @@ public class RecordTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "this := @this: RecordTest",
+            "this := @this: Record",
             "l1 := @parameter0: java.lang.Object",
-            "$stack2 = dynamicinvoke \"equals\" <boolean (RecordTest,java.lang.Object)>(this, l1) <java.lang.runtime.ObjectMethods: java.lang.Object bootstrap(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.TypeDescriptor,java.lang.Class,java.lang.String,java.lang.invoke.MethodHandle[])>(class \"LRecordTest;\", \"a;b\", methodhandle: \"REF_GET_FIELD\" <RecordTest: int a>, methodhandle: \"REF_GET_FIELD\" <RecordTest: java.lang.String b>)",
+            "$stack2 = dynamicinvoke \"equals\" <boolean (Record,java.lang.Object)>(this, l1) <java.lang.runtime.ObjectMethods: java.lang.Object bootstrap(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.TypeDescriptor,java.lang.Class,java.lang.String,java.lang.invoke.MethodHandle[])>(class \"LRecord;\", \"a;b\", methodhandle: \"REF_GET_FIELD\" <Record: int a>, methodhandle: \"REF_GET_FIELD\" <Record: java.lang.String b>)",
             "return $stack2")
         .collect(Collectors.toList());
   }
@@ -70,23 +68,23 @@ public class RecordTest extends MinimalBytecodeTestSuiteBase {
 
     // test bootstrap args
     List<Immediate> bootTrapArgs = invoke.getBootstrapArgs();
-    assertTrue(bootTrapArgs.contains(JavaJimple.newClassConstant("LRecordTest;")));
-    assertTrue(bootTrapArgs.contains(JavaJimple.newStringConstant("a;b")));
+    assertTrue(bootTrapArgs.contains(JavaJimple.newClassConstant("LRecord;", identifierFactory)));
+    assertTrue(bootTrapArgs.contains(JavaJimple.newStringConstant("a;b", identifierFactory)));
     assertTrue(
         bootTrapArgs.contains(
             JavaJimple.newMethodHandle(
-                new FieldSignature(
-                    new JavaClassType("RecordTest", new PackageName("")),
-                    "a",
-                    PrimitiveType.getInt()),
-                1)));
+                identifierFactory.getFieldSignature(
+                    "a", identifierFactory.getClassType("Record"), PrimitiveType.getInt()),
+                1,
+                identifierFactory)));
     assertTrue(
         bootTrapArgs.contains(
             JavaJimple.newMethodHandle(
-                new FieldSignature(
-                    new JavaClassType("RecordTest", new PackageName("")),
+                identifierFactory.getFieldSignature(
                     "b",
-                    new JavaClassType("String", new PackageName("java.lang"))),
-                1)));
+                    identifierFactory.getClassType("Record"),
+                    identifierFactory.getClassType("String", "java.lang")),
+                1,
+                identifierFactory)));
   }
 }

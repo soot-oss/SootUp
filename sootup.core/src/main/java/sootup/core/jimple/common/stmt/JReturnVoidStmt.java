@@ -31,7 +31,7 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A statement that ends the method, returning no value. */
-public final class JReturnVoidStmt extends AbstractStmt {
+public final class JReturnVoidStmt extends AbstractStmt implements ReturnStmt {
 
   public JReturnVoidStmt(@NonNull StmtPositionInfo positionInfo) {
     super(positionInfo);

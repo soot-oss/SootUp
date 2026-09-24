@@ -16,11 +16,11 @@ import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.common.Trap;
 import sootup.core.model.*;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
 import sootup.core.util.printer.BriefStmtPrinter;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
@@ -283,7 +283,9 @@ public class JimpleConverterTest {
     SootClass sc = parseJimpleClass(cs);
     assertTrue(
         sc.getMethod(
-                new MethodSubSignature("another", Collections.emptyList(), VoidType.getInstance()))
+                new JavaIdentifierFactory()
+                    .getMethodSubSignature(
+                        "another", VoidType.getInstance(), Collections.emptyList()))
             .isPresent());
   }
 
@@ -837,7 +839,7 @@ public class JimpleConverterTest {
     SootMethod method = methods.iterator().next();
 
     BriefStmtPrinter stmtPrinter = new BriefStmtPrinter();
-    stmtPrinter.buildTraps(method.getBody().getStmtGraph());
+    stmtPrinter.buildTraps(method.getBody().getControlFlowGraph());
     List<Trap> traps = stmtPrinter.getTraps();
     assertEquals(0, traps.size());
   }

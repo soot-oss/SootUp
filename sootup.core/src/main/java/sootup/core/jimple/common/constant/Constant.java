@@ -22,7 +22,7 @@ package sootup.core.jimple.common.constant;
  * #L%
  */
 
-import java.util.stream.Stream;
+import java.util.List;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.common.Immediate;
@@ -34,9 +34,7 @@ import sootup.core.util.printer.StmtPrinter;
 public interface Constant extends Immediate, Acceptor<ConstantVisitor> {
 
   @Override
-  default @NonNull Stream<Value> getUses() {
-    return Stream.empty();
-  }
+  default void collectUses(List<Value> collector) {}
 
   @Override
   default boolean equivTo(Object o, @NonNull JimpleComparator comparator) {

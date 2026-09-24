@@ -6,13 +6,13 @@ import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import sootup.core.IdentifierFactory;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
@@ -39,8 +39,7 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             "void",
             Collections.emptyList());
 
-    JavaClassType newClass =
-        new JavaClassType("AdderA", identifierFactory.getPackageName("update.operation.cg"));
+    JavaClassType newClass = identifierFactory.getClassType("AdderA", "update.operation.cg");
     CallGraph newCallGraph = algorithm.addClass(cg, newClass);
 
     assertEquals(0, cg.callsTo(mainMethodSignature).size());
@@ -872,7 +871,7 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
     JavaClassType mainClassSignature = identifierFactory.getClassType("example2.Example");
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(
-            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, identifierFactory.getMainSubSignature());
 
     CallGraphAlgorithm algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize();
@@ -939,7 +938,8 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
 
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(
-            "app.Application", "main", "void", Collections.singletonList("java.lang.String[]"));
+            identifierFactory.getClassType("app.Application"),
+            identifierFactory.getMainSubSignature());
     CallGraphAlgorithm algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
@@ -957,35 +957,28 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   }
 
   @Test
-  public void testMultiCallsToSameTarget() {
+  public void testMultipleCallsToSameTarget() {
     CallGraph cg = loadCallGraph("Misc", "multi.MultipleCallsToSameTarget");
 
     MethodSignature constructorMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("multi.Instantiated"),
+            identifierFactory.getClassType("multi.MultipleCallsToSameTarget"),
             "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature virtualMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("multi.Instantiated"),
+            identifierFactory.getClassType("multi.MultipleCallsToSameTarget"),
             "method",
-            "int",
+            "void",
             Collections.emptyList());
 
     MethodSignature staticMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("multi.MultiCalls"),
-            "method",
-            "int",
-            Collections.emptyList());
-
-    MethodSignature staticMethodField =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("multi.FieldLeft"),
-            "method",
-            "int",
+            identifierFactory.getClassType("multi.MultipleCallsToSameTarget"),
+            "staticMethod",
+            "void",
             Collections.emptyList());
 
     assertTrue(
@@ -1013,12 +1006,6 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
-            staticMethodField,
-            getInvokableStmt(mainMethodSignature, staticMethodField, 0)));
-
-    assertTrue(
-        cg.containsCall(
-            mainMethodSignature,
             virtualMethod,
             getInvokableStmt(mainMethodSignature, virtualMethod, 0)));
 
@@ -1027,44 +1014,6 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
             mainMethodSignature,
             virtualMethod,
             getInvokableStmt(mainMethodSignature, virtualMethod, 1)));
-
-    checkClinit(cg, "multi.Instantiated", 0, false, null);
-    checkClinit(cg, "multi.Instantiated", 1, false, null);
-
-    checkClinit(cg, "multi.FieldLeft", 0, true, null);
-    checkClinit(cg, "multi.FieldLeft", 1, true, null);
-    checkClinit(cg, "multi.FieldLeft", 2, true, null);
-
-    checkClinit(cg, "multi.FieldRight", 0, false, null);
-    checkClinit(cg, "multi.FieldRight", 1, false, null);
-
-    checkClinit(cg, "multi.MultiCalls", 0, false, staticMethod);
-    checkClinit(cg, "multi.MultiCalls", 1, false, staticMethod);
-
-    assertEquals(17, cg.callsFrom(mainMethodSignature).size());
-
-    assertEquals(2, cg.callsTo(staticMethod).size());
-    assertEquals(1, cg.callsTo(staticMethodField).size());
-    assertEquals(2, cg.callsTo(constructorMethod).size());
-    assertEquals(2, cg.callsTo(virtualMethod).size());
-
-    assertEquals(0, cg.callsFrom(staticMethod).size());
-    assertEquals(0, cg.callsFrom(staticMethodField).size());
-    assertEquals(1, cg.callsFrom(constructorMethod).size());
-    assertEquals(0, cg.callsFrom(virtualMethod).size());
-  }
-
-  private void checkClinit(
-      CallGraph cg, String clinitClassName, int index, boolean left, MethodSignature ms) {
-    ClassType clinitClass = identifierFactory.getClassType(clinitClassName);
-    MethodSignature clinitMethod = identifierFactory.getStaticInitializerSignature(clinitClass);
-    InvokableStmt invokeStmt;
-    if (ms == null) {
-      invokeStmt = getInvokableStmtNonInvokeExpr(mainMethodSignature, clinitClass, left, index);
-    } else {
-      invokeStmt = getInvokableStmt(mainMethodSignature, ms, index);
-    }
-    assertTrue(cg.containsCall(mainMethodSignature, clinitMethod, invokeStmt));
   }
 
   @Test
@@ -1181,5 +1130,132 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
     for (CallGraph.Call call : cg.getCalls()) {
       assertNotEquals(call.sourceMethodSignature(), call.targetMethodSignature());
     }
+  }
+
+  @Test
+  public void testClinitCallPruning() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccp.Main");
+    IdentifierFactory id = view.getIdentifierFactory();
+    MethodSignature methodSigOperation =
+        id.getMethodSignature(
+            "ccp.ClinitCallPruning$Operation", "<clinit>", "void", Collections.emptyList());
+    // no duplicates
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigOperation))
+            .count());
+    // no self-calls
+    for (CallGraph.Call call : cg.getCalls()) {
+      assertNotEquals(call.sourceMethodSignature(), call.targetMethodSignature());
+    }
+  }
+
+  @Test
+  public void testClinitCallPruning2() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccp2.ClinitCallPruning2");
+    IdentifierFactory id = view.getIdentifierFactory();
+
+    // testClinitCallPruningChild
+    MethodSignature methodSigChild =
+        id.getMethodSignature(
+            "ccp2.ClinitCallPruningChild", "<clinit>", "void", Collections.emptyList());
+    MethodSignature methodSigParent =
+        id.getMethodSignature(
+            "ccp2.ClinitCallPruningParent", "<clinit>", "void", Collections.emptyList());
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigChild))
+            .count());
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(
+                call ->
+                    call.targetMethodSignature().equals(methodSigParent)
+                        && call.invokableStmt().toString().contains("Parent"))
+            .count());
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigParent))
+            .count());
+
+    // testClinitCallPruningChild2
+    MethodSignature methodSigChild2 =
+        id.getMethodSignature(
+            "ccp2.ClinitCallPruningChild2", "<clinit>", "void", Collections.emptyList());
+    MethodSignature methodSigParent2 =
+        id.getMethodSignature(
+            "ccp2.ClinitCallPruningParent2", "<clinit>", "void", Collections.emptyList());
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigChild2))
+            .count());
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(
+                call ->
+                    call.targetMethodSignature().equals(methodSigParent2)
+                        && call.invokableStmt().toString().contains("Child"))
+            .count());
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigParent2))
+            .count());
+
+    // testClinitCallPruningSelf
+    // no self-call
+    for (CallGraph.Call call : cg.getCalls()) {
+      assertNotEquals(call.sourceMethodSignature(), call.targetMethodSignature());
+    }
+
+    // testClinitCallPruningBranch
+    MethodSignature methodSigOperation =
+        id.getMethodSignature(
+            "ccp2.ClinitCallPruningBranch", "<clinit>", "void", Collections.emptyList());
+    // include duplicate (method invocations within if-block)
+    assertEquals(
+        2,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigOperation))
+            .count());
+
+    // testClinitCallPruningBranch2
+    MethodSignature methodSigOperation2 =
+        id.getMethodSignature(
+            "ccp2.ClinitCallPruningBranch2", "<clinit>", "void", Collections.emptyList());
+    // do not include duplicate (method invocation before if-block)
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigOperation2))
+            .count());
+
+    // testClinitCallPruningBranch3
+    MethodSignature methodSigOperation3 =
+        id.getMethodSignature(
+            "ccp2.ClinitCallPruningBranch3", "<clinit>", "void", Collections.emptyList());
+    // do not include duplicate (method invocation before while-loop)
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigOperation3))
+            .count());
+
+    // testClinitCallPruningBranch4
+    MethodSignature methodSigOperation4 =
+        id.getMethodSignature(
+            "ccp2.ClinitCallPruningBranch4", "<clinit>", "void", Collections.emptyList());
+    // do not include duplicate
+    assertEquals(
+        1,
+        cg.callsFrom(mainMethodSignature).stream()
+            .filter(call -> call.targetMethodSignature().equals(methodSigOperation4))
+            .count());
   }
 }

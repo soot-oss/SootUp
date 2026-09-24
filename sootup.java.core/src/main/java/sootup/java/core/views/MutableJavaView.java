@@ -27,13 +27,13 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.ViewChangeListener;
 import sootup.core.cache.MutableClassCache;
 import sootup.core.cache.provider.MutableFullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.MutableView;
+import sootup.core.views.ViewChangeListener;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 
@@ -64,6 +64,8 @@ public class MutableJavaView extends JavaView implements MutableView {
       return;
     }
     this.cache.putClass(classType, clazz);
+    // the type may have been looked up - and recorded as absent - before it was added here
+    forgetAbsence(classType);
     this.fireAddition(clazz);
   }
 

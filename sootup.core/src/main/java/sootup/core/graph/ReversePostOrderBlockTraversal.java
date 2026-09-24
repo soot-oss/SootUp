@@ -23,16 +23,14 @@ package sootup.core.graph;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.jspecify.annotations.NonNull;
 
-/** A strategy to traverse a StmtGraph in reverse post-order. */
+/** A strategy to traverse a ControlFlowGraph in reverse post-order. */
 public class ReversePostOrderBlockTraversal implements BlockTraversalStrategy {
 
-  private final StmtGraph<?> cfg;
+  private final ControlFlowGraph<?> cfg;
 
-  public ReversePostOrderBlockTraversal(StmtGraph<?> cfg) {
+  public ReversePostOrderBlockTraversal(ControlFlowGraph<?> cfg) {
     this.cfg = cfg;
   }
 
@@ -49,11 +47,12 @@ public class ReversePostOrderBlockTraversal implements BlockTraversalStrategy {
 
   @Override
   @NonNull
-  public List<BasicBlock<?>> getBlocksSorted() {
-    return StreamSupport.stream(
-            Spliterators.spliteratorUnknownSize(
-                new ReversePostOrderBlockTraversal(this.cfg).iterator(), Spliterator.ORDERED),
-            false)
-        .collect(Collectors.toList());
+  public List<BasicBlock<?>> getBlockTraversal() {
+    // sizing this from getStmts() would walk the graph with the validating BlockGraphIterator,
+    // whose complaint about an unconnected graph is built from a DotExporter url that sorts the
+    // blocks again - which lands back here and recurses until the stack is gone
+    List<BasicBlock<?>> blocks = new ArrayList<>(this.cfg.getBlocks().size());
+    new ReversePostOrderBlockTraversal(this.cfg).iterator().forEachRemaining(blocks::add);
+    return blocks;
   }
 }

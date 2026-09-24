@@ -6,11 +6,11 @@ import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.*;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 import sootup.interceptors.BytecodeBodyInterceptors;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -28,15 +28,15 @@ public class RemoveExceptionalEdgeTest {
               .parseMethodSignature("<org.atmosphere.util.Version: void <clinit>()>");
       if (!builder.getMethodSignature().equals(methodSignature)) return;
 
-      MutableStmtGraph stmtGraph = builder.getStmtGraph();
-      List<? extends BasicBlock<?>> blocks = stmtGraph.getBlocks().stream().toList();
+      MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+      List<? extends BasicBlock<?>> blocks = controlFlowGraph.getBlocks().stream().toList();
       BasicBlock<?> basicBlock = blocks.get(11);
       Stmt head = basicBlock.getHead();
 
-      stmtGraph.removeExceptionalEdge(
+      controlFlowGraph.removeExceptionalEdge(
           head, view.getIdentifierFactory().getClassType("java.lang.Throwable"));
       if (basicBlock.getSuccessors().size() == 0) {
-        stmtGraph.removeBlock(basicBlock);
+        controlFlowGraph.removeBlock(basicBlock);
       }
     }
   }

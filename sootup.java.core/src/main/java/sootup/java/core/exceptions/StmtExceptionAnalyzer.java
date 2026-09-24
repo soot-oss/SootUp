@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -47,7 +47,7 @@ public class StmtExceptionAnalyzer {
   }
 
   public ExceptionInferResult mightThrow(
-      @NonNull Stmt stmt, @NonNull StmtGraph<? extends BasicBlock<?>> graph) {
+      @NonNull Stmt stmt, @NonNull ControlFlowGraph<? extends BasicBlock<?>> graph) {
     if (stmt instanceof JThrowStmt) {
       return mightThrowExplicitly((JThrowStmt) stmt, graph);
     } else {
@@ -56,7 +56,7 @@ public class StmtExceptionAnalyzer {
   }
 
   public ExceptionInferResult mightThrowExplicitly(
-      @NonNull JThrowStmt throwStmt, @NonNull StmtGraph<? extends BasicBlock<?>> graph) {
+      @NonNull JThrowStmt throwStmt, @NonNull ControlFlowGraph<? extends BasicBlock<?>> graph) {
     Immediate throwExpression = throwStmt.getOp();
     if (!(throwExpression instanceof Local)) {
       throw new IllegalStateException(
@@ -84,7 +84,7 @@ public class StmtExceptionAnalyzer {
   }
 
   private Type findPreciserType(
-      @NonNull Local local, @NonNull StmtGraph<? extends BasicBlock<?>> graph) {
+      @NonNull Local local, @NonNull ControlFlowGraph<? extends BasicBlock<?>> graph) {
     Type preciserType = null;
     Set<AbstractDefinitionStmt> defStmtsOfLocal =
         graph.getStmts().stream()

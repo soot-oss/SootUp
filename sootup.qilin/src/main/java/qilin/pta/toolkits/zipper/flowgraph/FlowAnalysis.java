@@ -28,16 +28,18 @@ public class FlowAnalysis {
 
   private Type currentType;
   private Set<VarNode> inVars;
-  private Set<Node> outNodes;
-  private Set<Node> visitedNodes;
-  private Map<Node, Set<Edge>> wuEdges;
-  private ConcurrentDirectedGraphImpl<Node> pollutionFlowGraph;
-  private Reachability<Node> reachability;
+  private Set<PagNode> outNodes;
+  private Set<PagNode> visitedNodes;
+  private Map<PagNode, Set<Edge>> wuEdges;
+  private ConcurrentDirectedGraphImpl<PagNode> pollutionFlowGraph;
+  private Reachability<PagNode> reachability;
+  private final ZOAG oag;
 
-  public FlowAnalysis(PTA pta, PotentialContextElement pce, ObjectFlowGraph ofg) {
+  public FlowAnalysis(PTA pta, PotentialContextElement pce, ObjectFlowGraph ofg, ZOAG oag) {
     this.pta = pta;
     this.pce = pce;
     this.objectFlowGraph = ofg;
+    this.oag = oag;
   }
 
   public void initialize(Type type, Set<SootMethod> inms, Set<SootMethod> outms) {
@@ -74,7 +76,7 @@ public class FlowAnalysis {
       Set<SootMethod> outMethods = new HashSet<>();
       for (VarNode param : ToolUtil.getParameters(pta.getPag(), startMethod)) {
         if (param != null) {
-          for (Node outNode : outNodes) {
+          for (PagNode outNode : outNodes) {
             if (reachability.reachableNodesFrom(param).contains(outNode)) {
               LocalVarNode outVarNode = (LocalVarNode) outNode;
               outMethods.add(outVarNode.getMethod());
@@ -87,9 +89,9 @@ public class FlowAnalysis {
     }
   }
 
-  public Set<Node> getFlowNodes() {
-    Set<Node> results = new HashSet<>();
-    for (Node outNode : outNodes) {
+  public Set<PagNode> getFlowNodes() {
+    Set<PagNode> results = new HashSet<>();
+    for (PagNode outNode : outNodes) {
       if (pollutionFlowGraph.allNodes().contains(outNode)) {
         results.addAll(reachability.nodesReach(outNode));
       }
@@ -103,13 +105,13 @@ public class FlowAnalysis {
 
   public int numberOfPFGEdges() {
     int nrEdges = 0;
-    for (Node node : pollutionFlowGraph.allNodes()) {
+    for (PagNode node : pollutionFlowGraph.allNodes()) {
       nrEdges += pollutionFlowGraph.succsOf(node).size();
     }
     return nrEdges;
   }
 
-  public ConcurrentDirectedGraphImpl<Node> getPFG() {
+  public ConcurrentDirectedGraphImpl<PagNode> getPFG() {
     return pollutionFlowGraph;
   }
 
@@ -124,7 +126,7 @@ public class FlowAnalysis {
   }
 
   // a bit more complicated than the algorithm in TOPLAS'20
-  private void dfs(Node node) {
+  private void dfs(PagNode node) {
     if (Global.isDebug()) {
       System.out.println(color(ANSIColor.BLUE, "Node ") + node);
     }
@@ -214,7 +216,7 @@ public class FlowAnalysis {
                       .forEach(e -> addWUEdge(next, e));
                 }
                 nextEdges.add(edge);
-              } else if (pce.allocateesOf(currentType).contains(base)) {
+              } else if (oag.getAllocateesOf(currentType).contains(base)) {
                 // Optimization, similar as above.
                 if (Global.isEnableWrappedFlow()) {
                   Set<VarNode> r = new HashSet<>();
@@ -235,7 +237,7 @@ public class FlowAnalysis {
                           });
                   Iterator<VarNode> it = r.iterator();
                   if (it.hasNext()) {
-                    Node assigned = r.iterator().next();
+                    PagNode assigned = r.iterator().next();
                     if (assigned != null) {
                       Edge e = new Edge(Kind.WRAPPED_FLOW, next, assigned);
                       addWUEdge(next, e);
@@ -253,14 +255,14 @@ public class FlowAnalysis {
         }
       }
       for (Edge nextEdge : nextEdges) {
-        Node nextNode = nextEdge.getTarget();
+        PagNode nextNode = nextEdge.getTarget();
         pollutionFlowGraph.addEdge(node, nextNode);
         dfs(nextNode);
       }
     }
   }
 
-  private void addWUEdge(Node sourceNode, Edge edge) {
+  private void addWUEdge(PagNode sourceNode, Edge edge) {
     wuEdges.computeIfAbsent(sourceNode, k -> new HashSet<>()).add(edge);
   }
 
@@ -276,7 +278,7 @@ public class FlowAnalysis {
    * @param node
    * @return out edges of node from OFG, and wuEdges, if present
    */
-  private Set<Edge> outEdgesOf(Node node) {
+  private Set<Edge> outEdgesOf(PagNode node) {
     Set<Edge> outEdges = objectFlowGraph.outEdgesOf(node);
     if (wuEdges.containsKey(node)) {
       outEdges = new HashSet<>(outEdges);
@@ -288,7 +290,7 @@ public class FlowAnalysis {
   private void outputPollutionFlowGraphSize() {
     int nrNodes = pollutionFlowGraph.allNodes().size();
     int nrEdges = 0;
-    for (Node node : pollutionFlowGraph.allNodes()) {
+    for (PagNode node : pollutionFlowGraph.allNodes()) {
       nrEdges += pollutionFlowGraph.succsOf(node).size();
     }
     System.out.printf("#Size of PFG of %s: %d nodes, %d edges.\n", currentType, nrNodes, nrEdges);

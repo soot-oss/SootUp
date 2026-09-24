@@ -32,7 +32,7 @@ import org.jf.dexlib2.iface.instruction.formats.PackedSwitchPayload;
 import org.jf.dexlib2.iface.instruction.formats.SparseSwitchPayload;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.BranchingStmt;
@@ -67,7 +67,7 @@ public abstract class SwitchInstruction extends DexLibAbstractInstruction
 
   @Override
   public void jimplify(DexBody body) {
-    markerUnit = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    markerUnit = Jimple.newNopStmt(new SimpleStmtPositionInfo(lineNumber));
     setStmt(markerUnit);
     body.add(markerUnit);
     body.addDeferredJimplification(this);

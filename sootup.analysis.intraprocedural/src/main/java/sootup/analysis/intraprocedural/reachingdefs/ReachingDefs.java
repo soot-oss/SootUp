@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.analysis.intraprocedural.ForwardFlowAnalysis;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -35,13 +35,14 @@ import sootup.core.jimple.common.stmt.Stmt;
 public class ReachingDefs {
   private final Map<Stmt, List<Stmt>> reachingDefs;
 
-  public ReachingDefs(StmtGraph<? extends BasicBlock<?>> graph) {
+  public ReachingDefs(ControlFlowGraph<? extends BasicBlock<?>> graph) {
     this.reachingDefs = new HashMap<>();
 
     ReachingDefsAnalysis analysis = new ReachingDefsAnalysis(graph);
 
     for (Stmt stmt : graph.getStmts()) {
-      if (!stmt.getUses().findAny().isPresent()) continue;
+      List<Value> uses = stmt.getUses();
+      if (uses.isEmpty()) continue;
 
       Set<VariableDefinition> inset = analysis.getFlowBefore(stmt);
       reachingDefs.put(stmt, new ArrayList<>());
@@ -50,7 +51,7 @@ public class ReachingDefs {
         Value definedVar = def.getValue();
         Optional<Stmt> definingStmt = def.getStmt();
 
-        stmt.getUses()
+        uses.stream()
             .filter(
                 usedVar ->
                     definedVar.equivTo(usedVar)
@@ -67,8 +68,8 @@ public class ReachingDefs {
 
   static class ReachingDefsAnalysis extends ForwardFlowAnalysis<Set<VariableDefinition>> {
 
-    /** Construct the analysis from StmtGraph. */
-    <B extends BasicBlock<B>> ReachingDefsAnalysis(StmtGraph<B> graph) {
+    /** Construct the analysis from ControlFlowGraph. */
+    <B extends BasicBlock<B>> ReachingDefsAnalysis(ControlFlowGraph<B> graph) {
       super(graph);
       execute();
     }

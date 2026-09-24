@@ -6,10 +6,7 @@ Only the latest version of this project receives security updates. Please make s
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 2.0.0   | :white_check_mark: |
-| 1.3.0   | :x:                |
-| 1.2.0   | :x:                |
-| 1.1.X   | :x:                |
+| 3.0.0   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 

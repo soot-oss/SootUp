@@ -11,12 +11,10 @@ import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.interceptors.LocalSplitter;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JrtFileSystemAnalysisInputLocation;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public class LocalSplitterTest {
@@ -33,7 +31,7 @@ public class LocalSplitterTest {
   }
 
   private Body getBody(String methodName) {
-    ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
+    ClassType type = view.getIdentifierFactory().getClassType("LocalSplitterTarget");
     SootMethod sootMethod =
         view.getClass(type).get().getMethods().stream()
             .filter(method -> method.getName().equals(methodName))
@@ -86,7 +84,7 @@ public class LocalSplitterTest {
             + "\n"
             + "return;";
 
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -112,7 +110,7 @@ public class LocalSplitterTest {
             + "\n"
             + "return;";
 
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -143,7 +141,7 @@ public class LocalSplitterTest {
             + "\n"
             + "label2:\n"
             + "return l1#1;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -180,7 +178,7 @@ public class LocalSplitterTest {
             + "\n"
             + "label2:\n"
             + "return l1#3;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -227,7 +225,7 @@ public class LocalSplitterTest {
             + "\n"
             + "label4:\n"
             + "return l1#5;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -268,7 +266,7 @@ public class LocalSplitterTest {
             + "\n"
             + "label3:\n"
             + "return l1#2;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -299,7 +297,7 @@ public class LocalSplitterTest {
             + "\n"
             + "label2:\n"
             + "return l1;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -343,7 +341,7 @@ public class LocalSplitterTest {
             + "virtualinvoke $stack6.<java.io.PrintStream: void println(java.lang.Object)>(l1#1);\n"
             + "\n"
             + "return;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 
   @Test
@@ -406,6 +404,6 @@ public class LocalSplitterTest {
             + "\n"
             + " catch java.lang.Throwable from label1 to label2 with label3;\n"
             + " catch java.lang.Throwable from label5 to label6 with label7;";
-    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
   }
 }

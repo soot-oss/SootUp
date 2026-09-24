@@ -223,9 +223,11 @@ public class ExceptionInferExprVisitor extends AbstractExprVisitor {
 
   @Override
   public void caseNewArrayExpr(@NonNull JNewArrayExpr expr) {
-    if (expr.getBaseType() instanceof ReferenceType) {
-      result = new ExceptionInferResult(ExceptionInferResult.ErrorType.RESOLVE_CLASS_ERROR);
-    }
+    // only a reference base type has to be resolved, a primitive one cannot cause a LinkageError
+    result =
+        expr.getBaseType() instanceof ReferenceType
+            ? new ExceptionInferResult(ExceptionInferResult.ErrorType.RESOLVE_CLASS_ERROR)
+            : ExceptionInferResult.createEmptyException();
     Value count = expr.getSize();
     if (count instanceof Local) {
       result =

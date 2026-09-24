@@ -41,7 +41,7 @@ public class TrapsValidator implements BodyValidator {
   public List<ValidationException> validate(Body body, View view) {
     List<ValidationException> exceptions = new ArrayList<>();
     BriefStmtPrinter stmtPrinter = new BriefStmtPrinter();
-    stmtPrinter.buildTraps(body.getStmtGraph());
+    stmtPrinter.buildTraps(body.getControlFlowGraph());
     Iterable<Trap> traps = stmtPrinter.getTraps();
 
     List<Stmt> stmts = body.getStmts();

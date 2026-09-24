@@ -63,7 +63,7 @@ public class IdentityStmtsValidator implements BodyValidator {
     // TODO: enforce stmts[thisIdentityStmt?, parameterRefIdentityStmt*, ..., returnStmt], too -> or
     // better create a preamble in the graph so that its not possible to insert it differently
 
-    for (Stmt stmt : body.getStmtGraph().getNodes()) {
+    for (Stmt stmt : body.getControlFlowGraph().getNodes()) {
       if (stmt instanceof JIdentityStmt) {
         JIdentityStmt identityStmt = (JIdentityStmt) stmt;
         if (identityStmt.getRightOp() instanceof JThisRef) {

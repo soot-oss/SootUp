@@ -2,7 +2,7 @@ package sootup.java.bytecode.frontend.interceptors;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
@@ -28,12 +28,13 @@ import sootup.java.core.views.JavaView;
 public class EmptySwitchEliminatorTest {
 
   // Preparation
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
   JavaClassType intType = factory.getClassType("int");
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
-      new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
+      new JavaIdentifierFactory()
+          .getMethodSignature(classType, "test", VoidType.getInstance(), Collections.emptyList());
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
 
   // build locals
@@ -63,7 +64,7 @@ public class EmptySwitchEliminatorTest {
     eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedEmptySwitchBody();
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    AssertUtils.assertControlFlowGraphEquiv(expectedBody, builder.build());
   }
 
   private Body createEmptySwitchBody() {
@@ -79,15 +80,15 @@ public class EmptySwitchEliminatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
 
     builder.setLocals(locals);
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     // build stmtsGraph for the builder
-    stmtGraph.putEdge(startingStmt, stmt1);
-    stmtGraph.putEdge(stmt1, sw);
-    stmtGraph.putEdge(sw, 0, defaultStmt);
-    stmtGraph.putEdge(defaultStmt, ret);
+    controlFlowGraph.putEdge(startingStmt, stmt1);
+    controlFlowGraph.putEdge(stmt1, sw);
+    controlFlowGraph.putEdge(sw, 0, defaultStmt);
+    controlFlowGraph.putEdge(defaultStmt, ret);
 
     // set startingStmt
-    stmtGraph.setStartingStmt(startingStmt);
+    controlFlowGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -109,14 +110,14 @@ public class EmptySwitchEliminatorTest {
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    stmtGraph.putEdge(startingStmt, stmt1);
-    stmtGraph.putEdge(stmt1, gotoStmt);
-    stmtGraph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, defaultStmt);
-    stmtGraph.putEdge(defaultStmt, ret);
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    controlFlowGraph.putEdge(startingStmt, stmt1);
+    controlFlowGraph.putEdge(stmt1, gotoStmt);
+    controlFlowGraph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, defaultStmt);
+    controlFlowGraph.putEdge(defaultStmt, ret);
 
     // set startingStmt
-    stmtGraph.setStartingStmt(startingStmt);
+    controlFlowGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());

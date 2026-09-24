@@ -5,12 +5,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sootup.core.cache.provider.FullCacheProvider;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.types.ClassType;
@@ -81,6 +84,37 @@ public class JavaViewTest {
             .sorted(Comparator.comparing(Type::toString))
             .collect(Collectors.toList()),
         this.signatures);
+  }
+
+  /** Counts how often the input location is asked to resolve a class source. */
+  private static class CountingInputLocation extends EagerInputLocation {
+    int lookups = 0;
+
+    @Override
+    public @NonNull Optional<SootClassSource> getClassSource(
+        @NonNull ClassType type, sootup.core.views.View view) {
+      lookups++;
+      return super.getClassSource(type, view);
+    }
+  }
+
+  /**
+   * A type that no input location can provide must only be looked up once - {@link
+   * JavaView#getClass} memoizes the absence. Without that, every repeated lookup re-probes every
+   * input location, which dominates call graph construction against an incomplete classpath. This
+   * counts the lookups rather than timing them, so it is not sensitive to machine speed.
+   */
+  @Test
+  public void testAbsentClassIsResolvedOnlyOnce() {
+    CountingInputLocation inputLocation = new CountingInputLocation();
+    JavaView view = new JavaView(inputLocation);
+    ClassType absent = view.getIdentifierFactory().getClassType("com.example.NonExistingClass");
+
+    for (int i = 0; i < 20; i++) {
+      assertFalse(view.getClass(absent).isPresent());
+    }
+
+    assertEquals(1, inputLocation.lookups, "absent type must only be resolved once");
   }
 
   @Test

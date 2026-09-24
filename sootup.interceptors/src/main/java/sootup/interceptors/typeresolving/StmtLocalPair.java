@@ -47,4 +47,17 @@ public class StmtLocalPair {
   public String toString() {
     return "(" + stmt + "," + local + ")";
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof StmtLocalPair other) {
+      return stmt.equals(other.stmt) && local.equals(other.local);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return stmt.hashCode() + local.hashCode();
+  }
 }

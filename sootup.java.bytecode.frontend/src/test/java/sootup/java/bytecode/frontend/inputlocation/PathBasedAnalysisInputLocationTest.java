@@ -27,8 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -53,6 +55,28 @@ import sootup.java.core.views.JavaView;
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
+  void testResourceLeaks() throws IOException {
+    Path path = Paths.get("src/test/resources/multi-release-jar/mrjar.jar");
+    try (FileSystem fileSystem =
+        FileSystems.newFileSystem(Objects.requireNonNull(path), (ClassLoader) null)) {
+
+      assertTrue(fileSystem.isOpen());
+
+      try (Stream<Path> stream = Files.walk(fileSystem.getPath("."))) {
+        stream
+            .filter(
+                p -> Files.isRegularFile(p) && Files.isReadable(p) && p.toString().endsWith(".jar"))
+            .map(p -> p)
+            .forEach(
+                p -> {
+                  System.out.println(p);
+                });
+      }
+      assertTrue(fileSystem.isOpen());
+    }
+  }
+
+  @Test
   public void testSingleClass() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         new ClassFileBasedAnalysisInputLocation(cls, "", SourceType.Application);
@@ -74,7 +98,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   public void testSingleClassWPackageName() {
     AnalysisInputLocation pathBasedNamespace =
         new ClassFileBasedAnalysisInputLocation(
-            Paths.get("../shared-test-resources/ClassWithPackageName.class"),
+            Paths.get("src/test/resources/single-file/ClassWithPackageName.class"),
             "ClassesPackageName",
             SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();
@@ -103,7 +127,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testClassInWar() {
 
-    String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
+    String warFile = "src/test/resources/java-warApp/dummyWarApp.war";
 
     assertTrue(new File(warFile).exists(), "File " + warFile + " not found.");
 

@@ -31,10 +31,7 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
 
   public MethodSignature getMainMethodSignature() {
     return identifierFactory.getMethodSignature(
-        getDeclaredClassSignature(),
-        "main",
-        "void",
-        Collections.singletonList("java.lang.String[]"));
+        getDeclaredClassSignature(), identifierFactory.getMainSubSignature());
   }
 
   public MethodSignature getEnumConstructorSignature() {

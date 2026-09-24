@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.BranchingStmt;
@@ -37,8 +37,8 @@ public class UnusedLocalEliminatorTest {
 
     Set<Local> originalLocals = originalBody.getLocals();
     Set<Local> processedLocals = processedBody.getLocals();
-    JavaClassType objectType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
-    JavaClassType stringType = JavaIdentifierFactory.getInstance().getClassType("java.lang.String");
+    JavaClassType objectType = new JavaIdentifierFactory().getClassType("java.lang.Object");
+    JavaClassType stringType = new JavaIdentifierFactory().getClassType("java.lang.String");
 
     assertEquals(4, originalLocals.size());
     assertEquals(2, processedLocals.size());
@@ -58,7 +58,7 @@ public class UnusedLocalEliminatorTest {
   }
 
   private static Body.BodyBuilder createBody(boolean unusedLocals) {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
@@ -75,7 +75,7 @@ public class UnusedLocalEliminatorTest {
     }
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str", factory), noPositionInfo);
     FallsThroughStmt bToA =
         JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
@@ -83,14 +83,14 @@ public class UnusedLocalEliminatorTest {
 
     final Body.BodyBuilder builder = Body.builder();
     locals.forEach(builder::addLocal);
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    stmtGraph.setStartingStmt(strToA);
-    stmtGraph.putEdge(strToA, jump);
-    stmtGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
-    stmtGraph.putEdge(bToA, ret);
+    final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
+    controlFlowGraph.setStartingStmt(strToA);
+    controlFlowGraph.putEdge(strToA, jump);
+    controlFlowGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
+    controlFlowGraph.putEdge(bToA, ret);
 
     builder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
+        new JavaIdentifierFactory()
             .getMethodSignature("a.b.c", "test", "void", Collections.emptyList()));
     return builder;
   }
