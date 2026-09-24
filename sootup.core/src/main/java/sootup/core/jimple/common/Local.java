@@ -137,8 +137,8 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
     // Seed the search queue with predecessors of 'stmt' rather than 'stmt' itself.
     // When a statement both uses and defines the same local (e.g. `x = x + 1`), starting at `stmt`
     // immediately matched `stmt` as a definition, short-circuiting and erroneously reporting that
-    // `x` is defined by `stmt` itself before it is evaluated. Seeding with predecessors searches the
-    // reaching definitions flowing into `stmt`.
+    // `x` is defined by `stmt` itself before it is evaluated. Seeding with predecessors searches
+    // the reaching definitions flowing into `stmt`.
     if (graph.containsNode(stmt)) {
       queue.addAll(graph.predecessors(stmt));
     }
