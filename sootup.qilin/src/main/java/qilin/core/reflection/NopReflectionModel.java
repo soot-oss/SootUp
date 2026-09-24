@@ -21,8 +21,10 @@ package qilin.core.reflection;
 import java.util.Collection;
 import java.util.Collections;
 import qilin.core.PTAScene;
+import qilin.core.pag.PAG;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
 
 /*
  * This is an empty reflection model which does nothing for reflection statements.
@@ -30,8 +32,8 @@ import sootup.core.jimple.common.stmt.Stmt;
 
 public class NopReflectionModel extends ReflectionModel {
 
-  public NopReflectionModel(PTAScene scene) {
-    super(scene);
+  public NopReflectionModel(PTAScene scene, PAG pag) {
+    super(scene, pag);
   }
 
   @Override
@@ -45,12 +47,12 @@ public class NopReflectionModel extends ReflectionModel {
   }
 
   @Override
-  Collection<Stmt> transformConstructorNewInstance(InvokableStmt s) {
+  Collection<Stmt> transformConstructorNewInstance(Body.BodyBuilder builder, InvokableStmt s) {
     return Collections.emptySet();
   }
 
   @Override
-  Collection<Stmt> transformMethodInvoke(InvokableStmt s) {
+  Collection<Stmt> transformMethodInvoke(Body.BodyBuilder builder, InvokableStmt s) {
     return Collections.emptySet();
   }
 
@@ -70,7 +72,7 @@ public class NopReflectionModel extends ReflectionModel {
   }
 
   @Override
-  Collection<Stmt> transformArrayGet(InvokableStmt s) {
+  Collection<Stmt> transformArrayGet(Body.BodyBuilder builder, InvokableStmt s) {
     return Collections.emptySet();
   }
 

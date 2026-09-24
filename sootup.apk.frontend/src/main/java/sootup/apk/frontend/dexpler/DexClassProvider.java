@@ -25,24 +25,34 @@ package sootup.apk.frontend.dexpler;
 import java.nio.file.Path;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
-public class DexClassProvider implements ClassProvider {
+public class DexClassProvider implements PathbasedClassProvider {
   @NonNull private final View view;
+  @NonNull private final DexLibWrapper dexLibWrapper;
 
-  public DexClassProvider(@NonNull View view) {
+  public DexClassProvider(@NonNull View view, @NonNull DexLibWrapper dexLibWrapper) {
     this.view = view;
+    this.dexLibWrapper = dexLibWrapper;
   }
 
   @Override
   public Optional<SootClassSource> createClassSource(
-      AnalysisInputLocation inputLocation, Path sourcePath, ClassType classSignature) {
-    return Optional.of(new DexClassSource(view, inputLocation, classSignature, sourcePath));
+      @NonNull AnalysisInputLocation inputLocation,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classSignature) {
+    DexLibWrapper.ClassInformation classInformation =
+        dexLibWrapper.getClassInformation(classSignature);
+    if (classInformation == null) {
+      return Optional.empty();
+    }
+    return Optional.of(
+        new DexClassSource(view, inputLocation, classSignature, sourcePath, classInformation));
   }
 
   @Override

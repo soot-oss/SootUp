@@ -25,14 +25,12 @@ package sootup.apk.frontend.instruction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.jf.dexlib2.dexbacked.instruction.DexBackedPackedSwitchPayload;
-import org.jf.dexlib2.dexbacked.instruction.DexBackedSparseSwitchPayload;
 import org.jf.dexlib2.iface.instruction.*;
 import org.jf.dexlib2.iface.instruction.formats.PackedSwitchPayload;
 import org.jf.dexlib2.iface.instruction.formats.SparseSwitchPayload;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.BranchingStmt;
@@ -67,16 +65,16 @@ public abstract class SwitchInstruction extends DexLibAbstractInstruction
 
   @Override
   public void jimplify(DexBody body) {
-    markerUnit = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    markerUnit = Jimple.newNopStmt(new SimpleStmtPositionInfo(lineNumber));
     setStmt(markerUnit);
     body.add(markerUnit);
     body.addDeferredJimplification(this);
   }
 
   public void computeLookUpValues(Instruction targetData) {
-    if (targetData instanceof DexBackedSparseSwitchPayload) {
+    if (targetData instanceof SparseSwitchPayload) {
       switchPayload = (SparseSwitchPayload) targetData;
-    } else if (targetData instanceof DexBackedPackedSwitchPayload) {
+    } else if (targetData instanceof PackedSwitchPayload) {
       switchPayload = (PackedSwitchPayload) targetData;
     }
     assert switchPayload != null;
@@ -106,10 +104,10 @@ public abstract class SwitchInstruction extends DexLibAbstractInstruction
 
   public void addBranchingStmts(DexBody body) {
     computeBranchingStmts(body);
-    if (targetData instanceof DexBackedPackedSwitchPayload) {
+    if (targetData instanceof PackedSwitchPayload) {
       body.addBranchingStmt((BranchingStmt) switchStmt, targets);
       body.addBranchingStmt((BranchingStmt) switchStmt, Collections.singletonList(defaultTarget));
-    } else if (targetData instanceof DexBackedSparseSwitchPayload) {
+    } else if (targetData instanceof SparseSwitchPayload) {
       body.addBranchingStmt((BranchingStmt) switchStmt, targets);
     }
   }

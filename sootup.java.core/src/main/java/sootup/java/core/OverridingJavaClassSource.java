@@ -149,8 +149,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       @NonNull Position position,
       @NonNull Path sourcePath,
       @NonNull ClassType classType,
-      @NonNull AnalysisInputLocation srcNamespace) {
-    super(srcNamespace, classType, sourcePath);
+      @NonNull AnalysisInputLocation inputLocation) {
+    super(inputLocation, classType, sourcePath);
 
     this.delegate = null;
     this.overriddenSootMethods = sootMethods;

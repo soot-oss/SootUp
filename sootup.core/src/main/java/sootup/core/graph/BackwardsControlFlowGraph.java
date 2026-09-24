@@ -55,7 +55,7 @@ public class BackwardsControlFlowGraph<V extends BasicBlock<V>>
   @Override
   public List<? extends BasicBlock<?>> getBlocksSorted() {
     PostOrderBlockTraversal traversal = new PostOrderBlockTraversal(backingGraph);
-    return traversal.getBlocksSorted();
+    return traversal.getBlockTraversal();
   }
 
   @NonNull

@@ -24,10 +24,13 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 
 import sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode;
 
+/** Abstract base class for AST (Abstract Syntax Tree) edges in a property graph. */
 public abstract class AbstAstEdge extends PropertyGraphEdge {
+  /** Creates an AST edge between the given source and destination nodes. */
   public AbstAstEdge(PropertyGraphNode source, PropertyGraphNode destination) {
     super(source, destination);
   }
 
+  /** Returns the label identifying this AST edge type. */
   public abstract String getLabel();
 }

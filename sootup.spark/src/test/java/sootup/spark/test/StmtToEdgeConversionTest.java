@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import lombok.val;
+import org.graph4j.Digraph;
+import org.graph4j.Edge;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -25,6 +27,7 @@ import sootup.spark.PAG;
 import sootup.spark.PAGEdge;
 import sootup.spark.SparkOptions;
 import sootup.spark.node.InstanceFieldRefNode;
+import sootup.spark.node.Node;
 
 public class StmtToEdgeConversionTest {
 
@@ -48,8 +51,8 @@ public class StmtToEdgeConversionTest {
     val methodPAG = new PAG(SparkOptions.defaultOptions());
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.ALLOCATION);
 
-    val source = methodPAG.getDelegate().getEdgeSource(edge);
-    val target = methodPAG.getDelegate().getEdgeTarget(edge);
+    val source = methodPAG.getDelegate().getVertexLabel(edge.source());
+    val target = methodPAG.getDelegate().getVertexLabel(edge.target());
     assertEquals(SparkTestUtil.var(aType, "a", methodSig), target);
     assertEquals(SparkTestUtil.alloc(aType, 1L, methodSig), source);
   }
@@ -61,8 +64,8 @@ public class StmtToEdgeConversionTest {
     val methodPAG = new PAG(SparkOptions.defaultOptions());
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.ASSIGNMENT);
 
-    val source = methodPAG.getDelegate().getEdgeSource(edge);
-    val target = methodPAG.getDelegate().getEdgeTarget(edge);
+    val source = methodPAG.getDelegate().getVertexLabel(edge.source());
+    val target = methodPAG.getDelegate().getVertexLabel(edge.target());
     assertEquals(SparkTestUtil.var(aType, "b", methodSig), target);
     assertEquals(SparkTestUtil.var(aType, "a", methodSig), source);
   }
@@ -75,8 +78,8 @@ public class StmtToEdgeConversionTest {
     val methodPAG = new PAG(SparkOptions.defaultOptions());
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.LOAD);
 
-    val source = methodPAG.getDelegate().getEdgeSource(edge);
-    val target = methodPAG.getDelegate().getEdgeTarget(edge);
+    val source = methodPAG.getDelegate().getVertexLabel(edge.source());
+    val target = methodPAG.getDelegate().getVertexLabel(edge.target());
     val expectedSource =
         InstanceFieldRefNode.builder()
             .type(fieldSig.getType())
@@ -96,8 +99,8 @@ public class StmtToEdgeConversionTest {
     val methodPAG = new PAG(SparkOptions.defaultOptions());
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.STORE);
 
-    val source = methodPAG.getDelegate().getEdgeSource(edge);
-    val target = methodPAG.getDelegate().getEdgeTarget(edge);
+    val source = methodPAG.getDelegate().getVertexLabel(edge.source());
+    val target = methodPAG.getDelegate().getVertexLabel(edge.target());
     val expectedTarget =
         InstanceFieldRefNode.builder()
             .type(fieldSig.getType())
@@ -109,7 +112,7 @@ public class StmtToEdgeConversionTest {
     assertEquals(SparkTestUtil.var(aType, "b", methodSig), source);
   }
 
-  private PAGEdge doAssignment(Value right, LValue left, PAG methodPAG, PAGEdge.EdgeType edgeType) {
+  private Edge doAssignment(Value right, LValue left, PAG methodPAG, PAGEdge.EdgeType edgeType) {
     JAssignStmt assignStmt = new JAssignStmt(left, right, StmtPositionInfo.getNoStmtPositionInfo());
     MethodPAGStmtVisitor stmtVisitor =
         MethodPAGStmtVisitor.builder()
@@ -118,12 +121,16 @@ public class StmtToEdgeConversionTest {
             .methodSignature(methodSig)
             .build();
     assignStmt.accept(stmtVisitor);
-    val edgeOpt =
-        methodPAG.getDelegate().edgeSet().stream()
-            .filter(PAGEdge.class::isInstance)
-            .filter(e -> edgeType.equals(e.getEdgeType()))
-            .findFirst();
-    assertTrue(edgeOpt.isPresent());
-    return edgeOpt.get();
+    Edge foundEdge = null;
+    Digraph<Node, PAGEdge> graph = methodPAG.getDelegate();
+    for (Edge edge : graph.edges()) {
+      PAGEdge e = graph.getEdgeLabel(edge.source(), edge.target());
+      if (edgeType.equals(e.getEdgeType())) {
+        foundEdge = edge;
+        break;
+      }
+    }
+    assertTrue(foundEdge != null);
+    return foundEdge;
   }
 }

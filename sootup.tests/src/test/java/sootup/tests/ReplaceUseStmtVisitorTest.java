@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
@@ -61,7 +60,7 @@ public class ReplaceUseStmtVisitorTest {
     expectedUses.add(op2);
 
     boolean isExpected = false;
-    List<Value> collect = newStmt.getUses().collect(Collectors.toList());
+    List<Value> collect = newStmt.getUses();
     for (int i = 0; i < 3; i++) {
       isExpected = collect.get(i).equivTo(expectedUses.get(i));
       if (!isExpected) {
@@ -80,7 +79,7 @@ public class ReplaceUseStmtVisitorTest {
     expectedUses.set(1, newOp);
 
     isExpected = false;
-    collect = newStmt.getUses().collect(Collectors.toList());
+    collect = newStmt.getUses();
     for (int i = 0; i < 3; i++) {
       isExpected = collect.get(i).equivTo(expectedUses.get(i));
       if (!isExpected) {
@@ -97,7 +96,7 @@ public class ReplaceUseStmtVisitorTest {
     expectedUses.clear();
     expectedUses.add(newOp);
 
-    assertEquals(expectedUses, stmt.getUses().collect(Collectors.toList()));
+    assertEquals(expectedUses, stmt.getUses());
   }
 
   /** Test use replacing in case JInvokeStmt and JIfStmt Here JInvokeStmt is as an example */
@@ -119,7 +118,7 @@ public class ReplaceUseStmtVisitorTest {
         JavaJimple.newSpecialInvokeExpr(newOp, methodeWithOutParas, Collections.emptyList()));
 
     boolean isExpected = false;
-    List<Value> collect = newStmt.getUses().collect(Collectors.toList());
+    List<Value> collect = newStmt.getUses();
     for (int i = 0; i < 2; i++) {
       isExpected = collect.get(i).equivTo(expectedUses.get(i));
       if (!isExpected) {
@@ -139,6 +138,6 @@ public class ReplaceUseStmtVisitorTest {
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newOp);
-    assertEquals(expectedUses, newStmt.getUses().collect(Collectors.toList()));
+    assertEquals(expectedUses, newStmt.getUses());
   }
 }

@@ -21,6 +21,8 @@ package sootup.java.bytecode.frontend.conversion;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import static org.objectweb.asm.Opcodes.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -33,7 +35,6 @@ import java.util.stream.StreamSupport;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -44,13 +45,11 @@ import org.objectweb.asm.util.TraceMethodVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.frontend.ResolveException;
-import sootup.core.frontend.SootClassSource;
-import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.FieldModifier;
-import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.core.types.UnknownType;
 import sootup.core.types.VoidType;
 import sootup.java.core.*;
 import sootup.java.core.language.JavaJimple;
@@ -63,56 +62,6 @@ public final class AsmUtil {
   private AsmUtil() {}
 
   public static final int SUPPORTED_ASM_OPCODE = Opcodes.ASM9;
-
-  /**
-   * Initializes a class node.
-   *
-   * @param classSource The source.
-   * @param classNode The node to initialize
-   * @return the actual class signature found in the compilation unit
-   */
-  protected static Optional<String> readClassName(
-      @NonNull final Path classSource, @NonNull final ClassVisitor classNode) {
-    try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
-      ClassReader classReader = new ClassReader(sourceFileInputStream);
-      classReader.accept(classNode, ClassReader.SKIP_FRAMES);
-      return Optional.of(classReader.getClassName().replace('/', '.'));
-    } catch (IOException exception) {
-      logger.warn("Cannot create class source for {}", classSource, exception);
-    } catch (IllegalArgumentException exception) {
-      logger.warn("Cannot create class source for {}", classSource, exception);
-    }
-    return Optional.empty();
-  }
-
-  public static SootClassSource createClassSource(
-      @NonNull final AnalysisInputLocation analysisInputLocation,
-      @NonNull final Path sourcePath,
-      @NonNull final ClassType classType,
-      @NonNull final ClassNode classNode) {
-    if ((classNode.access & Opcodes.ACC_ANNOTATION) == Opcodes.ACC_ANNOTATION) {
-      return new AsmAnnotationClassSource(analysisInputLocation, sourcePath, classType, classNode);
-    }
-
-    AsmClassSource asmClassSource =
-        new AsmClassSource(analysisInputLocation, sourcePath, classType, classNode);
-    // copy and load the complete class at once into memory so the newly created asmClassSource can
-    // release the memory and structures from the asm library
-    return new OverridingJavaClassSource(
-        asmClassSource.getAnalysisInputLocation(),
-        asmClassSource.getSourcePath(),
-        asmClassSource.getClassType(),
-        asmClassSource.resolveSuperclass().orElse(null),
-        asmClassSource.resolveInterfaces(),
-        asmClassSource.resolveOuterClass().orElse(null),
-        asmClassSource.resolveFields(),
-        asmClassSource.resolveMethods(),
-        asmClassSource.resolvePosition(),
-        asmClassSource.resolveModifiers(),
-        asmClassSource.resolveAnnotations(),
-        Collections.emptyList(), // TODO! implement
-        Collections.emptyList());
-  }
 
   /**
    * Determines if a type is a dword type.
@@ -150,20 +99,8 @@ public final class AsmUtil {
     return modifierEnumSet;
   }
 
-  public static EnumSet<ModuleModifier> getModuleModifiers(int access) {
-    EnumSet<ModuleModifier> modifierEnumSet = EnumSet.noneOf(ModuleModifier.class);
-
-    // add all modifiers for which (access & ABSTRACT) =! 0
-    for (ModuleModifier modifier : ModuleModifier.values()) {
-      if ((access & modifier.getBytecode()) != 0) {
-        modifierEnumSet.add(modifier);
-      }
-    }
-    return modifierEnumSet;
-  }
-
   @NonNull
-  public static Collection<JavaClassType> asmIdToSignature(
+  public static Collection<JavaClassType> asmIdToSignatures(
       @Nullable Iterable<String> asmClassNames) {
     if (asmClassNames == null) {
       return Collections.emptyList();
@@ -232,28 +169,18 @@ public final class AsmUtil {
     if (desc.length() > 1) {
       return Optional.empty();
     }
-    switch (desc.charAt(0)) {
-      case 'Z':
-        return Optional.of(PrimitiveType.getBoolean());
-      case 'B':
-        return Optional.of(PrimitiveType.getByte());
-      case 'C':
-        return Optional.of(PrimitiveType.getChar());
-      case 'S':
-        return Optional.of(PrimitiveType.getShort());
-      case 'I':
-        return Optional.of(PrimitiveType.getInt());
-      case 'F':
-        return Optional.of(PrimitiveType.getFloat());
-      case 'J':
-        return Optional.of(PrimitiveType.getLong());
-      case 'D':
-        return Optional.of(PrimitiveType.getDouble());
-      case 'V':
-        return Optional.of(VoidType.getInstance());
-      default:
-    }
-    return Optional.empty();
+    return switch (desc.charAt(0)) {
+      case 'Z' -> Optional.of(PrimitiveType.getBoolean());
+      case 'B' -> Optional.of(PrimitiveType.getByte());
+      case 'C' -> Optional.of(PrimitiveType.getChar());
+      case 'S' -> Optional.of(PrimitiveType.getShort());
+      case 'I' -> Optional.of(PrimitiveType.getInt());
+      case 'F' -> Optional.of(PrimitiveType.getFloat());
+      case 'J' -> Optional.of(PrimitiveType.getLong());
+      case 'D' -> Optional.of(PrimitiveType.getDouble());
+      case 'V' -> Optional.of(VoidType.getInstance());
+      default -> Optional.empty();
+    };
   }
 
   /** Converts n types contained in desc to a list of Jimple Types */
@@ -420,5 +347,56 @@ public final class AsmUtil {
       throw new ResolveException("Error loading the module-descriptor", moduleInfoFile, e);
     }
     return moduleDescriptor;
+  }
+
+  /**
+   * Returns the primitive result type implied by a bytecode opcode, or {@link UnknownType} when the
+   * opcode does not carry type information (e.g. ALOAD, AALOAD, ASTORE).
+   *
+   * <p>Covers:
+   *
+   * <ul>
+   *   <li>var insns: ILOAD/ISTORE → int, LLOAD/LSTORE → long, FLOAD/FSTORE → float, DLOAD/DSTORE →
+   *       double
+   *   <li>arithmetic + negate (IADD–DNEG, opcodes 96–119): I/L/F/D in groups-of-4
+   *   <li>shift + bitwise (ISHL–LXOR, opcodes 120–131): even → int, odd → long
+   *   <li>comparison results (LCMP, FCMPL/G, DCMPL/G) → int
+   *   <li>ARRAYLENGTH → int
+   *   <li>primitive array loads: IALOAD → int, LALOAD → long, FALOAD → float, DALOAD → double,
+   *       BALOAD → byte, CALOAD → char, SALOAD → short
+   * </ul>
+   */
+  public static Type primitiveTypeFromOpcode(int op) {
+    if (op == ILOAD || op == ISTORE) return PrimitiveType.getInt();
+    if (op == LLOAD || op == LSTORE) return PrimitiveType.getLong();
+    if (op == FLOAD || op == FSTORE) return PrimitiveType.getFloat();
+    if (op == DLOAD || op == DSTORE) return PrimitiveType.getDouble();
+    // arithmetic and negate: opcodes 96–119, repeating I/L/F/D pattern every 4
+    if (op >= IADD && op <= DNEG) {
+      return switch ((op - IADD) % 4) {
+        case 0 -> PrimitiveType.getInt();
+        case 1 -> PrimitiveType.getLong();
+        case 2 -> PrimitiveType.getFloat();
+        default -> PrimitiveType.getDouble();
+      };
+    }
+    // shift and bitwise: opcodes 120–131, even → int, odd → long
+    if (op >= ISHL && op <= LXOR) {
+      return (op % 2 == 0) ? PrimitiveType.getInt() : PrimitiveType.getLong();
+    }
+    if (op == LCMP || op == FCMPL || op == FCMPG || op == DCMPL || op == DCMPG) {
+      return PrimitiveType.getInt();
+    }
+    if (op == ARRAYLENGTH) return PrimitiveType.getInt();
+    return switch (op) {
+      case IALOAD -> PrimitiveType.getInt();
+      case LALOAD -> PrimitiveType.getLong();
+      case FALOAD -> PrimitiveType.getFloat();
+      case DALOAD -> PrimitiveType.getDouble();
+      case BALOAD -> PrimitiveType.getByte();
+      case CALOAD -> PrimitiveType.getChar();
+      case SALOAD -> PrimitiveType.getShort();
+      default -> UnknownType.getInstance();
+    };
   }
 }

@@ -19,7 +19,6 @@
 package qilin.core.solver;
 
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.CallGraphBuilder;
 import qilin.core.builder.ExceptionHandler;
@@ -28,12 +27,17 @@ import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.Kind;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
-import qilin.core.sets.DoublePointsToSet;
-import qilin.core.sets.P2SetVisitor;
-import qilin.core.sets.PointsToSetInternal;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
+import qilin.util.PagQueries;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
+import qilin.util.sets.DoublePointsToSet;
+import qilin.util.sets.P2SetVisitor;
+import qilin.util.sets.PointsToSetInternal;
+import sootup.callgraph.scope.ExplorationVerdict;
+import sootup.callgraph.scope.VirtualCallResolver;
+import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -56,7 +60,7 @@ public class Solver extends Propagator {
   private final ExceptionHandler eh;
   private final ChunkedQueue<ExceptionThrowSite> throwSiteQueue = new ChunkedQueue<>();
   private final ChunkedQueue<VirtualCallSite> virtualCallSiteQueue = new ChunkedQueue<>();
-  private final ChunkedQueue<Node> edgeQueue = new ChunkedQueue<>();
+  private final ChunkedQueue<PagNode> edgeQueue = new ChunkedQueue<>();
 
   private final ChunkedQueue<ContextMethod> rmQueue = new ChunkedQueue<>();
 
@@ -72,7 +76,7 @@ public class Solver extends Propagator {
   @Override
   public void propagate() {
     final QueueReader<ContextMethod> newRMs = rmQueue.reader();
-    final QueueReader<Node> newPAGEdges = edgeQueue.reader();
+    final QueueReader<PagNode> newPAGEdges = edgeQueue.reader();
     final QueueReader<ExceptionThrowSite> newThrows = throwSiteQueue.reader();
     final QueueReader<VirtualCallSite> newCalls = virtualCallSiteQueue.reader();
     cgb.initReachableMethods();
@@ -112,21 +116,33 @@ public class Solver extends Propagator {
     while (newRMs.hasNext()) {
       ContextMethod momc = newRMs.next();
       SootMethod method = momc.method();
-      if (!PTAUtils.hasBody(method)) {
+      if (!pag.hasBody(method)) {
         continue;
       }
       MethodPAG mpag = pag.getMethodPAG(method);
       addToPAG(mpag, momc.context());
       // !FIXME in a context-sensitive pointer analysis, clinits in a method maybe added multiple
       // times.
-      if (CoreConfig.v().getPtaConfig().clinitMode == CoreConfig.ClinitMode.ONFLY) {
-        // add <clinit> find in the method to reachableMethods.
-        Iterator<SootMethod> it = mpag.triggeredClinits();
-        while (it.hasNext()) {
-          SootMethod sm = it.next();
-          cgb.injectCallEdge(
-              sm.getDeclaringClassType(), pta.parameterize(sm, pta.emptyContext()), Kind.CLINIT);
+      // add <clinit> found in the method to reachableMethods, subject to the configured
+      // VirtualCallResolver admission check. Qilin doesn't track the statement that triggered a
+      // given <clinit>, so a synthetic invoke stmt stands in for it - resolvers that only inspect
+      // the callee (e.g. SuppressClinitCallResolver/AppOnlyClinitCallResolver) are unaffected.
+      VirtualCallResolver clinitResolver = pta.getConfig().getClinitVirtualCallResolver();
+      Iterator<SootMethod> it = mpag.triggeredClinits();
+      while (it.hasNext()) {
+        SootMethod sm = it.next();
+        MethodSignature clinitSig = sm.getSignature();
+        InvokableStmt syntheticTrigger =
+            Jimple.newInvokeStmt(
+                    Jimple.newStaticInvokeExpr(clinitSig, Collections.emptyList()),
+                    StmtPositionInfo.getNoStmtPositionInfo())
+                .asInvokableStmt();
+        if (clinitResolver.tryAdvanceCall(method, clinitSig, syntheticTrigger)
+            == ExplorationVerdict.STOP) {
+          continue;
         }
+        cgb.injectCallEdge(
+            sm.getDeclaringClassType(), pta.parameterize(sm, pta.emptyContext()), Kind.CLINIT);
       }
       recordCallStmts(momc, mpag.getInvokeStmts());
       recordThrowStmts(momc, mpag.stmt2wrapperedTraps.keySet());
@@ -173,7 +189,7 @@ public class Solver extends Propagator {
       SootMethod sm = m.method();
       MethodPAG mpag = pag.getMethodPAG(sm);
       MethodNodeFactory nodeFactory = mpag.nodeFactory();
-      Node src;
+      PagNode src;
       if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
         src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, sm);
       } else {
@@ -195,9 +211,9 @@ public class Solver extends Propagator {
     if (!contexts.add(cxt)) {
       return;
     }
-    for (QueueReader<Node> reader = mpag.getInternalReader().clone(); reader.hasNext(); ) {
-      Node from = reader.next();
-      Node to = reader.next();
+    for (QueueReader<PagNode> reader = mpag.getInternalReader().clone(); reader.hasNext(); ) {
+      PagNode from = reader.next();
+      PagNode to = reader.next();
       if (from instanceof AllocNode) {
         AllocNode heap = (AllocNode) from;
         from = pta.heapAbstractor().abstractHeap(heap);
@@ -220,15 +236,20 @@ public class Solver extends Propagator {
   private void handleImplicitCallToFinalizerRegister(AllocNode heap) {
     if (supportFinalize(heap)) {
       SootMethod rm =
-          pta.getScene().getMethod("<java.lang.ref.Finalizer: void register(java.lang.Object)>");
+          pta.getScene()
+              .getMethod(
+                  pta.getView()
+                      .getIdentifierFactory()
+                      .parseMethodSignature(
+                          "<java.lang.ref.Finalizer: void register(java.lang.Object)>"));
       MethodPAG tgtmpag = pag.getMethodPAG(rm);
       MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
-      Node parm = tgtnf.caseParm(0);
-      Context calleeCtx = pta.emptyContext();
+      PagNode parm = tgtnf.caseParm(0);
+      Context calleeContext = pta.emptyContext();
       AllocNode baseHeap = heap.base();
-      parm = pta.parameterize(parm, calleeCtx);
+      parm = pta.parameterize(parm, calleeContext);
       pag.addEdge(heap, parm);
-      cgb.injectCallEdge(baseHeap, pta.parameterize(rm, calleeCtx), Kind.STATIC);
+      cgb.injectCallEdge(baseHeap, pta.parameterize(rm, calleeContext), Kind.STATIC);
     }
   }
 
@@ -236,7 +257,7 @@ public class Solver extends Propagator {
     MethodSubSignature sigFinalize =
         JavaIdentifierFactory.getInstance().parseMethodSubSignature("void finalize()");
     Type type = heap.getType();
-    if (type instanceof ClassType && type != PTAUtils.getClassType("java.lang.Object")) {
+    if (type instanceof ClassType && type != JavaTypes.OBJECT) {
       ClassType refType = (ClassType) type;
       SootMethod finalizeMethod = cgb.resolveNonSpecial(refType, sigFinalize);
       if (finalizeMethod != null
@@ -262,13 +283,13 @@ public class Solver extends Propagator {
   private void handleStoreEdge(PointsToSetInternal baseHeaps, SparkField field, ValNode from) {
     baseHeaps.forall(
         new P2SetVisitor(pta) {
-          public void visit(Node n) {
+          public void visit(PagNode n) {
             if (disallowStoreOrLoadOn((AllocNode) n)) {
               return;
             }
             final FieldValNode fvn = pag.makeFieldValNode(field);
             final ValNode oDotF =
-                (ValNode) pta.parameterize(fvn, PTAUtils.plusplusOp((AllocNode) n));
+                (ValNode) pta.parameterize(fvn, PagQueries.plusplusOp((AllocNode) n));
             pag.addEdge(from, oDotF);
           }
         });
@@ -277,13 +298,13 @@ public class Solver extends Propagator {
   private void handleLoadEdge(PointsToSetInternal baseHeaps, SparkField field, ValNode to) {
     baseHeaps.forall(
         new P2SetVisitor(pta) {
-          public void visit(Node n) {
+          public void visit(PagNode n) {
             if (disallowStoreOrLoadOn((AllocNode) n)) {
               return;
             }
             final FieldValNode fvn = pag.makeFieldValNode(field);
             final ValNode oDotF =
-                (ValNode) pta.parameterize(fvn, PTAUtils.plusplusOp((AllocNode) n));
+                (ValNode) pta.parameterize(fvn, PagQueries.plusplusOp((AllocNode) n));
             pag.addEdge(oDotF, to);
           }
         });
@@ -293,7 +314,7 @@ public class Solver extends Propagator {
       QueueReader<VirtualCallSite> newCalls,
       QueueReader<ContextMethod> newRMs,
       QueueReader<ExceptionThrowSite> newThrows,
-      QueueReader<Node> addedEdges) {
+      QueueReader<PagNode> addedEdges) {
     while (newCalls.hasNext()) {
       while (newCalls.hasNext()) {
         final VirtualCallSite site = newCalls.next();
@@ -314,8 +335,8 @@ public class Solver extends Propagator {
      * target nodes into the worklist if nesseary.
      * */
     while (addedEdges.hasNext()) {
-      final Node addedSrc = addedEdges.next();
-      final Node addedTgt = addedEdges.next();
+      final PagNode addedSrc = addedEdges.next();
+      final PagNode addedTgt = addedEdges.next();
       if (addedSrc instanceof VarNode && addedTgt instanceof VarNode
           || addedSrc instanceof ContextField
           || addedTgt instanceof ContextField) { // x = y; x = o.f; o.f = y;
@@ -341,7 +362,7 @@ public class Solver extends Propagator {
     P2SetVisitor p2SetVisitor =
         new P2SetVisitor(pta) {
           @Override
-          public void visit(Node n) {
+          public void visit(PagNode n) {
             if (addWithTypeFiltering(addTo, pointer.getType(), n)) {
               returnValue = true;
             }
@@ -361,13 +382,11 @@ public class Solver extends Propagator {
 
   // we do not allow store to and load from constant heap/empty array.
   private boolean disallowStoreOrLoadOn(AllocNode heap) {
-    AllocNode base = heap.base();
-    // return base instanceof StringConstantNode || PTAUtils.isEmptyArray(base);
-    return PTAUtils.isEmptyArray(base);
+    return heap.base().isEmptyArray();
   }
 
-  private boolean addWithTypeFiltering(PointsToSetInternal pts, Type type, Node node) {
-    if (PTAUtils.castNeverFails(pta.getView(), node.getType(), type)) {
+  private boolean addWithTypeFiltering(PointsToSetInternal pts, Type type, PagNode node) {
+    if (JavaTypes.castNeverFails(pta.getView(), node.getType(), type)) {
       return pts.add(node.getNumber());
     }
     return false;

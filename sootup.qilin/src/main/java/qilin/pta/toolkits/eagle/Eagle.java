@@ -21,16 +21,16 @@ package qilin.pta.toolkits.eagle;
 import java.util.*;
 import java.util.stream.Collectors;
 import qilin.core.PTA;
-import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
-import qilin.util.PTAUtils;
-import qilin.util.Util;
+import qilin.util.FakeMainMethods;
+import qilin.util.JavaTypes;
+import qilin.util.StaticThisPointsTo;
 import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
+import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -102,7 +102,7 @@ public class Eagle {
   }
 
   public boolean addBalancedEdge(BNode from, BNode to) {
-    boolean ret = Util.addToMap(balancedOutEdges, from, to);
+    boolean ret = balancedOutEdges.computeIfAbsent(from, k -> new HashSet<>()).add(to);
     balance_count++;
     total_edges_count++;
     return ret;
@@ -188,7 +188,7 @@ public class Eagle {
 
   public boolean reachValidReceiverObject(BNode from, BNode to) {
     BNode fromEI = getBNode(to.sparkNode, false);
-    if (from.sparkNode instanceof Field || from.sparkNode instanceof ArrayElement) {
+    if (from.sparkNode instanceof ConcreteField || from.sparkNode instanceof ArrayElement) {
       return getOutEdges(fromEI).contains(from);
     }
     return true;
@@ -270,24 +270,24 @@ public class Eagle {
   public void buildGraph(PTA prePTA) {
     PAG prePAG = prePTA.getPag();
     // calculate points-to set for "This" pointer in each static method.
-    Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(prePTA);
+    Map<LocalVarNode, Set<AllocNode>> pts = StaticThisPointsTo.calcStaticThisPTS(prePTA);
 
     OnFlyCallGraph callGraph = prePTA.getCallGraph();
     for (SootMethod method : prePTA.getNakedReachableMethods()) {
-      if (!PTAUtils.hasBody(method)) {
+      if (!prePAG.hasBody(method)) {
         continue;
       }
       MethodPAG srcmpag = prePAG.getMethodPAG(method);
       MethodNodeFactory srcnf = srcmpag.nodeFactory();
       LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
       // add local edges
-      if (PTAUtils.isFakeMainMethod(method)) {
+      if (FakeMainMethods.isFakeMainMethod(method)) {
         // special treatment for fake main
         this.addNewEdge(prePTA.getRootNode(), thisRef);
       }
-      QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+      QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
       while (reader.hasNext()) {
-        Node from = reader.next(), to = reader.next();
+        PagNode from = reader.next(), to = reader.next();
         if (from instanceof LocalVarNode) {
           if (to instanceof LocalVarNode)
             this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
@@ -310,7 +310,7 @@ public class Eagle {
           .getExceptionEdges()
           .forEach(
               (k, vs) -> {
-                for (Node v : vs) {
+                for (PagNode v : vs) {
                   this.addAssignEdge((LocalVarNode) k, (LocalVarNode) v);
                 }
               });
@@ -325,10 +325,7 @@ public class Eagle {
       LocalVarNode mret =
           method.getReturnType() instanceof ReferenceType ? (LocalVarNode) srcnf.caseRet() : null;
       LocalVarNode throwFinal =
-          prePAG.findLocalVarNode(
-              method,
-              new Parm(method, PointsToAnalysis.THROW_NODE),
-              PTAUtils.getClassType("java.lang.Throwable"));
+          prePAG.findLocalVarNode(method, MethodParameter.ofThrow(method), JavaTypes.THROWABLE);
       if (method.isStatic()) {
         pts.getOrDefault(thisRef, Collections.emptySet())
             .forEach(

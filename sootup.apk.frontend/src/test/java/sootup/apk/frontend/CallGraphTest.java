@@ -1,0 +1,171 @@
+package sootup.apk.frontend;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import sootup.apk.frontend.main.AndroidVersionInfo;
+import sootup.callgraph.CallGraph;
+import sootup.callgraph.CallGraphAlgorithm;
+import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
+import sootup.callgraph.RapidTypeAnalysisAlgorithm;
+import sootup.core.model.SourceType;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.views.JavaView;
+
+public class CallGraphTest {
+
+  public static JavaView view;
+  public static JavaView locationLeakView;
+  public static JavaView cryptoView;
+
+  String flowSensitivityClassName = "de.ecspride.MainActivity";
+  String locationLeakClassName = "de.ecspride.LocationLeak1";
+  String cryptoClassName = "com.example.MainActivity";
+  String methodName = "onCreate";
+  List<String> methodParameters = List.of("android.os.Bundle");
+  String methodReturnType = "void";
+
+  @BeforeAll
+  public static void createView() {
+    view = createViewForApk("src/test/resources/FlowSensitivity1.apk");
+    locationLeakView = createViewForApk("src/test/resources/LocationLeak1.apk");
+    cryptoView = createViewForApk("src/test/resources/Crypto.apk");
+  }
+
+  private static JavaView createViewForApk(String apkPathString) {
+    Path apkPath = Paths.get(apkPathString);
+    AndroidVersionInfo androidVersionInfo =
+        new AndroidVersionInfo(apkPath, "src/test/resources/platforms");
+
+    ApkAnalysisInputLocation sootClassApkAnalysisInputLocation =
+        new ApkAnalysisInputLocation(
+            apkPath, androidVersionInfo, DexBodyInterceptors.Default.bodyInterceptors());
+
+    return new JavaView(
+        List.of(sootClassApkAnalysisInputLocation, androidVersionInfo.androidJarInputLocation()));
+  }
+
+  /**
+   * RTA seeds its instantiated-classes set from classes it already knows are reachable; android.jar
+   * is a stub with no bodies to observe instantiations in, so only the APK's own classes are
+   * seeded. Seeding with the whole view (including every framework class) degenerates RTA to CHA.
+   */
+  private static Set<ClassType> appClasses(JavaView view) {
+    return view.getClasses()
+        .filter(
+            c ->
+                c.getClassSource().getAnalysisInputLocation().getSourceType()
+                    == SourceType.Application)
+        .map(JavaSootClass::getType)
+        .collect(Collectors.toSet());
+  }
+
+  @Test
+  public void testCHACallGraphAlgorithm() {
+
+    MethodSignature onCreateMethodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                flowSensitivityClassName, methodName, methodReturnType, methodParameters);
+
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view);
+    CallGraph cg = cha.initialize(List.of(onCreateMethodSignature));
+
+    assertTrue(cg.containsMethod(onCreateMethodSignature));
+    assertEquals(9, cg.callsFrom(onCreateMethodSignature).size());
+  }
+
+  @Test
+  public void testRTACallGraphAlgorithm() {
+
+    MethodSignature onCreateMethodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                flowSensitivityClassName, methodName, methodReturnType, methodParameters);
+
+    CallGraphAlgorithm rta = new RapidTypeAnalysisAlgorithm(view, appClasses(view));
+
+    CallGraph cg = rta.initialize(List.of(onCreateMethodSignature));
+
+    assertTrue(cg.containsMethod(onCreateMethodSignature));
+    assertEquals(9, cg.callsFrom(onCreateMethodSignature).size());
+  }
+
+  @Test
+  public void testLocationLeakCHACallGraphAlgorithm() {
+
+    MethodSignature onCreateMethodSignature =
+        locationLeakView
+            .getIdentifierFactory()
+            .getMethodSignature(
+                locationLeakClassName, methodName, methodReturnType, methodParameters);
+
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(locationLeakView);
+    CallGraph cg = cha.initialize(List.of(onCreateMethodSignature));
+
+    assertTrue(cg.containsMethod(onCreateMethodSignature));
+    assertEquals(5, cg.callsFrom(onCreateMethodSignature).size());
+  }
+
+  @Test
+  public void testLocationLeakRTACallGraphAlgorithm() {
+
+    MethodSignature onCreateMethodSignature =
+        locationLeakView
+            .getIdentifierFactory()
+            .getMethodSignature(
+                locationLeakClassName, methodName, methodReturnType, methodParameters);
+
+    CallGraphAlgorithm rta =
+        new RapidTypeAnalysisAlgorithm(locationLeakView, appClasses(locationLeakView));
+
+    CallGraph cg = rta.initialize(List.of(onCreateMethodSignature));
+
+    assertTrue(cg.containsMethod(onCreateMethodSignature));
+    // one less than CHA's 5: onCreate calls LocationManager#requestLocationUpdates on a
+    // LocationManager obtained from getSystemService(), and app-only seeding has no evidence that
+    // LocationManager (an android.jar stub class the app never itself instantiates) was
+    // instantiated, so RTA does not resolve that virtual call.
+    assertEquals(4, cg.callsFrom(onCreateMethodSignature).size());
+  }
+
+  @Test
+  public void testCryptoCHACallGraphAlgorithm() {
+
+    MethodSignature onCreateMethodSignature =
+        cryptoView
+            .getIdentifierFactory()
+            .getMethodSignature(cryptoClassName, methodName, methodReturnType, methodParameters);
+
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(cryptoView);
+    CallGraph cg = cha.initialize(List.of(onCreateMethodSignature));
+
+    assertTrue(cg.containsMethod(onCreateMethodSignature));
+    assertEquals(3, cg.callsFrom(onCreateMethodSignature).size());
+  }
+
+  @Test
+  public void testCryptoRTACallGraphAlgorithm() {
+
+    MethodSignature onCreateMethodSignature =
+        cryptoView
+            .getIdentifierFactory()
+            .getMethodSignature(cryptoClassName, methodName, methodReturnType, methodParameters);
+
+    CallGraphAlgorithm rta = new RapidTypeAnalysisAlgorithm(cryptoView, appClasses(cryptoView));
+
+    CallGraph cg = rta.initialize(List.of(onCreateMethodSignature));
+
+    assertTrue(cg.containsMethod(onCreateMethodSignature));
+    assertEquals(3, cg.callsFrom(onCreateMethodSignature).size());
+  }
+}

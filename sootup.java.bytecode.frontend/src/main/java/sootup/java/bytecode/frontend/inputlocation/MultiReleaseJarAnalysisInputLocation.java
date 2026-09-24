@@ -40,8 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.interceptors.BytecodeBodyInterceptors;
@@ -217,7 +217,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
    * lists all versions from the version directories inside the META-INF/ directory - excluding the
    * default implemention version
    */
-  protected static List<Integer> getLanguageVersions(@NonNull Path path) {
+  protected List<Integer> getLanguageVersions(@NonNull Path path) {
     FileSystem fs;
     try {
       fs = fileSystemCache.get(path);

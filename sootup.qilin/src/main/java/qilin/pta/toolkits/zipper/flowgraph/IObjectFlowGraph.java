@@ -1,10 +1,10 @@
 package qilin.pta.toolkits.zipper.flowgraph;
 
 import java.util.Set;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 
 public interface IObjectFlowGraph {
-  Set<Edge> outEdgesOf(final Node p0);
+  Set<Edge> outEdgesOf(final PagNode p0);
 
-  Set<Node> allNodes();
+  Set<PagNode> allNodes();
 }

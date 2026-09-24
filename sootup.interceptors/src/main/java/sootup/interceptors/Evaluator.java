@@ -26,6 +26,8 @@ import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
+import sootup.core.types.PrimitiveType;
+import sootup.core.types.Type;
 
 /**
  * Evaluates, whether a value is constant and computes its constant value, if possible.
@@ -78,6 +80,12 @@ public class Evaluator {
       }
       return isOp1Constant && isOp2Constant;
     }
+    if (op instanceof JCastExpr) {
+      final Value innerOp = ((JCastExpr) op).getOp();
+
+      return isConstantValue(innerOp);
+    }
+
     return false;
   }
 
@@ -178,6 +186,47 @@ public class Evaluator {
       } else {
         // throw new RuntimeException("Unknown binary operator: " + op);
         return null;
+      }
+    } else if (op instanceof JCastExpr) {
+      final Value inner = ((JCastExpr) op).getOp();
+      assert inner instanceof Constant;
+      final Constant cst = (Constant) inner;
+
+      final Type castType = op.getType();
+
+      // Identity is always allowed.
+      if (inner.getType() == castType) {
+        return cst;
+      }
+
+      Number number;
+      if (cst instanceof BooleanConstant) {
+        if (((BooleanConstant) cst).getValue()) number = 1;
+        else number = 0;
+      } else if (cst instanceof IntConstant) {
+        number = ((IntConstant) cst).getValue();
+      } else if (cst instanceof FloatConstant) {
+        number = ((FloatConstant) cst).getValue();
+      } else if (cst instanceof DoubleConstant) {
+        number = ((DoubleConstant) cst).getValue();
+      } else {
+        return null;
+      }
+
+      if (castType == PrimitiveType.getByte()) {
+        return IntConstant.getInstance(number.byteValue());
+      } else if (castType == PrimitiveType.getChar()) {
+        return IntConstant.getInstance((char) number.longValue());
+      } else if (castType == PrimitiveType.getShort()) {
+        return IntConstant.getInstance(number.shortValue());
+      } else if (castType == PrimitiveType.getInt()) {
+        return IntConstant.getInstance(number.intValue());
+      } else if (castType == PrimitiveType.getLong()) {
+        return LongConstant.getInstance(number.longValue());
+      } else if (castType == PrimitiveType.getFloat()) {
+        return FloatConstant.getInstance(number.floatValue());
+      } else if (castType == PrimitiveType.getDouble()) {
+        return DoubleConstant.getInstance(number.doubleValue());
       }
     }
 

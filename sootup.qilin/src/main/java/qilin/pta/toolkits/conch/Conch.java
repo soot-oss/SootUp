@@ -23,9 +23,10 @@ import java.util.stream.Collectors;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
-import qilin.core.sets.PointsToSet;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
+import qilin.util.PagQueries;
 import qilin.util.Pair;
+import qilin.util.sets.PointsToSet;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -34,6 +35,8 @@ import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ArrayType;
+import sootup.core.types.PrimitiveType;
 
 /*
  * This classifier will classify heaps into context-dependent and context-independent heaps.
@@ -80,7 +83,7 @@ public class Conch extends AbstractConch {
           SootMethod target = pta.getView().getMethod(iie.getMethodSignature()).get();
           if (v1pts.size() == 1
               && v1pts.toCIPointsToSet().contains(heap)
-              && PTAUtils.isConstructor(target)) {
+              && JavaTypes.isConstructor(target)) {
             return target;
           }
         }
@@ -103,7 +106,7 @@ public class Conch extends AbstractConch {
           VarNode baseNode = (VarNode) nodeFactory.getNode(base);
           MethodSignature targetSig = iie.getMethodSignature();
           SootMethod target = pta.getView().getMethod(targetSig).get();
-          if (PTAUtils.mustAlias(pta, thisNode, baseNode)
+          if (PagQueries.mustAlias(pta, thisNode, baseNode)
               && targetSig.getSubSignature().getName().equals("<init>")) {
             return target;
           }
@@ -128,10 +131,10 @@ public class Conch extends AbstractConch {
     return ret;
   }
 
-  private Set<Node> mappingtoCallerCommingParamsOrHeaps(
-      Set<Node> params, SootMethod curr, SootMethod caller) {
+  private Set<PagNode> mappingtoCallerCommingParamsOrHeaps(
+      Set<PagNode> params, SootMethod curr, SootMethod caller) {
     MethodPAG cmpag = pag.getMethodPAG(caller);
-    Set<Node> ret = new HashSet<>();
+    Set<PagNode> ret = new HashSet<>();
     for (InvokableStmt stmt : cmpag.getInvokeStmts()) {
       if (!(stmt.getInvokeExpr().get() instanceof JSpecialInvokeExpr)) {
         continue;
@@ -139,10 +142,10 @@ public class Conch extends AbstractConch {
       MethodSignature methodSig = stmt.getInvokeExpr().get().getMethodSignature();
       Optional<? extends SootMethod> otarget = pta.getView().getMethod(methodSig);
       if (otarget.isPresent() && otarget.get().equals(curr)) {
-        for (Node n : params) {
+        for (PagNode n : params) {
           if (n instanceof VarNode) {
             VarNode paramNode = (VarNode) n;
-            LocalVarNode argNode = PTAUtils.paramToArg(pag, stmt, cmpag, paramNode);
+            LocalVarNode argNode = PagQueries.paramToArg(pag, stmt, cmpag, paramNode);
             if (argNode != null) {
               ret.addAll(this.pfg.fetchReachableParamsOf(argNode));
             }
@@ -153,9 +156,9 @@ public class Conch extends AbstractConch {
     return ret;
   }
 
-  private boolean containHeaps(Set<Node> nodes) {
+  private boolean containHeaps(Set<PagNode> nodes) {
     boolean ret = false;
-    for (Node n : nodes) {
+    for (PagNode n : nodes) {
       if (n instanceof AllocNode) {
         ret = true;
         break;
@@ -164,12 +167,12 @@ public class Conch extends AbstractConch {
     return ret;
   }
 
-  private Trilean handleTransitiveConstructors(SootMethod sm, AllocNode heap, Set<Node> params) {
+  private Trilean handleTransitiveConstructors(SootMethod sm, AllocNode heap, Set<PagNode> params) {
     SootMethod containingMethod = heap.getMethod();
     ArrayList<SootMethod> chain = recoverConstructorChain(sm, heap);
     SootMethod caller = sm;
     SootMethod curr;
-    Set<Node> ret = params;
+    Set<PagNode> ret = params;
     boolean notSure = containHeaps(params);
     for (SootMethod method : chain) {
       curr = caller;
@@ -195,12 +198,12 @@ public class Conch extends AbstractConch {
     return tmpRes2;
   }
 
-  private Trilean checkResult(Set<Node> res) {
+  private Trilean checkResult(Set<PagNode> res) {
     if (res.isEmpty()) {
       return Trilean.FALSE;
     }
     boolean hasParam = false;
-    for (Node n : res) {
+    for (PagNode n : res) {
       if (!(n instanceof AllocNode)) {
         hasParam = true;
         break;
@@ -214,8 +217,8 @@ public class Conch extends AbstractConch {
   }
 
   private Trilean isCommingFromParams(LocalVarNode from, SootMethod method, AllocNode heap) {
-    Set<Node> ret = this.pfg.fetchReachableParamsOf(from);
-    if (PTAUtils.isConstructor(method)) {
+    Set<PagNode> ret = this.pfg.fetchReachableParamsOf(from);
+    if (JavaTypes.isConstructor(method)) {
       return handleTransitiveConstructors(method, heap, ret);
     } else {
       return checkResult(ret);
@@ -239,8 +242,8 @@ public class Conch extends AbstractConch {
       Set<Pair<VarNode, VarNode>> pairs = f2sts.getOrDefault(field, Collections.emptySet());
       if (!pairs.isEmpty()) {
         for (Pair<VarNode, VarNode> pair : pairs) {
-          LocalVarNode storeBase = (LocalVarNode) pair.getFirst();
-          VarNode from = pair.getSecond();
+          LocalVarNode storeBase = (LocalVarNode) pair.first();
+          VarNode from = pair.second();
           if (storeBase.getMethod() != heap.getMethod()) {
             csorci = Trilean.TRUE;
           } else {
@@ -261,7 +264,7 @@ public class Conch extends AbstractConch {
             f2stsX.getOrDefault(field, Collections.emptySet());
         if (!thisFStores.isEmpty()) {
           for (Pair<VarNode, VarNode> pair : thisFStores) {
-            VarNode from = pair.getSecond();
+            VarNode from = pair.second();
             Trilean fromparam = isCommingFromParams((LocalVarNode) from, method, heap);
             csorci = Trilean.OR(csorci, fromparam);
           }
@@ -304,14 +307,16 @@ public class Conch extends AbstractConch {
     Set<AllocNode> remainToSolve = new HashSet<>();
     allHeaps.forEach(
         heap -> {
+          boolean ofPrimitiveBaseType =
+              heap.getType() instanceof ArrayType at && at.getBaseType() instanceof PrimitiveType;
           if (heap.getMethod() == null
               || heap instanceof ConstantNode
-              || PTAUtils.isEmptyArray(heap)
-              || PTAUtils.isOfPrimitiveBaseType(heap)) {
+              || heap.isEmptyArray()
+              || ofPrimitiveBaseType) {
             ciHeaps.add(heap);
           } else {
             SootMethod mthd = heap.getMethod();
-            if (PTAUtils.isStaticInitializer(mthd)) {
+            if (JavaTypes.isStaticInitializer(mthd)) {
               ciHeaps.add(heap);
             } else {
               remainToSolve.add(heap);

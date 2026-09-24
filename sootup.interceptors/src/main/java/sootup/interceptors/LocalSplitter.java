@@ -26,12 +26,12 @@ import java.util.*;
 import java.util.function.Function;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
 /**
@@ -234,7 +234,7 @@ public class LocalSplitter implements BodyInterceptor {
             continue;
           }
 
-          if (stmt.getUses().anyMatch(l -> l == local)) {
+          if (stmt.getUses().stream().anyMatch(l -> l == local)) {
             PartialStmt useStmt = new PartialStmt(stmt, false);
             disjointSet.add(useStmt);
             disjointSet.union(defStmt, useStmt);
@@ -276,7 +276,7 @@ public class LocalSplitter implements BodyInterceptor {
 
         Optional<LValue> stmtDef = stmt.getDef();
         boolean localIsDef = stmtDef.isPresent() && stmtDef.get() == local;
-        boolean localIsUse = stmt.getUses().anyMatch(l -> l == local);
+        boolean localIsUse = stmt.getUses().stream().anyMatch(l -> l == local);
 
         Stmt oldStmt = stmt;
 

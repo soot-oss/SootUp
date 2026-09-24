@@ -19,13 +19,10 @@
 package qilin.pta.tools;
 
 import qilin.core.PTAScene;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.AllocSiteAbstractor;
-import qilin.parm.heapabst.HeuristicAbstractor;
-import qilin.parm.select.CtxSelector;
-import qilin.parm.select.HeuristicSelector;
-import qilin.parm.select.PipelineSelector;
-import qilin.pta.PTAConfig;
+import qilin.core.config.PointerAnalysisComponents;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.HeapAbstractor;
+import qilin.parm.select.ContextSelector;
 import qilin.pta.toolkits.dd.DataDrivenSelector;
 
 /*
@@ -40,20 +37,14 @@ import qilin.pta.toolkits.dd.DataDrivenSelector;
 
 public class DataDrivenPTA extends BasePTA {
 
-  public DataDrivenPTA(PTAScene scene, CtxConstructor ctxCons) {
+  public DataDrivenPTA(PTAScene scene, ContextConstructor contextConstructor) {
     super(scene);
-    this.ctxCons = ctxCons;
-    CtxSelector us = new DataDrivenSelector(ctxCons.getClass());
-    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
-    } else {
-      this.ctxSel = us;
-    }
-    if (PTAConfig.v().getPtaConfig().mergeHeap) {
-      this.heapAbst = new HeuristicAbstractor(pag);
-    } else {
-      this.heapAbst = new AllocSiteAbstractor();
-    }
+    ContextSelector us = new DataDrivenSelector(contextConstructor.getClass(), pag);
+    ContextSelector contextSelector =
+        PointerAnalysisComponents.wrapIgnoreTypesGuard(getConfig(), getView(), us);
+    HeapAbstractor heapAbstractor =
+        PointerAnalysisComponents.createHeapAbstractor(getConfig(), pag);
+    initComponents(contextConstructor, contextSelector, heapAbstractor);
     System.out.println("data-driven ...");
   }
 }

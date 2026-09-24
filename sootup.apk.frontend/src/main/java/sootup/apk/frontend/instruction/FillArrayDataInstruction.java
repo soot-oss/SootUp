@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.ref.JArrayRef;
@@ -73,7 +73,7 @@ public class FillArrayDataInstruction extends DexLibAbstractInstruction {
         break;
       }
       JAssignStmt assign =
-          Jimple.newAssignStmt(arrayRef, element, StmtPositionInfo.getNoStmtPositionInfo());
+          Jimple.newAssignStmt(arrayRef, element, new SimpleStmtPositionInfo(lineNumber));
       body.add(assign);
       if (i == 0) {
         firstAssign = assign;
@@ -81,7 +81,7 @@ public class FillArrayDataInstruction extends DexLibAbstractInstruction {
     }
     if (firstAssign == null) { // if numElements == 0. Is it possible?
       logger.warn("Number of elements in the array is 0.. Weird case...");
-      firstAssign = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+      firstAssign = Jimple.newNopStmt(new SimpleStmtPositionInfo(lineNumber));
       body.add(firstAssign);
     }
     setStmt(firstAssign);

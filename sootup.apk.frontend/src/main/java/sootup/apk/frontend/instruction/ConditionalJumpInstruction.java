@@ -26,7 +26,7 @@ import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -56,7 +56,7 @@ public abstract class ConditionalJumpInstruction extends JumpInstruction
     } else {
       // set marker unit to swap real gotostmt with otherwise
       body.addDeferredJimplification(this);
-      markerUnit = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+      markerUnit = Jimple.newNopStmt(new SimpleStmtPositionInfo(lineNumber));
       setStmt(markerUnit);
       body.add(stmt);
     }

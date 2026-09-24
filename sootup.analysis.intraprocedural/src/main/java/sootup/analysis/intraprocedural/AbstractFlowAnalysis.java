@@ -22,11 +22,10 @@ package sootup.analysis.intraprocedural;
  * #L%
  */
 
-import java.util.IdentityHashMap;
-import java.util.Map;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
+import sootup.core.graph.ImmutableBlockControlFlowGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 
 /**
@@ -39,15 +38,18 @@ import sootup.core.jimple.common.stmt.Stmt;
 public abstract class AbstractFlowAnalysis<F> {
 
   /** The graph being analysed. */
-  protected final ControlFlowGraph<? extends BasicBlock<?>> graph;
+  protected final ImmutableBlockControlFlowGraph graph;
 
-  /** Maps graph nodes to IN sets. */
-  protected final Map<Stmt, F> stmtToBeforeFlow;
+  /** Flow values indexed by stmt position (from {@link ImmutableBlockControlFlowGraph#indexOf}). */
+  protected final Object[] flowBefore;
 
   /** Constructs a flow analysis on the given <code>ControlFlowGraph</code>. */
   public AbstractFlowAnalysis(ControlFlowGraph<? extends BasicBlock<?>> graph) {
-    this.graph = graph;
-    this.stmtToBeforeFlow = new IdentityHashMap<>(graph.getNodes().size() * 2 + 1);
+    this.graph =
+        (graph instanceof ImmutableBlockControlFlowGraph)
+            ? (ImmutableBlockControlFlowGraph) graph
+            : new ImmutableBlockControlFlowGraph(graph);
+    this.flowBefore = new Object[this.graph.getNodeCount()];
   }
 
   /** Returns the flow object corresponding to the initial values for each graph node. */
@@ -95,8 +97,10 @@ public abstract class AbstractFlowAnalysis<F> {
 
   /** Accessor function returning value of IN set for s. */
   @NonNull
+  @SuppressWarnings("unchecked")
   public F getFlowBefore(@NonNull Stmt s) {
-    return stmtToBeforeFlow.get(s);
+    F f = (F) flowBefore[graph.indexOf(s)];
+    return f == null ? newInitialFlow() : f;
   }
 
   /** Merges in into inout, just before node succNode. */

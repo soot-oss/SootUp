@@ -24,10 +24,13 @@ Copyright (C) 2024 Michael Youkeim, Stefan Schott and others
 
 import sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode;
 
+/** Abstract base class for CDG (Control Dependence Graph) edges in a property graph. */
 public abstract class AbstCdgEdge extends PropertyGraphEdge {
+  /** Creates a CDG edge between the given source and destination nodes. */
   public AbstCdgEdge(PropertyGraphNode source, PropertyGraphNode destination) {
     super(source, destination);
   }
 
+  /** Returns the label identifying this CDG edge type. */
   public abstract String getLabel();
 }

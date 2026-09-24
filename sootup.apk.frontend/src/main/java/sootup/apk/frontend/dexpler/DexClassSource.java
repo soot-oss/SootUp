@@ -22,37 +22,35 @@ package sootup.apk.frontend.dexpler;
  * #L%
  */
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import org.jf.dexlib2.dexbacked.raw.EncodedValue;
 import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.*;
-import sootup.java.core.language.JavaJimple;
 
 public class DexClassSource extends JavaSootClassSource {
 
-  DexLibWrapper wrapper;
+  private static final Logger logger = LoggerFactory.getLogger(DexClassSource.class);
 
-  DexLibWrapper.ClassInformation classInformation;
+  final DexLibWrapper.@NonNull ClassInformation classInformation;
 
   List<BodyInterceptor> bodyInterceptors;
 
@@ -67,29 +65,21 @@ public class DexClassSource extends JavaSootClassSource {
       @NonNull View view,
       @NonNull AnalysisInputLocation analysisInputLocation,
       @NonNull ClassType classSignature,
-      @NonNull Path sourcePath) {
+      @NonNull Path sourcePath,
+      DexLibWrapper.@NonNull ClassInformation classInformation) {
     super(analysisInputLocation, classSignature, sourcePath);
-    // Initialize only for the first time.
     this.view = view;
     this.bodyInterceptors = analysisInputLocation.getBodyInterceptors();
-    if (this.wrapper == null) {
-      this.wrapper = DexResolver.getInstance().initializeDexFile(new File(sourcePath.toString()));
-    }
-    this.classInformation = wrapper.getClassInformation(classSignature);
+    this.classInformation = classInformation;
   }
 
   @NonNull
   @Override
   public Collection<? extends JavaSootMethod> resolveMethods() throws ResolveException {
-    if (classInformation != null) {
-      DexMethod dexMethod = createDexMethodFactory(classInformation.dexEntry, classSignature);
-      return StreamSupport.stream(
-              classInformation.classDefinition.getMethods().spliterator(), false)
-          .map(method -> loadMethod(method, dexMethod))
-          .collect(Collectors.toSet());
-    } else {
-      throw new IllegalStateException("Class Information Should not be null");
-    }
+    DexMethod dexMethod = createDexMethodFactory(classInformation.dexEntry, classSignature);
+    return StreamSupport.stream(classInformation.classDefinition.getMethods().spliterator(), false)
+        .map(method -> loadMethod(method, dexMethod))
+        .collect(Collectors.toSet());
   }
 
   @NonNull
@@ -120,16 +110,11 @@ public class DexClassSource extends JavaSootClassSource {
   @NonNull
   @Override
   public Optional<? extends ClassType> resolveSuperclass() {
-    if (classInformation != null) {
-      String superclass = classInformation.classDefinition.getSuperclass();
-      if (superclass.isEmpty()) {
-        return Optional.empty();
-      } else {
-        return Optional.ofNullable(DexUtil.stringToJimpleType(view, superclass));
-      }
-    } else {
-      throw new IllegalStateException("Class Information Should not be null");
+    String superclass = classInformation.classDefinition.getSuperclass();
+    if (superclass == null || superclass.isEmpty()) {
+      return Optional.empty();
     }
+    return Optional.of(DexUtil.stringToJimpleType(view, superclass));
   }
 
   @NonNull
@@ -153,10 +138,7 @@ public class DexClassSource extends JavaSootClassSource {
 
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
-    if (classInformation != null) {
-      return convertAnnotation(classInformation.classDefinition.getAnnotations());
-    }
-    return Collections.emptyList();
+    return DexUtil.createAnnotationUsage(classInformation.classDefinition.getAnnotations());
   }
 
   private DexMethod createDexMethodFactory(
@@ -166,39 +148,6 @@ public class DexClassSource extends JavaSootClassSource {
 
   private JavaSootMethod loadMethod(Method method, DexMethod dexMethod) {
     return dexMethod.makeSootMethod(method, bodyInterceptors, view);
-  }
-
-  protected List<AnnotationUsage> convertAnnotation(Set<? extends Annotation> annotations) {
-    if (annotations.isEmpty()) {
-      return Collections.emptyList();
-    }
-    ArrayList<AnnotationUsage> annotationUsage = new ArrayList<>();
-    /* annotation.getVisibility() returns an integer refer org.jf.dexlib2.AnnotationVisibility.java
-     * 0 -> BUILD
-     * 1 -> RUNTIME
-     * 2 -> SYSTEM
-     * */
-    Map<String, Object> paramMap = new HashMap<>();
-    for (Annotation annotation : annotations) {
-      for (AnnotationElement element : annotation.getElements()) {
-        String name = element.getName();
-        paramMap.put(name, convertAnnotationValue(element.getValue().getValueType()));
-      }
-      ClassType at =
-          getView()
-              .getIdentifierFactory()
-              .getClassType(DexUtil.toQualifiedName(annotation.getType()));
-      annotationUsage.add(new AnnotationUsage(at, paramMap));
-    }
-    return annotationUsage;
-  }
-
-  private static Object convertAnnotationValue(Object annotationValue) {
-    if (annotationValue instanceof EncodedValue) {
-      ClassConstant classConstant = JavaJimple.newClassConstant(annotationValue.toString());
-      return ConstantUtil.fromObject(classConstant);
-    }
-    return ConstantUtil.fromObject(annotationValue);
   }
 
   private static Set<JavaSootField> resolveFields(
@@ -218,9 +167,28 @@ public class DexClassSource extends JavaSootClassSource {
               return new JavaSootField(
                   fieldSignature,
                   modifiers,
-                  Collections.emptySet(), // TODO Fix this annotations [PM]
+                  DexUtil.createAnnotationUsage(field.getAnnotations()),
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());
+  }
+
+  // JavaSootClassSource#equals/hashCode compare only (input location, source path): fine for
+  // one-class-per-file frontends, but every class in an APK shares the same sourcePath (the apk
+  // itself), which would make every DexClassSource from one APK equal. Include the class type too.
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof DexClassSource) || !super.equals(o)) {
+      return false;
+    }
+    return classSignature.equals(((DexClassSource) o).classSignature);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), classSignature);
   }
 }

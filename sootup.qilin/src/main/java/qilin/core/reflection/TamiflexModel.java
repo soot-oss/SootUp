@@ -22,10 +22,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTAScene;
-import qilin.util.DataFactory;
-import qilin.util.PTAUtils;
+import qilin.core.pag.PAG;
+import qilin.util.JavaTypes;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.Immediate;
@@ -54,6 +53,7 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
@@ -65,17 +65,17 @@ import sootup.java.core.language.JavaJimple;
 public class TamiflexModel extends ReflectionModel {
   protected Map<ReflectionKind, Map<Stmt, Set<String>>> reflectionMap;
 
-  public TamiflexModel(PTAScene ptaScene) {
-    super(ptaScene);
-    this.reflectionMap = DataFactory.createMap();
-    parseTamiflexLog(CoreConfig.v().getAppConfig().REFLECTION_LOG, false);
+  public TamiflexModel(PTAScene ptaScene, PAG pag) {
+    super(ptaScene, pag);
+    this.reflectionMap = new HashMap<>();
+    parseTamiflexLog(ptaScene.getConfig().getReflectionLogPath(), false);
   }
 
   @Override
   Collection<Stmt> transformClassForName(InvokableStmt s) {
     // <java.lang.Class: java.lang.Class forName(java.lang.String)>
     // <java.lang.Class: java.lang.Class forName(java.lang.String,boolean,java.lang.ClassLoader)>
-    Collection<Stmt> ret = DataFactory.createSet();
+    Collection<Stmt> ret = new HashSet<>();
     Map<Stmt, Set<String>> classForNames =
         reflectionMap.getOrDefault(ReflectionKind.ClassForName, Collections.emptyMap());
     if (classForNames.containsKey(s)) {
@@ -104,13 +104,14 @@ public class TamiflexModel extends ReflectionModel {
       return Collections.emptySet();
     }
     LValue lvalue = ((JAssignStmt) s).getLeftOp();
-    Collection<Stmt> ret = DataFactory.createSet();
+    Collection<Stmt> ret = new HashSet<>();
     Map<Stmt, Set<String>> classNewInstances =
         reflectionMap.getOrDefault(ReflectionKind.ClassNewInstance, Collections.emptyMap());
     if (classNewInstances.containsKey(s)) {
       Collection<String> classNames = classNewInstances.get(s);
       for (String clsName : classNames) {
-        SootClass cls = ptaScene.getSootClass(clsName);
+        SootClass cls =
+            ptaScene.getSootClass(ptaScene.getView().getIdentifierFactory().getClassType(clsName));
         MethodSubSignature initSubSig =
             ptaScene.getView().getIdentifierFactory().parseMethodSubSignature("void <init>()");
         Optional<? extends SootMethod> omthd = cls.getMethod(initSubSig);
@@ -130,13 +131,14 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  protected Collection<Stmt> transformConstructorNewInstance(InvokableStmt s) {
+  protected Collection<Stmt> transformConstructorNewInstance(
+      Body.BodyBuilder builder, InvokableStmt s) {
     // <java.lang.reflect.Constructor: java.lang.Object newInstance(java.lang.Object[])>
     if (!(s instanceof JAssignStmt)) {
       return Collections.emptySet();
     }
     LValue lvalue = ((JAssignStmt) s).getLeftOp();
-    Collection<Stmt> ret = DataFactory.createSet();
+    Collection<Stmt> ret = new HashSet<>();
     Map<Stmt, Set<String>> constructorNewInstances =
         reflectionMap.getOrDefault(ReflectionKind.ConstructorNewInstance, Collections.emptyMap());
     if (constructorNewInstances.containsKey(s)) {
@@ -144,11 +146,16 @@ public class TamiflexModel extends ReflectionModel {
       AbstractInvokeExpr iie = s.asInvokableStmt().getInvokeExpr().get();
       Value args = iie.getArg(0);
       JArrayRef arrayRef = JavaJimple.newArrayRef((Local) args, IntConstant.getInstance(0));
-      Local arg =
-          Jimple.newLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
+      Local arg = Jimple.newLocal("intermediate/" + arrayRef, JavaTypes.OBJECT);
+      builder.addLocal(arg);
       ret.add(new JAssignStmt(arg, arrayRef, StmtPositionInfo.getNoStmtPositionInfo()));
       for (String constructorSignature : constructorSignatures) {
-        SootMethod constructor = ptaScene.getMethod(constructorSignature);
+        SootMethod constructor =
+            ptaScene.getMethod(
+                ptaScene
+                    .getView()
+                    .getIdentifierFactory()
+                    .parseMethodSignature(constructorSignature));
         JNewExpr newExpr = new JNewExpr(constructor.getDeclaringClassType());
         ret.add(new JAssignStmt(lvalue, newExpr, StmtPositionInfo.getNoStmtPositionInfo()));
         int argCount = constructor.getParameterCount();
@@ -166,9 +173,9 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  protected Collection<Stmt> transformMethodInvoke(InvokableStmt s) {
+  protected Collection<Stmt> transformMethodInvoke(Body.BodyBuilder builder, InvokableStmt s) {
     // <java.lang.reflect.Method: java.lang.Object invoke(java.lang.Object,java.lang.Object[])>
-    Collection<Stmt> ret = DataFactory.createSet();
+    Collection<Stmt> ret = new HashSet<>();
     Map<Stmt, Set<String>> methodInvokes =
         reflectionMap.getOrDefault(ReflectionKind.MethodInvoke, Collections.emptyMap());
     if (methodInvokes.containsKey(s)) {
@@ -179,13 +186,15 @@ public class TamiflexModel extends ReflectionModel {
       Local arg = null;
       if (args.getType() instanceof ArrayType) {
         JArrayRef arrayRef = JavaJimple.newArrayRef((Local) args, IntConstant.getInstance(0));
-        arg =
-            Jimple.newLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
+        arg = Jimple.newLocal("intermediate/" + arrayRef, JavaTypes.OBJECT);
+        builder.addLocal(arg);
         ret.add(new JAssignStmt(arg, arrayRef, StmtPositionInfo.getNoStmtPositionInfo()));
       }
 
       for (String methodSignature : methodSignatures) {
-        SootMethod method = ptaScene.getMethod(methodSignature);
+        SootMethod method =
+            ptaScene.getMethod(
+                ptaScene.getView().getIdentifierFactory().parseMethodSignature(methodSignature));
         int argCount = method.getParameterCount();
         List<Immediate> mArgs = new ArrayList<>(argCount);
         for (int i = 0; i < argCount; i++) {
@@ -217,7 +226,7 @@ public class TamiflexModel extends ReflectionModel {
   @Override
   protected Collection<Stmt> transformFieldSet(InvokableStmt s) {
     // <java.lang.reflect.Field: void set(java.lang.Object,java.lang.Object)>
-    Collection<Stmt> ret = DataFactory.createSet();
+    Collection<Stmt> ret = new HashSet<>();
     Map<Stmt, Set<String>> fieldSets =
         reflectionMap.getOrDefault(ReflectionKind.FieldSet, Collections.emptyMap());
     if (fieldSets.containsKey(s)) {
@@ -247,7 +256,7 @@ public class TamiflexModel extends ReflectionModel {
   @Override
   protected Collection<Stmt> transformFieldGet(InvokableStmt s) {
     // <java.lang.reflect.Field: java.lang.Object get(java.lang.Object)>
-    Collection<Stmt> ret = DataFactory.createSet();
+    Collection<Stmt> ret = new HashSet<>();
     Map<Stmt, Set<String>> fieldGets =
         reflectionMap.getOrDefault(ReflectionKind.FieldGet, Collections.emptyMap());
     if (fieldGets.containsKey(s) && s instanceof JAssignStmt) {
@@ -279,7 +288,7 @@ public class TamiflexModel extends ReflectionModel {
   @Override
   protected Collection<Stmt> transformArrayNewInstance(InvokableStmt s) {
     // <java.lang.reflect.Array: java.lang.Object newInstance(java.lang.Class,int)>
-    Collection<Stmt> ret = DataFactory.createSet();
+    Collection<Stmt> ret = new HashSet<>();
     Map<Stmt, Set<String>> mappedToArrayTypes =
         reflectionMap.getOrDefault(ReflectionKind.ArrayNewInstance, Collections.emptyMap());
     Collection<String> arrayTypes = mappedToArrayTypes.getOrDefault(s, Collections.emptySet());
@@ -297,8 +306,8 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   @Override
-  Collection<Stmt> transformArrayGet(InvokableStmt s) {
-    Collection<Stmt> ret = DataFactory.createSet();
+  Collection<Stmt> transformArrayGet(Body.BodyBuilder builder, InvokableStmt s) {
+    Collection<Stmt> ret = new HashSet<>();
     AbstractInvokeExpr iie = s.getInvokeExpr().get();
     Value base = iie.getArg(0);
     if (s instanceof JAssignStmt) {
@@ -306,11 +315,9 @@ public class TamiflexModel extends ReflectionModel {
       Value arrayRef = null;
       if (base.getType() instanceof ArrayType) {
         arrayRef = JavaJimple.newArrayRef((Local) base, IntConstant.getInstance(0));
-      } else if (base.getType() == PTAUtils.getClassType("java.lang.Object")) {
-        Local local =
-            Jimple.newLocal(
-                "intermediate/" + base,
-                new ArrayType(PTAUtils.getClassType("java.lang.Object"), 1));
+      } else if (base.getType() == JavaTypes.OBJECT) {
+        Local local = Jimple.newLocal("intermediate/" + base, new ArrayType(JavaTypes.OBJECT, 1));
+        builder.addLocal(local);
         ret.add(new JAssignStmt(local, base, StmtPositionInfo.getNoStmtPositionInfo()));
         arrayRef = JavaJimple.newArrayRef(local, IntConstant.getInstance(0));
       }
@@ -323,7 +330,7 @@ public class TamiflexModel extends ReflectionModel {
 
   @Override
   Collection<Stmt> transformArraySet(InvokableStmt s) {
-    Collection<Stmt> ret = DataFactory.createSet();
+    Collection<Stmt> ret = new HashSet<>();
     AbstractInvokeExpr iie = s.getInvokeExpr().get();
     Value base = iie.getArg(0);
     if (base.getType() instanceof ArrayType) {
@@ -365,7 +372,10 @@ public class TamiflexModel extends ReflectionModel {
           case ClassForName:
             break;
           case ClassNewInstance:
-            if (!ptaScene.containsClass(mappedTarget)) {
+            if (ptaScene
+                .getView()
+                .getClass(ptaScene.getView().getIdentifierFactory().getClassType(mappedTarget))
+                .isEmpty()) {
               if (verbose) {
                 System.out.println("Warning: Unknown mapped class for signature: " + mappedTarget);
               }
@@ -374,7 +384,11 @@ public class TamiflexModel extends ReflectionModel {
             break;
           case ConstructorNewInstance:
           case MethodInvoke:
-            if (!ptaScene.containsMethod(mappedTarget)) {
+            if (ptaScene
+                .getView()
+                .getMethod(
+                    ptaScene.getView().getIdentifierFactory().parseMethodSignature(mappedTarget))
+                .isEmpty()) {
               if (verbose) {
                 System.out.println("Warning: Unknown mapped method for signature: " + mappedTarget);
               }
@@ -383,7 +397,11 @@ public class TamiflexModel extends ReflectionModel {
             break;
           case FieldSet:
           case FieldGet:
-            if (!ptaScene.containsField(mappedTarget)) {
+            if (ptaScene
+                .getView()
+                .getField(
+                    ptaScene.getView().getIdentifierFactory().parseFieldSignature(mappedTarget))
+                .isEmpty()) {
               if (verbose) {
                 System.out.println("Warning: Unknown mapped field for signature: " + mappedTarget);
               }
@@ -401,12 +419,11 @@ public class TamiflexModel extends ReflectionModel {
         Collection<Stmt> possibleSourceStmts = inferSourceStmt(inClzDotMthdStr, kind, lineNumber);
         for (Stmt stmt : possibleSourceStmts) {
           reflectionMap
-              .computeIfAbsent(kind, m -> DataFactory.createMap())
-              .computeIfAbsent(stmt, k -> DataFactory.createSet())
+              .computeIfAbsent(kind, m -> new HashMap<>())
+              .computeIfAbsent(stmt, k -> new HashSet<>())
               .add(mappedTarget);
         }
       }
-      reader.close();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -415,12 +432,13 @@ public class TamiflexModel extends ReflectionModel {
   private Collection<SootMethod> inferSourceMethod(String inClzDotMthd) {
     String inClassStr = inClzDotMthd.substring(0, inClzDotMthd.lastIndexOf("."));
     String inMethodStr = inClzDotMthd.substring(inClzDotMthd.lastIndexOf(".") + 1);
-    if (!ptaScene.containsClass(inClassStr)) {
+    ClassType inClassType = ptaScene.getView().getIdentifierFactory().getClassType(inClassStr);
+    if (ptaScene.getView().getClass(inClassType).isEmpty()) {
       System.out.println("Warning: unknown class \"" + inClassStr + "\" is referenced.");
       return Collections.emptySet();
     }
-    SootClass sootClass = ptaScene.getSootClass(inClassStr);
-    Set<SootMethod> ret = DataFactory.createSet();
+    SootClass sootClass = ptaScene.getSootClass(inClassType);
+    Set<SootMethod> ret = new HashSet<>();
     Set<? extends SootMethod> declMethods = sootClass.getMethods();
     for (SootMethod m : declMethods) {
       if (m.isConcrete() && m.getName().equals(inMethodStr)) {
@@ -432,11 +450,11 @@ public class TamiflexModel extends ReflectionModel {
 
   private Collection<Stmt> inferSourceStmt(
       String inClzDotMthd, ReflectionKind kind, int lineNumber) {
-    Set<Stmt> ret = DataFactory.createSet();
-    Set<Stmt> potential = DataFactory.createSet();
+    Set<Stmt> ret = new HashSet<>();
+    Set<Stmt> potential = new HashSet<>();
     Collection<SootMethod> sourceMethods = inferSourceMethod(inClzDotMthd);
     for (SootMethod sm : sourceMethods) {
-      Body body = PTAUtils.getMethodBody(sm);
+      Body body = pag.getMethodBody(sm);
       for (Stmt stmt : body.getStmts()) {
         if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
           String methodSig =
@@ -455,7 +473,7 @@ public class TamiflexModel extends ReflectionModel {
         ret.add(stmt);
       }
     }
-    if (ret.size() == 0 && potential.size() > 0) {
+    if (ret.isEmpty() && !potential.isEmpty()) {
       System.out.print("Warning: Mismatch between statement and reflection log entry - ");
       System.out.println(kind + ";" + inClzDotMthd + ";" + lineNumber + ";");
       return potential;
@@ -465,23 +483,15 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   private boolean matchReflectionKind(ReflectionKind kind, String methodSig) {
-    switch (kind) {
-      case ClassForName:
-        return methodSig.equals(sigForName) || methodSig.equals(sigForName2);
-      case ClassNewInstance:
-        return methodSig.equals(sigClassNewInstance);
-      case ConstructorNewInstance:
-        return methodSig.equals(sigConstructorNewInstance);
-      case MethodInvoke:
-        return methodSig.equals(sigMethodInvoke);
-      case FieldSet:
-        return methodSig.equals(sigFieldSet);
-      case FieldGet:
-        return methodSig.equals(sigFieldGet);
-      case ArrayNewInstance:
-        return methodSig.equals(sigArrayNewInstance);
-      default:
-        return false;
-    }
+    return switch (kind) {
+      case ClassForName -> methodSig.equals(sigForName) || methodSig.equals(sigForName2);
+      case ClassNewInstance -> methodSig.equals(sigClassNewInstance);
+      case ConstructorNewInstance -> methodSig.equals(sigConstructorNewInstance);
+      case MethodInvoke -> methodSig.equals(sigMethodInvoke);
+      case FieldSet -> methodSig.equals(sigFieldSet);
+      case FieldGet -> methodSig.equals(sigFieldGet);
+      case ArrayNewInstance -> methodSig.equals(sigArrayNewInstance);
+      default -> false;
+    };
   }
 }

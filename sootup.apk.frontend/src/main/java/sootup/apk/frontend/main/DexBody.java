@@ -34,30 +34,24 @@ import org.jf.dexlib2.immutable.debug.ImmutableLineNumber;
 import org.jf.dexlib2.immutable.debug.ImmutableRestartLocal;
 import org.jf.dexlib2.immutable.debug.ImmutableStartLocal;
 import org.jf.dexlib2.util.MethodUtil;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
-import sootup.apk.frontend.dexpler.DexMethodSource;
 import sootup.apk.frontend.instruction.*;
 import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
-import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
-import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootMethod;
-import sootup.java.core.language.JavaJimple;
-import sootup.java.core.types.JavaClassType;
 
 public class DexBody {
 
@@ -98,6 +92,13 @@ public class DexBody {
 
   protected List<Trap> traps;
 
+  // end of try ranges that reach the end of the code; resolved in removeUnreachableBlocks
+  @Nullable private Stmt endOfBody;
+
+  // the exception type of the try block reaching each handler address, so move-exception
+  // instructions can be jimplified with their real type instead of always java.lang.Throwable
+  private final Map<Integer, ClassType> handlerExceptionTypes = new HashMap<>();
+
   LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap = LinkedListMultimap.create();
 
   protected class RegDbgEntry {
@@ -135,6 +136,14 @@ public class DexBody {
     }
 
     tries = code.getTryBlocks();
+    // a handler shared by several catch types (multi-catch compiles to one handler per type)
+    // keeps whichever type is encountered first
+    for (TryBlock<? extends ExceptionHandler> tryItem : tries) {
+      for (ExceptionHandler handler : tryItem.getExceptionHandlers()) {
+        handlerExceptionTypes.putIfAbsent(
+            handler.getHandlerCodeAddress(), exceptionClassType(handler.getExceptionType()));
+      }
+    }
     locals = new LinkedHashSet<>();
 
     parameterNames = new ArrayList<String>();
@@ -236,6 +245,20 @@ public class DexBody {
     return storeResultLocal;
   }
 
+  /** The exception type a move-exception at this code address should be typed with. */
+  public ClassType exceptionTypeAt(int codeAddress) {
+    ClassType type = handlerExceptionTypes.get(codeAddress);
+    return type != null ? type : exceptionClassType(null);
+  }
+
+  private static ClassType exceptionClassType(@Nullable String dexExceptionType) {
+    return JavaIdentifierFactory.getInstance()
+        .getClassType(
+            dexExceptionType == null
+                ? "java.lang.Throwable"
+                : DexUtil.dottedClassName(dexExceptionType));
+  }
+
   public void add(Stmt stmt) {
     stmtList.add(stmt);
   }
@@ -322,25 +345,14 @@ public class DexBody {
         + parameterNames;
   }
 
-  public JavaSootMethod makeSootMethod(
-      Method method, ClassType classType, List<BodyInterceptor> bodyInterceptors, View view) {
+  public Set<Local> getLocals() {
+    return locals;
+  }
+
+  /** Converts the dex instructions and returns them as a ControlFlowGraph. */
+  public MutableBlockControlFlowGraph buildControlFlowGraph() {
     jimplify();
-    // All the statements are converted, it is time to create a mutable statement graph
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
-    // If the Nop Statements are not removed, graph.initializeWith throws a runtime exception
-    // It is only for the case where there is a JNop Statement after the return statement. Crazy
-    // android code :(
-    MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature(
-                classType,
-                method.getName(),
-                DexUtil.toSootType(method.getReturnType(), 0),
-                parameterTypes);
-    while (stmtList.get(stmtList.size() - 1) instanceof JNopStmt) {
-      stmtList.remove(stmtList.size() - 1);
-    }
-    //    stmtList.removeIf(JNopStmt.class::isInstance);
     Map<BranchingStmt, List<Stmt>> branchingStmtListMap = convertMultimap(branchingMap);
     Set<Stmt> blockBegin = new HashSet<>();
     Set<Stmt> blockEnd = new HashSet<>();
@@ -356,6 +368,18 @@ public class DexBody {
           blockBegin.add(trap.getEndStmt());
           blockBegin.add(trap.getHandlerStmt());
         });
+
+    // A Stmt that does not fall through - a return, a throw, a goto - ends its block. Whatever dex
+    // placed behind it is only reachable by a jump and must not be chained onto it.
+    for (Stmt stmt : stmtList) {
+      if (!stmt.fallsThrough()) {
+        blockEnd.add(stmt);
+        // lets a try range reaching the end of the code end just before its last Stmt
+        if (endOfBody != null && !(stmt instanceof JThrowStmt)) {
+          blockBegin.add(stmt);
+        }
+      }
+    }
 
     List<List<Stmt>> listList = new ArrayList<>();
     List<Stmt> currentList = new ArrayList<>();
@@ -376,10 +400,159 @@ public class DexBody {
     if (!currentList.isEmpty()) {
       listList.add(currentList);
     }
+    removeUnreachableBlocks(listList, branchingStmtListMap);
     graph.initializeWith(listList, branchingStmtListMap, traps);
-    DexMethodSource dexMethodSource =
-        new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
-    return dexMethodSource.makeSootMethod();
+    return graph;
+  }
+
+  private void removeUnreachableBlocks(
+      List<List<Stmt>> blocks, Map<BranchingStmt, List<Stmt>> successorMap) {
+    if (blocks.isEmpty()) {
+      return;
+    }
+
+    Map<Stmt, Integer> blockOfHead = new IdentityHashMap<>();
+    for (int i = 0; i < blocks.size(); i++) {
+      blockOfHead.put(blocks.get(i).get(0), i);
+    }
+
+    boolean[] reachable = new boolean[blocks.size()];
+    Deque<Integer> worklist = new ArrayDeque<>();
+    reachable[0] = true;
+    worklist.add(0);
+    // A handler is entered by an exceptional edge from the Stmts its Trap covers, so it becomes
+    // reachable as soon as any block of that range is.
+    boolean foundHandler = true;
+    while (foundHandler) {
+      followEdges(blocks, successorMap, blockOfHead, reachable, worklist);
+      foundHandler = false;
+      for (Trap trap : traps) {
+        Integer handler = blockOfHead.get(trap.getHandlerStmt());
+        if (handler != null
+            && !reachable[handler]
+            && isRangeReachable(trap, blockOfHead, reachable, blocks.size())) {
+          markReachable(handler, reachable, worklist);
+          foundHandler = true;
+        }
+      }
+    }
+
+    Set<Stmt> removedStmts = Collections.newSetFromMap(new IdentityHashMap<>());
+    for (int i = 0; i < blocks.size(); i++) {
+      if (!reachable[i]) {
+        removedStmts.addAll(blocks.get(i));
+      }
+    }
+    if (removedStmts.isEmpty()) {
+      return;
+    }
+
+    List<Trap> keptTraps = new ArrayList<>(traps.size());
+    for (Trap trap : traps) {
+      if (removedStmts.contains(trap.getBeginStmt())
+          || removedStmts.contains(trap.getHandlerStmt())) {
+        // nothing is left of the covered range, or of the handler that would catch for it
+        continue;
+      }
+      Stmt end = trap.getEndStmt();
+      if (removedStmts.contains(end)) {
+        // the end is exclusive, so with the Stmt behind the range gone, the range grows up to the
+        // next block that stayed
+        end = null;
+        Integer endIndex = blockOfHead.get(trap.getEndStmt());
+        for (int i = endIndex == null ? blocks.size() : endIndex + 1; i < blocks.size(); i++) {
+          if (reachable[i]) {
+            end = blocks.get(i).get(0);
+            break;
+          }
+        }
+        if (end == null) {
+          end = lastStmtIfItCannotThrow(blocks, reachable, blockOfHead.get(trap.getBeginStmt()));
+        }
+        if (end == null || end == trap.getBeginStmt()) {
+          logger.debug("Dropping trap that reaches the end of the body: {}", trap);
+          continue;
+        }
+      }
+      keptTraps.add(
+          end == trap.getEndStmt()
+              ? trap
+              : Jimple.newTrap(
+                  trap.getExceptionType(), trap.getBeginStmt(), end, trap.getHandlerStmt()));
+    }
+    traps.clear();
+    traps.addAll(keptTraps);
+
+    successorMap.keySet().removeIf(removedStmts::contains);
+    stmtList.removeIf(removedStmts::contains);
+    blocks.removeIf(block -> removedStmts.contains(block.get(0)));
+  }
+
+  /**
+   * A range reaching the end of the body cannot be expressed, but it can end before the last Stmt
+   * when that Stmt cannot throw anyway.
+   */
+  @Nullable
+  private static Stmt lastStmtIfItCannotThrow(
+      List<List<Stmt>> blocks, boolean[] reachable, int beginIndex) {
+    for (int i = blocks.size() - 1; i > beginIndex; i--) {
+      if (reachable[i]) {
+        List<Stmt> block = blocks.get(i);
+        Stmt last = block.get(0);
+        return block.size() == 1 && !last.fallsThrough() && !(last instanceof JThrowStmt)
+            ? last
+            : null;
+      }
+    }
+    return null;
+  }
+
+  private static void followEdges(
+      List<List<Stmt>> blocks,
+      Map<BranchingStmt, List<Stmt>> successorMap,
+      Map<Stmt, Integer> blockOfHead,
+      boolean[] reachable,
+      Deque<Integer> worklist) {
+    while (!worklist.isEmpty()) {
+      int index = worklist.poll();
+      List<Stmt> block = blocks.get(index);
+      Stmt tail = block.get(block.size() - 1);
+      if (tail.fallsThrough()) {
+        markReachable(index + 1 < blocks.size() ? index + 1 : null, reachable, worklist);
+      }
+      if (tail.branches()) {
+        List<Stmt> targets = successorMap.get((BranchingStmt) tail);
+        if (targets != null) {
+          for (Stmt target : targets) {
+            markReachable(blockOfHead.get(target), reachable, worklist);
+          }
+        }
+      }
+    }
+  }
+
+  private static boolean isRangeReachable(
+      Trap trap, Map<Stmt, Integer> blockOfHead, boolean[] reachable, int blockCount) {
+    Integer begin = blockOfHead.get(trap.getBeginStmt());
+    if (begin == null) {
+      return false;
+    }
+    Integer end = blockOfHead.get(trap.getEndStmt());
+    // end is exclusive.
+    for (int i = begin, last = end == null ? blockCount : end; i < last; i++) {
+      if (reachable[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static void markReachable(
+      @Nullable Integer blockIndex, boolean[] reachable, Deque<Integer> worklist) {
+    if (blockIndex != null && !reachable[blockIndex]) {
+      reachable[blockIndex] = true;
+      worklist.add(blockIndex);
+    }
   }
 
   // Just a conversion code from LinkedListMultimap<BranchingStmt, List<Stmt>> to Map<BranchingStmt,
@@ -539,99 +712,81 @@ public class DexBody {
             });
   }
 
-  public void insertBefore(Stmt tobeInserted, Stmt beforeThisStmt) {
-    int specificStmtIndex = stmtList.indexOf(beforeThisStmt);
-    if (specificStmtIndex > 0) {
-      // If the specific statement is found in the list
-      stmtList.add(specificStmtIndex, tobeInserted);
-    }
-  }
-
   private void addTraps() {
-    Set<String> exceptionTypeList = new HashSet<>();
+    Set<Stmt> emitted = Collections.newSetFromMap(new IdentityHashMap<>());
+    emitted.addAll(stmtList);
+    Map<Stmt, Stmt> handlerStubs = new IdentityHashMap<>();
+    List<Stmt> stubStmts = new ArrayList<>();
     for (TryBlock<? extends ExceptionHandler> tryItem : tries) {
       int startAddress = tryItem.getStartCodeAddress();
-      int length = tryItem.getCodeUnitCount(); // .getTryLength();
-      int endAddress = startAddress + length; // - 1;
-      Stmt beginStmt = instructionAtAddress(startAddress).getStmt();
-      // (startAddress + length) typically points to the first byte of the
-      // first instruction after the try block
-      // except if there is no instruction after the try block in which
-      // case it points to the last byte of the last
-      // instruction of the try block. Removing 1 from (startAddress +
-      // length) always points to "somewhere" in
-      // the last instruction of the try block since the smallest
-      // instruction is on two bytes (nop = 0x0000).
-      Stmt endStmt = instructionAtAddress(endAddress).getStmt();
-      // if the try block ends on the last instruction of the body, add a
-      // nop instruction so Soot can include
-      // the last instruction in the try block.
-      //      if (stmtList.get(stmtList.size() - 1) == endStmt
-      //          && instructionAtAddress(endAddress - 1).getStmt() == endStmt) {
-      //        Stmt nop = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
-      //        insertAfter(endStmt, endStmt);
-      //        endStmt = nop;
-      //      }
-      List<? extends ExceptionHandler> hList = tryItem.getExceptionHandlers();
-      for (ExceptionHandler handler : hList) {
-        String exceptionType = handler.getExceptionType();
-        if (exceptionType == null) {
-          exceptionType = "Ljava/lang/Throwable$CatchAll;";
+      int endAddress = startAddress + tryItem.getCodeUnitCount();
+      Stmt beginStmt = firstStmtAtOrAfter(startAddress, endAddress, emitted);
+      if (beginStmt == null) {
+        continue;
+      }
+      Stmt endStmt = firstStmtAtOrAfter(endAddress, Integer.MAX_VALUE, emitted);
+      if (endStmt == null) {
+        if (endOfBody == null) {
+          endOfBody = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
         }
-        if (exceptionTypeList.contains(exceptionType)) {
-          exceptionType = exceptionType + "$" + exceptionTypeList.size();
+        endStmt = endOfBody;
+      }
+      for (ExceptionHandler handler : tryItem.getExceptionHandlers()) {
+        ClassType type = exceptionClassType(handler.getExceptionType());
+        int handlerAddress = handler.getHandlerCodeAddress();
+        Stmt handlerStmt = firstStmtAtOrAfter(handlerAddress, Integer.MAX_VALUE, emitted);
+        if (handlerStmt == null) {
+          continue;
         }
-        exceptionTypeList.add(exceptionType);
-        Type t = DexUtil.toSootType(exceptionType, 0);
-        // exceptions can only be of ReferenceType
-        if (t instanceof JavaClassType) {
-          JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-          JavaClassType type =
-              identifierFactory.getClassType(((JavaClassType) t).getFullyQualifiedName());
-          DexLibAbstractInstruction instruction =
-              instructionAtAddress(handler.getHandlerCodeAddress());
-          if (!(instruction instanceof MoveExceptionInstruction)) {
-            logger.debug(
-                String.format(
-                    "First instruction of trap handler unit not MoveException but %s",
-                    instruction.getClass().getName()));
-          }
-          Stmt handlerStmt;
-          if (instruction.getStmt() instanceof JNopStmt || endStmt instanceof JNopStmt) {
-            Local local = new LocalGenerator(locals).generateLocal(type);
-            locals.add(local);
-            Stmt caughtStmt =
-                Jimple.newIdentityStmt(
-                    local,
-                    JavaJimple.newCaughtExceptionRef(),
-                    StmtPositionInfo.getNoStmtPositionInfo());
-            insertBefore(caughtStmt, instruction.getStmt());
-            handlerStmt = caughtStmt;
-            if (endStmt instanceof JNopStmt) {
-              endStmt = caughtStmt;
-            }
-          } else {
-            handlerStmt = instruction.getStmt();
-          }
-          if (beginStmt != endStmt) {
-            Trap trap = Jimple.newTrap(type, beginStmt, endStmt, handlerStmt);
-            traps.add(trap);
-          }
-
-          //          try {
-          //            System.out.println(42);
-          //          }catch (IOException e){
-          //            // e : csaughtexc
-          //            System.out.println(1);
-          //          }
-          //          catch (IllegalArgumentException e1){
-          //            // e1 : caught...
-          //            System.out.println(3);
-          //          }
-
+        if (!isCaughtExceptionStmt(handlerStmt)) {
+          // like Soot's DexTrapStackFixer: the handler must begin with @caughtexception
+          Stmt target = handlerStmt;
+          handlerStmt =
+              handlerStubs.computeIfAbsent(
+                  target,
+                  t -> {
+                    Local local =
+                        Jimple.newLocal(freshLocalName("$exception"), UnknownType.getInstance());
+                    locals.add(local);
+                    Stmt caught =
+                        Jimple.newIdentityStmt(
+                            local,
+                            new JCaughtExceptionRef(exceptionTypeAt(handlerAddress)),
+                            StmtPositionInfo.getNoStmtPositionInfo());
+                    JGotoStmt jump = Jimple.newGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
+                    branchingMap.put(jump, Collections.singletonList(t));
+                    stubStmts.add(caught);
+                    stubStmts.add(jump);
+                    return caught;
+                  });
         }
+        traps.add(Jimple.newTrap(type, beginStmt, endStmt, handlerStmt));
       }
     }
+    if (endOfBody != null) {
+      stmtList.add(endOfBody);
+    }
+    stmtList.addAll(stubStmts);
+  }
+
+  /** The first emitted Stmt of an instruction in [from, until), or null if there is none. */
+  @Nullable
+  private Stmt firstStmtAtOrAfter(int from, int until, Set<Stmt> emitted) {
+    for (DexLibAbstractInstruction instruction : instructions) {
+      int address = instruction.getCodeAddress();
+      if (address >= until) {
+        return null;
+      }
+      if (address >= from && emitted.contains(instruction.getStmt())) {
+        return instruction.getStmt();
+      }
+    }
+    return null;
+  }
+
+  private static boolean isCaughtExceptionStmt(Stmt stmt) {
+    return stmt instanceof JIdentityStmt
+        && ((JIdentityStmt) stmt).getRightOp() instanceof JCaughtExceptionRef;
   }
 
   public void setDanglingInstruction(DanglingInstruction i) {

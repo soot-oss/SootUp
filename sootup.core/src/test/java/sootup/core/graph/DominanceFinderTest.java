@@ -18,7 +18,7 @@ public class DominanceFinderTest {
     int[] domsArr = dominanceFinder.getImmediateDominators();
     List<Integer> doms = Arrays.stream(domsArr).boxed().collect(Collectors.toList());
 
-    List<Integer> expectedDoms = Arrays.asList(-1, 0, 1, 2, 2, 2, 1);
+    List<Integer> expectedDoms = Arrays.asList(-1, 0, 1, 1, 3, 3, 3);
     assertEquals(expectedDoms, doms);
   }
 
@@ -33,15 +33,15 @@ public class DominanceFinderTest {
             .map(block -> dominanceFinder.getDominanceFrontiers(block))
             .collect(Collectors.toList());
 
-    // create expectedDFList
+    // RPO: A(0) B(1) C(2) D(3) E(4) F(5) G(6)
     List<Set<BasicBlock<?>>> expectedDFList = new ArrayList<>();
-    expectedDFList.add(Collections.emptySet());
-    expectedDFList.add(Collections.singleton(blocks.get(1)));
-    expectedDFList.add(Collections.singleton(blocks.get(1)));
-    expectedDFList.add(Collections.singleton(blocks.get(5)));
-    expectedDFList.add(Collections.singleton(blocks.get(5)));
-    expectedDFList.add(Collections.singleton(blocks.get(1)));
-    expectedDFList.add(Collections.emptySet());
+    expectedDFList.add(Collections.emptySet()); // A:  DF={}
+    expectedDFList.add(Collections.singleton(blocks.get(1))); // B:  DF={B}
+    expectedDFList.add(Collections.emptySet()); // C:  DF={}
+    expectedDFList.add(Collections.singleton(blocks.get(1))); // D:  DF={B}
+    expectedDFList.add(Collections.singleton(blocks.get(6))); // E:  DF={G}
+    expectedDFList.add(Collections.singleton(blocks.get(6))); // F:  DF={G}
+    expectedDFList.add(Collections.singleton(blocks.get(1))); // G:  DF={B}
 
     assertEquals(expectedDFList, dfList);
   }
@@ -83,14 +83,16 @@ public class DominanceFinderTest {
             .map(block -> dominanceFinder.getDominanceFrontiers(block))
             .collect(Collectors.toList());
 
-    // create expectedDFList
+    // RPO: B0(0) B2(1) B5(2) B4(3) B3(4) B1(5)
     List<Set<BasicBlock<?>>> expectedDFList = new ArrayList<>();
-    expectedDFList.add(Collections.emptySet());
-    expectedDFList.add(Collections.singleton(blocks.get(5)));
-    expectedDFList.add(new HashSet<>(Arrays.asList(blocks.get(3), blocks.get(4))));
-    expectedDFList.add(Collections.singleton(blocks.get(4)));
-    expectedDFList.add(new HashSet<>(Arrays.asList(blocks.get(3), blocks.get(5))));
-    expectedDFList.add(Collections.singleton(blocks.get(4)));
+    expectedDFList.add(Collections.emptySet()); // B0: DF={}
+    expectedDFList.add(
+        new HashSet<>(Arrays.asList(blocks.get(2), blocks.get(3)))); // B2: DF={B5,B4}
+    expectedDFList.add(Collections.singleton(blocks.get(3))); // B5: DF={B4}
+    expectedDFList.add(
+        new HashSet<>(Arrays.asList(blocks.get(4), blocks.get(2)))); // B4: DF={B3,B5}
+    expectedDFList.add(Collections.singleton(blocks.get(3))); // B3: DF={B4}
+    expectedDFList.add(Collections.singleton(blocks.get(4))); // B1: DF={B3}
 
     assertEquals(expectedDFList, dfList);
   }

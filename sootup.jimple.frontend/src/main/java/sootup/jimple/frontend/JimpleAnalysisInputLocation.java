@@ -32,12 +32,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
@@ -97,7 +97,7 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   @NonNull Stream<SootClassSource> walkDirectory(
       @NonNull Path dirPath,
       @NonNull IdentifierFactory factory,
-      @NonNull ClassProvider classProvider) {
+      @NonNull PathbasedClassProvider classProvider) {
 
     try {
       return Files.walk(path)

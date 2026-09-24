@@ -26,26 +26,23 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
-import sootup.core.types.Type;
-import sootup.java.core.language.JavaJimple;
 
 public class MoveExceptionInstruction extends DexLibAbstractInstruction {
-
-  protected Type realType;
-  protected JIdentityStmt stmtToRetype;
 
   @Override
   public void jimplify(DexBody body) {
     int dest = ((OneRegisterInstruction) instruction).getRegisterA();
     Local l = body.getRegisterLocal(dest);
-    JCaughtExceptionRef ref = JavaJimple.newCaughtExceptionRef();
-    stmtToRetype = Jimple.newIdentityStmt(l, ref, StmtPositionInfo.getNoStmtPositionInfo());
-    setStmt(stmtToRetype);
-    body.add(stmtToRetype);
+    // the exception type of the try block(s) reaching this handler, precomputed from the try
+    // blocks before any instruction is jimplified, so the ref carries the real type from the start
+    JCaughtExceptionRef ref = new JCaughtExceptionRef(body.exceptionTypeAt(getCodeAddress()));
+    JIdentityStmt stmt = Jimple.newIdentityStmt(l, ref, new SimpleStmtPositionInfo(lineNumber));
+    setStmt(stmt);
+    body.add(stmt);
   }
 
   public MoveExceptionInstruction(Instruction instruction, int codeAddress) {

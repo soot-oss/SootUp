@@ -75,6 +75,44 @@ All call graph construction algorithms require an entry method to start with. In
    
     ```
 
+## Scoping the Call Graph
+By default, every call graph algorithm stops exploring at library classes
+(classes whose `SourceType` is `Library`, e.g. the JDK classes pulled in via `DefaultRuntimeAnalysisInputLocation`):
+a call *into* a library method is still recorded as an edge, but the library method's own body is never analyzed, so it never gets outgoing edges of its own.
+
+This behavior is controlled by a `CallGraphScope`. `CallGraphScope.filter(SootClass, MethodSignature)` is asked once per method before its calls are resolved;
+returning `true` excludes the method from expansion. The method still shows up as a node in the resulting call graph:
+it simply has no outgoing edges, since its body is never analyzed.
+The default scope (`DefaultCallGraphScope`) is exactly the "skip library classes" behavior described above.
+
+You can pass a custom `CallGraphScope` to `ClassHierarchyAnalysisAlgorithm`/`RapidTypeAnalysisAlgorithm` to change what gets explored, e.g. to also cut off a specific package:
+
+=== "SootUp (custom scope)"
+
+    ```java
+    CallGraphScope skipTestPackage =
+        (sc, ms) -> sc.isLibraryClass() || sc.getType().getFullyQualifiedName().startsWith("com.example.tests");
+
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, skipTestPackage);
+    CallGraph cg = cha.initialize(Collections.singletonList(entryMethodSignature));
+    ```
+
+If you need to know *what* got excluded, e.g. to diagnose why an expected method is missing from the call graph, use `ExcludedCallsCollectingCallGraphScope`, which applies the default library-class filtering while recording every excluded method signature:
+
+=== "SootUp (diagnosing exclusions)"
+
+    ```java
+    ExcludedCallsCollectingCallGraphScope scope = new ExcludedCallsCollectingCallGraphScope();
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, scope);
+    CallGraph cg = cha.initialize(Collections.singletonList(entryMethodSignature));
+
+    scope.getVisitedExcludedMethods().forEach(System.out::println);
+    ```
+
+!!! info "Scope prunes expansion, not existing edges"
+
+    A `CallGraphScope` only decides whether a method's *own* calls get resolved. It does not remove edges that other, non-excluded methods already call into it -- those calls are still part of the call graph.
+
 ## Class Hierarchy Analysis
 Class Hierarchy Analysis (CHA) algorithm is the most sound call graph construction algorithm available in SootUp. It soundly includes all implementers of an interface, when resolving a method call on an interface.
 You can construct a call graph with CHA as follows:
@@ -177,21 +215,6 @@ Spark requires an initial call graph to begin with. You can use one of the call 
     ```
 
 -->
-## Qilin Pointer Analysis
-
-Qilin builds a call graph on the fly with the pointer analysis.
-You can construct a call graph with Qilin as follows:
-
-=== "SootUp"
-
-    ```java
-    String MAINCLASS = "dacapo.antlr.Main"; // just an example
-    PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern("insens"); // "2o"=>2OBJ, "1c"=>1CFA, etc.
-    PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern, view, MAINCLASS);
-    pta.run();
-    CallGraph cg = pta.getCallGraph();
-    ```
-
 ## Exporting the call graph in a Dot format 
 This guide describes how to export a **call graph** created by one of the call graph algorithms to a `.dot` format for visualization with tools like [Graphviz](https://graphviz.org/).  
 The nodes represent method signatures, and the edges contain labels showing the line numbers of the invoking statements.  

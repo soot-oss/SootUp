@@ -18,6 +18,8 @@
 
 package qilin.core.pag;
 
+import qilin.core.context.Context;
+
 public class FieldValNode extends ValNode {
   // note, field could only be ArrayElement or Field type.
   // Parm should be a local variable in some methods.
@@ -30,5 +32,10 @@ public class FieldValNode extends ValNode {
 
   public SparkField getField() {
     return field;
+  }
+
+  @Override
+  public PagNode parameterize(Parameterizer parameterizer, Context context) {
+    return parameterizer.parameterize(this, context);
   }
 }

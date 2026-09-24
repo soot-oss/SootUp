@@ -21,12 +21,12 @@ package qilin.core.builder.callgraph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+// Retained (mostly) verbatim from Soot/Spark; part of qilin's ported pointer-analysis core.
 
 import java.util.*;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import qilin.core.pag.ContextMethod;
-import qilin.util.DataFactory;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import sootup.callgraph.CallGraph;
@@ -46,8 +46,8 @@ import sootup.core.signatures.MethodSignature;
  * @author Ondrej Lhotak
  */
 public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
-  protected Set<MethodSignature> methods = DataFactory.createSet();
-  protected Map<MethodSignature, Set<Call>> calls = DataFactory.createMap();
+  protected Set<MethodSignature> methods = new HashSet<>();
+  protected Map<MethodSignature, Set<Call>> calls = new HashMap<>();
   protected int callCnt = 0;
 
   protected Set<Edge> edges = new LinkedHashSet<>();
@@ -431,7 +431,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
       @NonNull MethodSignature sourceMethod,
       @NonNull MethodSignature targetMethod,
       @NonNull InvokableStmt stmt) {
-    Set<Call> targets = this.calls.computeIfAbsent(sourceMethod, k -> DataFactory.createSet());
+    Set<Call> targets = this.calls.computeIfAbsent(sourceMethod, k -> new HashSet<>());
     if (targets.add(new Call(sourceMethod, targetMethod, stmt))) {
       ++callCnt;
     }

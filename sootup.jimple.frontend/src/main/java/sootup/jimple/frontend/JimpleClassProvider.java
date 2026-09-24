@@ -30,19 +30,19 @@ import org.antlr.v4.runtime.CharStreams;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
  * @author Markus Schmidt
  */
-public class JimpleClassProvider implements ClassProvider {
+public class JimpleClassProvider implements PathbasedClassProvider {
 
   @NonNull private final List<BodyInterceptor> bodyInterceptors;
   @NonNull private final View view;
@@ -56,7 +56,9 @@ public class JimpleClassProvider implements ClassProvider {
 
   @Override
   public Optional<SootClassSource> createClassSource(
-      AnalysisInputLocation inputlocation, Path sourcePath, ClassType classSignature) {
+      @NonNull AnalysisInputLocation inputlocation,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classSignature) {
 
     try {
       final JimpleConverter jimpleConverter = new JimpleConverter();

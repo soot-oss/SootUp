@@ -27,11 +27,11 @@ public class ReversePostOrderTraversalTest {
 
     ReversePostOrderBlockTraversal reversePostOrderBlockTraversal =
         new ReversePostOrderBlockTraversal(graph);
-    List<BasicBlock<?>> reversePostOrderBlocks = reversePostOrderBlockTraversal.getBlocksSorted();
+    List<BasicBlock<?>> reversePostOrderBlocks = reversePostOrderBlockTraversal.getBlockTraversal();
     List<Integer> RPO =
         reversePostOrderBlocks.stream().map(b -> blockToId.get(b)).collect(Collectors.toList());
 
-    List<Integer> expectedRPO = Arrays.asList(3, 2, 1, 4, 5, 0, 6);
+    List<Integer> expectedRPO = Arrays.asList(3, 2, 6, 1, 5, 4, 0);
     assertEquals(expectedRPO, RPO);
   }
 
@@ -53,11 +53,11 @@ public class ReversePostOrderTraversalTest {
 
     ReversePostOrderBlockTraversal reversePostOrderBlockTraversal =
         new ReversePostOrderBlockTraversal(graph);
-    List<BasicBlock<?>> reversePostOrderBlocks = reversePostOrderBlockTraversal.getBlocksSorted();
+    List<BasicBlock<?>> reversePostOrderBlocks = reversePostOrderBlockTraversal.getBlockTraversal();
     List<Integer> RPO =
         reversePostOrderBlocks.stream().map(b -> blocksToId.get(b)).collect(Collectors.toList());
 
-    List<Integer> expectedRPO = Arrays.asList(1, 4, 0, 3, 5, 2);
+    List<Integer> expectedRPO = Arrays.asList(1, 0, 3, 5, 2, 4);
 
     assertEquals(expectedRPO, RPO);
   }

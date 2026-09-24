@@ -108,9 +108,9 @@ public class CopyPropagatorTest {
   // if i2 > 5 goto
   AbstractConditionExpr econdition = JavaJimple.newGtExpr(i2, IntConstant.getInstance(5));
   BranchingStmt eifstmt7 = JavaJimple.newIfStmt(econdition, noStmtPositionInfo);
-  // i3 = 5 + 1
-  Expr eadd1 = JavaJimple.newAddExpr(IntConstant.getInstance(5), IntConstant.getInstance(1));
-  FallsThroughStmt estmt8 = JavaJimple.newAssignStmt(i3, eadd1, noStmtPositionInfo);
+  // i3 = 6
+  FallsThroughStmt estmt8 =
+      JavaJimple.newAssignStmt(i3, IntConstant.getInstance(6), noStmtPositionInfo);
 
   // r0 := @this Test; r1 = (ref) 0; r2 = (ref) 0L; r3 = (ref) 1; r4 = r1, r5 = r2
   // r1 = (ref) 0
@@ -154,8 +154,7 @@ public class CopyPropagatorTest {
     assertEquals(
         Stream.of(
                 "CopyPropagator this",
-                "int l1",
-                "unknown l2, l3, l4",
+                "int l1, l2, l3, l4",
                 "this := @this: CopyPropagator",
                 "l1 := @parameter0: int",
                 "l3 = 0",

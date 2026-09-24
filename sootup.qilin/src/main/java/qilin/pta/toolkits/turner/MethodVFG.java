@@ -38,7 +38,12 @@ public class MethodVFG extends AbstractMVFG {
   }
 
   @Override
-  protected boolean satisfyAddingStoreCondition(int paramIndex, Set<SootMethod> targets) {
+  protected boolean satisfyAddingStoreConditionForThis(Set<SootMethod> targets) {
+    return true;
+  }
+
+  @Override
+  protected boolean satisfyAddingStoreConditionForParam(int paramIndex, Set<SootMethod> targets) {
     return true;
   }
 }

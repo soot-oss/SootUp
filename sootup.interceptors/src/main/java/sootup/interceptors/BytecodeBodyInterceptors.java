@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
-import sootup.core.transform.BodyInterceptor;
+import sootup.core.interceptor.BodyInterceptor;
 
 /** Built-in sets of {@link BodyInterceptor}s for the bytecode frontend */
 public enum BytecodeBodyInterceptors {

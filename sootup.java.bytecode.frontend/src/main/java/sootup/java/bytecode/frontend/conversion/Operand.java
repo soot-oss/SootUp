@@ -23,7 +23,6 @@ package sootup.java.bytecode.frontend.conversion;
  */
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -39,6 +38,8 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
+import sootup.core.types.Type;
+import sootup.core.types.UnknownType;
 
 /**
  * Stack operand.
@@ -84,7 +85,11 @@ class Operand {
 
   Local getOrAssignValueToStackLocal() {
     if (stackLocal == null) {
-      changeStackLocal(methodSource.newStackLocal());
+      Type type = value.getType();
+      if (type instanceof UnknownType) {
+        type = AsmUtil.primitiveTypeFromOpcode(insn.getOpcode());
+      }
+      changeStackLocal(methodSource.newStackLocal(type));
     }
 
     return stackLocal;
@@ -117,7 +122,7 @@ class Operand {
     }
 
     Stmt stmt = methodSource.getStmt(insn);
-    if (!(stmt instanceof JAssignStmt)) {
+    if (!(stmt instanceof JAssignStmt assignStmt)) {
       // emit `$newStackLocal = value`
       if (value instanceof JCaughtExceptionRef) {
         JIdentityStmt identityStmt =
@@ -127,7 +132,6 @@ class Operand {
         methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
       }
     } else {
-      JAssignStmt assignStmt = (JAssignStmt) stmt;
       assert assignStmt.getLeftOp() == oldStackLocal || assignStmt.getLeftOp() == newStackLocal;
       // replace `$oldStackLocal = value` with `$newStackLocal = value`
       methodSource.replaceStmt(assignStmt, assignStmt.withVariable(newStackLocal));
@@ -137,8 +141,7 @@ class Operand {
     if (oldStackLocal != null) {
       ReplaceUseStmtVisitor replaceStmtVisitor =
           new ReplaceUseStmtVisitor(oldStackLocal, newStackLocal);
-      for (Stmt oldUsage :
-          methodSource.getStmtsThatUse(oldStackLocal).collect(Collectors.toList())) {
+      for (Stmt oldUsage : methodSource.getStmtsThatUse(oldStackLocal).toList()) {
         oldUsage.accept(replaceStmtVisitor);
         Stmt newUsage = replaceStmtVisitor.getResult();
 

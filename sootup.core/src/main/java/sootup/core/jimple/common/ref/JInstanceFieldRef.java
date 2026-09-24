@@ -27,7 +27,7 @@ package sootup.core.jimple.common.ref;
  * @version 1.0
  */
 
-import java.util.stream.Stream;
+import java.util.List;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.common.Local;
@@ -68,9 +68,9 @@ public final class JInstanceFieldRef extends JFieldRef {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(base.getUses(), Stream.of(base));
+  public void collectUses(List<Value> collector) {
+    base.collectUses(collector);
+    collector.add(base);
   }
 
   @Override

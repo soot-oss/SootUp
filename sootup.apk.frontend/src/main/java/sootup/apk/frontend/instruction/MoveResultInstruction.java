@@ -26,7 +26,7 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 
 public class MoveResultInstruction extends DexLibAbstractInstruction {
@@ -43,7 +43,7 @@ public class MoveResultInstruction extends DexLibAbstractInstruction {
         Jimple.newAssignStmt(
             body.getRegisterLocal(dest),
             body.getStoreResultLocal(),
-            StmtPositionInfo.getNoStmtPositionInfo());
+            new SimpleStmtPositionInfo(lineNumber));
     setStmt(assignStmt);
     body.add(assignStmt);
   }

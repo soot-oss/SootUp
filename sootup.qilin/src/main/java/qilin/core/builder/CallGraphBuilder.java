@@ -19,7 +19,6 @@
 package qilin.core.builder;
 
 import java.util.*;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.VirtualCalls;
@@ -28,12 +27,12 @@ import qilin.core.builder.callgraph.Kind;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
-import qilin.core.sets.P2SetVisitor;
-import qilin.core.sets.PointsToSetInternal;
-import qilin.util.DataFactory;
-import qilin.util.PTAUtils;
+import qilin.util.CallDetails;
+import qilin.util.JavaTypes;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
+import qilin.util.sets.P2SetVisitor;
+import qilin.util.sets.PointsToSetInternal;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -53,7 +52,6 @@ import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 
 public class CallGraphBuilder {
-  private static final ClassType clRunnable = PTAUtils.getClassType("java.lang.Runnable");
   protected final Map<VarNode, Collection<VirtualCallSite>> receiverToSites;
   protected final Map<SootMethod, Map<Object, InvokableStmt>> methodToInvokeStmt;
   protected final Set<ContextMethod> reachMethods;
@@ -72,10 +70,10 @@ public class CallGraphBuilder {
     this.ptaScene = pta.getScene();
     ptaScene.setCallGraph(new OnFlyCallGraph());
     this.virtualCalls = new VirtualCalls(ptaScene.getView());
-    receiverToSites = DataFactory.createMap((int) ptaScene.getView().getClasses().count());
-    methodToInvokeStmt = DataFactory.createMap();
-    reachMethods = DataFactory.createSet();
-    calledges = DataFactory.createSet();
+    receiverToSites = new HashMap<>((int) ptaScene.getView().getClasses().count());
+    methodToInvokeStmt = new HashMap<>();
+    reachMethods = new HashSet<>();
+    calledges = new HashSet<>();
   }
 
   public void setRMQueue(ChunkedQueue<ContextMethod> rmQueue) {
@@ -116,16 +114,15 @@ public class CallGraphBuilder {
 
   private void constructCallGraph() {
     cicg = new OnFlyCallGraph();
-    Map<Stmt, Map<SootMethod, Set<SootMethod>>> map = DataFactory.createMap();
+    Map<Stmt, Map<SootMethod, Set<SootMethod>>> map = new HashMap<>();
     calledges.forEach(
         e -> {
           ptaScene.getCallGraph().addEdge(e);
           SootMethod src = e.src();
           SootMethod tgt = e.tgt();
           Stmt unit = e.srcUnit();
-          Map<SootMethod, Set<SootMethod>> submap =
-              map.computeIfAbsent(unit, k -> DataFactory.createMap());
-          Set<SootMethod> set = submap.computeIfAbsent(src, k -> DataFactory.createSet());
+          Map<SootMethod, Set<SootMethod>> submap = map.computeIfAbsent(unit, k -> new HashMap<>());
+          Set<SootMethod> set = submap.computeIfAbsent(src, k -> new HashSet<>());
           if (set.add(tgt)) {
             cicg.addEdge(
                 new Edge(
@@ -138,7 +135,7 @@ public class CallGraphBuilder {
   }
 
   public List<ContextMethod> getEntryPoints() {
-    Node thisRef = pag.getMethodPAG(ptaScene.getFakeMainMethod()).nodeFactory().caseThis();
+    PagNode thisRef = pag.getMethodPAG(ptaScene.getFakeMainMethod()).nodeFactory().caseThis();
     thisRef = pta.parameterize(thisRef, pta.emptyContext());
     pag.addEdge(pta.getRootNode(), thisRef);
     return Collections.singletonList(
@@ -163,13 +160,24 @@ public class CallGraphBuilder {
   }
 
   protected void dispatch(AllocNode receiverNode, VirtualCallSite site) {
+    // context-sensitive variants wrap alloc nodes in ContextAllocNode; base() unwraps to the
+    // original (a no-op under context-insensitive analysis, where base() just returns itself).
+    if (receiverNode.base() instanceof LambdaAllocNode lambdaNode) {
+      // Only static targets reach here (see LambdaMetafactoryModel) - a plain static edge, no
+      // receiver/this binding needed.
+      pta.getView()
+          .getMethod(lambdaNode.getTargetMethod())
+          .ifPresent(
+              target -> addStaticEdge(site.container(), site.getUnit(), target, site.kind()));
+      return;
+    }
     Type type = receiverNode.getType();
     final QueueReader<SootMethod> targets = dispatch(type, site);
     while (targets.hasNext()) {
       SootMethod target = targets.next();
       if (site.iie() instanceof JSpecialInvokeExpr) {
         Type calleeDeclType = target.getDeclaringClassType();
-        if (!PTAUtils.canStoreType(pta.getView(), type, calleeDeclType)) {
+        if (!JavaTypes.canStoreType(pta.getView(), type, calleeDeclType)) {
           continue;
         }
       }
@@ -183,17 +191,21 @@ public class CallGraphBuilder {
       SootMethod callee,
       Kind kind,
       AllocNode receiverNode) {
-    Context tgtContext = pta.createCalleeCtx(caller, receiverNode, new CallSite(callStmt), callee);
+    Context tgtContext =
+        pta.createCalleeContext(caller, receiverNode, new CallSite(callStmt), callee);
     ContextMethod cstarget = pta.parameterize(callee, tgtContext);
     handleCallEdge(new Edge(caller, callStmt, cstarget, kind));
-    Node thisRef = pag.getMethodPAG(callee).nodeFactory().caseThis();
+    PagNode thisRef = pag.getMethodPAG(callee).nodeFactory().caseThis();
     thisRef = pta.parameterize(thisRef, cstarget.context());
     pag.addEdge(receiverNode, thisRef);
+
+    // call detail recording for MOON / Zipper's optimized PotentialContextElement
+    ptaScene.getCallDetails().addCalleeToContextAndCaller(callee, receiverNode, caller.method());
   }
 
   public void injectCallEdge(Object heapOrType, ContextMethod callee, Kind kind) {
     Map<Object, InvokableStmt> stmtMap =
-        methodToInvokeStmt.computeIfAbsent(callee.method(), k -> DataFactory.createMap());
+        methodToInvokeStmt.computeIfAbsent(callee.method(), k -> new HashMap<>());
     if (!stmtMap.containsKey(heapOrType)) {
       AbstractInvokeExpr ie =
           new JStaticInvokeExpr(callee.method().getSignature(), Collections.emptyList());
@@ -210,9 +222,14 @@ public class CallGraphBuilder {
 
   public void addStaticEdge(
       ContextMethod caller, InvokableStmt callStmt, SootMethod calleem, Kind kind) {
-    Context typeContext = pta.createCalleeCtx(caller, null, new CallSite(callStmt), calleem);
+    Context typeContext = pta.createCalleeContext(caller, null, new CallSite(callStmt), calleem);
     ContextMethod callee = pta.parameterize(calleem, typeContext);
     handleCallEdge(new Edge(caller, callStmt, callee, kind));
+
+    // call detail recording for MOON / Zipper's optimized PotentialContextElement
+    ptaScene
+        .getCallDetails()
+        .addCalleeToContextAndCaller(calleem, CallDetails.STATIC_OBJ_CTX, caller.method());
   }
 
   protected void handleCallEdge(Edge edge) {
@@ -227,14 +244,14 @@ public class CallGraphBuilder {
 
   public boolean recordVirtualCallSite(VarNode receiver, VirtualCallSite site) {
     Collection<VirtualCallSite> sites =
-        receiverToSites.computeIfAbsent(receiver, k -> DataFactory.createSet());
+        receiverToSites.computeIfAbsent(receiver, k -> new HashSet<>());
     return sites.add(site);
   }
 
   public void virtualCallDispatch(PointsToSetInternal p2set, VirtualCallSite site) {
     p2set.forall(
         new P2SetVisitor(pta) {
-          public void visit(Node n) {
+          public void visit(PagNode n) {
             dispatch((AllocNode) n, site);
           }
         });
@@ -248,8 +265,8 @@ public class CallGraphBuilder {
     MethodPAG srcmpag = pag.getMethodPAG(e.src());
     MethodPAG tgtmpag = pag.getMethodPAG(e.tgt());
     Stmt s = e.srcUnit();
-    Context srcContext = e.srcCtxt();
-    Context tgtContext = e.tgtCtxt();
+    Context srcContext = e.srcContext();
+    Context tgtContext = e.tgtContext();
     MethodNodeFactory srcnf = srcmpag.nodeFactory();
     MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
     SootMethod tgtmtd = tgtmpag.getMethod();
@@ -257,6 +274,15 @@ public class CallGraphBuilder {
     // add arg --> param edges.
     int numArgs = ie.getArgCount();
     for (int i = 0; i < numArgs; i++) {
+      if (i >= tgtmtd.getParameterCount()) {
+        // Call site arg count > target's declared param count: only reachable through the
+        // LambdaAllocNode virtual-dispatch bridge in dispatch(AllocNode, VirtualCallSite) - the
+        // SAM interface method being invoked doesn't necessarily have the same arity as the
+        // lambda's underlying static target once points-to imprecision lets the same
+        // LambdaAllocNode reach an unrelated call site. Documented gap, not a correctness bug:
+        // skip modeling this particular arg rather than crash.
+        continue;
+      }
       Value arg = ie.getArg(i);
       if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant) {
         continue;
@@ -265,29 +291,32 @@ public class CallGraphBuilder {
       if (!(tgtType instanceof ReferenceType)) {
         continue;
       }
-      Node argNode = srcnf.getNode(arg);
+      PagNode argNode = srcnf.getNode(arg);
       argNode = pta.parameterize(argNode, srcContext);
-      Node parm = tgtnf.caseParm(i);
+      PagNode parm = tgtnf.caseParm(i);
       parm = pta.parameterize(parm, tgtContext);
       pag.addEdge(argNode, parm);
+
+      // call detail recording for MOON / Zipper's optimized PotentialContextElement
+      ptaScene.getCallDetails().addArgToParamToRecvValue(argNode, parm, s);
     }
     // add normal return edge
     if (s instanceof JAssignStmt) {
       Value dest = ((JAssignStmt) s).getLeftOp();
 
       if (dest.getType() instanceof ReferenceType) {
-        Node destNode = srcnf.getNode(dest);
+        PagNode destNode = srcnf.getNode(dest);
         destNode = pta.parameterize(destNode, srcContext);
         if (tgtmtd.getReturnType() instanceof ReferenceType) {
-          Node retNode = tgtnf.caseRet();
+          PagNode retNode = tgtnf.caseRet();
           retNode = pta.parameterize(retNode, tgtContext);
           pag.addEdge(retNode, destNode);
         }
       }
     }
     // add throw return edge
-    if (CoreConfig.v().getPtaConfig().preciseExceptions) {
-      Node throwNode = tgtnf.caseMethodThrow();
+    if (pta.getConfig().isPreciseExceptions()) {
+      PagNode throwNode = tgtnf.caseMethodThrow();
       /*
        * If an invocation statement may throw exceptions, we create a special local variables
        * to receive the exception objects.
@@ -296,7 +325,7 @@ public class CallGraphBuilder {
        * */
       throwNode = pta.parameterize(throwNode, tgtContext);
       MethodNodeFactory mnf = srcmpag.nodeFactory();
-      Node dst = mnf.makeInvokeStmtThrowVarNode(s, srcmpag.getMethod());
+      PagNode dst = mnf.makeInvokeStmtThrowVarNode(s, srcmpag.getMethod());
       dst = pta.parameterize(dst, srcContext);
       pag.addEdge(throwNode, dst);
     }
@@ -306,7 +335,7 @@ public class CallGraphBuilder {
     final ChunkedQueue<SootMethod> targetsQueue = new ChunkedQueue<>();
     final QueueReader<SootMethod> targets = targetsQueue.reader();
     if (site.kind() == Kind.THREAD
-        && !PTAUtils.canStoreType(ptaScene.getView(), type, clRunnable)) {
+        && !JavaTypes.canStoreType(ptaScene.getView(), type, JavaTypes.RUNNABLE)) {
       return targets;
     }
     ContextMethod container = site.container();

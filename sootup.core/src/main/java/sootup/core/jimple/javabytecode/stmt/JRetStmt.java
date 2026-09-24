@@ -22,8 +22,8 @@ package sootup.core.jimple.javabytecode.stmt;
  * #L%
  */
 
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -79,9 +79,9 @@ public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(stmtAddress.getUses(), Stream.of(stmtAddress));
+  public void collectUses(List<Value> collector) {
+    stmtAddress.collectUses(collector);
+    collector.add(stmtAddress);
   }
 
   @Override

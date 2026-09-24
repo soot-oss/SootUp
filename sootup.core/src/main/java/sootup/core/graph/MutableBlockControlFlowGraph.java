@@ -495,9 +495,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
   @NonNull
   public List<? extends BasicBlock<?>> getBlocksSorted() {
-    ReversePostOrderBlockTraversal reversePostOrderBlockTraversal =
-        new ReversePostOrderBlockTraversal(this);
-    return reversePostOrderBlockTraversal.getBlocksSorted();
+    return new ReversePostOrderBlockTraversal(this).getBlockTraversal();
   }
 
   /**
@@ -806,8 +804,23 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         || (sBlockPredecessors.size() == 1 && sBlockPredecessors.get(0) != firstBlock)) {
       return false;
     }
+    // Merging a handler away leaves the catching blocks pointing at a dropped block.
+    if (isExceptionalSuccessor(followingBlock)) {
+      return false;
+    }
     // check if the same traps are applied to both blocks
     return firstBlock.getExceptionalSuccessors().equals(followingBlock.getExceptionalSuccessors());
+  }
+
+  private boolean isExceptionalSuccessor(@NonNull MutableBasicBlock block) {
+    for (MutableBasicBlock otherBlock : blocks) {
+      final Map<ClassType, MutableBasicBlock> exceptionalSuccessors =
+          otherBlock.getExceptionalSuccessors();
+      if (!exceptionalSuccessors.isEmpty() && exceptionalSuccessors.containsValue(block)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** trys to merge the second block into the first one if possible */
@@ -819,11 +832,11 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         addNodeToBlock(firstBlock, stmt);
       }
 
-      // i.e. can just be the single followingblock which we merge now
+      // i.e. can just be the single following block which we merge now
       firstBlock.clearSuccessorBlocks();
 
       // update linking info into firstBlock
-      // done in clearPredecessorBlock      firstBlock.removeSuccessorBlock(followingBlock);
+      // done in clearPredecessorBlock firstBlock.removeSuccessorBlock(followingBlock);
       List<MutableBasicBlock> successors = followingBlock.getSuccessors();
       for (int i = 0; i < successors.size(); i++) {
         MutableBasicBlock succ = successors.get(i);
@@ -1148,19 +1161,34 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     final MutableBasicBlock newBlock = addBlockInternal(stmts, exceptionMap);
     // insert before a existingStmt that is at the beginning of a Block
     if (oldBlock.getHead() == existingStmt) {
+      // Exceptional edges enter oldBlock too, so they are re-pointed as well; predecessorBlocks
+      // holds one untagged entry per edge, so count moves the entries.
+      Set<MutableBasicBlock> movedPredecessors = Collections.newSetFromMap(new IdentityHashMap<>());
       for (MutableBasicBlock predecessor : Lists.newArrayList(oldBlock.getPredecessors())) {
-        // cleanup old & add new link
-        predecessor.replaceSuccessorBlock(oldBlock, newBlock);
+        if (!movedPredecessors.add(predecessor)) {
+          continue;
+        }
+        int normalEdgeCount = predecessor.replaceSuccessorBlock(oldBlock, newBlock).size();
+        List<ClassType> exceptionalEdges = new ArrayList<>();
+        predecessor
+            .getExceptionalSuccessors()
+            .forEach(
+                (type, handler) -> {
+                  if (handler == oldBlock) {
+                    exceptionalEdges.add(type);
+                  }
+                });
         oldBlock.removePredecessorBlock(predecessor);
-        newBlock.addPredecessorBlock(predecessor);
+        for (int i = 0; i < normalEdgeCount; i++) {
+          newBlock.addPredecessorBlock(predecessor);
+        }
+        // re-points the edge and registers predecessor on newBlock for each exception type
+        exceptionalEdges.forEach(type -> predecessor.linkExceptionalSuccessorBlock(type, newBlock));
       }
       // try to merge inserted stmts into oldBlock
       if (!tryMergeBlocks(newBlock, oldBlock)) {
         // all inserted stmts are FallingThrough: so successorIdx = 0
         newBlock.linkSuccessor(0, oldBlock);
-        if (existingStmt == getStartingStmt()) {
-          setStartingStmt(stmts.get(0));
-        }
       }
       if (existingStmt == getStartingStmt()) {
         setStartingStmt(stmts.get(0));
@@ -1551,7 +1579,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   }
 
   @Override
-  @Nullable
+  @NonNull
   public BasicBlock<?> getBlockOf(@NonNull Stmt stmt) {
     final Pair<Integer, MutableBasicBlock> mutableBasicBlock = stmtToBlock.get(stmt);
     if (mutableBasicBlock == null) {
@@ -1569,11 +1597,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
   public void setStartingStmt(@NonNull Stmt startingStmt) {
     if (stmtToBlock.get(startingStmt) == null) {
-      Pair<Integer, MutableBasicBlock> block = stmtToBlock.get(startingStmt);
-      if (block == null) {
-        // Stmt does not exist in the graph
-        createStmtsBlock(startingStmt);
-      }
+      createStmtsBlock(startingStmt);
     }
     this.startingStmt = startingStmt;
   }
@@ -1643,7 +1667,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
     List<Stmt> exceptionalPred = new ArrayList<>();
     for (BasicBlock<?> pBlock : block.getPredecessors()) {
-      if (pBlock.getExceptionalSuccessors().containsValue(pBlock)) {
+      if (pBlock.getExceptionalSuccessors().containsValue(block)) {
         exceptionalPred.addAll(pBlock.getStmts());
       }
     }

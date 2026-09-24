@@ -18,19 +18,19 @@
 
 package qilin.pta.toolkits.conch;
 
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 
 /*
  * This is the path edge defined as the standard in IFDS algorithm.
  * */
 public class PathEdge {
-  final Node srcNode;
+  final PagNode srcNode;
   final DFA.State srcState;
-  final Node tgtNode;
+  final PagNode tgtNode;
   final DFA.State tgtState;
   final int hashCode;
 
-  public PathEdge(Node srcNode, DFA.State srcState, Node tgtNode, DFA.State tgtState) {
+  public PathEdge(PagNode srcNode, DFA.State srcState, PagNode tgtNode, DFA.State tgtState) {
     this.srcNode = srcNode;
     this.srcState = srcState;
     this.tgtNode = tgtNode;
@@ -45,7 +45,7 @@ public class PathEdge {
     this.hashCode = result;
   }
 
-  public Node getSrcNode() {
+  public PagNode getSrcNode() {
     return srcNode;
   }
 
@@ -53,7 +53,7 @@ public class PathEdge {
     return srcState;
   }
 
-  public Node getTgtNode() {
+  public PagNode getTgtNode() {
     return tgtNode;
   }
 

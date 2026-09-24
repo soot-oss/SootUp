@@ -28,7 +28,7 @@ import org.jf.dexlib2.iface.reference.TypeReference;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.expr.JInstanceOfExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.types.Type;
@@ -45,7 +45,7 @@ public class InstanceOfInstruction extends DexLibAbstractInstruction {
         Jimple.newInstanceOfExpr(body.getRegisterLocal(source), sootType);
     JAssignStmt jAssignStmt =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), jInstanceOfExpr, StmtPositionInfo.getNoStmtPositionInfo());
+            body.getRegisterLocal(dest), jInstanceOfExpr, new SimpleStmtPositionInfo(lineNumber));
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }

@@ -24,7 +24,6 @@ package sootup.core.jimple.common.stmt;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -102,9 +101,9 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
   }
 
   @Override
-  @NonNull
-  public Stream<Value> getUses() {
-    return Stream.concat(getCondition().getUses(), Stream.of(getCondition()));
+  public void collectUses(List<Value> collector) {
+    getCondition().collectUses(collector);
+    collector.add(getCondition());
   }
 
   @Override

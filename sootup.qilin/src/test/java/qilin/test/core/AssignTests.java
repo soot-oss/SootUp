@@ -18,13 +18,10 @@
 
 package qilin.test.core;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import qilin.pta.PTAConfig;
-import qilin.test.util.JunitTests;
+import qilin.test.util.QilinFrameworkTests;
 
-@Disabled
-public class AssignTests extends JunitTests {
+public class AssignTests extends QilinFrameworkTests {
   @Test
   public void testCastFail() {
     checkAssertions(run("qilin.microben.core.assign.CastFail"));
@@ -43,19 +40,16 @@ public class AssignTests extends JunitTests {
   @Test
   public void testSimpleAssign() {
     checkAssertions(run("qilin.microben.core.assign.SimpleAssign"));
-    System.out.println(PTAConfig.v().getAppConfig().MAIN_CLASS);
   }
 
   @Test
   public void testReturnValue0() {
     checkAssertions(run("qilin.microben.core.assign.ReturnValue0"));
-    System.out.println(PTAConfig.v().getAppConfig().MAIN_CLASS);
   }
 
   @Test
   public void testReturnValue1() {
     checkAssertions(run("qilin.microben.core.assign.ReturnValue1"));
-    System.out.println(PTAConfig.v().getAppConfig().MAIN_CLASS);
   }
 
   @Test
@@ -86,6 +80,5 @@ public class AssignTests extends JunitTests {
   @Test
   public void testRecursion() {
     checkAssertions(run("qilin.microben.core.assign.Recursion"));
-    System.out.println(PTAConfig.v().getAppConfig().MAIN_CLASS);
   }
 }

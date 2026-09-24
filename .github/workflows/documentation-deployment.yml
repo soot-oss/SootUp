@@ -21,7 +21,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0                                                     # mike needs full history to push to gh-pages
@@ -34,13 +34,13 @@ jobs:
 
       - name: Generate Javadoc
         shell: bash
-        run: mvn clean install -DskipTests -B && mvn javadoc:aggregate         # generates javadoc in "target/reports/apidocs"
+        run: mvn clean install -DskipTests -B -ntp && mvn javadoc:aggregate         # generates javadoc in "target/reports/apidocs"
 
       - name: Move generated Javadoc into docs directory
         shell: bash
         run: rm -rf docs/api; mkdir -p docs/api; mv target/reports/apidocs/* docs/api
 
       - name: Deploy Documentation
-        uses: secure-software-engineering/actions/documentation/deployment@450bba69b4928dfedda9ba3f41e1aec8ac55e059 # develop
+        uses: secure-software-engineering/actions/documentation/deployment@7a286175a5ce134571e0228fc4da41885f2821e3 # develop
         with:
           version: ${{ github.ref_name }}

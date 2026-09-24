@@ -28,8 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import sootup.core.model.SootClass;
 import sootup.core.types.*;
 import sootup.core.views.View;
 
@@ -41,8 +40,6 @@ import sootup.core.views.View;
  * @author Christian Brüggemann
  */
 public interface TypeHierarchy {
-
-  Logger logger = LoggerFactory.getLogger(TypeHierarchy.class);
 
   /**
    * Returns all classes that implement the specified interface. This is transitive: If class <code>
@@ -84,6 +81,18 @@ public interface TypeHierarchy {
    */
   // TODO: [ms] check! not sure this method makes sense in the interface..
   @NonNull Stream<ClassType> subtypesOf(@NonNull ClassType type);
+
+  /**
+   * Equivalent to resolving every element of {@link #subtypesOf(ClassType)} to its {@link
+   * SootClass} via the underlying {@link View}, i.e. {@code subtypesOf(type).flatMap(ct ->
+   * view.getClass(ct).stream())} - a subtype the {@link View} cannot resolve on its own (e.g. one
+   * added via {@link MutableTypeHierarchy#addType} with a class instance the view doesn't know
+   * about) is silently excluded, same as that composition would produce. Implementations are
+   * expected to cache this resolution (invalidated the same way as {@link #subtypesOf(ClassType)}),
+   * since callers such as call graph algorithms query the same declaring type repeatedly across
+   * many call sites.
+   */
+  @NonNull Stream<? extends SootClass> subtypeClassesOf(@NonNull ClassType type);
 
   /** Returns the direct implementers of an interface or direct subclasses of a class. */
   @NonNull Stream<ClassType> directSubtypesOf(@NonNull ClassType type);
@@ -152,12 +161,7 @@ public interface TypeHierarchy {
     } else if (supertype instanceof ClassType) {
       String supertypeName = ((ClassType) supertype).getFullyQualifiedName();
       if (potentialSubtype instanceof ClassType) {
-        String potentialSubtypeName = ((ClassType) potentialSubtype).getFullyQualifiedName();
-        // any potential subtype is a subtype of java.lang.Object except java.lang.Object itself
-        // superClassOf() check is a fast path
-        return (supertypeName.equals(jlObject) && !potentialSubtypeName.equals(jlObject))
-            || superClassesOf((ClassType) potentialSubtype).anyMatch(t -> t == supertype)
-            || implementedInterfacesOf((ClassType) potentialSubtype).anyMatch(t -> t == supertype);
+        return isClassSubtype((ClassType) supertype, (ClassType) potentialSubtype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
         return supertypeName.equals(jlObject)
@@ -178,22 +182,32 @@ public interface TypeHierarchy {
   @NonNull
   default Stream<ClassType> superClassesOf(@NonNull ClassType classType) {
     List<ClassType> superClasses = new ArrayList<>();
-    Optional<ClassType> currentSuperClass = Optional.empty();
-    try {
-      currentSuperClass = superClassOf(classType);
-      while (currentSuperClass.isPresent()) {
-        ClassType superClassType = currentSuperClass.get();
-        superClasses.add(superClassType);
-        currentSuperClass = superClassOf(superClassType);
-      }
-    } catch (IllegalArgumentException ex) {
-      logger.warn(
-          "Could not find "
-              + (currentSuperClass.isPresent() ? currentSuperClass : classType)
-              + " and stopped there the resolve of superclasses of "
-              + classType);
+    Optional<ClassType> currentSuperClass = superClassOf(classType);
+    while (currentSuperClass.isPresent()) {
+      ClassType superClassType = currentSuperClass.get();
+      superClasses.add(superClassType);
+      currentSuperClass = superClassOf(superClassType);
     }
     return superClasses.stream();
+  }
+
+  /**
+   * Returns true if <code>potentialSubtype</code> is a (possibly indirect) subtype of <code>
+   * supertype</code>, both of which are class types (not arrays). Extracted out of {@link
+   * #isSubtype(Type, Type)} so implementations can override it with a check faster than the
+   * default's linear {@link #superClassesOf(ClassType)}/{@link #implementedInterfacesOf(ClassType)}
+   * walk.
+   */
+  default boolean isClassSubtype(
+      @NonNull ClassType supertype, @NonNull ClassType potentialSubtype) {
+    String supertypeName = supertype.getFullyQualifiedName();
+    String potentialSubtypeName = potentialSubtype.getFullyQualifiedName();
+    final String jlObject = "java.lang.Object";
+    // any potential subtype is a subtype of java.lang.Object except java.lang.Object itself
+    // superClassOf() check is a fast path
+    return (supertypeName.equals(jlObject) && !potentialSubtypeName.equals(jlObject))
+        || superClassesOf(potentialSubtype).anyMatch(t -> t == supertype)
+        || implementedInterfacesOf(potentialSubtype).anyMatch(t -> t == supertype);
   }
 
   Stream<ClassType> directlyImplementedInterfacesOf(@NonNull ClassType type);
@@ -207,4 +221,14 @@ public interface TypeHierarchy {
   boolean contains(ClassType type);
 
   Collection<ClassType> getLowestCommonAncestors(ClassType a, ClassType b);
+
+  /**
+   * Returns a counter that increases every time the hierarchy's structure is mutated (e.g. via
+   * {@link MutableTypeHierarchy#addType}, including mutations triggered internally by lazy
+   * resolution of previously-unseen types). Callers that build their own caches derived from
+   * hierarchy queries (e.g. call graph algorithms caching resolved dispatch targets) can compare
+   * this value across calls to detect staleness without needing to be notified of every individual
+   * mutation.
+   */
+  long getModificationCount();
 }

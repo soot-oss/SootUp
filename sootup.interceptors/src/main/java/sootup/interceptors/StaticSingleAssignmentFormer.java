@@ -23,12 +23,12 @@ package sootup.interceptors;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.DominanceFinder;
 import sootup.core.graph.DominanceTree;
 import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
@@ -39,7 +39,6 @@ import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
 /**
@@ -117,7 +116,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
       Set<FallsThroughStmt> newPhiStmts = new HashSet<>();
       for (Stmt stmt : block.getStmts()) {
         // replace use
-        final List<Value> uses = stmt.getUses().collect(Collectors.toList());
+        final List<Value> uses = stmt.getUses();
         if (!uses.isEmpty() && !containsPhiExpr(stmt)) {
           for (Value use : uses) {
             if (use instanceof Local) {
