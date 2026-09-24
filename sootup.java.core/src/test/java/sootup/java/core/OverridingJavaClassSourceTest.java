@@ -19,19 +19,18 @@ import sootup.core.model.MethodModifier;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
-import sootup.core.signatures.FieldSignature;
-import sootup.core.signatures.FieldSubSignature;
-import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
+import sootup.core.signatures.*;
 import sootup.core.types.PrimitiveType;
 import sootup.java.core.types.JavaClassType;
 
 class OverridingJavaClassSourceTest {
+  private final JavaIdentifierFactory factory = new JavaIdentifierFactory();
 
   private static JavaSootMethod createMethod(JavaClassType classType, String name) {
     MethodSubSignature subSig =
-        new MethodSubSignature(name, Collections.emptyList(), PrimitiveType.getInt());
-    MethodSignature sig = new MethodSignature(classType, subSig);
+        SignatureInterner.getMethodSubSignature(
+            name, PrimitiveType.getInt(), Collections.emptyList());
+    MethodSignature sig = SignatureInterner.getMethodSignature(classType, subSig);
     BodySource bodySource =
         new BodySource() {
           @Override
@@ -59,8 +58,8 @@ class OverridingJavaClassSourceTest {
   }
 
   private static JavaSootField createField(JavaClassType classType, String name) {
-    FieldSubSignature subSig = new FieldSubSignature(name, PrimitiveType.getInt());
-    FieldSignature sig = new FieldSignature(classType, subSig);
+    FieldSubSignature subSig = SignatureInterner.getFieldSubSignature(name, PrimitiveType.getInt());
+    FieldSignature sig = SignatureInterner.getFieldSignature(classType, subSig);
     return new JavaSootField(sig, Collections.emptySet(), NoPositionInformation.getInstance());
   }
 
@@ -80,7 +79,6 @@ class OverridingJavaClassSourceTest {
    */
   @Test
   void testPreservesMethodOrderOnReplacement() {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaClassType classType = factory.getClassType("com.example.TestClass");
     JavaSootMethod m1 = createMethod(classType, "alpha");
     JavaSootMethod m2 = createMethod(classType, "beta");
@@ -120,7 +118,6 @@ class OverridingJavaClassSourceTest {
 
   @Test
   void testPreservesFieldOrderOnReplacement() {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaClassType classType = factory.getClassType("com.example.TestClass");
     JavaSootField f1 = createField(classType, "alphaField");
     JavaSootField f2 = createField(classType, "betaField");
