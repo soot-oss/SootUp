@@ -111,4 +111,17 @@ public interface SootMethod extends Method {
   @NonNull Position getPosition();
 
   @NonNull ClassType getDeclaringClassType();
+
+  /**
+   * Query method parameter declaration annotations (JVMS §4.7.18/§4.7.19) by parameter index. JSR
+   * 308 type annotations (JVMS §4.7.20) attached to METHOD_FORMAL_PARAMETER are kept on parameter
+   * locals and do not leak into this declaration-annotation API.
+   */
+  default <T> List<T> getParameterAnnotations(int paramIndex) {
+    return getParameterAnnotations(paramIndex, "Any");
+  }
+
+  default <T> List<T> getParameterAnnotations(int paramIndex, String visibility) {
+    return getBodySource().getParameterAnnotations(paramIndex, visibility);
+  }
 }
