@@ -16,7 +16,6 @@ import org.jf.dexlib2.writer.io.MemoryDataStore;
 import org.jf.dexlib2.writer.pool.DexPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.views.View;
 
@@ -35,8 +34,7 @@ public class DexOutputLocation {
     this.apkFile = apkFile;
   }
 
-  public void writeDex(String outputDir) {
-    AndroidVersionInfo androidVersionInfo = DexUtil.getAndroidVersionInfo();
+  public void writeDex(String outputDir, AndroidVersionInfo androidVersionInfo) {
     int minSdkVersion = androidVersionInfo.minSdkVersion;
 
     opcodes = Opcodes.forApi(minSdkVersion);
@@ -58,8 +56,7 @@ public class DexOutputLocation {
     }
   }
 
-  public void writeApk(String outputDir) {
-    AndroidVersionInfo androidVersionInfo = DexUtil.getAndroidVersionInfo();
+  public void writeApk(String outputDir, AndroidVersionInfo androidVersionInfo) {
     int minSdkVersion = androidVersionInfo.minSdkVersion;
 
     opcodes = Opcodes.forApi(minSdkVersion);

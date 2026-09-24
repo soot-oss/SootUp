@@ -48,7 +48,7 @@ public class CmpInstruction extends DexLibAbstractInstruction {
     Opcode opcode = instruction.getOpcode();
     Expr cmpExpr;
     switch (opcode) {
-      case CMPL_DOUBLE:/        type = PrimitiveType.FloatType.getInstance();
+      case CMPL_DOUBLE:
       case CMPL_FLOAT:
         cmpExpr = Jimple.newCmplExpr(first, second);
         break;

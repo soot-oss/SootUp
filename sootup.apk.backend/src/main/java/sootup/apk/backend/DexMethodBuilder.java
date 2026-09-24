@@ -528,7 +528,7 @@ public class DexMethodBuilder {
         continue;
       }
 
-      if (stmt.getUses().anyMatch(variable::equals)) {
+      if (stmt.getUses().stream().anyMatch(variable::equals)) {
         return true;
       }
 
@@ -816,7 +816,7 @@ public class DexMethodBuilder {
         Stmt stmt = stmts.get(i);
         if (!(stmt instanceof JIdentityStmt)
             && !(stmt instanceof JInvokeStmt)
-            && stmt.getUses().anyMatch(value -> value.equals(finalThisVariable))) {
+            && stmt.getUses().stream().anyMatch(value -> value.equals(finalThisVariable))) {
 
           if (stmt instanceof JAssignStmt jAssignStmt) {
             if (jAssignStmt.getRightOp() instanceof JCastExpr jCastExpr) {
