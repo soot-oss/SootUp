@@ -2108,4 +2108,36 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     return Stream.concat(currentUses, oldMappedUses);
   }
+
+  // What & Why: Return method parameter declaration annotations (JVMS §4.7.18/§4.7.19).
+  // JSR 308 type-use annotations (JVMS §4.7.20) attached to METHOD_FORMAL_PARAMETER must NOT leak
+  // into parameter declaration annotations; they are kept separate on the parameter JavaLocal.
+  @Override
+  public List<AnnotationUsage> getParameterAnnotations(int paramIndex) {
+    return getParameterAnnotations(paramIndex, "Any");
+  }
+
+  @Override
+  public List<AnnotationUsage> getParameterAnnotations(int paramIndex, String visibility) {
+    boolean vis = "Any".equals(visibility) || "RuntimeVisible".equals(visibility);
+    boolean invis = "Any".equals(visibility) || "RuntimeInvisible".equals(visibility);
+    List<AnnotationUsage> list = new ArrayList<>();
+    if (vis) {
+      if (visibleParameterAnnotations != null
+          && paramIndex < visibleParameterAnnotations.length
+          && visibleParameterAnnotations[paramIndex] != null) {
+        AsmUtil.createAnnotationUsage(visibleParameterAnnotations[paramIndex], identifierFactory)
+            .forEach(list::add);
+      }
+    }
+    if (invis) {
+      if (invisibleParameterAnnotations != null
+          && paramIndex < invisibleParameterAnnotations.length
+          && invisibleParameterAnnotations[paramIndex] != null) {
+        AsmUtil.createAnnotationUsage(invisibleParameterAnnotations[paramIndex], identifierFactory)
+            .forEach(list::add);
+      }
+    }
+    return list;
+  }
 }
