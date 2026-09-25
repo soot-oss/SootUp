@@ -22,8 +22,12 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import sootup.core.model.SootClass;
+import sootup.core.views.View;
 
 /**
  * Validates classes to make sure that the outer class chain is not recursive
@@ -33,20 +37,29 @@ import sootup.core.model.SootClass;
 public class OuterClassValidator implements ClassValidator {
 
   @Override
-  public void validate(SootClass sc, List<ValidationException> exceptions) {
+  public void validate(SootClass sc, List<ValidationException> exceptions, View view) {
 
-    // TODO: check code from old soot in the comment
+    Set<SootClass> outerClasses = new HashSet<>();
+    SootClass curClass = sc;
 
-    /*
-     * Set<SootClass> outerClasses = new HashSet<SootClass>(); SootClass curClass = sc; while (curClass != null) { if
-     * (!outerClasses.add(curClass)) { exceptions.add(new ValidationException(curClass, "Circular outer class chain"));
-     * break; } curClass = curClass.hasOuterClass() ? curClass.getOuterClass() : null; }
-     */
+    while (curClass != null) {
+      boolean isNew = outerClasses.add(curClass);
+      if (!isNew) {
+        exceptions.add(new ValidationException(curClass, "Circular outer class chain"));
+        break;
+      }
+
+      if (curClass.hasOuterClass()) {
+        Optional<? extends SootClass> outerClassOpt = view.getClass(curClass.getOuterClass().get());
+        curClass = outerClassOpt.orElse(null);
+      } else {
+        curClass = null;
+      }
+    }
   }
 
   @Override
   public boolean isBasicValidator() {
-    // TODO: check code from old soot n the comment
     return true;
   }
 }
