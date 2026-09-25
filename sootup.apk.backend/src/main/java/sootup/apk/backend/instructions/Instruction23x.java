@@ -26,12 +26,18 @@ public class Instruction23x extends ThreeRegisterInstruction {
 
   @Override
   public List<Register> getDefRegisters() {
-    return List.of(getRegisterA());
+    if (!getOpcode().name.toLowerCase().startsWith("aput")) {
+      return List.of(getRegisterA());
+    }
+    return List.of();
   }
 
   @Override
   public List<Register> getUseRegisters() {
-    return List.of(getRegisterB(), getRegisterC());
+    if (!getOpcode().name.toLowerCase().startsWith("aput")) {
+      return List.of(getRegisterB(), getRegisterC());
+    }
+    return getRegisters();
   }
 
   @Override

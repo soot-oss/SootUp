@@ -22,6 +22,7 @@ public class Instruction10t extends AbstractInstruction {
 
   @Override
   public BuilderInstruction getBuilderInstruction() {
+    log.info("Get builder instruction");
     BuilderInstruction builderInstruction =
         new BuilderInstruction10t(
             super.getOpcode(), getLabelAssigner().getOrCreateLabel(targetStmt));

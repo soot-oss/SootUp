@@ -111,7 +111,6 @@ public class RegisterAllocator {
       Register register = getReusableConstantRegister(constant, type, guessed, n);
 
       register.setIsTypeGuessed(guessed);
-      register.setIsPotentialNullValue(n);
 
       dexConstantVisitor.setTargetRegister(register);
       dexConstantVisitor.setCurrentStmt(currentStmt);
@@ -155,7 +154,6 @@ public class RegisterAllocator {
         Register register = allocateNewRegister(type, false, false);
 
         register.setIsTypeGuessed(guessed);
-        register.setIsPotentialNullValue(potentialNull);
 
         pool.add(register);
         constantPoolIndices.put(constant.getClass(), index + 1);
@@ -173,7 +171,6 @@ public class RegisterAllocator {
       }
 
       register.setIsTypeGuessed(guessed);
-      register.setIsPotentialNullValue(potentialNull);
 
       return register;
     }

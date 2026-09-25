@@ -41,6 +41,9 @@ public class SwitchPayload extends AbstractPayload {
       List<Label> switchElements = new ArrayList<>();
       Stmt defaultStmt = stmts[stmts.length - 1];
       for (int key = cases.firstKey(); key <= cases.lastKey(); key++) {
+        log.info("get label for switch element 1");
+        log.info("Key: {}", key);
+        log.info("First key: {}, lastKey: {}", cases.firstKey(), cases.lastKey());
         switchElements.add(
             getLabelAssigner().getOrCreateLabel(cases.getOrDefault(key, defaultStmt)));
       }

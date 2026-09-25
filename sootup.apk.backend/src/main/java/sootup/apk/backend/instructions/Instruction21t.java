@@ -19,6 +19,7 @@ public class Instruction21t extends OneRegisterInstruction {
 
   @Override
   public BuilderInstruction getBuilderInstruction() {
+    log.info("get builder instruction");
     BuilderInstruction builderInstruction =
         new BuilderInstruction21t(
             getOpcode(),

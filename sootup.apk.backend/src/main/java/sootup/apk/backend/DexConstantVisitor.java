@@ -43,7 +43,6 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
   public void caseBooleanConstant(@NonNull BooleanConstant constant) {
     fixObjectType(PrimitiveType.getBoolean());
     int value = constant.getValue() ? 1 : 0;
-    targetRegister.setIsPotentialNullValue(value == 0);
     dexMethodBuilder.addInstruction(
         new Instruction11n(Opcode.CONST_4, targetRegister, value), currentStmt);
   }
@@ -69,7 +68,6 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
   @Override
   public void caseIntConstant(@NonNull IntConstant constant) {
     int value = constant.getValue();
-    targetRegister.setIsPotentialNullValue(value == 0);
     fixObjectType(PrimitiveType.getInt());
     if (DexUtil.inSigned4Bit(value)) {
       dexMethodBuilder.addInstruction(
@@ -101,7 +99,7 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
 
   @Override
   public void caseNullConstant(@NonNull NullConstant constant) {
-    fixObjectType(NullType.getInstance());
+    // fixObjectType(NullType.getInstance());
     dexMethodBuilder.addInstruction(
         new Instruction21s(Opcode.CONST_16, targetRegister, 0), currentStmt);
   }
@@ -196,7 +194,6 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
         || targetRegister.isTypeGuessed()) {
       log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
       targetRegister.setType(defaultType);
-      targetRegister.setIsTypeGuessed(true);
     }
   }
 }

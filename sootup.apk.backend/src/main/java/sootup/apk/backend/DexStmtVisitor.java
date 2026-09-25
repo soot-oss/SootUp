@@ -121,7 +121,6 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
           } else {
             targetRegister.setType(constant.getType());
           }
-          targetRegister.setIsTypeGuessed(true);
         }
         dexConstantVisitor.setTargetRegister(targetRegister);
         dexConstantVisitor.setCurrentStmt(stmt);
@@ -228,6 +227,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     Immediate op = stmt.getOp();
     Register register = registerAllocator.getRegisterForImmediate(op, false, stmt);
     String dexType = DexUtil.toDexType(register.getType());
+    log.info("return stmt {} with value type {}", stmt, dexType);
     Opcode opcode;
     if (DexUtil.isObject(dexType)) {
       opcode = Opcode.RETURN_OBJECT;
@@ -277,9 +277,12 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     ArrayList<IntConstant> valueList = new ArrayList<>(values);
     valueList.sort(Comparator.comparing(IntConstant::getValue));
 
-    int packedSize =
-        4 + (valueList.get(valueList.size() - 1).getValue() - valueList.get(0).getValue() + 1);
-    int sparseSize = 2 + (valueList.size() * 2);
+    long min = valueList.get(0).getValue();
+    long max = valueList.get(valueList.size() - 1).getValue();
+
+    long packedSize = 4L + (max - min + 1L);
+    long sparseSize = 2L + (valueList.size() * 2L);
+
     return packedSize <= sparseSize ? Opcode.PACKED_SWITCH : Opcode.SPARSE_SWITCH;
   }
 

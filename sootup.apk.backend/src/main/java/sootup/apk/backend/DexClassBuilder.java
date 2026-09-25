@@ -17,6 +17,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.java.core.JavaSootClass;
 
 public class DexClassBuilder {
 
@@ -62,6 +63,16 @@ public class DexClassBuilder {
             : null;
 
     List<Annotation> annotations = null; // TODO
+
+    if (c instanceof JavaSootClass javaSootClass) {
+      var a = javaSootClass.getAnnotations();
+      for (var annotation : a) {
+        log.info("ANNOTATION: {}", annotation.getAnnotation().getFullyQualifiedName());
+        for (var entry : annotation.getValues().entrySet()) {
+          log.info("{} = {}", entry.getKey(), entry.getValue());
+        }
+      }
+    }
 
     ClassDef classDef =
         new ImmutableClassDef(

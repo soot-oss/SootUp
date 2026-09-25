@@ -9,11 +9,21 @@ import sootup.core.types.*;
 
 public class DexUtil {
 
-  protected static String toDexClassName(String sootClassName) {
-    if (!sootClassName.startsWith("L") && !sootClassName.endsWith(";")) {
-      sootClassName = 'L' + sootClassName + ';';
+  protected static String toDexClassName(String s) {
+    int i = 0;
+    while (i < s.length() && s.charAt(i) == '[') i++;
+
+    String prefix = s.substring(0, i);
+    String name = s.substring(i);
+
+    if (isDexTypePrimitive(name)) {
+      return s;
     }
-    return sootClassName.replace('.', '/');
+
+    if (!name.startsWith("L")) name = "L" + name;
+    if (!name.endsWith(";")) name += ";";
+
+    return prefix + name.replace('.', '/');
   }
 
   protected static String toDexType(Type type) {
@@ -22,7 +32,7 @@ public class DexUtil {
     } else if (type instanceof PrimitiveType primitiveType) {
       return toDexPrimitiveType(primitiveType);
     } else if (type instanceof NullType) {
-      return "I";
+      return "Ljava/lang/Object;";
     } else if (type instanceof VoidType) {
       return "V";
     } else if (type instanceof ClassType classType) {
@@ -62,7 +72,7 @@ public class DexUtil {
     return null;
   }
 
-  private boolean isDexTypePrimitive(String dexType) {
+  private static boolean isDexTypePrimitive(String dexType) {
     return Set.of("Z", "B", "C", "S", "I", "J", "D", "F").contains(dexType);
   }
 

@@ -103,14 +103,18 @@ public class DexRefVisitor extends AbstractRefVisitor {
     Immediate index = ref.getIndex();
     Register indexRegister = registerAllocator.getRegisterForImmediate(index, false, currentStmt);
 
-    ArrayType arrayType = (ArrayType) arrayRegister.getType();
-    if (operation.equals(RefOperation.GET)) {
-      fixObjectType(arrayType.getElementType());
+    String dexType;
+    if (arrayRegister.getType() instanceof ArrayType arrayType) {
+      if (operation.equals(RefOperation.GET)) {
+        fixObjectType(arrayType.getElementType());
+      }
+      dexType =
+          arrayType.getDimension() > 1
+              ? DexUtil.toDexType(ArrayType.createArrayType(arrayType.getBaseType(), 1))
+              : DexUtil.toDexType(arrayType.getBaseType());
+    } else {
+      dexType = "Ljava/lang/Object";
     }
-    String dexType =
-        arrayType.getDimension() > 1
-            ? DexUtil.toDexType(ArrayType.createArrayType(arrayType.getBaseType(), 1))
-            : DexUtil.toDexType(arrayType.getBaseType());
 
     Opcode opcode = getRefOpcode("A", operation, dexType);
     dexStmtVisitor.addInstruction(

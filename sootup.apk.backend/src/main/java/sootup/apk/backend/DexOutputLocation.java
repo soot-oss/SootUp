@@ -45,9 +45,7 @@ public class DexOutputLocation {
     var classes = view.getClasses().toList();
     classes.forEach(
         c -> {
-          if (c.getName().startsWith("com.example.exampleapp.MainActivity")) {
-            dexClassBuilder.createClass(c);
-          }
+          dexClassBuilder.createClass(c);
         });
     try {
       writeDexFiles(outputDir);
@@ -67,9 +65,10 @@ public class DexOutputLocation {
     view.getClasses()
         .forEach(
             c -> {
-              if (c.getName().startsWith("com.example.exampleapp.MainActivity")) {
-                dexClassBuilder.createClass(c);
-              }
+              dexClassBuilder.createClass(c);
+              // if (c.getName().startsWith("com.example.exampleapp.MainActivity")) {
+
+              // }
             });
 
     String newApkName = apkFile == null ? "out.apk" : apkFile.getName();
@@ -96,12 +95,13 @@ public class DexOutputLocation {
           copyExistingFiles(zipOutputStream);
         }
 
-        addExistingClasses();
+        // addExistingClasses();
         writeDexFiles(zipOutputStream);
         log.info(
             "APK successfully created. The .apk still needs to be aligned with zipalign and signed with jarsigner");
       }
     } catch (IOException e) {
+      e.printStackTrace();
       throw new RuntimeException("An exception occurred during creation of .apk file");
     }
   }

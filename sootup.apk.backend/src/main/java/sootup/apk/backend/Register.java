@@ -10,7 +10,6 @@ public class Register {
   private int number;
   private Type type;
   private boolean isTypeGuessed = false;
-  private boolean potentialNullValue = false;
   private final boolean isParameter;
   private final boolean isTmp;
 
@@ -44,14 +43,6 @@ public class Register {
 
   public void setIsTypeGuessed(boolean isTypeGuessed) {
     this.isTypeGuessed = isTypeGuessed;
-  }
-
-  public boolean isPotentialNullValue() {
-    return potentialNullValue;
-  }
-
-  public void setIsPotentialNullValue(boolean isPotentialNullValue) {
-    this.potentialNullValue = isPotentialNullValue;
   }
 
   public void setType(Type type) {
