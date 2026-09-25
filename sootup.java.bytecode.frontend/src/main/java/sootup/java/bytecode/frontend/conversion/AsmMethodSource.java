@@ -38,6 +38,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypeReference;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.*;
@@ -104,6 +105,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private Map<AbstractInsnNode, Integer> insnIndexCache;
 
   private Map<Integer, List<ScopedTypeAnnotation>> localVarTypeAnnotationIndex;
+
+  /** Locals of variables of the LocalVariableTable (for slots that can be split by it). */
+  private LocalVariableTableLocals lvtLocals;
+
+  /** Names of all Locals created so far, and the ones reserved for LVT variables. */
+  private Set<String> usedLocalNames;
 
   /**
    * A JSR 308 LOCAL_VARIABLE type annotation together with the instruction range it is scoped to.
@@ -212,6 +219,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     stmtToInsn = new HashMap<>(instructions.size());
     operandStack = new OperandStack(this, instructions.size());
     trapHandler = new LinkedHashMap<>(tryCatchBlocks.size());
+    lvtLocals =
+        new LocalVariableTableLocals(
+            localVariables, instructions, this::insnIndex, preambleSlots());
+    usedLocalNames = new HashSet<>(lvtLocals.reservedNames());
 
     /* retrieve all trap handlers */
     for (TryCatchBlockNode tc : tryCatchBlocks) {
@@ -243,6 +254,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             // [ms] find out why some Local indices are not assigned(null)
             // ms -> guess because of dword values i.e. +=2 ?
             .collect(Collectors.toCollection(LinkedHashSet::new));
+    bodyLocals.addAll(lvtLocals.getLocals());
     bodyBuilder.setLocals(bodyLocals);
 
     // add converted insn as stmts into the graph
@@ -268,6 +280,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     /* clean up for gc */
     locals = null;
+    lvtLocals = null;
+    usedLocalNames = null;
     stmtsThatBranchToLabel = null;
     insnToStmt = null;
     stmtToInsn = null;
@@ -318,10 +332,18 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     if (idx >= maxLocals) {
       throw new IllegalArgumentException("Invalid local index: " + idx);
     }
+    Type type = typeHint instanceof UnknownType ? UnknownType.getInstance() : typeHint;
+    LocalVariableNode lvn = lvtLocals.resolve(atInsn);
+    if (lvn != null) {
+      // the name is collision-free already (see LocalVariableTableLocals)
+      return lvtLocals.getOrCreate(
+          lvn,
+          name -> JavaJimple.newLocal(name, type, resolveLocalVariableAnnotations(idx, lvn.start)));
+    }
+
     JavaLocal local = locals.get(idx);
     if (local == null) {
       String nameCandidate = determineLocalName(idx, atInsn);
-      Type type = typeHint instanceof UnknownType ? UnknownType.getInstance() : typeHint;
       local = createUniqueLocal(nameCandidate, type, resolveLocalVariableAnnotations(idx, atInsn));
       locals.set(idx, local);
     }
@@ -372,14 +394,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @NonNull String nameCandidate,
       @NonNull Type type,
       @NonNull List<AnnotationUsage> annotations) {
-    // check for collisions with the same local names in other scopes
-    // this can happen when different scopes use the same name for a
-    // different variable (and having a different local idx, were we are able distinguish)
-    String baseName = nameCandidate;
-    for (int i = 1; localNameExists(nameCandidate); i++) {
-      nameCandidate = baseName + "_" + i;
+    return JavaJimple.newLocal(uniqueLocalName(nameCandidate), type, annotations);
+  }
+
+  /**
+   * Returns {@code nameCandidate}, numbered if a Local of that name exists already or the name is
+   * reserved for an LVT variable, and marks it used.
+   */
+  @NonNull
+  private String uniqueLocalName(@NonNull String nameCandidate) {
+    String name = nameCandidate;
+    for (int i = 1; !usedLocalNames.add(name); i++) {
+      name = nameCandidate + "_" + i;
     }
-    return JavaJimple.newLocal(nameCandidate, type, annotations);
+    return name;
   }
 
   /**
@@ -461,12 +489,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
     Integer idx = insn == null ? null : insnIndexCache.get(insn);
     return idx == null ? -1 : idx;
-  }
-
-  private boolean localNameExists(String nameCandidate) {
-    return locals.stream()
-        .filter(Objects::nonNull)
-        .anyMatch(l -> l.getName().equals(nameCandidate));
   }
 
   void setStmt(@NonNull AbstractInsnNode insn, @NonNull Stmt stmt) {
@@ -1829,6 +1851,21 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
+  /** Slots of this (if not static) and the parameters, which are defined at method entry. */
+  @NonNull
+  private List<Integer> preambleSlots() {
+    List<Integer> slots = new ArrayList<>();
+    int localIdx = 0;
+    if ((access & Opcodes.ACC_STATIC) == 0) {
+      slots.add(localIdx++);
+    }
+    for (Type parameterType : lazyMethodSignature.get().getParameterTypes()) {
+      slots.add(localIdx);
+      localIdx += AsmUtil.isDWord(parameterType) ? 2 : 1;
+    }
+    return slots;
+  }
+
   @NonNull
   private List<Stmt> buildPreambleLocals(Body.BodyBuilder bodyBuilder) {
 
@@ -1841,6 +1878,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(MethodModifier.STATIC)) {
       JavaLocal thisLocal = JavaJimple.newLocal("this", declaringClass);
+      usedLocalNames.add("this");
+      LocalVariableNode lvn = lvtLocals.resolvePreamble(localIdx);
+      if (lvn != null) {
+        lvtLocals.registerPreambleLocal(lvn, thisLocal);
+      }
       locals.set(localIdx++, thisLocal);
       final JIdentityStmt stmt =
           Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(declaringClass), methodPosInfo);
@@ -1865,9 +1907,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             .forEach(parameterAnnotations::add);
       }
       collectFormalParameterTypeAnnotations(parameterAnnotations, i);
+      LocalVariableNode lvn = lvtLocals.resolvePreamble(localIdx);
       JavaLocal local =
           JavaJimple.newLocal(
-              determineLocalName(localIdx, null), parameterType, parameterAnnotations);
+              lvn != null
+                  ? lvtLocals.nameOf(lvn)
+                  : uniqueLocalName(determineLocalName(localIdx, null)),
+              parameterType,
+              parameterAnnotations);
+      if (lvn != null) {
+        lvtLocals.registerPreambleLocal(lvn, local);
+      }
       locals.set(localIdx, local);
 
       final JIdentityStmt stmt =
