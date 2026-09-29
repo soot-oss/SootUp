@@ -316,6 +316,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../getting-started/" class="md-nav__link">
         
   
@@ -519,6 +575,17 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-not-work-directly-on-source-or-bytecode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why not work directly on source or bytecode?
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#jimple-grammar-structure" class="md-nav__link">
@@ -974,7 +1041,147 @@
   <span class="md-ellipsis">
     
   
-    Write a Dataflow analysis
+    Write a Dataflow Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-liveness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Live Variables (backward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-constprop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Constant Propagation (forward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From Prototype to Tool
   
 
     
@@ -1249,6 +1456,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#why-not-work-directly-on-source-or-bytecode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why not work directly on source or bytecode?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#jimple-grammar-structure" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1486,6 +1704,22 @@ public static main([Ljava/lang/String;)V
 </div>
 </div>
 </div>
+<h2 id="why-not-work-directly-on-source-or-bytecode">Why not work directly on source or bytecode?</h2>
+<p>This is a natural question. Each representation has a fundamental problem for analysis:</p>
+<p><strong>Source code</strong> is readable, but it is not always available — you often only have a
+compiled <code>.jar</code>. Even when you do have source, nested expressions like
+<code>a.foo(b.bar() + c)</code> require you to invent temporary variables mentally before you can
+reason about intermediate values.</p>
+<p><strong>Bytecode</strong> is always derivable from the <code>.class</code> file, but the JVM is a <em>stack machine</em>:
+instructions push and pop an implicit operand stack. There are no named variables between
+instructions. Tracking "what value is currently at position 2 on the stack after this
+branch?" is surprisingly painful to reason about automatically.</p>
+<p><strong>Jimple</strong> is the best of both worlds. It is derived from bytecode (no source needed),
+but expressed as a <em>register machine</em>: every value is held in a named <code>Local</code>, every
+operation touches at most three operands (three-address code), and there are no nested
+expressions. What the JVM handles implicitly, Jimple makes explicit. The result is a
+representation where "which local variables flow into this assignment?" has a direct,
+mechanical answer.</p>
 <p>The Java Sourcecode is the easiest representation - So why all the fuzz and just use that?
 Sometimes we have no access to the sourcecode but have a binary with the bytecode.
 For most People reading bytecode is not that intuitive. So SootUp generates Jimple from the bytecode.

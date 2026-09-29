@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#whats-sootup" class="md-skip">
+        <a href="#what-is-sootup" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              What's SootUp?
+              What is SootUp?
             
           </span>
         </div>
@@ -292,6 +292,62 @@
     
   
     Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
   
 
     
@@ -860,7 +916,147 @@
   <span class="md-ellipsis">
     
   
-    Write a Dataflow analysis
+    Write a Dataflow Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="analysis-liveness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Live Variables (backward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="analysis-constprop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Constant Propagation (forward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tool_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From Prototype to Tool
   
 
     
@@ -1135,10 +1331,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-sootup" class="md-nav__link">
+  <a href="#what-sootup-provides" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why SootUp?
+        What SootUp provides
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-orientation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick orientation
       
     </span>
   </a>
@@ -1187,36 +1394,82 @@
   
 
 
-<h1 id="whats-sootup">What's SootUp?</h1>
-<p>SootUp is a complete overhaul of the good, old static analysis framework <a href="https://github.com/soot-oss/soot">Soot</a>.</p>
-<ul>
-<li>Transforms JVM bytecode to the intermediate representation Jimple.</li>
-<li>Provides ClassHierarchy generation</li>
-<li>CallGraph generation with different algorithms/precisions</li>
-<li>Inter-procedural data-flow analysis with the IDE/IFDS framework enabled by <a href="https://github.com/Sable/heros">Heros</a></li>
-<li>Applies simple transformations on retrieving a methods Body (see BodyInterceptor)</li>
-<li>Provides serialization of the Jimple IR.</li>
-</ul>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>SootUp is <em>not a version update</em> to Soot, it is a <em>completely new implementation</em> written from scratch that aims to be a leaner, modernized and developer friendly successor of Soot.
-It is not a Drop-In Replacement! The new architecture and API, renders it not trivial to update existing projects that were built on soot.
-Therefore we recommend using SootUp for greenfield projects. We hope improved type safety and streamlined mechanisms will aide you implementing and debugging your analysis tool.
-Unfortunately not every feature has been ported - If you miss something feel free to <a href="https://github.com/soot-oss/SootUp/pulls">contribute</a> a feature you miss from good old Soot.</p>
+<h1 id="what-is-sootup">What is SootUp?</h1>
+<p>Have you ever wondered how a linter catches a bug before you run your code?
+How a security scanner finds a vulnerability in a compiled library you don't have source for?
+How an IDE tells you that a variable might be null three call-levels deep?</p>
+<p>The answer is <strong>static analysis</strong> — reasoning about a program's behaviour by reading its
+structure, without executing it. SootUp is a Java library that gives you the building
+blocks to write such analyses yourself.</p>
+<p>You point SootUp at a Java <code>.jar</code>, Android <code>.apk</code>, or source tree, and it gives you back
+a clean, structured, traversable representation of every class, method, and instruction
+inside it. You then walk that representation and compute whatever you need to know.</p>
+<h2 id="what-sootup-provides">What SootUp provides</h2>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>What it means for you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Jimple IR</strong></td>
+<td>Bytecode translated into a simple, flat, human-readable form that is easy to traverse in Java code</td>
+</tr>
+<tr>
+<td><strong>Class Hierarchy</strong></td>
+<td>Answers "which classes implement this interface?" or "what is the supertype chain?"</td>
+</tr>
+<tr>
+<td><strong>Call Graph</strong></td>
+<td>Answers "which methods can be called at this call site?" — essential for inter-procedural analysis</td>
+</tr>
+<tr>
+<td><strong>Dataflow framework (IFDS/IDE)</strong></td>
+<td>A principled engine for tracking facts (e.g. tainted values, null pointers) across method boundaries</td>
+</tr>
+<tr>
+<td><strong>Body Interceptors</strong></td>
+<td>Optional pre-processing passes that simplify the IR before you analyse it (e.g. constant folding, SSA conversion)</td>
+</tr>
+<tr>
+<td><strong>Jimple serialization</strong></td>
+<td>Write the IR back to <code>.jimple</code> files for debugging or round-trip processing</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">New to static analysis?</p>
+<p>Before diving into the API, read <a href="concepts/">Core Concepts</a> — it explains what a
+Control Flow Graph is, what an IR is, and what "analysis" actually means in concrete
+terms. Five minutes there will make everything else click faster.</p>
 </div>
-<h2 id="why-sootup">Why SootUp?</h2>
-<p>Over the 20+ years, SootUps predecessor Soot has evolved into a powerful framework, which is one of the most widely used tools in the static analysis community. 
-This evolution was guided by the needs of the community and carried out with ad-hoc improvements.
-As a result, Soot has become a tool that can do a multitude of things, but it is heavy and hard to maintain and comprehend.
-So there was the need to clean up the codebase e.g. improve the software architecture,
-remove legacy datastructures that weren't in the Java Runtime at the time of Soots creation,
-enforce validation to have a sane state,
-removing the necessity of arcane knowledge, document it more and more - to make Soot future prove.
-So we introduced <a href="whatsnew/">Design changes in SootUp</a>, which aim to address Soot's shortcomings.
-The goal is a lighter library that can easily be understood and maintained to be included in other projects.</p>
+<h2 id="quick-orientation">Quick orientation</h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code>your code (.jar / .apk / .java)
+        ↓
+  AnalysisInputLocation   ← tells SootUp where to look
+        ↓
+       View               ← your in-memory handle to the loaded program
+        ↓
+  SootClass → SootMethod → Body → ControlFlowGraph
+                                        ↓
+                                 your analysis logic
+</code></pre></div></td></tr></table></div>
+<p>Start with <a href="getting-started/">Getting Started</a> to see this in code within minutes.</p>
 <h2 id="publications-citations">Publications &amp; Citations</h2>
-<p><a href="https://doi.org/10.1007/978-3-031-57246-3_13">The SootUp paper</a> provides additional details and discusses the design decisions behind SootUp. <br />
-<a href="https://scholar.google.de/scholar?cites=7580240720760424326&amp;as_sdt=2005&amp;sciodt=0,5&amp;hl=de">Here</a> you can find the list of works that cite the paper.</p>
+<p><a href="https://doi.org/10.1007/978-3-031-57246-3_13">The SootUp paper</a> describes the design
+decisions in detail.
+<a href="https://scholar.google.de/scholar?cites=7580240720760424326&amp;as_sdt=2005&amp;sciodt=0,5&amp;hl=de">Works citing the paper</a>
+show how the community is using SootUp.</p>
 <h2 id="supporters">Supporters</h2>
 <p>The development of SootUp is financed by generous support from the German Research Foundation (DFG) and
 the Heinz Nixdorf Institute (HNI).</p>
@@ -1229,6 +1482,14 @@ the Heinz Nixdorf Institute (HNI).</p>
 </table>
 
 <p><a href="https://github.com/sponsors/soot-oss">Become a sponsor!</a></p>
+<hr />
+<div class="admonition important">
+<p class="admonition-title">Coming from Soot?</p>
+<p>SootUp is <em>not a version update</em> to Soot — it is a completely new implementation
+written from scratch. It is not a drop-in replacement. See <a href="whatsnew/">What's New</a>
+for the design changes and <a href="migrating/">Migrating from Soot</a> for a side-by-side
+API comparison.</p>
+</div>
 
 
 

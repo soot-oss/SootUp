@@ -5,6 +5,18 @@
          <lastmod>2026-09-29</lastmod>
     </url>
     <url>
+         <loc>https://soot-oss.github.io/SootUp/develop/analysis-constprop/</loc>
+         <lastmod>2026-09-29</lastmod>
+    </url>
+    <url>
+         <loc>https://soot-oss.github.io/SootUp/develop/analysis-liveness/</loc>
+         <lastmod>2026-09-29</lastmod>
+    </url>
+    <url>
+         <loc>https://soot-oss.github.io/SootUp/develop/analysis-typestate/</loc>
+         <lastmod>2026-09-29</lastmod>
+    </url>
+    <url>
          <loc>https://soot-oss.github.io/SootUp/develop/analysisinput/</loc>
          <lastmod>2026-09-29</lastmod>
     </url>
@@ -29,6 +41,10 @@
          <lastmod>2026-09-29</lastmod>
     </url>
     <url>
+         <loc>https://soot-oss.github.io/SootUp/develop/concepts/</loc>
+         <lastmod>2026-09-29</lastmod>
+    </url>
+    <url>
          <loc>https://soot-oss.github.io/SootUp/develop/docguide/</loc>
          <lastmod>2026-09-29</lastmod>
     </url>
@@ -42,6 +58,10 @@
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/getting-started/</loc>
+         <lastmod>2026-09-29</lastmod>
+    </url>
+    <url>
+         <loc>https://soot-oss.github.io/SootUp/develop/glossary/</loc>
          <lastmod>2026-09-29</lastmod>
     </url>
     <url>
@@ -78,6 +98,10 @@
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/qilin/</loc>
+         <lastmod>2026-09-29</lastmod>
+    </url>
+    <url>
+         <loc>https://soot-oss.github.io/SootUp/develop/taint-analysis-example/</loc>
          <lastmod>2026-09-29</lastmod>
     </url>
     <url>

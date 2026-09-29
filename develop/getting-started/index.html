@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://soot-oss.github.io/SootUp/develop/getting-started/">
       
       
-        <link rel="prev" href="../installation/">
+        <link rel="prev" href="../glossary/">
       
       
         <link rel="next" href="../analysisinput/">
@@ -315,6 +315,62 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -376,6 +432,17 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-mental-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Mental Model
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#creating-a-view" class="md-nav__link">
@@ -968,7 +1035,147 @@
   <span class="md-ellipsis">
     
   
-    Write a Dataflow analysis
+    Write a Dataflow Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-liveness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Live Variables (backward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-constprop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Constant Propagation (forward)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis-typestate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Typestate (interprocedural, IDE)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../taint-analysis-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Example: Taint Analysis (interprocedural, IFDS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From Prototype to Tool
   
 
     
@@ -1243,6 +1450,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#the-mental-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Mental Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#creating-a-view" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1318,11 +1536,77 @@
 
 
 <h1 id="first-steps-with-sootup">First Steps with SootUp</h1>
+<h2 id="the-mental-model">The Mental Model</h2>
+<p><strong>What does "analyzing a program" mean in practice?</strong></p>
+<p>You want to ask questions about code without running it: "Can this variable ever be
+<code>null</code> at line 42?", "Does this method ever write to a file?", "Which methods could
+be invoked at this call site?". To answer these questions automatically, you need a
+structured, machine-traversable representation of the program — something richer than
+raw text, simpler than a running process.</p>
+<p>SootUp works in three layers:</p>
+<ol>
+<li>
+<p><strong>Your program on disk</strong> — compiled <code>.class</code> files (bytecode), source files, or an
+   Android <code>.apk</code>. The JVM can run these; SootUp reads them.</p>
+</li>
+<li>
+<p><strong>The Intermediate Representation (Jimple)</strong> — SootUp translates bytecode into
+   Jimple, a clean, flat, named-variable form. Every instruction is explicit.
+   No implicit stack. No nested expressions. This makes it straightforward to traverse
+   and reason about in Java code. You almost never write bytecode; you write code that
+   walks Jimple.</p>
+</li>
+<li>
+<p><strong>Your analysis</strong> — you walk the Jimple representation and compute whatever you
+   need: collect all call sites, track which locals may be null, count branches, or
+   check a security property.</p>
+</li>
+</ol>
+<p><strong>How the API maps onto this model:</strong></p>
+<table>
+<thead>
+<tr>
+<th>SootUp type</th>
+<th>What it represents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AnalysisInputLocation</code></td>
+<td>Where on disk is the code you want to examine?</td>
+</tr>
+<tr>
+<td><code>View</code></td>
+<td>Your in-memory handle to the loaded program — everything you query goes through here</td>
+</tr>
+<tr>
+<td><code>SootClass</code></td>
+<td>One class loaded from the View</td>
+</tr>
+<tr>
+<td><code>SootMethod</code></td>
+<td>One method inside a class</td>
+</tr>
+<tr>
+<td><code>Body</code></td>
+<td>The instructions of a method, in Jimple form, plus declared local variables</td>
+</tr>
+<tr>
+<td><code>ControlFlowGraph</code></td>
+<td>The edges between those instructions: which statement can follow which</td>
+</tr>
+</tbody>
+</table>
+<p>With this model in mind, the code below should feel like a natural consequence rather
+than magic API calls.</p>
+<hr />
 <p>Before you get started with the SootUp library, it helps to learn about the following core data structures:</p>
 <ul>
 <li>
-<p><span class="tooltip hint--top" aria-label="It corresponds to the <code>cp</code> option, which specifies the classpath for Soot to find classes to be analyzed."><code>AnalysisInputLocation</code></span>
-  : points to the target code that shall be loaded into the <code>View</code>.</p>
+<dl>
+<dt><span class="tooltip hint--top" aria-label="It corresponds to the <code>cp</code> option, which specifies the classpath for Soot to find classes to be analyzed."><code>AnalysisInputLocation</code></span></dt>
+<dd>points to the target code that shall be loaded into the <code>View</code>.</dd>
+</dl>
 </li>
 <li>
 <p><span class="tooltip hint--top" aria-label="Corresponds to the <code>Scene</code> class, but it is not a singleton. So it is possible to instantiate multiple views simultaneously."><code>View</code></span>:
