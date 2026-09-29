@@ -22,9 +22,12 @@ package sootup.callgraph;
  * #L%
  */
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.stmt.InvokableStmt;
@@ -180,19 +183,82 @@ public interface CallGraph {
   int callCount();
 
   /**
-   * exports a call of the call graph to an edge in a dot file
+   * This method returns all labels attached to a call in the call graph.
+   *
+   * @param call the requested call in the call graph
+   * @return an unmodifiable set of the labels of the call. It is empty if the call has no labels or
+   *     is not contained in the call graph.
+   */
+  default @NonNull Set<CallLabel> getLabels(@NonNull Call call) {
+    return Collections.emptySet();
+  }
+
+  /**
+   * This method checks if a given label is attached to a call in the call graph.
+   *
+   * @param call the requested call in the call graph
+   * @param label the requested label
+   * @return true if the label is attached to the call, otherwise false
+   */
+  default boolean hasLabel(@NonNull Call call, @NonNull CallLabel label) {
+    return getLabels(call).contains(label);
+  }
+
+  /**
+   * This method returns all outgoing calls of a given method signature that carry at least one
+   * label matching the given filter.
+   *
+   * @param sourceMethod the method signature of the requested node in the call graph
+   * @param labelFilter the filter the labels of the calls are tested against
+   * @return a set of outgoing calls with at least one matching label
+   */
+  default @NonNull Set<Call> callsFrom(
+      @NonNull MethodSignature sourceMethod, @NonNull Predicate<CallLabel> labelFilter) {
+    return callsFrom(sourceMethod).stream()
+        .filter(call -> getLabels(call).stream().anyMatch(labelFilter))
+        .collect(Collectors.toSet());
+  }
+
+  /**
+   * This method returns all incoming calls of a given method signature that carry at least one
+   * label matching the given filter.
+   *
+   * @param targetMethod the method signature of the requested node in the call graph
+   * @param labelFilter the filter the labels of the calls are tested against
+   * @return a set of incoming calls with at least one matching label
+   */
+  default @NonNull Set<Call> callsTo(
+      @NonNull MethodSignature targetMethod, @NonNull Predicate<CallLabel> labelFilter) {
+    return callsTo(targetMethod).stream()
+        .filter(call -> getLabels(call).stream().anyMatch(labelFilter))
+        .collect(Collectors.toSet());
+  }
+
+  /**
+   * exports a call of the call graph to an edge in a dot file. The edge label contains the line
+   * number of the call and, if present, the labels of the call.
    *
    * @param call the data of the call
    * @return an edge defining the call in the dot file
    */
   default StringBuilder toDotEdge(Call call) {
-    return new StringBuilder("\"")
-        .append(call.sourceMethodSignature())
-        .append("\"->\"")
-        .append(call.targetMethodSignature())
-        .append("\"[label=\"")
-        .append(call.getLineNumber())
-        .append("\"]");
+    StringBuilder dotEdge =
+        new StringBuilder("\"")
+            .append(call.sourceMethodSignature())
+            .append("\"->\"")
+            .append(call.targetMethodSignature())
+            .append("\"[label=\"")
+            .append(call.getLineNumber());
+    Set<CallLabel> labels = getLabels(call);
+    if (!labels.isEmpty()) {
+      dotEdge
+          .append(": ")
+          .append(
+              labels.stream()
+                  .map(label -> label.toString().replace("\"", "\\\""))
+                  .collect(Collectors.joining(", ")));
+    }
+    return dotEdge.append("\"]");
   }
 
   /**

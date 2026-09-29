@@ -57,4 +57,32 @@ public interface MutableCallGraph extends CallGraph {
    * @param call this parameter defines the call that is transformed to the edge in the call graph.
    */
   void addCall(@NonNull Call call);
+
+  /**
+   * This method attaches a label to a call in the call graph. A call can carry several labels. A
+   * label that is already attached to the call is not added a second time.
+   *
+   * @param call the call the label is attached to. It must be contained in the call graph.
+   * @param label the label that will be attached to the call
+   * @throws IllegalArgumentException if the call is not contained in the call graph
+   * @throws UnsupportedOperationException if the call graph does not support labels
+   */
+  default void addLabel(@NonNull Call call, @NonNull CallLabel label) {
+    throw new UnsupportedOperationException(
+        getClass().getSimpleName() + " does not support call labels");
+  }
+
+  /**
+   * This method adds a call to the call graph if it is not contained yet and attaches the given
+   * label to it.
+   *
+   * @param call the call that will be added to the call graph
+   * @param label the label that will be attached to the call
+   */
+  default void addCall(@NonNull Call call, @NonNull CallLabel label) {
+    if (!containsCall(call)) {
+      addCall(call);
+    }
+    addLabel(call, label);
+  }
 }
