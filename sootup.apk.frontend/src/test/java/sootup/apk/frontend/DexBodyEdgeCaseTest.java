@@ -439,6 +439,46 @@ public class DexBodyEdgeCaseTest {
   }
 
   /**
+   * Exception types are taken as they are, like the bytecode frontend does: a type that two try
+   * blocks catch keeps its name in both Traps, and a catch-all handler catches java.lang.Throwable.
+   */
+  @Test
+  public void exceptionTypesAreKeptAsTheyAre() {
+    Body body =
+        convert(
+            "ExceptionTypes",
+            3,
+            b -> {
+              b.addLabel("try1");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end1");
+              b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+              b.addLabel("try2");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 1));
+              b.addLabel("end2");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler1");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 2));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler2");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 2));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              ImmutableTypeReference io = new ImmutableTypeReference("Ljava/io/IOException;");
+              b.addCatch(io, b.getLabel("try1"), b.getLabel("end1"), b.getLabel("handler1"));
+              b.addCatch(b.getLabel("try1"), b.getLabel("end1"), b.getLabel("handler2"));
+              b.addCatch(io, b.getLabel("try2"), b.getLabel("end2"), b.getLabel("handler1"));
+            });
+
+    List<String> types =
+        trapsOf(body).stream()
+            .map(trap -> trap.getExceptionType().getFullyQualifiedName())
+            .sorted()
+            .collect(Collectors.toList());
+    assertEquals(
+        List.of("java.io.IOException", "java.io.IOException", "java.lang.Throwable"), types);
+  }
+
+  /**
    * A goto can enter a try block in its middle, jumping over a padding nop at its start. The nop is
    * dead and removed, but the rest of the range is not: the Trap then begins at the first Stmt of
    * the range that stayed, instead of being dropped with its handler left behind unreachable.

@@ -730,7 +730,6 @@ public class DexBody {
   }
 
   private void addTraps() {
-    Set<String> exceptionTypeList = new HashSet<>();
     for (TryBlock<? extends ExceptionHandler> tryItem : tries) {
       int startAddress = tryItem.getStartCodeAddress();
       int length = tryItem.getCodeUnitCount(); // .getTryLength();
@@ -758,16 +757,14 @@ public class DexBody {
       for (ExceptionHandler handler : hList) {
         String exceptionType = handler.getExceptionType();
         if (exceptionType == null) {
-          exceptionType = "Ljava/lang/Throwable$CatchAll;";
+          // a catch-all handler (finally, or catch (Throwable) after d8), as the bytecode
+          // frontend reads a TryCatchBlockNode without a type
+          exceptionType = "Ljava/lang/Throwable;";
         }
-        if (exceptionTypeList.contains(exceptionType)) {
-          exceptionType = exceptionType + "$" + exceptionTypeList.size();
-        }
-        exceptionTypeList.add(exceptionType);
         Type t = DexUtil.toSootType(exceptionType, 0, identifierFactory);
         // exceptions can only be of ReferenceType
         if (t instanceof JavaClassType) {
-          ClassType type = identifierFactory.getClassType(((JavaClassType) t).getClassName());
+          ClassType type = (ClassType) t;
           DexLibAbstractInstruction instruction =
               instructionAtAddress(handler.getHandlerCodeAddress());
           if (!(instruction instanceof MoveExceptionInstruction)) {
