@@ -76,6 +76,7 @@ public final class SparkCallGraphConfig implements CallGraphConfig {
               .view(common.getView())
               .entryPoints(common.getEntryPoints())
               .sparkOptions(sparkOptions)
+              .reflectionModel(common.getReflectionModel())
               .build();
     } else {
       CallGraph cha =
@@ -83,10 +84,16 @@ public final class SparkCallGraphConfig implements CallGraphConfig {
                   common.getView(),
                   common.getCallResolver(),
                   common.getVirtualCallResolver(),
-                  common.getSeedEntryPointClinits(true))
+                  common.getSeedEntryPointClinits(true),
+                  common.getReflectionModel())
               .initialize(common.getEntryPoints());
       spark =
-          Spark.builder().view(common.getView()).callGraph(cha).sparkOptions(sparkOptions).build();
+          Spark.builder()
+              .view(common.getView())
+              .callGraph(cha)
+              .sparkOptions(sparkOptions)
+              .reflectionModel(common.getReflectionModel())
+              .build();
     }
     return spark.getCallGraph();
   }

@@ -31,6 +31,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import sootup.callgraph.CallGraph;
+import sootup.callgraph.reflection.ReflectionModel;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -45,6 +46,7 @@ import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
+import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
@@ -60,6 +62,9 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   CallGraph callGraph;
   View view;
   NodeFactory nodeFactory;
+
+  /** Must be the model the call graph was built with, so callee bodies match its edges. */
+  @Builder.Default ReflectionModel reflectionModel = ReflectionModel.none();
 
   /** Captured invoke site whose targets are decided by the OTF builder via points-to. */
   public record PendingVirtualCall(
@@ -194,7 +199,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
     if (expr instanceof AbstractInstanceInvokeExpr instanceExpr) {
       val baseNode = nodeFactory.createNode(instanceExpr.getBase(), methodSignature);
       val thisLocal =
-          sootMethod.getBody().getStmts().stream()
+          body(sootMethod).getStmts().stream()
               .filter(s -> s instanceof JIdentityStmt)
               .map(s -> (JIdentityStmt) s)
               .filter(s -> s.getRightOp() instanceof JThisRef)
@@ -210,7 +215,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
       val argNode = nodeFactory.createNode(expr.getArg(i), methodSignature);
       final int index = i;
       val paramLocal =
-          sootMethod.getBody().getStmts().stream()
+          body(sootMethod).getStmts().stream()
               .filter(s -> s instanceof JIdentityStmt)
               .map(s -> (JIdentityStmt) s)
               .filter(s -> s.getRightOp() instanceof JParameterRef)
@@ -226,7 +231,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
     lhs.flatMap(l -> nodeFactory.createNode(l, methodSignature))
         .ifPresent(
             lhsNode ->
-                sootMethod.getBody().getStmts().stream()
+                body(sootMethod).getStmts().stream()
                     .filter(s -> s instanceof JReturnStmt)
                     .map(s -> (JReturnStmt) s)
                     .forEach(
@@ -234,5 +239,9 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
                             nodeFactory
                                 .createNode(returnStmt.getOp(), targetMethodSig)
                                 .ifPresent(retOpNode -> addPagEdge(retOpNode, lhsNode))));
+  }
+
+  private Body body(SootMethod method) {
+    return reflectionModel.resolve(method, method.getBody());
   }
 }

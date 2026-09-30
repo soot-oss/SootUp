@@ -44,7 +44,7 @@ import sootup.core.types.ClassType;
  * allocation of the functional-interface type (registered with {@link PAG#registerLambdaTarget} so
  * it becomes a {@link qilin.core.pag.LambdaAllocNode} instead of a plain one) before the original
  * invokedynamic statement, which is left untouched - mirroring how {@link
- * qilin.core.reflection.ReflectionModel} augments rather than replaces the original call.
+ * sootup.callgraph.reflection.ReflectionModel} augments rather than replaces the original call.
  */
 public class LambdaMetafactoryModel implements MethodEffectModel {
   private static final String LAMBDA_METAFACTORY = "java.lang.invoke.LambdaMetafactory";
