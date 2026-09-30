@@ -487,9 +487,10 @@ public class DexMethodBuilder {
           registerMaps.stream().map(m -> m.get(local)).filter(Objects::nonNull).toList();
 
       // if a local has the same register in all registerMaps, there is nothing to do
-      if (regs.stream().allMatch(r -> r.equals(regs.get(0)))) {
-        result.put(local, regs.get(0));
-        continue;
+      List<Register> finalRegs = regs;
+      if (regs.stream().allMatch(r -> r.equals(finalRegs.get(0)))) {
+        // result.put(local, regs.get(0));
+        // continue;
       }
 
       log.info(
@@ -500,6 +501,36 @@ public class DexMethodBuilder {
       // a local has different types in different registerMap
       Type objectType = view.getIdentifierFactory().getClassType(JIMPLE_OBJECT_TYPE);
 
+      if ((newBlock.getStmts().get(0) instanceof JIdentityStmt jIdentityStmt
+          && jIdentityStmt.getRightOp() instanceof JCaughtExceptionRef)) {
+        // consider only those registers that were not assigned at the last statement of the
+        // previous block
+        registerMaps =
+            previousBlocks.stream()
+                .filter(
+                    b ->
+                        !(b.getStmts().get(b.getStmts().size() - 1).getDef().isPresent()
+                            && b.getStmts()
+                                .get(b.getStmts().size() - 1)
+                                .getDef()
+                                .get()
+                                .equals(local)))
+                .map(blockRegisterMapAtEnd::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        regs = registerMaps.stream().map(m -> m.get(local)).filter(Objects::nonNull).toList();
+
+        if (registerMaps.isEmpty()) {
+          registerMaps =
+              previousBlocks.stream()
+                  .map(blockRegisterMapAtEnd::get)
+                  .filter(Objects::nonNull)
+                  .collect(Collectors.toSet());
+          regs = registerMaps.stream().map(m -> m.get(local)).filter(Objects::nonNull).toList();
+        }
+      }
+
+      List<Register> finalRegs1 = regs;
       Register newRegister =
           regs.stream()
               .filter(
@@ -510,14 +541,14 @@ public class DexMethodBuilder {
               .orElseGet(
                   () -> {
                     List<Register> intRegisters =
-                        regs.stream()
+                        finalRegs1.stream()
                             .filter(reg -> reg.getType().equals(PrimitiveType.getInt()))
                             .toList();
                     return intRegisters.stream()
                         .findFirst()
                         .orElseGet(
                             () ->
-                                regs.stream()
+                                finalRegs1.stream()
                                     .filter(reg -> reg.getType().equals(objectType))
                                     .findFirst()
                                     .orElseThrow());
@@ -549,6 +580,8 @@ public class DexMethodBuilder {
             log.info("local register map is null");
             continue;
           }
+          // TODO the current new register is based on the blockRegisterMapAtEnd. If an exception
+          // occurs before, and the TYPE of the variable is changed after, the merge will not work
           addExceptionalMoves(local, block, newRegister, blockRegisterMapAtStart);
         }
       }
@@ -677,8 +710,8 @@ public class DexMethodBuilder {
       if (!previous.equals(target)) {
         AbstractInstruction moveInstruction = generateMoveInstructionToSuccessor(previous, target);
         instructionMap.put(moveInstruction, instructionMap.get(instructions.get(block).get(0)));
-        i.add(moveInstruction);
-        log.info("Add move instruction from {} to {}", previous, target);
+        i.add(0, moveInstruction);
+        log.info("Add move instruction from {} to {}", previous.getNumber(), target.getNumber());
       } else {
         log.info("Previous equals target: {}, {}", target.getNumber(), previous.getNumber());
       }
@@ -688,6 +721,10 @@ public class DexMethodBuilder {
 
     // loop at instructions of block
     for (var ins_index = 0; ins_index < i.size() - 1; ins_index++) {
+      if (ins_index == i.size() - 2
+          && instructions.get(block).get(i.size() - 1).getOpcode().name.startsWith("return")) {
+        continue;
+      }
       var ins = instructions.get(block).get(ins_index);
       Stmt stmt = instructionMap.get(ins);
       if (stmt != null && stmt.getDef().isPresent() && stmt.getDef().get().equals(local)) {

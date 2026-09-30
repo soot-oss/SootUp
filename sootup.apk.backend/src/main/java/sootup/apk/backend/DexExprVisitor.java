@@ -882,7 +882,8 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
     fixObjectType(type);
 
-    if (type.toString().startsWith(JIMPLE_OBJECT_TYPE)) {
+    if (register.getType() instanceof PrimitiveType
+        && type.toString().startsWith(JIMPLE_OBJECT_TYPE)) {
       log.info("Move instruction because of unnecessary cast");
       dexStmtVisitor.addInstruction(
           generateMoveInstruction(
@@ -1170,6 +1171,11 @@ public class DexExprVisitor extends AbstractExprVisitor {
       boolean fixObjectType,
       Value local,
       RegisterAllocator registerAllocator) {
+
+    if (sourceRegister.equals(targetR)) {
+      return new Instruction10x(Opcode.NOP);
+    }
+
     if (fixObjectType
         && (sourceRegister.getType() != targetR.getType() || targetR.isTypeGuessed())) {
       if (!(sourceRegister.getType() instanceof PrimitiveType
