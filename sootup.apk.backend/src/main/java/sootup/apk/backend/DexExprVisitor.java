@@ -915,6 +915,32 @@ public class DexExprVisitor extends AbstractExprVisitor {
               currentStmt.asJAssignStmt().getLeftOp(),
               registerAllocator),
           currentStmt);
+    } else if (!register.getDefs().isEmpty()
+        && register.getDefs().get(register.getDefs().size() - 1).getOpcode() == Opcode.NEW_INSTANCE
+        && register.getDefs().stream().filter(def -> def.getOpcode() == Opcode.NEW_INSTANCE).count()
+            > register.getUses().stream()
+                .filter(
+                    use ->
+                        use.getOpcode() == Opcode.INVOKE_DIRECT
+                            && (use instanceof Instruction35c instruction35c
+                                    && instruction35c.getReference()
+                                        instanceof MethodReference methodReference
+                                    && methodReference.getName().equals("<init")
+                                || (use instanceof Instruction3rc instruction3rc
+                                    && instruction3rc.getReference()
+                                        instanceof MethodReference methodReference2
+                                    && methodReference2.getName().equals("<init"))))
+                .count()) {
+      // no not check-cast on uninitialized reference
+      dexStmtVisitor.addInstruction(
+          generateMoveInstruction(
+              targetRegister,
+              register,
+              register.getType(),
+              true,
+              currentStmt.asJAssignStmt().getLeftOp(),
+              registerAllocator),
+          currentStmt);
     } else if (register.getType() instanceof PrimitiveType && type instanceof PrimitiveType) {
       castPrimitive(register, targetRegister, register.getType(), type);
     } else {
