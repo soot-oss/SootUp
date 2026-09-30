@@ -41,6 +41,7 @@ import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.GraphBasedCallGraph;
 import sootup.callgraph.MutableCallGraph;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.DefaultCallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
@@ -63,6 +64,7 @@ class Solver {
   private List<MethodSignature> entryPoints;
   private SparkOptions sparkOptions;
   private ReflectionModel reflectionModel;
+  private DynamicInvokeResolver dynamicInvokeResolver;
 
   /** Non-null only when {@link SparkOptions#isOnFlyCallGraph()} is set. */
   private IncrementalPointsToAnalysis incrementalAnalysis;
@@ -73,9 +75,14 @@ class Solver {
       List<MethodSignature> entryPoints,
       SparkOptions sparkOptions,
       CallGraph callGraph,
-      ReflectionModel reflectionModel) {
+      ReflectionModel reflectionModel,
+      DynamicInvokeResolver dynamicInvokeResolver) {
     this.view = view;
     this.reflectionModel = reflectionModel != null ? reflectionModel : ReflectionModel.none();
+    this.dynamicInvokeResolver =
+        dynamicInvokeResolver != null
+            ? dynamicInvokeResolver
+            : DynamicInvokeResolver.bootstrapMethodHandles();
     this.entryPoints = entryPoints;
     this.sparkOptions = sparkOptions != null ? sparkOptions : SparkOptions.defaultOptions();
     this.pag = new PAG(this.sparkOptions);
@@ -103,7 +110,8 @@ class Solver {
                   new DefaultCallResolver(view),
                   VirtualCallResolver.all(),
                   true,
-                  this.reflectionModel)
+                  this.reflectionModel,
+                  this.dynamicInvokeResolver)
               .initialize(entryPoints);
       this.incrementalAnalysis = null;
     }
@@ -137,6 +145,7 @@ class Solver {
             .view(view)
             .nodeFactory(new NodeFactory(sparkOptions, view.getIdentifierFactory()))
             .reflectionModel(reflectionModel)
+            .dynamicInvokeResolver(dynamicInvokeResolver)
             .build();
     reflectionModel
         .resolve(method, method.getBody())
@@ -180,6 +189,7 @@ class Solver {
                 .otfContext(
                     new MethodPAGStmtVisitor.OtfContext(incrementalAnalysis, worklist, pending))
                 .reflectionModel(reflectionModel)
+                .dynamicInvokeResolver(dynamicInvokeResolver)
                 .build();
         visitors.put(sig, visitor);
         reflectionModel

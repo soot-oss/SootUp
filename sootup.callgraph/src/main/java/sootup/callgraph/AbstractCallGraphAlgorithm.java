@@ -34,6 +34,8 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.DefaultCallResolver;
@@ -43,7 +45,6 @@ import sootup.core.IdentifierFactory;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Value;
-import sootup.core.jimple.common.constant.MethodHandle;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
@@ -96,6 +97,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /** Makes reflective calls explicit in the bodies this algorithm inspects. */
   @NonNull private final ReflectionModel reflectionModel;
+
+  /** Decides the targets of invokedynamic call sites. */
+  @NonNull private final DynamicInvokeResolver dynamicInvokeResolver;
 
   /** Creates a new call graph algorithm using the given view. */
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
@@ -181,6 +185,27 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull VirtualCallResolver virtualCallResolver,
       boolean seedEntryPointClinits,
       @NonNull ReflectionModel reflectionModel) {
+    this(
+        view,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        reflectionModel,
+        DynamicInvokeResolver.bootstrapMethodHandles());
+  }
+
+  /**
+   * Like {@link #AbstractCallGraphAlgorithm(View, CallResolver, VirtualCallResolver, boolean,
+   * ReflectionModel)}, plus a {@link DynamicInvokeResolver} deciding the targets of invokedynamic
+   * call sites.
+   */
+  protected AbstractCallGraphAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
     this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
@@ -188,6 +213,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     this.virtualCallResolver = virtualCallResolver;
     this.seedEntryPointClinits = seedEntryPointClinits;
     this.reflectionModel = reflectionModel;
+    this.dynamicInvokeResolver = dynamicInvokeResolver;
   }
 
   /**
@@ -931,22 +957,20 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       SootMethod method, InvokableStmt invokableStmt);
 
   /**
-   * Resolves the methods referenced by method handles in the bootstrap arguments of an
-   * invokedynamic expression, e.g. the synthetic lambda body or the method reference passed to
-   * {@code LambdaMetafactory}. These methods are treated as call targets of the invokedynamic
-   * statement, so that code reached only via lambdas becomes part of the call graph.
+   * Resolves the targets of an invokedynamic expression via the configured {@link
+   * DynamicInvokeResolver} (by default: the methods referenced by its bootstrap method handles,
+   * e.g. the synthetic lambda body passed to {@code LambdaMetafactory}). These methods are treated
+   * as call targets of the invokedynamic statement, so that code reached only via lambdas becomes
+   * part of the call graph.
    *
    * @param dynamicInvokeExpr the invokedynamic expression
-   * @return the signatures of all methods referenced by method handles in the bootstrap arguments
+   * @return the (concretely dispatched) signatures of the resolved targets
    */
   @NonNull
   protected Stream<MethodSignature> resolveDynamicInvokeTargets(
       @NonNull JDynamicInvokeExpr dynamicInvokeExpr) {
-    return dynamicInvokeExpr.getBootstrapArgs().stream()
-        .filter(arg -> arg instanceof MethodHandle)
-        .map(arg -> (MethodHandle) arg)
-        .filter(MethodHandle::isMethodRef)
-        .map(handle -> (MethodSignature) handle.getReferenceSignature())
+    return dynamicInvokeResolver.resolve(dynamicInvokeExpr).stream()
+        .map(DynamicInvokeTarget::method)
         .map(sig -> resolveConcreteDispatch(view, sig).orElse(sig));
   }
 

@@ -25,6 +25,7 @@ package sootup.callgraph.config;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
@@ -47,6 +48,7 @@ public final class CommonCallGraphSettings {
   @NonNull private final VirtualCallResolver virtualCallResolver;
   @Nullable private final Boolean seedEntryPointClinits;
   @Nullable private final ReflectionModel reflectionModel;
+  @Nullable private final DynamicInvokeResolver dynamicInvokeResolver;
 
   CommonCallGraphSettings(
       @NonNull View view,
@@ -54,13 +56,15 @@ public final class CommonCallGraphSettings {
       @NonNull CallResolver callResolver,
       @NonNull VirtualCallResolver virtualCallResolver,
       @Nullable Boolean seedEntryPointClinits,
-      @Nullable ReflectionModel reflectionModel) {
+      @Nullable ReflectionModel reflectionModel,
+      @Nullable DynamicInvokeResolver dynamicInvokeResolver) {
     this.view = view;
     this.entryPoints = entryPoints;
     this.callResolver = callResolver;
     this.virtualCallResolver = virtualCallResolver;
     this.seedEntryPointClinits = seedEntryPointClinits;
     this.reflectionModel = reflectionModel;
+    this.dynamicInvokeResolver = dynamicInvokeResolver;
   }
 
   @NonNull
@@ -111,5 +115,24 @@ public final class CommonCallGraphSettings {
    */
   public boolean isReflectionModelSet() {
     return reflectionModel != null;
+  }
+
+  /**
+   * Invokedynamic resolver to apply; {@link DynamicInvokeResolver#bootstrapMethodHandles()} if
+   * never set.
+   */
+  @NonNull
+  public DynamicInvokeResolver getDynamicInvokeResolver() {
+    return dynamicInvokeResolver != null
+        ? dynamicInvokeResolver
+        : DynamicInvokeResolver.bootstrapMethodHandles();
+  }
+
+  /**
+   * Whether the caller explicitly set an invokedynamic resolver - lets families with their own
+   * invokedynamic config (Qilin's {@code resolveDynamicInvoke}) keep it unless overridden.
+   */
+  public boolean isDynamicInvokeResolverSet() {
+    return dynamicInvokeResolver != null;
   }
 }

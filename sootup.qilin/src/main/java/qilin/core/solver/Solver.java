@@ -26,6 +26,7 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.Kind;
 import qilin.core.context.Context;
+import qilin.core.invokedynamic.LambdaMetafactoryModel;
 import qilin.core.pag.*;
 import qilin.util.JavaTypes;
 import qilin.util.PagQueries;
@@ -34,6 +35,9 @@ import qilin.util.queue.QueueReader;
 import qilin.util.sets.DoublePointsToSet;
 import qilin.util.sets.P2SetVisitor;
 import qilin.util.sets.PointsToSetInternal;
+import sootup.callgraph.AbstractCallGraphAlgorithm;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.callgraph.scope.ExplorationVerdict;
 import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.jimple.Jimple;
@@ -162,24 +166,36 @@ public class Solver extends Propagator {
           if (cgb.recordVirtualCallSite(recNode, virtualCallSite)) {
             virtualCallSiteQueue.add(virtualCallSite);
           }
+        } else if (ie instanceof JDynamicInvokeExpr die) {
+          recordDynamicInvoke(m, s, die);
         } else {
           MethodSignature tgtSig = ie.getMethodSignature();
           Optional<? extends SootMethod> otgt = pta.getView().getMethod(tgtSig);
           if (otgt.isPresent()) {
-            // static invoke or dynamic invoke
-            VarNode recNode = pag.getMethodPAG(m.method()).nodeFactory().caseThis();
-            recNode = (VarNode) pta.parameterize(recNode, m.context());
-            if (ie instanceof JDynamicInvokeExpr) {
-              // !TODO dynamicInvoke is provided in JDK after Java 7.
-              // currently, PTA does not handle dynamicInvokeExpr.
-            } else {
-              cgb.addStaticEdge(m, s, otgt.get(), Edge.ieToKind(ie));
-            }
-          } else {
-            //
+            cgb.addStaticEdge(m, s, otgt.get(), Edge.ieToKind(ie));
           }
         }
       }
+    }
+  }
+
+  /**
+   * Calls every target of the shared {@link DynamicInvokeResolver} from the invokedynamic
+   * statement, except those {@link LambdaMetafactoryModel} models precisely via a {@link
+   * LambdaAllocNode}.
+   */
+  private void recordDynamicInvoke(ContextMethod m, InvokableStmt s, JDynamicInvokeExpr die) {
+    if (!pta.getConfig().isResolveDynamicInvoke()) {
+      return;
+    }
+    for (DynamicInvokeTarget target : pta.getConfig().getDynamicInvokeResolver().resolve(die)) {
+      if (LambdaMetafactoryModel.handles(s, target)) {
+        continue;
+      }
+      MethodSignature sig =
+          AbstractCallGraphAlgorithm.resolveConcreteDispatch(pta.getView(), target.method())
+              .orElse(target.method());
+      pta.getView().getMethod(sig).ifPresent(tgt -> cgb.addDynamicInvokeEdge(m, s, tgt, target));
     }
   }
 
