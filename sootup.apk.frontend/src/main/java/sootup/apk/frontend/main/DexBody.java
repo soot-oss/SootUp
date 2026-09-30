@@ -102,6 +102,16 @@ public class DexBody {
 
   LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap = LinkedListMultimap.create();
 
+  /** The address behind the last instruction of the code. */
+  private int codeEndAddress;
+
+  /**
+   * The end of a Trap whose range reaches the end of the code. It is never added to the body, and
+   * MutableBlockControlFlowGraph.initializeWith reads an end that is in no block as the end of the
+   * body.
+   */
+  private final Stmt endOfCode = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+
   /** The caught exception Stmts addTraps() appends for handlers without a move-exception. */
   private final Set<Stmt> caughtExceptionEntries =
       Collections.newSetFromMap(new IdentityHashMap<>());
@@ -286,6 +296,7 @@ public class DexBody {
       instructionAtAddress.put(address, dexInstruction);
       address += instruction.getCodeUnits();
     }
+    codeEndAddress = address;
   }
 
   public List<DexLibAbstractInstruction> instructionsBefore(DexLibAbstractInstruction instruction) {
@@ -781,29 +792,18 @@ public class DexBody {
   private void addTraps() {
     // one entry per handler address and exception type, however many try blocks share them
     Map<String, Stmt> entryOfHandler = new HashMap<>();
+    int codeStmtCount = stmtList.size();
     for (TryBlock<? extends ExceptionHandler> tryItem : tries) {
       int startAddress = tryItem.getStartCodeAddress();
       int length = tryItem.getCodeUnitCount(); // .getTryLength();
       int endAddress = startAddress + length; // - 1;
       Stmt beginStmt = instructionAtAddress(startAddress).getStmt();
-      // (startAddress + length) typically points to the first byte of the
-      // first instruction after the try block
-      // except if there is no instruction after the try block in which
-      // case it points to the last byte of the last
-      // instruction of the try block. Removing 1 from (startAddress +
-      // length) always points to "somewhere" in
-      // the last instruction of the try block since the smallest
-      // instruction is on two bytes (nop = 0x0000).
-      Stmt endStmt = instructionAtAddress(endAddress).getStmt();
-      // if the try block ends on the last instruction of the body, add a
-      // nop instruction so Soot can include
-      // the last instruction in the try block.
-      //      if (stmtList.get(stmtList.size() - 1) == endStmt
-      //          && instructionAtAddress(endAddress - 1).getStmt() == endStmt) {
-      //        Stmt nop = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
-      //        insertAfter(endStmt, endStmt);
-      //        endStmt = nop;
-      //      }
+      // (startAddress + length) is the first address behind the range. When the range reaches the
+      // end of the code, no instruction is there: instructionAtAddress would walk back to the last
+      // instruction and leave it out of the range. The range reaches the end of the body instead,
+      // expressed by an end that is in no block (see endOfCode).
+      Stmt endStmt =
+          endAddress >= codeEndAddress ? endOfCode : instructionAtAddress(endAddress).getStmt();
       List<? extends ExceptionHandler> hList = tryItem.getExceptionHandlers();
       for (ExceptionHandler handler : hList) {
         String exceptionType = handler.getExceptionType();
@@ -854,6 +854,20 @@ public class DexBody {
 
         }
       }
+    }
+    if (stmtList.size() > codeStmtCount) {
+      // the caught exception entries are appended behind the code: a range reaching the end of the
+      // code stops in front of them instead of covering them as well
+      Stmt firstEntry = stmtList.get(codeStmtCount);
+      traps.replaceAll(
+          trap ->
+              trap.getEndStmt() == endOfCode
+                  ? Jimple.newTrap(
+                      trap.getExceptionType(),
+                      trap.getBeginStmt(),
+                      firstEntry,
+                      trap.getHandlerStmt())
+                  : trap);
     }
   }
 

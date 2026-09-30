@@ -653,6 +653,79 @@ public class DexBodyEdgeCaseTest {
     assertEquals(0, trapsOf(body).size());
   }
 
+  private static Stmt stmtStartingWith(Body body, String prefix) {
+    return body.getStmts().stream().filter(s -> s.toString().startsWith(prefix)).findFirst().get();
+  }
+
+  /**
+   * A try block reaching the very end of the code has no instruction behind it to end at. It must
+   * still cover its last Stmt: here a throw whose exception would otherwise bypass the handler.
+   */
+  @Test
+  public void trapReachingTheEndOfTheCodeCoversItsLastStmt() {
+    Body body =
+        convert(
+            "TrapToEndOfCode",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction10t(Opcode.GOTO, b.getLabel("try")));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addInstruction(new BuilderInstruction11x(Opcode.THROW, 0));
+              b.addLabel("end");
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    assertEquals(1, trapsOf(body).size());
+    Stmt thrower = stmtStartingWith(body, "throw");
+    assertEquals(1, body.getControlFlowGraph().exceptionalSuccessors(thrower).size());
+    assertEquals(List.of(), new JimpleTrapValidator().validate(body, null));
+  }
+
+  /**
+   * The same with a handler without move-exception: its caught exception entry is appended behind
+   * the code, and the range stops in front of it instead of covering the entry as well.
+   */
+  @Test
+  public void trapReachingTheEndOfTheCodeStopsBeforeTheCaughtExceptionEntries() {
+    Body body =
+        convert(
+            "TrapToEndOfCodeWithEntry",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction10t(Opcode.GOTO, b.getLabel("try")));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addInstruction(new BuilderInstruction11x(Opcode.THROW, 0));
+              b.addLabel("end");
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    Stmt thrower = stmtStartingWith(body, "throw");
+    Stmt entry =
+        body.getStmts().stream()
+            .filter(s -> s.toString().endsWith(":= @caughtexception"))
+            .findFirst()
+            .get();
+    assertEquals(1, body.getControlFlowGraph().exceptionalSuccessors(thrower).size());
+    assertEquals(0, body.getControlFlowGraph().exceptionalSuccessors(entry).size());
+    assertEquals(List.of(), new JimpleTrapValidator().validate(body, null));
+  }
+
   /** A try block whose whole range is nops still covers them: they are reachable code. */
   @Test
   public void trapCoveringOnlyNopsIsKept() {
