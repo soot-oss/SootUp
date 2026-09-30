@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import org.jspecify.annotations.NonNull;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.DefaultCallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
@@ -59,6 +60,9 @@ public final class CallGraphConfigBuilder {
    * family's default onto another changes its behavior silently.
    */
   private Boolean seedEntryPointClinits;
+
+  /** {@code null} means "not explicitly set" - see {@link #dynamicInvokeResolver}. */
+  private DynamicInvokeResolver dynamicInvokeResolver;
 
   public CallGraphConfigBuilder() {}
 
@@ -104,6 +108,19 @@ public final class CallGraphConfigBuilder {
     return this;
   }
 
+  /**
+   * Decides the targets of invokedynamic call sites (lambdas, method references); unset = {@link
+   * DynamicInvokeResolver#bootstrapMethodHandles()}. Qilin keeps its precise {@code
+   * LambdaAllocNode} modeling where it applies and falls back to this resolver elsewhere; {@link
+   * DynamicInvokeResolver#none()} turns invokedynamic resolution off in every family.
+   */
+  @NonNull
+  public CallGraphConfigBuilder dynamicInvokeResolver(
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
+    this.dynamicInvokeResolver = dynamicInvokeResolver;
+    return this;
+  }
+
   @NonNull
   private CommonCallGraphSettings snapshot() {
     if (view == null) {
@@ -112,7 +129,12 @@ public final class CallGraphConfigBuilder {
     CallResolver resolvedCallResolver =
         callResolver != null ? callResolver : new DefaultCallResolver(view);
     return new CommonCallGraphSettings(
-        view, entryPoints, resolvedCallResolver, virtualCallResolver, seedEntryPointClinits);
+        view,
+        entryPoints,
+        resolvedCallResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        dynamicInvokeResolver);
   }
 
   /** Transitions to the CHA-specific stage. */

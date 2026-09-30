@@ -18,6 +18,7 @@
 
 package qilin.core.config;
 
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
 
 /**
@@ -57,6 +58,7 @@ public final class PointerAnalysisConfig {
   private final boolean enforceEmptyContextForIgnoreTypes;
   private final String reflectionLogPath;
   private final boolean resolveDynamicInvoke;
+  private final DynamicInvokeResolver dynamicInvokeResolver;
   private final boolean preAnalysisOnly;
   private final boolean ctxDebloating;
   private final DebloatApproach debloatApproach;
@@ -80,6 +82,7 @@ public final class PointerAnalysisConfig {
     this.enforceEmptyContextForIgnoreTypes = b.enforceEmptyContextForIgnoreTypes;
     this.reflectionLogPath = b.reflectionLogPath;
     this.resolveDynamicInvoke = b.resolveDynamicInvoke;
+    this.dynamicInvokeResolver = b.dynamicInvokeResolver;
     this.preAnalysisOnly = b.preAnalysisOnly;
     this.ctxDebloating = b.ctxDebloating;
     this.debloatApproach = b.debloatApproach;
@@ -157,12 +160,22 @@ public final class PointerAnalysisConfig {
   }
 
   /**
-   * Whether to resolve invokedynamic call sites bootstrapped by {@code LambdaMetafactory} (lambdas
-   * and method references) to their target method. Unlike reflection resolution this needs no
-   * external log - the target is a constant in the bootstrap args - so it defaults to enabled.
+   * Whether to resolve invokedynamic call sites (lambdas and method references) to their target
+   * method(s), as decided by {@link #getDynamicInvokeResolver()}. Unlike reflection resolution this
+   * needs no external log - the target is a constant in the bootstrap args - so it defaults to
+   * enabled. {@code false}, or a {@link DynamicInvokeResolver#none()} resolver, turns it off.
    */
   public boolean isResolveDynamicInvoke() {
-    return resolveDynamicInvoke;
+    return resolveDynamicInvoke && !dynamicInvokeResolver.isNone();
+  }
+
+  /**
+   * Shared call-graph invokedynamic resolver. Non-capturing static lambda targets are modeled
+   * precisely (see {@link qilin.core.invokedynamic.LambdaMetafactoryModel}); every other target is
+   * called from the invokedynamic statement with its captured values bound, like CHA/RTA/Spark.
+   */
+  public DynamicInvokeResolver getDynamicInvokeResolver() {
+    return dynamicInvokeResolver;
   }
 
   public boolean isPreAnalysisOnly() {
@@ -218,6 +231,8 @@ public final class PointerAnalysisConfig {
     private boolean enforceEmptyContextForIgnoreTypes = false;
     private String reflectionLogPath = null;
     private boolean resolveDynamicInvoke = true;
+    private DynamicInvokeResolver dynamicInvokeResolver =
+        DynamicInvokeResolver.bootstrapMethodHandles();
     private boolean preAnalysisOnly = false;
     private boolean ctxDebloating = false;
     private DebloatApproach debloatApproach = DebloatApproach.CONCH;
@@ -283,6 +298,12 @@ public final class PointerAnalysisConfig {
 
     public Builder resolveDynamicInvoke(boolean resolveDynamicInvoke) {
       this.resolveDynamicInvoke = resolveDynamicInvoke;
+      return this;
+    }
+
+    /** Shared call-graph invokedynamic resolver; see {@link #getDynamicInvokeResolver()}. */
+    public Builder dynamicInvokeResolver(DynamicInvokeResolver dynamicInvokeResolver) {
+      this.dynamicInvokeResolver = dynamicInvokeResolver;
       return this;
     }
 

@@ -134,7 +134,9 @@ public class PAG {
     effectModels.add(new ReflectionEffectModel(createReflectionModel()));
     effectModels.add(new NativeEffectModel(new NativeMethodDriver(pta.getScene(), this)));
     if (pta.getConfig().isResolveDynamicInvoke()) {
-      effectModels.add(new LambdaMetafactoryModel(pta.getScene(), this));
+      effectModels.add(
+          new LambdaMetafactoryModel(
+              pta.getScene(), this, pta.getConfig().getDynamicInvokeResolver()));
     }
     this.effectModels = List.copyOf(effectModels);
     this.contextVarNodeMap = new HashMap<>(16000);

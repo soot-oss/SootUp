@@ -25,6 +25,7 @@ package sootup.callgraph.config;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.signatures.MethodSignature;
@@ -45,18 +46,21 @@ public final class CommonCallGraphSettings {
   @NonNull private final CallResolver callResolver;
   @NonNull private final VirtualCallResolver virtualCallResolver;
   @Nullable private final Boolean seedEntryPointClinits;
+  @Nullable private final DynamicInvokeResolver dynamicInvokeResolver;
 
   CommonCallGraphSettings(
       @NonNull View view,
       @NonNull List<MethodSignature> entryPoints,
       @NonNull CallResolver callResolver,
       @NonNull VirtualCallResolver virtualCallResolver,
-      @Nullable Boolean seedEntryPointClinits) {
+      @Nullable Boolean seedEntryPointClinits,
+      @Nullable DynamicInvokeResolver dynamicInvokeResolver) {
     this.view = view;
     this.entryPoints = entryPoints;
     this.callResolver = callResolver;
     this.virtualCallResolver = virtualCallResolver;
     this.seedEntryPointClinits = seedEntryPointClinits;
+    this.dynamicInvokeResolver = dynamicInvokeResolver;
   }
 
   @NonNull
@@ -93,5 +97,24 @@ public final class CommonCallGraphSettings {
   @NonNull
   public Boolean getSeedEntryPointClinits(boolean defaultValue) {
     return seedEntryPointClinits != null ? seedEntryPointClinits : defaultValue;
+  }
+
+  /**
+   * Invokedynamic resolver to apply; {@link DynamicInvokeResolver#bootstrapMethodHandles()} if
+   * never set.
+   */
+  @NonNull
+  public DynamicInvokeResolver getDynamicInvokeResolver() {
+    return dynamicInvokeResolver != null
+        ? dynamicInvokeResolver
+        : DynamicInvokeResolver.bootstrapMethodHandles();
+  }
+
+  /**
+   * Whether the caller explicitly set an invokedynamic resolver - lets families with their own
+   * invokedynamic config (Qilin's {@code resolveDynamicInvoke}) keep it unless overridden.
+   */
+  public boolean isDynamicInvokeResolverSet() {
+    return dynamicInvokeResolver != null;
   }
 }

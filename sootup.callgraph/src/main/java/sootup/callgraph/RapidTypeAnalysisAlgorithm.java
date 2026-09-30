@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -165,7 +166,27 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       @NonNull CallResolver callResolver,
       @NonNull VirtualCallResolver virtualCallResolver,
       boolean seedEntryPointClinits) {
-    super(view, callResolver, virtualCallResolver, seedEntryPointClinits);
+    this(
+        view,
+        preInstantiatedClasses,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        DynamicInvokeResolver.bootstrapMethodHandles());
+  }
+
+  /**
+   * Widest RTA constructor: additionally takes a {@link DynamicInvokeResolver} deciding the targets
+   * of invokedynamic call sites.
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull Set<ClassType> preInstantiatedClasses,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
+    super(view, callResolver, virtualCallResolver, seedEntryPointClinits, dynamicInvokeResolver);
     this.instantiatedClasses = new HashSet<>(preInstantiatedClasses);
   }
 
