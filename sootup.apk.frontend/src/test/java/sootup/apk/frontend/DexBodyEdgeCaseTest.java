@@ -812,6 +812,40 @@ public class DexBodyEdgeCaseTest {
         messagesOf(e).toString());
   }
 
+  /**
+   * The same with a handler without move-exception in the method: its caught exception entry is
+   * appended behind the dex code, so the trailing nop would fall into the entry instead of off the
+   * end. It must fail all the same.
+   */
+  @Test
+  public void trailingNopInFrontOfACaughtExceptionEntryStillRunsOffTheEnd() {
+    RuntimeException e =
+        assertThrows(
+            RuntimeException.class,
+            () ->
+                convert(
+                    "TrailingNopBeforeEntry",
+                    2,
+                    b -> {
+                      b.addLabel("try");
+                      b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+                      b.addLabel("end");
+                      b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+                      b.addLabel("handler");
+                      b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 1));
+                      b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+                      b.addCatch(
+                          new ImmutableTypeReference("Ljava/lang/Exception;"),
+                          b.getLabel("try"),
+                          b.getLabel("end"),
+                          b.getLabel("handler"));
+                    }));
+
+    assertTrue(
+        messagesOf(e).stream().anyMatch(m -> m.contains("falls into the abyss")),
+        messagesOf(e).toString());
+  }
+
   /** Every message along the cause chain, so a test can look for the one it cares about. */
   private static List<String> messagesOf(Throwable throwable) {
     List<String> messages = new ArrayList<>();

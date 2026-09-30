@@ -102,6 +102,10 @@ public class DexBody {
 
   LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap = LinkedListMultimap.create();
 
+  /** The caught exception Stmts addTraps() appends for handlers without a move-exception. */
+  private final Set<Stmt> caughtExceptionEntries =
+      Collections.newSetFromMap(new IdentityHashMap<>());
+
   protected class RegDbgEntry {
     public int startAddress;
     public int endAddress;
@@ -391,6 +395,7 @@ public class DexBody {
     }
     checkTrapRanges(listList, methodSignature);
     removeUnreachableBlocks(listList, branchingStmtListMap);
+    checkNothingFallsIntoACaughtExceptionEntry(listList);
     graph.initializeWith(listList, branchingStmtListMap, traps);
     DexMethodSource dexMethodSource =
         new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
@@ -748,7 +753,29 @@ public class DexBody {
     add(caughtStmt);
     add(gotoStmt);
     addBranchingStmt(gotoStmt, Collections.singletonList(handler));
+    caughtExceptionEntries.add(caughtStmt);
     return caughtStmt;
+  }
+
+  /**
+   * The entries sit behind the last Stmt of the dex code, which in verified dex never falls
+   * through. Dex that runs off the end of the method would otherwise fall into an entry instead of
+   * failing the way it does without one, when the graph finds no Block to fall into.
+   */
+  private void checkNothingFallsIntoACaughtExceptionEntry(List<List<Stmt>> blocks) {
+    for (int i = 1; i < blocks.size(); i++) {
+      if (!caughtExceptionEntries.contains(blocks.get(i).get(0))) {
+        continue;
+      }
+      List<Stmt> previous = blocks.get(i - 1);
+      Stmt tail = previous.get(previous.size() - 1);
+      if (tail.fallsThrough()) {
+        throw new IllegalStateException(
+            "FallsthroughStmt '"
+                + tail
+                + "' falls into the abyss - as there is no following Block of dex code!");
+      }
+    }
   }
 
   private void addTraps() {
