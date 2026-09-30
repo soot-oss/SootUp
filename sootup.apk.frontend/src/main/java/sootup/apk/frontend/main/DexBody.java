@@ -447,18 +447,18 @@ public class DexBody {
       }
       Stmt end = trap.getEndStmt();
       if (removedStmts.contains(end)) {
-        // the end is exclusive, so with the Stmt behind the range gone, the range grows up to the
-        // next block that stayed; a range that would reach the end of the body cannot be expressed
-        end = null;
+        // The end is exclusive and only marks where the range stops, so it moves forward to the
+        // next block that stayed: everything it moves over was removed as well, so the range
+        // covers the same Stmts as before. With no block left, the removed end is kept, and
+        // initializeWith reads an end that is in no block as the end of the body. Dropping the
+        // Trap instead would leave its handler without the exceptional edge that is its only way
+        // in.
         Integer endIndex = blockOfHead.get(trap.getEndStmt());
         for (int i = endIndex == null ? blocks.size() : endIndex + 1; i < blocks.size(); i++) {
           if (reachable[i]) {
             end = blocks.get(i).get(0);
             break;
           }
-        }
-        if (end == null || end == trap.getBeginStmt()) {
-          continue;
         }
       }
       keptTraps.add(
@@ -736,7 +736,10 @@ public class DexBody {
                     instruction.getClass().getName()));
           }
           Stmt handlerStmt;
-          if (instruction.getStmt() instanceof JNopStmt || endStmt instanceof JNopStmt) {
+          // The end of the range is left alone even when it is a nop: it is the Stmt behind the
+          // covered range in stmtList order, while the handler can sit anywhere in the body, so
+          // ending the range at the handler would cover the wrong Stmts (or none at all).
+          if (instruction.getStmt() instanceof JNopStmt) {
             Local local = new LocalGenerator(locals).generateLocal(type);
             locals.add(local);
             Stmt caughtStmt =
@@ -746,9 +749,6 @@ public class DexBody {
                     StmtPositionInfo.getNoStmtPositionInfo());
             insertBefore(caughtStmt, instruction.getStmt());
             handlerStmt = caughtStmt;
-            if (endStmt instanceof JNopStmt) {
-              endStmt = caughtStmt;
-            }
           } else {
             handlerStmt = instruction.getStmt();
           }

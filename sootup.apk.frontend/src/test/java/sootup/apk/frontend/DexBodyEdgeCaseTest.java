@@ -401,6 +401,42 @@ public class DexBodyEdgeCaseTest {
     assertEquals("nop", trapsOf(body).get(0).getBeginStmt().toString());
   }
 
+  /**
+   * The layout obfuscators produce: the handler is stored at a lower address than the try block it
+   * catches for, and the range ends on a nop. The Trap must end at that nop and not at the handler,
+   * which would make it run backwards, cover nothing, and get the handler deleted as unreachable.
+   */
+  @Test
+  public void handlerStoredBeforeItsTryBlockKeepsItsRange() {
+    Body body =
+        convert(
+            "HandlerBeforeTry",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction10t(Opcode.GOTO, b.getLabel("try")));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 0));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    assertTrue(stmtsOf(body).contains("$u0 := @caughtexception"));
+    assertEquals(1, trapsOf(body).size());
+    Trap trap = trapsOf(body).get(0);
+    assertEquals("$u1 = 0", trap.getBeginStmt().toString());
+    assertEquals("nop", trap.getEndStmt().toString());
+    assertEquals("$u0 := @caughtexception", trap.getHandlerStmt().toString());
+  }
+
   /** A try block whose whole range is nops still covers them: they are reachable code. */
   @Test
   public void trapCoveringOnlyNopsIsKept() {
@@ -455,12 +491,12 @@ public class DexBodyEdgeCaseTest {
                   b.getLabel("handler"));
             });
 
-    // addTraps() answers a Trap that ends on a nop by inserting a caught exception Stmt of its own
-    // and ending the Trap there, so the body holds that Stmt next to the move-exception it covers
-    assertEquals(
-        List.of("$u0 = 0", "goto", "r0 := @caughtexception", "$u1 := @caughtexception", "return"),
-        stmtsOf(body));
+    // the trailing nops are unreachable and removed, which leaves nothing behind the range to end
+    // it at: the Trap is kept and runs to the end of the body, handler included
+    assertEquals(List.of("$u0 = 0", "goto", "$u1 := @caughtexception", "return"), stmtsOf(body));
     assertEquals(1, trapsOf(body).size());
+    assertEquals("$u0 = 0", trapsOf(body).get(0).getBeginStmt().toString());
+    assertEquals("$u1 := @caughtexception", trapsOf(body).get(0).getHandlerStmt().toString());
   }
 
   /** An endless loop, which is a body without any return at all. */
