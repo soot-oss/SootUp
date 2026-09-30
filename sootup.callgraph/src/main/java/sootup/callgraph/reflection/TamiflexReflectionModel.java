@@ -38,6 +38,7 @@ import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -282,7 +283,12 @@ public class TamiflexReflectionModel extends AbstractReflectionModel {
       if (method.get().isStatic()) {
         ie = new JStaticInvokeExpr(sig, mArgs);
       } else if (base instanceof Local baseLocal) {
-        ie = new JVirtualInvokeExpr(baseLocal, sig, mArgs);
+        boolean inInterface =
+            view.getClass(sig.getDeclClassType()).map(SootClass::isInterface).orElse(false);
+        ie =
+            inInterface
+                ? new JInterfaceInvokeExpr(baseLocal, sig, mArgs)
+                : new JVirtualInvokeExpr(baseLocal, sig, mArgs);
       } else {
         continue;
       }

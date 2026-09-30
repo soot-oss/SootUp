@@ -137,4 +137,15 @@ public class ReflectionSparkTest {
             .containsAll(
                 List.of(sig("PluginA", "start", "void"), sig("PluginB", "start", "void"))));
   }
+
+  @Test
+  public void otfChainedReflectionDispatchesOnReflectiveAllocation() {
+    // w = Class.forName("tfx.RealWorker").getConstructor().newInstance();
+    // Worker.class.getMethod("work", ..).invoke(w, "x")  -> dispatch via pts(w) = {RealWorker}
+    MethodSignature entry = main("ChainedReflection");
+    MethodSignature work = sig("RealWorker", "work", "java.lang.Object", "java.lang.Object");
+    ReflectionModel model = new TamiflexReflectionModel(view, DIR + "refl.log");
+    assertTrue(!spark(entry, true, ReflectionModel.none()).getCallGraph().containsMethod(work));
+    assertTrue(spark(entry, true, model).getCallGraph().callTargetsFrom(entry).contains(work));
+  }
 }

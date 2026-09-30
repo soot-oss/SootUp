@@ -2,6 +2,7 @@ package sootup.callgraph.reflection;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphConfig;
 import sootup.callgraph.config.CallGraphConfigBuilder;
+import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
@@ -173,5 +175,94 @@ public class TamiflexLogCallGraphTest {
   public void resolveIsMemoized() {
     SootMethod m = view.getMethod(main("PrivateInvoke")).get();
     assertTrue(model.resolve(m, m.getBody()) == model.resolve(m, m.getBody()));
+  }
+
+  // --- batch 2: features covered by the TamiFlex JDK 21 port (tamiflex PR #15) ---
+
+  @Test
+  public void declaredMethodsLoopResolvesEachInvokedMethod() {
+    MethodSignature entry = main("DeclaredMethodsLoop");
+    for (boolean rta : new boolean[] {false, true}) {
+      assertOnlyWithModel(entry, sig("Handlers", "onA", "void"), rta);
+      assertOnlyWithModel(entry, sig("Handlers", "onB", "void"), rta);
+      // helper() was returned by getDeclaredMethods but never invoked
+      assertFalse(cg(entry, rta, model).containsMethod(sig("Handlers", "helper", "void")));
+    }
+  }
+
+  @Test
+  public void inheritedMethodFoundViaSubclass() {
+    MethodSignature inherited = sig("Parent", "inherited", "java.lang.Object");
+    assertOnlyWithModel(main("InheritedGetMethod"), inherited, false);
+    assertOnlyWithModel(main("InheritedGetMethod"), inherited, true);
+  }
+
+  @Test
+  public void interfaceDefaultMethod() {
+    MethodSignature greet = sig("Greeter", "greet", "java.lang.String");
+    assertOnlyWithModel(main("DefaultMethodInvoke"), greet, false);
+    assertOnlyWithModel(main("DefaultMethodInvoke"), greet, true);
+  }
+
+  @Test
+  public void proxyHandlerForwardsToRealTarget() {
+    // invoke site lives in an instance method reached only through a JDK dynamic proxy
+    MethodSignature handler =
+        sig(
+            "ForwardingHandler",
+            "invoke",
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.lang.reflect.Method",
+            "java.lang.Object[]");
+    MethodSignature work = sig("RealWorker", "work", "java.lang.Object", "java.lang.Object");
+    assertOnlyWithModel(handler, work, false);
+  }
+
+  @Test
+  public void varargsTarget() {
+    MethodSignature count = sig("VarargsTarget", "count", "int", "java.lang.String[]");
+    assertOnlyWithModel(main("VarargsInvoke"), count, false);
+    assertOnlyWithModel(main("VarargsInvoke"), count, true);
+  }
+
+  @Test
+  public void hiddenLambdaClassTargetIsSkipped() {
+    // logged target is a normalized hidden class (tfx.LambdaReflect$$Lambda$HASHED$...), absent
+    // from the view: no rewrite, no bogus edge
+    SootMethod m = view.getMethod(main("LambdaReflect")).get();
+    assertSame(m.getBody(), model.resolve(m, m.getBody()));
+    assertTrue(
+        cg(main("LambdaReflect"), false, model).callTargetsFrom(main("LambdaReflect")).stream()
+            .noneMatch(t -> t.getDeclClassType().getFullyQualifiedName().contains("$$Lambda")));
+  }
+
+  @Test
+  public void nestedClassBinaryName() {
+    MethodSignature entry = main("NestedNewInstance");
+    assertOnlyWithModel(entry, sig("Outer$Inner", "<init>", "void"), false);
+    assertOnlyWithModel(entry, sig("Outer$Inner", "start", "void"), true);
+  }
+
+  @Test
+  public void chainedReflectiveCalls() {
+    // RTA: RealWorker instantiated reflectively, then called reflectively in the same method
+    MethodSignature entry = main("ChainedReflection");
+    assertOnlyWithModel(entry, sig("RealWorker", "<init>", "void"), true);
+    assertOnlyWithModel(
+        entry, sig("RealWorker", "work", "java.lang.Object", "java.lang.Object"), true);
+  }
+
+  @Test
+  public void threeArgForNameBecomesClassConstant() {
+    Body body = rewritten("ForName3");
+    assertTrue(
+        body.getStmts().stream()
+            .anyMatch(
+                s ->
+                    s instanceof JAssignStmt a
+                        && a.getRightOp() instanceof ClassConstant c
+                        && c.getValue().equals("Ltfx/PluginB;")));
+    assertOnlyWithModel(main("ForName3"), sig("PluginB", "<init>", "void"), false);
   }
 }
