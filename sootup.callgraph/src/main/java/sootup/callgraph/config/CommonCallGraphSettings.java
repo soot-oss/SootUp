@@ -25,6 +25,7 @@ package sootup.callgraph.config;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.signatures.MethodSignature;
@@ -45,18 +46,21 @@ public final class CommonCallGraphSettings {
   @NonNull private final CallResolver callResolver;
   @NonNull private final VirtualCallResolver virtualCallResolver;
   @Nullable private final Boolean seedEntryPointClinits;
+  @Nullable private final ReflectionModel reflectionModel;
 
   CommonCallGraphSettings(
       @NonNull View view,
       @NonNull List<MethodSignature> entryPoints,
       @NonNull CallResolver callResolver,
       @NonNull VirtualCallResolver virtualCallResolver,
-      @Nullable Boolean seedEntryPointClinits) {
+      @Nullable Boolean seedEntryPointClinits,
+      @Nullable ReflectionModel reflectionModel) {
     this.view = view;
     this.entryPoints = entryPoints;
     this.callResolver = callResolver;
     this.virtualCallResolver = virtualCallResolver;
     this.seedEntryPointClinits = seedEntryPointClinits;
+    this.reflectionModel = reflectionModel;
   }
 
   @NonNull
@@ -93,5 +97,19 @@ public final class CommonCallGraphSettings {
   @NonNull
   public Boolean getSeedEntryPointClinits(boolean defaultValue) {
     return seedEntryPointClinits != null ? seedEntryPointClinits : defaultValue;
+  }
+
+  /** Reflection model to apply; {@link ReflectionModel#none()} if never set. */
+  @NonNull
+  public ReflectionModel getReflectionModel() {
+    return reflectionModel != null ? reflectionModel : ReflectionModel.none();
+  }
+
+  /**
+   * Whether the caller explicitly set a reflection model - lets families with their own reflection
+   * config (Qilin's {@code reflectionLogPath}) keep it unless overridden.
+   */
+  public boolean isReflectionModelSet() {
+    return reflectionModel != null;
   }
 }

@@ -34,6 +34,7 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.DefaultCallResolver;
 import sootup.callgraph.scope.ExplorationVerdict;
@@ -52,6 +53,7 @@ import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -91,6 +93,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * traversal starts, independently of whether any statement actually triggers it.
    */
   private final boolean seedEntryPointClinits;
+
+  /** Makes reflective calls explicit in the bodies this algorithm inspects. */
+  @NonNull private final ReflectionModel reflectionModel;
 
   /** Creates a new call graph algorithm using the given view. */
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
@@ -162,12 +167,36 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull CallResolver callResolver,
       @NonNull VirtualCallResolver virtualCallResolver,
       boolean seedEntryPointClinits) {
+    this(view, callResolver, virtualCallResolver, seedEntryPointClinits, ReflectionModel.none());
+  }
+
+  /**
+   * Like {@link #AbstractCallGraphAlgorithm(View, CallResolver, VirtualCallResolver, boolean)},
+   * plus a {@link ReflectionModel} rewriting each inspected body so resolved reflective calls
+   * become plain call edges.
+   */
+  protected AbstractCallGraphAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel) {
     this.view = view;
     this.typeHierarchy = view.getTypeHierarchy();
     this.threadType = view.getIdentifierFactory().getClassType("java.lang.Thread");
     this.callResolver = callResolver;
     this.virtualCallResolver = virtualCallResolver;
     this.seedEntryPointClinits = seedEntryPointClinits;
+    this.reflectionModel = reflectionModel;
+  }
+
+  /**
+   * Body of {@code method} as the algorithm sees it: the stored body, rewritten by the configured
+   * {@link ReflectionModel}. {@code method} must have a body.
+   */
+  @NonNull
+  protected Body getBody(@NonNull SootMethod method) {
+    return reflectionModel.resolve(method, method.getBody());
   }
 
   /**
@@ -438,7 +467,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected void resolveAllCallsFromSourceMethod(
       @NonNull SootMethod sourceMethod, @NonNull MutableCallGraph cg, @NonNull Frontier frontier) {
-    sourceMethod.getBody().getStmts().stream()
+    getBody(sourceMethod).getStmts().stream()
         .filter(Stmt::isInvokableStmt)
         .map(Stmt::asInvokableStmt)
         .forEach(
@@ -493,7 +522,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected void implicitStartRunCall(
       @NonNull SootMethod sourceMethod, @NonNull MutableCallGraph cg, @NonNull Frontier frontier) {
-    for (Stmt stmt : sourceMethod.getBody().getStmts()) {
+    for (Stmt stmt : getBody(sourceMethod).getStmts()) {
       if (!stmt.isInvokableStmt()) {
         continue;
       }
@@ -579,8 +608,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     // value: true, if the classType has a static initializer call in the block
     Table<ClassType, BasicBlock<?>, Boolean> table = HashBasedTable.create();
     Set<BasicBlock<?>> visitedBlocks = new HashSet<>();
-    sourceMethod
-        .getBody()
+    getBody(sourceMethod)
         .getControlFlowGraph()
         .getBlocksSorted()
         .forEach(
@@ -700,7 +728,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       return potentialClinitCalls;
     }
 
-    ControlFlowGraph<?> cfg = sourceMethod.getBody().getControlFlowGraph();
+    ControlFlowGraph<?> cfg = getBody(sourceMethod).getControlFlowGraph();
     BasicBlock<?> currentBlock = cfg.getBlockOf(invokableStmt);
     MethodSignature sourceSig = sourceMethod.getSignature();
 

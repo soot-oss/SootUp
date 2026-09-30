@@ -377,6 +377,12 @@
                         <root>sootup.jimple.frontend/src/main/java</root>
                         <root>sootup.tests/src/main/java</root>
                     </roots>
+                    <excludes>
+                        <!-- moved from Qilin: keep original LGPL-3.0 Qilin headers -->
+                        <exclude>**/sootup/callgraph/reflection/AbstractReflectionModel.java</exclude>
+                        <exclude>**/sootup/callgraph/reflection/ReflectionKind.java</exclude>
+                        <exclude>**/sootup/callgraph/reflection/TamiflexReflectionModel.java</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>

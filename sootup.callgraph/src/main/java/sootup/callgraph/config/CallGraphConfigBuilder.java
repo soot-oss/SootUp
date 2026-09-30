@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import org.jspecify.annotations.NonNull;
+import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.DefaultCallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
@@ -59,6 +60,9 @@ public final class CallGraphConfigBuilder {
    * family's default onto another changes its behavior silently.
    */
   private Boolean seedEntryPointClinits;
+
+  /** {@code null} means "not explicitly set" - see {@link #reflectionModel}. */
+  private ReflectionModel reflectionModel;
 
   public CallGraphConfigBuilder() {}
 
@@ -104,6 +108,17 @@ public final class CallGraphConfigBuilder {
     return this;
   }
 
+  /**
+   * Makes reflective calls explicit before calls are resolved (e.g. {@code
+   * sootup.callgraph.reflection.TamiflexReflectionModel}); unset = {@link ReflectionModel#none()}.
+   * Spark reuses the same instance for its PAG, so its bodies match the CHA graph's.
+   */
+  @NonNull
+  public CallGraphConfigBuilder reflectionModel(@NonNull ReflectionModel reflectionModel) {
+    this.reflectionModel = reflectionModel;
+    return this;
+  }
+
   @NonNull
   private CommonCallGraphSettings snapshot() {
     if (view == null) {
@@ -112,7 +127,12 @@ public final class CallGraphConfigBuilder {
     CallResolver resolvedCallResolver =
         callResolver != null ? callResolver : new DefaultCallResolver(view);
     return new CommonCallGraphSettings(
-        view, entryPoints, resolvedCallResolver, virtualCallResolver, seedEntryPointClinits);
+        view,
+        entryPoints,
+        resolvedCallResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        reflectionModel);
   }
 
   /** Transitions to the CHA-specific stage. */
