@@ -273,6 +273,12 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       addBlock(block, exceptionToHandlerMap);
     }
 
+    // a Trap whose end heads no block reaches the end of the body, so it is never closed above
+    while (nextEndingTrap != null
+        && trapstmtToIdx.get(nextEndingTrap.getEndStmt()) == blocks.size()) {
+      nextEndingTrap = trapEnd.poll();
+    }
+
     if (nextStartingTrap != null || nextEndingTrap != null) {
       throw new IllegalStateException("The Traps are not iterated completely/correctly!");
       //      System.out.println("The Traps are not iterated completely/correctly");
