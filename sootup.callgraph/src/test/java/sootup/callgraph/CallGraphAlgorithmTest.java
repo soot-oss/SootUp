@@ -50,6 +50,27 @@ public abstract class CallGraphAlgorithmTest extends CallGraphTest {
   }
 
   @Test
+  public void testLambdaBodyIsReachable() {
+    CallGraph cg = loadCallGraph("Misc", "lambda.Class");
+
+    MethodSignature lambdaBody =
+        identifierFactory.getMethodSignature(
+            mainClassSignature,
+            "lambda$main$0",
+            "java.lang.String",
+            Collections.singletonList("java.lang.String"));
+    MethodSignature target =
+        identifierFactory.getMethodSignature(
+            mainClassSignature,
+            "target",
+            "java.lang.String",
+            Collections.singletonList("java.lang.String"));
+
+    assertTrue(cg.callTargetsFrom(mainMethodSignature).contains(lambdaBody));
+    assertTrue(cg.callTargetsFrom(lambdaBody).contains(target));
+  }
+
+  @Test
   public void testRecursiveCall() {
     CallGraph cg = loadCallGraph("Misc", "recur.Class");
 

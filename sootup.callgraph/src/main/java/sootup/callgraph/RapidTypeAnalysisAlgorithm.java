@@ -252,7 +252,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     AbstractInvokeExpr invokeExpr = optInvokeExpr.get();
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
     if ((invokeExpr instanceof JDynamicInvokeExpr)) {
-      return Stream.empty();
+      return resolveDynamicInvokeTargets((JDynamicInvokeExpr) invokeExpr);
     }
 
     SootMethod actualTargetMethod = view.getMethod(targetMethodSignature).orElse(null);

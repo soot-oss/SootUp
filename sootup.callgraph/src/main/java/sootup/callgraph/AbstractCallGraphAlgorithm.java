@@ -43,7 +43,9 @@ import sootup.core.IdentifierFactory;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Value;
+import sootup.core.jimple.common.constant.MethodHandle;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
@@ -927,6 +929,26 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   @NonNull
   protected abstract Stream<MethodSignature> resolveCall(
       SootMethod method, InvokableStmt invokableStmt);
+
+  /**
+   * Resolves the methods referenced by method handles in the bootstrap arguments of an
+   * invokedynamic expression, e.g. the synthetic lambda body or the method reference passed to
+   * {@code LambdaMetafactory}. These methods are treated as call targets of the invokedynamic
+   * statement, so that code reached only via lambdas becomes part of the call graph.
+   *
+   * @param dynamicInvokeExpr the invokedynamic expression
+   * @return the signatures of all methods referenced by method handles in the bootstrap arguments
+   */
+  @NonNull
+  protected Stream<MethodSignature> resolveDynamicInvokeTargets(
+      @NonNull JDynamicInvokeExpr dynamicInvokeExpr) {
+    return dynamicInvokeExpr.getBootstrapArgs().stream()
+        .filter(arg -> arg instanceof MethodHandle)
+        .map(arg -> (MethodHandle) arg)
+        .filter(MethodHandle::isMethodRef)
+        .map(handle -> (MethodSignature) handle.getReferenceSignature())
+        .map(sig -> resolveConcreteDispatch(view, sig).orElse(sig));
+  }
 
   /**
    * Searches for the signature of the method that is the concrete implementation of <code>m</code>.
