@@ -54,8 +54,6 @@ public class ReflectionSparkTest {
 
   /**
    * Types the result of the reflective {@code newInstance()} call in {@code entry} may point to.
-   * Queried before the {@code (Plugin)} cast: Spark ignores casts (no PAG edge), independent of
-   * reflection.
    */
   private Set<String> newInstanceResultTypes(Spark spark, MethodSignature entry) {
     Local result =
@@ -126,5 +124,17 @@ public class ReflectionSparkTest {
             .build()
             .computeCallGraph();
     assertTrue(cg.callTargetsFrom(entry).contains(subFoo));
+  }
+
+  @Test
+  public void reflectiveAllocationFlowsThroughCast() {
+    // p = (Plugin) Class.forName(..).newInstance(); p.start() - needs cast propagation
+    MethodSignature entry = main("PluginLoader");
+    ReflectionModel model = new TamiflexReflectionModel(view, DIR + "refl.log");
+    CallGraph cg = spark(entry, true, model).getCallGraph();
+    assertTrue(
+        cg.callTargetsFrom(entry)
+            .containsAll(
+                List.of(sig("PluginA", "start", "void"), sig("PluginB", "start", "void"))));
   }
 }
