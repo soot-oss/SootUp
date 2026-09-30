@@ -1,4 +1,46 @@
 # First Steps with SootUp
+
+## The Mental Model
+
+**What does "analyzing a program" mean in practice?**
+
+You want to ask questions about code without running it: "Can this variable ever be
+`null` at line 42?", "Does this method ever write to a file?", "Which methods could
+be invoked at this call site?". To answer these questions automatically, you need a
+structured, machine-traversable representation of the program — something richer than
+raw text, simpler than a running process.
+
+SootUp works in three layers:
+
+1. **Your program on disk** — compiled `.class` files (bytecode), source files, or an
+   Android `.apk`. The JVM can run these; SootUp reads them.
+
+2. **The Intermediate Representation (Jimple)** — SootUp translates bytecode into
+   Jimple, a clean, flat, named-variable form. Every instruction is explicit.
+   No implicit stack. No nested expressions. This makes it straightforward to traverse
+   and reason about in Java code. You almost never write bytecode; you write code that
+   walks Jimple.
+
+3. **Your analysis** — you walk the Jimple representation and compute whatever you
+   need: collect all call sites, track which locals may be null, count branches, or
+   check a security property.
+
+**How the API maps onto this model:**
+
+| SootUp type | What it represents |
+|---|---|
+| `AnalysisInputLocation` | Where on disk is the code you want to examine? |
+| `View` | Your in-memory handle to the loaded program — everything you query goes through here |
+| `SootClass` | One class loaded from the View |
+| `SootMethod` | One method inside a class |
+| `Body` | The instructions of a method, in Jimple form, plus declared local variables |
+| `ControlFlowGraph` | The edges between those instructions: which statement can follow which |
+
+With this model in mind, the code below should feel like a natural consequence rather
+than magic API calls.
+
+---
+
 Before you get started with the SootUp library, it helps to learn about the following core data structures:
 
 - [`AnalysisInputLocation`]{It corresponds to the `cp` option, which specifies the classpath for Soot to find classes to be analyzed.}
