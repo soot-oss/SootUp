@@ -57,6 +57,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.jimple.common.Trap;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.util.printer.BriefStmtPrinter;
 import sootup.java.core.views.JavaView;
@@ -435,6 +436,73 @@ public class DexBodyEdgeCaseTest {
     assertEquals("$u1 = 0", trap.getBeginStmt().toString());
     assertEquals("nop", trap.getEndStmt().toString());
     assertEquals("$u0 := @caughtexception", trap.getHandlerStmt().toString());
+  }
+
+  /**
+   * A goto can enter a try block in its middle, jumping over a padding nop at its start. The nop is
+   * dead and removed, but the rest of the range is not: the Trap then begins at the first Stmt of
+   * the range that stayed, instead of being dropped with its handler left behind unreachable.
+   */
+  @Test
+  public void trapWhoseFirstStmtIsDeadBeginsAtItsFirstReachableStmt() {
+    Body body =
+        convert(
+            "DeadBegin",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction10t(Opcode.GOTO, b.getLabel("in")));
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+              b.addLabel("in");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    assertEquals(
+        List.of("goto", "$u0 = 0", "return", "$u1 := @caughtexception", "return"), stmtsOf(body));
+    assertEquals(1, trapsOf(body).size());
+    Trap trap = trapsOf(body).get(0);
+    assertEquals("$u0 = 0", trap.getBeginStmt().toString());
+    assertEquals("$u1 := @caughtexception", trap.getHandlerStmt().toString());
+    Stmt covered = body.getStmts().get(1);
+    assertEquals(1, body.getControlFlowGraph().exceptionalSuccessors(covered).size());
+  }
+
+  /** When nothing of a try block is reachable, its Trap goes, and so does its handler. */
+  @Test
+  public void trapWhoseWholeRangeIsDeadIsDroppedWithItsHandler() {
+    Body body =
+        convert(
+            "DeadRange",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction10t(Opcode.GOTO, b.getLabel("end")));
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    assertEquals(List.of("goto", "return"), stmtsOf(body));
+    assertEquals(0, trapsOf(body).size());
   }
 
   /** A try block whose whole range is nops still covers them: they are reachable code. */

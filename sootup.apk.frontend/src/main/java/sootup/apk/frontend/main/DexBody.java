@@ -466,10 +466,27 @@ public class DexBody {
 
     List<Trap> keptTraps = new ArrayList<>(traps.size());
     for (Trap trap : traps) {
-      if (removedStmts.contains(trap.getBeginStmt())
-          || removedStmts.contains(trap.getHandlerStmt())) {
-        // nothing is left of the covered range, or of the handler that would catch for it
+      if (removedStmts.contains(trap.getHandlerStmt())) {
+        // the handler is reached from any reachable block of the range, so none of it is left
         continue;
+      }
+      Integer endIndex = blockOfHead.get(trap.getEndStmt());
+      Stmt begin = trap.getBeginStmt();
+      if (removedStmts.contains(begin)) {
+        // control can enter a range in its middle, e.g. by a goto over a padding nop at its start,
+        // so the first blocks of a range may be dead while the rest of it is not: the range then
+        // begins at the first of its blocks that stayed
+        begin = null;
+        int rangeEnd = endIndex == null ? blocks.size() : endIndex;
+        for (int i = blockOfHead.get(trap.getBeginStmt()) + 1; i < rangeEnd; i++) {
+          if (reachable[i]) {
+            begin = blocks.get(i).get(0);
+            break;
+          }
+        }
+        if (begin == null) {
+          continue;
+        }
       }
       Stmt end = trap.getEndStmt();
       if (removedStmts.contains(end)) {
@@ -479,7 +496,6 @@ public class DexBody {
         // initializeWith reads an end that is in no block as the end of the body. Dropping the
         // Trap instead would leave its handler without the exceptional edge that is its only way
         // in.
-        Integer endIndex = blockOfHead.get(trap.getEndStmt());
         for (int i = endIndex == null ? blocks.size() : endIndex + 1; i < blocks.size(); i++) {
           if (reachable[i]) {
             end = blocks.get(i).get(0);
@@ -488,10 +504,9 @@ public class DexBody {
         }
       }
       keptTraps.add(
-          end == trap.getEndStmt()
+          begin == trap.getBeginStmt() && end == trap.getEndStmt()
               ? trap
-              : Jimple.newTrap(
-                  trap.getExceptionType(), trap.getBeginStmt(), end, trap.getHandlerStmt()));
+              : Jimple.newTrap(trap.getExceptionType(), begin, end, trap.getHandlerStmt()));
     }
     traps.clear();
     traps.addAll(keptTraps);
