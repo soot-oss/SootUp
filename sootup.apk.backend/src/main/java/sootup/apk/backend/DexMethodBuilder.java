@@ -4,15 +4,22 @@ import static sootup.apk.backend.Constants.JIMPLE_OBJECT_TYPE;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import org.jf.dexlib2.AnnotationVisibility;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.*;
 import org.jf.dexlib2.iface.Annotation;
+import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.MethodImplementation;
 import org.jf.dexlib2.iface.MethodParameter;
 import org.jf.dexlib2.iface.reference.TypeReference;
+import org.jf.dexlib2.immutable.ImmutableAnnotation;
+import org.jf.dexlib2.immutable.ImmutableAnnotationElement;
 import org.jf.dexlib2.immutable.ImmutableMethod;
 import org.jf.dexlib2.immutable.ImmutableMethodParameter;
 import org.jf.dexlib2.immutable.reference.ImmutableTypeReference;
+import org.jf.dexlib2.immutable.value.ImmutableArrayEncodedValue;
+import org.jf.dexlib2.immutable.value.ImmutableEncodedValue;
+import org.jf.dexlib2.immutable.value.ImmutableTypeEncodedValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.apk.backend.instructions.*;
@@ -30,6 +37,7 @@ import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
 import sootup.core.types.*;
 import sootup.core.views.View;
+import sootup.java.core.JavaSootMethod;
 
 public class DexMethodBuilder {
 
@@ -93,7 +101,7 @@ public class DexMethodBuilder {
     Type returnType = sootMethod.getReturnType();
     String dexReturnType = DexUtil.toDexType(returnType);
 
-    Set<Annotation> annotations = null; // TODO
+    Set<Annotation> annotations = createMethodAnnotations(sootMethod);
 
     MethodImplementation methodImplementation = createMethodImplementation(sootMethod);
 
@@ -106,6 +114,47 @@ public class DexMethodBuilder {
         annotations,
         null,
         methodImplementation);
+  }
+
+  private Set<Annotation> createMethodAnnotations(SootMethod m) {
+    Set<Annotation> annotations = new HashSet<>();
+    if (m instanceof JavaSootMethod javaSootMethod) {
+      var a = javaSootMethod.getAnnotations();
+      for (var annotation : a) {
+        List<AnnotationElement> annotationElements = new ArrayList<>();
+        for (var entry : annotation.getValues().entrySet()) {
+          AnnotationElement annotationElement =
+              new ImmutableAnnotationElement(
+                  entry.getKey(), DexUtil.buildEncodedValueForAnnotation(entry.getValue()));
+          annotationElements.add(annotationElement);
+        }
+        ImmutableAnnotation ann =
+            new ImmutableAnnotation(
+                AnnotationVisibility.RUNTIME,
+                DexUtil.toDexClassName(annotation.getAnnotation().getFullyQualifiedName()),
+                annotationElements);
+        annotations.add(ann);
+      }
+    }
+
+    List<ClassType> exceptionSignatures = m.getExceptionSignatures();
+    if (!exceptionSignatures.isEmpty()) {
+      List<ImmutableEncodedValue> valueList = new ArrayList<>(exceptionSignatures.size());
+      for (ClassType exceptionClass : exceptionSignatures) {
+        valueList.add(
+            new ImmutableTypeEncodedValue(
+                DexUtil.toDexClassName(exceptionClass.getFullyQualifiedName())));
+      }
+      ImmutableArrayEncodedValue valueValue = new ImmutableArrayEncodedValue(valueList);
+      ImmutableAnnotationElement valueElement = new ImmutableAnnotationElement("value", valueValue);
+      Set<ImmutableAnnotationElement> elements = Collections.singleton(valueElement);
+      ImmutableAnnotation ann =
+          new ImmutableAnnotation(
+              AnnotationVisibility.SYSTEM, "Ldalvik/annotation/Throws;", elements);
+      annotations.add(ann);
+    }
+
+    return annotations;
   }
 
   private MethodImplementation createMethodImplementation(SootMethod sootMethod) {

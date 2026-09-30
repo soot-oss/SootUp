@@ -1,14 +1,16 @@
 package sootup.apk.backend;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import org.jf.dexlib2.AnnotationVisibility;
 import org.jf.dexlib2.iface.Annotation;
+import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.Field;
-import org.jf.dexlib2.immutable.ImmutableClassDef;
-import org.jf.dexlib2.immutable.ImmutableField;
-import org.jf.dexlib2.immutable.ImmutableMethod;
+import org.jf.dexlib2.immutable.*;
+import org.jf.dexlib2.immutable.value.ImmutableArrayEncodedValue;
 import org.jf.dexlib2.immutable.value.ImmutableEncodedValue;
+import org.jf.dexlib2.immutable.value.ImmutableNullEncodedValue;
+import org.jf.dexlib2.immutable.value.ImmutableTypeEncodedValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.model.ClassModifier;
@@ -18,6 +20,7 @@ import sootup.core.model.SootField;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootField;
 
 public class DexClassBuilder {
 
@@ -62,17 +65,7 @@ public class DexClassBuilder {
             ? c.getMethods().stream().map(dexMethodBuilder::createMethod).toList()
             : null;
 
-    List<Annotation> annotations = null; // TODO
-
-    if (c instanceof JavaSootClass javaSootClass) {
-      var a = javaSootClass.getAnnotations();
-      for (var annotation : a) {
-        log.info("ANNOTATION: {}", annotation.getAnnotation().getFullyQualifiedName());
-        for (var entry : annotation.getValues().entrySet()) {
-          log.info("{} = {}", entry.getKey(), entry.getValue());
-        }
-      }
-    }
+    List<Annotation> annotations = createClassAnnotations(c);
 
     ClassDef classDef =
         new ImmutableClassDef(
@@ -103,10 +96,139 @@ public class DexClassBuilder {
     // static fields of type Primitive, String, null
     ImmutableEncodedValue initialValue = null; // TODO
 
-    Set<Annotation> fieldAnnotations = null; // TODO
+    Set<Annotation> fieldAnnotations = createFieldAnnotations(f);
 
     return new ImmutableField(
         classType, fieldName, fieldType, accessFlags, initialValue, fieldAnnotations, null);
+  }
+
+  private List<Annotation> createClassAnnotations(SootClass c) {
+    List<Annotation> annotations = new ArrayList<>();
+    if (c instanceof JavaSootClass javaSootClass) {
+      var a = javaSootClass.getAnnotations();
+      for (var annotation : a) {
+        List<AnnotationElement> annotationElements = new ArrayList<>();
+        for (var entry : annotation.getValues().entrySet()) {
+          AnnotationElement annotationElement =
+              new ImmutableAnnotationElement(
+                  entry.getKey(), DexUtil.buildEncodedValueForAnnotation(entry.getValue()));
+          annotationElements.add(annotationElement);
+        }
+        ImmutableAnnotation ann =
+            new ImmutableAnnotation(
+                AnnotationVisibility.RUNTIME,
+                DexUtil.toDexClassName(annotation.getAnnotation().getFullyQualifiedName()),
+                annotationElements);
+        annotations.add(ann);
+      }
+    }
+
+    // TODO How to distinguish enclosingClass and enclosingMethod in SootUp?
+    if (c.getOuterClass().isPresent()) {
+      ImmutableAnnotationElement enclosingElement =
+          new ImmutableAnnotationElement(
+              "value",
+              new ImmutableTypeEncodedValue(
+                  DexUtil.toDexClassName(c.getOuterClass().get().getFullyQualifiedName())));
+      annotations.add(
+          new ImmutableAnnotation(
+              AnnotationVisibility.SYSTEM,
+              "Ldalvik/annotation/EnclosingClass;",
+              Collections.singleton(enclosingElement)));
+    } else if (c.getName().contains("$")
+        && dexOutputLocation
+            .getView()
+            .getClasses()
+            .anyMatch(
+                cl -> cl.getName().equals(c.getName().substring(0, c.getName().indexOf("$"))))) {
+      ImmutableAnnotationElement enclosingElement =
+          new ImmutableAnnotationElement(
+              "value",
+              new ImmutableTypeEncodedValue(
+                  DexUtil.toDexClassName(c.getName().substring(0, c.getName().indexOf("$")))));
+      annotations.add(
+          new ImmutableAnnotation(
+              AnnotationVisibility.SYSTEM,
+              "Ldalvik/annotation/EnclosingClass;",
+              Collections.singleton(enclosingElement)));
+    }
+
+    if (c.isInnerClass()) {
+      ImmutableEncodedValue immutableEncodedValue;
+      if (c.getName().contains("$")
+          && c.getName().substring(c.getName().lastIndexOf('$') + 1).matches("\\d+")) {
+        immutableEncodedValue = ImmutableNullEncodedValue.INSTANCE;
+      } else {
+        immutableEncodedValue =
+            new ImmutableTypeEncodedValue(
+                DexUtil.toDexClassName(c.getName().substring(c.getName().lastIndexOf("$"))));
+      }
+
+      ImmutableAnnotationElement enclosingElement =
+          new ImmutableAnnotationElement("value", immutableEncodedValue);
+      annotations.add(
+          new ImmutableAnnotation(
+              AnnotationVisibility.SYSTEM,
+              "Ldalvik/annotation/InnerClass;",
+              Collections.singleton(enclosingElement)));
+    }
+
+    if ((!c.getName().contains("$")
+            || (c.getName().contains("$")
+                && !c.getName().substring(c.getName().lastIndexOf('$') + 1).matches("\\d+")))
+        && dexOutputLocation
+            .getView()
+            .getClasses()
+            .anyMatch(cl -> cl.getName().contains(c.getName()))) {
+      List<String> classNames =
+          dexOutputLocation
+              .getView()
+              .getClasses()
+              .map(SootClass::getName)
+              .filter(
+                  name ->
+                      name.contains(c.getName())
+                          && !(name.contains("$")
+                              && name.substring(name.lastIndexOf('$') + 1).matches("\\d+")))
+              .toList();
+      List<ImmutableTypeEncodedValue> classes = new ArrayList<>();
+      for (String memberClass : classNames) {
+        classes.add(new ImmutableTypeEncodedValue(DexUtil.toDexClassName(memberClass)));
+      }
+      ImmutableArrayEncodedValue classesValue = new ImmutableArrayEncodedValue(classes);
+      ImmutableAnnotationElement element = new ImmutableAnnotationElement("value", classesValue);
+      ImmutableAnnotation memberAnnotation =
+          new ImmutableAnnotation(
+              AnnotationVisibility.SYSTEM,
+              "Ldalvik/annotation/MemberClasses;",
+              Collections.singletonList(element));
+      annotations.add(memberAnnotation);
+    }
+
+    return annotations;
+  }
+
+  private Set<Annotation> createFieldAnnotations(SootField f) {
+    Set<Annotation> annotations = new HashSet<>();
+    if (f instanceof JavaSootField javaSootField) {
+      var a = javaSootField.getAnnotations();
+      for (var annotation : a) {
+        List<AnnotationElement> annotationElements = new ArrayList<>();
+        for (var entry : annotation.getValues().entrySet()) {
+          AnnotationElement annotationElement =
+              new ImmutableAnnotationElement(
+                  entry.getKey(), DexUtil.buildEncodedValueForAnnotation(entry.getValue()));
+          annotationElements.add(annotationElement);
+        }
+        ImmutableAnnotation ann =
+            new ImmutableAnnotation(
+                AnnotationVisibility.RUNTIME,
+                DexUtil.toDexClassName(annotation.getAnnotation().getFullyQualifiedName()),
+                annotationElements);
+        annotations.add(ann);
+      }
+    }
+    return annotations;
   }
 
   protected View getView() {

@@ -1,11 +1,13 @@
 package sootup.apk.backend;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jf.dexlib2.immutable.ImmutableAnnotationElement;
+import org.jf.dexlib2.immutable.reference.ImmutableFieldReference;
+import org.jf.dexlib2.immutable.value.*;
+import sootup.core.jimple.common.constant.*;
 import sootup.core.types.*;
+import sootup.java.core.AnnotationUsage;
 
 public class DexUtil {
 
@@ -214,5 +216,50 @@ public class DexUtil {
 
   protected static boolean inSigned32Bit(long number) {
     return number >= -2147483648 && number <= 2147483647;
+  }
+
+  public static ImmutableEncodedValue buildEncodedValueForAnnotation(Object elem) {
+    if (elem instanceof BooleanConstant booleanConstant) {
+      return booleanConstant.getValue()
+          ? ImmutableBooleanEncodedValue.TRUE_VALUE
+          : ImmutableBooleanEncodedValue.FALSE_VALUE;
+    } else if (elem instanceof IntConstant intConstant) {
+      return new ImmutableIntEncodedValue(intConstant.getValue());
+    } else if (elem instanceof LongConstant longConstant) {
+      return new ImmutableLongEncodedValue(longConstant.getValue());
+    } else if (elem instanceof FloatConstant floatConstant) {
+      return new ImmutableFloatEncodedValue(floatConstant.getValue());
+    } else if (elem instanceof DoubleConstant doubleConstant) {
+      return new ImmutableDoubleEncodedValue(doubleConstant.getValue());
+    } else if (elem instanceof StringConstant stringConstant) {
+      return new ImmutableStringEncodedValue(stringConstant.getValue());
+    } else if (elem instanceof ClassConstant classConstant) {
+      return new ImmutableTypeEncodedValue(classConstant.getValue());
+    } else if (elem instanceof EnumConstant enumConstant) {
+      String classT = DexUtil.toDexType(enumConstant.getType());
+      return new ImmutableEnumEncodedValue(
+          new ImmutableFieldReference(classT, enumConstant.getValue(), classT));
+    } else if (elem instanceof AnnotationUsage annotationUsage) {
+      List<ImmutableAnnotationElement> elements = new ArrayList<>();
+      for (var a : annotationUsage.getValues().entrySet()) {
+        ImmutableAnnotationElement e =
+            new ImmutableAnnotationElement(
+                a.getKey(), DexUtil.buildEncodedValueForAnnotation(a.getValue()));
+        elements.add(e);
+      }
+      return new ImmutableAnnotationEncodedValue(
+          DexUtil.toDexClassName(annotationUsage.getAnnotation().getFullyQualifiedName()),
+          elements);
+
+    } else if (elem instanceof List list) {
+      List<ImmutableEncodedValue> values = new ArrayList<>();
+      for (var e : list) {
+        values.add(DexUtil.buildEncodedValueForAnnotation(e));
+      }
+      return new ImmutableArrayEncodedValue(values);
+    } else if (elem instanceof NullConstant) {
+      return ImmutableNullEncodedValue.INSTANCE;
+    }
+    return ImmutableNullEncodedValue.INSTANCE;
   }
 }
