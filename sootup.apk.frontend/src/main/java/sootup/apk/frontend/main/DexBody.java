@@ -729,7 +729,31 @@ public class DexBody {
     }
   }
 
+  /**
+   * A Jimple handler has to start with a {@code := @caughtexception} Stmt, but a dex handler only
+   * starts with move-exception when it uses the exception: without one (e.g. {@code catch
+   * (Exception ignored)}) it is ordinary code, often shared with the normal path, like the final
+   * return-void. So the entry is not put in front of the handler, where normal flow would fall into
+   * it, but appended to the body as {@code $x := @caughtexception; goto handler}.
+   */
+  private Stmt addCaughtExceptionEntry(ClassType type, Stmt handler) {
+    Local local = new LocalGenerator(locals).generateLocal(type);
+    locals.add(local);
+    Stmt caughtStmt =
+        Jimple.newIdentityStmt(
+            local,
+            JavaJimple.newCaughtExceptionRef(identifierFactory),
+            StmtPositionInfo.getNoStmtPositionInfo());
+    JGotoStmt gotoStmt = Jimple.newGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    add(caughtStmt);
+    add(gotoStmt);
+    addBranchingStmt(gotoStmt, Collections.singletonList(handler));
+    return caughtStmt;
+  }
+
   private void addTraps() {
+    // one entry per handler address and exception type, however many try blocks share them
+    Map<String, Stmt> entryOfHandler = new HashMap<>();
     for (TryBlock<? extends ExceptionHandler> tryItem : tries) {
       int startAddress = tryItem.getStartCodeAddress();
       int length = tryItem.getCodeUnitCount(); // .getTryLength();
@@ -777,16 +801,11 @@ public class DexBody {
           // The end of the range is left alone even when it is a nop: it is the Stmt behind the
           // covered range in stmtList order, while the handler can sit anywhere in the body, so
           // ending the range at the handler would cover the wrong Stmts (or none at all).
-          if (instruction.getStmt() instanceof JNopStmt) {
-            Local local = new LocalGenerator(locals).generateLocal(type);
-            locals.add(local);
-            Stmt caughtStmt =
-                Jimple.newIdentityStmt(
-                    local,
-                    JavaJimple.newCaughtExceptionRef(identifierFactory),
-                    StmtPositionInfo.getNoStmtPositionInfo());
-            insertBefore(caughtStmt, instruction.getStmt());
-            handlerStmt = caughtStmt;
+          if (!(instruction instanceof MoveExceptionInstruction)) {
+            handlerStmt =
+                entryOfHandler.computeIfAbsent(
+                    handler.getHandlerCodeAddress() + " " + type,
+                    key -> addCaughtExceptionEntry(type, instruction.getStmt()));
           } else {
             handlerStmt = instruction.getStmt();
           }

@@ -60,6 +60,7 @@ import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.util.printer.BriefStmtPrinter;
+import sootup.core.validation.JimpleTrapValidator;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -436,6 +437,113 @@ public class DexBodyEdgeCaseTest {
     assertEquals("$u1 = 0", trap.getBeginStmt().toString());
     assertEquals("nop", trap.getEndStmt().toString());
     assertEquals("$u0 := @caughtexception", trap.getHandlerStmt().toString());
+  }
+
+  private static long caughtExceptionStmts(Body body) {
+    return stmtsOf(body).stream().filter(s -> s.endsWith(":= @caughtexception")).count();
+  }
+
+  /**
+   * move-exception is optional: a handler that never reads the exception starts with ordinary code.
+   * Its Trap still has to point at a caught exception Stmt, so one is added, followed by a goto to
+   * the handler code.
+   */
+  @Test
+  public void handlerWithoutMoveExceptionGetsACaughtExceptionEntry() {
+    Body body =
+        convert(
+            "HandlerWithoutMoveException",
+            2,
+            b -> {
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    assertEquals(1, trapsOf(body).size());
+    Stmt handler = trapsOf(body).get(0).getHandlerStmt();
+    assertTrue(handler.toString().endsWith(":= @caughtexception"));
+    assertEquals(1, body.getControlFlowGraph().exceptionalPredecessors(handler).size());
+    Stmt jump = body.getControlFlowGraph().successors(handler).get(0);
+    assertEquals("goto", jump.toString());
+    assertEquals("$u1 = 1", body.getControlFlowGraph().successors(jump).get(0).toString());
+    assertEquals(List.of(), new JimpleTrapValidator().validate(body, null));
+  }
+
+  /**
+   * A handler without move-exception is often the code the normal path continues with anyway, here
+   * the final return. The caught exception Stmt must not sit in front of it, or the normal path
+   * would run into it.
+   */
+  @Test
+  public void handlerSharedWithTheNormalPathKeepsTheNormalPathClean() {
+    Body body =
+        convert(
+            "HandlerSharedWithNormalPath",
+            1,
+            b -> {
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("end"));
+            });
+
+    List<String> stmts = stmtsOf(body);
+    assertEquals("$u0 = 0", stmts.get(0));
+    assertEquals("return", stmts.get(1));
+    Stmt ret = body.getStmts().get(1);
+    // reached by falling through from the try block and by the goto behind the caught exception
+    assertEquals(2, body.getControlFlowGraph().predecessors(ret).size());
+    assertEquals(1, caughtExceptionStmts(body));
+    assertEquals(List.of(), new JimpleTrapValidator().validate(body, null));
+  }
+
+  /** Two try blocks that share one handler without move-exception share its entry, too. */
+  @Test
+  public void tryBlocksSharingAHandlerWithoutMoveExceptionShareOneEntry() {
+    Body body =
+        convert(
+            "SharedHandlerWithoutMoveException",
+            2,
+            b -> {
+              b.addLabel("try1");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end1");
+              b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+              b.addLabel("try2");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 1));
+              b.addLabel("end2");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              ImmutableTypeReference exception =
+                  new ImmutableTypeReference("Ljava/lang/Exception;");
+              b.addCatch(exception, b.getLabel("try1"), b.getLabel("end1"), b.getLabel("handler"));
+              b.addCatch(exception, b.getLabel("try2"), b.getLabel("end2"), b.getLabel("handler"));
+            });
+
+    assertEquals(1, caughtExceptionStmts(body));
+    List<Trap> traps = trapsOf(body);
+    assertEquals(2, traps.size());
+    Stmt entry = traps.get(0).getHandlerStmt();
+    assertTrue(entry.toString().endsWith(":= @caughtexception"));
+    assertEquals(entry, traps.get(1).getHandlerStmt());
+    assertEquals(2, body.getControlFlowGraph().exceptionalPredecessors(entry).size());
+    assertEquals(List.of(), new JimpleTrapValidator().validate(body, null));
   }
 
   /**
