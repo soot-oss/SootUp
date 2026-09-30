@@ -389,11 +389,37 @@ public class DexBody {
     if (!currentList.isEmpty()) {
       listList.add(currentList);
     }
+    checkTrapRanges(listList, methodSignature);
     removeUnreachableBlocks(listList, branchingStmtListMap);
     graph.initializeWith(listList, branchingStmtListMap, traps);
     DexMethodSource dexMethodSource =
         new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
     return dexMethodSource.makeSootMethod();
+  }
+
+  /**
+   * A Trap covers the Stmts from its begin up to its end in stmtList order, so an end that is not
+   * behind its begin covers nothing. Left alone, removeUnreachableBlocks would find no way into the
+   * handler and delete it, together with the Trap, and the body would carry on without them. This
+   * runs before that, so a wrong range fails here instead of as an unrelated error later on.
+   */
+  private void checkTrapRanges(List<List<Stmt>> blocks, MethodSignature methodSignature) {
+    Map<Stmt, Integer> blockOfHead = new IdentityHashMap<>();
+    for (int i = 0; i < blocks.size(); i++) {
+      blockOfHead.put(blocks.get(i).get(0), i);
+    }
+    for (Trap trap : traps) {
+      Integer begin = blockOfHead.get(trap.getBeginStmt());
+      Integer end = blockOfHead.get(trap.getEndStmt());
+      if (begin != null && end != null && end <= begin) {
+        throw new IllegalStateException(
+            "The Trap "
+                + trap
+                + " in "
+                + methodSignature
+                + " ends at or before its begin, so it would cover no Stmt.");
+      }
+    }
   }
 
   private void removeUnreachableBlocks(
