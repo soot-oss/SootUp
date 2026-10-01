@@ -168,7 +168,7 @@ public class DexClassSource extends JavaSootClassSource {
                   DexUtil.createAnnotationUsage(field.getAnnotations());
 
               if (field.getInitialValue() != null) {
-                Object value = DexUtil.convertAnnotationValue(field.getInitialValue());
+                Object value = field.getInitialValue();
                 Map<String, Object> values = new HashMap<>();
                 values.put("value", value);
                 AnnotationUsage annotationUsage =

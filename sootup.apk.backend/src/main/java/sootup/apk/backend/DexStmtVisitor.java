@@ -44,6 +44,9 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
 
     dexExprVisitor = new DexExprVisitor(registerAllocator, this);
     dexRefVisitor = new DexRefVisitor(this, registerAllocator);
+    if (sootMethod != null) {
+      dexRefVisitor.setCurrentMethodName(sootMethod.getName());
+    }
     this.view = view;
     this.dexMethodBuilder = dexMethodBuilder;
     this.registerAllocator = registerAllocator;

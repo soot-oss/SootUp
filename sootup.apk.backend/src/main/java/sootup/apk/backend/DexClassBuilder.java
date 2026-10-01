@@ -6,6 +6,7 @@ import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.Field;
+import org.jf.dexlib2.iface.value.EncodedValue;
 import org.jf.dexlib2.immutable.*;
 import org.jf.dexlib2.immutable.value.ImmutableArrayEncodedValue;
 import org.jf.dexlib2.immutable.value.ImmutableEncodedValue;
@@ -93,14 +94,16 @@ public class DexClassBuilder {
             .mapToInt(FieldModifier::getBytecode)
             .reduce(0, (flagsBefore, newFlag) -> flagsBefore | newFlag);
 
-    ImmutableEncodedValue initialValue = null;
+    EncodedValue initialValue = null;
 
     if (f instanceof JavaSootField javaSootField) {
       var a = javaSootField.getAnnotations();
       for (var annotation : a) {
         if (annotation.getAnnotation().getClassName().equals("initialValue")) {
           Object value = annotation.getValues().get("value");
-          initialValue = DexUtil.buildEncodedValueForAnnotation(value);
+          if (value instanceof EncodedValue) {
+            initialValue = (EncodedValue) value;
+          }
         }
       }
     }

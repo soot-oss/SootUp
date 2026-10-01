@@ -546,9 +546,11 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
     InvokeOpcode opcode;
     if (targetClassType.equals(currentClassType)
-        || expr.getMethodSignature()
-            .getName()
-            .equals(Constants.DEX_INIT_METHOD)) { // constructor or private method
+        || expr.getMethodSignature().getName().equals(Constants.DEX_INIT_METHOD)) {
+      // constructor or private method
+      Register baseRegister =
+          registerAllocator.getRegisterForImmediate(expr.getBase(), false, currentStmt);
+      baseRegister.setIsInitialized(true);
       opcode = InvokeOpcode.INVOKE_DIRECT;
     } else if (isCallToSuperClass(currentClassType, targetClassType)) {
       opcode = InvokeOpcode.INVOKE_SUPER;
@@ -905,7 +907,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
         targetRegister.getNumber());
     log.info("Cast type: {}", type);
 
-    if (register.getType().equals(type)) {
+    /*if (register.getType().equals(type)) {
       log.info("Move instruction cast java.lang.Object");
       dexStmtVisitor.addInstruction(
           generateMoveInstruction(
@@ -916,22 +918,8 @@ public class DexExprVisitor extends AbstractExprVisitor {
               currentStmt.asJAssignStmt().getLeftOp(),
               registerAllocator),
           currentStmt);
-    } else if (!register.getDefs().isEmpty()
-        && register.getDefs().get(register.getDefs().size() - 1).getOpcode() == Opcode.NEW_INSTANCE
-        && register.getDefs().stream().filter(def -> def.getOpcode() == Opcode.NEW_INSTANCE).count()
-            > register.getUses().stream()
-                .filter(
-                    use ->
-                        use.getOpcode() == Opcode.INVOKE_DIRECT
-                            && (use instanceof Instruction35c instruction35c
-                                    && instruction35c.getReference()
-                                        instanceof MethodReference methodReference
-                                    && methodReference.getName().equals("<init")
-                                || (use instanceof Instruction3rc instruction3rc
-                                    && instruction3rc.getReference()
-                                        instanceof MethodReference methodReference2
-                                    && methodReference2.getName().equals("<init"))))
-                .count()) {
+    } else */
+    if (!register.isInitialized()) {
       // no not check-cast on uninitialized reference
       dexStmtVisitor.addInstruction(
           generateMoveInstruction(
@@ -953,6 +941,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
     String dexType = DexUtil.toDexType(castType);
     TypeReference castTypeReference = new ImmutableTypeReference(dexType);
     fixObjectType(castType);
+
     if (sourceRegister.equals(targetRegister)) {
       dexStmtVisitor.addInstruction(
           new Instruction21c(Opcode.CHECK_CAST, targetRegister, castTypeReference), currentStmt);
@@ -1109,6 +1098,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
     fixObjectType(type);
     String dexType = DexUtil.toDexType(type);
     TypeReference typeReference = new ImmutableTypeReference(dexType);
+    targetRegister.setIsInitialized(false);
     dexStmtVisitor.addInstruction(
         new Instruction21c(Opcode.NEW_INSTANCE, this.targetRegister, typeReference), currentStmt);
   }
@@ -1196,6 +1186,8 @@ public class DexExprVisitor extends AbstractExprVisitor {
         targetR.setIsTypeGuessed(true);
       }
     }
+
+    targetR.setIsInitialized(sourceRegister.isInitialized());
     log.info(
         "Source register {} with type {}", sourceRegister.getNumber(), sourceRegister.getType());
     log.info("Move type {}", valueType);

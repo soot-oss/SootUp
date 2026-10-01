@@ -15,6 +15,7 @@ public class Register {
 
   private final List<AbstractInstruction> defs;
   private final List<AbstractInstruction> uses;
+  private boolean isInitialized;
 
   protected Register(int number, Type type, boolean isParameter, boolean isTmp) {
     this.number = number;
@@ -23,6 +24,7 @@ public class Register {
     this.isTmp = isTmp;
     this.defs = new ArrayList<>();
     this.uses = new ArrayList<>();
+    this.isInitialized = true;
   }
 
   public int getNumber() {
@@ -87,6 +89,14 @@ public class Register {
 
   public void addUse(AbstractInstruction instruction) {
     this.uses.add(instruction);
+  }
+
+  public boolean isInitialized() {
+    return isInitialized;
+  }
+
+  public void setIsInitialized(boolean initialized) {
+    this.isInitialized = initialized;
   }
 
   private static boolean fitsInto(int regNumber, int maxNumber, boolean isWide) {
