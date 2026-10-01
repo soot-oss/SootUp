@@ -19,6 +19,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
 
@@ -92,9 +93,17 @@ public class DexClassBuilder {
             .mapToInt(FieldModifier::getBytecode)
             .reduce(0, (flagsBefore, newFlag) -> flagsBefore | newFlag);
 
-    // initialize a constant field
-    // static fields of type Primitive, String, null
-    ImmutableEncodedValue initialValue = null; // TODO
+    ImmutableEncodedValue initialValue = null;
+
+    if (f instanceof JavaSootField javaSootField) {
+      var a = javaSootField.getAnnotations();
+      for (var annotation : a) {
+        if (annotation.getAnnotation().getClassName().equals("initialValue")) {
+          Object value = annotation.getValues().get("value");
+          initialValue = DexUtil.buildEncodedValueForAnnotation(value);
+        }
+      }
+    }
 
     Set<Annotation> fieldAnnotations = createFieldAnnotations(f);
 
@@ -116,7 +125,9 @@ public class DexClassBuilder {
         }
         ImmutableAnnotation ann =
             new ImmutableAnnotation(
-                AnnotationVisibility.RUNTIME,
+                annotation.getVisibility() == AnnotationUsage.AnnotationUsageVisibility.RUNTIME
+                    ? AnnotationVisibility.RUNTIME
+                    : AnnotationVisibility.BUILD,
                 DexUtil.toDexClassName(annotation.getAnnotation().getFullyQualifiedName()),
                 annotationElements);
         annotations.add(ann);
@@ -213,6 +224,9 @@ public class DexClassBuilder {
     if (f instanceof JavaSootField javaSootField) {
       var a = javaSootField.getAnnotations();
       for (var annotation : a) {
+        if (annotation.getVisibility() == AnnotationUsage.AnnotationUsageVisibility.NONE) {
+          continue;
+        }
         List<AnnotationElement> annotationElements = new ArrayList<>();
         for (var entry : annotation.getValues().entrySet()) {
           AnnotationElement annotationElement =
@@ -222,7 +236,9 @@ public class DexClassBuilder {
         }
         ImmutableAnnotation ann =
             new ImmutableAnnotation(
-                AnnotationVisibility.RUNTIME,
+                annotation.getVisibility() == AnnotationUsage.AnnotationUsageVisibility.RUNTIME
+                    ? AnnotationVisibility.RUNTIME
+                    : AnnotationVisibility.BUILD,
                 DexUtil.toDexClassName(annotation.getAnnotation().getFullyQualifiedName()),
                 annotationElements);
         annotations.add(ann);

@@ -35,12 +35,30 @@ import sootup.core.types.ClassType;
  */
 public class AnnotationUsage {
 
+  public enum AnnotationUsageVisibility {
+    BUILD,
+    RUNTIME,
+    SYSTEM,
+    NONE
+  }
+
   @NonNull private final ClassType annotation;
   @NonNull private final Map<String, Object> values;
+  @NonNull private final AnnotationUsageVisibility visibility;
+
+  public AnnotationUsage(
+      @NonNull ClassType annotation,
+      @NonNull Map<String, Object> values,
+      @NonNull AnnotationUsageVisibility visibility) {
+    this.annotation = annotation;
+    this.values = values;
+    this.visibility = visibility;
+  }
 
   public AnnotationUsage(@NonNull ClassType annotation, @NonNull Map<String, Object> values) {
     this.annotation = annotation;
     this.values = values;
+    this.visibility = AnnotationUsageVisibility.NONE;
   }
 
   /*
@@ -54,6 +72,10 @@ public class AnnotationUsage {
   @NonNull
   public Map<String, Object> getValues() {
     return Collections.unmodifiableMap(values);
+  }
+
+  public AnnotationUsageVisibility getVisibility() {
+    return visibility;
   }
 
   public String toString() {

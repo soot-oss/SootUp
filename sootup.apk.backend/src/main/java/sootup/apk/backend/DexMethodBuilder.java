@@ -37,6 +37,7 @@ import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
 import sootup.core.types.*;
 import sootup.core.views.View;
+import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootMethod;
 
 public class DexMethodBuilder {
@@ -130,7 +131,9 @@ public class DexMethodBuilder {
         }
         ImmutableAnnotation ann =
             new ImmutableAnnotation(
-                AnnotationVisibility.RUNTIME,
+                annotation.getVisibility() == AnnotationUsage.AnnotationUsageVisibility.RUNTIME
+                    ? AnnotationVisibility.RUNTIME
+                    : AnnotationVisibility.BUILD,
                 DexUtil.toDexClassName(annotation.getAnnotation().getFullyQualifiedName()),
                 annotationElements);
         annotations.add(ann);

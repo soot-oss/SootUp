@@ -164,11 +164,20 @@ public class DexClassSource extends JavaSootClassSource {
               EnumSet<FieldModifier> modifiers =
                   Modifiers.getFieldModifiers(field.getAccessFlags());
 
+              List<AnnotationUsage> annotationUsages =
+                  DexUtil.createAnnotationUsage(field.getAnnotations());
+
+              if (field.getInitialValue() != null) {
+                Object value = DexUtil.convertAnnotationValue(field.getInitialValue());
+                Map<String, Object> values = new HashMap<>();
+                values.put("value", value);
+                AnnotationUsage annotationUsage =
+                    new AnnotationUsage(signatureFactory.getClassType("initialValue"), values);
+                annotationUsages.add(annotationUsage);
+              }
+
               return new JavaSootField(
-                  fieldSignature,
-                  modifiers,
-                  DexUtil.createAnnotationUsage(field.getAnnotations()),
-                  NoPositionInformation.getInstance());
+                  fieldSignature, modifiers, annotationUsages, NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());
   }

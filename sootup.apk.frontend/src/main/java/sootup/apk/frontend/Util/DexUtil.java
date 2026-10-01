@@ -108,7 +108,12 @@ public class DexUtil {
     List<AnnotationUsage> usages = new ArrayList<>();
     for (Annotation annotation : annotations) {
       if (annotation.getVisibility() != AnnotationVisibility.SYSTEM) {
-        usages.add(createAnnotationUsage(annotation.getType(), annotation.getElements()));
+        AnnotationUsage.AnnotationUsageVisibility visibility =
+            annotation.getVisibility() == AnnotationVisibility.RUNTIME
+                ? AnnotationUsage.AnnotationUsageVisibility.RUNTIME
+                : AnnotationUsage.AnnotationUsageVisibility.BUILD;
+        usages.add(
+            createAnnotationUsage(annotation.getType(), annotation.getElements(), visibility));
       }
     }
     return usages;
@@ -137,16 +142,20 @@ public class DexUtil {
   }
 
   private static AnnotationUsage createAnnotationUsage(
-      String type, Set<? extends AnnotationElement> elements) {
+      String type,
+      Set<? extends AnnotationElement> elements,
+      AnnotationUsage.AnnotationUsageVisibility visibility) {
     Map<String, Object> values = new HashMap<>();
     for (AnnotationElement element : elements) {
       values.put(element.getName(), convertAnnotationValue(element.getValue()));
     }
     return new AnnotationUsage(
-        JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(type)), values);
+        JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(type)),
+        values,
+        visibility);
   }
 
-  private static Object convertAnnotationValue(EncodedValue value) {
+  public static Object convertAnnotationValue(EncodedValue value) {
     if (value instanceof BooleanEncodedValue) {
       return BooleanConstant.getInstance(((BooleanEncodedValue) value).getValue());
     } else if (value instanceof ByteEncodedValue) {
@@ -173,7 +182,8 @@ public class DexUtil {
           constant.getName(), toQualifiedName(constant.getDefiningClass()));
     } else if (value instanceof AnnotationEncodedValue) {
       AnnotationEncodedValue nested = (AnnotationEncodedValue) value;
-      return createAnnotationUsage(nested.getType(), nested.getElements());
+      return createAnnotationUsage(
+          nested.getType(), nested.getElements(), AnnotationUsage.AnnotationUsageVisibility.NONE);
     } else if (value instanceof ArrayEncodedValue) {
       List<Object> elements = new ArrayList<>();
       for (EncodedValue element : ((ArrayEncodedValue) value).getValue()) {
