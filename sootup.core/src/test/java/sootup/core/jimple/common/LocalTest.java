@@ -1,11 +1,11 @@
 package sootup.core.jimple.common;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockControlFlowGraph;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
@@ -34,7 +34,7 @@ class LocalTest {
    */
   @Test
   void testGetDefsForLocalUseExcludesSelfDefinition() {
-    Local x = new Local("x", PrimitiveType.getInt());
+    Local x = Jimple.newLocal("x", PrimitiveType.getInt());
     JAssignStmt s1 =
         new JAssignStmt(x, IntConstant.getInstance(5), StmtPositionInfo.getNoStmtPositionInfo());
     JAssignStmt s2 =
@@ -55,8 +55,8 @@ class LocalTest {
 
   @Test
   void testGetDefsForLocalUseBranches() {
-    Local x = new Local("x", PrimitiveType.getInt());
-    Local y = new Local("y", PrimitiveType.getInt());
+    Local x = Jimple.newLocal("x", PrimitiveType.getInt());
+    Local y = Jimple.newLocal("y", PrimitiveType.getInt());
     JAssignStmt s1 =
         new JAssignStmt(x, IntConstant.getInstance(5), StmtPositionInfo.getNoStmtPositionInfo());
     JGotoStmt goto1 = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
@@ -84,7 +84,7 @@ class LocalTest {
 
   @Test
   void testGetDefsForLocalUseReachesSelfThroughLoop() {
-    Local i = new Local("i", PrimitiveType.getInt());
+    Local i = Jimple.newLocal("i", PrimitiveType.getInt());
     StmtPositionInfo pos = StmtPositionInfo.getNoStmtPositionInfo();
     JAssignStmt init = new JAssignStmt(i, IntConstant.getInstance(0), pos);
     JIfStmt cond = new JIfStmt(new JGtExpr(i, IntConstant.getInstance(5)), pos);
@@ -106,5 +106,89 @@ class LocalTest {
     assertEquals(2, defs.size());
     assertTrue(defs.contains(init));
     assertTrue(defs.contains(step));
+  }
+
+  @Test
+  void testLocalSlotIndexWithers() {
+    SlotLocal local = Jimple.newSlotLocal("a", PrimitiveType.getInt(), 3);
+    assertEquals(3, local.getSlotIndex());
+    assertEquals(3, local.getIndex());
+    assertEquals(5, local.withSlotIndex(5).getSlotIndex());
+    assertEquals(8, local.withIndex(8).getSlotIndex());
+    assertEquals(3, local.withName("b").getSlotIndex());
+    assertEquals("b", local.withName("b").getName());
+    assertEquals(3, local.withType(PrimitiveType.getFloat()).getSlotIndex());
+    assertEquals(PrimitiveType.getFloat(), local.withType(PrimitiveType.getFloat()).getType());
+    assertEquals(3, local.getSlotIndex());
+  }
+
+  @Test
+  void testStackWithersPreserveCategory() {
+    Local stack = Jimple.newStackLocal("temporary", PrimitiveType.getInt());
+    assertInstanceOf(StackLocal.class, stack.withName("renamed"));
+    assertInstanceOf(StackLocal.class, stack.withType(PrimitiveType.getFloat()));
+    assertFalse(stack instanceof SlotLocal);
+    assertFalse(Jimple.newLocal("generic", PrimitiveType.getInt()) instanceof StackLocal);
+  }
+
+  @Test
+  void testEqualityAcrossCategories() {
+    Local generic = Jimple.newLocal("same", PrimitiveType.getInt());
+    Local stack = Jimple.newStackLocal("same", PrimitiveType.getInt());
+    Local slot = Jimple.newSlotLocal("same", PrimitiveType.getInt(), 2);
+    for (Local left : List.of(generic, stack, slot)) {
+      for (Local right : List.of(generic, stack, slot)) {
+        assertEquals(left, right);
+        assertEquals(left.hashCode(), right.hashCode());
+        assertTrue(left.equivTo(right));
+        assertEquals(left.equivHashCode(), right.equivHashCode());
+      }
+    }
+    assertEquals(1, new java.util.HashSet<>(List.of(generic, stack, slot)).size());
+    var map = new java.util.HashMap<Local, String>();
+    map.put(slot, "value");
+    assertEquals("value", map.get(stack));
+    assertEquals(generic, slot.withType(PrimitiveType.getFloat()));
+    assertFalse(generic.equivTo(slot.withType(PrimitiveType.getFloat())));
+    assertNotEquals(generic, slot.withName("other"));
+  }
+
+  @Test
+  void testVisitorDispatch() {
+    for (Local local :
+        List.of(
+            Jimple.newLocal("generic", PrimitiveType.getInt()),
+            Jimple.newStackLocal("stack", PrimitiveType.getInt()),
+            Jimple.newSlotLocal("slot", PrimitiveType.getInt(), 0))) {
+      var visited = new java.util.ArrayList<Local>();
+      var visitor =
+          new sootup.core.jimple.visitor.AbstractImmediateVisitor() {
+            @Override
+            public void caseLocal(Local value) {
+              visited.add(value);
+            }
+          };
+      assertSame(visitor, local.accept(visitor));
+      assertEquals(List.of(local), visited);
+    }
+  }
+
+  @Test
+  @SuppressWarnings("deprecation")
+  void testSlotValidationAndLegacyFactories() {
+    assertInstanceOf(SlotLocal.class, Jimple.newLocal("a", PrimitiveType.getInt(), 0));
+    Local generic = Jimple.newLocal("a", PrimitiveType.getInt(), -1);
+    assertFalse(generic instanceof SlotLocal);
+    assertFalse(generic instanceof StackLocal);
+    assertThrows(
+        IllegalArgumentException.class, () -> Jimple.newLocal("a", PrimitiveType.getInt(), -2));
+    assertThrows(
+        IllegalArgumentException.class, () -> Jimple.newSlotLocal("a", PrimitiveType.getInt(), -1));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> Jimple.newSlotLocal("a", PrimitiveType.getInt(), 0).withSlotIndex(-1));
+    assertThrows(
+        RuntimeException.class,
+        () -> Jimple.newStackLocal("void", sootup.core.types.VoidType.getInstance()));
   }
 }

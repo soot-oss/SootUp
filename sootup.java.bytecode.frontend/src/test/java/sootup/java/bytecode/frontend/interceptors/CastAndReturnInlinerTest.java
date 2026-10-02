@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.BranchingStmt;
@@ -89,8 +90,9 @@ public class CastAndReturnInlinerTest {
     expected.add(JavaJimple.newReturnStmt(aRet, noPositionInfo));
     assertStmtsEquiv(expected, processedBody.getStmts());
     assertEquals(2, processedBody.getLocals().size());
-    assertTrue(processedBody.getLocals().contains(new Local("a", UnknownType.getInstance())));
-    assertTrue(processedBody.getLocals().contains(new Local("a_ret0", UnknownType.getInstance())));
+    assertTrue(processedBody.getLocals().contains(Jimple.newLocal("a", UnknownType.getInstance())));
+    assertTrue(
+        processedBody.getLocals().contains(Jimple.newLocal("a_ret0", UnknownType.getInstance())));
   }
 
   /**

@@ -338,13 +338,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // the name is collision-free already (see LocalVariableTableLocals)
       return lvtLocals.getOrCreate(
           lvn,
-          name -> JavaJimple.newLocal(name, type, resolveLocalVariableAnnotations(idx, lvn.start)));
+          name ->
+              JavaJimple.newSlotLocal(
+                  name, type, idx, resolveLocalVariableAnnotations(idx, lvn.start)));
     }
 
     JavaLocal local = locals.get(idx);
     if (local == null) {
       String nameCandidate = determineLocalName(idx, atInsn);
-      local = createUniqueLocal(nameCandidate, type, resolveLocalVariableAnnotations(idx, atInsn));
+      local =
+          createUniqueLocal(nameCandidate, type, idx, resolveLocalVariableAnnotations(idx, atInsn));
       locals.set(idx, local);
     }
     return local;
@@ -386,15 +389,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return "l" + idx;
   }
 
-  private JavaLocal createUniqueLocal(@NonNull String nameCandidate, @NonNull Type type) {
-    return createUniqueLocal(nameCandidate, type, Collections.emptyList());
-  }
-
   private JavaLocal createUniqueLocal(
       @NonNull String nameCandidate,
       @NonNull Type type,
+      int slotIndex,
       @NonNull List<AnnotationUsage> annotations) {
-    return JavaJimple.newLocal(uniqueLocalName(nameCandidate), type, annotations);
+    return JavaJimple.newSlotLocal(uniqueLocalName(nameCandidate), type, slotIndex, annotations);
   }
 
   /**
@@ -505,7 +505,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @NonNull Local newStackLocal(@NonNull Type type) {
     int idx = nextLocal++;
-    JavaLocal l = createUniqueLocal("$stack" + idx, type);
+    JavaLocal l = JavaJimple.newStackLocal(uniqueLocalName("$stack" + idx), type);
     locals.set(idx, l);
     return l;
   }
@@ -1877,7 +1877,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(MethodModifier.STATIC)) {
-      JavaLocal thisLocal = JavaJimple.newLocal("this", declaringClass);
+      JavaLocal thisLocal = JavaJimple.newSlotLocal("this", declaringClass, localIdx);
       usedLocalNames.add("this");
       LocalVariableNode lvn = lvtLocals.resolvePreamble(localIdx);
       if (lvn != null) {
@@ -1909,11 +1909,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       collectFormalParameterTypeAnnotations(parameterAnnotations, i);
       LocalVariableNode lvn = lvtLocals.resolvePreamble(localIdx);
       JavaLocal local =
-          JavaJimple.newLocal(
+          JavaJimple.newSlotLocal(
               lvn != null
                   ? lvtLocals.nameOf(lvn)
                   : uniqueLocalName(determineLocalName(localIdx, null)),
               parameterType,
+              localIdx,
               parameterAnnotations);
       if (lvn != null) {
         lvtLocals.registerPreambleLocal(lvn, local);

@@ -26,6 +26,8 @@ import java.util.*;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.SlotLocal;
+import sootup.core.jimple.common.StackLocal;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
@@ -67,13 +69,22 @@ public class JimpleBodySerializer {
     for (Local local : locals) {
       String varName = toLocalVarName(local.getName(), ctx.usedNames);
       ctx.localVarNames.put(local, varName);
+      String factory =
+          local instanceof SlotLocal
+              ? "newSlotLocal"
+              : local instanceof StackLocal ? "newStackLocal" : "newLocal";
       sb.append("Local ")
           .append(varName)
-          .append(" = new Local(\"")
+          .append(" = Jimple.")
+          .append(factory)
+          .append("(\"")
           .append(escapeString(local.getName()))
           .append("\", ")
-          .append(serializeType(local.getType()))
-          .append(");\n");
+          .append(serializeType(local.getType()));
+      if (local instanceof SlotLocal) {
+        sb.append(", ").append(((SlotLocal) local).getSlotIndex());
+      }
+      sb.append(");\n");
     }
 
     sb.append("\n");
