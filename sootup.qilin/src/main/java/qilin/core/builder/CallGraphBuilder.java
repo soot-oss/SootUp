@@ -33,6 +33,7 @@ import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import qilin.util.sets.P2SetVisitor;
 import qilin.util.sets.PointsToSetInternal;
+import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -230,6 +231,53 @@ public class CallGraphBuilder {
     ptaScene
         .getCallDetails()
         .addCalleeToContextAndCaller(calleem, CallDetails.STATIC_OBJ_CTX, caller.method());
+  }
+
+  /**
+   * Adds an edge from an invokedynamic statement to one of its {@link DynamicInvokeTarget}s and
+   * binds the captured values (the statement's arguments) to the target's receiver/parameters. No
+   * return or exception flow: the statement yields the functional object, not the target's result.
+   */
+  public void addDynamicInvokeEdge(
+      ContextMethod caller,
+      InvokableStmt callStmt,
+      SootMethod calleem,
+      DynamicInvokeTarget target) {
+    Context typeContext = pta.createCalleeContext(caller, null, new CallSite(callStmt), calleem);
+    ContextMethod callee = pta.parameterize(calleem, typeContext);
+    Edge edge = new Edge(caller, callStmt, callee, Kind.INVOKE_DYNAMIC);
+    if (!calledges.add(edge)) {
+      return;
+    }
+    if (reachMethods.add(callee)) {
+      rmQueue.add(callee);
+    }
+    ptaScene
+        .getCallDetails()
+        .addCalleeToContextAndCaller(calleem, CallDetails.STATIC_OBJ_CTX, caller.method());
+
+    MethodNodeFactory srcnf = pag.getMethodPAG(caller.method()).nodeFactory();
+    MethodNodeFactory tgtnf = pag.getMethodPAG(calleem).nodeFactory();
+    AbstractInvokeExpr ie = callStmt.getInvokeExpr().get();
+    for (int i = 0; i < ie.getArgCount(); i++) {
+      Value arg = ie.getArg(i);
+      if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant) {
+        continue;
+      }
+      int paramIndex = target.captureParameterIndex(i);
+      PagNode param;
+      if (paramIndex == DynamicInvokeTarget.RECEIVER && !calleem.isStatic()) {
+        param = tgtnf.caseThis();
+      } else if (paramIndex >= 0
+          && paramIndex < calleem.getParameterCount()
+          && calleem.getParameterType(paramIndex) instanceof ReferenceType) {
+        param = tgtnf.caseParm(paramIndex);
+      } else {
+        continue;
+      }
+      PagNode argNode = pta.parameterize(srcnf.getNode(arg), caller.context());
+      pag.addEdge(argNode, pta.parameterize(param, callee.context()));
+    }
   }
 
   protected void handleCallEdge(Edge edge) {
