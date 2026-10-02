@@ -107,4 +107,33 @@ class LocalTest {
     assertTrue(defs.contains(init));
     assertTrue(defs.contains(step));
   }
+
+  @Test
+  void testLocalSlotIndexDefaultsAndWithers() {
+    Local l1 = new Local("a", PrimitiveType.getInt());
+    assertEquals(-1, l1.getSlotIndex());
+    assertEquals(-1, l1.getIndex());
+
+    Local l2 = new Local("a", PrimitiveType.getInt(), 3);
+    assertEquals(3, l2.getSlotIndex());
+    assertEquals(3, l2.getIndex());
+
+    Local l3 = l2.withSlotIndex(5);
+    assertEquals(5, l3.getSlotIndex());
+    assertEquals(5, l3.getIndex());
+    assertEquals("a", l3.getName());
+    assertEquals(PrimitiveType.getInt(), l3.getType());
+
+    Local l4 = l2.withName("b");
+    assertEquals(3, l4.getSlotIndex());
+    assertEquals("b", l4.getName());
+
+    Local l5 = l2.withType(PrimitiveType.getFloat());
+    assertEquals(3, l5.getSlotIndex());
+    assertEquals(PrimitiveType.getFloat(), l5.getType());
+
+    Local l6 = l2.withIndex(8);
+    assertEquals(8, l6.getSlotIndex());
+    assertEquals(8, l6.getIndex());
+  }
 }
