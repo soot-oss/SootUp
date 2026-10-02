@@ -49,14 +49,23 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
   @NonNull private final String name;
   @NonNull private final Type type;
 
-  /** Constructs a JimpleLocal of the given name and type. */
+  /** Bytecode local variable slot index or -1 if not associated with a slot */
+  private final int slotIndex;
+
+  /** Constructs a JimpleLocal of the given name and type with an not associated slot index (-1). */
   public Local(@NonNull String name, @NonNull Type type) {
+    this(name, type, -1);
+  }
+
+  /** Constructs a JimpleLocal of the given name, type, and bytecode slot index */
+  public Local(@NonNull String name, @NonNull Type type, int slotIndex) {
     this.name = name;
     if (type instanceof VoidType) {
       throw new RuntimeException("Type should not be VoidType");
     } else {
       this.type = type;
     }
+    this.slotIndex = slotIndex;
   }
 
   @Override
@@ -93,6 +102,19 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
   @Override
   public Type getType() {
     return type;
+  }
+
+  /**
+   * Returns the bytecode local variable slot index this Local represents or -1 if not associated
+   * with a slot.
+   */
+  public int getSlotIndex() {
+    return slotIndex;
+  }
+
+  /** Alias for {@link #getSlotIndex()}. */
+  public int getIndex() {
+    return slotIndex;
   }
 
   @Override
@@ -180,11 +202,22 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
 
   @NonNull
   public Local withName(@NonNull String name) {
-    return new Local(name, type);
+    return new Local(name, type, slotIndex);
   }
 
   @NonNull
   public Local withType(@NonNull Type type) {
-    return new Local(name, type);
+    return new Local(name, type, slotIndex);
+  }
+
+  @NonNull
+  public Local withSlotIndex(int slotIndex) {
+    return new Local(name, type, slotIndex);
+  }
+
+  /** Alias for {@link #withSlotIndex(int)}. */
+  @NonNull
+  public Local withIndex(int slotIndex) {
+    return withSlotIndex(slotIndex);
   }
 }

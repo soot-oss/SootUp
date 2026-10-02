@@ -59,6 +59,17 @@ public class JavaJimple extends Jimple {
     return new JavaLocal(name, t, annotations);
   }
 
+  /** Constructs a Local with the given name, type, and bytecode slot index. */
+  public static JavaLocal newLocal(String name, Type t, int slotIndex) {
+    return new JavaLocal(name, t, slotIndex, Collections.emptyList());
+  }
+
+  /** Constructs a Local with the given name, type, bytecode slot index, and annotations. */
+  public static JavaLocal newLocal(
+      String name, Type t, int slotIndex, Iterable<AnnotationUsage> annotations) {
+    return new JavaLocal(name, t, slotIndex, annotations);
+  }
+
   /**
    * Constructs a CaughtExceptionRef() grammar chunk.
    *

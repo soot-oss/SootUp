@@ -480,6 +480,11 @@ public abstract class Jimple {
     return new Local(name, t);
   }
 
+  /** Constructs a Local with the given name, type, and bytecode slot index. */
+  public static Local newLocal(String name, Type t, int slotIndex) {
+    return new Local(name, t, slotIndex);
+  }
+
   /** Constructs a JStaticFieldRef(FieldSignature) grammar chunk. */
   public static JStaticFieldRef newStaticFieldRef(FieldSignature f) {
     return new JStaticFieldRef(f);

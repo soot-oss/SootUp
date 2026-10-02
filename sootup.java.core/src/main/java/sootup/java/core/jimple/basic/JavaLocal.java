@@ -36,14 +36,31 @@ public class JavaLocal extends Local implements HasAnnotation {
   @NonNull private final Iterable<AnnotationUsage> annotations;
 
   /**
-   * Constructs a JimpleLocal of the given name and type.
+   * Constructs a JavaLocal of the given name and type with an unknown/synthetic slot index (-1).
    *
    * @param name
    * @param type
+   * @param annotations
    */
   public JavaLocal(
       @NonNull String name, @NonNull Type type, @NonNull Iterable<AnnotationUsage> annotations) {
-    super(name, type);
+    this(name, type, -1, annotations);
+  }
+
+  /**
+   * Constructs a JavaLocal of the given name, type, bytecode slot index, and annotations.
+   *
+   * @param name
+   * @param type
+   * @param slotIndex
+   * @param annotations
+   */
+  public JavaLocal(
+      @NonNull String name,
+      @NonNull Type type,
+      int slotIndex,
+      @NonNull Iterable<AnnotationUsage> annotations) {
+    super(name, type, slotIndex);
     this.annotations = annotations;
   }
 
@@ -53,17 +70,33 @@ public class JavaLocal extends Local implements HasAnnotation {
   }
 
   @NonNull
+  @Override
   public Local withName(@NonNull String name) {
-    return new JavaLocal(name, getType(), getAnnotations());
+    return new JavaLocal(name, getType(), getSlotIndex(), getAnnotations());
   }
 
   @NonNull
+  @Override
   public Local withType(@NonNull Type type) {
-    return new JavaLocal(getName(), type, getAnnotations());
+    return new JavaLocal(getName(), type, getSlotIndex(), getAnnotations());
   }
 
   @NonNull
   public Local withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
-    return new JavaLocal(getName(), getType(), annotations);
+    return new JavaLocal(getName(), getType(), getSlotIndex(), annotations);
+  }
+
+  /** Returns a copy of this JavaLocal with the given bytecode slot index. */
+  @NonNull
+  @Override
+  public Local withSlotIndex(int slotIndex) {
+    return new JavaLocal(getName(), getType(), slotIndex, getAnnotations());
+  }
+
+  /** Alias for {@link #withSlotIndex(int)}. */
+  @NonNull
+  @Override
+  public Local withIndex(int slotIndex) {
+    return withSlotIndex(slotIndex);
   }
 }
