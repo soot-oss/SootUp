@@ -24,7 +24,6 @@ package sootup.java.core.language;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
@@ -50,84 +49,76 @@ import sootup.java.core.jimple.basic.JavaLocal;
  */
 public class JavaJimple extends Jimple {
 
-    public static boolean isJavaKeywordType(Type t) {
-        // TODO: [JMP] Ensure that the check is complete.
-        return t instanceof PrimitiveType || t instanceof VoidType || t instanceof NullType;
-    }
+  public static boolean isJavaKeywordType(Type t) {
+    // TODO: [JMP] Ensure that the check is complete.
+    return t instanceof PrimitiveType || t instanceof VoidType || t instanceof NullType;
+  }
 
-    /**
-     * Constructs a Local with the given name and type.
-     */
-    public static JavaLocal newLocal(String name, Type t, Iterable<AnnotationUsage> annotations) {
-        return new JavaLocal(name, t, annotations);
-    }
+  /** Constructs a Local with the given name and type. */
+  public static JavaLocal newLocal(String name, Type t, Iterable<AnnotationUsage> annotations) {
+    return new JavaLocal(name, t, annotations);
+  }
 
-    /**
-     * Constructs a Local with the given name, type, and bytecode slot index.
-     */
-    public static JavaLocal newLocal(String name, Type t, int slotIndex) {
-        return new JavaLocal(name, t, slotIndex, Collections.emptyList());
-    }
+  /** Constructs a Local with the given name, type, and bytecode slot index. */
+  public static JavaLocal newLocal(String name, Type t, int slotIndex) {
+    return new JavaLocal(name, t, slotIndex, Collections.emptyList());
+  }
 
-    /**
-     * Constructs a Local with the given name, type, bytecode slot index, and annotations.
-     */
-    public static JavaLocal newLocal(
-        String name, Type t, int slotIndex, Iterable<AnnotationUsage> annotations) {
-        return new JavaLocal(name, t, slotIndex, annotations);
-    }
+  /** Constructs a Local with the given name, type, bytecode slot index, and annotations. */
+  public static JavaLocal newLocal(
+      String name, Type t, int slotIndex, Iterable<AnnotationUsage> annotations) {
+    return new JavaLocal(name, t, slotIndex, annotations);
+  }
 
-    /**
-     * Constructs a CaughtExceptionRef() grammar chunk.
-     *
-     * @param identifierFactory the factory that provides the {@code java.lang.Throwable} type
-     * @return the created caught exception reference
-     */
-    public static JCaughtExceptionRef newCaughtExceptionRef(
-        @NonNull IdentifierFactory identifierFactory) {
-        return new JCaughtExceptionRef(identifierFactory.getType("java.lang.Throwable"));
-    }
+  /**
+   * Constructs a CaughtExceptionRef() grammar chunk.
+   *
+   * @param identifierFactory the factory that provides the {@code java.lang.Throwable} type
+   * @return the created caught exception reference
+   */
+  public static JCaughtExceptionRef newCaughtExceptionRef(
+      @NonNull IdentifierFactory identifierFactory) {
+    return new JCaughtExceptionRef(identifierFactory.getType("java.lang.Throwable"));
+  }
 
-    public static ClassConstant newClassConstant(
-        String value, @NonNull IdentifierFactory identifierFactory) {
-        return new ClassConstant(value, identifierFactory.getType("java.lang.Class"));
-    }
+  public static ClassConstant newClassConstant(
+      String value, @NonNull IdentifierFactory identifierFactory) {
+    return new ClassConstant(value, identifierFactory.getType("java.lang.Class"));
+  }
 
-    public static EnumConstant newEnumConstant(
-        String value, String type, @NonNull IdentifierFactory identifierFactory) {
-        return new EnumConstant(value, identifierFactory.getClassType(type), identifierFactory);
-    }
+  public static EnumConstant newEnumConstant(
+      String value, String type, @NonNull IdentifierFactory identifierFactory) {
+    return new EnumConstant(value, identifierFactory.getClassType(type), identifierFactory);
+  }
 
-    public static StringConstant newStringConstant(
-        String value, @NonNull IdentifierFactory identifierFactory) {
-        return new StringConstant(value, identifierFactory.getType("java.lang.String"));
-    }
+  public static StringConstant newStringConstant(
+      String value, @NonNull IdentifierFactory identifierFactory) {
+    return new StringConstant(value, identifierFactory.getType("java.lang.String"));
+  }
 
-    public static MethodHandle newMethodHandle(
-        SootClassMemberSignature<? extends SootClassMemberSubSignature> ref,
-        int tag,
-        @NonNull IdentifierFactory identifierFactory) {
-        return new MethodHandle(ref, tag, identifierFactory.getType("java.lang.invoke.MethodHandle"));
-    }
+  public static MethodHandle newMethodHandle(
+      SootClassMemberSignature<? extends SootClassMemberSubSignature> ref,
+      int tag,
+      @NonNull IdentifierFactory identifierFactory) {
+    return new MethodHandle(ref, tag, identifierFactory.getType("java.lang.invoke.MethodHandle"));
+  }
 
-    public static MethodHandle newMethodHandle(
-        SootClassMemberSignature<? extends SootClassMemberSubSignature> ref,
-        MethodHandle.Kind kind,
-        @NonNull IdentifierFactory identifierFactory) {
-        return new MethodHandle(ref, kind, identifierFactory.getType("java.lang.invoke.MethodHandle"));
-    }
+  public static MethodHandle newMethodHandle(
+      SootClassMemberSignature<? extends SootClassMemberSubSignature> ref,
+      MethodHandle.Kind kind,
+      @NonNull IdentifierFactory identifierFactory) {
+    return new MethodHandle(ref, kind, identifierFactory.getType("java.lang.invoke.MethodHandle"));
+  }
 
-    public static MethodType newMethodType(
-        List<Type> parameterTypes, Type returnType, @NonNull IdentifierFactory identifierFactory) {
-        return new MethodType(
-            identifierFactory.getMethodSubSignature("__METHODTYPE__", returnType, parameterTypes),
-            identifierFactory.getClassType("java.lang.invoke.MethodType"));
-    }
+  public static MethodType newMethodType(
+      List<Type> parameterTypes, Type returnType, @NonNull IdentifierFactory identifierFactory) {
+    return new MethodType(
+        identifierFactory.getMethodSubSignature("__METHODTYPE__", returnType, parameterTypes),
+        identifierFactory.getClassType("java.lang.invoke.MethodType"));
+  }
 
-    /**
-     * Constructs a Local with the given name and type.
-     */
-    public static JavaLocal newLocal(String name, Type t) {
-        return new JavaLocal(name, t, Collections.emptyList());
-    }
+  /** Constructs a Local with the given name and type. */
+  public static JavaLocal newLocal(String name, Type t) {
+    return new JavaLocal(name, t, Collections.emptyList());
+  }
 }
