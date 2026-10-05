@@ -31,6 +31,8 @@ import java.util.function.ToIntFunction;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.*;
+import sootup.core.model.LocalVariableInfo;
+import sootup.core.model.LocalVariableScope;
 import sootup.java.core.jimple.basic.JavaLocal;
 
 /**
@@ -59,6 +61,7 @@ class LocalVariableTableLocals {
     }
   }
 
+  @Nullable private final List<LocalVariableNode> localVariables;
   @NonNull private final InsnList instructions;
 
   /** Position of an instruction in {@link #instructions}. */
@@ -86,6 +89,7 @@ class LocalVariableTableLocals {
       @NonNull InsnList instructions,
       @NonNull ToIntFunction<AbstractInsnNode> insnIndex,
       @NonNull Collection<Integer> preambleSlots) {
+    this.localVariables = localVariables;
     this.instructions = instructions;
     this.insnIndex = insnIndex;
     if (localVariables == null || localVariables.isEmpty()) {
@@ -146,6 +150,70 @@ class LocalVariableTableLocals {
 
   @NonNull Collection<JavaLocal> getLocals() {
     return locals.values();
+  }
+
+  /**
+   * Captures scope membership in original bytecode order, before CFG layout and optimization.
+   * Scopes cover [start, end): the start label is included and the end label is excluded.
+   */
+  @NonNull Map<AbstractInsnNode, LocalVariableScope> createScopes() {
+    if (localVariables == null || localVariables.isEmpty()) {
+      return Collections.emptyMap();
+    }
+
+    // `starts` tracks the indices in localVariables whose start label is this node
+    Map<AbstractInsnNode, List<Integer>> starts = new IdentityHashMap<>();
+    // `ends` tracks the indices in localVariables whose end label is this node (exclusive)
+    Map<AbstractInsnNode, List<Integer>> ends = new IdentityHashMap<>();
+    List<LocalVariableInfo> variables = new ArrayList<>(localVariables.size());
+    for (int varIdx = 0; varIdx < localVariables.size(); varIdx++) {
+      LocalVariableNode node = localVariables.get(varIdx);
+      variables.add(new LocalVariableInfo(node.name, node.index, node.desc));
+
+      // get the instruction indices of the start and end labels
+      int startInsnIdx = insnIndex.applyAsInt(node.start);
+      int endInsnIdx = insnIndex.applyAsInt(node.end);
+
+      // add only valid ranges (ignore empty, reversed, or missing-label ranges)
+      if (startInsnIdx >= 0 && endInsnIdx > startInsnIdx) {
+        starts.computeIfAbsent(node.start, key -> new ArrayList<>()).add(varIdx);
+        ends.computeIfAbsent(node.end, key -> new ArrayList<>()).add(varIdx);
+      }
+    }
+
+    Map<AbstractInsnNode, LocalVariableScope> result = new IdentityHashMap<>();
+
+    // when iterating over instructions, will keep pairs of variable indices and LocalVariableInfo
+    // records
+    // that are currently active at iterated instruction.
+    Map<Integer, LocalVariableInfo> activeVariables = new TreeMap<>();
+
+    // caches already computed scopes by list of variables (order sensitive)
+    Map<List<LocalVariableInfo>, LocalVariableScope> sharedScopes = new HashMap<>();
+    LocalVariableScope activeScope = LocalVariableScope.empty();
+    for (AbstractInsnNode insn : instructions) {
+      List<Integer> endedVarIdxs = ends.get(insn);
+      List<Integer> startedVarIdxs = starts.get(insn);
+
+      // add variables that start at this instruction and remove variables that end at this
+      // instruction
+      if (startedVarIdxs != null) {
+        startedVarIdxs.forEach(index -> activeVariables.put(index, variables.get(index)));
+      }
+      if (endedVarIdxs != null) {
+        endedVarIdxs.forEach(activeVariables::remove);
+      }
+
+      // update active scope if any variable started or ended at this instruction
+      if (endedVarIdxs != null || startedVarIdxs != null) {
+        activeScope =
+            sharedScopes.computeIfAbsent(
+                List.copyOf(activeVariables.values()), LocalVariableScope::of);
+      }
+
+      result.put(insn, activeScope);
+    }
+    return result;
   }
 
   /**

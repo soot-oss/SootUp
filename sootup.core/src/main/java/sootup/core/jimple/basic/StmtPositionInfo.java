@@ -22,6 +22,8 @@ package sootup.core.jimple.basic;
  * #L%
  */
 
+import static sootup.core.jimple.basic.SimpleStmtPositionInfo.NOPOSITION;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.model.Position;
@@ -31,26 +33,7 @@ import sootup.core.model.Position;
  *
  * @author Linghui Luo, Markus Schmidt
  */
-public abstract class StmtPositionInfo {
-
-  protected static final StmtPositionInfo NOPOSITION =
-      new StmtPositionInfo() {
-        @NonNull
-        @Override
-        public Position getStmtPosition() {
-          return NoPositionInformation.getInstance();
-        }
-
-        @Override
-        public Position getOperandPosition(int index) {
-          return NoPositionInformation.getInstance();
-        }
-
-        @Override
-        public String toString() {
-          return "No StmtPositionnfo";
-        }
-      };
+public interface StmtPositionInfo {
 
   /**
    * Create an instance with no position information.
@@ -58,7 +41,7 @@ public abstract class StmtPositionInfo {
    * @return an instance with no position information.
    */
   @NonNull
-  public static StmtPositionInfo getNoStmtPositionInfo() {
+  static StmtPositionInfo getNoStmtPositionInfo() {
     return NOPOSITION;
   }
 
@@ -67,8 +50,13 @@ public abstract class StmtPositionInfo {
    *
    * @return the position of the statement
    */
-  @NonNull
-  public abstract Position getStmtPosition();
+  @NonNull Position getStmtPosition();
+
+  /**
+   * Mutator. Allows subclasses to maintain own class type when creating a new instance with a
+   * different statement position.
+   */
+  @NonNull StmtPositionInfo withStmtPosition(@NonNull Position stmtPosition);
 
   /**
    * Return the precise position of the given operand in the statement.
@@ -76,13 +64,5 @@ public abstract class StmtPositionInfo {
    * @param index the operand index
    * @return the position of the given operand
    */
-  @Nullable
-  public abstract Position getOperandPosition(int index);
-
-  @Override
-  public String toString() {
-    StringBuilder s = new StringBuilder();
-    s.append("stmt at:").append(getStmtPosition());
-    return s.toString();
-  }
+  @Nullable Position getOperandPosition(int index);
 }

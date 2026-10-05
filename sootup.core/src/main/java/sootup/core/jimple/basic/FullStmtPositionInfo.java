@@ -82,12 +82,13 @@ public class FullStmtPositionInfo extends SimpleStmtPositionInfo {
   }
 
   @NonNull
-  public StmtPositionInfo withStmtPosition(@NonNull Position stmtPosition) {
+  @Override
+  public FullStmtPositionInfo withStmtPosition(@NonNull Position stmtPosition) {
     return new FullStmtPositionInfo(stmtPosition, operandPositions);
   }
 
   @NonNull
-  public StmtPositionInfo withOperandPositions(@NonNull Position[] operandPositions) {
+  public FullStmtPositionInfo withOperandPositions(@NonNull Position[] operandPositions) {
     return new FullStmtPositionInfo(stmtPosition, operandPositions);
   }
 }

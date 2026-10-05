@@ -33,7 +33,15 @@ import sootup.core.model.Position;
  *
  * @author Markus Schmidt
  */
-public class SimpleStmtPositionInfo extends StmtPositionInfo {
+public class SimpleStmtPositionInfo implements StmtPositionInfo {
+
+  static StmtPositionInfo NOPOSITION =
+      new SimpleStmtPositionInfo(NoPositionInformation.getInstance()) {
+        @Override
+        public String toString() {
+          return "No StmtPositionnfo";
+        }
+      };
 
   @NonNull protected final Position stmtPosition;
 
@@ -56,9 +64,22 @@ public class SimpleStmtPositionInfo extends StmtPositionInfo {
     return stmtPosition;
   }
 
+  @NonNull
+  @Override
+  public SimpleStmtPositionInfo withStmtPosition(@NonNull Position stmtPosition) {
+    return new SimpleStmtPositionInfo(stmtPosition);
+  }
+
   @Nullable
   @Override
   public Position getOperandPosition(int index) {
     return null;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder s = new StringBuilder();
+    s.append("stmt at:").append(getStmtPosition());
+    return s.toString();
   }
 }

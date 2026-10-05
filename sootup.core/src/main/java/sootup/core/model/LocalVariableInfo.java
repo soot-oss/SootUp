@@ -1,10 +1,10 @@
-package sootup.core.inputlocation;
+package sootup.core.model;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2026 SootUp contributors
+ * Copyright (C) 1997-2026 Raja Vallee-Rai, Linghui Luo, Markus Schmidt and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,13 +22,14 @@ package sootup.core.inputlocation;
  * #L%
  */
 
-import sootup.core.model.LocalVariableScope;
+import java.util.Objects;
+import org.jspecify.annotations.NonNull;
 
-/** Extended analysis scope options for an {@link AnalysisInputLocation}. */
-public enum AnalysisExtendedScope {
-  /**
-   * Preserves LocalVariableTable debug metadata from bytecode, creating statement-level {@link
-   * LocalVariableScope} metadata on Jimple statements.
-   */
-  LocalVariableTable
+/** A debug variable binding, independent of statement identity and of optimized Jimple locals. */
+public record LocalVariableInfo(@NonNull String name, int slotIndex, @NonNull String descriptor) {
+
+  public LocalVariableInfo {
+    Objects.requireNonNull(name);
+    Objects.requireNonNull(descriptor);
+  }
 }
