@@ -39,6 +39,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import sootup.core.frontend.SootClassSource;
+import sootup.core.inputlocation.AnalysisExtendedScope;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.interceptor.BodyInterceptor;
@@ -69,11 +70,22 @@ final class WarArchiveAnalysisInputLocation extends DirectoryBasedAnalysisInputL
       @NonNull List<BodyInterceptor> bodyInterceptors,
       @NonNull Collection<Path> ignoredPaths)
       throws IOException {
+    this(warPath, srcType, bodyInterceptors, ignoredPaths, Collections.emptySet());
+  }
+
+  WarArchiveAnalysisInputLocation(
+      @NonNull Path warPath,
+      @NonNull SourceType srcType,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull Collection<Path> ignoredPaths,
+      @NonNull Set<AnalysisExtendedScope> extendedScope)
+      throws IOException {
     super(
         Files.createTempDirectory("sootUp-war-" + warPath.hashCode()).toAbsolutePath(),
         srcType,
         bodyInterceptors,
-        ignoredPaths);
+        ignoredPaths,
+        extendedScope);
 
     extractWarFile(warPath, path);
 
@@ -83,7 +95,8 @@ final class WarArchiveAnalysisInputLocation extends DirectoryBasedAnalysisInputL
     Path classDir = webInfPath.resolve("classes");
     if (Files.exists(classDir)) {
       containedInputLocations.add(
-          new DirectoryBasedAnalysisInputLocation(classDir, srcType, bodyInterceptors));
+          new DirectoryBasedAnalysisInputLocation(
+              classDir, srcType, bodyInterceptors, Collections.emptyList(), extendedScope));
     }
 
     Path libDir = webInfPath.resolve("lib");
@@ -94,7 +107,8 @@ final class WarArchiveAnalysisInputLocation extends DirectoryBasedAnalysisInputL
             .forEach(
                 f ->
                     containedInputLocations.add(
-                        new ArchiveBasedAnalysisInputLocation(f, srcType, bodyInterceptors)));
+                        new ArchiveBasedAnalysisInputLocation(
+                            f, srcType, bodyInterceptors, Collections.emptyList(), extendedScope)));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
