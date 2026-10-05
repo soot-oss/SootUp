@@ -23,34 +23,15 @@ package sootup.core.jimple.basic;
  */
 
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import sootup.core.model.Position;
 
 /**
- * This class stores position information stored for a statement.
+ * Source position information for a statement. Additional metadata is exposed through interfaces
+ * such as {@link FullStmtPositionInfo} and {@link LocalVariableStmtPositionInfo}.
  *
  * @author Linghui Luo, Markus Schmidt
  */
-public abstract class StmtPositionInfo {
-
-  protected static final StmtPositionInfo NOPOSITION =
-      new StmtPositionInfo() {
-        @NonNull
-        @Override
-        public Position getStmtPosition() {
-          return NoPositionInformation.getInstance();
-        }
-
-        @Override
-        public Position getOperandPosition(int index) {
-          return NoPositionInformation.getInstance();
-        }
-
-        @Override
-        public String toString() {
-          return "No StmtPositionnfo";
-        }
-      };
+public interface StmtPositionInfo {
 
   /**
    * Create an instance with no position information.
@@ -58,8 +39,8 @@ public abstract class StmtPositionInfo {
    * @return an instance with no position information.
    */
   @NonNull
-  public static StmtPositionInfo getNoStmtPositionInfo() {
-    return NOPOSITION;
+  static StmtPositionInfo getNoStmtPositionInfo() {
+    return DefaultStmtPositionInfoFactory.getNoStmtPositionInfo();
   }
 
   /**
@@ -67,22 +48,17 @@ public abstract class StmtPositionInfo {
    *
    * @return the position of the statement
    */
-  @NonNull
-  public abstract Position getStmtPosition();
+  @NonNull Position getStmtPosition();
+
+  /** Returns the factory responsible for copying this implementation and its metadata variants. */
+  @NonNull StmtPositionInfoFactory getFactory();
 
   /**
-   * Return the precise position of the given operand in the statement.
-   *
-   * @param index the operand index
-   * @return the position of the given operand
+   * Returns a copy with a different statement position, retaining all other metadata and supported
+   * metadata interfaces.
    */
-  @Nullable
-  public abstract Position getOperandPosition(int index);
-
-  @Override
-  public String toString() {
-    StringBuilder s = new StringBuilder();
-    s.append("stmt at:").append(getStmtPosition());
-    return s.toString();
+  @NonNull
+  default StmtPositionInfo withStmtPosition(@NonNull Position stmtPosition) {
+    return getFactory().withStmtPosition(this, stmtPosition);
   }
 }
