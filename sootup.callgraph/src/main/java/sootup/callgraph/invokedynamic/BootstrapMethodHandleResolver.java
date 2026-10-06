@@ -25,12 +25,18 @@ package sootup.callgraph.invokedynamic;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.WeakHashMap;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.constant.MethodHandle;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
+import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.views.View;
 
 /**
  * Resolves an invokedynamic call site to every method referenced by a {@link MethodHandle} among
@@ -45,7 +51,31 @@ public final class BootstrapMethodHandleResolver implements DynamicInvokeResolve
 
   private static final String LAMBDA_METAFACTORY = "java.lang.invoke.LambdaMetafactory";
 
+  /** Desugared bodies by original body (identity), empty if unchanged; see {@link #desugar}. */
+  private final Map<Body, Optional<Body>> desugared =
+      Collections.synchronizedMap(new WeakHashMap<>());
+
   private BootstrapMethodHandleResolver() {}
+
+  /**
+   * Makes the implicit calls of string concatenation and record methods explicit (see {@link
+   * InvokeDynamicDesugaring}).
+   */
+  @NonNull
+  @Override
+  public Body desugar(@NonNull SootMethod method, @NonNull Body body, @NonNull View view) {
+    if (body.getStmts().stream().noneMatch(InvokeDynamicDesugaring::applies)) {
+      return body; // common case: no lookup
+    }
+    return desugared
+        .computeIfAbsent(
+            body,
+            b -> {
+              Body result = InvokeDynamicDesugaring.desugar(b, view);
+              return result == b ? Optional.empty() : Optional.of(result);
+            })
+        .orElse(body);
+  }
 
   @NonNull
   @Override

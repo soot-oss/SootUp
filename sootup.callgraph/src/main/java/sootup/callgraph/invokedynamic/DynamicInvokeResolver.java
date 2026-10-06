@@ -27,6 +27,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 /**
  * Decides which methods an invokedynamic call site transfers control to. Shared by CHA, RTA, Spark
@@ -94,10 +95,11 @@ public interface DynamicInvokeResolver {
    * Makes the implicit calls of other invokedynamics explicit (string concatenation's {@code
    * toString()}, records' {@code equals}/{@code hashCode}/{@code toString}). Identity by default.
    *
-   * @return {@code body} itself if nothing changed, else a rewritten copy
+   * @return {@code body} itself if nothing changed, else a rewritten copy - the same one on each
+   *     call, so statements of call graph edges and of later passes over the body match
    */
   @NonNull
-  default Body desugar(@NonNull SootMethod method, @NonNull Body body) {
+  default Body desugar(@NonNull SootMethod method, @NonNull Body body, @NonNull View view) {
     return body;
   }
 }

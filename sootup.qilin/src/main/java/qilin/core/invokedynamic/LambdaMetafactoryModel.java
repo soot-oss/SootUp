@@ -48,7 +48,10 @@ import sootup.core.views.View;
  * statement is left untouched - mirroring how {@link sootup.callgraph.reflection.ReflectionModel}
  * augments rather than replaces the original call.
  *
-  * <p>Calls on the object dispatch to the implementation ({@code CallGraphBuilder}), loading the
+ * <p>First {@link DynamicInvokeResolver#desugar desugars} the body (string concatenation, record
+ * methods).
+ *
+ * <p>Calls on the object dispatch to the implementation ({@code CallGraphBuilder}), loading the
  * captured values back from the receiver - so they stay with their object under context
  * sensitivity.
  */
@@ -89,7 +92,8 @@ public class LambdaMetafactoryModel implements MethodEffectModel {
       return;
     }
     View view = ptaScene.getView();
-    Body body = pag.getMethodBody(m);
+    Body original = pag.getMethodBody(m);
+    Body body = resolver.desugar(m, original, view);
     Body.BodyBuilder builder = null;
     for (Stmt u : body.getStmts()) {
       FunctionalObject fo = FunctionalObject.of(u, resolver, view).orElse(null);
@@ -115,6 +119,8 @@ public class LambdaMetafactoryModel implements MethodEffectModel {
     }
     if (builder != null) {
       pag.updateMethodBody(m, builder.build());
+    } else if (body != original) {
+      pag.updateMethodBody(m, body);
     }
   }
 }

@@ -179,6 +179,32 @@ public class DynamicInvokeSparkTest {
   }
 
   @Test
+  public void stringConcatenationAndRecordMethodsReachComponentMethods() {
+    MethodSignature concat = main("Concat");
+    MethodSignature rec = main("Rec");
+    MethodSignature toString = sig("Payload", "toString", "java.lang.String");
+    for (boolean otf : new boolean[] {false, true}) {
+      assertTrue(
+          spark(concat, otf, DynamicInvokeResolver.bootstrapMethodHandles())
+              .getCallGraph()
+              .callTargetsFrom(concat)
+              .contains(toString),
+          "otf=" + otf);
+      CallGraph cg = spark(rec, otf, DynamicInvokeResolver.bootstrapMethodHandles()).getCallGraph();
+      assertTrue(
+          cg.callTargetsFrom(sig("Rec", "toString", "java.lang.String")).contains(toString),
+          "otf=" + otf);
+      assertTrue(
+          cg.callTargetsFrom(sig("Rec", "equals", "boolean", "java.lang.Object"))
+              .contains(sig("Payload", "equals", "boolean", "java.lang.Object")),
+          "otf=" + otf);
+      assertFalse(
+          spark(concat, otf, DynamicInvokeResolver.none()).getCallGraph().containsMethod(toString),
+          "otf=" + otf);
+    }
+  }
+
+  @Test
   public void noneLeavesLambdaBodyUnreachable() {
     MethodSignature entry = main("CapturingLambda");
     MethodSignature body = sig("CapturingLambda", "lambda$main$0", "void", "indy.Payload");

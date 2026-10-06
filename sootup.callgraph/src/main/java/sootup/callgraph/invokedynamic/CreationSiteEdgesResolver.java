@@ -27,6 +27,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 /** {@link DynamicInvokeResolver#withCreationSiteEdges()}: delegates, with the flag set. */
 final class CreationSiteEdgesResolver implements DynamicInvokeResolver {
@@ -56,7 +57,7 @@ final class CreationSiteEdgesResolver implements DynamicInvokeResolver {
 
   @NonNull
   @Override
-  public Body desugar(@NonNull SootMethod method, @NonNull Body body) {
-    return delegate.desugar(method, body);
+  public Body desugar(@NonNull SootMethod method, @NonNull Body body, @NonNull View view) {
+    return delegate.desugar(method, body, view);
   }
 }

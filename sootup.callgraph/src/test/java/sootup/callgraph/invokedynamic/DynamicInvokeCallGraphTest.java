@@ -118,6 +118,26 @@ public class DynamicInvokeCallGraphTest {
   }
 
   @Test
+  public void stringConcatenationCallsToString() {
+    // "x" + p
+    assertResolved(main("Concat"), main("Concat"), sig("Payload", "toString", "java.lang.String"));
+  }
+
+  @Test
+  public void recordMethodsCallComponentMethods() {
+    MethodSignature entry = main("Rec");
+    assertResolved(
+        entry,
+        sig("Rec", "toString", "java.lang.String"),
+        sig("Payload", "toString", "java.lang.String"));
+    assertResolved(entry, sig("Rec", "hashCode", "int"), sig("Payload", "hashCode", "int"));
+    assertResolved(
+        entry,
+        sig("Rec", "equals", "boolean", "java.lang.Object"),
+        sig("Payload", "equals", "boolean", "java.lang.Object"));
+  }
+
+  @Test
   public void neverCalledLambdaIsUnreachableUnlessCreationSiteEdges() {
     MethodSignature entry = main("NeverCalled");
     MethodSignature body = sig("NeverCalled", "lambda$main$0", "void");

@@ -138,6 +138,12 @@ public class InvokeDynamicTests {
   }
 
   @Test
+  public void testRecordMethods() {
+    checkAssertions(
+        run("qilin.microben.core.invokedynamic.RecordMethods", ContextSensitivity.insensitive()));
+  }
+
+  @Test
   public void testNoneResolverLeavesLambdaBodiesUnreachable() {
     for (String cls : new String[] {"CapturingLambda", "InstanceLambda"}) {
       PTA pta =

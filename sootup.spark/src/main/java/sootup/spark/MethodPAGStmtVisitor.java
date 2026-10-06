@@ -404,6 +404,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   }
 
   private Body body(SootMethod method) {
-    return reflectionModel.resolve(method, method.getBody());
+    return dynamicInvokeResolver.desugar(
+        method, reflectionModel.resolve(method, method.getBody()), view);
   }
 }
