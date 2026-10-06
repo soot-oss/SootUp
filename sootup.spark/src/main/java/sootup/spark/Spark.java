@@ -26,6 +26,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
 import sootup.callgraph.CallGraph;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
@@ -56,6 +57,11 @@ import sootup.core.views.View;
  * the non-OTF path. Pre-build the graph with {@code ClassHierarchyAnalysisAlgorithm}'s {@code
  * seedEntryPointClinits}/{@code sootup.callgraph.scope.VirtualCallResolver} constructor and pass it
  * via {@code callGraph(...)} instead of letting Spark run CHA with its defaults.
+ *
+ * <p>{@code dynamicInvokeResolver(...)} (default {@code
+ * DynamicInvokeResolver.bootstrapMethodHandles()}) decides invokedynamic targets; values captured
+ * by a lambda flow into its body. When passing a pre-built {@code callGraph}, build it with the
+ * same resolver, else invokedynamic edges and PAG disagree.
  */
 public class Spark {
 
@@ -68,13 +74,15 @@ public class Spark {
       @NonNull View view,
       List<MethodSignature> entryPoints,
       SparkOptions sparkOptions,
-      CallGraph callGraph) {
+      CallGraph callGraph,
+      DynamicInvokeResolver dynamicInvokeResolver) {
     this.solver =
         Solver.builder()
             .view(view)
             .entryPoints(entryPoints)
             .sparkOptions(sparkOptions)
             .callGraph(callGraph)
+            .dynamicInvokeResolver(dynamicInvokeResolver)
             .build();
   }
 

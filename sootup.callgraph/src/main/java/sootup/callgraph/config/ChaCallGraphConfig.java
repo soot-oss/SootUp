@@ -48,7 +48,8 @@ public final class ChaCallGraphConfig implements CallGraphConfig {
             common.getView(),
             common.getCallResolver(),
             common.getVirtualCallResolver(),
-            common.getSeedEntryPointClinits(true));
+            common.getSeedEntryPointClinits(true),
+            common.getDynamicInvokeResolver());
     return common.getEntryPoints().isEmpty()
         ? cha.initialize()
         : cha.initialize(common.getEntryPoints());
