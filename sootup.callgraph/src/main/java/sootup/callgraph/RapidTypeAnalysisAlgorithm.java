@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph.Call;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -172,6 +173,27 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
         callResolver,
         virtualCallResolver,
         seedEntryPointClinits,
+        ReflectionModel.none());
+  }
+
+  /**
+   * Additionally takes a {@link ReflectionModel}; classes it instantiates reflectively (e.g. {@code
+   * Class.newInstance}) count as instantiated.
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull Set<ClassType> preInstantiatedClasses,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel) {
+    this(
+        view,
+        preInstantiatedClasses,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        reflectionModel,
         DynamicInvokeResolver.bootstrapMethodHandles());
   }
 
@@ -185,8 +207,15 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       @NonNull CallResolver callResolver,
       @NonNull VirtualCallResolver virtualCallResolver,
       boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel,
       @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
-    super(view, callResolver, virtualCallResolver, seedEntryPointClinits, dynamicInvokeResolver);
+    super(
+        view,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        reflectionModel,
+        dynamicInvokeResolver);
     this.instantiatedClasses = new HashSet<>(preInstantiatedClasses);
   }
 
@@ -222,7 +251,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     if (method.isAbstract() || method.isNative()) {
       return Stream.empty();
     }
-    return method.getBody().getStmts().stream()
+    return getBody(method).getStmts().stream()
         .filter(stmt -> stmt instanceof JAssignStmt)
         .map(stmt -> ((JAssignStmt) stmt).getRightOp())
         .filter(value -> value instanceof JNewExpr)
