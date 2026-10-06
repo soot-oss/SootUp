@@ -14,4 +14,4 @@ jobs:
     uses: secure-software-engineering/actions/.github/workflows/maven-style-check.yml@7a286175a5ce134571e0228fc4da41885f2821e3
     with:
       java_version: '17'
-      java_distribution: adopt
+      java_distribution: temurin

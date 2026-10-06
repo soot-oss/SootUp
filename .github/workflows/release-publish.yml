@@ -22,8 +22,8 @@ jobs:
       contents: write
     with:
       head_branch: develop
-      release_java_distribution: adopt
-      prepare_java_distribution: zulu
+      release_java_distribution: temurin
+      prepare_java_distribution: temurin
       maven_server_id: central
       deployment_environment: deployment
     secrets:
