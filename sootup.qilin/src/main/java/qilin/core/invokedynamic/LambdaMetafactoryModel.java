@@ -23,33 +23,34 @@ import qilin.core.PTAScene;
 import qilin.core.effect.MethodEffectModel;
 import qilin.core.pag.PAG;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
-import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
+import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.constant.MethodHandle;
+import sootup.core.jimple.common.Immediate;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
-import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
-import sootup.core.types.ClassType;
+import sootup.core.signatures.FieldSignature;
+import sootup.core.types.ReferenceType;
+import sootup.core.views.View;
 
 /**
- * Precisely models invokedynamic call sites whose {@link DynamicInvokeResolver} target is a
- * non-capturing static {@code LambdaMetafactory} implementation - every non-capturing lambda body
- * and every static method reference. Splices in a synthetic allocation of the functional-interface
- * type (registered with {@link PAG#registerLambdaTarget} so it becomes a {@link
- * qilin.core.pag.LambdaAllocNode} instead of a plain one) before the original invokedynamic
- * statement, which is left untouched - mirroring how {@link
- * sootup.callgraph.reflection.ReflectionModel} augments rather than replaces the original call.
- * Calls on that object then dispatch straight to the target, with the functional interface's
- * arguments bound.
+ * Models the objects {@code LambdaMetafactory} invokedynamic call sites create (lambdas and method
+ * references, see {@link FunctionalObject}). Before each such call site {@code r = indy(c_0, ...)},
+ * splices in a synthetic allocation of the functional-interface type (registered with {@link
+ * PAG#registerLambdaTarget} so it becomes a {@link qilin.core.pag.LambdaAllocNode}) and stores the
+ * captured values into it: {@code r = new FI; r.<capture field 0> = c_0; ...}. The original
+ * statement is left untouched - mirroring how {@link sootup.callgraph.reflection.ReflectionModel}
+ * augments rather than replaces the original call.
  *
- * <p>All other targets (captured values, instance/constructor refs) are called from the
- * invokedynamic statement itself, like CHA/RTA/Spark do - see {@code
- * CallGraphBuilder#addDynamicInvokeEdge}.
+  * <p>Calls on the object dispatch to the implementation ({@code CallGraphBuilder}), loading the
+ * captured values back from the receiver - so they stay with their object under context
+ * sensitivity.
  */
 public class LambdaMetafactoryModel implements MethodEffectModel {
 
@@ -64,19 +65,17 @@ public class LambdaMetafactoryModel implements MethodEffectModel {
   }
 
   /**
-   * Whether this model handles {@code target} of the invokedynamic {@code stmt}: a non-capturing
-   * static lambda implementation whose functional object is assigned to a local.
+   * The synthetic field holding the {@code i}-th value captured for {@code fo}: declared by the
+   * functional interface, named after the implementation so different lambdas keep their captures
+   * apart.
    */
-  public static boolean handles(InvokableStmt stmt, DynamicInvokeTarget target) {
-    // Captured (closure) lambdas offset the target's parameters by the captured values, and
-    // instance/constructor refs need a different edge shape (receiver from the SAM's own argument
-    // or a fresh allocation) - those go through the invokedynamic-statement edge instead.
-    return stmt instanceof JAssignStmt assign
-        && assign.getLeftOp().getType() instanceof ClassType
-        && assign.getRightOp() instanceof JDynamicInvokeExpr die
-        && die.getArgCount() == 0
-        && target.lambdaImplementation()
-        && target.kind() == MethodHandle.Kind.REF_INVOKE_STATIC;
+  public static FieldSignature captureField(View view, FunctionalObject fo, int i) {
+    JDynamicInvokeExpr expr = (JDynamicInvokeExpr) ((JAssignStmt) fo.site()).getRightOp();
+    return view.getIdentifierFactory()
+        .getFieldSignature(
+            "capture$" + i + "$" + fo.implementationMethod().getName(),
+            fo.functionalInterface(),
+            expr.getArg(i).getType());
   }
 
   @Override
@@ -89,27 +88,29 @@ public class LambdaMetafactoryModel implements MethodEffectModel {
     if (!ptaScene.dynamicInvokeBuilt.add(m)) {
       return;
     }
+    View view = ptaScene.getView();
     Body body = pag.getMethodBody(m);
     Body.BodyBuilder builder = null;
     for (Stmt u : body.getStmts()) {
-      if (!(u instanceof JAssignStmt assign)
-          || !(assign.getRightOp() instanceof JDynamicInvokeExpr die)) {
+      FunctionalObject fo = FunctionalObject.of(u, resolver, view).orElse(null);
+      if (fo == null || !(((JAssignStmt) u).getLeftOp() instanceof Local lhs)) {
         continue;
       }
-      for (DynamicInvokeTarget target : resolver.resolve(die)) {
-        if (!handles(assign, target)) {
-          continue;
+      JNewExpr syntheticAlloc = new JNewExpr(fo.functionalInterface());
+      pag.registerLambdaTarget(syntheticAlloc, fo);
+      if (builder == null) {
+        builder = Body.builder(body, Collections.emptySet());
+      }
+      MutableControlFlowGraph cfg = builder.getControlFlowGraph();
+      StmtPositionInfo pos = StmtPositionInfo.getNoStmtPositionInfo();
+      cfg.insertBefore(u, new JAssignStmt(lhs, syntheticAlloc, pos));
+      JDynamicInvokeExpr expr = (JDynamicInvokeExpr) ((JAssignStmt) u).getRightOp();
+      for (int i = 0; i < expr.getArgCount(); i++) {
+        Immediate arg = expr.getArg(i);
+        if (arg.getType() instanceof ReferenceType) {
+          JInstanceFieldRef field = new JInstanceFieldRef(lhs, captureField(view, fo, i));
+          cfg.insertBefore(u, new JAssignStmt(field, arg, pos));
         }
-        JNewExpr syntheticAlloc = new JNewExpr((ClassType) assign.getLeftOp().getType());
-        pag.registerLambdaTarget(syntheticAlloc, target.method(), target.kind());
-        if (builder == null) {
-          builder = Body.builder(body, Collections.emptySet());
-        }
-        MutableControlFlowGraph cfg = builder.getControlFlowGraph();
-        cfg.insertBefore(
-            u,
-            new JAssignStmt(
-                assign.getLeftOp(), syntheticAlloc, StmtPositionInfo.getNoStmtPositionInfo()));
       }
     }
     if (builder != null) {

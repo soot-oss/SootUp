@@ -118,6 +118,26 @@ public class InvokeDynamicTests {
   }
 
   @Test
+  public void testLambdaArgs() {
+    checkAssertions(
+        run("qilin.microben.core.invokedynamic.LambdaArgs", ContextSensitivity.insensitive()));
+  }
+
+  @Test
+  public void testUnboundMethodRef() {
+    checkAssertions(
+        run(
+            "qilin.microben.core.invokedynamic.UnboundMethodRef",
+            ContextSensitivity.insensitive()));
+  }
+
+  @Test
+  public void testConstructorRef() {
+    checkAssertions(
+        run("qilin.microben.core.invokedynamic.ConstructorRef", ContextSensitivity.insensitive()));
+  }
+
+  @Test
   public void testNoneResolverLeavesLambdaBodiesUnreachable() {
     for (String cls : new String[] {"CapturingLambda", "InstanceLambda"}) {
       PTA pta =
