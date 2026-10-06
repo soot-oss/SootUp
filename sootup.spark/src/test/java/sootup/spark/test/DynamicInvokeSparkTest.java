@@ -14,6 +14,7 @@ import sootup.callgraph.CallGraphConfig;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.JParameterRef;
+import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
@@ -104,6 +105,77 @@ public class DynamicInvokeSparkTest {
             .getCallGraph()
             .callTargetsFrom(main("ConstructorRef"))
             .contains(sig("Worker", "<init>", "void")));
+  }
+
+  /** Types the receiver of {@code method} may point to. */
+  private Set<String> thisTypes(Spark spark, MethodSignature method) {
+    Local self =
+        view.getMethod(method).get().getBody().getStmts().stream()
+            .filter(s -> s instanceof JIdentityStmt id && id.getRightOp() instanceof JThisRef)
+            .map(s -> ((JIdentityStmt) s).getLeftOp())
+            .findFirst()
+            .get();
+    return spark.getPointsToAnalysis().reachingTypes(self, method).stream()
+        .map(Type::toString)
+        .collect(Collectors.toSet());
+  }
+
+  @Test
+  public void callArgumentAndResultFlowThroughLambda() {
+    // f = x -> id(x); q = f.apply(new Payload()); sink(q)
+    MethodSignature entry = main("LambdaArgs");
+    MethodSignature body = sig("LambdaArgs", "lambda$main$0", "indy.Payload", "indy.Payload");
+    MethodSignature sink = sig("LambdaArgs", "sink", "void", "java.lang.Object");
+    for (boolean otf : new boolean[] {false, true}) {
+      Spark spark = spark(entry, otf, DynamicInvokeResolver.bootstrapMethodHandles());
+      assertTrue(spark.getCallGraph().callTargetsFrom(entry).contains(body), "otf=" + otf);
+      assertEquals(Set.of("indy.Payload"), paramTypes(spark, body, 0), "otf=" + otf);
+      assertEquals(Set.of("indy.Payload"), paramTypes(spark, sink, 0), "otf=" + otf);
+    }
+  }
+
+  @Test
+  public void unboundMethodRefTakesReceiverFromFirstArgument() {
+    // g = Payload::self; r = g.apply(new Payload()); sink(r)
+    MethodSignature entry = main("UnboundRef");
+    MethodSignature self = sig("Payload", "self", "indy.Payload");
+    MethodSignature sink = sig("UnboundRef", "sink", "void", "java.lang.Object");
+    for (boolean otf : new boolean[] {false, true}) {
+      Spark spark = spark(entry, otf, DynamicInvokeResolver.bootstrapMethodHandles());
+      assertEquals(Set.of("indy.Payload"), thisTypes(spark, self), "otf=" + otf);
+      assertEquals(Set.of("indy.Payload"), paramTypes(spark, sink, 0), "otf=" + otf);
+    }
+  }
+
+  @Test
+  public void constructorRefYieldsFreshObject() {
+    // s = Worker::new; w = s.get(); sink(w)
+    MethodSignature entry = main("CtorRefResult");
+    MethodSignature init = sig("Worker", "<init>", "void");
+    MethodSignature sink = sig("CtorRefResult", "sink", "void", "java.lang.Object");
+    for (boolean otf : new boolean[] {false, true}) {
+      Spark spark = spark(entry, otf, DynamicInvokeResolver.bootstrapMethodHandles());
+      assertEquals(Set.of("indy.Worker"), thisTypes(spark, init), "otf=" + otf);
+      assertEquals(Set.of("indy.Worker"), paramTypes(spark, sink, 0), "otf=" + otf);
+    }
+  }
+
+  @Test
+  public void neverCalledLambdaIsUnreachableUnlessCreationSiteEdges() {
+    MethodSignature entry = main("NeverCalled");
+    MethodSignature body = sig("NeverCalled", "lambda$main$0", "void");
+    for (boolean otf : new boolean[] {false, true}) {
+      assertFalse(
+          spark(entry, otf, DynamicInvokeResolver.bootstrapMethodHandles())
+              .getCallGraph()
+              .containsMethod(body),
+          "otf=" + otf);
+      assertTrue(
+          spark(entry, otf, DynamicInvokeResolver.bootstrapMethodHandles().withCreationSiteEdges())
+              .getCallGraph()
+              .containsMethod(body),
+          "otf=" + otf);
+    }
   }
 
   @Test

@@ -42,15 +42,19 @@ import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.GraphBasedCallGraph;
 import sootup.callgraph.MutableCallGraph;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.DefaultCallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.spark.node.AllocationNode;
+import sootup.spark.node.LambdaAllocationNode;
 import sootup.spark.node.Node;
 
 @Getter
@@ -128,14 +132,32 @@ class Solver {
     if (sparkOptions.isOnFlyCallGraph()) {
       solveOnTheFly();
     } else {
-      callGraph
-          .getMethodSignatures()
-          .forEach(
-              methodSignature -> view.getMethod(methodSignature).ifPresent(this::buildMethodPAG));
+      List<SootMethod> methods =
+          callGraph.getMethodSignatures().stream()
+              .flatMap(sig -> view.getMethod(sig).stream())
+              .filter(SootMethod::hasBody)
+              .map(SootMethod.class::cast)
+              .toList();
+      Map<MethodSignature, List<FunctionalObject>> functionalObjects = new HashMap<>();
+      for (SootMethod method : methods) {
+        body(method).getStmts().stream()
+            .flatMap(stmt -> FunctionalObject.of(stmt, dynamicInvokeResolver, view).stream())
+            .forEach(
+                fo ->
+                    functionalObjects
+                        .computeIfAbsent(fo.dispatchedImplementation(view), k -> new ArrayList<>())
+                        .add(fo));
+      }
+      methods.forEach(method -> buildMethodPAG(method, functionalObjects));
     }
   }
 
-  private void buildMethodPAG(SootMethod method) {
+  private Body body(SootMethod method) {
+    return reflectionModel.resolve(method, method.getBody());
+  }
+
+  private void buildMethodPAG(
+      SootMethod method, Map<MethodSignature, List<FunctionalObject>> functionalObjects) {
     if (!method.hasBody()) return;
     MethodPAGStmtVisitor stmtVisitor =
         MethodPAGStmtVisitor.builder()
@@ -146,11 +168,9 @@ class Solver {
             .nodeFactory(new NodeFactory(sparkOptions, view.getIdentifierFactory()))
             .reflectionModel(reflectionModel)
             .dynamicInvokeResolver(dynamicInvokeResolver)
+            .functionalObjects(functionalObjects)
             .build();
-    reflectionModel
-        .resolve(method, method.getBody())
-        .getStmts()
-        .forEach(stmt -> stmt.accept(stmtVisitor));
+    body(method).getStmts().forEach(stmt -> stmt.accept(stmtVisitor));
   }
 
   /**
@@ -192,10 +212,7 @@ class Solver {
                 .dynamicInvokeResolver(dynamicInvokeResolver)
                 .build();
         visitors.put(sig, visitor);
-        reflectionModel
-            .resolve(method, method.getBody())
-            .getStmts()
-            .forEach(stmt -> stmt.accept(visitor));
+        body(method).getStmts().forEach(stmt -> stmt.accept(visitor));
         changed = true;
       }
 
@@ -204,15 +221,22 @@ class Solver {
 
       // 3. Resolve pending virtual call sites against current points-to results.
       for (MethodPAGStmtVisitor.PendingVirtualCall call : pending) {
-        Optional<Node> receiver =
-            nodeFactory.createNode(
-                ((sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr) call.expr()).getBase(),
-                call.srcSig());
+        AbstractInstanceInvokeExpr expr = (AbstractInstanceInvokeExpr) call.expr();
+        Optional<Node> receiver = nodeFactory.createNode(expr.getBase(), call.srcSig());
         if (receiver.isEmpty()) continue;
         Set<AllocationNode> reaching = incrementalAnalysis.reachingObjects(receiver.get());
         for (AllocationNode o : reaching) {
+          FunctionalObject fo =
+              o instanceof LambdaAllocationNode lambda
+                      && lambda
+                          .getFunctionalObject()
+                          .answers(expr.getMethodSignature(), view.getTypeHierarchy())
+                  ? lambda.getFunctionalObject()
+                  : null;
           MethodSignature targetSig =
-              dispatch(o.getType(), call.expr().getMethodSignature()).orElse(null);
+              fo != null
+                  ? fo.dispatchedImplementation(view)
+                  : dispatch(o.getType(), expr.getMethodSignature()).orElse(null);
           if (targetSig == null) continue;
           ResolvedVirtualCall key = new ResolvedVirtualCall(call.srcSig(), call.stmt(), targetSig);
           if (!resolved.add(key)) continue;
@@ -227,8 +251,10 @@ class Solver {
           }
           // Install this/param/return edges via the source method's visitor.
           MethodPAGStmtVisitor sourceVisitor = visitors.get(call.srcSig());
-          if (sourceVisitor != null) {
-            sourceVisitor.installCallEdges(call.expr(), call.lhs(), targetSig);
+          if (sourceVisitor != null && fo != null) {
+            sourceVisitor.installLambdaCallEdges(expr, call.lhs(), call.stmt(), fo, targetSig);
+          } else if (sourceVisitor != null) {
+            sourceVisitor.installCallEdges(expr, call.lhs(), targetSig);
           }
           changed = true;
         }

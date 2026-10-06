@@ -22,8 +22,11 @@ package sootup.spark;
  * #L%
  */
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -35,6 +38,7 @@ import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
+import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -55,6 +59,8 @@ import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
+import sootup.spark.node.AllocationNode;
+import sootup.spark.node.LambdaAllocationNode;
 
 @Slf4j
 @Builder
@@ -74,6 +80,13 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   /** Must be the resolver the call graph was built with, so invokedynamic edges match. */
   @Builder.Default
   DynamicInvokeResolver dynamicInvokeResolver = DynamicInvokeResolver.bootstrapMethodHandles();
+
+  /**
+   * CHA mode: the functional objects of the call graph's methods, by {@link
+   * FunctionalObject#dispatchedImplementation}. A call edge to such a method from an interface call
+   * the object {@link FunctionalObject#answers answers} is a lambda call.
+   */
+  @Builder.Default Map<MethodSignature, List<FunctionalObject>> functionalObjects = Map.of();
 
   /** Captured invoke site whose targets are decided by the OTF builder via points-to. */
   public record PendingVirtualCall(
@@ -96,6 +109,12 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   @Override
   public void caseAssignStmt(JAssignStmt stmt) {
     if (stmt.isInvokableStmt() && stmt.asInvokableStmt().getInvokeExpr().isPresent()) {
+      FunctionalObject.of(stmt, dynamicInvokeResolver, view)
+          .ifPresent(
+              fo ->
+                  nodeFactory
+                      .createNode(stmt.getLeftOp(), methodSignature)
+                      .ifPresent(lhsNode -> addPagEdge(lambdaAllocation(fo), lhsNode)));
       handleInvokeExpr(
           stmt.asInvokableStmt().getInvokeExpr().get(),
           Optional.of(stmt.getLeftOp()),
@@ -149,13 +168,30 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
     if (expr instanceof JDynamicInvokeExpr dynamicInvokeExpr) {
       for (DynamicInvokeTarget target : dynamicInvokeResolver.resolve(dynamicInvokeExpr)) {
         MethodSignature targetSig = dispatch(target);
-        if (callGraph.containsCall(methodSignature, targetSig, stmt)) {
+        // a lambda body is called elsewhere (or at the creation site, if so configured)
+        if (target.lambdaImplementation()
+            ? callGraph.containsMethod(targetSig)
+            : callGraph.containsCall(methodSignature, targetSig, stmt)) {
           installCaptureEdges(dynamicInvokeExpr, target, targetSig);
         }
       }
       return;
     }
+    Set<MethodSignature> lambdaTargets = new HashSet<>();
+    if (expr instanceof AbstractInstanceInvokeExpr instanceExpr) {
+      for (CallGraph.Call call : callGraph.callsFrom(methodSignature)) {
+        if (!call.invokableStmt().equals(stmt)) continue;
+        MethodSignature targetSig = call.targetMethodSignature();
+        for (FunctionalObject fo : functionalObjects.getOrDefault(targetSig, List.of())) {
+          if (fo.answers(expr.getMethodSignature(), view.getTypeHierarchy())) {
+            installLambdaCallEdges(instanceExpr, lhs, stmt, fo, targetSig);
+            lambdaTargets.add(targetSig);
+          }
+        }
+      }
+    }
     callGraph.callTargetsFrom(methodSignature).stream()
+        .filter(targetMethodSig -> !lambdaTargets.contains(targetMethodSig))
         .filter(
             targetMethodSig ->
                 targetMethodSig
@@ -177,11 +213,14 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
       // invokedynamic call sites have no dispatch receiver to defer resolution on, so they must
       // not be queued as a PendingVirtualCall (Solver.solveOnTheFly casts every pending call's
       // expr to AbstractInstanceInvokeExpr). Their targets are fixed by the bootstrap arguments,
-      // resolved exactly as CHA mode does.
+      // resolved exactly as CHA mode does. Lambda bodies are called where the object is called
+      // (Solver.solveOnTheFly), captures still bind here.
       for (DynamicInvokeTarget target : dynamicInvokeResolver.resolve(dynamicInvokeExpr)) {
-        MethodSignature targetSig = dispatch(target);
-        installCaptureEdges(dynamicInvokeExpr, target, targetSig);
-        addOtfCallEdge(targetSig, stmt);
+        installCaptureEdges(dynamicInvokeExpr, target, dispatch(target));
+      }
+      for (DynamicInvokeTarget target :
+          dynamicInvokeResolver.creationSiteTargets(dynamicInvokeExpr)) {
+        addOtfCallEdge(dispatch(target), stmt);
       }
       return;
     }
@@ -259,6 +298,68 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
                                 .ifPresent(retOpNode -> addPagEdge(retOpNode, lhsNode))));
   }
 
+  /**
+   * Installs the PAG edges of a call that reaches the body of {@code fo} ({@code targetMethodSig}):
+   * the call's arguments go to the parameters / receiver {@link FunctionalObject#samArgumentIndex}
+   * names; the result flows to {@code lhs}: the body's return value or, for a constructor
+   * reference, a fresh object (also bound to the constructor's receiver). Captured values are bound
+   * at the creation site ({@link #installCaptureEdges}).
+   */
+  public void installLambdaCallEdges(
+      AbstractInstanceInvokeExpr expr,
+      Optional<Value> lhs,
+      InvokableStmt stmt,
+      FunctionalObject fo,
+      MethodSignature targetMethodSig) {
+    Optional<? extends SootMethod> sootMethodOpt =
+        view.getMethod(targetMethodSig).filter(SootMethod::hasBody);
+    if (sootMethodOpt.isEmpty()) return;
+    Body targetBody = body(sootMethodOpt.get());
+    for (int j = 0; j < expr.getArgCount(); j++) {
+      val argNode = nodeFactory.createNode(expr.getArg(j), methodSignature);
+      val targetNode =
+          parameterLocal(targetBody, fo.samArgumentIndex(j))
+              .flatMap(local -> nodeFactory.createNode(local, targetMethodSig));
+      if (argNode.isPresent() && targetNode.isPresent()) {
+        addPagEdge(argNode.get(), targetNode.get());
+      }
+    }
+    val lhsNode = lhs.flatMap(l -> nodeFactory.createNode(l, methodSignature));
+    if (fo.isConstructorReference()) {
+      AllocationNode created =
+          AllocationNode.builder()
+              .type(targetMethodSig.getDeclClassType())
+              .containingMethodSig(methodSignature)
+              .allocationSite(stmt)
+              .build();
+      lhsNode.ifPresent(node -> addPagEdge(created, node));
+      parameterLocal(targetBody, DynamicInvokeTarget.RECEIVER)
+          .flatMap(local -> nodeFactory.createNode(local, targetMethodSig))
+          .ifPresent(node -> addPagEdge(created, node));
+      return;
+    }
+    lhsNode.ifPresent(
+        node ->
+            targetBody.getStmts().stream()
+                .filter(s -> s instanceof JReturnStmt)
+                .map(s -> (JReturnStmt) s)
+                .forEach(
+                    returnStmt ->
+                        nodeFactory
+                            .createNode(returnStmt.getOp(), targetMethodSig)
+                            .ifPresent(retOpNode -> addPagEdge(retOpNode, node))));
+  }
+
+  /** The object {@code fo} creates, one per creation site. */
+  private LambdaAllocationNode lambdaAllocation(FunctionalObject fo) {
+    return LambdaAllocationNode.builder()
+        .type(fo.functionalInterface())
+        .containingMethodSig(methodSignature)
+        .allocationSite(fo)
+        .functionalObject(fo)
+        .build();
+  }
+
   /** The concrete implementation of {@code target}, matching CHA's invokedynamic edges. */
   private MethodSignature dispatch(DynamicInvokeTarget target) {
     return AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, target.method())
@@ -277,18 +378,20 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
     if (sootMethodOpt.isEmpty()) return;
     Body targetBody = body(sootMethodOpt.get());
     for (int i = 0; i < expr.getArgCount(); i++) {
-      int paramIndex = target.captureParameterIndex(i);
-      Optional<Local> targetLocal =
-          paramIndex == DynamicInvokeTarget.RECEIVER
-              ? identityLocal(targetBody, ref -> ref instanceof JThisRef)
-              : identityLocal(
-                  targetBody, ref -> ref instanceof JParameterRef p && p.getIndex() == paramIndex);
+      Optional<Local> targetLocal = parameterLocal(targetBody, target.captureParameterIndex(i));
       val argNode = nodeFactory.createNode(expr.getArg(i), methodSignature);
       val targetNode = targetLocal.flatMap(local -> nodeFactory.createNode(local, targetMethodSig));
       if (argNode.isPresent() && targetNode.isPresent()) {
         addPagEdge(argNode.get(), targetNode.get());
       }
     }
+  }
+
+  /** The local holding parameter {@code index}, or the receiver for {@code RECEIVER}. */
+  private static Optional<Local> parameterLocal(Body body, int index) {
+    return index == DynamicInvokeTarget.RECEIVER
+        ? identityLocal(body, ref -> ref instanceof JThisRef)
+        : identityLocal(body, ref -> ref instanceof JParameterRef p && p.getIndex() == index);
   }
 
   private static Optional<Local> identityLocal(Body body, Predicate<Value> rightOp) {

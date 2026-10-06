@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
+import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.constant.ClassConstant;
@@ -166,6 +167,13 @@ public record FunctionalObject(
   @NonNull
   public MethodSignature implementationMethod() {
     return implementation.method();
+  }
+
+  /** The method a call reaches: {@link #implementationMethod()}, dispatched as declared. */
+  @NonNull
+  public MethodSignature dispatchedImplementation(@NonNull View view) {
+    MethodSignature sig = implementationMethod();
+    return AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, sig).orElse(sig);
   }
 
   /**

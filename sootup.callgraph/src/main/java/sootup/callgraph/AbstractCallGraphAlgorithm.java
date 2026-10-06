@@ -543,7 +543,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
     functionalObjects.add(fo);
     onFunctionalObject(creator, fo, cg, frontier.workList);
-    MethodSignature implementation = dispatchedImplementation(fo);
+    MethodSignature implementation = fo.dispatchedImplementation(view);
     Stream.concat(Stream.of(fo.sam()), fo.bridges().stream())
         .flatMap(subSig -> interfaceCalls.getOrDefault(subSig, List.of()).stream())
         .filter(call -> fo.answers(call.called(), typeHierarchy))
@@ -578,15 +578,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .add(new InterfaceCall(sourceMethod, stmt, called));
     for (FunctionalObject fo : List.copyOf(functionalObjects)) {
       if (fo.answers(called, typeHierarchy)) {
-        addResolvedCall(sourceMethod, dispatchedImplementation(fo), stmt, cg, frontier);
+        addResolvedCall(sourceMethod, fo.dispatchedImplementation(view), stmt, cg, frontier);
       }
     }
-  }
-
-  @NonNull
-  private MethodSignature dispatchedImplementation(@NonNull FunctionalObject fo) {
-    MethodSignature sig = fo.implementationMethod();
-    return resolveConcreteDispatch(view, sig).orElse(sig);
   }
 
   /**
