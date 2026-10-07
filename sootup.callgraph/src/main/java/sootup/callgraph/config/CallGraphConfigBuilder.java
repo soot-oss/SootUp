@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.function.Function;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.DefaultCallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
@@ -60,6 +61,9 @@ public final class CallGraphConfigBuilder {
    * family's default onto another changes its behavior silently.
    */
   private Boolean seedEntryPointClinits;
+
+  /** {@code null} means "not explicitly set" - see {@link #reflectionModel}. */
+  private ReflectionModel reflectionModel;
 
   /** {@code null} means "not explicitly set" - see {@link #dynamicInvokeResolver}. */
   private DynamicInvokeResolver dynamicInvokeResolver;
@@ -109,6 +113,17 @@ public final class CallGraphConfigBuilder {
   }
 
   /**
+   * Makes reflective calls explicit before calls are resolved (e.g. {@code
+   * sootup.callgraph.reflection.TamiflexReflectionModel}); unset = {@link ReflectionModel#none()}.
+   * Spark reuses the same instance for its PAG, so its bodies match the CHA graph's.
+   */
+  @NonNull
+  public CallGraphConfigBuilder reflectionModel(@NonNull ReflectionModel reflectionModel) {
+    this.reflectionModel = reflectionModel;
+    return this;
+  }
+
+  /**
    * Decides the targets of invokedynamic call sites (lambdas, method references); unset = {@link
    * DynamicInvokeResolver#bootstrapMethodHandles()}. Qilin keeps its precise {@code
    * LambdaAllocNode} modeling where it applies and falls back to this resolver elsewhere; {@link
@@ -134,6 +149,7 @@ public final class CallGraphConfigBuilder {
         resolvedCallResolver,
         virtualCallResolver,
         seedEntryPointClinits,
+        reflectionModel,
         dynamicInvokeResolver);
   }
 
