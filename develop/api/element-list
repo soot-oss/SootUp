@@ -8,7 +8,6 @@ qilin.core.effect
 qilin.core.invokedynamic
 qilin.core.natives
 qilin.core.pag
-qilin.core.reflection
 qilin.core.solver
 qilin.parm.contextconstruction
 qilin.parm.heapabstraction
@@ -54,6 +53,7 @@ sootup.apk.frontend.Util
 sootup.callgraph
 sootup.callgraph.config
 sootup.callgraph.invokedynamic
+sootup.callgraph.reflection
 sootup.callgraph.scope
 sootup.codepropertygraph.ast
 sootup.codepropertygraph.cdg
