@@ -188,6 +188,7 @@ public class DexMethodBuilder {
       Set<BasicBlock<?>> visitedBlocks = new HashSet<>();
       Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtStart = new HashMap<>();
       Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtEnd = new HashMap<>();
+      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtEndExceptional = new HashMap<>();
 
       while (!worklist.isEmpty()) {
         currentBlock = worklist.pollFirst();
@@ -224,6 +225,7 @@ public class DexMethodBuilder {
               mergeIncomingRegisterMaps(
                   new HashSet<>(predecessors),
                   blockRegisterMapAtEnd,
+                  blockRegisterMapAtEndExceptional,
                   blockRegisterMapAtStart,
                   controlFlowGraph,
                   currentBlock);
@@ -255,6 +257,12 @@ public class DexMethodBuilder {
           Stmt stmt = stmts.get(i);
           log.info("Process stmt: {}", stmt);
           dexStmtVisitor.newStmt();
+
+          if (i == stmts.size() - 1) {
+            log.info("Insert into block register map at end");
+            blockRegisterMapAtEndExceptional.put(
+                currentBlock, new HashMap<>(registerAllocator.getRegisterMap()));
+          }
 
           // insert a monitor-enter if method is synchronized
           // and method does not already begin with a JEnterMonitorStmt
@@ -324,6 +332,13 @@ public class DexMethodBuilder {
         blockRegisterMapAtEnd.put(currentBlock, registerAllocator.getRegisterMap());
         registerAllocator.resetRegisterMap();
 
+        log.info("Locals at end of block exceptional:");
+        blockRegisterMapAtEndExceptional
+            .get(currentBlock)
+            .forEach(
+                (key, value) ->
+                    log.info("{}:{}:{}", key.getName(), value.getNumber(), value.getType()));
+
         // Add successors of the current block to the worklist
         List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
         if (!successors.isEmpty()) {
@@ -344,7 +359,11 @@ public class DexMethodBuilder {
               }
               if (blockRegisterMapAtStart.containsKey(b) && visitedBlocks.contains(b)) {
                 mergeCurrentRegisterMapToSuccessor(
-                    currentBlock, b, blockRegisterMapAtStart, blockRegisterMapAtEnd);
+                    currentBlock,
+                    b,
+                    blockRegisterMapAtStart,
+                    blockRegisterMapAtEnd,
+                    blockRegisterMapAtEndExceptional);
               }
             }
           } else {
@@ -360,7 +379,11 @@ public class DexMethodBuilder {
 
               if (blockRegisterMapAtStart.containsKey(block) && visitedBlocks.contains(block)) {
                 mergeCurrentRegisterMapToSuccessor(
-                    currentBlock, block, blockRegisterMapAtStart, blockRegisterMapAtEnd);
+                    currentBlock,
+                    block,
+                    blockRegisterMapAtStart,
+                    blockRegisterMapAtEnd,
+                    blockRegisterMapAtEndExceptional);
               }
             }
           }
@@ -394,7 +417,11 @@ public class DexMethodBuilder {
                     if (blockRegisterMapAtEnd.containsKey(b) && visitedBlocks.contains(b)) {
                       log.info("Merge current register map to successor");
                       mergeCurrentRegisterMapToSuccessor(
-                          currentBlock, b, blockRegisterMapAtStart, blockRegisterMapAtEnd);
+                          currentBlock,
+                          b,
+                          blockRegisterMapAtStart,
+                          blockRegisterMapAtEnd,
+                          blockRegisterMapAtEndExceptional);
                     }
                   });
         }
@@ -451,15 +478,26 @@ public class DexMethodBuilder {
   private Map<Local, Register> mergeIncomingRegisterMaps(
       Set<BasicBlock<?>> previousBlocks,
       Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtEnd,
+      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtEndExceptional,
       Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtStart,
       ControlFlowGraph<?> controlFlowGraph,
       BasicBlock<?> newBlock) {
 
-    Set<Map<Local, Register>> registerMaps =
-        previousBlocks.stream()
-            .map(blockRegisterMapAtEnd::get)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
+    Set<Map<Local, Register>> registerMaps;
+    if ((newBlock.getStmts().get(0) instanceof JIdentityStmt jIdentityStmt
+        && jIdentityStmt.getRightOp() instanceof JCaughtExceptionRef)) {
+      registerMaps =
+          previousBlocks.stream()
+              .map(blockRegisterMapAtEndExceptional::get)
+              .filter(Objects::nonNull)
+              .collect(Collectors.toSet());
+    } else {
+      registerMaps =
+          previousBlocks.stream()
+              .map(blockRegisterMapAtEnd::get)
+              .filter(Objects::nonNull)
+              .collect(Collectors.toSet());
+    }
 
     // Consider locals that are included in all predecessors
     Set<Local> locals =
@@ -490,8 +528,7 @@ public class DexMethodBuilder {
           registerMaps.stream().map(m -> m.get(local)).filter(Objects::nonNull).toList();
 
       // if a local has the same register in all registerMaps, there is nothing to do
-      List<Register> finalRegs = regs;
-      if (regs.stream().allMatch(r -> r.equals(finalRegs.get(0)))) {
+      if (regs.stream().allMatch(r -> r.equals(regs.get(0)))) {
         // result.put(local, regs.get(0));
         // continue;
       }
@@ -504,36 +541,6 @@ public class DexMethodBuilder {
       // a local has different types in different registerMap
       Type objectType = view.getIdentifierFactory().getClassType(JIMPLE_OBJECT_TYPE);
 
-      if ((newBlock.getStmts().get(0) instanceof JIdentityStmt jIdentityStmt
-          && jIdentityStmt.getRightOp() instanceof JCaughtExceptionRef)) {
-        // consider only those registers that were not assigned at the last statement of the
-        // previous block
-        registerMaps =
-            previousBlocks.stream()
-                .filter(
-                    b ->
-                        !(b.getStmts().get(b.getStmts().size() - 1).getDef().isPresent()
-                            && b.getStmts()
-                                .get(b.getStmts().size() - 1)
-                                .getDef()
-                                .get()
-                                .equals(local)))
-                .map(blockRegisterMapAtEnd::get)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-        regs = registerMaps.stream().map(m -> m.get(local)).filter(Objects::nonNull).toList();
-
-        if (registerMaps.isEmpty()) {
-          registerMaps =
-              previousBlocks.stream()
-                  .map(blockRegisterMapAtEnd::get)
-                  .filter(Objects::nonNull)
-                  .collect(Collectors.toSet());
-          regs = registerMaps.stream().map(m -> m.get(local)).filter(Objects::nonNull).toList();
-        }
-      }
-
-      List<Register> finalRegs1 = regs;
       Register newRegister =
           regs.stream()
               .filter(
@@ -544,14 +551,14 @@ public class DexMethodBuilder {
               .orElseGet(
                   () -> {
                     List<Register> intRegisters =
-                        finalRegs1.stream()
+                        regs.stream()
                             .filter(reg -> reg.getType().equals(PrimitiveType.getInt()))
                             .toList();
                     return intRegisters.stream()
                         .findFirst()
                         .orElseGet(
                             () ->
-                                finalRegs1.stream()
+                                regs.stream()
                                     .filter(reg -> reg.getType().equals(objectType))
                                     .findFirst()
                                     .orElseThrow());
@@ -578,13 +585,11 @@ public class DexMethodBuilder {
       } else {
         for (BasicBlock<?> block : previousBlocks) {
           log.info("Exceptional block: {}", block);
-          Map<Local, Register> localRegisterMap = blockRegisterMapAtEnd.get(block);
+          Map<Local, Register> localRegisterMap = blockRegisterMapAtEndExceptional.get(block);
           if (localRegisterMap == null) {
             log.info("local register map is null");
             continue;
           }
-          // TODO the current new register is based on the blockRegisterMapAtEnd. If an exception
-          // occurs before, and the TYPE of the variable is changed after, the merge will not work
           addExceptionalMoves(local, block, newRegister, blockRegisterMapAtStart);
         }
       }
@@ -624,9 +629,17 @@ public class DexMethodBuilder {
       BasicBlock<?> cBlock,
       BasicBlock<?> successorBlock,
       Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapStart,
-      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapEnd) {
+      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapEnd,
+      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapEndExceptional) {
 
-    Map<Local, Register> registerMapCurrent = blockRegisterMapEnd.get(cBlock);
+    Map<Local, Register> registerMapCurrent;
+    if (!(successorBlock.getStmts().get(0) instanceof JIdentityStmt jIdentityStmt
+        && jIdentityStmt.getRightOp() instanceof JCaughtExceptionRef)) {
+      registerMapCurrent = blockRegisterMapEnd.get(cBlock);
+    } else {
+      registerMapCurrent = blockRegisterMapEndExceptional.get(cBlock);
+    }
+
     Map<Local, Register> registerMapSuccessor = blockRegisterMapStart.get(successorBlock);
 
     Set<Local> locals = registerMapCurrent.keySet();
@@ -649,7 +662,7 @@ public class DexMethodBuilder {
 
       if (!(successorBlock.getStmts().get(0) instanceof JIdentityStmt jIdentityStmt
           && jIdentityStmt.getRightOp() instanceof JCaughtExceptionRef)) {
-        if (register == registerSuccessor) {
+        if (register.equals(registerSuccessor)) {
           continue;
         }
 
@@ -730,6 +743,10 @@ public class DexMethodBuilder {
       }
       var ins = instructions.get(block).get(ins_index);
       Stmt stmt = instructionMap.get(ins);
+      if (instructionMap.get(instructions.get(block).get(ins_index + 1)) != null
+          && instructionMap.get(instructions.get(block).get(ins_index + 1)).equals(stmt)) {
+        continue;
+      }
       if (stmt != null && stmt.getDef().isPresent() && stmt.getDef().get().equals(local)) {
         // move to successor register
         List<Register> defRegisters = ins.getDefRegisters();
