@@ -30,14 +30,13 @@ import qilin.core.effect.NativeEffectModel;
 import qilin.core.effect.ReflectionEffectModel;
 import qilin.core.invokedynamic.LambdaMetafactoryModel;
 import qilin.core.natives.NativeMethodDriver;
-import qilin.core.reflection.NopReflectionModel;
-import qilin.core.reflection.ReflectionModel;
-import qilin.core.reflection.TamiflexModel;
 import qilin.util.ArrayNumberer;
 import qilin.util.JavaTypes;
 import qilin.util.Triple;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
+import sootup.callgraph.reflection.ReflectionModel;
+import sootup.callgraph.reflection.TamiflexReflectionModel;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -71,6 +70,7 @@ import sootup.java.core.language.JavaJimple;
  */
 public class PAG {
   protected final List<MethodEffectModel> effectModels;
+  protected final ReflectionModel reflectionModel;
 
   // ========================= context-sensitive nodes =================================
   protected final Map<VarNode, Map<Context, ContextVarNode>> contextVarNodeMap;
@@ -131,7 +131,8 @@ public class PAG {
     this.store = new HashMap<>();
     this.storeInv = new HashMap<>();
     List<MethodEffectModel> effectModels = new ArrayList<>();
-    effectModels.add(new ReflectionEffectModel(createReflectionModel()));
+    this.reflectionModel = createReflectionModel();
+    effectModels.add(new ReflectionEffectModel(reflectionModel, pta.getScene(), this));
     effectModels.add(new NativeEffectModel(new NativeMethodDriver(pta.getScene(), this)));
     if (pta.getConfig().isResolveDynamicInvoke()) {
       effectModels.add(
@@ -361,8 +362,7 @@ public class PAG {
       View view = pta.getView();
       Optional<? extends SootClass> osc = view.getClass(rt);
       if (osc.isPresent() && osc.get().isAbstract()) {
-        boolean usesReflectionLog = pta.getConfig().getReflectionLogPath() != null;
-        if (!usesReflectionLog) {
+        if (reflectionModel.isNone()) {
           throw new RuntimeException("Attempt to create allocnode with abstract type " + rt);
         }
       }
@@ -577,14 +577,15 @@ public class PAG {
   }
 
   protected ReflectionModel createReflectionModel() {
-    ReflectionModel model;
-    String reflectionLogPath = pta.getConfig().getReflectionLogPath();
-    if (reflectionLogPath != null && reflectionLogPath.length() > 0) {
-      model = new TamiflexModel(pta.getScene(), this);
-    } else {
-      model = new NopReflectionModel(pta.getScene(), this);
+    ReflectionModel configured = pta.getConfig().getReflectionModel();
+    if (configured != null) {
+      return configured;
     }
-    return model;
+    String reflectionLogPath = pta.getConfig().getReflectionLogPath();
+    if (reflectionLogPath != null && !reflectionLogPath.isEmpty()) {
+      return new TamiflexReflectionModel(pta.getView(), reflectionLogPath);
+    }
+    return ReflectionModel.none();
   }
 
   public MethodPAG getMethodPAG(SootMethod m) {

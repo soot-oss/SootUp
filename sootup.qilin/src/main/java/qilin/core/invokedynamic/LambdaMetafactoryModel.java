@@ -42,9 +42,10 @@ import sootup.core.types.ClassType;
  * and every static method reference. Splices in a synthetic allocation of the functional-interface
  * type (registered with {@link PAG#registerLambdaTarget} so it becomes a {@link
  * qilin.core.pag.LambdaAllocNode} instead of a plain one) before the original invokedynamic
- * statement, which is left untouched - mirroring how {@link qilin.core.reflection.ReflectionModel}
- * augments rather than replaces the original call. Calls on that object then dispatch straight to
- * the target, with the functional interface's arguments bound.
+ * statement, which is left untouched - mirroring how {@link
+ * sootup.callgraph.reflection.ReflectionModel} augments rather than replaces the original call.
+ * Calls on that object then dispatch straight to the target, with the functional interface's
+ * arguments bound.
  *
  * <p>All other targets (captured values, instance/constructor refs) are called from the
  * invokedynamic statement itself, like CHA/RTA/Spark do - see {@code
