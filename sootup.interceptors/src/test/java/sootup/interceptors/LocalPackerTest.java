@@ -35,7 +35,7 @@ class LocalPackerTest {
     graph.putEdge(init, add);
     graph.putEdge(add, ret);
     graph.setStartingStmt(init);
-    var factory = JavaIdentifierFactory.getInstance();
+    var factory = new JavaIdentifierFactory();
     var builder =
         Body.builder(graph)
             .setLocals(new LinkedHashSet<>(List.of(first, second)))
