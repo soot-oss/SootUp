@@ -35,6 +35,7 @@ import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
+import sootup.callgraph.reflection.ReflectionModel;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -66,6 +67,9 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   CallGraph callGraph;
   View view;
   NodeFactory nodeFactory;
+
+  /** Must be the model the call graph was built with, so callee bodies match its edges. */
+  @Builder.Default ReflectionModel reflectionModel = ReflectionModel.none();
 
   /** Must be the resolver the call graph was built with, so invokedynamic edges match. */
   @Builder.Default
@@ -213,7 +217,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
     if (expr instanceof AbstractInstanceInvokeExpr instanceExpr) {
       val baseNode = nodeFactory.createNode(instanceExpr.getBase(), methodSignature);
       val thisLocal =
-          sootMethod.getBody().getStmts().stream()
+          body(sootMethod).getStmts().stream()
               .filter(s -> s instanceof JIdentityStmt)
               .map(s -> (JIdentityStmt) s)
               .filter(s -> s.getRightOp() instanceof JThisRef)
@@ -229,7 +233,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
       val argNode = nodeFactory.createNode(expr.getArg(i), methodSignature);
       final int index = i;
       val paramLocal =
-          sootMethod.getBody().getStmts().stream()
+          body(sootMethod).getStmts().stream()
               .filter(s -> s instanceof JIdentityStmt)
               .map(s -> (JIdentityStmt) s)
               .filter(s -> s.getRightOp() instanceof JParameterRef)
@@ -245,7 +249,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
     lhs.flatMap(l -> nodeFactory.createNode(l, methodSignature))
         .ifPresent(
             lhsNode ->
-                sootMethod.getBody().getStmts().stream()
+                body(sootMethod).getStmts().stream()
                     .filter(s -> s instanceof JReturnStmt)
                     .map(s -> (JReturnStmt) s)
                     .forEach(
@@ -253,6 +257,10 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
                             nodeFactory
                                 .createNode(returnStmt.getOp(), targetMethodSig)
                                 .ifPresent(retOpNode -> addPagEdge(retOpNode, lhsNode))));
+  }
+
+  private Body body(SootMethod method) {
+    return reflectionModel.resolve(method, method.getBody());
   }
 
   /** The concrete implementation of {@code target}, matching CHA's invokedynamic edges. */
@@ -271,7 +279,7 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
     Optional<? extends SootMethod> sootMethodOpt =
         view.getMethod(targetMethodSig).filter(SootMethod::hasBody);
     if (sootMethodOpt.isEmpty()) return;
-    Body targetBody = sootMethodOpt.get().getBody();
+    Body targetBody = body(sootMethodOpt.get());
     for (int i = 0; i < expr.getArgCount(); i++) {
       int paramIndex = target.captureParameterIndex(i);
       Optional<Local> targetLocal =
