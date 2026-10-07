@@ -19,6 +19,7 @@
 package qilin.core.config;
 
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.VirtualCallResolver;
 
 /**
@@ -57,6 +58,7 @@ public final class PointerAnalysisConfig {
   private final boolean preciseExceptions;
   private final boolean enforceEmptyContextForIgnoreTypes;
   private final String reflectionLogPath;
+  private final ReflectionModel reflectionModel;
   private final boolean resolveDynamicInvoke;
   private final DynamicInvokeResolver dynamicInvokeResolver;
   private final boolean preAnalysisOnly;
@@ -81,6 +83,7 @@ public final class PointerAnalysisConfig {
     this.preciseExceptions = b.preciseExceptions;
     this.enforceEmptyContextForIgnoreTypes = b.enforceEmptyContextForIgnoreTypes;
     this.reflectionLogPath = b.reflectionLogPath;
+    this.reflectionModel = b.reflectionModel;
     this.resolveDynamicInvoke = b.resolveDynamicInvoke;
     this.dynamicInvokeResolver = b.dynamicInvokeResolver;
     this.preAnalysisOnly = b.preAnalysisOnly;
@@ -160,6 +163,15 @@ public final class PointerAnalysisConfig {
   }
 
   /**
+   * Explicit reflection model, or {@code null} if none was set - then {@link
+   * #getReflectionLogPath()} (if any) is resolved via {@link
+   * sootup.callgraph.reflection.TamiflexReflectionModel}.
+   */
+  public ReflectionModel getReflectionModel() {
+    return reflectionModel;
+  }
+
+  /**
    * Whether to resolve invokedynamic call sites (lambdas and method references) to their target
    * method(s), as decided by {@link #getDynamicInvokeResolver()}. Unlike reflection resolution this
    * needs no external log - the target is a constant in the bootstrap args - so it defaults to
@@ -230,6 +242,7 @@ public final class PointerAnalysisConfig {
     private boolean preciseExceptions = false;
     private boolean enforceEmptyContextForIgnoreTypes = false;
     private String reflectionLogPath = null;
+    private ReflectionModel reflectionModel = null;
     private boolean resolveDynamicInvoke = true;
     private DynamicInvokeResolver dynamicInvokeResolver =
         DynamicInvokeResolver.bootstrapMethodHandles();
@@ -293,6 +306,12 @@ public final class PointerAnalysisConfig {
 
     public Builder reflectionLogPath(String reflectionLogPath) {
       this.reflectionLogPath = reflectionLogPath;
+      return this;
+    }
+
+    /** Shared call-graph reflection model; takes precedence over {@link #reflectionLogPath}. */
+    public Builder reflectionModel(ReflectionModel reflectionModel) {
+      this.reflectionModel = reflectionModel;
       return this;
     }
 

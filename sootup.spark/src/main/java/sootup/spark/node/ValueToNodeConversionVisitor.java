@@ -125,7 +125,8 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseCastExpr(@NonNull JCastExpr expr) {
-    ignore(expr);
+    // x = (T) y: pointer flows from y unchanged (no type filtering)
+    expr.getOp().accept(this);
   }
 
   @Override
