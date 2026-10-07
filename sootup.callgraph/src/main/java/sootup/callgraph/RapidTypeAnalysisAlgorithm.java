@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph.Call;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
@@ -172,12 +173,14 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
         callResolver,
         virtualCallResolver,
         seedEntryPointClinits,
-        ReflectionModel.none());
+        ReflectionModel.none(),
+        DynamicInvokeResolver.bootstrapMethodHandles());
   }
 
   /**
-   * Widest RTA constructor: additionally takes a {@link ReflectionModel}; classes it instantiates
-   * reflectively (e.g. {@code Class.newInstance}) count as instantiated.
+   * Like {@link #RapidTypeAnalysisAlgorithm(View, Set, CallResolver, VirtualCallResolver,
+   * boolean)}, plus a {@link ReflectionModel}; classes it instantiates reflectively (e.g. {@code
+   * Class.newInstance}) count as instantiated.
    */
   public RapidTypeAnalysisAlgorithm(
       @NonNull View view,
@@ -186,7 +189,58 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       @NonNull VirtualCallResolver virtualCallResolver,
       boolean seedEntryPointClinits,
       @NonNull ReflectionModel reflectionModel) {
-    super(view, callResolver, virtualCallResolver, seedEntryPointClinits, reflectionModel);
+    this(
+        view,
+        preInstantiatedClasses,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        reflectionModel,
+        DynamicInvokeResolver.bootstrapMethodHandles());
+  }
+
+  /**
+   * Like {@link #RapidTypeAnalysisAlgorithm(View, Set, CallResolver, VirtualCallResolver,
+   * boolean)}, plus a {@link DynamicInvokeResolver} deciding the targets of invokedynamic call
+   * sites.
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull Set<ClassType> preInstantiatedClasses,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
+    this(
+        view,
+        preInstantiatedClasses,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        ReflectionModel.none(),
+        dynamicInvokeResolver);
+  }
+
+  /**
+   * Widest RTA constructor: additionally takes a {@link ReflectionModel} (classes it instantiates
+   * reflectively, e.g. {@code Class.newInstance}, count as instantiated) and a {@link
+   * DynamicInvokeResolver} deciding the targets of invokedynamic call sites.
+   */
+  public RapidTypeAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull Set<ClassType> preInstantiatedClasses,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
+    super(
+        view,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        reflectionModel,
+        dynamicInvokeResolver);
     this.instantiatedClasses = new HashSet<>(preInstantiatedClasses);
   }
 

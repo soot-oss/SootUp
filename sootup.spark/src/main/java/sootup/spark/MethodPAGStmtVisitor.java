@@ -24,14 +24,19 @@ package sootup.spark;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.callgraph.reflection.ReflectionModel;
+import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -65,6 +70,10 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
 
   /** Must be the model the call graph was built with, so callee bodies match its edges. */
   @Builder.Default ReflectionModel reflectionModel = ReflectionModel.none();
+
+  /** Must be the resolver the call graph was built with, so invokedynamic edges match. */
+  @Builder.Default
+  DynamicInvokeResolver dynamicInvokeResolver = DynamicInvokeResolver.bootstrapMethodHandles();
 
   /** Captured invoke site whose targets are decided by the OTF builder via points-to. */
   public record PendingVirtualCall(
@@ -137,6 +146,15 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
       handleInvokeExprOtf(expr, lhs, stmt);
       return;
     }
+    if (expr instanceof JDynamicInvokeExpr dynamicInvokeExpr) {
+      for (DynamicInvokeTarget target : dynamicInvokeResolver.resolve(dynamicInvokeExpr)) {
+        MethodSignature targetSig = dispatch(target);
+        if (callGraph.containsCall(methodSignature, targetSig, stmt)) {
+          installCaptureEdges(dynamicInvokeExpr, target, targetSig);
+        }
+      }
+      return;
+    }
     callGraph.callTargetsFrom(methodSignature).stream()
         .filter(
             targetMethodSig ->
@@ -155,16 +173,16 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
       addOtfCallEdge(targetSig, stmt);
       return;
     }
-    if (expr instanceof JDynamicInvokeExpr) {
-      // invokedynamic call sites (lambdas, method references, string-concat factories) have no
-      // dispatch receiver to defer resolution on -- they are not virtual calls in the
-      // AbstractInstanceInvokeExpr sense, so they must not be queued as a PendingVirtualCall
-      // (Solver.solveOnTheFly force-casts every pending call's expr to
-      // AbstractInstanceInvokeExpr to read the receiver, which throws a ClassCastException for
-      // these). CHA-mode call graph construction does not resolve invokedynamic targets either
-      // (see ClassHierarchyAnalysisAlgorithm.resolveCall, which returns Stream.empty() for
-      // JDynamicInvokeExpr), so skipping here keeps OTF mode's treatment consistent with CHA
-      // mode instead of crashing.
+    if (expr instanceof JDynamicInvokeExpr dynamicInvokeExpr) {
+      // invokedynamic call sites have no dispatch receiver to defer resolution on, so they must
+      // not be queued as a PendingVirtualCall (Solver.solveOnTheFly casts every pending call's
+      // expr to AbstractInstanceInvokeExpr). Their targets are fixed by the bootstrap arguments,
+      // resolved exactly as CHA mode does.
+      for (DynamicInvokeTarget target : dynamicInvokeResolver.resolve(dynamicInvokeExpr)) {
+        MethodSignature targetSig = dispatch(target);
+        installCaptureEdges(dynamicInvokeExpr, target, targetSig);
+        addOtfCallEdge(targetSig, stmt);
+      }
       return;
     }
     // Virtual or interface invoke: defer until the receiver's points-to set is known.
@@ -243,5 +261,46 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
 
   private Body body(SootMethod method) {
     return reflectionModel.resolve(method, method.getBody());
+  }
+
+  /** The concrete implementation of {@code target}, matching CHA's invokedynamic edges. */
+  private MethodSignature dispatch(DynamicInvokeTarget target) {
+    return AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, target.method())
+        .orElse(target.method());
+  }
+
+  /**
+   * Binds the values an invokedynamic call site captures to the receiver/parameters of its target
+   * (see {@link DynamicInvokeTarget#captureParameterIndex(int)}). No return edge: the call site
+   * yields the functional object, not the target's result.
+   */
+  private void installCaptureEdges(
+      JDynamicInvokeExpr expr, DynamicInvokeTarget target, MethodSignature targetMethodSig) {
+    Optional<? extends SootMethod> sootMethodOpt =
+        view.getMethod(targetMethodSig).filter(SootMethod::hasBody);
+    if (sootMethodOpt.isEmpty()) return;
+    Body targetBody = body(sootMethodOpt.get());
+    for (int i = 0; i < expr.getArgCount(); i++) {
+      int paramIndex = target.captureParameterIndex(i);
+      Optional<Local> targetLocal =
+          paramIndex == DynamicInvokeTarget.RECEIVER
+              ? identityLocal(targetBody, ref -> ref instanceof JThisRef)
+              : identityLocal(
+                  targetBody, ref -> ref instanceof JParameterRef p && p.getIndex() == paramIndex);
+      val argNode = nodeFactory.createNode(expr.getArg(i), methodSignature);
+      val targetNode = targetLocal.flatMap(local -> nodeFactory.createNode(local, targetMethodSig));
+      if (argNode.isPresent() && targetNode.isPresent()) {
+        addPagEdge(argNode.get(), targetNode.get());
+      }
+    }
+  }
+
+  private static Optional<Local> identityLocal(Body body, Predicate<Value> rightOp) {
+    return body.getStmts().stream()
+        .filter(s -> s instanceof JIdentityStmt)
+        .map(s -> (JIdentityStmt) s)
+        .filter(s -> rightOp.test(s.getRightOp()))
+        .map(JIdentityStmt::getLeftOp)
+        .findFirst();
   }
 }
