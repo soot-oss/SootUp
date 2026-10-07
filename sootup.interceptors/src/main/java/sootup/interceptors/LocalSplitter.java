@@ -32,17 +32,22 @@ import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.BooleanConstant;
+import sootup.core.jimple.common.constant.DoubleConstant;
+import sootup.core.jimple.common.constant.FloatConstant;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.constant.NumericConstant;
+import sootup.core.jimple.common.expr.AbstractBinopExpr;
 import sootup.core.jimple.common.expr.JAddExpr;
 import sootup.core.jimple.common.expr.JAndExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JCmpExpr;
 import sootup.core.jimple.common.expr.JCmpgExpr;
 import sootup.core.jimple.common.expr.JCmplExpr;
+import sootup.core.jimple.common.expr.JDivExpr;
 import sootup.core.jimple.common.expr.JMulExpr;
 import sootup.core.jimple.common.expr.JNegExpr;
 import sootup.core.jimple.common.expr.JOrExpr;
+import sootup.core.jimple.common.expr.JRemExpr;
 import sootup.core.jimple.common.expr.JShlExpr;
 import sootup.core.jimple.common.expr.JShrExpr;
 import sootup.core.jimple.common.expr.JSubExpr;
@@ -542,7 +547,15 @@ public class LocalSplitter implements BodyInterceptor {
       // a primitive conversion cannot throw, a reference cast can
       return !(value.getType() instanceof PrimitiveType);
     }
-    // arithmetic, logic, shifts and comparisons of immediates: only division and remainder throw
+    if (value instanceof JDivExpr || value instanceof JRemExpr) {
+      // only integer division throws. A Local's type cannot tell which one this is: before the
+      // TypeAssigner it may be unknown, or the type of another value its register held. A float or
+      // double constant operand can, as both operands have the same type.
+      AbstractBinopExpr division = (AbstractBinopExpr) value;
+      return !(isFloatingPointConstant(division.getOp1())
+          || isFloatingPointConstant(division.getOp2()));
+    }
+    // other arithmetic, logic, shifts and comparisons of immediates cannot throw
     return !(value instanceof JAddExpr
         || value instanceof JSubExpr
         || value instanceof JMulExpr
@@ -556,6 +569,10 @@ public class LocalSplitter implements BodyInterceptor {
         || value instanceof JCmpExpr
         || value instanceof JCmplExpr
         || value instanceof JCmpgExpr);
+  }
+
+  private static boolean isFloatingPointConstant(Value value) {
+    return value instanceof FloatConstant || value instanceof DoubleConstant;
   }
 
   @NonNull Map<Local, List<Integer>> groupAssignmentsByLocal(List<Stmt> statements) {

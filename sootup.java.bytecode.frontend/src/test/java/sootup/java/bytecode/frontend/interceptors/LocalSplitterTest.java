@@ -522,6 +522,76 @@ public class LocalSplitterTest {
   }
 
   /**
+   * Floating-point division cannot throw, and the constant divisor shows that {@code a / 2.0f} is
+   * one: the handler is only entered from work(), after the division, so it returns l1#1.
+   */
+  @Test
+  public void testFloatDivisionByAConstantCannotThrow() {
+    Body.BodyBuilder builder =
+        Body.builder(getExceptionsBody("floatDivisionByConstant"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
+
+    String expectedStmts =
+        "this := @this: LocalSplitterExceptionsTarget;\n"
+            + "l1#0 := @parameter0: float;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#1 = l1#0 / 2.0F;\n"
+            + "staticinvoke <LocalSplitterExceptionsTarget: void work()>();\n"
+            + "\n"
+            + "label2:\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "$stack3 := @caughtexception;\n"
+            + "l2 = $stack3;\n"
+            + "\n"
+            + "return l1#1;\n"
+            + "\n"
+            + "label4:\n"
+            + "return l1#1;\n"
+            + "\n"
+            + " catch java.lang.RuntimeException from label1 to label2 with label3;";
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
+  }
+
+  /**
+   * {@code a / b} divides two locals. Their types say float, but a local's type cannot be trusted
+   * before typing, so the division counts as one that can throw: the handler may see either a, and
+   * l1 is not split.
+   */
+  @Test
+  public void testDivisionOfLocalsCanThrow() {
+    Body.BodyBuilder builder =
+        Body.builder(getExceptionsBody("floatDivisionByLocal"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
+
+    String expectedStmts =
+        "this := @this: LocalSplitterExceptionsTarget;\n"
+            + "l1 := @parameter0: float;\n"
+            + "l2 := @parameter1: float;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1 = l1 / l2;\n"
+            + "staticinvoke <LocalSplitterExceptionsTarget: void work()>();\n"
+            + "\n"
+            + "label2:\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "$stack4 := @caughtexception;\n"
+            + "l3 = $stack4;\n"
+            + "\n"
+            + "return l1;\n"
+            + "\n"
+            + "label4:\n"
+            + "return l1;\n"
+            + "\n"
+            + " catch java.lang.RuntimeException from label1 to label2 with label3;";
+    assertEquals(expectedStmts, builder.getControlFlowGraph().toString().trim());
+  }
+
+  /**
    * The same with catch (Error): a VirtualMachineError can be thrown asynchronously before a = 2
    * completes (JLS 11.1.3), so the handler may see 1 or 2, and l1 is not split.
    */

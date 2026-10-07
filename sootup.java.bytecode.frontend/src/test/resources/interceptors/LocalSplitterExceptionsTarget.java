@@ -54,4 +54,26 @@ public class LocalSplitterExceptionsTarget {
     }
     return a;
   }
+
+  /** a / 2.0f cannot throw: the handler is only entered from work(), after the division. */
+  float floatDivisionByConstant(float a) {
+    try {
+      a = a / 2.0f;
+      work();
+    } catch (RuntimeException e) {
+      return a;
+    }
+    return a;
+  }
+
+  /** The divisor is a local, whose type cannot be trusted before typing: the division can throw. */
+  float floatDivisionByLocal(float a, float b) {
+    try {
+      a = a / b;
+      work();
+    } catch (RuntimeException e) {
+      return a;
+    }
+    return a;
+  }
 }
