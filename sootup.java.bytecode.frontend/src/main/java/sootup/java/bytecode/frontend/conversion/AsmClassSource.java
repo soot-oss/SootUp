@@ -79,7 +79,10 @@ class AsmClassSource extends JavaSootClassSource {
                           convertAnnotation(fieldNode.visibleAnnotations, signatureFactory),
                           convertAnnotation(fieldNode.invisibleAnnotations, signatureFactory))
                       .collect(Collectors.toList()),
-                  NoPositionInformation.getInstance());
+                  NoPositionInformation.getInstance(),
+                  fieldNode.value == null
+                      ? null
+                      : ConstantUtil.fromObject(fieldNode.value, signatureFactory));
             })
         .collect(Collectors.toSet());
   }
