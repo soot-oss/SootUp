@@ -8,7 +8,7 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.JavaTypes;
 import qilin.util.Stopwatch;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.Local;
@@ -75,7 +75,7 @@ public class XUtility {
   }
 
   private boolean isImpreciseType(Type type) {
-    if (type == PTAUtils.getClassType("java.lang.Object")) {
+    if (type == JavaTypes.OBJECT) {
       return true;
     }
     if (type instanceof ClassType) {
@@ -151,11 +151,11 @@ public class XUtility {
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
     Set<FieldRefNode> stores = new HashSet<>();
     Set<FieldRefNode> loads = new HashSet<>();
-    Set<Node> thisAliases = new HashSet<>();
+    Set<PagNode> thisAliases = new HashSet<>();
     thisAliases.add(thisRef);
-    QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+    QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
     while (reader.hasNext()) {
-      Node from = reader.next(), to = reader.next();
+      PagNode from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
         if (to instanceof FieldRefNode) {
           FieldRefNode frn = (FieldRefNode) to;
@@ -209,7 +209,7 @@ public class XUtility {
 
   private void buildHeapFieldsMapping() {
     pta.getNakedReachableMethods().stream()
-        .filter(PTAUtils::hasBody)
+        .filter(pag::hasBody)
         .forEach(this::buildHeapFieldsMappingIn);
   }
 
@@ -221,7 +221,7 @@ public class XUtility {
     for (Edge edge : callgraph) {
       SootMethod srcM = edge.src();
       SootMethod tgtM = edge.tgt();
-      if (tgtM.isStatic() || !PTAUtils.hasBody(tgtM)) {
+      if (tgtM.isStatic() || !pag.hasBody(tgtM)) {
         continue;
       }
       final InvokableStmt s = edge.srcStmt();
@@ -308,13 +308,13 @@ public class XUtility {
       } else {
         ret = this.t2Fields.computeIfAbsent(refType, k -> new HashSet<>());
         for (AllocNode heap : this.o2Fields.keySet()) {
-          if (PTAUtils.canStoreType(pta.getView(), heap.getType(), refType)) {
+          if (JavaTypes.canStoreType(pta.getView(), heap.getType(), refType)) {
             for (SparkField sparkField : this.o2Fields.get(heap)) {
-              if (sparkField instanceof Field) {
-                Field f = (Field) sparkField;
+              if (sparkField instanceof ConcreteField) {
+                ConcreteField f = (ConcreteField) sparkField;
                 SootField sf = f.getField();
                 Type declType = sf.getDeclaringClassType();
-                if (PTAUtils.canStoreType(pta.getView(), type, declType)) {
+                if (JavaTypes.canStoreType(pta.getView(), type, declType)) {
                   ret.add(sparkField);
                 }
               } else {

@@ -22,8 +22,6 @@ package sootup.java.core;
  * #L%
  */
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -32,11 +30,13 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.ClassUtils;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
+import sootup.core.jimple.JimpleUtils;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
+import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.NullType;
@@ -51,11 +51,10 @@ import sootup.java.core.types.JavaClassType;
  */
 public class JavaIdentifierFactory implements IdentifierFactory {
 
-  @NonNull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
-
   @NonNull
   public static final MethodSubSignature STATIC_INITIALIZER =
-      new MethodSubSignature("<clinit>", Collections.emptyList(), VoidType.getInstance());
+      SignatureInterner.getMethodSubSignature(
+          "<clinit>", VoidType.getInstance(), Collections.emptyList());
 
   @NonNull
   private static final Pattern SOOT_FIELD_SUB_SIGNATURE_PATTERN =
@@ -65,27 +64,15 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   private static final Pattern JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN =
       Pattern.compile("^#(?<field>[^(]+):(?<type>.+)$");
 
-  /** Caches the created PackageNames for packages. */
-  @NonNull
-  protected final Cache<String, PackageName> packageCache =
-      CacheBuilder.newBuilder().weakValues().build();
-
-  /** Caches class types */
-  @NonNull
-  protected final Cache<String, JavaClassType> classTypeCache =
-      CacheBuilder.newBuilder().weakValues().build();
-
   @NonNull
   protected final Map<String, PrimitiveType> primitiveTypeMap = Maps.newHashMapWithExpectedSize(8);
 
-  public static JavaIdentifierFactory getInstance() {
-    return INSTANCE;
-  }
-
-  JavaIdentifierFactory() {
-    /* Represents the default package. */
-    packageCache.put(PackageName.DEFAULT_PACKAGE.getName(), PackageName.DEFAULT_PACKAGE);
-
+  /**
+   * Creates an identifier factory. Obtain one from {@link
+   * sootup.core.views.View#getIdentifierFactory()} rather than constructing it directly, so that
+   * the factory shares the lifetime of the {@link sootup.java.core.views.JavaView} that uses it.
+   */
+  public JavaIdentifierFactory() {
     // initialize primitive map
     primitiveTypeMap.put(
         PrimitiveType.LongType.getInstance().getName(), PrimitiveType.LongType.getInstance());
@@ -106,8 +93,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   }
 
   /**
-   * Always creates a new ClassSignature. In opposite to PackageSignatures, ClassSignatures are not
-   * cached because the are unique per class, and thus reusing them does not make sense.
+   * Returns a unique ClassType. The method looks up a cache if it already contains a ClassType with
+   * the given name/package. If the cache lookup fails a new ClassType is created. This lets callers
+   * compare ClassTypes with {@code ==}.
    *
    * @param className the simple class name
    * @param packageName the Java package name; must not be null use empty string for the default
@@ -118,11 +106,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    */
   @Override
   public JavaClassType getClassType(final String className, final String packageName) {
-    PackageName packageIdentifier = getPackageName(packageName);
-    return classTypeCache
-        .asMap()
-        .computeIfAbsent(
-            className + packageName, (k) -> new JavaClassType(className, packageIdentifier));
+    return JavaClassType.of(className, getPackageName(packageName));
   }
 
   /**
@@ -234,7 +218,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    */
   @Override
   public PackageName getPackageName(@NonNull final String packageName) {
-    return packageCache.asMap().computeIfAbsent(packageName, PackageName::new);
+    return SignatureInterner.getPackageName(packageName);
   }
 
   /**
@@ -259,7 +243,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       Type parameterSignature = getType(fqParameterName);
       parameterSignatures.add(parameterSignature);
     }
-    return new MethodSignature(declaringClass, methodName, parameterSignatures, returnType);
+    return getMethodSignature(
+        declaringClass, getMethodSubSignature(methodName, returnType, parameterSignatures));
   }
 
   /**
@@ -283,8 +268,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       Type parameterSignature = getType(fqParameterName);
       parameterSignatures.add(parameterSignature);
     }
-    return new MethodSignature(
-        declaringClassSignature, methodName, parameterSignatures, returnType);
+    return getMethodSignature(
+        declaringClassSignature,
+        getMethodSubSignature(methodName, returnType, parameterSignatures));
   }
 
   @Override
@@ -293,15 +279,19 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       final String methodName,
       final Type fqReturnType,
       final List<Type> parameters) {
-
-    return new MethodSignature(declaringClassSignature, methodName, parameters, fqReturnType);
+    return getMethodSignature(
+        declaringClassSignature, getMethodSubSignature(methodName, fqReturnType, parameters));
   }
 
+  /**
+   * Always returns the same, hash-consed MethodSignature for equal (declaringClass, subSignature)
+   * pairs, so callers may compare MethodSignatures with {@code ==}.
+   */
   @Override
   @NonNull
   public MethodSignature getMethodSignature(
       @NonNull ClassType declaringClassSignature, @NonNull MethodSubSignature subSignature) {
-    return new MethodSignature(declaringClassSignature, subSignature);
+    return SignatureInterner.getMethodSignature(declaringClassSignature, subSignature);
   }
 
   private static final class MethodSignatureParserPatternHolder {
@@ -370,7 +360,12 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     }
 
     String className = matcher.group("class").trim();
-    String methodName = matcher.group("method").trim();
+    // Unescape quotes from parsed method name.
+    // Reserved Jimple keyword names (e.g. 'from', 'to', 'default') are printed with single quotes
+    // in signatures to satisfy Jimple grammar. When parsing back into a MethodSignature, the quotes
+    // must be stripped so that getName() returns the actual member name ("from") matching class
+    // declarations.
+    String methodName = JimpleUtils.unescape(matcher.group("method").trim());
     String returnName = matcher.group("return").trim();
 
     if (className.isEmpty() || methodName.isEmpty() || returnName.isEmpty()) {
@@ -405,7 +400,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       @NonNull String name,
       @NonNull Type returnType,
       @NonNull Iterable<? extends Type> parameterSignatures) {
-    return new MethodSubSignature(name, parameterSignatures, returnType);
+    return SignatureInterner.getMethodSubSignature(name, returnType, parameterSignatures);
   }
 
   @NonNull
@@ -466,7 +461,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       }
     }
 
-    String methodName = matcher.group("method").trim();
+    String methodName = JimpleUtils.unescape(matcher.group("method").trim());
     String returnName = matcher.group("return").trim();
 
     if (methodName.isEmpty() || returnName.isEmpty()) {
@@ -548,7 +543,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     }
 
     String className = matcher.group("class").trim();
-    String fieldName = matcher.group("field").trim();
+    String fieldName = JimpleUtils.unescape(matcher.group("field").trim());
     String typeName = matcher.group("type").trim();
 
     if (className.isEmpty() || fieldName.isEmpty() || typeName.isEmpty()) {
@@ -562,26 +557,30 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   public FieldSignature getFieldSignature(
       final String fieldName, final ClassType declaringClassSignature, final String fieldType) {
     Type type = getType(fieldType);
-    return new FieldSignature(declaringClassSignature, fieldName, type);
+    return getFieldSignature(declaringClassSignature, getFieldSubSignature(fieldName, type));
   }
 
   @Override
   public FieldSignature getFieldSignature(
       final String fieldName, final ClassType declaringClassSignature, final Type fieldType) {
-    return new FieldSignature(declaringClassSignature, fieldName, fieldType);
+    return getFieldSignature(declaringClassSignature, getFieldSubSignature(fieldName, fieldType));
   }
 
+  /**
+   * Always returns the same, hash-consed FieldSignature for equal (declaringClass, subSignature)
+   * pairs, so callers may compare FieldSignatures with {@code ==}.
+   */
   @Override
   @NonNull
   public FieldSignature getFieldSignature(
       @NonNull ClassType declaringClassSignature, @NonNull FieldSubSignature subSignature) {
-    return new FieldSignature(declaringClassSignature, subSignature);
+    return SignatureInterner.getFieldSignature(declaringClassSignature, subSignature);
   }
 
   @NonNull
   @Override
   public FieldSubSignature getFieldSubSignature(@NonNull String name, @NonNull Type type) {
-    return new FieldSubSignature(name, type);
+    return SignatureInterner.getFieldSubSignature(name, type);
   }
 
   @NonNull
@@ -628,7 +627,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       }
     }
 
-    String fieldName = matcher.group("field").trim();
+    String fieldName = JimpleUtils.unescape(matcher.group("field").trim());
     String typeName = matcher.group("type").trim();
 
     if (fieldName.isEmpty() || typeName.isEmpty()) {

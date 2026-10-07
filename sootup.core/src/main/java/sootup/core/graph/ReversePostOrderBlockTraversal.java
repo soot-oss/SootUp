@@ -48,7 +48,10 @@ public class ReversePostOrderBlockTraversal implements BlockTraversalStrategy {
   @Override
   @NonNull
   public List<BasicBlock<?>> getBlockTraversal() {
-    List<BasicBlock<?>> blocks = new ArrayList<>(this.cfg.getStmts().size());
+    // sizing this from getStmts() would walk the graph with the validating BlockGraphIterator,
+    // whose complaint about an unconnected graph is built from a DotExporter url that sorts the
+    // blocks again - which lands back here and recurses until the stack is gone
+    List<BasicBlock<?>> blocks = new ArrayList<>(this.cfg.getBlocks().size());
     new ReversePostOrderBlockTraversal(this.cfg).iterator().forEachRemaining(blocks::add);
     return blocks;
   }

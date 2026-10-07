@@ -21,7 +21,7 @@
 *Self-review*
 - [ ] I performed a self-review of my code
 - [ ] I added or updated tests where needed
-- [ ] I have successfully run tests with your changes locally
+- [ ] I have successfully run tests with my changes locally
 - [ ] My branch is up to date with `develop`
 
 *Review*

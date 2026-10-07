@@ -18,7 +18,7 @@
 
 package qilin.pta.toolkits.dd;
 
-import qilin.util.PTAUtils;
+import qilin.core.pag.PAG;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -46,7 +46,7 @@ public class CtxTunnelingFeaturesTrueTable {
   private final View view;
   private final boolean[] f = new boolean[24];
 
-  public CtxTunnelingFeaturesTrueTable(View view, SootMethod sm) {
+  public CtxTunnelingFeaturesTrueTable(View view, SootMethod sm, PAG pag) {
     this.view = view;
     String sig = sm.getSignature().toString();
     // the 10 atomic signature features.
@@ -64,7 +64,7 @@ public class CtxTunnelingFeaturesTrueTable {
     this.f[11] = containedInNestedClass(sm);
     this.f[12] = sm.getParameterCount() > 1;
 
-    Body body = PTAUtils.getMethodBody(sm);
+    Body body = pag.getMethodBody(sm);
     this.f[15] = body.getLocalCount() > 0;
     int heapAllocCnt = 0;
     for (Stmt unit : body.getStmts()) {

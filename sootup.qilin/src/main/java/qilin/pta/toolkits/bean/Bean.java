@@ -30,7 +30,7 @@ import qilin.util.Pair;
 import qilin.util.Stopwatch;
 
 public class Bean {
-  public static void run(PTA pta, Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap) {
+  public static void run(PTA pta, Map<Object, Map<Object, Map<Object, Object>>> beanNexContextMap) {
     System.out.println("Constructing object allocation graph (OAG) ...");
     Stopwatch timer = Stopwatch.newAndStart("OAG construction");
     OAG oag = new OAG(pta);
@@ -60,30 +60,32 @@ public class Bean {
             + ANSIColor.RESET
             + "\n");
 
-    writeContext(cs, oag, beanNexCtxMap);
+    writeContext(cs, oag, beanNexContextMap);
   }
 
   /*
    * Should be generalized for k >= 3.
    * */
   private static void writeContext(
-      ContextSelector cs, OAG oag, Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap) {
+      ContextSelector cs,
+      OAG oag,
+      Map<Object, Map<Object, Map<Object, Object>>> beanNexContextMap) {
     oag.allNodes()
         .forEach(
             allocator -> {
               Set<ContextElements> ctxs = cs.contextsOf(allocator);
               for (ContextElements ctx : ctxs) {
-                AllocNode allocHctx = (AllocNode) ctx.get(0);
+                AllocNode allocHeapContext = (AllocNode) ctx.get(0);
                 Set<Pair<ContextElements, AllocNode>> csheaps = cs.allocatedBy(ctx, allocator);
                 if (csheaps != null) {
                   csheaps.forEach(
                       csheap -> {
-                        AllocNode newHctx = (AllocNode) csheap.getFirst().get(0);
-                        AllocNode heap = csheap.getSecond();
-                        beanNexCtxMap
+                        AllocNode newHeapContext = (AllocNode) csheap.first().get(0);
+                        AllocNode heap = csheap.second();
+                        beanNexContextMap
                             .computeIfAbsent(heap.getNewExpr(), k -> new HashMap<>())
                             .computeIfAbsent(allocator.getNewExpr(), k -> new HashMap<>())
-                            .put(allocHctx.getNewExpr(), newHctx.getNewExpr());
+                            .put(allocHeapContext.getNewExpr(), newHeapContext.getNewExpr());
                       });
                 }
               }

@@ -23,7 +23,6 @@ package sootup.java.core.views;
  */
 
 import java.util.*;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.cache.ClassCache;
@@ -72,10 +71,20 @@ public class JavaView extends AbstractView {
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull ClassCacheProvider cacheProvider,
       @NonNull LoadingStrategy loadingStrategy) {
-    this(inputLocations, cacheProvider, loadingStrategy, JavaIdentifierFactory.getInstance());
+    this(inputLocations, cacheProvider, loadingStrategy, new JavaIdentifierFactory());
   }
 
-  protected JavaView(
+  /**
+   * Creates a view that uses the given {@link JavaIdentifierFactory} instead of one of its own. The
+   * factory shares the lifetime of the views it is handed to, so passing the same instance to
+   * several views is the way to share it between them.
+   *
+   * @param inputLocations the input locations the view resolves classes from
+   * @param cacheProvider provides the cache that stores the resolved classes
+   * @param loadingStrategy determines when classes are resolved
+   * @param idf the identifier factory this view hands out
+   */
+  public JavaView(
       @NonNull List<AnalysisInputLocation> inputLocations,
       @NonNull ClassCacheProvider cacheProvider,
       @NonNull LoadingStrategy loadingStrategy,
@@ -166,18 +175,12 @@ public class JavaView extends AbstractView {
 
   @NonNull
   protected Optional<JavaSootClassSource> getClassSource(@NonNull ClassType type) {
-    // Process inputLocations in parallel but preserve the "first-in-list" semantics by
-    // attaching indices and selecting the smallest index whose location produced a present
-    // Optional. This keeps full parallelism while returning the earliest-match by input order.
-    // Which actually matches the JVM behavior and is deterministic so nicer anyway.
-    return IntStream.range(0, inputLocations.size())
-        .parallel()
-        .mapToObj(
-            i -> new AbstractMap.SimpleEntry<>(i, inputLocations.get(i).getClassSource(type, this)))
-        .filter(e -> e.getValue().isPresent())
-        // pick the entry with the smallest original index
-        .min(Comparator.comparingInt(e -> e.getKey()))
-        .map(e -> (JavaSootClassSource) e.getValue().get());
+    return inputLocations.stream()
+        .map(location -> location.getClassSource(type, this))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .findFirst()
+        .map(src -> (JavaSootClassSource) src);
   }
 
   @NonNull

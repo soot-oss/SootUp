@@ -34,6 +34,8 @@ import sootup.java.core.views.JavaView;
 
 public class DeadAssignmentEliminatorTest {
 
+  private static final JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
+
   Path classFilePath = Paths.get("src/test/resources/bugfixes/DeadAssignmentEliminator.class");
 
   /**
@@ -78,8 +80,7 @@ public class DeadAssignmentEliminatorTest {
 
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+        identifierFactory.getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     builder.setLocals(locals);
     final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
@@ -130,14 +131,15 @@ public class DeadAssignmentEliminatorTest {
   private static Body.BodyBuilder createBody(boolean essentialOption) {
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
-    JavaClassType objectType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
+    JavaClassType objectType = identifierFactory.getClassType("java.lang.Object");
 
     Local a = JavaJimple.newLocal("a", objectType);
     Local b = JavaJimple.newLocal("b", objectType);
     Local c = JavaJimple.newLocal("c", PrimitiveType.getInt());
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(
+            a, JavaJimple.newStringConstant("str", identifierFactory), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(a, noPositionInfo);
 
     Set<Local> locals = new LinkedHashSet<>(Arrays.asList(a, b, c));
@@ -146,8 +148,7 @@ public class DeadAssignmentEliminatorTest {
     final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();
     controlFlowGraph.setStartingStmt(strToA);
     builder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
-            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
+        identifierFactory.getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
     if (essentialOption) {
       FallsThroughStmt newToB =

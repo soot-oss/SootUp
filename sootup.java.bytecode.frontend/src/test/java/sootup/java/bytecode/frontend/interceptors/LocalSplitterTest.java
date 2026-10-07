@@ -11,12 +11,10 @@ import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.interceptors.LocalSplitter;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JrtFileSystemAnalysisInputLocation;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public class LocalSplitterTest {
@@ -33,7 +31,7 @@ public class LocalSplitterTest {
   }
 
   private Body getBody(String methodName) {
-    ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
+    ClassType type = view.getIdentifierFactory().getClassType("LocalSplitterTarget");
     SootMethod sootMethod =
         view.getClass(type).get().getMethods().stream()
             .filter(method -> method.getName().equals(methodName))

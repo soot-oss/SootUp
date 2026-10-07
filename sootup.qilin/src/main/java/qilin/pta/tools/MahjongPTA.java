@@ -23,14 +23,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import qilin.core.PTAScene;
+import qilin.core.config.ContextSensitivity;
 import qilin.core.pag.PAG;
-import qilin.parm.ctxcons.CtxConstructor;
-import qilin.parm.heapabst.MahjongAbstractor;
-import qilin.parm.select.CtxSelector;
+import qilin.parm.contextconstruction.ContextConstructor;
+import qilin.parm.heapabstraction.MahjongAbstractor;
+import qilin.parm.select.ContextSelector;
 import qilin.parm.select.DebloatingSelector;
 import qilin.parm.select.PipelineSelector;
 import qilin.parm.select.UniformSelector;
-import qilin.pta.PTAConfig;
 import qilin.pta.toolkits.mahjong.Mahjong;
 
 /*
@@ -41,20 +41,20 @@ public class MahjongPTA extends StagedPTA {
   public Set<Object> mergedHeap = new HashSet<>();
   public Set<Object> csHeap = new HashSet<>();
 
-  public MahjongPTA(PTAScene scene, int k, int hk, CtxConstructor ctxCons) {
+  public MahjongPTA(PTAScene scene, int k, int hk, ContextConstructor contextConstructor) {
     super(scene);
-    this.ctxCons = ctxCons;
-    CtxSelector us = new UniformSelector(k, hk);
-    CtxSelector ds = new DebloatingSelector(csHeap);
-    this.ctxSel = new PipelineSelector(us, ds);
-    this.heapAbst = new MahjongAbstractor(pag, mergedHeap, heapModelMap);
-    this.prePTA = new Spark(scene);
+    ContextSelector us = new UniformSelector(k, hk);
+    ContextSelector ds = new DebloatingSelector(csHeap);
+    initComponents(
+        contextConstructor,
+        new PipelineSelector(us, ds),
+        new MahjongAbstractor(pag, mergedHeap, heapModelMap));
+    this.prePTA = new CoreVariantPTA(scene, ContextSensitivity.insensitive());
     System.out.println("Mahjong ...");
   }
 
   @Override
   protected void preAnalysis() {
-    PTAConfig.v().getPtaConfig().mergeHeap = false;
     prePTA.pureRun();
     PAG prePAG = prePTA.getPag();
     Mahjong.run(prePTA, heapModelMap);

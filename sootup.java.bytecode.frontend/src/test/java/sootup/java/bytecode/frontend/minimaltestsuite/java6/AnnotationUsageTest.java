@@ -50,7 +50,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     ClassType onClassType = identifierFactory.getClassType("OnClass");
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put("sthBlue", IntConstant.getInstance(42));
-    elementValueMap.put("author", JavaJimple.newStringConstant("GeorgeLucas"));
+    elementValueMap.put("author", JavaJimple.newStringConstant("GeorgeLucas", identifierFactory));
 
     assertEquals(
         Arrays.asList(
@@ -70,7 +70,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
     ClassType onFieldType = identifierFactory.getClassType("OnField");
     Map<String, Object> annotationParamMap = new HashMap<>();
-    annotationParamMap.put("isRipe", JavaJimple.newStringConstant("true"));
+    annotationParamMap.put("isRipe", JavaJimple.newStringConstant("true", identifierFactory));
 
     assertEquals(
         Collections.singletonList(new AnnotationUsage(onFieldType, annotationParamMap)),
@@ -108,7 +108,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     JavaSootClass annotationSootClass = classOptional.get();
 
     Map<String, Object> elementValueMap = new HashMap<>();
-    elementValueMap.put("isRipe", JavaJimple.newStringConstant("false"));
+    elementValueMap.put("isRipe", JavaJimple.newStringConstant("false", identifierFactory));
     elementValueMap.put("sthNew", IntConstant.getInstance(789));
 
     assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
@@ -134,7 +134,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     elementValueMap.put(
         "value",
         Arrays.asList(
-            JavaJimple.newStringConstant("first"), JavaJimple.newStringConstant("second")));
+            JavaJimple.newStringConstant("first", identifierFactory),
+            JavaJimple.newStringConstant("second", identifierFactory)));
     assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
@@ -153,10 +154,14 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     elementValueMap.put(
         "array",
         Arrays.asList(
-            JavaJimple.newEnumConstant("ENUM1", enumClass.getType().getFullyQualifiedName()),
-            JavaJimple.newEnumConstant("ENUM2", enumClass.getType().getFullyQualifiedName())));
+            JavaJimple.newEnumConstant(
+                "ENUM1", enumClass.getType().getFullyQualifiedName(), identifierFactory),
+            JavaJimple.newEnumConstant(
+                "ENUM2", enumClass.getType().getFullyQualifiedName(), identifierFactory)));
     elementValueMap.put(
-        "single", JavaJimple.newEnumConstant("ENUM3", enumClass.getType().getFullyQualifiedName()));
+        "single",
+        JavaJimple.newEnumConstant(
+            "ENUM3", enumClass.getType().getFullyQualifiedName(), identifierFactory));
     assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
@@ -171,9 +176,10 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     elementValueMap.put(
         "array",
         Arrays.asList(
-            JavaJimple.newClassConstant("Ljava/lang/Boolean;"),
-            JavaJimple.newClassConstant("Ljava/lang/Double;")));
-    elementValueMap.put("single", JavaJimple.newClassConstant("Ljava/lang/Integer;"));
+            JavaJimple.newClassConstant("Ljava/lang/Boolean;", identifierFactory),
+            JavaJimple.newClassConstant("Ljava/lang/Double;", identifierFactory)));
+    elementValueMap.put(
+        "single", JavaJimple.newClassConstant("Ljava/lang/Integer;", identifierFactory));
     assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
 
@@ -191,7 +197,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             Collections.singletonMap("countOnMe", IntConstant.getInstance(1337)));
 
     Map<String, Object> elementValueMap = new HashMap<>();
-    elementValueMap.put("containerValue", JavaJimple.newStringConstant("defaultValue"));
+    elementValueMap.put(
+        "containerValue", JavaJimple.newStringConstant("defaultValue", identifierFactory));
     elementValueMap.put("value", Collections.singletonList(baseAnnotationUsage));
     assertEquals(elementValueMap, annotationSootClass.getAnnotationDefaultValues());
   }
@@ -281,7 +288,8 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
       ClassType onMethodRepeatableType = identifierFactory.getClassType("OnMethodRepeatable");
 
       Map<String, Object> elementValueMap = new HashMap<>();
-      elementValueMap.put("containerValue", JavaJimple.newStringConstant("betterValue"));
+      elementValueMap.put(
+          "containerValue", JavaJimple.newStringConstant("betterValue", identifierFactory));
 
       AnnotationUsage anno1 =
           new AnnotationUsage(
@@ -308,7 +316,9 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     Map<String, Object> elementValueMap = new HashMap<>();
     elementValueMap.put(
         "value",
-        Arrays.asList(JavaJimple.newStringConstant("test"), JavaJimple.newStringConstant("test1")));
+        Arrays.asList(
+            JavaJimple.newStringConstant("test", identifierFactory),
+            JavaJimple.newStringConstant("test1", identifierFactory)));
     assertEquals(
         Collections.singletonList(new AnnotationUsage(arrayConstantType, elementValueMap)),
         method.get().getAnnotations());
@@ -330,10 +340,14 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     elementValueMap.put(
         "array",
         Arrays.asList(
-            JavaJimple.newEnumConstant("ENUM3", enumClass.getType().getFullyQualifiedName()),
-            JavaJimple.newEnumConstant("ENUM2", enumClass.getType().getFullyQualifiedName())));
+            JavaJimple.newEnumConstant(
+                "ENUM3", enumClass.getType().getFullyQualifiedName(), identifierFactory),
+            JavaJimple.newEnumConstant(
+                "ENUM2", enumClass.getType().getFullyQualifiedName(), identifierFactory)));
     elementValueMap.put(
-        "single", JavaJimple.newEnumConstant("ENUM1", enumClass.getType().getFullyQualifiedName()));
+        "single",
+        JavaJimple.newEnumConstant(
+            "ENUM1", enumClass.getType().getFullyQualifiedName(), identifierFactory));
     assertEquals(
         Collections.singletonList(new AnnotationUsage(enumAnnotationType, elementValueMap)),
         method.get().getAnnotations());
@@ -350,9 +364,10 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
     elementValueMap.put(
         "array",
         Arrays.asList(
-            JavaJimple.newClassConstant("Ljava/lang/Integer;"),
-            JavaJimple.newClassConstant("Ljava/lang/String;")));
-    elementValueMap.put("single", JavaJimple.newClassConstant("Ljava/lang/Double;"));
+            JavaJimple.newClassConstant("Ljava/lang/Integer;", identifierFactory),
+            JavaJimple.newClassConstant("Ljava/lang/String;", identifierFactory)));
+    elementValueMap.put(
+        "single", JavaJimple.newClassConstant("Ljava/lang/Double;", identifierFactory));
     assertEquals(
         Collections.singletonList(new AnnotationUsage(classAnnotationType, elementValueMap)),
         method.get().getAnnotations());

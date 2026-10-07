@@ -41,7 +41,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.SootClassMemberSignature;
 import sootup.core.signatures.SootClassMemberSubSignature;
 import sootup.core.types.*;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.jimple.JimpleBaseVisitor;
 import sootup.jimple.JimpleParser;
@@ -75,7 +74,7 @@ public class ValueVisitor extends JimpleBaseVisitor<Value> {
       }
 
       Immediate dim = visitImmediate(ctx.array_descriptor().immediate());
-      return JavaJimple.newNewArrayExpr(type, dim, JavaIdentifierFactory.getInstance());
+      return JavaJimple.newNewArrayExpr(type, dim, state.getIdentifierFactory());
     } else if (ctx.NEWMULTIARRAY() != null && ctx.immediate() != null) {
       final Type type = state.getUtil().getType(ctx.multiarray_type.getText());
       if (!(type instanceof ReferenceType || type instanceof PrimitiveType)) {
@@ -222,10 +221,10 @@ public class ValueVisitor extends JimpleBaseVisitor<Value> {
       return DoubleConstant.getInstance(Double.parseDouble(floatStr));
     } else if (ctx.CLASS() != null) {
       final String text = JimpleUtils.unescape(ctx.STRING_CONSTANT().getText());
-      return JavaJimple.newClassConstant(text);
+      return JavaJimple.newClassConstant(text, state.getIdentifierFactory());
     } else if (ctx.STRING_CONSTANT() != null) {
       final String text = JimpleUtils.unescape(ctx.STRING_CONSTANT().getText());
-      return JavaJimple.newStringConstant(text);
+      return JavaJimple.newStringConstant(text, state.getIdentifierFactory());
     } else if (ctx.BOOL_CONSTANT() != null) {
       final char firstChar = ctx.BOOL_CONSTANT().getText().charAt(0);
       return BooleanConstant.getInstance(firstChar == 't' || firstChar == 'T');
@@ -242,13 +241,15 @@ public class ValueVisitor extends JimpleBaseVisitor<Value> {
               : state.getUtil().getFieldSignature(methodhandleContext.field_signature());
       return JavaJimple.newMethodHandle(
           referenceSignature,
-          MethodHandle.Kind.getKind(kindName.substring(1, kindName.length() - 1)));
+          MethodHandle.Kind.getKind(kindName.substring(1, kindName.length() - 1)),
+          state.getIdentifierFactory());
     } else if (ctx.methodtype != null && ctx.method_subsignature() != null) {
       final JimpleParser.Type_listContext typelist = ctx.method_subsignature().type_list();
       final List<Type> typeList = state.getUtil().getTypeList(typelist);
       return JavaJimple.newMethodType(
           typeList,
-          state.getIdentifierFactory().getType(ctx.method_subsignature().type().getText()));
+          state.getIdentifierFactory().getType(ctx.method_subsignature().type().getText()),
+          state.getIdentifierFactory());
     }
     throw new ResolveException(
         "Unknown Constant.", state.getPath(), JimpleConverterUtil.buildPositionFromCtx(ctx));

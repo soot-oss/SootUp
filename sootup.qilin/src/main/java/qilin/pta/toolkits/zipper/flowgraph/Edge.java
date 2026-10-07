@@ -1,15 +1,15 @@
 package qilin.pta.toolkits.zipper.flowgraph;
 
 import java.util.Objects;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 
 public class Edge {
   private final Kind kind;
-  private final Node source;
-  private final Node target;
+  private final PagNode source;
+  private final PagNode target;
   private final int hashCode;
 
-  public Edge(final Kind kind, final Node source, final Node target) {
+  public Edge(final Kind kind, final PagNode source, final PagNode target) {
     this.kind = kind;
     this.source = source;
     this.target = target;
@@ -20,11 +20,11 @@ public class Edge {
     return this.kind;
   }
 
-  public Node getSource() {
+  public PagNode getSource() {
     return this.source;
   }
 
-  public Node getTarget() {
+  public PagNode getTarget() {
     return this.target;
   }
 

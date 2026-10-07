@@ -21,14 +21,14 @@ package qilin.pta.toolkits.selectx;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
-import qilin.core.pag.Node;
+import qilin.core.pag.PagNode;
 
 /** local nodes */
 public abstract class I extends BNode {
   private final Set<I> outIs = new HashSet<>();
   protected Set<L> paras = new HashSet<>();
 
-  I(Node origin) {
+  I(PagNode origin) {
     super(origin);
   }
 

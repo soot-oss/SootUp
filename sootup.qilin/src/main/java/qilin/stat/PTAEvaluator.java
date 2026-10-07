@@ -18,7 +18,6 @@
 
 package qilin.stat;
 
-import qilin.CoreConfig;
 import qilin.core.PTA;
 
 /**
@@ -59,7 +58,7 @@ public class PTAEvaluator implements IEvaluator {
         "Total Memory Before:", runtime.totalMemory() / GB + " GB"); // Print total available memory
     exporter.collectMetric(
         "Max Memory Before:", runtime.maxMemory() / GB + " GB"); // Print Maximum available memory
-    exporter.collectMetric("Analysis: ", CoreConfig.v().getPtaConfig().ptaName);
+    exporter.collectMetric("Analysis: ", pta.getConfig().getAnalysisName());
     runtimeStat.begin();
   }
 

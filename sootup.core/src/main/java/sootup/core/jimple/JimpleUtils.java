@@ -22,9 +22,98 @@ package sootup.core.jimple;
  * #L%
  */
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import sootup.core.util.StringTools;
 
 public class JimpleUtils {
+
+  /**
+   * Reserved Jimple grammar keywords matching Soot's Scene.v().reservedNames. When formatting
+   * method, field, or class identifiers in Jimple signatures and subsignatures, identifiers
+   * matching these names must be enclosed in single quotes (e.g. 'from', 'to') to prevent ambiguous
+   * parsing against Jimple keywords.
+   */
+  private static final Set<String> RESERVED_NAMES =
+      Collections.unmodifiableSet(
+          new HashSet<>(
+              Arrays.asList(
+                  "newarray",
+                  "newmultiarray",
+                  "nop",
+                  "ret",
+                  "specialinvoke",
+                  "staticinvoke",
+                  "tableswitch",
+                  "virtualinvoke",
+                  "null_type",
+                  "unknown",
+                  "cmp",
+                  "cmpg",
+                  "cmpl",
+                  "entermonitor",
+                  "exitmonitor",
+                  "interfaceinvoke",
+                  "lengthof",
+                  "lookupswitch",
+                  "neg",
+                  "if",
+                  "abstract",
+                  "annotation",
+                  "boolean",
+                  "break",
+                  "byte",
+                  "case",
+                  "catch",
+                  "char",
+                  "class",
+                  "final",
+                  "native",
+                  "public",
+                  "protected",
+                  "private",
+                  "static",
+                  "synchronized",
+                  "transient",
+                  "volatile",
+                  "interface",
+                  "void",
+                  "short",
+                  "int",
+                  "long",
+                  "float",
+                  "double",
+                  "extends",
+                  "implements",
+                  "breakpoint",
+                  "default",
+                  "goto",
+                  "instanceof",
+                  "new",
+                  "return",
+                  "throw",
+                  "throws",
+                  "null",
+                  "from",
+                  "to")));
+
+  /**
+   * Quotes reserved Jimple keywords with single quotes. Method, field, or local names matching
+   * reserved Jimple grammar tokens (e.g. 'from', 'to', 'default') must be quoted in signatures and
+   * printed Jimple to prevent grammar syntax errors during Jimple parsing.
+   */
+  public static String quotedNameOf(String s) {
+    if (s == null || (s.startsWith("'") && s.endsWith("'") && s.length() >= 2)) {
+      return s;
+    }
+    if (RESERVED_NAMES.contains(s)) {
+      return "'" + s + "'";
+    }
+    return s;
+  }
+
   /** Escapes reserved Jimple keywords e.g. used in (Stmt)Printer, necessary in the JimpleParser */
   public static String escape(String str) {
     if (str.length() == 0) {

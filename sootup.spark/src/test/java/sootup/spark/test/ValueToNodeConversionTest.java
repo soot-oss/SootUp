@@ -38,14 +38,13 @@ import sootup.spark.node.VariableNode;
 
 class ValueToNodeConversionTest {
 
-  NodeFactory nodeFactory = new NodeFactory(SparkOptions.defaultOptions());
+  JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
+  NodeFactory nodeFactory = new NodeFactory(SparkOptions.defaultOptions(), identifierFactory);
   ClassType aType = SparkTestUtil.simpleType("A");
   ClassType bType = SparkTestUtil.simpleType("B");
-  FieldSignature fieldSig =
-      JavaIdentifierFactory.getInstance().getFieldSignature("f", aType, bType);
+  FieldSignature fieldSig = identifierFactory.getFieldSignature("f", aType, bType);
   MethodSignature methodSig =
-      JavaIdentifierFactory.getInstance()
-          .getMethodSignature(aType, "test", "void", Collections.emptyList());
+      identifierFactory.getMethodSignature(aType, "test", "void", Collections.emptyList());
 
   @BeforeEach
   public void reset() {
@@ -137,8 +136,7 @@ class ValueToNodeConversionTest {
   @Test
   void testNewArrayExprToNodeConversion() {
     val newArrayExpr =
-        JavaJimple.newNewArrayExpr(
-            aType, IntConstant.getInstance(1), JavaIdentifierFactory.getInstance());
+        JavaJimple.newNewArrayExpr(aType, IntConstant.getInstance(1), new JavaIdentifierFactory());
     val node = nodeFactory.createNode(newArrayExpr, methodSig);
     assertTrue(node.isEmpty());
   }
@@ -180,7 +178,7 @@ class ValueToNodeConversionTest {
 
   @Test
   void testClassConstantToNodeConversion() {
-    val classConstant = JavaJimple.newClassConstant(aType.toString());
+    val classConstant = JavaJimple.newClassConstant(aType.toString(), identifierFactory);
     val node = nodeFactory.createNode(classConstant, methodSig);
     assertTrue(node.isEmpty());
   }
@@ -427,28 +425,32 @@ class ValueToNodeConversionTest {
 
   @Test
   void testCaughtExceptionRefToNodeConversion() {
-    val caughtExceptionRef = JavaJimple.newCaughtExceptionRef();
+    val caughtExceptionRef = JavaJimple.newCaughtExceptionRef(identifierFactory);
     val node = nodeFactory.createNode(caughtExceptionRef, methodSig);
     assertTrue(node.isEmpty());
   }
 
   @Test
   void testEnumConstantToNodeConversion() {
-    val enumConstant = JavaJimple.newEnumConstant("VALUE", "MyEnum");
+    val enumConstant = JavaJimple.newEnumConstant("VALUE", "MyEnum", identifierFactory);
     val node = nodeFactory.createNode(enumConstant, methodSig);
     assertTrue(node.isEmpty());
   }
 
   @Test
   void testMethodHandleToNodeConversion() {
-    val methodHandle = JavaJimple.newMethodHandle(methodSig, MethodHandle.Kind.REF_INVOKE_VIRTUAL);
+    val methodHandle =
+        JavaJimple.newMethodHandle(
+            methodSig, MethodHandle.Kind.REF_INVOKE_VIRTUAL, identifierFactory);
     val node = nodeFactory.createNode(methodHandle, methodSig);
     assertTrue(node.isEmpty());
   }
 
   @Test
   void testMethodTypeToNodeConversion() {
-    val methodType = JavaJimple.newMethodType(Collections.emptyList(), VoidType.getInstance());
+    val methodType =
+        JavaJimple.newMethodType(
+            Collections.emptyList(), VoidType.getInstance(), identifierFactory);
     val node = nodeFactory.createNode(methodType, methodSig);
     assertTrue(node.isEmpty());
   }
@@ -468,7 +470,7 @@ class ValueToNodeConversionTest {
 
   @Test
   void testStringConstantToNodeConversion() {
-    val stringConstant = JavaJimple.newStringConstant("hello");
+    val stringConstant = JavaJimple.newStringConstant("hello", identifierFactory);
     val nodeOpt = nodeFactory.createNode(stringConstant, methodSig);
     assertTrue(nodeOpt.isPresent());
     val node = nodeOpt.get();

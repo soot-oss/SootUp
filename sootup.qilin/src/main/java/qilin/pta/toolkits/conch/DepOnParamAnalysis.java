@@ -27,7 +27,7 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
-import qilin.util.PTAUtils;
+import qilin.util.PagQueries;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.SootMethod;
@@ -43,8 +43,8 @@ import sootup.core.model.SootMethod;
  * */
 
 public class DepOnParamAnalysis extends AbstractPAG {
-  private final Map<Node, Set<Node>> pathEdges = new ConcurrentHashMap<>();
-  private final Set<Node> initialSeeds = ConcurrentHashMap.newKeySet();
+  private final Map<PagNode, Set<PagNode>> pathEdges = new ConcurrentHashMap<>();
+  private final Set<PagNode> initialSeeds = ConcurrentHashMap.newKeySet();
 
   public DepOnParamAnalysis(PTA prePTA) {
     super(prePTA);
@@ -69,23 +69,24 @@ public class DepOnParamAnalysis extends AbstractPAG {
   }
 
   protected void submitInitialSeeds() {
-    for (Node node : initialSeeds) {
+    for (PagNode node : initialSeeds) {
       propagate(node, node);
     }
   }
 
-  private void propagate(Node srcParam, Node currNode) {
-    Set<Node> fromParams = pathEdges.computeIfAbsent(currNode, k -> ConcurrentHashMap.newKeySet());
+  private void propagate(PagNode srcParam, PagNode currNode) {
+    Set<PagNode> fromParams =
+        pathEdges.computeIfAbsent(currNode, k -> ConcurrentHashMap.newKeySet());
     if (!fromParams.contains(srcParam)) {
       executor.execute(new PathEdgeProcessingTask(srcParam, currNode));
     }
   }
 
   private class PathEdgeProcessingTask implements Runnable {
-    private final Node sourceParam;
-    private final Node currNode;
+    private final PagNode sourceParam;
+    private final PagNode currNode;
 
-    public PathEdgeProcessingTask(Node param, Node node) {
+    public PathEdgeProcessingTask(PagNode param, PagNode node) {
       this.sourceParam = param;
       this.currNode = node;
     }
@@ -94,7 +95,7 @@ public class DepOnParamAnalysis extends AbstractPAG {
     public void run() {
       pathEdges.computeIfAbsent(currNode, k -> ConcurrentHashMap.newKeySet()).add(sourceParam);
       for (TranEdge e : outAndSummaryEdges(currNode)) {
-        Node nextNode = e.getTarget();
+        PagNode nextNode = e.getTarget();
         DFA.TranCond tranCond = e.getTranCond();
         DFA.State nextState = DFA.nextState2(tranCond);
         if (nextState == DFA.State.ERROR) {
@@ -126,7 +127,7 @@ public class DepOnParamAnalysis extends AbstractPAG {
               VarNode r = (VarNode) srcnf.getNode(assignStmt.getLeftOp());
               if (sourceParam instanceof LocalVarNode) {
                 LocalVarNode pj = (LocalVarNode) sourceParam;
-                VarNode aj = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pj);
+                VarNode aj = PagQueries.paramToArg(prePAG, invokeStmt, srcmpag, pj);
                 if (aj != null) {
                   addSummaryEdge(new TranEdge(aj, r, DFA.TranCond.INTER_ASSIGN));
                 }
@@ -143,11 +144,11 @@ public class DepOnParamAnalysis extends AbstractPAG {
   }
 
   private void addSummaryEdge(TranEdge tranEdge) {
-    Node src = tranEdge.getSource();
-    Node tgt = tranEdge.getTarget();
+    PagNode src = tranEdge.getSource();
+    PagNode tgt = tranEdge.getTarget();
     DFA.TranCond tranCond = tranEdge.getTranCond();
     sumEdges.computeIfAbsent(src, k -> ConcurrentHashMap.newKeySet()).add(tranEdge);
-    for (Node srcParam : pathEdges.getOrDefault(src, Collections.emptySet())) {
+    for (PagNode srcParam : pathEdges.getOrDefault(src, Collections.emptySet())) {
       DFA.State nextState = DFA.nextState2(tranCond);
       if (nextState == DFA.State.ERROR) {
         continue;
@@ -156,7 +157,7 @@ public class DepOnParamAnalysis extends AbstractPAG {
     }
   }
 
-  public Set<Node> fetchReachableParamsOf(Node node) {
+  public Set<PagNode> fetchReachableParamsOf(PagNode node) {
     return pathEdges.getOrDefault(node, Collections.emptySet());
   }
 }

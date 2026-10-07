@@ -147,9 +147,11 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     Comparator<Trap> trapComparator;
     if (!traps.isEmpty()) {
       Map<Stmt, Integer> blockIdxMap = new HashMap<>();
+      Set<Stmt> blockStmts = Collections.newSetFromMap(new IdentityHashMap<>());
       int i = 0;
       for (List<Stmt> block : blocks) {
         blockIdxMap.put(block.get(0), i++);
+        blockStmts.addAll(block);
         /*
         for (int j = 0; j < block.size(); j++) {
           blockIdxMap.put(block.get(j), i++);
@@ -165,9 +167,18 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
             }
             trapstmtToIdx.put(trap.getBeginStmt(), beginIdx);
             Integer endIdx = blockIdxMap.get(trap.getEndStmt());
-            if (endIdx == null) {
+            if (endIdx == null) { // The end statement is not the head of any block
+              if (blockStmts.contains(trap.getEndStmt())) {
+                // a Trap can only end where a Block begins; inside a Block it would cover part of
+                // it
+                throw new IllegalArgumentException(
+                    "The end of the Trap "
+                        + trap
+                        + " is in the middle of a Block instead of at the head of one.");
+              }
+              // the end is in no Block at all (e.g. removed as unreachable): the Trap reaches the
+              // end of the body
               endIdx = blockIdxMap.size();
-              // throw new AssertionError();
             }
             trapstmtToIdx.put(trap.getEndStmt(), endIdx);
             Integer handlerIdx = blockIdxMap.get(trap.getHandlerStmt());
@@ -271,6 +282,12 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       }
 
       addBlock(block, exceptionToHandlerMap);
+    }
+
+    // a Trap whose end is in no Block reaches the end of the body, so it is never closed above
+    while (nextEndingTrap != null
+        && trapstmtToIdx.get(nextEndingTrap.getEndStmt()) == blocks.size()) {
+      nextEndingTrap = trapEnd.poll();
     }
 
     if (nextStartingTrap != null || nextEndingTrap != null) {
@@ -804,8 +821,23 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         || (sBlockPredecessors.size() == 1 && sBlockPredecessors.get(0) != firstBlock)) {
       return false;
     }
+    // Merging a handler away leaves the catching blocks pointing at a dropped block.
+    if (isExceptionalSuccessor(followingBlock)) {
+      return false;
+    }
     // check if the same traps are applied to both blocks
     return firstBlock.getExceptionalSuccessors().equals(followingBlock.getExceptionalSuccessors());
+  }
+
+  private boolean isExceptionalSuccessor(@NonNull MutableBasicBlock block) {
+    for (MutableBasicBlock otherBlock : blocks) {
+      final Map<ClassType, MutableBasicBlock> exceptionalSuccessors =
+          otherBlock.getExceptionalSuccessors();
+      if (!exceptionalSuccessors.isEmpty() && exceptionalSuccessors.containsValue(block)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** trys to merge the second block into the first one if possible */
@@ -817,11 +849,11 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         addNodeToBlock(firstBlock, stmt);
       }
 
-      // i.e. can just be the single followingblock which we merge now
+      // i.e. can just be the single following block which we merge now
       firstBlock.clearSuccessorBlocks();
 
       // update linking info into firstBlock
-      // done in clearPredecessorBlock      firstBlock.removeSuccessorBlock(followingBlock);
+      // done in clearPredecessorBlock firstBlock.removeSuccessorBlock(followingBlock);
       List<MutableBasicBlock> successors = followingBlock.getSuccessors();
       for (int i = 0; i < successors.size(); i++) {
         MutableBasicBlock succ = successors.get(i);
@@ -1146,11 +1178,29 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     final MutableBasicBlock newBlock = addBlockInternal(stmts, exceptionMap);
     // insert before a existingStmt that is at the beginning of a Block
     if (oldBlock.getHead() == existingStmt) {
+      // Exceptional edges enter oldBlock too, so they are re-pointed as well; predecessorBlocks
+      // holds one untagged entry per edge, so count moves the entries.
+      Set<MutableBasicBlock> movedPredecessors = Collections.newSetFromMap(new IdentityHashMap<>());
       for (MutableBasicBlock predecessor : Lists.newArrayList(oldBlock.getPredecessors())) {
-        // cleanup old & add new link
-        predecessor.replaceSuccessorBlock(oldBlock, newBlock);
+        if (!movedPredecessors.add(predecessor)) {
+          continue;
+        }
+        int normalEdgeCount = predecessor.replaceSuccessorBlock(oldBlock, newBlock).size();
+        List<ClassType> exceptionalEdges = new ArrayList<>();
+        predecessor
+            .getExceptionalSuccessors()
+            .forEach(
+                (type, handler) -> {
+                  if (handler == oldBlock) {
+                    exceptionalEdges.add(type);
+                  }
+                });
         oldBlock.removePredecessorBlock(predecessor);
-        newBlock.addPredecessorBlock(predecessor);
+        for (int i = 0; i < normalEdgeCount; i++) {
+          newBlock.addPredecessorBlock(predecessor);
+        }
+        // re-points the edge and registers predecessor on newBlock for each exception type
+        exceptionalEdges.forEach(type -> predecessor.linkExceptionalSuccessorBlock(type, newBlock));
       }
       // try to merge inserted stmts into oldBlock
       if (!tryMergeBlocks(newBlock, oldBlock)) {

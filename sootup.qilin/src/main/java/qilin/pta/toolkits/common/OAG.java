@@ -24,10 +24,12 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
-import qilin.core.sets.PointsToSet;
-import qilin.util.PTAUtils;
+import qilin.core.pag.PagNode;
+import qilin.util.FakeMainMethods;
+import qilin.util.StaticThisPointsTo;
 import qilin.util.graph.DirectedGraph;
 import qilin.util.queue.QueueReader;
+import qilin.util.sets.PointsToSet;
 import sootup.core.model.SootMethod;
 
 /** Implementation of Object Allocation Graph (OAG). */
@@ -103,20 +105,20 @@ public class OAG implements DirectedGraph<AllocNode> {
   }
 
   protected void buildOAG() {
-    Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(this.pta);
+    Map<LocalVarNode, Set<AllocNode>> pts = StaticThisPointsTo.calcStaticThisPTS(this.pta);
     for (SootMethod method : this.pta.getNakedReachableMethods()) {
-      if (!PTAUtils.hasBody(method)) {
+      if (!pta.getPag().hasBody(method)) {
         continue;
       }
       MethodPAG srcmpag = pta.getPag().getMethodPAG(method);
       MethodNodeFactory srcnf = srcmpag.nodeFactory();
       LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
-      QueueReader<qilin.core.pag.Node> reader = srcmpag.getInternalReader().clone();
+      QueueReader<PagNode> reader = srcmpag.getInternalReader().clone();
       while (reader.hasNext()) {
-        qilin.core.pag.Node from = reader.next(), to = reader.next();
+        PagNode from = reader.next(), to = reader.next();
         if (from instanceof AllocNode) {
           AllocNode tgt = (AllocNode) from;
-          if (PTAUtils.isFakeMainMethod(method)) {
+          if (FakeMainMethods.isFakeMainMethod(method)) {
             // special treatment for fake main
             AllocNode src = pta.getRootNode();
             addEdge(src, tgt);

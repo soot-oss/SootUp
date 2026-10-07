@@ -14,6 +14,7 @@ import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.interceptors.CopyPropagator;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaEagerView;
 import sootup.java.core.views.JavaView;
@@ -38,7 +39,7 @@ public class JimpleAnalysisInputLocationTest {
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("");
+            return new JavaIdentifierFactory().getPackageName("");
           }
         };
 
@@ -57,7 +58,7 @@ public class JimpleAnalysisInputLocationTest {
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("jimple");
+            return new JavaIdentifierFactory().getPackageName("jimple");
           }
         };
 
@@ -76,7 +77,7 @@ public class JimpleAnalysisInputLocationTest {
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("jimple");
+            return new JavaIdentifierFactory().getPackageName("jimple");
           }
         };
 

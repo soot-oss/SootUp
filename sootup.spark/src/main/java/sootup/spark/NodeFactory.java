@@ -27,6 +27,7 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.Value;
 import sootup.core.signatures.MethodSignature;
 import sootup.spark.node.Node;
@@ -41,6 +42,7 @@ import sootup.spark.node.ValueToNodeConversionVisitor;
 public class NodeFactory {
 
   @NonNull SparkOptions sparkOptions;
+  @NonNull IdentifierFactory identifierFactory;
 
   /**
    * creates a PAG node for a given Jimple value
@@ -51,7 +53,7 @@ public class NodeFactory {
   @NonNull
   public Optional<Node> createNode(@NonNull Value value, MethodSignature containingMethodSig) {
     ValueToNodeConversionVisitor visitor =
-        new ValueToNodeConversionVisitor(containingMethodSig, sparkOptions);
+        new ValueToNodeConversionVisitor(containingMethodSig, sparkOptions, identifierFactory);
     value.accept(visitor);
     return visitor.getResult();
   }
