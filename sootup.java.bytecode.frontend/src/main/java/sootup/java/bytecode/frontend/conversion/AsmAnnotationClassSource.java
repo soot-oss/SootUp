@@ -65,7 +65,7 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
       ClassType classType,
       @NonNull ClassNode classNode,
       @NonNull IdentifierFactory identifierFactory) {
-    super(inputLocation, classType, sourcePath);
+    super(inputLocation, classType, sourcePath, classNode.signature);
     this.classNode = classNode;
     this.identifierFactory = identifierFactory;
   }
@@ -86,7 +86,8 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
                   fieldSignature,
                   modifiers,
                   convertAnnotation(fieldNode.invisibleAnnotations, signatureFactory),
-                  NoPositionInformation.getInstance());
+                  NoPositionInformation.getInstance(),
+                  fieldNode.signature);
             })
         .collect(Collectors.toSet());
   }
@@ -134,7 +135,8 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
                   modifiers,
                   exceptions,
                   convertAnnotation(annotations, signatureFactory),
-                  NoPositionInformation.getInstance());
+                  NoPositionInformation.getInstance(),
+                  methodSource.signature);
             });
   }
 

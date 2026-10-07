@@ -26,8 +26,10 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
@@ -40,15 +42,14 @@ public class JavaSootField extends SootClassMember<FieldSignature>
 
   @NonNull private final ImmutableSet<FieldModifier> modifiers;
   @NonNull private final Iterable<AnnotationUsage> annotations;
+  @Nullable private final String genericSignature;
 
   /** Constructs a Soot field with the given name, type and modifiers. */
   public JavaSootField(
       @NonNull FieldSignature signature,
       @NonNull Iterable<FieldModifier> modifiers,
       @NonNull Position position) {
-    super(signature, position);
-    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
-    this.annotations = ImmutableUtils.emptyImmutableList();
+    this(signature, modifiers, ImmutableUtils.emptyImmutableList(), position, null);
   }
 
   /**
@@ -64,9 +65,34 @@ public class JavaSootField extends SootClassMember<FieldSignature>
       @NonNull Iterable<FieldModifier> modifiers,
       @NonNull Iterable<AnnotationUsage> annotations,
       @NonNull Position position) {
+    this(signature, modifiers, annotations, position, null);
+  }
+
+  /**
+   * Constructs a field with an optional classfile Signature attribute.
+   *
+   * @param signature the erased field signature
+   * @param modifiers the field modifiers
+   * @param annotations the field annotations
+   * @param position the source position
+   * @param genericSignature the unparsed Signature attribute, or {@code null} if absent
+   */
+  public JavaSootField(
+      @NonNull FieldSignature signature,
+      @NonNull Iterable<FieldModifier> modifiers,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Position position,
+      @Nullable String genericSignature) {
     super(signature, position);
     this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
     this.annotations = annotations;
+    this.genericSignature = genericSignature;
+  }
+
+  /** Returns the unparsed classfile Signature attribute, or an empty optional if absent. */
+  @NonNull
+  public Optional<String> getGenericSignature() {
+    return Optional.ofNullable(genericSignature);
   }
 
   @Override
@@ -116,12 +142,14 @@ public class JavaSootField extends SootClassMember<FieldSignature>
 
   @NonNull
   public JavaSootField withSignature(@NonNull FieldSignature signature) {
-    return new JavaSootField(signature, getModifiers(), getPosition());
+    return new JavaSootField(
+        signature, getModifiers(), getAnnotations(), getPosition(), genericSignature);
   }
 
   @NonNull
   public JavaSootField withModifiers(@NonNull Iterable<FieldModifier> modifiers) {
-    return new JavaSootField(getSignature(), modifiers, getPosition());
+    return new JavaSootField(
+        getSignature(), modifiers, getAnnotations(), getPosition(), genericSignature);
   }
 
   /** Returns the SootClass declaring this one. */
@@ -137,7 +165,8 @@ public class JavaSootField extends SootClassMember<FieldSignature>
 
   @NonNull
   public JavaSootField withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
-    return new JavaSootField(getSignature(), getModifiers(), annotations, getPosition());
+    return new JavaSootField(
+        getSignature(), getModifiers(), annotations, getPosition(), genericSignature);
   }
 
   /** Defines a {@link SootField} builder to provide a fluent API. */
@@ -147,6 +176,7 @@ public class JavaSootField extends SootClassMember<FieldSignature>
     private Iterable<FieldModifier> modifiers;
     private Position position = NoPositionInformation.getInstance();
     private Iterable<AnnotationUsage> annotations = Collections.emptyList();
+    @Nullable private String genericSignature;
 
     private JavaSootFieldBuilder() {}
 
@@ -175,12 +205,22 @@ public class JavaSootField extends SootClassMember<FieldSignature>
       CompleteStep withPosition(@NonNull Position position);
     }
 
+    public interface GenericSignatureStep {
+      /** Sets the unparsed Signature attribute; {@code null} clears it. */
+      CompleteStep withGenericSignature(@Nullable String genericSignature);
+    }
+
     public interface BuildStep {
       JavaSootField build();
     }
 
     public interface CompleteStep
-        extends SignatureStep, ModifierStep, AnnotationsStep, PositionStep, BuildStep {}
+        extends SignatureStep,
+            ModifierStep,
+            AnnotationsStep,
+            PositionStep,
+            GenericSignatureStep,
+            BuildStep {}
 
     private static class Steps implements CompleteStep {
       private final JavaSootFieldBuilder instance = new JavaSootFieldBuilder();
@@ -210,12 +250,19 @@ public class JavaSootField extends SootClassMember<FieldSignature>
       }
 
       @Override
+      public CompleteStep withGenericSignature(@Nullable String genericSignature) {
+        instance.genericSignature = genericSignature;
+        return this;
+      }
+
+      @Override
       public JavaSootField build() {
         return new JavaSootField(
             instance.signature,
             instance.modifiers,
             instance.annotations != null ? instance.annotations : Collections.emptyList(),
-            instance.position);
+            instance.position,
+            instance.genericSignature);
       }
     }
   }
