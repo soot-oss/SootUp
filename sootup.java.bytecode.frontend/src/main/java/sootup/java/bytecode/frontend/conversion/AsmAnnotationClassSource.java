@@ -65,7 +65,8 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
       ClassType classType,
       @NonNull ClassNode classNode,
       @NonNull IdentifierFactory identifierFactory) {
-    super(inputLocation, classType, sourcePath);
+    super(
+        inputLocation, classType, sourcePath, AsmClassMetadata.read(classNode, identifierFactory));
     this.classNode = classNode;
     this.identifierFactory = identifierFactory;
   }
@@ -198,10 +199,7 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
 
   @NonNull
   public Optional<? extends ClassType> resolveOuterClass() {
-    if (classNode.outerClass == null) {
-      return Optional.empty();
-    }
-    return Optional.of(AsmUtil.toJimpleClassType(classNode.outerClass, identifierFactory));
+    return AsmClassMetadata.resolveOuterClass(getClassFileMetadata(), classSignature);
   }
 
   @NonNull

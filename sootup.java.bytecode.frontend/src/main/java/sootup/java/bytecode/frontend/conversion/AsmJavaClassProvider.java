@@ -86,7 +86,8 @@ public class AsmJavaClassProvider implements PathbasedClassProvider {
         asmClassSource.resolveModifiers(),
         asmClassSource.resolveAnnotations(),
         Collections.emptyList(), // TODO! implement
-        Collections.emptyList());
+        Collections.emptyList(),
+        asmClassSource.getClassFileMetadata());
 
     //    return asmClassSource;
   }

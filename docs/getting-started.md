@@ -214,6 +214,14 @@ Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contain
     }
     ```
 
+## Reading Class Nesting and Source Metadata
+
+`JavaSootClass` exposes source filenames (`getSourceFile()`), raw source/debug text
+(`getSourceDebugExtension()`), enclosing classes/methods (`getEnclosingClass()` /
+`getEnclosingMethod()`), and ordered `InnerClasses` entries (`getInnerClasses()`).
+Missing attributes return empty optionals or lists; SMAP text is preserved without
+remapping statement positions.
+
 ## Retrieving the Control-Flow Graph of a Method
 
 Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via the `ControlFlowGraph`. This structure is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
