@@ -59,19 +59,21 @@ public final class BootstrapMethodHandleResolver implements DynamicInvokeResolve
 
   /**
    * Makes the implicit calls of string concatenation and record methods explicit (see {@link
-   * InvokeDynamicDesugaring}).
+   * InvokeDynamicDesugaring#DEFAULT}).
    */
   @NonNull
   @Override
   public Body desugar(@NonNull SootMethod method, @NonNull Body body, @NonNull View view) {
-    if (body.getStmts().stream().noneMatch(InvokeDynamicDesugaring::applies)) {
+    if (body.getStmts().stream()
+        .noneMatch(s -> InvokeDynamicDesugaring.applies(s, InvokeDynamicDesugaring.DEFAULT))) {
       return body; // common case: no lookup
     }
     return desugared
         .computeIfAbsent(
             body,
             b -> {
-              Body result = InvokeDynamicDesugaring.desugar(b, view);
+              Body result =
+                  InvokeDynamicDesugaring.desugar(b, view, InvokeDynamicDesugaring.DEFAULT);
               return result == b ? Optional.empty() : Optional.of(result);
             })
         .orElse(body);
