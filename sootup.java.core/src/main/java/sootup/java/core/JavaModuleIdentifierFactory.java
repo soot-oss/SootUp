@@ -38,37 +38,35 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
   public static final String MODULE_INFO_FILE = "module-info";
 
-  private static final Cache<String, ModuleSignature> modules =
+  @NonNull
+  private final Cache<ModuleSignature, JavaModuleIdentifierFactory> moduleIdentifierFactoryWrapper =
       CacheBuilder.newBuilder().weakValues().build();
 
-  private static final JavaModuleIdentifierFactory INSTANCE = new JavaModuleIdentifierFactory();
-
-  public static JavaModuleIdentifierFactory getInstance() {
-    return INSTANCE;
+  /**
+   * Returns a view on this factory that resolves class names without an explicit module to {@code
+   * module}. The wrappers are cached per factory instance, so they are released together with the
+   * {@link sootup.java.core.views.JavaModuleView} this factory belongs to.
+   *
+   * @param module the name of the default module
+   * @return a factory that resolves module-less class names to {@code module}
+   */
+  @NonNull
+  public JavaModuleIdentifierFactory forModule(@NonNull String module) {
+    return forModule(getModuleSignature(module));
   }
 
-  public static JavaModuleIdentifierFactory getInstance(@NonNull String module) {
-    return getInstance(getModuleSignature(module));
-  }
-
-  private static final Cache<ModuleSignature, JavaModuleIdentifierFactory>
-      moduleIdentifierFactoryWrapper = CacheBuilder.newBuilder().weakValues().build();
-
-  public static JavaModuleIdentifierFactory getInstance(@NonNull ModuleSignature moduleSignature) {
+  /**
+   * Returns a view on this factory that resolves class names without an explicit module to {@code
+   * moduleSignature}.
+   *
+   * @param moduleSignature the signature of the default module
+   * @return a factory that resolves module-less class names to {@code moduleSignature}
+   */
+  @NonNull
+  public JavaModuleIdentifierFactory forModule(@NonNull ModuleSignature moduleSignature) {
     return moduleIdentifierFactoryWrapper
         .asMap()
         .computeIfAbsent(moduleSignature, JavaModuleIdentifierFactoryWrapper::new);
-  }
-
-  static {
-    /*
-     * Represents the unnamed module in Java's module system. Every type that is not defined in any known module but loaded
-     * from the classpath is associated with this unnamed module, so as to ensure that every type is associated with a
-     * module.
-     *
-     * <p>{@link ModuleSignature#UNNAMED_MODULE}
-     */
-    modules.put(ModuleSignature.UNNAMED_MODULE.getModuleName(), ModuleSignature.UNNAMED_MODULE);
   }
 
   @Override
@@ -114,9 +112,9 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   }
 
   /**
-   * Always creates a new ClassSignature. In opposite to PackageSignatures and ModuleSignatures,
-   * ClassSignatures are not cached because the are unique per class, and thus reusing them does not
-   * make sense.
+   * Returns a unique ClassType. The method looks up a cache if it already contains a ClassType with
+   * the given name/package/module. If the cache lookup fails a new ClassType is created. This lets
+   * callers compare ClassTypes with {@code ==}.
    *
    * @param className the simple name of the class
    * @param packageName the declaring package
@@ -129,16 +127,14 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
       final @NonNull String className,
       final @NonNull String packageName,
       final @NonNull String moduleName) {
-    ModulePackageName packageIdentifier = getPackageName(packageName, moduleName);
-    return new ModuleJavaClassType(className, packageIdentifier);
+    return ModuleJavaClassType.of(className, getPackageName(packageName, moduleName));
   }
 
   public ModuleJavaClassType getClassType(
       final @NonNull String className,
       final @NonNull String packageName,
       final @NonNull ModuleSignature moduleSignature) {
-    ModulePackageName packageIdentifier = getPackageName(packageName, moduleSignature);
-    return new ModuleJavaClassType(className, packageIdentifier);
+    return ModuleJavaClassType.of(className, getPackageName(packageName, moduleSignature));
   }
 
   /**
@@ -154,7 +150,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
    *     the unnamed module.
    */
   public static ModuleSignature getModuleSignature(@NonNull final String moduleName) {
-    return modules.asMap().computeIfAbsent(moduleName, ModuleSignature::new);
+    return ModuleSignature.of(moduleName);
   }
 
   @Override
@@ -175,21 +171,12 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
    */
   public ModulePackageName getPackageName(
       @NonNull final String packageName, @NonNull final String moduleName) {
-    String fqId = moduleName + "." + packageName;
-    return (ModulePackageName)
-        packageCache
-            .asMap()
-            .computeIfAbsent(
-                fqId, key -> new ModulePackageName(packageName, getModuleSignature(moduleName)));
+    return ModulePackageName.of(packageName, getModuleSignature(moduleName));
   }
 
   public ModulePackageName getPackageName(
       @NonNull final String packageName, @NonNull final ModuleSignature moduleSignature) {
-    String fqId = moduleSignature.getModuleName() + "." + packageName;
-    return (ModulePackageName)
-        packageCache
-            .asMap()
-            .computeIfAbsent(fqId, key -> new ModulePackageName(packageName, moduleSignature));
+    return ModulePackageName.of(packageName, moduleSignature);
   }
 
   /** Wrapper which refers to a given ModuleSignature when building stuff */

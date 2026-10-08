@@ -23,6 +23,8 @@ package sootup.core.frontend;
  */
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import org.jspecify.annotations.NonNull;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
@@ -49,4 +51,16 @@ public interface BodySource {
   Object resolveAnnotationsDefaultValue();
 
   @NonNull MethodSignature getSignature();
+
+  /**
+   * Query method parameter declaration annotations (JVMS §4.7.18/§4.7.19) by index. JSR 308 type
+   * annotations (JVMS §4.7.20) attached to METHOD_FORMAL_PARAMETER must not be returned here.
+   */
+  default <T> List<T> getParameterAnnotations(int paramIndex) {
+    return getParameterAnnotations(paramIndex, "Any");
+  }
+
+  default <T> List<T> getParameterAnnotations(int paramIndex, String visibility) {
+    return Collections.emptyList();
+  }
 }

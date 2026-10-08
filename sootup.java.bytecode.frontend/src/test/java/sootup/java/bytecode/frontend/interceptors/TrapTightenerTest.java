@@ -35,13 +35,14 @@ import sootup.java.core.views.JavaView;
 public class TrapTightenerTest {
   public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();
 
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
   JavaClassType intType = factory.getClassType("int");
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
-      new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
+      new JavaIdentifierFactory()
+          .getMethodSignature(classType, "test", VoidType.getInstance(), Collections.emptyList());
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
 
   // build locals
@@ -51,7 +52,7 @@ public class TrapTightenerTest {
   Local l3 = JavaJimple.newLocal("l3", intType);
 
   ClassType exception = factory.getClassType("java.lang.Throwable");
-  IdentityRef caughtExceptionRef = JavaJimple.newCaughtExceptionRef();
+  IdentityRef caughtExceptionRef = JavaJimple.newCaughtExceptionRef(factory);
   FallsThroughStmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
   Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 

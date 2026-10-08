@@ -138,7 +138,8 @@ public class DexClassSource extends JavaSootClassSource {
 
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
-    return DexUtil.createAnnotationUsage(classInformation.classDefinition.getAnnotations());
+    return DexUtil.createAnnotationUsage(
+        classInformation.classDefinition.getAnnotations(), view.getIdentifierFactory());
   }
 
   private DexMethod createDexMethodFactory(
@@ -158,7 +159,7 @@ public class DexClassSource extends JavaSootClassSource {
         .map(
             field -> {
               String fieldName = field.getName();
-              Type fieldType = DexUtil.toSootType(field.getType(), 0);
+              Type fieldType = DexUtil.toSootType(field.getType(), 0, signatureFactory);
               FieldSignature fieldSignature =
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<FieldModifier> modifiers =
@@ -167,7 +168,7 @@ public class DexClassSource extends JavaSootClassSource {
               return new JavaSootField(
                   fieldSignature,
                   modifiers,
-                  DexUtil.createAnnotationUsage(field.getAnnotations()),
+                  DexUtil.createAnnotationUsage(field.getAnnotations(), signatureFactory),
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());

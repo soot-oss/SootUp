@@ -52,14 +52,16 @@ public class DexMethod {
       final Method method, List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
     List<Type> parameters =
         method.getParameters().stream()
-            .map(methodParameter -> DexUtil.toSootType(methodParameter.getType(), 0))
+            .map(
+                methodParameter ->
+                    DexUtil.toSootType(methodParameter.getType(), 0, view.getIdentifierFactory()))
             .collect(Collectors.toList());
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature(
                 declaringclassType,
                 method.getName(),
-                DexUtil.toSootType(method.getReturnType(), 0),
+                DexUtil.toSootType(method.getReturnType(), 0, view.getIdentifierFactory()),
                 parameters);
     return new DexMethodSource(methodSignature, method, dexEntry, bodyInterceptors, view)
         .makeSootMethod();

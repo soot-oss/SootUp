@@ -46,7 +46,10 @@ public class CheckCastInstruction extends DexLibAbstractInstruction {
 
     Local castValue = body.getRegisterLocal(checkCastInstr.getRegisterA());
     Type checkCastType =
-        DexUtil.toSootType(((TypeReference) checkCastInstr.getReference()).getType(), 0);
+        DexUtil.toSootType(
+            ((TypeReference) checkCastInstr.getReference()).getType(),
+            0,
+            body.getIdentifierFactory());
 
     JCastExpr castExpr = Jimple.newCastExpr(castValue, checkCastType);
     // generate "x = (Type) x"

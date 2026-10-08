@@ -25,6 +25,7 @@ package sootup.apk.frontend.instruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import sootup.apk.frontend.Util.DexUtil;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.LValue;
@@ -46,13 +47,15 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
    * Return the SootUp field signature for a dexlib FieldReference.
    *
    * @param fref the dexlib FieldReference.
+   * @param identifierFactory the factory that creates the field signature
    */
-  protected FieldSignature getFieldSignature(FieldReference fref) {
+  protected FieldSignature getFieldSignature(
+      FieldReference fref, IdentifierFactory identifierFactory) {
     String className = DexUtil.dottedClassName(fref.getDefiningClass());
-    return new FieldSignature(
-        DexUtil.getClassTypeFromClassName(className),
+    return identifierFactory.getFieldSignature(
         fref.getName(),
-        DexUtil.toSootType(fref.getType(), 0));
+        DexUtil.getClassTypeFromClassName(className, identifierFactory),
+        DexUtil.toSootType(fref.getType(), 0, identifierFactory));
   }
 
   /**

@@ -20,7 +20,7 @@ jobs:
       - name: Set up Java 17
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
-          distribution: adopt
+          distribution: temurin
           java-package: jdk
           java-version: 17
 
@@ -32,7 +32,7 @@ jobs:
         if: endsWith(env.PROJECT_VERSION, '-SNAPSHOT')
         uses: secure-software-engineering/actions/deployment/maven-deployment@7a286175a5ce134571e0228fc4da41885f2821e3 # develop
         with:
-          java-distribution: adopt
+          java-distribution: temurin
           java-version: 17
           server-id: central
           server-username: ${{ secrets.MAVEN_USERNAME }}

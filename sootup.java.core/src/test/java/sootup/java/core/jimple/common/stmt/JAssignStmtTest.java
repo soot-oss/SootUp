@@ -116,13 +116,13 @@ public class JAssignStmtTest {
 
     // test JFieldRef cast for JFieldRef - should not throw an Exception
     Local someLocal =
-        new Local("r42", JavaIdentifierFactory.getInstance().getClassType("Abc.def.Alphabet"));
+        new Local("r42", new JavaIdentifierFactory().getClassType("Abc.def.Alphabet"));
     final JStaticFieldRef somefield =
         Jimple.newStaticFieldRef(
-            JavaIdentifierFactory.getInstance()
+            new JavaIdentifierFactory()
                 .getFieldSignature(
                     "somefield",
-                    JavaIdentifierFactory.getInstance().getClassType("Abc.def.Alphabet"),
+                    new JavaIdentifierFactory().getClassType("Abc.def.Alphabet"),
                     PrimitiveType.getInt()));
     final JAssignStmt jAssignStmtField =
         Jimple.newAssignStmt(someLocal, somefield, StmtPositionInfo.getNoStmtPositionInfo());

@@ -69,7 +69,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   /**
    * Cheap, incrementally-mutated-in-place adjacency (dense ids + direct edges only). Built once,
    * memoized, then mutated directly by {@link #addType(SootClass)} - unlike {@link
-   * #typeHierarcBacking}, it never needs to be rebuilt wholesale.
+   * #typeHierarchyBacking}, it never needs to be rebuilt wholesale.
    */
   private final Supplier<RawAdjacency> lazyRaw;
 
@@ -80,7 +80,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
    * shift every subsequent pre-order position - mutation is rare relative to reads, so a full
    * rebuild on the first read after a mutation is cheap in practice.
    */
-  private ViewTypeHierarchy.@Nullable TypeHierarchyEncoding typeHierarcBacking;
+  private ViewTypeHierarchy.@Nullable TypeHierarchyEncoding typeHierarchyBacking;
 
   private final ClassType objectClassType;
 
@@ -143,11 +143,11 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     return resolved == null ? -1 : resolved;
   }
 
-  private TypeHierarchyEncoding getTypeHierarcBacking() {
-    TypeHierarchyEncoding d = typeHierarcBacking;
+  private TypeHierarchyEncoding getTypeHierarchyBacking() {
+    TypeHierarchyEncoding d = typeHierarchyBacking;
     if (d == null) {
       d = buildDerived(lazyRaw.get());
-      typeHierarcBacking = d;
+      typeHierarchyBacking = d;
     }
     return d;
   }
@@ -191,7 +191,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (!raw.isInterface.get(id)) {
       return Stream.empty();
     }
-    TypeHierarchyEncoding d = getTypeHierarcBacking();
+    TypeHierarchyEncoding d = getTypeHierarchyBacking();
     int dense = d.denseOfInterfaceId[id];
     return Arrays.stream(d.descendants[dense])
         .filter(x -> x != dense)
@@ -207,7 +207,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     }
 
     RawAdjacency raw = lazyRaw.get();
-    TypeHierarchyEncoding d = getTypeHierarcBacking();
+    TypeHierarchyEncoding d = getTypeHierarchyBacking();
     return raw.isInterface.get(id) ? interfaceSubtypesOf(id, raw, d) : classSubtypesOf(id, raw, d);
   }
 
@@ -294,7 +294,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     int idA = resolveId(a);
     int idB = resolveId(b);
     RawAdjacency raw = lazyRaw.get();
-    TypeHierarchyEncoding d = getTypeHierarcBacking();
+    TypeHierarchyEncoding d = getTypeHierarchyBacking();
 
     Set<ClassType> lcas;
     if (idA == -1 || idB == -1) {
@@ -386,7 +386,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       return Stream.empty();
     }
     RawAdjacency raw = lazyRaw.get();
-    TypeHierarchyEncoding d = getTypeHierarcBacking();
+    TypeHierarchyEncoding d = getTypeHierarchyBacking();
 
     if (!raw.isInterface.get(id)) {
       // We ascend from the class through its superclasses to java.lang.Object, unioning together
@@ -467,7 +467,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     }
 
     RawAdjacency raw = lazyRaw.get();
-    TypeHierarchyEncoding d = getTypeHierarcBacking();
+    TypeHierarchyEncoding d = getTypeHierarchyBacking();
     boolean superIsInterface = raw.isInterface.get(superId);
 
     if (!superIsInterface) {
@@ -511,7 +511,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (!changed) {
       return;
     }
-    typeHierarcBacking = null;
+    typeHierarchyBacking = null;
     subtypeClassesCache.clear();
     lcaCache.clear();
     modificationCount++;

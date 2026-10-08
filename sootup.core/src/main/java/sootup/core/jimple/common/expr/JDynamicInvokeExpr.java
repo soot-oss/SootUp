@@ -192,25 +192,25 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr {
   public JDynamicInvokeExpr withBootstrapMethodSignature(
       @NonNull MethodSignature bootstrapMethodSignature) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), getArgs());
+        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), tag, getArgs());
   }
 
   @NonNull
   public JDynamicInvokeExpr withBootstrapArgs(@NonNull List<Immediate> bootstrapArgs) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, bootstrapArgs, getMethodSignature(), getArgs());
+        bootstrapMethodSignature, bootstrapArgs, getMethodSignature(), tag, getArgs());
   }
 
   @NonNull
   public JDynamicInvokeExpr withMethodSignature(@NonNull MethodSignature methodSignature) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), getArgs());
+        bootstrapMethodSignature, getBootstrapArgs(), methodSignature, tag, getArgs());
   }
 
   @NonNull
   public JDynamicInvokeExpr withMethodArgs(@NonNull List<Immediate> methodArgs) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), methodArgs);
+        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), tag, methodArgs);
   }
 
   @Override

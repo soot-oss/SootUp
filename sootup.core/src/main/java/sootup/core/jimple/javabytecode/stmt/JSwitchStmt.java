@@ -226,6 +226,11 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
 
   @NonNull
   public JSwitchStmt withKey(@NonNull Immediate key) {
+    // Preserve tableswitch type when cloning with a new key.
+    // The List<IntConstant> constructor unconditionally marks isTableSwitch = false (lookupswitch).
+    if (isTableSwitch()) {
+      return new JSwitchStmt(key, getValue(0), getValue(getValues().size() - 1), getPositionInfo());
+    }
     return new JSwitchStmt(key, getValues(), getPositionInfo());
   }
 
@@ -236,6 +241,10 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
 
   @NonNull
   public JSwitchStmt withPositionInfo(@NonNull StmtPositionInfo positionInfo) {
+    // Preserve tableswitch type when cloning with updated position information.
+    if (isTableSwitch()) {
+      return new JSwitchStmt(getKey(), getValue(0), getValue(getValues().size() - 1), positionInfo);
+    }
     return new JSwitchStmt(getKey(), getValues(), positionInfo);
   }
 

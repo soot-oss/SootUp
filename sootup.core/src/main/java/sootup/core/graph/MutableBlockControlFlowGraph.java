@@ -147,9 +147,11 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
     Comparator<Trap> trapComparator;
     if (!traps.isEmpty()) {
       Map<Stmt, Integer> blockIdxMap = new HashMap<>();
+      Set<Stmt> blockStmts = Collections.newSetFromMap(new IdentityHashMap<>());
       int i = 0;
       for (List<Stmt> block : blocks) {
         blockIdxMap.put(block.get(0), i++);
+        blockStmts.addAll(block);
         /*
         for (int j = 0; j < block.size(); j++) {
           blockIdxMap.put(block.get(j), i++);
@@ -165,9 +167,18 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
             }
             trapstmtToIdx.put(trap.getBeginStmt(), beginIdx);
             Integer endIdx = blockIdxMap.get(trap.getEndStmt());
-            if (endIdx == null) {
+            if (endIdx == null) { // The end statement is not the head of any block
+              if (blockStmts.contains(trap.getEndStmt())) {
+                // a Trap can only end where a Block begins; inside a Block it would cover part of
+                // it
+                throw new IllegalArgumentException(
+                    "The end of the Trap "
+                        + trap
+                        + " is in the middle of a Block instead of at the head of one.");
+              }
+              // the end is in no Block at all (e.g. removed as unreachable): the Trap reaches the
+              // end of the body
               endIdx = blockIdxMap.size();
-              // throw new AssertionError();
             }
             trapstmtToIdx.put(trap.getEndStmt(), endIdx);
             Integer handlerIdx = blockIdxMap.get(trap.getHandlerStmt());
@@ -271,6 +282,12 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
       }
 
       addBlock(block, exceptionToHandlerMap);
+    }
+
+    // a Trap whose end is in no Block reaches the end of the body, so it is never closed above
+    while (nextEndingTrap != null
+        && trapstmtToIdx.get(nextEndingTrap.getEndStmt()) == blocks.size()) {
+      nextEndingTrap = trapEnd.poll();
     }
 
     if (nextStartingTrap != null || nextEndingTrap != null) {

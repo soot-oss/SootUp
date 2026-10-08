@@ -128,7 +128,7 @@ public class SootMethodTest {
 
   @Test
   public void constructorTest() {
-    IdentifierFactory idf = JavaIdentifierFactory.getInstance();
+    IdentifierFactory idf = new JavaIdentifierFactory();
 
     SootMethod mockedConstructor = spy(JavaSootMethod.JavaSootMethodBuilder.builder().build());
     MethodSignature mockedSignature = mock(MethodSignature.class);
