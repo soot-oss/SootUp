@@ -32,6 +32,7 @@ import org.graph4j.GraphBuilder;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.InstanceFieldRefNode;
 import sootup.spark.node.Node;
+import sootup.spark.node.StaticFieldRefNode;
 import sootup.spark.node.VariableNode;
 
 /** Pointer assigment graph */
@@ -48,7 +49,12 @@ public class PAG {
   }
 
   public void addEdge(Node source, Node target) {
-    if (source instanceof VariableNode) {
+    // a static field behaves like a global variable: writes and reads are assignments
+    if (source instanceof StaticFieldRefNode && target instanceof VariableNode) {
+      addEdge(source, target, PAGEdge.assignment());
+    } else if (source instanceof VariableNode && target instanceof StaticFieldRefNode) {
+      addEdge(source, target, PAGEdge.assignment());
+    } else if (source instanceof VariableNode) {
       if (target instanceof VariableNode) {
         addEdge(source, target, PAGEdge.assignment());
       } else if (target instanceof InstanceFieldRefNode) {

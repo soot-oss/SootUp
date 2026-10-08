@@ -73,9 +73,11 @@ import sootup.core.jimple.common.expr.JUshrExpr;
 import sootup.core.jimple.common.expr.JXorExpr;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.visitor.AbstractValueVisitor;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
+import sootup.core.types.ReferenceType;
+import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 import sootup.spark.Engine;
 import sootup.spark.SparkOptions;
@@ -97,6 +99,13 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   final SparkOptions sparkOptions;
   final IdentifierFactory identifierFactory;
   final MethodSignature globalScope;
+  final FieldSignature arrayElementField;
+
+  /**
+   * Name of the pseudo field that represents all elements of an array; no Java field can have it
+   */
+  public static final String ARRAY_ELEMENT_FIELD_NAME = "<arrayElement>";
+
   Node node;
 
   public ValueToNodeConversionVisitor(
@@ -112,6 +121,11 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
             "GLOBAL_SCOPE",
             VoidType.getInstance(),
             Collections.emptyList());
+    this.arrayElementField =
+        identifierFactory.getFieldSignature(
+            ARRAY_ELEMENT_FIELD_NAME,
+            identifierFactory.getClassType("GLOBAL", "sootup.global"),
+            identifierFactory.getClassType("java.lang.Object"));
   }
 
   /**
@@ -131,7 +145,8 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseNewArrayExpr(@NonNull JNewArrayExpr expr) {
-    ignore(expr);
+    // an array is an object: references stored in its elements flow through it
+    allocate(expr.getType());
   }
 
   @Override
@@ -311,14 +326,18 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
 
   @Override
   public void caseNewMultiArrayExpr(@NonNull JNewMultiArrayExpr expr) {
-    // TODO: wip
-    defaultCaseValue(expr);
+    // models the outermost array; the arrays it contains are not modeled
+    allocate(expr.getType());
   }
 
   @Override
   public void caseNewExpr(@NonNull JNewExpr expr) {
+    allocate(expr.getType());
+  }
+
+  private void allocate(@NonNull Type type) {
     AllocationNode.AllocationNodeBuilder<?, ?> builder =
-        AllocationNode.builder().type(expr.getType()).containingMethodSig(containingMethodSig);
+        AllocationNode.builder().type(type).containingMethodSig(containingMethodSig);
     if (!sparkOptions.isTypesForSites()) {
       builder.allocationSite(Engine.incrementAndGetAllocCount());
     }
@@ -328,10 +347,11 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   @Override
   public void caseStaticFieldRef(@NonNull JStaticFieldRef ref) {
     this.node =
+        // a static field is one global variable, shared by all methods
         StaticFieldRefNode.builder()
             .field(ref.getFieldSignature())
-            .type(ref.getFieldSignature().getDeclClassType())
-            .containingMethodSig(containingMethodSig)
+            .type(ref.getFieldSignature().getType())
+            .containingMethodSig(globalScope)
             .build();
   }
 
@@ -358,12 +378,12 @@ public class ValueToNodeConversionVisitor extends AbstractValueVisitor {
   @Override
   public void caseArrayRef(@NonNull JArrayRef ref) {
     val type = ref.getBase().getType();
-    if (type instanceof ArrayType arrayType) {
-      val baseType = arrayType.getBaseType();
-      if (baseType instanceof ClassType declaringClassType) {
-        val field =
-            identifierFactory.getFieldSignature(
-                String.valueOf(ref.getIndex()), declaringClassType, ref.getType());
+    if (type instanceof ArrayType) {
+      // Only arrays of references can hold objects. All elements of an array are modeled as one
+      // field, independent of the index and of the static type of the array, so that a[0] and a[i]
+      // as well as an Object[] and a String[] view of the same array refer to the same elements.
+      if (ref.getType() instanceof ReferenceType) {
+        val field = arrayElementField;
         val fieldBasedScope = sparkOptions.isIgnoreBaseObjects();
         val baseMethodSig = fieldBasedScope ? globalScope : containingMethodSig;
         val baseName =
