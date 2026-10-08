@@ -26,20 +26,16 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
-import org.jf.dexlib2.iface.DexFile;
 import org.jspecify.annotations.NonNull;
-import sootup.apk.frontend.Util.*;
 import sootup.apk.frontend.dexpler.DexClassProvider;
 import sootup.apk.frontend.dexpler.DexFileProvider;
+import sootup.apk.frontend.dexpler.DexLibWrapper;
 import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.interceptor.BodyInterceptor;
-import sootup.core.model.ClassModifier;
-import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
-import sootup.core.util.Modifiers;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 
@@ -53,20 +49,10 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
 
   Path apk_path;
 
-  /**
-   * Path to the Android platforms directory containing Android system libraries (android.jar files)
-   * for different API levels. This directory is required to resolve method calls and class
-   * references that are not defined in the APK itself, but are part of the Android system
-   * libraries.
-   *
-   * <p>The Android platforms directory can be obtained from: <a
-   * href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a>
-   */
-  private final AndroidVersionInfo androidSDKVersionInfo;
-
   private final List<BodyInterceptor> bodyInterceptors;
 
-  final Map<String, EnumSet<ClassModifier>> classNamesList;
+  // owned by this location, so the dex data is released together with it
+  private final DexLibWrapper dexLibWrapper;
 
   /**
    * Package prefixes for third-party libraries commonly statically linked into an app's own dex
@@ -138,11 +124,11 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
   /**
    * Creates a new ApkAnalysisInputLocation.
    *
-   * @param apkPath the path to the APK file to analyze system libraries (android.jar files) for
-   *     different API levels. This directory is required to resolve method calls and class
-   *     references that are not defined in the APK itself, but are part of the Android system
-   *     libraries. The Android platforms directory can be obtained from <a
-   *     href="https://github.com/Sable/android-platforms">https://github.com/Sable/android-platforms</a>
+   * <p>Only classes defined in the APK are provided. Framework classes (android.*) need the
+   * android.jar as a separate library input location.
+   *
+   * @param apkPath the APK, dex or odex file, or a directory of dex files
+   * @param androidSDKVersionInfo API level information of the APK
    * @param bodyInterceptors the list of body interceptors to apply during analysis
    */
   public ApkAnalysisInputLocation(
@@ -150,34 +136,15 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
       AndroidVersionInfo androidSDKVersionInfo,
       List<BodyInterceptor> bodyInterceptors) {
     this.apk_path = apkPath;
-    this.androidSDKVersionInfo = androidSDKVersionInfo;
     this.bodyInterceptors = bodyInterceptors;
-    this.classNamesList = extractDexFilesFromPath();
-  }
-
-  private Map<String, EnumSet<ClassModifier>> extractDexFilesFromPath() {
-    List<DexFileProvider.DexContainer<? extends DexFile>> dexFromSource;
-    DexUtil.setAndroidVersionInfo(androidSDKVersionInfo);
     try {
-      dexFromSource =
-          DexFileProvider.getInstance()
-              .getDexFromSource(apk_path.toFile(), androidSDKVersionInfo.getApi_version());
+      this.dexLibWrapper =
+          new DexLibWrapper(
+              new DexFileProvider()
+                  .getDexFromSource(apkPath.toFile(), androidSDKVersionInfo.getApi_version()));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    Map<String, EnumSet<ClassModifier>> classList = new HashMap<>();
-    dexFromSource.forEach(
-        dexContainer ->
-            dexContainer
-                .getBase()
-                .getDexFile()
-                .getClasses()
-                .forEach(
-                    dexClass ->
-                        classList.put(
-                            DexUtil.dottedClassName(dexClass.toString()),
-                            Modifiers.getClassModifiers(dexClass.getAccessFlags()))));
-    return classList;
   }
 
   /**
@@ -188,14 +155,14 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
    * <p>This is the reliable way to tell classes belonging to this program (app code and whatever's
    * bundled with it) apart from platform (android.jar) or other classpath classes in a {@link
    * View}. It does <em>not</em> distinguish the app's own classes from a bundled library within the
-   * program - for that, check {@link SootClass#isLibraryClass()}, which now reflects both
-   * boundaries correctly: {@link #getClassSource(ClassType, View)} reports {@link
+   * program - for that, check {@link sootup.core.model.SootClass#isLibraryClass()}, which now
+   * reflects both boundaries correctly: {@link #getClassSource(ClassType, View)} reports {@link
    * SourceType#Library} for bundled-library classes the same way android.jar's {@code
    * AnalysisInputLocation} does for platform classes.
    */
   @NonNull
   public Set<String> getApplicationClassNames() {
-    return Collections.unmodifiableSet(classNamesList.keySet());
+    return Collections.unmodifiableSet(dexLibWrapper.getClassNames());
   }
 
   @NonNull
@@ -204,18 +171,18 @@ public class ApkAnalysisInputLocation implements AnalysisInputLocation {
       @NonNull ClassType type, @NonNull View view) {
     AnalysisInputLocation reportedLocation =
         isBundledLibraryClass(type.getFullyQualifiedName()) ? bundledLibraryInputLocation : this;
-    return new DexClassProvider(view).createClassSource(reportedLocation, apk_path, type);
+    return new DexClassProvider(view, dexLibWrapper)
+        .createClassSource(reportedLocation, apk_path, type);
   }
 
   @NonNull
   @Override
   public Stream<? extends SootClassSource> getClassSources(@NonNull View view) {
-    return classNamesList.entrySet().stream()
+    return dexLibWrapper.getClassNames().stream()
         .flatMap(
             className ->
                 StreamUtils.optionalToStream(
-                    getClassSource(
-                        view.getIdentifierFactory().getClassType(className.getKey()), view)));
+                    getClassSource(view.getIdentifierFactory().getClassType(className), view)));
   }
 
   @NonNull
