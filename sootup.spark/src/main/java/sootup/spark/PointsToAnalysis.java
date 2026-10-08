@@ -75,8 +75,7 @@ public class PointsToAnalysis {
 
   private PointsToAnalysis(Solver solver) {
     this.solver = solver;
-    this.nodeFactory =
-        new NodeFactory(solver.getSparkOptions(), solver.getView().getIdentifierFactory());
+    this.nodeFactory = new NodeFactory(solver.getSparkOptions(), solver.getView());
   }
 
   /**

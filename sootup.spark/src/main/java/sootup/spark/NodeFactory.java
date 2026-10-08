@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jspecify.annotations.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -38,6 +38,7 @@ import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
+import sootup.core.views.View;
 import sootup.spark.node.AllocationNode;
 import sootup.spark.node.Node;
 import sootup.spark.node.ValueToNodeConversionVisitor;
@@ -47,12 +48,33 @@ import sootup.spark.node.VariableNode;
  * It is responsible for creating a SPARK representative nodes (nodes present in SPARK, AllocNode,
  * FieldRef Node, and VarNode)
  */
-@RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class NodeFactory {
 
   @NonNull SparkOptions sparkOptions;
   @NonNull IdentifierFactory identifierFactory;
+  @Nullable View view;
+
+  /**
+   * Creates a node factory that resolves field references in the given view, so that all references
+   * to a field share one field node, regardless of the class through which the field is accessed.
+   */
+  public NodeFactory(@NonNull SparkOptions sparkOptions, @NonNull View view) {
+    this.sparkOptions = sparkOptions;
+    this.identifierFactory = view.getIdentifierFactory();
+    this.view = view;
+  }
+
+  /**
+   * Creates a node factory without a view: field nodes use the field signatures as they are
+   * referenced.
+   */
+  public NodeFactory(
+      @NonNull SparkOptions sparkOptions, @NonNull IdentifierFactory identifierFactory) {
+    this.sparkOptions = sparkOptions;
+    this.identifierFactory = identifierFactory;
+    this.view = null;
+  }
 
   /**
    * creates a PAG node for a given Jimple value
@@ -63,7 +85,8 @@ public class NodeFactory {
   @NonNull
   public Optional<Node> createNode(@NonNull Value value, MethodSignature containingMethodSig) {
     ValueToNodeConversionVisitor visitor =
-        new ValueToNodeConversionVisitor(containingMethodSig, sparkOptions, identifierFactory);
+        new ValueToNodeConversionVisitor(
+            containingMethodSig, sparkOptions, identifierFactory, view);
     value.accept(visitor);
     return visitor.getResult();
   }
@@ -83,7 +106,8 @@ public class NodeFactory {
       @NonNull Local target,
       @NonNull MethodSignature containingMethodSig) {
     ValueToNodeConversionVisitor visitor =
-        new ValueToNodeConversionVisitor(containingMethodSig, sparkOptions, identifierFactory);
+        new ValueToNodeConversionVisitor(
+            containingMethodSig, sparkOptions, identifierFactory, view);
     List<Map.Entry<Node, Node>> edges = new ArrayList<>();
     String enclosingName = target.getName();
     // the base of the first store is the node of the target local, so it has the local's type
