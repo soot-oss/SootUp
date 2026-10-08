@@ -131,7 +131,7 @@ class ValueToNodeConversionTest {
     val local = JavaJimple.newLocal("r0", bType);
     val jcastExpr = JavaJimple.newCastExpr(local, aType);
     val node = nodeFactory.createNode(jcastExpr, methodSig);
-    assertTrue(node.isEmpty());
+    assertEquals(nodeFactory.createNode(local, methodSig), node);
   }
 
   @Test

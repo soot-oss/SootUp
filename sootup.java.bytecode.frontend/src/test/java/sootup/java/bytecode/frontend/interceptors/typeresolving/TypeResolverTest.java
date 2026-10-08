@@ -367,12 +367,14 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
             .getMethodSignature("Misc", "testTaAndLnsWithoutLS", "void", Collections.emptyList());
     final Body body = view.getMethod(methodSignature).get().getBody();
 
+    // a = 8 / 0 can throw before it assigns. a++ after the try is reached two ways: through the
+    // handler, where a is still the 10 assigned before the try, and directly when the division
+    // completes, where a is its result. Both definitions reach a++, so they are one local, l0#0.
     assertLocals(
         body,
-        Jimple.newLocal("l0#0", PrimitiveType.getByte()),
-        Jimple.newLocal("l0#2", PrimitiveType.getInt()),
+        Jimple.newLocal("l0#0", PrimitiveType.getInt()),
         Jimple.newLocal("l2#0", PrimitiveType.getInt()),
-        Jimple.newLocal("$stack3", sysoutType),
+        Jimple.newLocal("$stack3", throwableType),
         Jimple.newLocal("l0#1", PrimitiveType.getInt()),
         Jimple.newLocal("l1", PrimitiveType.getInt()),
         Jimple.newLocal("l2#1", throwableType));

@@ -16,7 +16,7 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package qilin.core.reflection;
+package sootup.callgraph.reflection;
 
 public enum ReflectionKind {
   ClassForName,

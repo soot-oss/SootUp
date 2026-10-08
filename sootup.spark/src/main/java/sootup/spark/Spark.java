@@ -27,6 +27,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.reflection.ReflectionModel;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
@@ -58,10 +59,11 @@ import sootup.core.views.View;
  * seedEntryPointClinits}/{@code sootup.callgraph.scope.VirtualCallResolver} constructor and pass it
  * via {@code callGraph(...)} instead of letting Spark run CHA with its defaults.
  *
- * <p>{@code dynamicInvokeResolver(...)} (default {@code
+ * <p>{@code reflectionModel(...)} (default {@code ReflectionModel.none()}) makes reflective calls
+ * explicit in every body Spark reads. {@code dynamicInvokeResolver(...)} (default {@code
  * DynamicInvokeResolver.bootstrapMethodHandles()}) decides invokedynamic targets; values captured
  * by a lambda flow into its body. When passing a pre-built {@code callGraph}, build it with the
- * same resolver, else invokedynamic edges and PAG disagree.
+ * same model and resolver instances, else reflective/invokedynamic edges and PAG disagree.
  */
 public class Spark {
 
@@ -75,6 +77,7 @@ public class Spark {
       List<MethodSignature> entryPoints,
       SparkOptions sparkOptions,
       CallGraph callGraph,
+      ReflectionModel reflectionModel,
       DynamicInvokeResolver dynamicInvokeResolver) {
     this.solver =
         Solver.builder()
@@ -82,6 +85,7 @@ public class Spark {
             .entryPoints(entryPoints)
             .sparkOptions(sparkOptions)
             .callGraph(callGraph)
+            .reflectionModel(reflectionModel)
             .dynamicInvokeResolver(dynamicInvokeResolver)
             .build();
   }
