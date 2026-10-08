@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -137,8 +138,23 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   }
 
   /**
-   * Widest CHA constructor: additionally takes a {@link DynamicInvokeResolver} deciding the targets
-   * of invokedynamic call sites.
+   * Like {@link #ClassHierarchyAnalysisAlgorithm(View, CallResolver, VirtualCallResolver,
+   * boolean)}, plus a {@link ReflectionModel} that turns resolved reflective calls into plain call
+   * edges.
+   */
+  public ClassHierarchyAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel) {
+    super(view, callResolver, virtualCallResolver, seedEntryPointClinits, reflectionModel);
+  }
+
+  /**
+   * Like {@link #ClassHierarchyAnalysisAlgorithm(View, CallResolver, VirtualCallResolver,
+   * boolean)}, plus a {@link DynamicInvokeResolver} deciding the targets of invokedynamic call
+   * sites.
    */
   public ClassHierarchyAnalysisAlgorithm(
       @NonNull View view,
@@ -147,6 +163,27 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       boolean seedEntryPointClinits,
       @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
     super(view, callResolver, virtualCallResolver, seedEntryPointClinits, dynamicInvokeResolver);
+  }
+
+  /**
+   * Widest CHA constructor: additionally takes a {@link ReflectionModel} that turns resolved
+   * reflective calls into plain call edges and a {@link DynamicInvokeResolver} deciding the targets
+   * of invokedynamic call sites.
+   */
+  public ClassHierarchyAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull ReflectionModel reflectionModel,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
+    super(
+        view,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        reflectionModel,
+        dynamicInvokeResolver);
   }
 
   @NonNull
