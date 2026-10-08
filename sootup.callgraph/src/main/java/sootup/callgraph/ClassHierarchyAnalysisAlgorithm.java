@@ -138,8 +138,9 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   }
 
   /**
-   * Additionally takes a {@link ReflectionModel} that turns resolved reflective calls into plain
-   * call edges.
+   * Like {@link #ClassHierarchyAnalysisAlgorithm(View, CallResolver, VirtualCallResolver,
+   * boolean)}, plus a {@link ReflectionModel} that turns resolved reflective calls into plain call
+   * edges.
    */
   public ClassHierarchyAnalysisAlgorithm(
       @NonNull View view,
@@ -151,7 +152,22 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   }
 
   /**
-   * Widest CHA constructor: additionally takes a {@link DynamicInvokeResolver} deciding the targets
+   * Like {@link #ClassHierarchyAnalysisAlgorithm(View, CallResolver, VirtualCallResolver,
+   * boolean)}, plus a {@link DynamicInvokeResolver} deciding the targets of invokedynamic call
+   * sites.
+   */
+  public ClassHierarchyAnalysisAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
+    super(view, callResolver, virtualCallResolver, seedEntryPointClinits, dynamicInvokeResolver);
+  }
+
+  /**
+   * Widest CHA constructor: additionally takes a {@link ReflectionModel} that turns resolved
+   * reflective calls into plain call edges and a {@link DynamicInvokeResolver} deciding the targets
    * of invokedynamic call sites.
    */
   public ClassHierarchyAnalysisAlgorithm(

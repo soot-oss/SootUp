@@ -184,7 +184,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       @NonNull CallResolver callResolver,
       @NonNull VirtualCallResolver virtualCallResolver,
       boolean seedEntryPointClinits) {
-    this(view, callResolver, virtualCallResolver, seedEntryPointClinits, ReflectionModel.none());
+    this(
+        view,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        ReflectionModel.none(),
+        DynamicInvokeResolver.bootstrapMethodHandles());
   }
 
   /**
@@ -208,9 +214,28 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * Like {@link #AbstractCallGraphAlgorithm(View, CallResolver, VirtualCallResolver, boolean,
-   * ReflectionModel)}, plus a {@link DynamicInvokeResolver} deciding the targets of invokedynamic
-   * call sites.
+   * Like {@link #AbstractCallGraphAlgorithm(View, CallResolver, VirtualCallResolver, boolean)},
+   * plus a {@link DynamicInvokeResolver} deciding the targets of invokedynamic call sites.
+   */
+  protected AbstractCallGraphAlgorithm(
+      @NonNull View view,
+      @NonNull CallResolver callResolver,
+      @NonNull VirtualCallResolver virtualCallResolver,
+      boolean seedEntryPointClinits,
+      @NonNull DynamicInvokeResolver dynamicInvokeResolver) {
+    this(
+        view,
+        callResolver,
+        virtualCallResolver,
+        seedEntryPointClinits,
+        ReflectionModel.none(),
+        dynamicInvokeResolver);
+  }
+
+  /**
+   * Widest constructor: a {@link ReflectionModel} rewriting each inspected body so resolved
+   * reflective calls become plain call edges, and a {@link DynamicInvokeResolver} deciding the
+   * targets of invokedynamic call sites.
    */
   protected AbstractCallGraphAlgorithm(
       @NonNull View view,

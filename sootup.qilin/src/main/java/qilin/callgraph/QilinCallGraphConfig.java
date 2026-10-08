@@ -52,8 +52,9 @@ import sootup.core.types.ClassType;
  * PointerAnalysisConfig.Builder} the caller supplies (or a fresh default one).
  *
  * <p>A reflection model set on the common stage overrides the {@link PointerAnalysisConfig}'s own
- * {@code reflectionModel}/{@code reflectionLogPath}; if unset, those apply unchanged. Same for the
- * common stage's {@code dynamicInvokeResolver}.
+ * {@code reflectionModel}/{@code reflectionLogPath}; if unset, those apply unchanged. Likewise, an
+ * invokedynamic resolver set on the common stage overrides the {@link PointerAnalysisConfig}'s own
+ * {@code dynamicInvokeResolver}; if unset, that applies unchanged.
  *
  * <p>The common stage's {@code CallResolver} (pre-dispatch) is <b>not</b> consulted: qilin's own
  * dispatch resolution ({@code qilin.core.VirtualCalls}) doesn't integrate with {@code

@@ -60,13 +60,10 @@ import sootup.core.views.View;
  * via {@code callGraph(...)} instead of letting Spark run CHA with its defaults.
  *
  * <p>{@code reflectionModel(...)} (default {@code ReflectionModel.none()}) makes reflective calls
- * explicit in every body Spark reads. When passing a pre-built {@code callGraph}, build it with the
- * same model instance, else reflective edges and PAG disagree.
- *
- * <p>{@code dynamicInvokeResolver(...)} (default {@code
+ * explicit in every body Spark reads. {@code dynamicInvokeResolver(...)} (default {@code
  * DynamicInvokeResolver.bootstrapMethodHandles()}) decides invokedynamic targets; values captured
- * by a lambda flow into its body. Same rule: build a pre-built {@code callGraph} with the same
- * resolver.
+ * by a lambda flow into its body. When passing a pre-built {@code callGraph}, build it with the
+ * same model and resolver instances, else reflective/invokedynamic edges and PAG disagree.
  */
 public class Spark {
 
