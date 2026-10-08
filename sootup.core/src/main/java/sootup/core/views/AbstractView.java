@@ -53,6 +53,20 @@ public abstract class AbstractView implements View {
   }
 
   /**
+   * Returns the type hierarchy if it has already been built, so that changes to the view can be
+   * applied to it.
+   */
+  @Nullable
+  protected TypeHierarchy getTypeHierarchyIfBuilt() {
+    return typeHierarchy;
+  }
+
+  /** Discards the type hierarchy, so that it is rebuilt from the view on its next use. */
+  protected void resetTypeHierarchy() {
+    typeHierarchy = null;
+  }
+
+  /**
    * resolve and check for accessibility of the class from a given package * TODO: incorporate
    * AccessUtil @NonNull public synchronized Optional&lt;T&gt; getClass( @NonNull PackageName
    * entryPackage, @NonNull ClassType type) { Optional&lt;T&gt; aClass = getClass(type); if

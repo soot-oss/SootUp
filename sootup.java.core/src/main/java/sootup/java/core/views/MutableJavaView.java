@@ -31,6 +31,8 @@ import sootup.core.cache.MutableClassCache;
 import sootup.core.cache.provider.MutableFullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.typehierarchy.MutableTypeHierarchy;
+import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.MutableView;
 import sootup.core.views.ViewChangeListener;
@@ -66,6 +68,10 @@ public class MutableJavaView extends JavaView implements MutableView {
     this.cache.putClass(classType, clazz);
     // the type may have been looked up - and recorded as absent - before it was added here
     forgetAbsence(classType);
+    TypeHierarchy typeHierarchy = getTypeHierarchyIfBuilt();
+    if (typeHierarchy instanceof MutableTypeHierarchy) {
+      ((MutableTypeHierarchy) typeHierarchy).addType(clazz);
+    }
     this.fireAddition(clazz);
   }
 
@@ -75,6 +81,8 @@ public class MutableJavaView extends JavaView implements MutableView {
   public void removeClass(ClassType classType) {
     JavaSootClass removedClass =
         (JavaSootClass) ((MutableClassCache) this.cache).removeClass(classType);
+    // the hierarchy cannot remove types, so it is rebuilt on its next use
+    resetTypeHierarchy();
     this.fireRemoval(removedClass);
   }
 
@@ -86,8 +94,28 @@ public class MutableJavaView extends JavaView implements MutableView {
 
   /** Removes the provided oldClass from the view and adds the provided newClass. */
   public void replaceClass(JavaSootClass oldClass, JavaSootClass newClass) {
-    this.removeClass(oldClass);
-    this.addClass(newClass);
+    ClassType oldType = oldClass.getClassSource().getClassType();
+    ClassType newType = newClass.getClassSource().getClassType();
+    boolean sameSupertypes =
+        oldType.equals(newType)
+            && oldClass.getSuperclass().equals(newClass.getSuperclass())
+            && oldClass.getInterfaces().equals(newClass.getInterfaces());
+    if (!sameSupertypes) {
+      this.removeClass(oldClass);
+      this.addClass(newClass);
+      return;
+    }
+
+    // the class keeps its place in the type hierarchy, only the class object changes
+    JavaSootClass removedClass =
+        (JavaSootClass) ((MutableClassCache) this.cache).removeClass(oldType);
+    this.fireRemoval(removedClass);
+    this.cache.putClass(newType, newClass);
+    TypeHierarchy typeHierarchy = getTypeHierarchyIfBuilt();
+    if (typeHierarchy instanceof MutableTypeHierarchy) {
+      ((MutableTypeHierarchy) typeHierarchy).updateType(newClass);
+    }
+    this.fireAddition(newClass);
   }
 
   /**

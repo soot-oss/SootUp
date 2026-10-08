@@ -33,4 +33,13 @@ public interface MutableTypeHierarchy extends TypeHierarchy {
    * <p>For internal use only.
    */
   void addType(SootClass sootClass);
+
+  /**
+   * Notifies the hierarchy that the class of a type it already contains was replaced by a class
+   * with the same superclass and interfaces, e.g. because a method was added. The hierarchy itself
+   * does not change, but cached class objects must not be returned anymore.
+   *
+   * <p>For internal use only.
+   */
+  void updateType(SootClass sootClass);
 }

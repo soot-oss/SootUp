@@ -529,6 +529,12 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     modificationCount++;
   }
 
+  @Override
+  public void updateType(@NonNull SootClass sootClass) {
+    subtypeClassesCache.clear();
+    modificationCount++;
+  }
+
   private static Stream<ClassType> classSubtypesOf(
       int id, RawAdjacency raw, TypeHierarchyEncoding d) {
     int start = d.rangeStart[id];
