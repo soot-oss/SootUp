@@ -29,7 +29,8 @@ import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 
 /**
  * Lowers one kind of invokedynamic (identified by its bootstrap method) to equivalent plain Jimple,
- * which {@link InvokeDynamicDesugarer} puts in place of the invokedynamic statement.
+ * which {@link sootup.interceptors.InvokeDynamicDesugarer} puts in place of the invokedynamic
+ * statement.
  */
 public interface InvokeDynamicDesugarizer {
 
