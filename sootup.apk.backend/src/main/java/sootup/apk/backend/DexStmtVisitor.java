@@ -19,6 +19,7 @@ import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.*;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.model.SootMethod;
+import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
@@ -114,8 +115,9 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
       Register targetRegister = registerAllocator.getRegisterForImmediate(leftOpLocal, false, stmt);
 
       if (rightOp instanceof Constant constant) {
-        if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
-            || targetRegister.isTypeGuessed()) {
+        if ((targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
+                || targetRegister.isTypeGuessed())
+            && !constant.getType().equals(NullType.getInstance())) {
           if (targetRegister.getType() != constant.getType()
               && !targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)) {
             targetRegister =

@@ -907,18 +907,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
         targetRegister.getNumber());
     log.info("Cast type: {}", type);
 
-    /*if (register.getType().equals(type)) {
-      log.info("Move instruction cast java.lang.Object");
-      dexStmtVisitor.addInstruction(
-          generateMoveInstruction(
-              targetRegister,
-              register,
-              register.getType(),
-              true,
-              currentStmt.asJAssignStmt().getLeftOp(),
-              registerAllocator),
-          currentStmt);
-    } else */
+
     if (!register.isInitialized()) {
       // no not check-cast on uninitialized reference
       dexStmtVisitor.addInstruction(
@@ -932,6 +921,16 @@ public class DexExprVisitor extends AbstractExprVisitor {
           currentStmt);
     } else if (register.getType() instanceof PrimitiveType && type instanceof PrimitiveType) {
       castPrimitive(register, targetRegister, register.getType(), type);
+    } else if (!DexUtil.isObject(type)) {
+      dexStmtVisitor.addInstruction(
+          generateMoveInstruction(
+              targetRegister,
+              register,
+              register.getType(),
+              true,
+              currentStmt.asJAssignStmt().getLeftOp(),
+              registerAllocator),
+          currentStmt);
     } else {
       castObject(register, type);
     }
