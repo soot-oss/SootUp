@@ -88,10 +88,15 @@ public abstract class ClassType extends ReferenceType implements Signature {
     if (this == o) {
       return true;
     }
-    if (getClass() != o.getClass()) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
     return getFullyQualifiedName().equals(((ClassType) o).getFullyQualifiedName());
+  }
+
+  @Override
+  public int hashCode() {
+    return getFullyQualifiedName().hashCode();
   }
 
   @Override
