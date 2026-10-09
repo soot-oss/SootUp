@@ -9,6 +9,9 @@ permissions:
 
 jobs:
   schedule:
+    permissions:
+      contents: read
+      pull-requests: read
     uses: secure-software-engineering/actions/.github/workflows/maven-release-schedule.yml@7a286175a5ce134571e0228fc4da41885f2821e3
     with:
       head_branch: develop

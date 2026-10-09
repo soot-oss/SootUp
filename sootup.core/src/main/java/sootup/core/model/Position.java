@@ -22,6 +22,7 @@ package sootup.core.model;
  * #L%
  */
 
+import java.util.Objects;
 import org.jspecify.annotations.NonNull;
 
 public abstract class Position implements Comparable<Position> {
@@ -61,6 +62,11 @@ public abstract class Position implements Comparable<Position> {
         && getFirstCol() == position.getFirstCol()
         && getLastLine() == position.getLastLine()
         && getLastCol() == position.getLastCol();
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getFirstLine(), getFirstCol(), getLastLine(), getLastCol());
   }
 
   /**
