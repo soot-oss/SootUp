@@ -27,6 +27,7 @@ import java.util.List;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.common.AbstractLocal;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.EnumConstant;
 import sootup.core.jimple.common.constant.MethodHandle;
@@ -41,6 +42,8 @@ import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.jimple.basic.JavaLocal;
+import sootup.java.core.jimple.basic.JavaSlotLocal;
+import sootup.java.core.jimple.basic.JavaStackLocal;
 
 /**
  * JavaJimple implements the Java specific terms for {@link Jimple}
@@ -56,7 +59,46 @@ public class JavaJimple extends Jimple {
 
   /** Constructs a Local with the given name and type. */
   public static JavaLocal newLocal(String name, Type t, Iterable<AnnotationUsage> annotations) {
-    return new JavaLocal(name, t, annotations);
+    return new JavaLocalImpl(name, t, annotations);
+  }
+
+  /**
+   * @deprecated Use {@link #newSlotLocal(String, Type, int)} or {@link #newLocal(String, Type)}.
+   */
+  @Deprecated
+  public static JavaLocal newLocal(String name, Type t, int slotIndex) {
+    return newLocal(name, t, slotIndex, Collections.emptyList());
+  }
+
+  /**
+   * @deprecated Use an explicit generic or slot local factory.
+   */
+  @Deprecated
+  public static JavaLocal newLocal(
+      String name, Type t, int slotIndex, Iterable<AnnotationUsage> annotations) {
+    return slotIndex == -1
+        ? newLocal(name, t, annotations)
+        : newSlotLocal(name, t, slotIndex, annotations);
+  }
+
+  /** Constructs a temporary originating from the JVM operand stack. */
+  public static JavaStackLocal newStackLocal(String name, Type t) {
+    return newStackLocal(name, t, Collections.emptyList());
+  }
+
+  public static JavaStackLocal newStackLocal(
+      String name, Type t, Iterable<AnnotationUsage> annotations) {
+    return new JavaStackLocalImpl(name, t, annotations);
+  }
+
+  /** Constructs a local originating from the given nonnegative JVM local variable slot. */
+  public static JavaSlotLocal newSlotLocal(String name, Type t, int slotIndex) {
+    return newSlotLocal(name, t, slotIndex, Collections.emptyList());
+  }
+
+  public static JavaSlotLocal newSlotLocal(
+      String name, Type t, int slotIndex, Iterable<AnnotationUsage> annotations) {
+    return new JavaSlotLocalImpl(name, t, slotIndex, annotations);
   }
 
   /**
@@ -108,6 +150,98 @@ public class JavaJimple extends Jimple {
 
   /** Constructs a Local with the given name and type. */
   public static JavaLocal newLocal(String name, Type t) {
-    return new JavaLocal(name, t, Collections.emptyList());
+    return new JavaLocalImpl(name, t, Collections.emptyList());
+  }
+
+  /** Generic Java local with annotations and no JVM slot or operand stack provenance. */
+  private static class JavaLocalImpl extends AbstractLocal implements JavaLocal {
+    @NonNull private final Iterable<AnnotationUsage> annotations;
+
+    private JavaLocalImpl(String name, Type type, @NonNull Iterable<AnnotationUsage> annotations) {
+      super(name, type);
+      this.annotations = annotations;
+    }
+
+    @Override
+    public @NonNull Iterable<AnnotationUsage> getAnnotations() {
+      return annotations;
+    }
+
+    @Override
+    public @NonNull JavaLocal withName(@NonNull String name) {
+      return new JavaLocalImpl(name, getType(), annotations);
+    }
+
+    @Override
+    public @NonNull JavaLocal withType(@NonNull Type type) {
+      return new JavaLocalImpl(getName(), type, annotations);
+    }
+
+    @Override
+    public @NonNull JavaLocal withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
+      return new JavaLocalImpl(getName(), getType(), annotations);
+    }
+  }
+
+  /** Operand stack temporary that preserves Java annotations when copied. */
+  private static final class JavaStackLocalImpl extends JavaLocalImpl implements JavaStackLocal {
+    private JavaStackLocalImpl(
+        String name, Type type, @NonNull Iterable<AnnotationUsage> annotations) {
+      super(name, type, annotations);
+    }
+
+    @Override
+    public @NonNull JavaStackLocal withName(@NonNull String name) {
+      return new JavaStackLocalImpl(name, getType(), getAnnotations());
+    }
+
+    @Override
+    public @NonNull JavaStackLocal withType(@NonNull Type type) {
+      return new JavaStackLocalImpl(getName(), type, getAnnotations());
+    }
+
+    @Override
+    public @NonNull JavaStackLocal withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
+      return new JavaStackLocalImpl(getName(), getType(), annotations);
+    }
+  }
+
+  /** Local preserving its original JVM slot index and Java annotations when copied. */
+  private static final class JavaSlotLocalImpl extends JavaLocalImpl implements JavaSlotLocal {
+    private final int slotIndex;
+
+    private JavaSlotLocalImpl(
+        String name, Type type, int slotIndex, @NonNull Iterable<AnnotationUsage> annotations) {
+      super(name, type, annotations);
+      if (slotIndex < 0) {
+        throw new IllegalArgumentException("Slot index must be nonnegative");
+      }
+      this.slotIndex = slotIndex;
+    }
+
+    @Override
+    public int getSlotIndex() {
+      return slotIndex;
+    }
+
+    @Override
+    public @NonNull JavaSlotLocal withName(@NonNull String name) {
+      return new JavaSlotLocalImpl(name, getType(), slotIndex, getAnnotations());
+    }
+
+    @Override
+    public @NonNull JavaSlotLocal withType(@NonNull Type type) {
+      return new JavaSlotLocalImpl(getName(), type, slotIndex, getAnnotations());
+    }
+
+    @Override
+    public @NonNull JavaSlotLocal withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
+      return new JavaSlotLocalImpl(getName(), getType(), slotIndex, annotations);
+    }
+
+    @Override
+    public @NonNull JavaSlotLocal withSlotIndex(int slotIndex) {
+      return new JavaSlotLocalImpl(getName(), getType(), slotIndex, getAnnotations());
+    }
   }
 }

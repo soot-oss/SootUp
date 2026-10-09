@@ -23,22 +23,26 @@ package sootup.java.core.jimple.basic;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.SlotLocal;
 import sootup.core.types.Type;
 import sootup.java.core.AnnotationUsage;
-import sootup.java.core.HasAnnotation;
 
-/** A local with Java annotations, independent of its slot or operand stack provenance. */
-public interface JavaLocal extends Local, HasAnnotation {
+/** Combines Java annotations with original JVM local variable slot provenance. */
+public interface JavaSlotLocal extends JavaLocal, SlotLocal {
   @Override
-  @NonNull Iterable<AnnotationUsage> getAnnotations();
-
-  @Override
-  @NonNull JavaLocal withName(@NonNull String name);
+  @NonNull JavaSlotLocal withName(@NonNull String name);
 
   @Override
-  @NonNull JavaLocal withType(@NonNull Type type);
+  @NonNull JavaSlotLocal withType(@NonNull Type type);
 
-  /** Returns a copy with new annotations, preserving all other state and capabilities. */
-  @NonNull JavaLocal withAnnotations(@NonNull Iterable<AnnotationUsage> annotations);
+  @Override
+  @NonNull JavaSlotLocal withAnnotations(@NonNull Iterable<AnnotationUsage> annotations);
+
+  @Override
+  @NonNull JavaSlotLocal withSlotIndex(int slotIndex);
+
+  @Override
+  default @NonNull JavaSlotLocal withIndex(int slotIndex) {
+    return withSlotIndex(slotIndex);
+  }
 }
