@@ -39,7 +39,7 @@ public class ExceptionHandler {
   public ExceptionHandler(PTA pta) {
     this.pta = pta;
     this.pag = pta.getPag();
-    this.throwNodeToSites = new HashMap<>((int) pta.getView().getClasses().count());
+    this.throwNodeToSites = new HashMap<>();
   }
 
   public Collection<ExceptionThrowSite> throwSitesLookUp(VarNode throwNode) {

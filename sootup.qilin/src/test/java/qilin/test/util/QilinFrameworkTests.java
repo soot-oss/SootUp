@@ -47,9 +47,17 @@ public abstract class QilinFrameworkTests {
   protected static String appPath, refLogPath;
   protected static boolean isSetUp = false;
 
+  /**
+   * One view per test class (JUnit runs this inherited {@code @BeforeAll} per subclass): parsing
+   * the JDK runtime is the bulk of a small test's time. PTAs don't mutate the view - effect models
+   * copy bodies into their own PAG.
+   */
+  protected static View view;
+
   @BeforeAll
   public static void setUp() throws IOException {
     if (isSetUp) {
+      view = ViewFactory.createView(appPath, null);
       return;
     }
     File rootDir = new File("../");
@@ -78,6 +86,7 @@ public abstract class QilinFrameworkTests {
                 + "reflog");
     refLogPath = refLogDir.getCanonicalPath();
     isSetUp = true;
+    view = ViewFactory.createView(appPath, null);
   }
 
   public PTA run(String mainClass) {
@@ -120,11 +129,12 @@ public abstract class QilinFrameworkTests {
         .preciseArrayElement(true)
         .preciseExceptions(true)
         .reflectionLogPath(refLogPath + File.separator + "Reflection.log")
-        .analysisName(contextSensitivity.toString());
+        .analysisName(contextSensitivity.toString())
+        // stats unused by assertions; alias stats are quadratic in #locals
+        .evaluate(false);
   }
 
   private PTA run(String mainClass, PointerAnalysisConfig config) {
-    View view = ViewFactory.createView(appPath, null);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
     PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
     // NOT pta.pureRun(): for staged toolkit variants (Zipper, DebloatedPTA/Moon, Bean, ...)

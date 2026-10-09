@@ -423,7 +423,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (id == -1) {
       return Optional.empty();
     }
-    if (objectClassType.equals(classType)) {
+    if (objectClassType == classType) {
       return Optional.empty();
     }
     RawAdjacency raw = lazyRaw.get();
@@ -455,9 +455,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public boolean isClassSubtype(
       @NonNull ClassType supertypeCt, @NonNull ClassType potentialSubtypeCt) {
-    final String jlObject = "java.lang.Object";
-    if (supertypeCt.getFullyQualifiedName().equals(jlObject)) {
-      return !potentialSubtypeCt.getFullyQualifiedName().equals(jlObject);
+    // types are interned via the view's IdentifierFactory: identity check suffices
+    if (supertypeCt == objectClassType) {
+      return potentialSubtypeCt != objectClassType;
     }
 
     int superId = resolveId(supertypeCt);

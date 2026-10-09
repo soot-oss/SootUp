@@ -49,6 +49,7 @@ import sootup.core.views.View;
  */
 public class InvokeDynamicTests {
   private static String appPath;
+  private static View view;
 
   @BeforeAll
   public static void setUp() throws IOException {
@@ -57,6 +58,7 @@ public class InvokeDynamicTests {
         new File(
             rootDir, "sootup.qilin" + File.separator + "target" + File.separator + "test-classes");
     appPath = testDir.getCanonicalPath();
+    view = ViewFactory.createView(appPath, null);
   }
 
   private PTA run(String mainClass, ContextSensitivity contextSensitivity) {
@@ -71,7 +73,6 @@ public class InvokeDynamicTests {
             .singleEntry(true)
             .dynamicInvokeResolver(resolver)
             .build();
-    View view = ViewFactory.createView(appPath, null);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
     PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
     pta.pureRun();
