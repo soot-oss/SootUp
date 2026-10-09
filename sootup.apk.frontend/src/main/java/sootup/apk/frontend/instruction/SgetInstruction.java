@@ -37,9 +37,7 @@ public class SgetInstruction extends FieldInstruction {
   public void jimplify(DexBody body) {
     int dest = ((OneRegisterInstruction) instruction).getRegisterA();
     FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
-    JStaticFieldRef r =
-        Jimple.newStaticFieldRef(
-            getStaticSootFieldRef(f, body.getIdentifierFactory()).getFieldSignature());
+    JStaticFieldRef r = Jimple.newStaticFieldRef(getFieldSignature(f, body.getIdentifierFactory()));
     JAssignStmt assign =
         Jimple.newAssignStmt(
             body.getRegisterLocal(dest), r, new SimpleStmtPositionInfo(lineNumber));

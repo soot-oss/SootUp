@@ -22,6 +22,7 @@ package sootup.apk.frontend.interceptors;
  * #L%
  */
 
+import java.util.Map;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.LongConstant;
@@ -61,14 +62,22 @@ public abstract class AbstractNullTransformer extends DexTransformer {
    *
    * @param stmt the unit where 0 will be replaced with null.
    */
-  protected void replaceWithNull(Stmt stmt) {
-    if (stmt instanceof JIfStmt) {
-      AbstractConditionExpr expr = ((JIfStmt) stmt).getCondition();
+  protected void replaceWithNull(Stmt stmt, Map<Stmt, Stmt> rewrites) {
+    Stmt current = current(rewrites, stmt);
+    if (current instanceof JIfStmt) {
+      JIfStmt ifStmt = (JIfStmt) current;
+      AbstractConditionExpr expr = ifStmt.getCondition();
       if (isZeroComparison(expr)) {
-        expr.withOp2(NullConstant.getInstance());
+        NullConstant nullConstant = NullConstant.getInstance();
+        rewrites.put(
+            stmt,
+            ifStmt.withCondition(
+                expr instanceof JEqExpr
+                    ? ((JEqExpr) expr).withOp2(nullConstant)
+                    : ((JNeExpr) expr).withOp2(nullConstant)));
       }
-    } else if (stmt instanceof JAssignStmt) {
-      JAssignStmt s = (JAssignStmt) stmt;
+    } else if (current instanceof JAssignStmt) {
+      JAssignStmt s = (JAssignStmt) current;
       Value v = s.getRightOp();
       if ((v instanceof IntConstant && ((IntConstant) v).getValue() == 0)
           || (v instanceof LongConstant && ((LongConstant) v).getValue() == 0)) {
@@ -77,7 +86,7 @@ public abstract class AbstractNullTransformer extends DexTransformer {
         // being an int.
         if (!(s.getLeftOp() instanceof JInstanceFieldRef)
             || s.getLeftOp().getType() instanceof ReferenceType) {
-          s.withRValue(NullConstant.getInstance());
+          rewrites.put(stmt, s.withRValue(NullConstant.getInstance()));
         }
       }
     }

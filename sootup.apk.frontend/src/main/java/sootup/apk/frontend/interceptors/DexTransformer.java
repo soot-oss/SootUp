@@ -22,9 +22,12 @@ package sootup.apk.frontend.interceptors;
  * #L%
  */
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
@@ -39,10 +42,12 @@ import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
 import sootup.core.types.ArrayType;
 import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.core.types.UnknownType;
 
 public abstract class DexTransformer implements BodyInterceptor {
   protected Type findArrayType(
@@ -228,6 +233,16 @@ public abstract class DexTransformer implements BodyInterceptor {
     }
   }
 
+  /** The element type of the array accessed in the stmt, or UnknownType if it cannot be found. */
+  protected Type arrayElementType(DexDefUseAnalysis dexDefUseAnalysis, Stmt arrayStmt) {
+    try {
+      Type type = findArrayType(dexDefUseAnalysis, arrayStmt, 0, Collections.emptySet());
+      return type == null ? UnknownType.getInstance() : type;
+    } catch (RuntimeException e) {
+      return UnknownType.getInstance();
+    }
+  }
+
   protected boolean examineInvokeExpr(AbstractInvokeExpr abstractInvokeExpr, Local l) {
     List<Immediate> args = abstractInvokeExpr.getArgs();
     List<Type> argTypes = abstractInvokeExpr.getMethodSignature().getParameterTypes();
@@ -242,5 +257,18 @@ public abstract class DexTransformer implements BodyInterceptor {
 
   protected boolean isFloatingPointLike(Type t) {
     return (t instanceof PrimitiveType.FloatType || t instanceof PrimitiveType.DoubleType);
+  }
+
+  /**
+   * Stmts are immutable, so a pass records old -> new and applies them at the end; applying them
+   * right away would invalidate the Stmt index of {@link DexDefUseAnalysis}.
+   */
+  protected static Stmt current(Map<Stmt, Stmt> rewrites, Stmt stmt) {
+    return rewrites.getOrDefault(stmt, stmt);
+  }
+
+  protected static void applyRewrites(Body.BodyBuilder builder, Map<Stmt, Stmt> rewrites) {
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
+    rewrites.forEach(graph::replaceNode);
   }
 }
