@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
-import sootup.core.jimple.common.Local;
+import sootup.core.jimple.Jimple;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.spark.Engine;
@@ -60,8 +60,8 @@ public class CustomCallGraphTest {
     PointsToAnalysis pta = spark.getPointsToAnalysis();
     AllocationNode valueAlloc = SparkTestUtil.alloc(valueType, 2L, mainSig);
     assertTrue(
-        pta.reachingObjects(new Local("l2", valueType), mainSig).contains(valueAlloc)
-            || pta.reachingObjects(new Local("l3", valueType), mainSig).contains(valueAlloc),
+        pta.reachingObjects(Jimple.newLocal("l2", valueType), mainSig).contains(valueAlloc)
+            || pta.reachingObjects(Jimple.newLocal("l3", valueType), mainSig).contains(valueAlloc),
         "PAG built from the client-supplied call graph must still resolve the virtual call");
   }
 

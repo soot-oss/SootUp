@@ -67,8 +67,8 @@ public class JAssignStmtTest {
     Immediate numConst1 = IntConstant.getInstance(42);
     Immediate numConst2 = IntConstant.getInstance(33102);
 
-    Local local = new Local("i0", PrimitiveType.getInt());
-    Local field = new Local("i2", PrimitiveType.getInt());
+    Local local = Jimple.newLocal("i0", PrimitiveType.getInt());
+    Local field = Jimple.newLocal("i2", PrimitiveType.getInt());
 
     Stmt lStmt = new JAssignStmt(local, numConst1, nop);
     Stmt fStmt = new JAssignStmt(field, numConst1, nop);
@@ -79,12 +79,14 @@ public class JAssignStmtTest {
     assertTrue(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("i0", PrimitiveType.getInt()), IntConstant.getInstance(42), nop)));
+                Jimple.newLocal("i0", PrimitiveType.getInt()), IntConstant.getInstance(42), nop)));
 
     assertTrue(
         deepStmt.equivTo(
             new JAssignStmt(
-                new Local("i0", PrimitiveType.getInt()), new JAddExpr(numConst1, numConst2), nop)));
+                Jimple.newLocal("i0", PrimitiveType.getInt()),
+                new JAddExpr(numConst1, numConst2),
+                nop)));
 
     // equivTo: switched operands
     assertFalse(lStmt.equivTo(new JAssignStmt(local, numConst2, nop)));
@@ -95,13 +97,15 @@ public class JAssignStmtTest {
     assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("i100differentname", PrimitiveType.getInt()),
+                Jimple.newLocal("i100differentname", PrimitiveType.getInt()),
                 IntConstant.getInstance(42),
                 nop)));
     assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("i0", PrimitiveType.getLong()), LongConstant.getInstance(42), nop)));
+                Jimple.newLocal("i0", PrimitiveType.getLong()),
+                LongConstant.getInstance(42),
+                nop)));
 
     // equivTo: different depth
     assertFalse(lStmt.equivTo(new JAssignStmt(field, new JAddExpr(numConst1, numConst2), nop)));
@@ -116,7 +120,7 @@ public class JAssignStmtTest {
 
     // test JFieldRef cast for JFieldRef - should not throw an Exception
     Local someLocal =
-        new Local("r42", new JavaIdentifierFactory().getClassType("Abc.def.Alphabet"));
+        Jimple.newLocal("r42", new JavaIdentifierFactory().getClassType("Abc.def.Alphabet"));
     final JStaticFieldRef somefield =
         Jimple.newStaticFieldRef(
             new JavaIdentifierFactory()

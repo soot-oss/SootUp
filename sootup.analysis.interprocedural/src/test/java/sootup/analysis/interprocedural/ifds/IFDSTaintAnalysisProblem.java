@@ -30,8 +30,8 @@ import heros.flowfunc.Gen;
 import heros.flowfunc.Identity;
 import heros.flowfunc.KillAll;
 import java.util.*;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Immediate;
-import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -93,7 +93,7 @@ public class IFDSTaintAnalysisProblem
 
   @Override
   protected Value createZeroValue() {
-    return new Local("<<zero>>", NullType.getInstance());
+    return Jimple.newLocal("<<zero>>", NullType.getInstance());
   }
 
   FlowFunction<Value> getNormalFlow(Stmt curr, Stmt succ) {

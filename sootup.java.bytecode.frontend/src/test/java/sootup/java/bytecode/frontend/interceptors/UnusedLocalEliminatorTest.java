@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableControlFlowGraph;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.BranchingStmt;
@@ -43,8 +44,8 @@ public class UnusedLocalEliminatorTest {
     assertEquals(4, originalLocals.size());
     assertEquals(2, processedLocals.size());
     processedLocals = processedBody.getLocals();
-    assertTrue(processedLocals.contains(new Local("a", objectType)));
-    assertTrue(processedLocals.contains(new Local("b", stringType)));
+    assertTrue(processedLocals.contains(Jimple.newLocal("a", objectType)));
+    assertTrue(processedLocals.contains(Jimple.newLocal("b", stringType)));
   }
 
   @Test
