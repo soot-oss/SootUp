@@ -169,6 +169,30 @@ public class CopyPropagatorTest {
         Utils.filterJimple(bodyAfter.toString()));
   }
 
+  /**
+   * The constant assigned in the try block does not reach the return on the exceptional path: if
+   * the first call throws, the method returns the parameter.
+   */
+  @Test
+  public void testNoPropagationOfDefinitionThatMayNotCompleteBeforeException() {
+    View view = setUp();
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                "ReachingDefsTarget",
+                "constantAssignedInTryBlock",
+                "int",
+                Collections.singletonList("int"));
+    Body bodyBefore = view.getMethod(methodSignature).get().getBody();
+    final Body.BodyBuilder builder = Body.builder(bodyBefore, Collections.emptySet());
+    new CopyPropagator().interceptBody(builder, view);
+    Body bodyAfter = builder.build();
+
+    java.util.List<String> stmts = Utils.filterJimple(bodyAfter.toString());
+    assertTrue(stmts.contains("c = 7"), stmts.toString());
+    assertTrue(stmts.contains("return c"), stmts.toString());
+  }
+
   @Test
   public void testEqualStmt() {
     assertTrue(eestmt4.equivTo(eestmt4.withRValue(NullConstant.getInstance())));

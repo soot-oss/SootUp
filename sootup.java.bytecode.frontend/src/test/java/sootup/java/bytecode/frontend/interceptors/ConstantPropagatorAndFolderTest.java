@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -12,7 +13,10 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
+import sootup.core.jimple.common.expr.JEqExpr;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
@@ -77,6 +81,55 @@ public class ConstantPropagatorAndFolderTest {
     for (int i = 0; i < processedStmts.size(); i++) {
       assertEquals(originalStmts.get(i).toString(), processedStmts.get(i).toString());
     }
+  }
+
+  /**
+   * A constant is only propagated into a return if it is the only definition that reaches the
+   * return. In
+   *
+   * <p>c = 3 + 4; if a == 0 goto l; c = a; l: return c;
+   *
+   * <p>the constant 7 is not returned if a != 0.
+   */
+  @Test
+  public void testNoPropagationOfConstantRedefinedOnOtherPath() {
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
+    Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
+    Local c = JavaJimple.newLocal("c", PrimitiveType.getInt());
+
+    FallsThroughStmt assignA =
+        JavaJimple.newIdentityStmt(
+            a, JavaJimple.newParameterRef(PrimitiveType.getInt(), 0), noPositionInfo);
+    FallsThroughStmt assignConstant =
+        JavaJimple.newAssignStmt(
+            c,
+            new JAddExpr(IntConstant.getInstance(3), IntConstant.getInstance(4)),
+            noPositionInfo);
+    BranchingStmt ifStmt =
+        JavaJimple.newIfStmt(new JEqExpr(a, IntConstant.getInstance(0)), noPositionInfo);
+    FallsThroughStmt assignLocal = JavaJimple.newAssignStmt(c, a, noPositionInfo);
+    Stmt ret = JavaJimple.newReturnStmt(c, noPositionInfo);
+
+    Body.BodyBuilder builder = Body.builder();
+    builder.setMethodSignature(
+        new JavaIdentifierFactory()
+            .getMethodSignature("ab.c", "test", "int", Collections.singletonList("int")));
+    MutableControlFlowGraph graph = builder.getControlFlowGraph();
+    graph.setStartingStmt(assignA);
+    graph.putEdge(assignA, assignConstant);
+    graph.putEdge(assignConstant, ifStmt);
+    graph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, assignLocal);
+    graph.putEdge(ifStmt, JIfStmt.TRUE_BRANCH_IDX, ret);
+    graph.putEdge(assignLocal, ret);
+    builder.setLocals(ImmutableUtils.immutableSet(a, c));
+    builder.setPosition(NoPositionInformation.getInstance());
+
+    new ConstantPropagatorAndFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
+    List<String> stmts =
+        builder.build().getStmts().stream().map(Object::toString).collect(Collectors.toList());
+
+    assertEquals("c = 7", stmts.get(1));
+    assertEquals("return c", stmts.get(stmts.size() - 1));
   }
 
   private static Body.BodyBuilder createBody(boolean constantFolding) {

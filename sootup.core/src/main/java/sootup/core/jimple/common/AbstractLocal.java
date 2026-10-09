@@ -118,19 +118,27 @@ public abstract class AbstractLocal implements Local {
   }
 
   /**
-   * Get all definition-stmts which define the given local used by the given stmt.
+   * Get all definition-stmts which define the given local used by the given stmt, i.e. the
+   * definitions that reach the use on a normal or an exceptional control flow path. A stmt that
+   * throws does not complete its definition, so the definition of a stmt is only considered on its
+   * normal flows; on its exceptional flows, the definitions that reach the stmt itself are used.
    *
    * @param graph a stmt graph which contains the given stmts.
    * @param stmt a stmt which uses the given local.
    */
+  @Override
   public List<Stmt> getDefsForLocalUse(ControlFlowGraph<?> graph, Stmt stmt) {
     if (stmt.getUses().stream().noneMatch(v -> v == this)) {
       throw new RuntimeException(stmt + " doesn't use the local " + this);
     }
     List<Stmt> defStmts = new ArrayList<>();
+    // stmts reached via a normal flow, i.e. whose definition is completed
     Set<Stmt> visited = new HashSet<>();
+    // stmts reached via an exceptional flow, i.e. which may throw before their definition
+    Set<Stmt> visitedThrowing = new HashSet<>();
 
     Deque<Stmt> queue = new ArrayDeque<>();
+    Deque<Stmt> throwingQueue = new ArrayDeque<>();
     // Seed the search queue with predecessors of 'stmt' rather than 'stmt' itself.
     // When a statement both uses and defines the same local (e.g. `x = x + 1`), starting at `stmt`
     // immediately matched `stmt` as a definition, short-circuiting and erroneously reporting that
@@ -138,17 +146,24 @@ public abstract class AbstractLocal implements Local {
     // the reaching definitions flowing into `stmt`.
     if (graph.containsNode(stmt)) {
       queue.addAll(graph.predecessors(stmt));
+      throwingQueue.addAll(graph.exceptionalPredecessors(stmt));
     }
-    while (!queue.isEmpty()) {
-      Stmt s = queue.removeFirst();
-      if (!visited.contains(s)) {
-        visited.add(s);
-        if (s instanceof AbstractDefinitionStmt && s.getDef().get().equivTo(this)) {
-          defStmts.add(s);
-        } else {
-          if (graph.containsNode(s)) {
+    while (!queue.isEmpty() || !throwingQueue.isEmpty()) {
+      if (!queue.isEmpty()) {
+        Stmt s = queue.removeFirst();
+        if (visited.add(s)) {
+          if (s instanceof AbstractDefinitionStmt && s.getDef().get().equivTo(this)) {
+            defStmts.add(s);
+          } else if (graph.containsNode(s)) {
             queue.addAll(graph.predecessors(s));
+            throwingQueue.addAll(graph.exceptionalPredecessors(s));
           }
+        }
+      } else {
+        Stmt s = throwingQueue.removeFirst();
+        if (visitedThrowing.add(s) && graph.containsNode(s)) {
+          queue.addAll(graph.predecessors(s));
+          throwingQueue.addAll(graph.exceptionalPredecessors(s));
         }
       }
     }
