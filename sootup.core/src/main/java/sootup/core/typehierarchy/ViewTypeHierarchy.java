@@ -455,9 +455,8 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public boolean isClassSubtype(
       @NonNull ClassType supertypeCt, @NonNull ClassType potentialSubtypeCt) {
-    final String jlObject = "java.lang.Object";
-    if (supertypeCt.getFullyQualifiedName().equals(jlObject)) {
-      return !potentialSubtypeCt.getFullyQualifiedName().equals(jlObject);
+    if (isJavaLangObject(supertypeCt)) {
+      return !isJavaLangObject(potentialSubtypeCt);
     }
 
     int superId = resolveId(supertypeCt);
@@ -515,6 +514,12 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     subtypeClassesCache.clear();
     lcaCache.clear();
     modificationCount++;
+  }
+
+  /** Hot path: compares name parts, no {@code getFullyQualifiedName()} string building. */
+  private static boolean isJavaLangObject(@NonNull ClassType type) {
+    return type.getClassName().equals("Object")
+        && type.getPackageName().getName().equals("java.lang");
   }
 
   private static Stream<ClassType> classSubtypesOf(
