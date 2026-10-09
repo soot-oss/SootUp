@@ -36,14 +36,14 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.language.JavaJimple;
 
-class JavaSootFieldGenericSignatureTest {
+class JavaSootFieldConstantValueTest {
   private final JavaIdentifierFactory factory = new JavaIdentifierFactory();
   private final FieldSignature signature =
       factory.getFieldSignature(
           "value", factory.getClassType("Example"), factory.getClassType("java.lang.String"));
 
   @Test
-  void existingConstructorsAndBuilderDefaultToAbsentGenericSignature() {
+  void existingConstructorsAndBuilderDefaultToAbsentConstantValue() {
     for (JavaSootField field :
         List.of(
             new JavaSootField(
@@ -53,22 +53,16 @@ class JavaSootFieldGenericSignatureTest {
                 Collections.emptySet(),
                 Collections.emptyList(),
                 NoPositionInformation.getInstance()),
-            new JavaSootField(
-                signature,
-                Collections.emptySet(),
-                Collections.emptyList(),
-                NoPositionInformation.getInstance(),
-                null),
             JavaSootField.JavaSootFieldBuilder.builder()
                 .withSignature(signature)
                 .withModifier(Collections.emptySet())
                 .build())) {
-      assertTrue(field.getGenericSignature().isEmpty());
+      assertTrue(field.getConstantValue().isEmpty());
     }
   }
 
   @Test
-  void copiesPreserveGenericSignatureConstantValueAndUnchangedAnnotations() {
+  void copiesPreserveConstantValueAndUnchangedAnnotations() {
     AnnotationUsage annotation =
         new AnnotationUsage(factory.getClassType("Marker"), Collections.emptyMap());
     JavaSootField field =
@@ -77,8 +71,7 @@ class JavaSootFieldGenericSignatureTest {
             EnumSet.of(FieldModifier.PUBLIC, FieldModifier.STATIC, FieldModifier.FINAL),
             List.of(annotation),
             NoPositionInformation.getInstance(),
-            JavaJimple.newStringConstant("constant", factory),
-            "Ljava/lang/String;");
+            JavaJimple.newStringConstant("constant", factory));
     FieldSignature renamed =
         factory.getFieldSignature("renamed", signature.getDeclClassType(), signature.getType());
     List<JavaSootField> copies =
@@ -87,7 +80,6 @@ class JavaSootFieldGenericSignatureTest {
             field.withModifiers(EnumSet.of(FieldModifier.PRIVATE)),
             field.withAnnotations(Collections.emptyList()));
     for (JavaSootField copy : copies) {
-      assertEquals(field.getGenericSignature(), copy.getGenericSignature());
       assertEquals(field.getConstantValue(), copy.getConstantValue());
       assertEquals(field.getPosition(), copy.getPosition());
     }
@@ -100,23 +92,16 @@ class JavaSootFieldGenericSignatureTest {
   }
 
   @Test
-  void builderAcceptsAndClearsGenericSignature() {
+  void builderAcceptsAndClearsConstantValue() {
     var builder =
         JavaSootField.JavaSootFieldBuilder.builder()
             .withSignature(signature)
             .withModifier(Collections.emptySet())
-            .withConstantValue(JavaJimple.newStringConstant("constant", factory))
-            .withGenericSignature("Ljava/lang/String;");
+            .withConstantValue(JavaJimple.newStringConstant("", factory));
     JavaSootField field = builder.build();
-    assertEquals("Ljava/lang/String;", field.getGenericSignature().orElseThrow());
-    JavaSootField cleared = builder.withGenericSignature(null).build();
-    assertTrue(cleared.getGenericSignature().isEmpty());
-    assertEquals(field.getConstantValue(), cleared.getConstantValue());
-    assertTrue(field.getGenericSignature().isPresent());
-    JavaSootField constantCleared =
-        builder.withGenericSignature("Ljava/lang/String;").withConstantValue(null).build();
-    assertEquals(field.getGenericSignature(), constantCleared.getGenericSignature());
-    assertTrue(constantCleared.getConstantValue().isEmpty());
+    assertEquals(JavaJimple.newStringConstant("", factory), field.getConstantValue().orElseThrow());
+    JavaSootField cleared = builder.withConstantValue(null).build();
+    assertTrue(cleared.getConstantValue().isEmpty());
     assertTrue(field.getConstantValue().isPresent());
   }
 }

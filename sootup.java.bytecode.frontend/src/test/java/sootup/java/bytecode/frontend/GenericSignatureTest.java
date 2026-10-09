@@ -43,6 +43,7 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.language.JavaJimple;
 import sootup.java.core.views.JavaView;
 
 class GenericSignatureTest {
@@ -89,6 +90,42 @@ class GenericSignatureTest {
     assertEquals(
         identity.getGenericSignature(),
         identity.withBody(identity.getBody()).getGenericSignature());
+  }
+
+  @Test
+  void readsFieldSignaturesAlongsideConstantsForClassesAndAnnotations() throws Exception {
+    for (boolean annotationClass : List.of(false, true)) {
+      ClassWriter writer = writer(null);
+      if (annotationClass) {
+        writer = new ClassWriter(0);
+        writer.visit(
+            Opcodes.V1_8,
+            Opcodes.ACC_PUBLIC
+                | Opcodes.ACC_ABSTRACT
+                | Opcodes.ACC_INTERFACE
+                | Opcodes.ACC_ANNOTATION,
+            "MetadataSubject",
+            null,
+            "java/lang/Object",
+            new String[] {"java/lang/annotation/Annotation"});
+      }
+      writer
+          .visitField(
+              Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL,
+              "text",
+              "Ljava/lang/String;",
+              "Ljava/lang/String;",
+              "constant")
+          .visitEnd();
+      JavaSootClass clazz = load(writer);
+      assertEquals(annotationClass, clazz.isAnnotation());
+      var field = clazz.getField("text").orElseThrow();
+      assertEquals("Ljava/lang/String;", field.getGenericSignature().orElseThrow());
+      var factory = new JavaView(Collections.emptyList()).getIdentifierFactory();
+      assertEquals(
+          JavaJimple.newStringConstant("constant", factory),
+          field.getConstantValue().orElseThrow());
+    }
   }
 
   @Test
