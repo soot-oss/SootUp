@@ -240,6 +240,43 @@ loadScripts(document, 'script');</script>
 <div class="block">Converts the given object into the Jimple constant that represents it.</div>
 </div>
 </div>
+<div class="caption"><span>Methods in <a href="../../../../../java/core/package-summary.html">sootup.java.core</a> that return types with arguments of type <a href="../Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JavaSootField.</span><code><a href="../../../../../java/core/JavaSootField.html#getConstantValue()" class="member-name-link">getConstantValue</a>()</code></div>
+<div class="col-last even-row-color">
+<div class="block">Returns the classfile ConstantValue attribute, or an empty optional if absent.</div>
+</div>
+</div>
+<div class="caption"><span>Methods in <a href="../../../../../java/core/package-summary.html">sootup.java.core</a> with parameters of type <a href="../Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code><a href="../../../../../java/core/JavaSootField.JavaSootFieldBuilder.CompleteStep.html" title="interface in sootup.java.core">JavaSootField.JavaSootFieldBuilder.CompleteStep</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JavaSootField.JavaSootFieldBuilder.ConstantValueStep.</span><code><a href="../../../../../java/core/JavaSootField.JavaSootFieldBuilder.ConstantValueStep.html#withConstantValue(sootup.core.jimple.common.constant.Constant)" class="member-name-link">withConstantValue</a><wbr>(@Nullable <a href="../Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a>&nbsp;constantValue)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Sets the ConstantValue attribute; <code>null</code> clears it.</div>
+</div>
+</div>
+<div class="caption"><span>Constructors in <a href="../../../../../java/core/package-summary.html">sootup.java.core</a> with parameters of type <a href="../Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier</div>
+<div class="table-header col-second">Constructor</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../../../../../java/core/JavaSootField.html#%3Cinit%3E(sootup.core.signatures.FieldSignature,java.lang.Iterable,java.lang.Iterable,sootup.core.model.Position,sootup.core.jimple.common.constant.Constant)" class="member-name-link">JavaSootField</a><wbr>(@NonNull <a href="../../../../signatures/FieldSignature.html" title="class in sootup.core.signatures">FieldSignature</a>&nbsp;signature,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../../model/FieldModifier.html" title="enum class in sootup.core.model">FieldModifier</a>&gt;&nbsp;modifiers,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations,
+ @NonNull <a href="../../../../model/Position.html" title="class in sootup.core.model">Position</a>&nbsp;position,
+ @Nullable <a href="../Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a>&nbsp;constantValue)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a field with an optional classfile ConstantValue attribute.</div>
+</div>
+</div>
 </section>
 </li>
 <li>

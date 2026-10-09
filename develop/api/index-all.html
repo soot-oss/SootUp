@@ -8078,6 +8078,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/PTAScene.html#getConfig()" class="member-name-link">getConfig()</a> - Method in class qilin.core.<a href="qilin/core/PTAScene.html" title="class in qilin.core">PTAScene</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/JavaSootField.html#getConstantValue()" class="member-name-link">getConstantValue()</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootField.html" title="class in sootup.java.core">JavaSootField</a></dt>
+<dd>
+<div class="block">Returns the classfile ConstantValue attribute, or an empty optional if absent.</div>
+</dd>
 <dt><a href="sootup/interceptors/Evaluator.html#getConstantValueOf(sootup.core.jimple.common.Value)" class="member-name-link">getConstantValueOf(Value)</a> - Static method in class sootup.interceptors.<a href="sootup/interceptors/Evaluator.html" title="class in sootup.interceptors">Evaluator</a></dt>
 <dd>
 <div class="block">Returns the constant value of op, if it is easy to find the constant value; else returns null.</div>
@@ -13175,6 +13179,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constructs a Soot field with the given name, type and modifiers.</div>
 </dd>
+<dt><a href="sootup/java/core/JavaSootField.html#%3Cinit%3E(sootup.core.signatures.FieldSignature,java.lang.Iterable,java.lang.Iterable,sootup.core.model.Position,sootup.core.jimple.common.constant.Constant)" class="member-name-link">JavaSootField(FieldSignature, Iterable&lt;FieldModifier&gt;, Iterable&lt;AnnotationUsage&gt;, Position, Constant)</a> - Constructor for class sootup.java.core.<a href="sootup/java/core/JavaSootField.html" title="class in sootup.java.core">JavaSootField</a></dt>
+<dd>
+<div class="block">Constructs a field with an optional classfile ConstantValue attribute.</div>
+</dd>
 <dt><a href="sootup/java/core/JavaSootField.html#%3Cinit%3E(sootup.core.signatures.FieldSignature,java.lang.Iterable,sootup.core.model.Position)" class="member-name-link">JavaSootField(FieldSignature, Iterable&lt;FieldModifier&gt;, Position)</a> - Constructor for class sootup.java.core.<a href="sootup/java/core/JavaSootField.html" title="class in sootup.java.core">JavaSootField</a></dt>
 <dd>
 <div class="block">Constructs a Soot field with the given name, type and modifiers.</div>
@@ -13188,6 +13196,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/java/core/JavaSootField.JavaSootFieldBuilder.BuildStep.html" class="type-name-link" title="interface in sootup.java.core">JavaSootField.JavaSootFieldBuilder.BuildStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootField.JavaSootFieldBuilder.CompleteStep.html" class="type-name-link" title="interface in sootup.java.core">JavaSootField.JavaSootFieldBuilder.CompleteStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/JavaSootField.JavaSootFieldBuilder.ConstantValueStep.html" class="type-name-link" title="interface in sootup.java.core">JavaSootField.JavaSootFieldBuilder.ConstantValueStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootField.JavaSootFieldBuilder.ModifierStep.html" class="type-name-link" title="interface in sootup.java.core">JavaSootField.JavaSootFieldBuilder.ModifierStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>&nbsp;</dd>
@@ -21739,6 +21749,10 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/stmt/JIfStmt.html#withCondition(sootup.core.jimple.common.expr.AbstractConditionExpr)" class="member-name-link">withCondition(AbstractConditionExpr)</a> - Method in class sootup.core.jimple.common.stmt.<a href="sootup/core/jimple/common/stmt/JIfStmt.html" title="class in sootup.core.jimple.common.stmt">JIfStmt</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/JavaSootField.JavaSootFieldBuilder.ConstantValueStep.html#withConstantValue(sootup.core.jimple.common.constant.Constant)" class="member-name-link">withConstantValue(Constant)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootField.JavaSootFieldBuilder.ConstantValueStep.html" title="interface in sootup.java.core">JavaSootField.JavaSootFieldBuilder.ConstantValueStep</a></dt>
+<dd>
+<div class="block">Sets the ConstantValue attribute; <code>null</code> clears it.</div>
+</dd>
 <dt><a href="sootup/core/jimple/common/Trap.html#withEndStmt(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">withEndStmt(Stmt)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Trap.html" title="class in sootup.core.jimple.common">Trap</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/Trap.html#withException(sootup.core.types.ClassType)" class="member-name-link">withException(ClassType)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Trap.html" title="class in sootup.core.jimple.common">Trap</a></dt>

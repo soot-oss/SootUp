@@ -478,6 +478,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reading-constant-field-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading Constant Field Values
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#reading-annotation-visibility" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1505,6 +1516,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reading-constant-field-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading Constant Field Values
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#reading-annotation-visibility" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1830,6 +1852,9 @@ To for example use an <code>LRUCache</code> instead, which stores at most e.g. 5
 <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 </div>
+<h2 id="reading-constant-field-values">Reading Constant Field Values</h2>
+<p><code>JavaSootField.getConstantValue()</code> returns the classfile <code>ConstantValue</code> attribute as an
+<code>Optional&lt;Constant&gt;</code>, or an empty optional if absent. Field initializers are not evaluated.</p>
 <h2 id="reading-annotation-visibility">Reading Annotation Visibility</h2>
 <p><code>AnnotationUsage.isRuntimeVisible()</code> distinguishes runtime-visible and runtime-invisible
 bytecode annotations on classes, fields, methods, and parameters. Parameter declaration
