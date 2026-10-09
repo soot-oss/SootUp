@@ -454,19 +454,21 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private Map<Integer, List<ScopedTypeAnnotation>> localVarTypeAnnotationIndex() {
     if (localVarTypeAnnotationIndex == null) {
       localVarTypeAnnotationIndex = new HashMap<>();
-      indexLocalVariableAnnotations(visibleLocalVariableAnnotations);
-      indexLocalVariableAnnotations(invisibleLocalVariableAnnotations);
+      indexLocalVariableAnnotations(visibleLocalVariableAnnotations, true);
+      indexLocalVariableAnnotations(invisibleLocalVariableAnnotations, false);
     }
     return localVarTypeAnnotationIndex;
   }
 
-  private void indexLocalVariableAnnotations(@Nullable List<LocalVariableAnnotationNode> nodes) {
+  private void indexLocalVariableAnnotations(
+      @Nullable List<LocalVariableAnnotationNode> nodes, boolean runtimeVisible) {
     if (nodes == null) {
       return;
     }
     for (LocalVariableAnnotationNode node : nodes) {
       // Note: node.typePath (nested-type position) is not represented by AnnotationUsage.
-      AnnotationUsage usage = AsmUtil.createAnnotationUsage(node, identifierFactory);
+      AnnotationUsage usage =
+          AsmUtil.createAnnotationUsage(node, identifierFactory, runtimeVisible);
       // index/start/end are parallel lists: entry k is one scope range for the annotation.
       for (int k = 0; k < node.index.size(); k++) {
         int startIdx = insnIndex(node.start.get(k));
@@ -1810,8 +1812,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    * TypeReference#METHOD_RETURN}. Examples: {@code @Nat int foo()}.
    */
   void collectReturnTypeAnnotations(@NonNull List<AnnotationUsage> out) {
-    collectMethodTypeAnnotations(out, visibleTypeAnnotations, TypeReference.METHOD_RETURN, -1);
-    collectMethodTypeAnnotations(out, invisibleTypeAnnotations, TypeReference.METHOD_RETURN, -1);
+    collectMethodTypeAnnotations(
+        out, visibleTypeAnnotations, TypeReference.METHOD_RETURN, -1, true);
+    collectMethodTypeAnnotations(
+        out, invisibleTypeAnnotations, TypeReference.METHOD_RETURN, -1, false);
   }
 
   /**
@@ -1823,16 +1827,25 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private void collectFormalParameterTypeAnnotations(
       @NonNull List<AnnotationUsage> out, int formalParameterIndex) {
     collectMethodTypeAnnotations(
-        out, visibleTypeAnnotations, TypeReference.METHOD_FORMAL_PARAMETER, formalParameterIndex);
+        out,
+        visibleTypeAnnotations,
+        TypeReference.METHOD_FORMAL_PARAMETER,
+        formalParameterIndex,
+        true);
     collectMethodTypeAnnotations(
-        out, invisibleTypeAnnotations, TypeReference.METHOD_FORMAL_PARAMETER, formalParameterIndex);
+        out,
+        invisibleTypeAnnotations,
+        TypeReference.METHOD_FORMAL_PARAMETER,
+        formalParameterIndex,
+        false);
   }
 
   private void collectMethodTypeAnnotations(
       @NonNull List<AnnotationUsage> out,
       List<TypeAnnotationNode> nodes,
       int sort,
-      int formalParameterIndex) {
+      int formalParameterIndex,
+      boolean runtimeVisible) {
     if (nodes == null) {
       return;
     }
@@ -1847,7 +1860,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
       // Note: node.typePath (the position of the annotation within a nested/generic type) is not
       // represented by AnnotationUsage; the annotation is attached to the parameter/return target.
-      out.add(AsmUtil.createAnnotationUsage(node, identifierFactory));
+      out.add(AsmUtil.createAnnotationUsage(node, identifierFactory, runtimeVisible));
     }
   }
 
@@ -1897,15 +1910,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // Annotations, e.g. @Param) and parameter *type* annotations (JSR 308 TYPE_USE, e.g.
       // @Nat/@Nullable, stored in RuntimeVisible/InvisibleTypeAnnotations with a
       // METHOD_FORMAL_PARAMETER target) and attach all of them to the parameter Local.
-      List<AnnotationUsage> parameterAnnotations = new ArrayList<>();
-      if (visibleParameterAnnotations != null) {
-        AsmUtil.createAnnotationUsage(visibleParameterAnnotations[i], identifierFactory)
-            .forEach(parameterAnnotations::add);
-      }
-      if (invisibleParameterAnnotations != null) {
-        AsmUtil.createAnnotationUsage(invisibleParameterAnnotations[i], identifierFactory)
-            .forEach(parameterAnnotations::add);
-      }
+      List<AnnotationUsage> parameterAnnotations = getParameterAnnotations(i);
       collectFormalParameterTypeAnnotations(parameterAnnotations, i);
       LocalVariableNode lvn = lvtLocals.resolvePreamble(localIdx);
       JavaLocal local =
@@ -2176,7 +2181,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (visibleParameterAnnotations != null
           && paramIndex < visibleParameterAnnotations.length
           && visibleParameterAnnotations[paramIndex] != null) {
-        AsmUtil.createAnnotationUsage(visibleParameterAnnotations[paramIndex], identifierFactory)
+        AsmUtil.createAnnotationUsage(
+                visibleParameterAnnotations[paramIndex], identifierFactory, true)
             .forEach(list::add);
       }
     }
@@ -2184,7 +2190,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (invisibleParameterAnnotations != null
           && paramIndex < invisibleParameterAnnotations.length
           && invisibleParameterAnnotations[paramIndex] != null) {
-        AsmUtil.createAnnotationUsage(invisibleParameterAnnotations[paramIndex], identifierFactory)
+        AsmUtil.createAnnotationUsage(
+                invisibleParameterAnnotations[paramIndex], identifierFactory, false)
             .forEach(list::add);
       }
     }

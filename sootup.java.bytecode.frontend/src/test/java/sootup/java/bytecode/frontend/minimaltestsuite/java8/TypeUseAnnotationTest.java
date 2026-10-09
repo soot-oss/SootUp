@@ -29,8 +29,9 @@ import sootup.java.core.jimple.basic.JavaLocal;
  */
 public class TypeUseAnnotationTest extends MinimalBytecodeTestSuiteBase {
 
-  private AnnotationUsage annotation(String name) {
-    return new AnnotationUsage(identifierFactory.getClassType(name), Collections.emptyMap());
+  private AnnotationUsage annotation(String name, boolean runtimeVisible) {
+    return new AnnotationUsage(
+        identifierFactory.getClassType(name), Collections.emptyMap(), runtimeVisible);
   }
 
   private JavaSootMethod method(JavaSootClass sootClass, String name) {
@@ -56,7 +57,7 @@ public class TypeUseAnnotationTest extends MinimalBytecodeTestSuiteBase {
   public void testReturnTypeAnnotationClassRetention() {
     JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
     assertEquals(
-        Collections.singletonList(annotation("TypeUseCls")),
+        Collections.singletonList(annotation("TypeUseCls", false)),
         method(sootClass, "returnTypeCls").getAnnotations());
   }
 
@@ -65,7 +66,7 @@ public class TypeUseAnnotationTest extends MinimalBytecodeTestSuiteBase {
   public void testReturnTypeAnnotationRuntimeRetention() {
     JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
     assertEquals(
-        Collections.singletonList(annotation("TypeUseRt")),
+        Collections.singletonList(annotation("TypeUseRt", true)),
         method(sootClass, "returnTypeRt").getAnnotations());
   }
 
@@ -77,7 +78,7 @@ public class TypeUseAnnotationTest extends MinimalBytecodeTestSuiteBase {
   public void testMethodDeclarationAndReturnTypeAnnotation() {
     JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
     assertEquals(
-        Arrays.asList(annotation("MethodDecl"), annotation("TypeUseCls")),
+        Arrays.asList(annotation("MethodDecl", false), annotation("TypeUseCls", false)),
         method(sootClass, "returnTypeWithMethodDecl").getAnnotations());
   }
 
@@ -88,7 +89,8 @@ public class TypeUseAnnotationTest extends MinimalBytecodeTestSuiteBase {
     Body body = methodWithIntParams(sootClass, "paramTypeCls", 1).getBody();
     JavaLocal parameterLocal = (JavaLocal) body.getParameterLocal(0);
     assertEquals(
-        Collections.singletonList(annotation("TypeUseCls")), parameterLocal.getAnnotations());
+        Collections.singletonList(annotation("TypeUseCls", false)),
+        parameterLocal.getAnnotations());
   }
 
   /** TYPE_USE annotation on a formal parameter type with RUNTIME retention. */
@@ -98,7 +100,7 @@ public class TypeUseAnnotationTest extends MinimalBytecodeTestSuiteBase {
     Body body = methodWithIntParams(sootClass, "paramTypeRt", 1).getBody();
     JavaLocal parameterLocal = (JavaLocal) body.getParameterLocal(0);
     assertEquals(
-        Collections.singletonList(annotation("TypeUseRt")), parameterLocal.getAnnotations());
+        Collections.singletonList(annotation("TypeUseRt", true)), parameterLocal.getAnnotations());
   }
 
   /**
@@ -113,7 +115,7 @@ public class TypeUseAnnotationTest extends MinimalBytecodeTestSuiteBase {
 
     JavaLocal annotatedParam = (JavaLocal) body.getParameterLocal(0);
     assertEquals(
-        Arrays.asList(annotation("ParamDecl"), annotation("TypeUseCls")),
+        Arrays.asList(annotation("ParamDecl", false), annotation("TypeUseCls", false)),
         annotatedParam.getAnnotations());
 
     JavaLocal plainParam = (JavaLocal) body.getParameterLocal(1);
@@ -136,7 +138,7 @@ public class TypeUseAnnotationTest extends MinimalBytecodeTestSuiteBase {
         }
       }
     }
-    assertEquals(Collections.singletonList(annotation("TypeUseCls")), annotationsOnLocals);
+    assertEquals(Collections.singletonList(annotation("TypeUseCls", false)), annotationsOnLocals);
   }
 
   /**
@@ -163,7 +165,7 @@ public class TypeUseAnnotationTest extends MinimalBytecodeTestSuiteBase {
         Collections.emptyList(),
         methodWithIntParams(sootClass, "paramTypeRt", 1).getParameterAnnotations(0));
     assertEquals(
-        Collections.singletonList(annotation("ParamDecl")),
+        Collections.singletonList(annotation("ParamDecl", false)),
         methodWithIntParams(sootClass, "paramDeclAndType", 2).getParameterAnnotations(0));
     assertEquals(
         Collections.emptyList(),

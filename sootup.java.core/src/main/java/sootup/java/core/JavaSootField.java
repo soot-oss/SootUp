@@ -116,12 +116,12 @@ public class JavaSootField extends SootClassMember<FieldSignature>
 
   @NonNull
   public JavaSootField withSignature(@NonNull FieldSignature signature) {
-    return new JavaSootField(signature, getModifiers(), getPosition());
+    return new JavaSootField(signature, getModifiers(), getAnnotations(), getPosition());
   }
 
   @NonNull
   public JavaSootField withModifiers(@NonNull Iterable<FieldModifier> modifiers) {
-    return new JavaSootField(getSignature(), modifiers, getPosition());
+    return new JavaSootField(getSignature(), modifiers, getAnnotations(), getPosition());
   }
 
   /** Returns the SootClass declaring this one. */
