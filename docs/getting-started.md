@@ -214,6 +214,11 @@ Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contain
     }
     ```
 
+## Reading Constant Field Values
+
+`JavaSootField.getConstantValue()` returns the classfile `ConstantValue` attribute as an
+`Optional<Constant>`, or an empty optional if absent. Field initializers are not evaluated.
+
 ## Reading Annotation Visibility
 
 `AnnotationUsage.isRuntimeVisible()` distinguishes runtime-visible and runtime-invisible
