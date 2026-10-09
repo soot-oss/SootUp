@@ -218,6 +218,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/analysis/interprocedural/icfg/AbstractJimpleBasedICFG.html#%3Cinit%3E(boolean)" class="member-name-link">AbstractJimpleBasedICFG(boolean)</a> - Constructor for class sootup.analysis.interprocedural.icfg.<a href="sootup/analysis/interprocedural/icfg/AbstractJimpleBasedICFG.html" title="class in sootup.analysis.interprocedural.icfg">AbstractJimpleBasedICFG</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html" class="type-name-link" title="class in sootup.core.jimple.common">AbstractLocal</a> - Class in <a href="sootup/core/jimple/common/package-summary.html">sootup.core.jimple.common</a></dt>
+<dd>
+<div class="block">Shared immutable implementation of <a href="sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common"><code>Local</code></a>.</div>
+</dd>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#%3Cinit%3E(java.lang.String,sootup.core.types.Type)" class="member-name-link">AbstractLocal(String, Type)</a> - Constructor for class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
+<dd>
+<div class="block">Constructs a local with the given name and type.</div>
+</dd>
 <dt><a href="qilin/pta/toolkits/turner/AbstractMVFG.html" class="type-name-link" title="class in qilin.pta.toolkits.turner">AbstractMVFG</a> - Class in <a href="qilin/pta/toolkits/turner/package-summary.html">qilin.pta.toolkits.turner</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/turner/AbstractMVFG.html#%3Cinit%3E(qilin.core.PTA,qilin.pta.toolkits.turner.OCG,sootup.core.model.SootMethod)" class="member-name-link">AbstractMVFG(PTA, OCG, SootMethod)</a> - Constructor for class qilin.pta.toolkits.turner.<a href="qilin/pta/toolkits/turner/AbstractMVFG.html" title="class in qilin.pta.toolkits.turner">AbstractMVFG</a></dt>
@@ -280,6 +288,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/core/views/AbstractView.html#%3Cinit%3E()" class="member-name-link">AbstractView()</a> - Constructor for class sootup.core.views.<a href="sootup/core/views/AbstractView.html" title="class in sootup.core.views">AbstractView</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/Value.html#accept(sootup.core.jimple.visitor.ValueVisitor)" class="member-name-link">accept(ValueVisitor)</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#accept(V)" class="member-name-link">accept(V)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/constant/BooleanConstant.html#accept(V)" class="member-name-link">accept(V)</a> - Method in class sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></dt>
 <dd>&nbsp;</dd>
@@ -368,8 +378,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/core/jimple/common/expr/JVirtualInvokeExpr.html#accept(V)" class="member-name-link">accept(V)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JVirtualInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JVirtualInvokeExpr</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JXorExpr.html#accept(V)" class="member-name-link">accept(V)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JXorExpr.html" title="class in sootup.core.jimple.common.expr">JXorExpr</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="sootup/core/jimple/common/Local.html#accept(V)" class="member-name-link">accept(V)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JArrayRef.html#accept(V)" class="member-name-link">accept(V)</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JArrayRef.html" title="class in sootup.core.jimple.common.ref">JArrayRef</a></dt>
 <dd>&nbsp;</dd>
@@ -3740,6 +3748,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Collects all using statements of a Values from a list of statements</div>
 </dd>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#collectUses(java.util.List)" class="member-name-link">collectUses(List&lt;Value&gt;)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/constant/Constant.html#collectUses(java.util.List)" class="member-name-link">collectUses(List&lt;Value&gt;)</a> - Method in interface sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/AbstractBinopExpr.html#collectUses(java.util.List)" class="member-name-link">collectUses(List&lt;Value&gt;)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/AbstractBinopExpr.html" title="class in sootup.core.jimple.common.expr">AbstractBinopExpr</a></dt>
@@ -3761,8 +3771,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/core/jimple/common/expr/JNewMultiArrayExpr.html#collectUses(java.util.List)" class="member-name-link">collectUses(List&lt;Value&gt;)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JNewMultiArrayExpr.html" title="class in sootup.core.jimple.common.expr">JNewMultiArrayExpr</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JPhiExpr.html#collectUses(java.util.List)" class="member-name-link">collectUses(List&lt;Value&gt;)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JPhiExpr.html" title="class in sootup.core.jimple.common.expr">JPhiExpr</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="sootup/core/jimple/common/Local.html#collectUses(java.util.List)" class="member-name-link">collectUses(List&lt;Value&gt;)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JArrayRef.html#collectUses(java.util.List)" class="member-name-link">collectUses(List&lt;Value&gt;)</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JArrayRef.html" title="class in sootup.core.jimple.common.ref">JArrayRef</a></dt>
 <dd>&nbsp;</dd>
@@ -5948,6 +5956,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/inputlocation/EagerInputLocation.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class sootup.core.inputlocation.<a href="sootup/core/inputlocation/EagerInputLocation.html" title="class in sootup.core.inputlocation">EagerInputLocation</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/constant/ClassConstant.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/ClassConstant.html" title="class in sootup.core.jimple.common.constant">ClassConstant</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/constant/DoubleConstant.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/DoubleConstant.html" title="class in sootup.core.jimple.common.constant">DoubleConstant</a></dt>
@@ -5967,8 +5977,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/core/jimple/common/constant/NullConstant.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/NullConstant.html" title="class in sootup.core.jimple.common.constant">NullConstant</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/constant/StringConstant.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/StringConstant.html" title="class in sootup.core.jimple.common.constant">StringConstant</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="sootup/core/jimple/common/Local.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JFieldRef.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JFieldRef.html" title="class in sootup.core.jimple.common.ref">JFieldRef</a></dt>
 <dd>&nbsp;</dd>
@@ -6038,6 +6046,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a (not necessarily fixed) hash code for this object.</div>
 </dd>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#equivHashCode()" class="member-name-link">equivHashCode()</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/constant/Constant.html#equivHashCode()" class="member-name-link">equivHashCode()</a> - Method in interface sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></dt>
 <dd>
 <div class="block">Returns a hash code consistent with structural equality for this object.</div>
@@ -6088,8 +6098,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a hash code for this object, consistent with structural equality.</div>
 </dd>
-<dt><a href="sootup/core/jimple/common/Local.html#equivHashCode()" class="member-name-link">equivHashCode()</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JArrayRef.html#equivHashCode()" class="member-name-link">equivHashCode()</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JArrayRef.html" title="class in sootup.core.jimple.common.ref">JArrayRef</a></dt>
 <dd>
 <div class="block">Returns a hash code for this object, consistent with structural equality.</div>
@@ -6148,11 +6156,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/graph/ForwardingBasicBlock.html#equivTo(java.lang.Object,sootup.core.jimple.basic.JimpleComparator)" class="member-name-link">equivTo(Object, JimpleComparator)</a> - Method in class sootup.core.graph.<a href="sootup/core/graph/ForwardingBasicBlock.html" title="class in sootup.core.graph">ForwardingBasicBlock</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#equivTo(java.lang.Object,sootup.core.jimple.basic.JimpleComparator)" class="member-name-link">equivTo(Object, JimpleComparator)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/AbstractBinopExpr.html#equivTo(java.lang.Object,sootup.core.jimple.basic.JimpleComparator)" class="member-name-link">equivTo(Object, JimpleComparator)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/AbstractBinopExpr.html" title="class in sootup.core.jimple.common.expr">AbstractBinopExpr</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JCastExpr.html#equivTo(java.lang.Object,sootup.core.jimple.basic.JimpleComparator)" class="member-name-link">equivTo(Object, JimpleComparator)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JCastExpr.html" title="class in sootup.core.jimple.common.expr">JCastExpr</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="sootup/core/jimple/common/Local.html#equivTo(java.lang.Object,sootup.core.jimple.basic.JimpleComparator)" class="member-name-link">equivTo(Object, JimpleComparator)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/stmt/JGotoStmt.html#equivTo(java.lang.Object,sootup.core.jimple.basic.JimpleComparator)" class="member-name-link">equivTo(Object, JimpleComparator)</a> - Method in class sootup.core.jimple.common.stmt.<a href="sootup/core/jimple/common/stmt/JGotoStmt.html" title="class in sootup.core.jimple.common.stmt">JGotoStmt</a></dt>
 <dd>&nbsp;</dd>
@@ -7492,7 +7500,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/basic/LocalGenerator.html#generateLocal(sootup.core.types.Type)" class="member-name-link">generateLocal(Type)</a> - Method in class sootup.core.jimple.basic.<a href="sootup/core/jimple/basic/LocalGenerator.html" title="class in sootup.core.jimple.basic">LocalGenerator</a></dt>
 <dd>
-<div class="block">generates a new <a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common"><code>Local</code></a> given the type for local.</div>
+<div class="block">generates a new <a href="sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common"><code>Local</code></a> given the type for local.</div>
 </dd>
 <dt><a href="sootup/core/jimple/basic/LocalGenerator.html#generateParameterLocal(sootup.core.types.Type,int)" class="member-name-link">generateParameterLocal(Type, int)</a> - Method in class sootup.core.jimple.basic.<a href="sootup/core/jimple/basic/LocalGenerator.html" title="class in sootup.core.jimple.basic">LocalGenerator</a></dt>
 <dd>&nbsp;</dd>
@@ -7608,7 +7616,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootMethod.html#getAnnotations()" class="member-name-link">getAnnotations()</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootMethod.html" title="class in sootup.java.core">JavaSootMethod</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/jimple/basic/JavaLocal.html#getAnnotations()" class="member-name-link">getAnnotations()</a> - Method in class sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaLocal.html" title="class in sootup.java.core.jimple.basic">JavaLocal</a></dt>
+<dt><a href="sootup/java/core/jimple/basic/JavaLocal.html#getAnnotations()" class="member-name-link">getAnnotations()</a> - Method in interface sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/main/AndroidVersionInfo.html#getApi_version()" class="member-name-link">getApi_version()</a> - Method in class sootup.apk.frontend.main.<a href="sootup/apk/frontend/main/AndroidVersionInfo.html" title="class in sootup.apk.frontend.main">AndroidVersionInfo</a></dt>
 <dd>&nbsp;</dd>
@@ -8167,16 +8175,20 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the results of iterating through all Stmts in this Body and querying them for Values
  defined.</div>
 </dd>
-<dt><a href="sootup/core/jimple/common/Local.html#getDefs(java.util.Collection)" class="member-name-link">getDefs(Collection&lt;Stmt&gt;)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#getDefs(java.util.Collection)" class="member-name-link">getDefs(Collection&lt;Stmt&gt;)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
 <dd>
 <div class="block">returns a List that can contain: Locals, JFieldRefs, JArrayRefs</div>
 </dd>
+<dt><a href="sootup/core/jimple/common/Local.html#getDefs(java.util.Collection)" class="member-name-link">getDefs(Collection&lt;Stmt&gt;)</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/model/Body.html#getDefs(sootup.core.graph.ControlFlowGraph)" class="member-name-link">getDefs(ControlFlowGraph&lt;?&gt;)</a> - Static method in class sootup.core.model.<a href="sootup/core/model/Body.html" title="class in sootup.core.model">Body</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/core/jimple/common/Local.html#getDefsForLocalUse(sootup.core.graph.ControlFlowGraph,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">getDefsForLocalUse(ControlFlowGraph&lt;?&gt;, Stmt)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#getDefsForLocalUse(sootup.core.graph.ControlFlowGraph,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">getDefsForLocalUse(ControlFlowGraph&lt;?&gt;, Stmt)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
 <dd>
 <div class="block">Get all definition-stmts which define the given local used by the given stmt.</div>
 </dd>
+<dt><a href="sootup/core/jimple/common/Local.html#getDefsForLocalUse(sootup.core.graph.ControlFlowGraph,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">getDefsForLocalUse(ControlFlowGraph&lt;?&gt;, Stmt)</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/interceptors/DexDefUseAnalysis.html#getDefsOf(sootup.core.jimple.common.Local)" class="member-name-link">getDefsOf(Local)</a> - Method in class sootup.apk.frontend.interceptors.<a href="sootup/apk/frontend/interceptors/DexDefUseAnalysis.html" title="class in sootup.apk.frontend.interceptors">DexDefUseAnalysis</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/codepropertygraph/propertygraph/edges/PropertyGraphEdge.html#getDestination()" class="member-name-link">getDestination()</a> - Method in class sootup.codepropertygraph.propertygraph.edges.<a href="sootup/codepropertygraph/propertygraph/edges/PropertyGraphEdge.html" title="class in sootup.codepropertygraph.propertygraph.edges">PropertyGraphEdge</a></dt>
@@ -8574,6 +8586,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the num of this ParameterRef.</div>
 </dd>
+<dt><a href="sootup/core/jimple/common/SlotLocal.html#getIndex()" class="member-name-link">getIndex()</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a></dt>
+<dd>
+<div class="block">Alias for <a href="sootup/core/jimple/common/SlotLocal.html#getSlotIndex()"><code>SlotLocal.getSlotIndex()</code></a>.</div>
+</dd>
 <dt><a href="qilin/pta/toolkits/moon/graph/LabeledGraph.html#getInEdgesOf(N)" class="member-name-link">getInEdgesOf(N)</a> - Method in class qilin.pta.toolkits.moon.graph.<a href="qilin/pta/toolkits/moon/graph/LabeledGraph.html" title="class in qilin.pta.toolkits.moon.graph">LabeledGraph</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/selectx/L.html#getInEntryEdges(int)" class="member-name-link">getInEntryEdges(int)</a> - Method in class qilin.pta.toolkits.selectx.<a href="qilin/pta/toolkits/selectx/L.html" title="class in qilin.pta.toolkits.selectx">L</a></dt>
@@ -8833,7 +8849,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/pag/VarNode.html#getLocal()" class="member-name-link">getLocal()</a> - Method in class qilin.core.pag.<a href="qilin/core/pag/VarNode.html" title="class in qilin.core.pag">VarNode</a></dt>
 <dd>
-<div class="block">Returns the underlying variable as a real Jimple <a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common"><code>Local</code></a>, or <code>null</code> if this node
+<div class="block">Returns the underlying variable as a real Jimple <a href="sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common"><code>Local</code></a>, or <code>null</code> if this node
  does not represent one (e.g. it represents a <a href="qilin/core/pag/MethodParameter.html" title="class in qilin.core.pag"><code>MethodParameter</code></a>, a field, or a constant —
  see <a href="qilin/core/pag/VarNode.html#getVariable()"><code>VarNode.getVariable()</code></a>).</div>
 </dd>
@@ -9166,10 +9182,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/codepropertygraph/propertygraph/StmtMethodPropertyGraph.html#getName()" class="member-name-link">getName()</a> - Method in class sootup.codepropertygraph.propertygraph.<a href="sootup/codepropertygraph/propertygraph/StmtMethodPropertyGraph.html" title="class in sootup.codepropertygraph.propertygraph">StmtMethodPropertyGraph</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/core/jimple/common/Local.html#getName()" class="member-name-link">getName()</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#getName()" class="member-name-link">getName()</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
 <dd>
 <div class="block">Returns the name of this object.</div>
 </dd>
+<dt><a href="sootup/core/jimple/common/Local.html#getName()" class="member-name-link">getName()</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/model/SootClass.html#getName()" class="member-name-link">getName()</a> - Method in interface sootup.core.model.<a href="sootup/core/model/SootClass.html" title="interface in sootup.core.model">SootClass</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/model/SootClassMember.html#getName()" class="member-name-link">getName()</a> - Method in class sootup.core.model.<a href="sootup/core/model/SootClassMember.html" title="class in sootup.core.model">SootClassMember</a></dt>
@@ -9817,6 +9835,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a list of Values.</div>
 </dd>
+<dt><a href="sootup/core/jimple/common/SlotLocal.html#getSlotIndex()" class="member-name-link">getSlotIndex()</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a></dt>
+<dd>
+<div class="block">Returns the original, nonnegative JVM local variable slot index.</div>
+</dd>
 <dt><a href="qilin/pta/toolkits/conch/AbstractConch.html#getSMAPG(qilin.core.pag.MethodPAG)" class="member-name-link">getSMAPG(MethodPAG)</a> - Method in class qilin.pta.toolkits.conch.<a href="qilin/pta/toolkits/conch/AbstractConch.html" title="class in qilin.pta.toolkits.conch">AbstractConch</a></dt>
 <dd>
 <div class="block">Returns the simplified method PAG (SMPAG) for the given method PAG, creating it if absent.</div>
@@ -9996,7 +10018,9 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">* returns all stmts that use this expr</div>
 </dd>
-<dt><a href="sootup/core/jimple/common/Local.html#getStmtsUsingOrDefiningthisLocal(java.util.Collection,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">getStmtsUsingOrDefiningthisLocal(Collection&lt;Stmt&gt;, Stmt)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#getStmtsUsingOrDefiningthisLocal(java.util.Collection,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">getStmtsUsingOrDefiningthisLocal(Collection&lt;Stmt&gt;, Stmt)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/common/Local.html#getStmtsUsingOrDefiningthisLocal(java.util.Collection,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">getStmtsUsingOrDefiningthisLocal(Collection&lt;Stmt&gt;, Stmt)</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/moon/support/FieldRecorder.html#getStoredFields(qilin.core.pag.LocalVarNode)" class="member-name-link">getStoredFields(LocalVarNode)</a> - Method in class qilin.pta.toolkits.moon.support.<a href="qilin/pta/toolkits/moon/support/FieldRecorder.html" title="class in qilin.pta.toolkits.moon.support">FieldRecorder</a></dt>
 <dd>&nbsp;</dd>
@@ -10226,6 +10250,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/codepropertygraph/propertygraph/nodes/TypeGraphNode.html#getType()" class="member-name-link">getType()</a> - Method in class sootup.codepropertygraph.propertygraph.nodes.<a href="sootup/codepropertygraph/propertygraph/nodes/TypeGraphNode.html" title="class in sootup.codepropertygraph.propertygraph.nodes">TypeGraphNode</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#getType()" class="member-name-link">getType()</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
+<dd>
+<div class="block">Returns the type of this local.</div>
+</dd>
 <dt><a href="sootup/core/jimple/common/constant/BooleanConstant.html#getType()" class="member-name-link">getType()</a> - Method in class sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/constant/ClassConstant.html#getType()" class="member-name-link">getType()</a> - Method in class sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/ClassConstant.html" title="class in sootup.core.jimple.common.constant">ClassConstant</a></dt>
@@ -10280,10 +10308,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JUshrExpr.html#getType()" class="member-name-link">getType()</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JUshrExpr.html" title="class in sootup.core.jimple.common.expr">JUshrExpr</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/core/jimple/common/Local.html#getType()" class="member-name-link">getType()</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
-<dd>
-<div class="block">Returns the type of this local.</div>
-</dd>
 <dt><a href="sootup/core/jimple/common/ref/JArrayRef.html#getType()" class="member-name-link">getType()</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JArrayRef.html" title="class in sootup.core.jimple.common.ref">JArrayRef</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JCaughtExceptionRef.html#getType()" class="member-name-link">getType()</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JCaughtExceptionRef.html" title="class in sootup.core.jimple.common.ref">JCaughtExceptionRef</a></dt>
@@ -10737,6 +10761,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/inputlocation/EagerInputLocation.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class sootup.core.inputlocation.<a href="sootup/core/inputlocation/EagerInputLocation.html" title="class in sootup.core.inputlocation">EagerInputLocation</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/constant/ClassConstant.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/ClassConstant.html" title="class in sootup.core.jimple.common.constant">ClassConstant</a></dt>
 <dd>
 <div class="block">Returns a hash code for this ClassConstant object.</div>
@@ -10767,8 +10793,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a hash code for this StringConstant object.</div>
 </dd>
-<dt><a href="sootup/core/jimple/common/Local.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JFieldRef.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JFieldRef.html" title="class in sootup.core.jimple.common.ref">JFieldRef</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JInstanceFieldRef.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JInstanceFieldRef.html" title="class in sootup.core.jimple.common.ref">JInstanceFieldRef</a></dt>
@@ -13063,11 +13087,9 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/natives/JavaLangThreadStart0Native.html#%3Cinit%3E(sootup.core.views.View,sootup.core.model.SootMethod,sootup.core.jimple.common.LValue,qilin.core.pag.PAG)" class="member-name-link">JavaLangThreadStart0Native(View, SootMethod, LValue, PAG)</a> - Constructor for class qilin.core.natives.<a href="qilin/core/natives/JavaLangThreadStart0Native.html" title="class in qilin.core.natives">JavaLangThreadStart0Native</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/jimple/basic/JavaLocal.html" class="type-name-link" title="class in sootup.java.core.jimple.basic">JavaLocal</a> - Class in <a href="sootup/java/core/jimple/basic/package-summary.html">sootup.java.core.jimple.basic</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/jimple/basic/JavaLocal.html#%3Cinit%3E(java.lang.String,sootup.core.types.Type,java.lang.Iterable)" class="member-name-link">JavaLocal(String, Type, Iterable&lt;AnnotationUsage&gt;)</a> - Constructor for class sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaLocal.html" title="class in sootup.java.core.jimple.basic">JavaLocal</a></dt>
+<dt><a href="sootup/java/core/jimple/basic/JavaLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaLocal</a> - Interface in <a href="sootup/java/core/jimple/basic/package-summary.html">sootup.java.core.jimple.basic</a></dt>
 <dd>
-<div class="block">Constructs a JimpleLocal of the given name and type.</div>
+<div class="block">A local with Java annotations, independent of its slot or operand stack provenance.</div>
 </dd>
 <dt><a href="sootup/java/core/JavaModuleIdentifierFactory.html" class="type-name-link" title="class in sootup.java.core">JavaModuleIdentifierFactory</a> - Class in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>&nbsp;</dd>
@@ -13125,6 +13147,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/natives/JavaSecurityAccessControllerDoPrivilegedNative.html#%3Cinit%3E(sootup.core.views.View,sootup.core.model.SootMethod,qilin.core.pag.PAG)" class="member-name-link">JavaSecurityAccessControllerDoPrivilegedNative(View, SootMethod, PAG)</a> - Constructor for class qilin.core.natives.<a href="qilin/core/natives/JavaSecurityAccessControllerDoPrivilegedNative.html" title="class in qilin.core.natives">JavaSecurityAccessControllerDoPrivilegedNative</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/jimple/basic/JavaSlotLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a> - Interface in <a href="sootup/java/core/jimple/basic/package-summary.html">sootup.java.core.jimple.basic</a></dt>
+<dd>
+<div class="block">Combines Java annotations with original JVM local variable slot provenance.</div>
+</dd>
 <dt><a href="sootup/java/core/JavaSootClass.html" class="type-name-link" title="class in sootup.java.core">JavaSootClass</a> - Class in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.html#%3Cinit%3E(sootup.core.frontend.SootClassSource,sootup.core.model.SourceType)" class="member-name-link">JavaSootClass(SootClassSource, SourceType)</a> - Constructor for class sootup.java.core.<a href="sootup/java/core/JavaSootClass.html" title="class in sootup.java.core">JavaSootClass</a></dt>
@@ -13233,6 +13259,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootMethod.JavaSootMethodBuilder.ThrownExceptionsStep.html" class="type-name-link" title="interface in sootup.java.core">JavaSootMethod.JavaSootMethodBuilder.ThrownExceptionsStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/jimple/basic/JavaStackLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a> - Interface in <a href="sootup/java/core/jimple/basic/package-summary.html">sootup.java.core.jimple.basic</a></dt>
+<dd>
+<div class="block">Combines Java annotations with operand stack provenance.</div>
+</dd>
 <dt><a href="qilin/util/JavaTypes.html" class="type-name-link" title="class in qilin.util">JavaTypes</a> - Class in <a href="qilin/util/package-summary.html">qilin.util</a></dt>
 <dd>
 <div class="block">Well-known JDK <a href="sootup/core/types/ClassType.html" title="class in sootup.core.types"><code>ClassType</code></a>s, plus type-hierarchy and method-kind checks.</div>
@@ -14188,13 +14218,9 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/util/printer/StmtPrinter.html#local(sootup.core.jimple.common.Local)" class="member-name-link">local(Local)</a> - Method in class sootup.core.util.printer.<a href="sootup/core/util/printer/StmtPrinter.html" title="class in sootup.core.util.printer">StmtPrinter</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/core/jimple/common/Local.html" class="type-name-link" title="class in sootup.core.jimple.common">Local</a> - Class in <a href="sootup/core/jimple/common/package-summary.html">sootup.core.jimple.common</a></dt>
+<dt><a href="sootup/core/jimple/common/Local.html" class="type-name-link" title="interface in sootup.core.jimple.common">Local</a> - Interface in <a href="sootup/core/jimple/common/package-summary.html">sootup.core.jimple.common</a></dt>
 <dd>
-<div class="block">Local variable in <a href="sootup/core/model/Body.html" title="class in sootup.core.model"><code>Body</code></a>.</div>
-</dd>
-<dt><a href="sootup/core/jimple/common/Local.html#%3Cinit%3E(java.lang.String,sootup.core.types.Type)" class="member-name-link">Local(String, Type)</a> - Constructor for class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
-<dd>
-<div class="block">Constructs a JimpleLocal of the given name and type.</div>
+<div class="block">Local variable in a <a href="sootup/core/model/Body.html" title="class in sootup.core.model"><code>Body</code></a>.</div>
 </dd>
 <dt><a href="qilin/pta/toolkits/moon/graph/FlowKind.html#LOCAL_ASSIGN" class="member-name-link">LOCAL_ASSIGN</a> - Enum constant in enum class qilin.pta.toolkits.moon.graph.<a href="qilin/pta/toolkits/moon/graph/FlowKind.html" title="enum class in qilin.pta.toolkits.moon.graph">FlowKind</a></dt>
 <dd>&nbsp;</dd>
@@ -14210,7 +14236,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/core/jimple/basic/LocalGenerator.html#%3Cinit%3E(java.util.Set)" class="member-name-link">LocalGenerator(Set&lt;Local&gt;)</a> - Constructor for class sootup.core.jimple.basic.<a href="sootup/core/jimple/basic/LocalGenerator.html" title="class in sootup.core.jimple.basic">LocalGenerator</a></dt>
 <dd>
-<div class="block">Creates Locals <a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common"><code>Local</code></a> with a standard naming scheme.</div>
+<div class="block">Creates Locals <a href="sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common"><code>Local</code></a> with a standard naming scheme.</div>
 </dd>
 <dt><a href="sootup/interceptors/LocalLivenessAnalyser.html" class="type-name-link" title="class in sootup.interceptors">LocalLivenessAnalyser</a> - Class in <a href="sootup/interceptors/package-summary.html">sootup.interceptors</a></dt>
 <dd>&nbsp;</dd>
@@ -15174,6 +15200,24 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constructs a Local with the given name and type.</div>
 </dd>
+<dt><a href="sootup/core/jimple/Jimple.html#newLocal(java.lang.String,sootup.core.types.Type,int)" class="member-name-link">newLocal(String, Type, int)</a> - Static method in class sootup.core.jimple.<a href="sootup/core/jimple/Jimple.html" title="class in sootup.core.jimple">Jimple</a></dt>
+<dd>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Use <a href="sootup/core/jimple/Jimple.html#newSlotLocal(java.lang.String,sootup.core.types.Type,int)"><code>Jimple.newSlotLocal(String, Type, int)</code></a> or <a href="sootup/core/jimple/Jimple.html#newLocal(java.lang.String,sootup.core.types.Type)"><code>Jimple.newLocal(String, Type)</code></a>.</div>
+</div>
+</dd>
+<dt><a href="sootup/java/core/language/JavaJimple.html#newLocal(java.lang.String,sootup.core.types.Type,int)" class="member-name-link">newLocal(String, Type, int)</a> - Static method in class sootup.java.core.language.<a href="sootup/java/core/language/JavaJimple.html" title="class in sootup.java.core.language">JavaJimple</a></dt>
+<dd>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Use <a href="sootup/java/core/language/JavaJimple.html#newSlotLocal(java.lang.String,sootup.core.types.Type,int)"><code>JavaJimple.newSlotLocal(String, Type, int)</code></a> or <a href="sootup/java/core/language/JavaJimple.html#newLocal(java.lang.String,sootup.core.types.Type)"><code>JavaJimple.newLocal(String, Type)</code></a>.</div>
+</div>
+</dd>
+<dt><a href="sootup/java/core/language/JavaJimple.html#newLocal(java.lang.String,sootup.core.types.Type,int,java.lang.Iterable)" class="member-name-link">newLocal(String, Type, int, Iterable&lt;AnnotationUsage&gt;)</a> - Static method in class sootup.java.core.language.<a href="sootup/java/core/language/JavaJimple.html" title="class in sootup.java.core.language">JavaJimple</a></dt>
+<dd>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Use an explicit generic or slot local factory.</div>
+</div>
+</dd>
 <dt><a href="sootup/java/core/language/JavaJimple.html#newLocal(java.lang.String,sootup.core.types.Type,java.lang.Iterable)" class="member-name-link">newLocal(String, Type, Iterable&lt;AnnotationUsage&gt;)</a> - Static method in class sootup.java.core.language.<a href="sootup/java/core/language/JavaJimple.html" title="class in sootup.java.core.language">JavaJimple</a></dt>
 <dd>
 <div class="block">Constructs a Local with the given name and type.</div>
@@ -15262,6 +15306,16 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constructs a ShrExpr(Immediate, Immediate) grammar chunk.</div>
 </dd>
+<dt><a href="sootup/core/jimple/Jimple.html#newSlotLocal(java.lang.String,sootup.core.types.Type,int)" class="member-name-link">newSlotLocal(String, Type, int)</a> - Static method in class sootup.core.jimple.<a href="sootup/core/jimple/Jimple.html" title="class in sootup.core.jimple">Jimple</a></dt>
+<dd>
+<div class="block">Constructs a local originating from the given nonnegative JVM local variable slot.</div>
+</dd>
+<dt><a href="sootup/java/core/language/JavaJimple.html#newSlotLocal(java.lang.String,sootup.core.types.Type,int)" class="member-name-link">newSlotLocal(String, Type, int)</a> - Static method in class sootup.java.core.language.<a href="sootup/java/core/language/JavaJimple.html" title="class in sootup.java.core.language">JavaJimple</a></dt>
+<dd>
+<div class="block">Constructs a local originating from the given nonnegative JVM local variable slot.</div>
+</dd>
+<dt><a href="sootup/java/core/language/JavaJimple.html#newSlotLocal(java.lang.String,sootup.core.types.Type,int,java.lang.Iterable)" class="member-name-link">newSlotLocal(String, Type, int, Iterable&lt;AnnotationUsage&gt;)</a> - Static method in class sootup.java.core.language.<a href="sootup/java/core/language/JavaJimple.html" title="class in sootup.java.core.language">JavaJimple</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/Jimple.html#newSpecialInvokeExpr(sootup.core.jimple.common.Local,sootup.core.signatures.MethodSignature)" class="member-name-link">newSpecialInvokeExpr(Local, MethodSignature)</a> - Static method in class sootup.core.jimple.<a href="sootup/core/jimple/Jimple.html" title="class in sootup.core.jimple">Jimple</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/Jimple.html#newSpecialInvokeExpr(sootup.core.jimple.common.Local,sootup.core.signatures.MethodSignature,java.util.List)" class="member-name-link">newSpecialInvokeExpr(Local, MethodSignature, List&lt;Immediate&gt;)</a> - Static method in class sootup.core.jimple.<a href="sootup/core/jimple/Jimple.html" title="class in sootup.core.jimple">Jimple</a></dt>
@@ -15270,6 +15324,16 @@ loadScripts(document, 'script');</script>
  chunk.</div>
 </dd>
 <dt><a href="sootup/core/jimple/Jimple.html#newSpecialInvokeExpr(sootup.core.jimple.common.Local,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.Immediate)" class="member-name-link">newSpecialInvokeExpr(Local, MethodSignature, Immediate)</a> - Static method in class sootup.core.jimple.<a href="sootup/core/jimple/Jimple.html" title="class in sootup.core.jimple">Jimple</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/Jimple.html#newStackLocal(java.lang.String,sootup.core.types.Type)" class="member-name-link">newStackLocal(String, Type)</a> - Static method in class sootup.core.jimple.<a href="sootup/core/jimple/Jimple.html" title="class in sootup.core.jimple">Jimple</a></dt>
+<dd>
+<div class="block">Constructs a temporary originating from the JVM operand stack.</div>
+</dd>
+<dt><a href="sootup/java/core/language/JavaJimple.html#newStackLocal(java.lang.String,sootup.core.types.Type)" class="member-name-link">newStackLocal(String, Type)</a> - Static method in class sootup.java.core.language.<a href="sootup/java/core/language/JavaJimple.html" title="class in sootup.java.core.language">JavaJimple</a></dt>
+<dd>
+<div class="block">Constructs a temporary originating from the JVM operand stack.</div>
+</dd>
+<dt><a href="sootup/java/core/language/JavaJimple.html#newStackLocal(java.lang.String,sootup.core.types.Type,java.lang.Iterable)" class="member-name-link">newStackLocal(String, Type, Iterable&lt;AnnotationUsage&gt;)</a> - Static method in class sootup.java.core.language.<a href="sootup/java/core/language/JavaJimple.html" title="class in sootup.java.core.language">JavaJimple</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/Jimple.html#newStaticFieldRef(sootup.core.signatures.FieldSignature)" class="member-name-link">newStaticFieldRef(FieldSignature)</a> - Static method in class sootup.core.jimple.<a href="sootup/core/jimple/Jimple.html" title="class in sootup.core.jimple">Jimple</a></dt>
 <dd>
@@ -18383,6 +18447,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/util/queue/QueueReader.html#skip(java.lang.Object)" class="member-name-link">skip(Object)</a> - Method in class qilin.util.queue.<a href="qilin/util/queue/QueueReader.html" title="class in qilin.util.queue">QueueReader</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/common/SlotLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">SlotLocal</a> - Interface in <a href="sootup/core/jimple/common/package-summary.html">sootup.core.jimple.common</a></dt>
+<dd>
+<div class="block">A local originating from a JVM local variable slot.</div>
+</dd>
 <dt><a href="qilin/pta/toolkits/conch/SMPAG.html" class="type-name-link" title="class in qilin.pta.toolkits.conch">SMPAG</a> - Class in <a href="qilin/pta/toolkits/conch/package-summary.html">qilin.pta.toolkits.conch</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/conch/SMPAG.html#%3Cinit%3E(qilin.core.pag.MethodPAG)" class="member-name-link">SMPAG(MethodPAG)</a> - Constructor for class qilin.pta.toolkits.conch.<a href="qilin/pta/toolkits/conch/SMPAG.html" title="class in qilin.pta.toolkits.conch">SMPAG</a></dt>
@@ -18688,6 +18756,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/builder/callgraph/OnFlyCallGraph.html#srcUnitToEdge" class="member-name-link">srcUnitToEdge</a> - Variable in class qilin.core.builder.callgraph.<a href="qilin/core/builder/callgraph/OnFlyCallGraph.html" title="class in qilin.core.builder.callgraph">OnFlyCallGraph</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/common/StackLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">StackLocal</a> - Interface in <a href="sootup/core/jimple/common/package-summary.html">sootup.core.jimple.common</a></dt>
+<dd>
+<div class="block">A temporary materialized from the JVM operand stack, with no JVM local variable slot.</div>
+</dd>
 <dt><a href="qilin/pta/tools/StagedPTA.html" class="type-name-link" title="class in qilin.pta.tools">StagedPTA</a> - Class in <a href="qilin/pta/tools/package-summary.html">qilin.pta.tools</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/tools/StagedPTA.html#%3Cinit%3E(qilin.core.PTAScene)" class="member-name-link">StagedPTA(PTAScene)</a> - Constructor for class qilin.pta.tools.<a href="qilin/pta/tools/StagedPTA.html" title="class in qilin.pta.tools">StagedPTA</a></dt>
@@ -19880,6 +19952,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/basic/StmtPositionInfo.html#toString()" class="member-name-link">toString()</a> - Method in class sootup.core.jimple.basic.<a href="sootup/core/jimple/basic/StmtPositionInfo.html" title="class in sootup.core.jimple.basic">StmtPositionInfo</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#toString()" class="member-name-link">toString()</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/constant/BooleanConstant.html#toString()" class="member-name-link">toString()</a> - Method in class sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/constant/ClassConstant.html#toString()" class="member-name-link">toString()</a> - Method in class sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/ClassConstant.html" title="class in sootup.core.jimple.common.constant">ClassConstant</a></dt>
@@ -19931,8 +20005,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/core/jimple/common/expr/JStaticInvokeExpr.html#toString()" class="member-name-link">toString()</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JStaticInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JStaticInvokeExpr</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JVirtualInvokeExpr.html#toString()" class="member-name-link">toString()</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JVirtualInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JVirtualInvokeExpr</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="sootup/core/jimple/common/Local.html#toString()" class="member-name-link">toString()</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JArrayRef.html#toString()" class="member-name-link">toString()</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JArrayRef.html" title="class in sootup.core.jimple.common.ref">JArrayRef</a></dt>
 <dd>&nbsp;</dd>
@@ -20079,6 +20151,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Converts the given modifiers to their string representation, in canonical form.</div>
 </dd>
+<dt><a href="sootup/core/jimple/common/AbstractLocal.html#toString(sootup.core.util.printer.StmtPrinter)" class="member-name-link">toString(StmtPrinter)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/AbstractLocal.html" title="class in sootup.core.jimple.common">AbstractLocal</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/constant/Constant.html#toString(sootup.core.util.printer.StmtPrinter)" class="member-name-link">toString(StmtPrinter)</a> - Method in interface sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/AbstractBinopExpr.html#toString(sootup.core.util.printer.StmtPrinter)" class="member-name-link">toString(StmtPrinter)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/AbstractBinopExpr.html" title="class in sootup.core.jimple.common.expr">AbstractBinopExpr</a></dt>
@@ -20119,8 +20193,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Converts a parameter of type StmtPrinter to a string literal.</div>
 </dd>
-<dt><a href="sootup/core/jimple/common/Local.html#toString(sootup.core.util.printer.StmtPrinter)" class="member-name-link">toString(StmtPrinter)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JArrayRef.html#toString(sootup.core.util.printer.StmtPrinter)" class="member-name-link">toString(StmtPrinter)</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JArrayRef.html" title="class in sootup.core.jimple.common.ref">JArrayRef</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JCaughtExceptionRef.html#toString(sootup.core.util.printer.StmtPrinter)" class="member-name-link">toString(StmtPrinter)</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JCaughtExceptionRef.html" title="class in sootup.core.jimple.common.ref">JCaughtExceptionRef</a></dt>
@@ -21693,7 +21765,13 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootMethod.html#withAnnotations(java.lang.Iterable)" class="member-name-link">withAnnotations(Iterable&lt;AnnotationUsage&gt;)</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootMethod.html" title="class in sootup.java.core">JavaSootMethod</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/jimple/basic/JavaLocal.html#withAnnotations(java.lang.Iterable)" class="member-name-link">withAnnotations(Iterable&lt;AnnotationUsage&gt;)</a> - Method in class sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaLocal.html" title="class in sootup.java.core.jimple.basic">JavaLocal</a></dt>
+<dt><a href="sootup/java/core/jimple/basic/JavaLocal.html#withAnnotations(java.lang.Iterable)" class="member-name-link">withAnnotations(Iterable&lt;AnnotationUsage&gt;)</a> - Method in interface sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></dt>
+<dd>
+<div class="block">Returns a copy with new annotations, preserving all other state and capabilities.</div>
+</dd>
+<dt><a href="sootup/java/core/jimple/basic/JavaSlotLocal.html#withAnnotations(java.lang.Iterable)" class="member-name-link">withAnnotations(Iterable&lt;AnnotationUsage&gt;)</a> - Method in interface sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaSlotLocal.html" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/jimple/basic/JavaStackLocal.html#withAnnotations(java.lang.Iterable)" class="member-name-link">withAnnotations(Iterable&lt;AnnotationUsage&gt;)</a> - Method in interface sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaStackLocal.html" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/AbstractInstanceInvokeExpr.html#withArgs(java.util.List)" class="member-name-link">withArgs(List&lt;Immediate&gt;)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/AbstractInstanceInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInstanceInvokeExpr</a></dt>
 <dd>&nbsp;</dd>
@@ -21781,6 +21859,12 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/stmt/JIdentityStmt.html#withIdentityValue(sootup.core.jimple.common.ref.IdentityRef)" class="member-name-link">withIdentityValue(IdentityRef)</a> - Method in class sootup.core.jimple.common.stmt.<a href="sootup/core/jimple/common/stmt/JIdentityStmt.html" title="class in sootup.core.jimple.common.stmt">JIdentityStmt</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/common/SlotLocal.html#withIndex(int)" class="member-name-link">withIndex(int)</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a></dt>
+<dd>
+<div class="block">Alias for <a href="sootup/core/jimple/common/SlotLocal.html#withSlotIndex(int)"><code>SlotLocal.withSlotIndex(int)</code></a>.</div>
+</dd>
+<dt><a href="sootup/java/core/jimple/basic/JavaSlotLocal.html#withIndex(int)" class="member-name-link">withIndex(int)</a> - Method in interface sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaSlotLocal.html" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JArrayRef.html#withIndex(sootup.core.jimple.common.Immediate)" class="member-name-link">withIndex(Immediate)</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JArrayRef.html" title="class in sootup.core.jimple.common.ref">JArrayRef</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.InterfaceStep.html#withInterface(sootup.core.types.ClassType)" class="member-name-link">withInterface(ClassType)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.InterfaceStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.InterfaceStep</a></dt>
@@ -21857,9 +21941,19 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootMethod.JavaSootMethodBuilder.ModifierStep.html#withModifiers(sootup.core.model.MethodModifier,sootup.core.model.MethodModifier...)" class="member-name-link">withModifiers(MethodModifier, MethodModifier...)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootMethod.JavaSootMethodBuilder.ModifierStep.html" title="interface in sootup.java.core">JavaSootMethod.JavaSootMethodBuilder.ModifierStep</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/core/jimple/common/Local.html#withName(java.lang.String)" class="member-name-link">withName(String)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
+<dt><a href="sootup/core/jimple/common/Local.html#withName(java.lang.String)" class="member-name-link">withName(String)</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></dt>
+<dd>
+<div class="block">Returns a copy with a new name, preserving all other state and capabilities.</div>
+</dd>
+<dt><a href="sootup/core/jimple/common/SlotLocal.html#withName(java.lang.String)" class="member-name-link">withName(String)</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/jimple/basic/JavaLocal.html#withName(java.lang.String)" class="member-name-link">withName(String)</a> - Method in class sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaLocal.html" title="class in sootup.java.core.jimple.basic">JavaLocal</a></dt>
+<dt><a href="sootup/core/jimple/common/StackLocal.html#withName(java.lang.String)" class="member-name-link">withName(String)</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/StackLocal.html" title="interface in sootup.core.jimple.common">StackLocal</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/jimple/basic/JavaLocal.html#withName(java.lang.String)" class="member-name-link">withName(String)</a> - Method in interface sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/jimple/basic/JavaSlotLocal.html#withName(java.lang.String)" class="member-name-link">withName(String)</a> - Method in interface sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaSlotLocal.html" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/jimple/basic/JavaStackLocal.html#withName(java.lang.String)" class="member-name-link">withName(String)</a> - Method in interface sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaStackLocal.html" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/stmt/AbstractDefinitionStmt.html#withNewDef(sootup.core.jimple.common.Local)" class="member-name-link">withNewDef(Local)</a> - Method in class sootup.core.jimple.common.stmt.<a href="sootup/core/jimple/common/stmt/AbstractDefinitionStmt.html" title="class in sootup.core.jimple.common.stmt">AbstractDefinitionStmt</a></dt>
 <dd>
@@ -22061,6 +22155,12 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JNewMultiArrayExpr.html#withSizes(java.util.List)" class="member-name-link">withSizes(List&lt;Immediate&gt;)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JNewMultiArrayExpr.html" title="class in sootup.core.jimple.common.expr">JNewMultiArrayExpr</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/jimple/common/SlotLocal.html#withSlotIndex(int)" class="member-name-link">withSlotIndex(int)</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a></dt>
+<dd>
+<div class="block">Returns a copy with a nonnegative slot index, preserving all other state and capabilities.</div>
+</dd>
+<dt><a href="sootup/java/core/jimple/basic/JavaSlotLocal.html#withSlotIndex(int)" class="member-name-link">withSlotIndex(int)</a> - Method in interface sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaSlotLocal.html" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SootClassSourceStep.html#withSootClassSource(sootup.java.core.JavaSootClassSource)" class="member-name-link">withSootClassSource(JavaSootClassSource)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SootClassSourceStep.html" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SootClassSourceStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/model/SootMethod.html#withSource(sootup.core.frontend.BodySource)" class="member-name-link">withSource(BodySource)</a> - Method in interface sootup.core.model.<a href="sootup/core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a></dt>
@@ -22099,9 +22199,19 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JCastExpr.html#withType(sootup.core.types.Type)" class="member-name-link">withType(Type)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JCastExpr.html" title="class in sootup.core.jimple.common.expr">JCastExpr</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/core/jimple/common/Local.html#withType(sootup.core.types.Type)" class="member-name-link">withType(Type)</a> - Method in class sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></dt>
+<dt><a href="sootup/core/jimple/common/Local.html#withType(sootup.core.types.Type)" class="member-name-link">withType(Type)</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></dt>
+<dd>
+<div class="block">Returns a copy with a new type, preserving all other state and capabilities.</div>
+</dd>
+<dt><a href="sootup/core/jimple/common/SlotLocal.html#withType(sootup.core.types.Type)" class="member-name-link">withType(Type)</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/jimple/basic/JavaLocal.html#withType(sootup.core.types.Type)" class="member-name-link">withType(Type)</a> - Method in class sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaLocal.html" title="class in sootup.java.core.jimple.basic">JavaLocal</a></dt>
+<dt><a href="sootup/core/jimple/common/StackLocal.html#withType(sootup.core.types.Type)" class="member-name-link">withType(Type)</a> - Method in interface sootup.core.jimple.common.<a href="sootup/core/jimple/common/StackLocal.html" title="interface in sootup.core.jimple.common">StackLocal</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/jimple/basic/JavaLocal.html#withType(sootup.core.types.Type)" class="member-name-link">withType(Type)</a> - Method in interface sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/jimple/basic/JavaSlotLocal.html#withType(sootup.core.types.Type)" class="member-name-link">withType(Type)</a> - Method in interface sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaSlotLocal.html" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/jimple/basic/JavaStackLocal.html#withType(sootup.core.types.Type)" class="member-name-link">withType(Type)</a> - Method in interface sootup.java.core.jimple.basic.<a href="sootup/java/core/jimple/basic/JavaStackLocal.html" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/javabytecode/stmt/JSwitchStmt.html#withValues(java.util.List)" class="member-name-link">withValues(List&lt;IntConstant&gt;)</a> - Method in class sootup.core.jimple.javabytecode.stmt.<a href="sootup/core/jimple/javabytecode/stmt/JSwitchStmt.html" title="class in sootup.core.jimple.javabytecode.stmt">JSwitchStmt</a></dt>
 <dd>&nbsp;</dd>

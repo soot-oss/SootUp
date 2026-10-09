@@ -148,10 +148,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>protected <a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></code></div>
+<div class="col-first even-row-color"><code>protected <a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ArtificialMethod.</span><code><a href="../../../../qilin/core/ArtificialMethod.html#getNextLocal(sootup.core.types.Type)" class="member-name-link">getNextLocal</a><wbr>(<a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></code></div>
+<div class="col-first odd-row-color"><code>protected <a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ArtificialMethod.</span><code><a href="../../../../qilin/core/ArtificialMethod.html#getPara(int,sootup.core.types.Type)" class="member-name-link">getPara</a><wbr>(int&nbsp;index,
  <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
@@ -228,7 +228,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>protected final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../../qilin/util/Triple.html" title="class in qilin.util">Triple</a>&lt;<a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>,<wbr><a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a>,<wbr><a href="../Type.html" title="class in sootup.core.types">Type</a>&gt;&gt;</code></div>
+<div class="col-first even-row-color"><code>protected final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../../qilin/util/Triple.html" title="class in qilin.util">Triple</a>&lt;<a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>,<wbr><a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>,<wbr><a href="../Type.html" title="class in sootup.core.types">Type</a>&gt;&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">PAG.</span><code><a href="../../../../qilin/core/pag/PAG.html#locals" class="member-name-link">locals</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
@@ -257,7 +257,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../../qilin/util/Triple.html" title="class in qilin.util">Triple</a>&lt;<a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>,<wbr><a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a>,<wbr><a href="../Type.html" title="class in sootup.core.types">Type</a>&gt;&gt;</code></div>
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../../qilin/util/Triple.html" title="class in qilin.util">Triple</a>&lt;<a href="../../model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>,<wbr><a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>,<wbr><a href="../Type.html" title="class in sootup.core.types">Type</a>&gt;&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">PAG.</span><code><a href="../../../../qilin/core/pag/PAG.html#getLocalPointers()" class="member-name-link">getLocalPointers</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
@@ -732,24 +732,46 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">
 <div class="block">Constructs a InstanceOfExpr(Immediate, Type) grammar chunk.</div>
 </div>
-<div class="col-first even-row-color"><code>static <a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></code></div>
+<div class="col-first even-row-color"><code>static <a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">Jimple.</span><code><a href="../../jimple/Jimple.html#newLocal(java.lang.String,sootup.core.types.Type)" class="member-name-link">newLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Constructs a Local with the given name and type.</div>
 </div>
-<div class="col-first odd-row-color"><code>static <a href="../../jimple/common/expr/JNewArrayExpr.html" title="class in sootup.core.jimple.common.expr">JNewArrayExpr</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Jimple.</span><code><a href="../../jimple/Jimple.html#newNewArrayExpr(sootup.core.types.Type,sootup.core.jimple.common.Immediate,sootup.core.IdentifierFactory)" class="member-name-link">newNewArrayExpr</a><wbr>(<a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type,
+<div class="col-first odd-row-color"><code>static <a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Jimple.</span><code><a href="../../jimple/Jimple.html#newLocal(java.lang.String,sootup.core.types.Type,int)" class="member-name-link">newLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex)</code></div>
+<div class="col-last odd-row-color">
+<div class="block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Use <a href="../../jimple/Jimple.html#newSlotLocal(java.lang.String,sootup.core.types.Type,int)"><code>Jimple.newSlotLocal(String, Type, int)</code></a> or <a href="../../jimple/Jimple.html#newLocal(java.lang.String,sootup.core.types.Type)"><code>Jimple.newLocal(String, Type)</code></a>.</div>
+</div>
+</div>
+<div class="col-first even-row-color"><code>static <a href="../../jimple/common/expr/JNewArrayExpr.html" title="class in sootup.core.jimple.common.expr">JNewArrayExpr</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Jimple.</span><code><a href="../../jimple/Jimple.html#newNewArrayExpr(sootup.core.types.Type,sootup.core.jimple.common.Immediate,sootup.core.IdentifierFactory)" class="member-name-link">newNewArrayExpr</a><wbr>(<a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type,
  <a href="../../jimple/common/Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a>&nbsp;size,
  <a href="../../IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Constructs a NewArrayExpr(Type, Immediate) grammar chunk.</div>
 </div>
-<div class="col-first even-row-color"><code>static <a href="../../jimple/common/ref/JParameterRef.html" title="class in sootup.core.jimple.common.ref">JParameterRef</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Jimple.</span><code><a href="../../jimple/Jimple.html#newParameterRef(sootup.core.types.Type,int)" class="member-name-link">newParameterRef</a><wbr>(<a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;paramType,
+<div class="col-first odd-row-color"><code>static <a href="../../jimple/common/ref/JParameterRef.html" title="class in sootup.core.jimple.common.ref">JParameterRef</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Jimple.</span><code><a href="../../jimple/Jimple.html#newParameterRef(sootup.core.types.Type,int)" class="member-name-link">newParameterRef</a><wbr>(<a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;paramType,
  int&nbsp;number)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Constructs a ParameterRef(SootMethod, int) grammar chunk.</div>
+</div>
+<div class="col-first even-row-color"><code>static <a href="../../jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Jimple.</span><code><a href="../../jimple/Jimple.html#newSlotLocal(java.lang.String,sootup.core.types.Type,int)" class="member-name-link">newSlotLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a local originating from the given nonnegative JVM local variable slot.</div>
+</div>
+<div class="col-first odd-row-color"><code>static <a href="../../jimple/common/StackLocal.html" title="interface in sootup.core.jimple.common">StackLocal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Jimple.</span><code><a href="../../jimple/Jimple.html#newStackLocal(java.lang.String,sootup.core.types.Type)" class="member-name-link">newStackLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Constructs a temporary originating from the JVM operand stack.</div>
 </div>
 </div>
 </section>
@@ -762,16 +784,16 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code><a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></code></div>
+<div class="col-first even-row-color"><code><a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">LocalGenerator.</span><code><a href="../../jimple/basic/LocalGenerator.html#generateLocal(sootup.core.types.Type)" class="member-name-link">generateLocal</a><wbr>(@NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color">
-<div class="block">generates a new <a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common"><code>Local</code></a> given the type for local.</div>
+<div class="block">generates a new <a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common"><code>Local</code></a> given the type for local.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></code></div>
+<div class="col-first odd-row-color"><code><a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">LocalGenerator.</span><code><a href="../../jimple/basic/LocalGenerator.html#generateParameterLocal(sootup.core.types.Type,int)" class="member-name-link">generateParameterLocal</a><wbr>(@NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type,
  int&nbsp;index)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></code></div>
+<div class="col-first even-row-color"><code><a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">LocalGenerator.</span><code><a href="../../jimple/basic/LocalGenerator.html#generateThisLocal(sootup.core.types.Type)" class="member-name-link">generateThisLocal</a><wbr>(@NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color">
 <div class="block">generate this local with given type</div>
@@ -788,7 +810,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>@NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Local.</span><code><a href="../../jimple/common/Local.html#getType()" class="member-name-link">getType</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">AbstractLocal.</span><code><a href="../../jimple/common/AbstractLocal.html#getType()" class="member-name-link">getType</a>()</code></div>
 <div class="col-last even-row-color">
 <div class="block">Returns the type of this local.</div>
 </div>
@@ -803,8 +825,16 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>@NonNull <a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></code></div>
+<div class="col-first even-row-color"><code>@NonNull <a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">Local.</span><code><a href="../../jimple/common/Local.html#withType(sootup.core.types.Type)" class="member-name-link">withType</a><wbr>(@NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Returns a copy with a new type, preserving all other state and capabilities.</div>
+</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="../../jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">SlotLocal.</span><code><a href="../../jimple/common/SlotLocal.html#withType(sootup.core.types.Type)" class="member-name-link">withType</a><wbr>(@NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="../../jimple/common/StackLocal.html" title="interface in sootup.core.jimple.common">StackLocal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">StackLocal.</span><code><a href="../../jimple/common/StackLocal.html#withType(sootup.core.types.Type)" class="member-name-link">withType</a><wbr>(@NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 <div class="caption"><span>Constructors in <a href="../../jimple/common/package-summary.html">sootup.core.jimple.common</a> with parameters of type <a href="../Type.html" title="class in sootup.core.types">Type</a></span></div>
@@ -812,11 +842,11 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier</div>
 <div class="table-header col-second">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../../jimple/common/Local.html#%3Cinit%3E(java.lang.String,sootup.core.types.Type)" class="member-name-link">Local</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-first even-row-color"><code>protected </code></div>
+<div class="col-second even-row-color"><code><a href="../../jimple/common/AbstractLocal.html#%3Cinit%3E(java.lang.String,sootup.core.types.Type)" class="member-name-link">AbstractLocal</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  @NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Constructs a JimpleLocal of the given name and type.</div>
+<div class="block">Constructs a local with the given name and type.</div>
 </div>
 </div>
 </section>
@@ -1422,7 +1452,7 @@ loadScripts(document, 'script');</script>
  belongs to.</div>
 </div>
 <div class="col-first odd-row-color"><code>@Nullable <a href="../Type.html" title="class in sootup.core.types">Type</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Typing.</span><code><a href="../../../interceptors/typeresolving/Typing.html#getType(sootup.core.jimple.common.Local)" class="member-name-link">getType</a><wbr>(@NonNull <a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a>&nbsp;local)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Typing.</span><code><a href="../../../interceptors/typeresolving/Typing.html#getType(sootup.core.jimple.common.Local)" class="member-name-link">getType</a><wbr>(@NonNull <a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&nbsp;local)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Type.html" title="class in sootup.core.types">Type</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">TypeChecker.</span><code><a href="../../../interceptors/typeresolving/TypeChecker.html#selectArrayType(sootup.core.types.Type,sootup.core.types.Type,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">selectArrayType</a><wbr>(@Nullable <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;preType,
@@ -1445,7 +1475,7 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color"><span class="type-name-label">BytecodeHierarchy.</span><code><a href="../../../interceptors/typeresolving/BytecodeHierarchy.html#getLeastCommonAncestors(sootup.core.types.Type,sootup.core.types.Type)" class="member-name-link">getLeastCommonAncestors</a><wbr>(<a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;a,
  <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;b)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a>,<wbr><a href="../Type.html" title="class in sootup.core.types">Type</a>&gt;</code></div>
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>,<wbr><a href="../Type.html" title="class in sootup.core.types">Type</a>&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">Typing.</span><code><a href="../../../interceptors/typeresolving/Typing.html#getMap()" class="member-name-link">getMap</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
@@ -1491,7 +1521,7 @@ loadScripts(document, 'script');</script>
  @NonNull <a href="../../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmt)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Typing.</span><code><a href="../../../interceptors/typeresolving/Typing.html#set(sootup.core.jimple.common.Local,sootup.core.types.Type)" class="member-name-link">set</a><wbr>(@NonNull <a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a>&nbsp;local,
+<div class="col-second odd-row-color"><span class="type-name-label">Typing.</span><code><a href="../../../interceptors/typeresolving/Typing.html#set(sootup.core.jimple.common.Local,sootup.core.types.Type)" class="member-name-link">set</a><wbr>(@NonNull <a href="../../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&nbsp;local,
  @NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
@@ -1735,22 +1765,15 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>@NonNull <a href="../../jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></code></div>
+<div class="col-first even-row-color"><code>@NonNull <a href="../../../java/core/jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">JavaLocal.</span><code><a href="../../../java/core/jimple/basic/JavaLocal.html#withType(sootup.core.types.Type)" class="member-name-link">withType</a><wbr>(@NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-</div>
-<div class="caption"><span>Constructors in <a href="../../../java/core/jimple/basic/package-summary.html">sootup.java.core.jimple.basic</a> with parameters of type <a href="../Type.html" title="class in sootup.core.types">Type</a></span></div>
-<div class="summary-table three-column-summary">
-<div class="table-header col-first">Modifier</div>
-<div class="table-header col-second">Constructor</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../../../java/core/jimple/basic/JavaLocal.html#%3Cinit%3E(java.lang.String,sootup.core.types.Type,java.lang.Iterable)" class="member-name-link">JavaLocal</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- @NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type,
- @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Constructs a JimpleLocal of the given name and type.</div>
-</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="../../../java/core/jimple/basic/JavaSlotLocal.html" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JavaSlotLocal.</span><code><a href="../../../java/core/jimple/basic/JavaSlotLocal.html#withType(sootup.core.types.Type)" class="member-name-link">withType</a><wbr>(@NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="../../../java/core/jimple/basic/JavaStackLocal.html" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JavaStackLocal.</span><code><a href="../../../java/core/jimple/basic/JavaStackLocal.html#withType(sootup.core.types.Type)" class="member-name-link">withType</a><wbr>(@NonNull <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;type)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -1765,13 +1788,32 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>static boolean</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">JavaJimple.</span><code><a href="../../../java/core/language/JavaJimple.html#isJavaKeywordType(sootup.core.types.Type)" class="member-name-link">isJavaKeywordType</a><wbr>(<a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>static <a href="../../../java/core/jimple/basic/JavaLocal.html" title="class in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
+<div class="col-first odd-row-color"><code>static <a href="../../../java/core/jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">JavaJimple.</span><code><a href="../../../java/core/language/JavaJimple.html#newLocal(java.lang.String,sootup.core.types.Type)" class="member-name-link">newLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Constructs a Local with the given name and type.</div>
 </div>
-<div class="col-first even-row-color"><code>static <a href="../../../java/core/jimple/basic/JavaLocal.html" title="class in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
+<div class="col-first even-row-color"><code>static <a href="../../../java/core/jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JavaJimple.</span><code><a href="../../../java/core/language/JavaJimple.html#newLocal(java.lang.String,sootup.core.types.Type,int)" class="member-name-link">newLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex)</code></div>
+<div class="col-last even-row-color">
+<div class="block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Use <a href="../../../java/core/language/JavaJimple.html#newSlotLocal(java.lang.String,sootup.core.types.Type,int)"><code>JavaJimple.newSlotLocal(String, Type, int)</code></a> or <a href="../../../java/core/language/JavaJimple.html#newLocal(java.lang.String,sootup.core.types.Type)"><code>JavaJimple.newLocal(String, Type)</code></a>.</div>
+</div>
+</div>
+<div class="col-first odd-row-color"><code>static <a href="../../../java/core/jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JavaJimple.</span><code><a href="../../../java/core/language/JavaJimple.html#newLocal(java.lang.String,sootup.core.types.Type,int,java.lang.Iterable)" class="member-name-link">newLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</code></div>
+<div class="col-last odd-row-color">
+<div class="block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Use an explicit generic or slot local factory.</div>
+</div>
+</div>
+<div class="col-first even-row-color"><code>static <a href="../../../java/core/jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">JavaJimple.</span><code><a href="../../../java/core/language/JavaJimple.html#newLocal(java.lang.String,sootup.core.types.Type,java.lang.Iterable)" class="member-name-link">newLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</code></div>
@@ -1782,6 +1824,30 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color"><span class="type-name-label">JavaJimple.</span><code><a href="../../../java/core/language/JavaJimple.html#newMethodType(java.util.List,sootup.core.types.Type,sootup.core.IdentifierFactory)" class="member-name-link">newMethodType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../Type.html" title="class in sootup.core.types">Type</a>&gt;&nbsp;parameterTypes,
  <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;returnType,
  @NonNull <a href="../../IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static <a href="../../../java/core/jimple/basic/JavaSlotLocal.html" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JavaJimple.</span><code><a href="../../../java/core/language/JavaJimple.html#newSlotLocal(java.lang.String,sootup.core.types.Type,int)" class="member-name-link">newSlotLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a local originating from the given nonnegative JVM local variable slot.</div>
+</div>
+<div class="col-first odd-row-color"><code>static <a href="../../../java/core/jimple/basic/JavaSlotLocal.html" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JavaJimple.</span><code><a href="../../../java/core/language/JavaJimple.html#newSlotLocal(java.lang.String,sootup.core.types.Type,int,java.lang.Iterable)" class="member-name-link">newSlotLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static <a href="../../../java/core/jimple/basic/JavaStackLocal.html" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JavaJimple.</span><code><a href="../../../java/core/language/JavaJimple.html#newStackLocal(java.lang.String,sootup.core.types.Type)" class="member-name-link">newStackLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a temporary originating from the JVM operand stack.</div>
+</div>
+<div class="col-first odd-row-color"><code>static <a href="../../../java/core/jimple/basic/JavaStackLocal.html" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JavaJimple.</span><code><a href="../../../java/core/language/JavaJimple.html#newStackLocal(java.lang.String,sootup.core.types.Type,java.lang.Iterable)" class="member-name-link">newStackLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <div class="caption"><span>Method parameters in <a href="../../../java/core/language/package-summary.html">sootup.java.core.language</a> with type arguments of type <a href="../Type.html" title="class in sootup.core.types">Type</a></span></div>

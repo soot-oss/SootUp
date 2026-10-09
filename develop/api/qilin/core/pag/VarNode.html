@@ -170,10 +170,10 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns all field ref nodes having this node as their base.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLocal()" class="member-name-link">getLocal</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the underlying variable as a real Jimple <a href="../../../sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common"><code>Local</code></a>, or <code>null</code> if this node
+<div class="block">Returns the underlying variable as a real Jimple <a href="../../../sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common"><code>Local</code></a>, or <code>null</code> if this node
  does not represent one (e.g. it represents a <a href="MethodParameter.html" title="class in qilin.core.pag"><code>MethodParameter</code></a>, a field, or a constant —
  see <a href="#getVariable()"><code>getVariable()</code></a>).</div>
 </div>
@@ -314,7 +314,7 @@ loadScripts(document, 'script');</script>
 <h3>getVariable</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">getVariable</span>()</div>
 <div class="block">Returns the underlying variable that this node represents. Depending on what kind of synthetic
- variable this node models, this can be a real Jimple <a href="../../../sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common"><code>Local</code></a>, a <a href="MethodParameter.html" title="class in qilin.core.pag"><code>MethodParameter</code></a>
+ variable this node models, this can be a real Jimple <a href="../../../sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common"><code>Local</code></a>, a <a href="MethodParameter.html" title="class in qilin.core.pag"><code>MethodParameter</code></a>
  (this/return/throw/param-N), a <a href="../../../sootup/core/signatures/FieldSignature.html" title="class in sootup.core.signatures"><code>FieldSignature</code></a> (static field), a
  <a href="../../../sootup/core/jimple/common/constant/StringConstant.html" title="class in sootup.core.jimple.common.constant"><code>StringConstant</code></a>/<a href="../../../sootup/core/jimple/common/constant/ClassConstant.html" title="class in sootup.core.jimple.common.constant"><code>ClassConstant</code></a>, or another Jimple <a href="../../../sootup/core/jimple/common/expr/Expr.html" title="interface in sootup.core.jimple.common.expr"><code>Expr</code></a> used as a synthetic key (e.g. a cast expression). Use
  <a href="#getLocal()"><code>getLocal()</code></a> if you only care about the common "this is a real local" case.</div>
@@ -323,8 +323,8 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getLocal()">
 <h3>getLocal</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common">Local</a></span>&nbsp;<span class="element-name">getLocal</span>()</div>
-<div class="block">Returns the underlying variable as a real Jimple <a href="../../../sootup/core/jimple/common/Local.html" title="class in sootup.core.jimple.common"><code>Local</code></a>, or <code>null</code> if this node
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a></span>&nbsp;<span class="element-name">getLocal</span>()</div>
+<div class="block">Returns the underlying variable as a real Jimple <a href="../../../sootup/core/jimple/common/Local.html" title="interface in sootup.core.jimple.common"><code>Local</code></a>, or <code>null</code> if this node
  does not represent one (e.g. it represents a <a href="MethodParameter.html" title="class in qilin.core.pag"><code>MethodParameter</code></a>, a field, or a constant —
  see <a href="#getVariable()"><code>getVariable()</code></a>).</div>
 </section>

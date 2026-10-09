@@ -2333,7 +2333,7 @@ them in one by one.</p>
 <span class="cm"> */</span>
 <span class="nd">@Override</span>
 <span class="kd">protected</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="nf">createZeroValue</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Local</span><span class="p">(</span><span class="s">"&lt;&lt;zero&gt;&gt;"</span><span class="p">,</span><span class="w"> </span><span class="n">NullType</span><span class="p">.</span><span class="na">getInstance</span><span class="p">());</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Jimple</span><span class="p">.</span><span class="na">newLocal</span><span class="p">(</span><span class="s">"&lt;&lt;zero&gt;&gt;"</span><span class="p">,</span><span class="w"> </span><span class="n">NullType</span><span class="p">.</span><span class="na">getInstance</span><span class="p">());</span>
 <span class="p">}</span>
 
 <span class="cm">/** Where the analysis starts: the zero fact, at the first statement of the entry method. */</span>

@@ -60,7 +60,7 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" class="type-name-link external-link" title="class or interface in java.lang">Object</a>
 <ul>
-<li class="circle">sootup.core.jimple.common.<a href="Local.html" class="type-name-link" title="class in sootup.core.jimple.common">Local</a> (implements sootup.core.jimple.visitor.<a href="../visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;V&gt;, sootup.core.jimple.common.<a href="Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a>, sootup.core.jimple.common.<a href="LValue.html" title="interface in sootup.core.jimple.common">LValue</a>)</li>
+<li class="circle">sootup.core.jimple.common.<a href="AbstractLocal.html" class="type-name-link" title="class in sootup.core.jimple.common">AbstractLocal</a> (implements sootup.core.jimple.common.<a href="Local.html" title="interface in sootup.core.jimple.common">Local</a>)</li>
 <li class="circle">sootup.core.jimple.common.<a href="Trap.html" class="type-name-link" title="class in sootup.core.jimple.common">Trap</a></li>
 </ul>
 </li>
@@ -69,12 +69,40 @@ loadScripts(document, 'script');</script>
 <section class="hierarchy">
 <h2 title="Interface Hierarchy">Interface Hierarchy</h2>
 <ul>
+<li class="circle">sootup.core.jimple.visitor.<a href="../visitor/Acceptor.html" class="type-name-link" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;V&gt;
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="Local.html" class="type-name-link" title="interface in sootup.core.jimple.common">Local</a> (also extends sootup.core.jimple.common.<a href="Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a>, sootup.core.jimple.common.<a href="LValue.html" title="interface in sootup.core.jimple.common">LValue</a>)
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="SlotLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">SlotLocal</a></li>
+<li class="circle">sootup.core.jimple.common.<a href="StackLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">StackLocal</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="circle">sootup.core.jimple.basic.<a href="../basic/EquivTo.html" class="type-name-link" title="interface in sootup.core.jimple.basic">EquivTo</a>
 <ul>
 <li class="circle">sootup.core.jimple.common.<a href="Value.html" class="type-name-link" title="interface in sootup.core.jimple.common">Value</a> (also extends sootup.core.jimple.<a href="../JimpleIR.html" title="interface in sootup.core.jimple">JimpleIR</a>)
 <ul>
-<li class="circle">sootup.core.jimple.common.<a href="Immediate.html" class="type-name-link" title="interface in sootup.core.jimple.common">Immediate</a></li>
-<li class="circle">sootup.core.jimple.common.<a href="LValue.html" class="type-name-link" title="interface in sootup.core.jimple.common">LValue</a></li>
+<li class="circle">sootup.core.jimple.common.<a href="Immediate.html" class="type-name-link" title="interface in sootup.core.jimple.common">Immediate</a>
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="Local.html" class="type-name-link" title="interface in sootup.core.jimple.common">Local</a> (also extends sootup.core.jimple.visitor.<a href="../visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;V&gt;, sootup.core.jimple.common.<a href="LValue.html" title="interface in sootup.core.jimple.common">LValue</a>)
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="SlotLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">SlotLocal</a></li>
+<li class="circle">sootup.core.jimple.common.<a href="StackLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">StackLocal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="LValue.html" class="type-name-link" title="interface in sootup.core.jimple.common">LValue</a>
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="Local.html" class="type-name-link" title="interface in sootup.core.jimple.common">Local</a> (also extends sootup.core.jimple.visitor.<a href="../visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;V&gt;, sootup.core.jimple.common.<a href="Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a>)
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="SlotLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">SlotLocal</a></li>
+<li class="circle">sootup.core.jimple.common.<a href="StackLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">StackLocal</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -83,8 +111,26 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">sootup.core.jimple.common.<a href="Value.html" class="type-name-link" title="interface in sootup.core.jimple.common">Value</a> (also extends sootup.core.jimple.basic.<a href="../basic/EquivTo.html" title="interface in sootup.core.jimple.basic">EquivTo</a>)
 <ul>
-<li class="circle">sootup.core.jimple.common.<a href="Immediate.html" class="type-name-link" title="interface in sootup.core.jimple.common">Immediate</a></li>
-<li class="circle">sootup.core.jimple.common.<a href="LValue.html" class="type-name-link" title="interface in sootup.core.jimple.common">LValue</a></li>
+<li class="circle">sootup.core.jimple.common.<a href="Immediate.html" class="type-name-link" title="interface in sootup.core.jimple.common">Immediate</a>
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="Local.html" class="type-name-link" title="interface in sootup.core.jimple.common">Local</a> (also extends sootup.core.jimple.visitor.<a href="../visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;V&gt;, sootup.core.jimple.common.<a href="LValue.html" title="interface in sootup.core.jimple.common">LValue</a>)
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="SlotLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">SlotLocal</a></li>
+<li class="circle">sootup.core.jimple.common.<a href="StackLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">StackLocal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="LValue.html" class="type-name-link" title="interface in sootup.core.jimple.common">LValue</a>
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="Local.html" class="type-name-link" title="interface in sootup.core.jimple.common">Local</a> (also extends sootup.core.jimple.visitor.<a href="../visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;V&gt;, sootup.core.jimple.common.<a href="Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a>)
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="SlotLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">SlotLocal</a></li>
+<li class="circle">sootup.core.jimple.common.<a href="StackLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">StackLocal</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

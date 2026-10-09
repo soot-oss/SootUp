@@ -56,13 +56,150 @@ loadScripts(document, 'script');</script>
 </ul>
 </div>
 <section class="hierarchy">
-<h2 title="Class Hierarchy">Class Hierarchy</h2>
+<h2 title="Interface Hierarchy">Interface Hierarchy</h2>
 <ul>
-<li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" class="type-name-link external-link" title="class or interface in java.lang">Object</a>
+<li class="circle">sootup.core.jimple.visitor.<a href="../../../../core/jimple/visitor/Acceptor.html" class="type-name-link" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;V&gt;
 <ul>
-<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/Local.html" class="type-name-link" title="class in sootup.core.jimple.common">Local</a> (implements sootup.core.jimple.visitor.<a href="../../../../core/jimple/visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;V&gt;, sootup.core.jimple.common.<a href="../../../../core/jimple/common/Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a>, sootup.core.jimple.common.<a href="../../../../core/jimple/common/LValue.html" title="interface in sootup.core.jimple.common">LValue</a>)
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/Local.html" class="type-name-link" title="interface in sootup.core.jimple.common">Local</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a>, sootup.core.jimple.common.<a href="../../../../core/jimple/common/LValue.html" title="interface in sootup.core.jimple.common">LValue</a>)
 <ul>
-<li class="circle">sootup.java.core.jimple.basic.<a href="JavaLocal.html" class="type-name-link" title="class in sootup.java.core.jimple.basic">JavaLocal</a> (implements sootup.java.core.<a href="../../HasAnnotation.html" title="interface in sootup.java.core">HasAnnotation</a>)</li>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaLocal</a> (also extends sootup.java.core.<a href="../../HasAnnotation.html" title="interface in sootup.java.core">HasAnnotation</a>)
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaSlotLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a>)</li>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaStackLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/StackLocal.html" title="interface in sootup.core.jimple.common">StackLocal</a>)</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/SlotLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">SlotLocal</a>
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaSlotLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a> (also extends sootup.java.core.jimple.basic.<a href="JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a>)</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/StackLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">StackLocal</a>
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaStackLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a> (also extends sootup.java.core.jimple.basic.<a href="JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a>)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.basic.<a href="../../../../core/jimple/basic/EquivTo.html" class="type-name-link" title="interface in sootup.core.jimple.basic">EquivTo</a>
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/Value.html" class="type-name-link" title="interface in sootup.core.jimple.common">Value</a> (also extends sootup.core.jimple.<a href="../../../../core/jimple/JimpleIR.html" title="interface in sootup.core.jimple">JimpleIR</a>)
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/Immediate.html" class="type-name-link" title="interface in sootup.core.jimple.common">Immediate</a>
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/Local.html" class="type-name-link" title="interface in sootup.core.jimple.common">Local</a> (also extends sootup.core.jimple.visitor.<a href="../../../../core/jimple/visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;V&gt;, sootup.core.jimple.common.<a href="../../../../core/jimple/common/LValue.html" title="interface in sootup.core.jimple.common">LValue</a>)
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaLocal</a> (also extends sootup.java.core.<a href="../../HasAnnotation.html" title="interface in sootup.java.core">HasAnnotation</a>)
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaSlotLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a>)</li>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaStackLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/StackLocal.html" title="interface in sootup.core.jimple.common">StackLocal</a>)</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/SlotLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">SlotLocal</a>
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaSlotLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a> (also extends sootup.java.core.jimple.basic.<a href="JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a>)</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/StackLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">StackLocal</a>
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaStackLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a> (also extends sootup.java.core.jimple.basic.<a href="JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a>)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/LValue.html" class="type-name-link" title="interface in sootup.core.jimple.common">LValue</a>
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/Local.html" class="type-name-link" title="interface in sootup.core.jimple.common">Local</a> (also extends sootup.core.jimple.visitor.<a href="../../../../core/jimple/visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;V&gt;, sootup.core.jimple.common.<a href="../../../../core/jimple/common/Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a>)
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaLocal</a> (also extends sootup.java.core.<a href="../../HasAnnotation.html" title="interface in sootup.java.core">HasAnnotation</a>)
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaSlotLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a>)</li>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaStackLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/StackLocal.html" title="interface in sootup.core.jimple.common">StackLocal</a>)</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/SlotLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">SlotLocal</a>
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaSlotLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a> (also extends sootup.java.core.jimple.basic.<a href="JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a>)</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/StackLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">StackLocal</a>
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaStackLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a> (also extends sootup.java.core.jimple.basic.<a href="JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a>)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="circle">sootup.java.core.<a href="../../HasAnnotation.html" class="type-name-link" title="interface in sootup.java.core">HasAnnotation</a>
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>)
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaSlotLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a>)</li>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaStackLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/StackLocal.html" title="interface in sootup.core.jimple.common">StackLocal</a>)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.<a href="../../../../core/jimple/JimpleIR.html" class="type-name-link" title="interface in sootup.core.jimple">JimpleIR</a>
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/Value.html" class="type-name-link" title="interface in sootup.core.jimple.common">Value</a> (also extends sootup.core.jimple.basic.<a href="../../../../core/jimple/basic/EquivTo.html" title="interface in sootup.core.jimple.basic">EquivTo</a>)
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/Immediate.html" class="type-name-link" title="interface in sootup.core.jimple.common">Immediate</a>
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/Local.html" class="type-name-link" title="interface in sootup.core.jimple.common">Local</a> (also extends sootup.core.jimple.visitor.<a href="../../../../core/jimple/visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;V&gt;, sootup.core.jimple.common.<a href="../../../../core/jimple/common/LValue.html" title="interface in sootup.core.jimple.common">LValue</a>)
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaLocal</a> (also extends sootup.java.core.<a href="../../HasAnnotation.html" title="interface in sootup.java.core">HasAnnotation</a>)
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaSlotLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a>)</li>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaStackLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/StackLocal.html" title="interface in sootup.core.jimple.common">StackLocal</a>)</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/SlotLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">SlotLocal</a>
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaSlotLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a> (also extends sootup.java.core.jimple.basic.<a href="JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a>)</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/StackLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">StackLocal</a>
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaStackLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a> (also extends sootup.java.core.jimple.basic.<a href="JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a>)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/LValue.html" class="type-name-link" title="interface in sootup.core.jimple.common">LValue</a>
+<ul>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/Local.html" class="type-name-link" title="interface in sootup.core.jimple.common">Local</a> (also extends sootup.core.jimple.visitor.<a href="../../../../core/jimple/visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;V&gt;, sootup.core.jimple.common.<a href="../../../../core/jimple/common/Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a>)
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaLocal</a> (also extends sootup.java.core.<a href="../../HasAnnotation.html" title="interface in sootup.java.core">HasAnnotation</a>)
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaSlotLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/SlotLocal.html" title="interface in sootup.core.jimple.common">SlotLocal</a>)</li>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaStackLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a> (also extends sootup.core.jimple.common.<a href="../../../../core/jimple/common/StackLocal.html" title="interface in sootup.core.jimple.common">StackLocal</a>)</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/SlotLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">SlotLocal</a>
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaSlotLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a> (also extends sootup.java.core.jimple.basic.<a href="JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a>)</li>
+</ul>
+</li>
+<li class="circle">sootup.core.jimple.common.<a href="../../../../core/jimple/common/StackLocal.html" class="type-name-link" title="interface in sootup.core.jimple.common">StackLocal</a>
+<ul>
+<li class="circle">sootup.java.core.jimple.basic.<a href="JavaStackLocal.html" class="type-name-link" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a> (also extends sootup.java.core.jimple.basic.<a href="JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a>)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

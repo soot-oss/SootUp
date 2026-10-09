@@ -116,7 +116,7 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button><button id="method-summary-table-tab6" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab6', 3)" class="table-tab">Deprecated Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -139,13 +139,32 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;type,
  @NonNull <a href="../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../jimple/basic/JavaLocal.html" title="class in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#newLocal(java.lang.String,sootup.core.types.Type)" class="member-name-link">newLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Constructs a Local with the given name and type.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../jimple/basic/JavaLocal.html" title="class in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static <a href="../jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#newLocal(java.lang.String,sootup.core.types.Type,int)" class="member-name-link">newLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6">
+<div class="block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Use <a href="#newSlotLocal(java.lang.String,sootup.core.types.Type,int)"><code>newSlotLocal(String, Type, int)</code></a> or <a href="#newLocal(java.lang.String,sootup.core.types.Type)"><code>newLocal(String, Type)</code></a>.</div>
+</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static <a href="../jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#newLocal(java.lang.String,sootup.core.types.Type,int,java.lang.Iterable)" class="member-name-link">newLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6">
+<div class="block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Use an explicit generic or slot local factory.</div>
+</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#newLocal(java.lang.String,sootup.core.types.Type,java.lang.Iterable)" class="member-name-link">newLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</code></div>
@@ -166,6 +185,30 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#newMethodType(java.util.List,sootup.core.types.Type,sootup.core.IdentifierFactory)" class="member-name-link">newMethodType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&gt;&nbsp;parameterTypes,
  <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;returnType,
  @NonNull <a href="../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../jimple/basic/JavaSlotLocal.html" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#newSlotLocal(java.lang.String,sootup.core.types.Type,int)" class="member-name-link">newSlotLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Constructs a local originating from the given nonnegative JVM local variable slot.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../jimple/basic/JavaSlotLocal.html" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#newSlotLocal(java.lang.String,sootup.core.types.Type,int,java.lang.Iterable)" class="member-name-link">newSlotLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../jimple/basic/JavaStackLocal.html" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#newStackLocal(java.lang.String,sootup.core.types.Type)" class="member-name-link">newStackLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Constructs a temporary originating from the JVM operand stack.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../jimple/basic/JavaStackLocal.html" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#newStackLocal(java.lang.String,sootup.core.types.Type,java.lang.Iterable)" class="member-name-link">newStackLocal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../../../core/jimple/common/constant/StringConstant.html" title="class in sootup.core.jimple.common.constant">StringConstant</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#newStringConstant(java.lang.String,sootup.core.IdentifierFactory)" class="member-name-link">newStringConstant</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;value,
@@ -214,10 +257,69 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="newLocal(java.lang.String,sootup.core.types.Type,java.lang.Iterable)">
 <h3>newLocal</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../jimple/basic/JavaLocal.html" title="class in sootup.java.core.jimple.basic">JavaLocal</a></span>&nbsp;<span class="element-name">newLocal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></span>&nbsp;<span class="element-name">newLocal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</span></div>
 <div class="block">Constructs a Local with the given name and type.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newLocal(java.lang.String,sootup.core.types.Type,int)">
+<h3>newLocal</h3>
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></span>&nbsp;<span class="element-name">newLocal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex)</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Use <a href="#newSlotLocal(java.lang.String,sootup.core.types.Type,int)"><code>newSlotLocal(String, Type, int)</code></a> or <a href="#newLocal(java.lang.String,sootup.core.types.Type)"><code>newLocal(String, Type)</code></a>.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newLocal(java.lang.String,sootup.core.types.Type,int,java.lang.Iterable)">
+<h3>newLocal</h3>
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></span>&nbsp;<span class="element-name">newLocal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Use an explicit generic or slot local factory.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newStackLocal(java.lang.String,sootup.core.types.Type)">
+<h3>newStackLocal</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../jimple/basic/JavaStackLocal.html" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a></span>&nbsp;<span class="element-name">newStackLocal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t)</span></div>
+<div class="block">Constructs a temporary originating from the JVM operand stack.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newStackLocal(java.lang.String,sootup.core.types.Type,java.lang.Iterable)">
+<h3>newStackLocal</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../jimple/basic/JavaStackLocal.html" title="interface in sootup.java.core.jimple.basic">JavaStackLocal</a></span>&nbsp;<span class="element-name">newStackLocal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="newSlotLocal(java.lang.String,sootup.core.types.Type,int)">
+<h3>newSlotLocal</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../jimple/basic/JavaSlotLocal.html" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a></span>&nbsp;<span class="element-name">newSlotLocal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex)</span></div>
+<div class="block">Constructs a local originating from the given nonnegative JVM local variable slot.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newSlotLocal(java.lang.String,sootup.core.types.Type,int,java.lang.Iterable)">
+<h3>newSlotLocal</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../jimple/basic/JavaSlotLocal.html" title="interface in sootup.java.core.jimple.basic">JavaSlotLocal</a></span>&nbsp;<span class="element-name">newSlotLocal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t,
+ int&nbsp;slotIndex,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations)</span></div>
 </section>
 </li>
 <li>
@@ -282,7 +384,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="newLocal(java.lang.String,sootup.core.types.Type)">
 <h3>newLocal</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../jimple/basic/JavaLocal.html" title="class in sootup.java.core.jimple.basic">JavaLocal</a></span>&nbsp;<span class="element-name">newLocal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../jimple/basic/JavaLocal.html" title="interface in sootup.java.core.jimple.basic">JavaLocal</a></span>&nbsp;<span class="element-name">newLocal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;t)</span></div>
 <div class="block">Constructs a Local with the given name and type.</div>
 </section>
