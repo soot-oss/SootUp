@@ -214,6 +214,12 @@ Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contain
     }
     ```
 
+## Reading Java Generic Signatures
+
+`getGenericSignature()` on `JavaSootClass`, `JavaSootField`, and `JavaSootMethod` returns
+the raw classfile `Signature` attribute as an `Optional<String>`, or an empty optional
+if absent. Generic signatures do not change SootUp's erased types.
+
 ## Reading Constant Field Values
 
 `JavaSootField.getConstantValue()` returns the classfile `ConstantValue` attribute as an

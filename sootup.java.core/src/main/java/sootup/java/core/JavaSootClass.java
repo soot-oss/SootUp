@@ -221,6 +221,17 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   }
 
   /**
+   * Returns the unparsed classfile Signature attribute, or an empty optional if absent. This
+   * metadata does not change the erased types used by SootUp's type system.
+   */
+  @NonNull
+  public Optional<String> getGenericSignature() {
+    return classSource instanceof JavaSootClassSource
+        ? ((JavaSootClassSource) classSource).getGenericSignature()
+        : Optional.empty();
+  }
+
+  /**
    * Returns a backed Chain of the interfaces that are directly implemented by this class. Note that
    * direct implementation corresponds to an "implements" keyword in the Java class file and that
    * this class may still be implementing additional interfaces in the usual sense by being a
