@@ -214,6 +214,19 @@ Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contain
     }
     ```
 
+## Reading Constant Field Values
+
+`JavaSootField.getConstantValue()` returns the classfile `ConstantValue` attribute as an
+`Optional<Constant>`, or an empty optional if absent. Field initializers are not evaluated.
+
+## Reading Annotation Visibility
+
+`AnnotationUsage.isRuntimeVisible()` distinguishes runtime-visible and runtime-invisible
+bytecode annotations on classes, fields, methods, and parameters. Parameter declaration
+queries support `"Any"`, `"RuntimeVisible"`, and `"RuntimeInvisible"`; type-use annotations
+remain on their existing targets. Nested annotation values inherit their container's
+visibility; the existing two-argument constructor defaults to runtime-visible.
+
 ## Retrieving the Control-Flow Graph of a Method
 
 Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via the `ControlFlowGraph`. This structure is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
