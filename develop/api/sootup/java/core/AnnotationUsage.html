@@ -97,7 +97,15 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(sootup.core.types.ClassType,java.util.Map)" class="member-name-link">AnnotationUsage</a><wbr>(@NonNull <a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;annotation,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;values)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates an annotation usage with runtime visibility, without inferring its retention policy.</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(sootup.core.types.ClassType,java.util.Map,boolean)" class="member-name-link">AnnotationUsage</a><wbr>(@NonNull <a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;annotation,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;values,
+ boolean&nbsp;runtimeVisible)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates an annotation usage with the visibility of its containing classfile attribute.</div>
+</div>
 </div>
 </section>
 </li>
@@ -124,9 +132,14 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRuntimeVisible()" class="member-name-link">isRuntimeVisible</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns whether this usage comes from a RuntimeVisible annotation attribute.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -149,6 +162,16 @@ loadScripts(document, 'script');</script>
 <h3>AnnotationUsage</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AnnotationUsage</span><wbr><span class="parameters">(@NonNull <a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;annotation,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;values)</span></div>
+<div class="block">Creates an annotation usage with runtime visibility, without inferring its retention policy.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(sootup.core.types.ClassType,java.util.Map,boolean)">
+<h3>AnnotationUsage</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AnnotationUsage</span><wbr><span class="parameters">(@NonNull <a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;annotation,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;values,
+ boolean&nbsp;runtimeVisible)</span></div>
+<div class="block">Creates an annotation usage with the visibility of its containing classfile attribute.</div>
 </section>
 </li>
 </ul>
@@ -169,6 +192,15 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getValues()">
 <h3>getValues</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</span>&nbsp;<span class="element-name">getValues</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isRuntimeVisible()">
+<h3>isRuntimeVisible</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isRuntimeVisible</span>()</div>
+<div class="block">Returns whether this usage comes from a RuntimeVisible annotation attribute. Nested annotation
+ values inherit the visibility of the containing annotation. Usages created without an explicit
+ visibility, including annotation default values, default to <code>true</code>.</div>
 </section>
 </li>
 <li>

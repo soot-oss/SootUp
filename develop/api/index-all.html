@@ -1149,7 +1149,13 @@ loadScripts(document, 'script');</script>
 <div class="block">This class models Annotations</div>
 </dd>
 <dt><a href="sootup/java/core/AnnotationUsage.html#%3Cinit%3E(sootup.core.types.ClassType,java.util.Map)" class="member-name-link">AnnotationUsage(ClassType, Map&lt;String, Object&gt;)</a> - Constructor for class sootup.java.core.<a href="sootup/java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates an annotation usage with runtime visibility, without inferring its retention policy.</div>
+</dd>
+<dt><a href="sootup/java/core/AnnotationUsage.html#%3Cinit%3E(sootup.core.types.ClassType,java.util.Map,boolean)" class="member-name-link">AnnotationUsage(ClassType, Map&lt;String, Object&gt;, boolean)</a> - Constructor for class sootup.java.core.<a href="sootup/java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a></dt>
+<dd>
+<div class="block">Creates an annotation usage with the visibility of its containing classfile attribute.</div>
+</dd>
 <dt><a href="qilin/util/ANSIColor.html" class="type-name-link" title="class in qilin.util">ANSIColor</a> - Class in <a href="qilin/util/package-summary.html">qilin.util</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/util/ANSIColor.html#%3Cinit%3E()" class="member-name-link">ANSIColor()</a> - Constructor for class qilin.util.<a href="qilin/util/ANSIColor.html" title="class in qilin.util">ANSIColor</a></dt>
@@ -4261,6 +4267,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Converts the given property graph to a DOT format string.</div>
 </dd>
+<dt><a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html#convertAnnotation(java.util.List,sootup.core.IdentifierFactory,boolean)" class="member-name-link">convertAnnotation(List&lt;? extends AnnotationNode&gt;, IdentifierFactory, boolean)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmAnnotationClassSource</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html#convertAnnotation(java.util.List,sootup.core.IdentifierFactory)" class="member-name-link">convertAnnotation(List&lt;AnnotationNode&gt;, IdentifierFactory)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmAnnotationClassSource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/dexpler/DexClassSource.html#convertAnnotation(java.util.Set)" class="member-name-link">convertAnnotation(Set&lt;? extends Annotation&gt;)</a> - Method in class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexClassSource.html" title="class in sootup.apk.frontend.dexpler">DexClassSource</a></dt>
@@ -4339,9 +4347,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html#createAnnotationUsage(java.util.List,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage(List&lt;? extends AnnotationNode&gt;, IdentifierFactory)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html" title="class in sootup.java.bytecode.frontend.conversion">AsmUtil</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html#createAnnotationUsage(java.util.List,sootup.core.IdentifierFactory,boolean)" class="member-name-link">createAnnotationUsage(List&lt;? extends AnnotationNode&gt;, IdentifierFactory, boolean)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html" title="class in sootup.java.bytecode.frontend.conversion">AsmUtil</a></dt>
+<dd>
+<div class="block">Converts annotations, propagating the containing attribute's visibility to nested values.</div>
+</dd>
 <dt><a href="sootup/apk/frontend/Util/DexUtil.html#createAnnotationUsage(java.util.Set)" class="member-name-link">createAnnotationUsage(Set&lt;? extends Annotation&gt;)</a> - Static method in class sootup.apk.frontend.Util.<a href="sootup/apk/frontend/Util/DexUtil.html" title="class in sootup.apk.frontend.Util">DexUtil</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html#createAnnotationUsage(org.objectweb.asm.tree.AnnotationNode,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage(AnnotationNode, IdentifierFactory)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html" title="class in sootup.java.bytecode.frontend.conversion">AsmUtil</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html#createAnnotationUsage(org.objectweb.asm.tree.AnnotationNode,sootup.core.IdentifierFactory,boolean)" class="member-name-link">createAnnotationUsage(AnnotationNode, IdentifierFactory, boolean)</a> - Static method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmUtil.html" title="class in sootup.java.bytecode.frontend.conversion">AsmUtil</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/types/Type.html#createArrayType(sootup.core.types.Type,int)" class="member-name-link">createArrayType(Type, int)</a> - Static method in class sootup.core.types.<a href="sootup/core/types/Type.html" title="class in sootup.core.types">Type</a></dt>
 <dd>
@@ -12688,6 +12702,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/analysis/interprocedural/icfg/BackwardsInterproceduralCFG.html#isReturnSite(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">isReturnSite(Stmt)</a> - Method in class sootup.analysis.interprocedural.icfg.<a href="sootup/analysis/interprocedural/icfg/BackwardsInterproceduralCFG.html" title="class in sootup.analysis.interprocedural.icfg">BackwardsInterproceduralCFG</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/AnnotationUsage.html#isRuntimeVisible()" class="member-name-link">isRuntimeVisible()</a> - Method in class sootup.java.core.<a href="sootup/java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a></dt>
+<dd>
+<div class="block">Returns whether this usage comes from a RuntimeVisible annotation attribute.</div>
+</dd>
 <dt><a href="qilin/core/config/PointerAnalysisConfig.html#isSeedEntryPointClinits()" class="member-name-link">isSeedEntryPointClinits()</a> - Method in class qilin.core.config.<a href="qilin/core/config/PointerAnalysisConfig.html" title="class in qilin.core.config">PointerAnalysisConfig</a></dt>
 <dd>
 <div class="block">Whether each entry point's declaring-class <code>&lt;clinit&gt;</code> is eagerly seeded as a root before

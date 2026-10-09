@@ -121,12 +121,24 @@ loadScripts(document, 'script');</script>
  @NonNull <a href="../../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createAnnotationUsage(java.util.List,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends org.objectweb.asm.tree.AnnotationNode&gt;&nbsp;invisibleParameterAnnotation,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createAnnotationUsage(java.util.List,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends org.objectweb.asm.tree.AnnotationNode&gt;&nbsp;annotationNodes,
+ @NonNull <a href="../../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createAnnotationUsage(java.util.List,sootup.core.IdentifierFactory,boolean)" class="member-name-link">createAnnotationUsage</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends org.objectweb.asm.tree.AnnotationNode&gt;&nbsp;annotationNodes,
+ @NonNull <a href="../../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory,
+ boolean&nbsp;runtimeVisible)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Converts annotations, propagating the containing attribute's visibility to nested values.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../../../core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createAnnotationUsage(org.objectweb.asm.tree.AnnotationNode,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage</a><wbr>(org.objectweb.asm.tree.AnnotationNode&nbsp;annotationNode,
  @NonNull <a href="../../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../../../core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createAnnotationUsage(org.objectweb.asm.tree.AnnotationNode,sootup.core.IdentifierFactory)" class="member-name-link">createAnnotationUsage</a><wbr>(org.objectweb.asm.tree.AnnotationNode&nbsp;annotationNode,
- @NonNull <a href="../../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createAnnotationUsage(org.objectweb.asm.tree.AnnotationNode,sootup.core.IdentifierFactory,boolean)" class="member-name-link">createAnnotationUsage</a><wbr>(org.objectweb.asm.tree.AnnotationNode&nbsp;annotationNode,
+ @NonNull <a href="../../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory,
+ boolean&nbsp;runtimeVisible)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/EnumSet.html" title="class or interface in java.util" class="external-link">EnumSet</a>&lt;<a href="../../../../core/model/FieldModifier.html" title="enum class in sootup.core.model">FieldModifier</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getFieldModifiers(int)" class="member-name-link">getFieldModifiers</a><wbr>(int&nbsp;access)</code></div>
@@ -295,10 +307,27 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="createAnnotationUsage(org.objectweb.asm.tree.AnnotationNode,sootup.core.IdentifierFactory,boolean)">
+<h3>createAnnotationUsage</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../../../core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a></span>&nbsp;<span class="element-name">createAnnotationUsage</span><wbr><span class="parameters">(org.objectweb.asm.tree.AnnotationNode&nbsp;annotationNode,
+ @NonNull <a href="../../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory,
+ boolean&nbsp;runtimeVisible)</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="createAnnotationUsage(java.util.List,sootup.core.IdentifierFactory)">
 <h3>createAnnotationUsage</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</span>&nbsp;<span class="element-name">createAnnotationUsage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends org.objectweb.asm.tree.AnnotationNode&gt;&nbsp;invisibleParameterAnnotation,
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</span>&nbsp;<span class="element-name">createAnnotationUsage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends org.objectweb.asm.tree.AnnotationNode&gt;&nbsp;annotationNodes,
  @NonNull <a href="../../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createAnnotationUsage(java.util.List,sootup.core.IdentifierFactory,boolean)">
+<h3>createAnnotationUsage</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</span>&nbsp;<span class="element-name">createAnnotationUsage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends org.objectweb.asm.tree.AnnotationNode&gt;&nbsp;annotationNodes,
+ @NonNull <a href="../../../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a>&nbsp;identifierFactory,
+ boolean&nbsp;runtimeVisible)</span></div>
+<div class="block">Converts annotations, propagating the containing attribute's visibility to nested values.</div>
 </section>
 </li>
 <li>

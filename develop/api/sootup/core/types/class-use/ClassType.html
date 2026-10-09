@@ -1882,16 +1882,25 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../../java/core/AnnotationUsage.html#%3Cinit%3E(sootup.core.types.ClassType,java.util.Map)" class="member-name-link">AnnotationUsage</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;annotation,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;values)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates an annotation usage with runtime visibility, without inferring its retention policy.</div>
+</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="../../../java/core/JavaSootClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,sootup.core.types.ClassType,java.nio.file.Path)" class="member-name-link">JavaSootClassSource</a><wbr>(@NonNull <a href="../../inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;inputLocation,
- @NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classSignature,
- @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;sourcePath)</code></div>
+<div class="col-second odd-row-color"><code><a href="../../../java/core/AnnotationUsage.html#%3Cinit%3E(sootup.core.types.ClassType,java.util.Map,boolean)" class="member-name-link">AnnotationUsage</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;annotation,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&nbsp;values,
+ boolean&nbsp;runtimeVisible)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Creates and a <a href="../../frontend/SootClassSource.html" title="interface in sootup.core.frontend"><code>SootClassSource</code></a> for a specific source file.</div>
+<div class="block">Creates an annotation usage with the visibility of its containing classfile attribute.</div>
 </div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../../../java/core/OverridingJavaClassSource.html#%3Cinit%3E(java.util.Set,java.util.Set,java.util.EnumSet,java.util.Set,sootup.java.core.types.JavaClassType,sootup.java.core.types.JavaClassType,sootup.core.model.Position,java.nio.file.Path,sootup.core.types.ClassType,sootup.core.inputlocation.AnalysisInputLocation)" class="member-name-link">OverridingJavaClassSource</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../java/core/JavaSootMethod.html" title="class in sootup.java.core">JavaSootMethod</a>&gt;&nbsp;sootMethods,
+<div class="col-second even-row-color"><code><a href="../../../java/core/JavaSootClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,sootup.core.types.ClassType,java.nio.file.Path)" class="member-name-link">JavaSootClassSource</a><wbr>(@NonNull <a href="../../inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;inputLocation,
+ @NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classSignature,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;sourcePath)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates and a <a href="../../frontend/SootClassSource.html" title="interface in sootup.core.frontend"><code>SootClassSource</code></a> for a specific source file.</div>
+</div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../../../java/core/OverridingJavaClassSource.html#%3Cinit%3E(java.util.Set,java.util.Set,java.util.EnumSet,java.util.Set,sootup.java.core.types.JavaClassType,sootup.java.core.types.JavaClassType,sootup.core.model.Position,java.nio.file.Path,sootup.core.types.ClassType,sootup.core.inputlocation.AnalysisInputLocation)" class="member-name-link">OverridingJavaClassSource</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../java/core/JavaSootMethod.html" title="class in sootup.java.core">JavaSootMethod</a>&gt;&nbsp;sootMethods,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../java/core/JavaSootField.html" title="class in sootup.java.core">JavaSootField</a>&gt;&nbsp;sootFields,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/EnumSet.html" title="class or interface in java.util" class="external-link">EnumSet</a>&lt;<a href="../../model/ClassModifier.html" title="enum class in sootup.core.model">ClassModifier</a>&gt;&nbsp;modifiers,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../java/core/types/JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&gt;&nbsp;interfaces,
@@ -1901,9 +1910,9 @@ loadScripts(document, 'script');</script>
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;sourcePath,
  @NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classType,
  @NonNull <a href="../../inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;inputLocation)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="../../../java/core/OverridingJavaClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,java.nio.file.Path,sootup.core.types.ClassType,sootup.java.core.types.JavaClassType,java.util.Set,sootup.java.core.types.JavaClassType,java.util.Set,java.util.Set,sootup.core.model.Position,java.util.EnumSet,java.lang.Iterable,java.lang.Iterable,java.lang.Iterable)" class="member-name-link">OverridingJavaClassSource</a><wbr>(@NonNull <a href="../../inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;srcNamespace,
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../../../java/core/OverridingJavaClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,java.nio.file.Path,sootup.core.types.ClassType,sootup.java.core.types.JavaClassType,java.util.Set,sootup.java.core.types.JavaClassType,java.util.Set,java.util.Set,sootup.core.model.Position,java.util.EnumSet,java.lang.Iterable,java.lang.Iterable,java.lang.Iterable)" class="member-name-link">OverridingJavaClassSource</a><wbr>(@NonNull <a href="../../inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;srcNamespace,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;sourcePath,
  @NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classType,
  @Nullable <a href="../../../java/core/types/JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&nbsp;superClass,
@@ -1916,7 +1925,7 @@ loadScripts(document, 'script');</script>
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;methodAnnotations,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;fieldAnnotations)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Class source where all information already available</div>
 </div>
 </div>

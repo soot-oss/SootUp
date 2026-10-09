@@ -478,6 +478,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reading-annotation-visibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading Annotation Visibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#retrieving-the-control-flow-graph-of-a-method" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1494,6 +1505,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reading-annotation-visibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading Annotation Visibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#retrieving-the-control-flow-graph-of-a-method" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1808,6 +1830,12 @@ To for example use an <code>LRUCache</code> instead, which stores at most e.g. 5
 <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 </div>
+<h2 id="reading-annotation-visibility">Reading Annotation Visibility</h2>
+<p><code>AnnotationUsage.isRuntimeVisible()</code> distinguishes runtime-visible and runtime-invisible
+bytecode annotations on classes, fields, methods, and parameters. Parameter declaration
+queries support <code>"Any"</code>, <code>"RuntimeVisible"</code>, and <code>"RuntimeInvisible"</code>; type-use annotations
+remain on their existing targets. Nested annotation values inherit their container's
+visibility; the existing two-argument constructor defaults to runtime-visible.</p>
 <h2 id="retrieving-the-control-flow-graph-of-a-method">Retrieving the Control-Flow Graph of a Method</h2>
 <p>Each <code>SootMethod</code> contains a Control-Flow Graph (CFG) which is represented via the <code>ControlFlowGraph</code>. This structure is usually used for program analysis. You can retrieve the CFG of a <code>SootMethod</code> as follows:</p>
 <div class="admonition example">
