@@ -55,6 +55,7 @@ public class ClinitHandlingTests extends QilinFrameworkTests {
             .contextSensitivity(ContextSensitivity.insensitive())
             .singleEntry(true)
             .clinitVirtualCallResolver(clinitVirtualCallResolver)
+            .evaluate(false)
             .build();
     PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
     pta.run();

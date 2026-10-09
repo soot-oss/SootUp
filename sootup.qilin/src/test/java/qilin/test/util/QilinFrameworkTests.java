@@ -120,7 +120,9 @@ public abstract class QilinFrameworkTests {
         .preciseArrayElement(true)
         .preciseExceptions(true)
         .reflectionLogPath(refLogPath + File.separator + "Reflection.log")
-        .analysisName(contextSensitivity.toString());
+        .analysisName(contextSensitivity.toString())
+        // stats unused by assertions; alias stats are quadratic in #locals
+        .evaluate(false);
   }
 
   private PTA run(String mainClass, PointerAnalysisConfig config) {
