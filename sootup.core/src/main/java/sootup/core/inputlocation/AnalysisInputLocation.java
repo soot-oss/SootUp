@@ -22,8 +22,10 @@ package sootup.core.inputlocation;
  * #L%
  */
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.core.frontend.SootClassSource;
@@ -73,6 +75,12 @@ public interface AnalysisInputLocation extends AutoCloseable {
   @NonNull SourceType getSourceType();
 
   @NonNull List<BodyInterceptor> getBodyInterceptors();
+
+  /** Returns the set of extended scope features enabled for this input location */
+  @NonNull
+  default Set<AnalysisExtendedScope> getExtendedScope() {
+    return Collections.emptySet();
+  }
 
   /** Release any file-system resources held by this input location (e.g. open ZipFileSystems). */
   default void close() throws Exception {}

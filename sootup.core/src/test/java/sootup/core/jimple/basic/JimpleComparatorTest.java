@@ -31,9 +31,12 @@ public class JimpleComparatorTest {
     lookup2.add(IntConstant.getInstance(5));
     lookup2.add(IntConstant.getInstance(999));
 
-    JSwitchStmt switch1 = Jimple.newLookupSwitchStmt(l1, lookup1, StmtPositionInfo.NOPOSITION);
-    JSwitchStmt switch2 = Jimple.newLookupSwitchStmt(l2, lookup2, StmtPositionInfo.NOPOSITION);
-    JSwitchStmt switch3 = Jimple.newLookupSwitchStmt(l3, lookup2, StmtPositionInfo.NOPOSITION);
+    JSwitchStmt switch1 =
+        Jimple.newLookupSwitchStmt(l1, lookup1, StmtPositionInfo.getNoStmtPositionInfo());
+    JSwitchStmt switch2 =
+        Jimple.newLookupSwitchStmt(l2, lookup2, StmtPositionInfo.getNoStmtPositionInfo());
+    JSwitchStmt switch3 =
+        Jimple.newLookupSwitchStmt(l3, lookup2, StmtPositionInfo.getNoStmtPositionInfo());
 
     assertTrue(switch1.equivTo(switch2));
     assertFalse(switch1.equivTo(switch3));
