@@ -50,6 +50,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.util.Modifiers;
 import sootup.java.core.AnnotationUsage;
+import sootup.java.core.ConstantUtil;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
@@ -91,7 +92,10 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
                           convertAnnotation(fieldNode.invisibleAnnotations, signatureFactory, false)
                               .stream())
                       .collect(Collectors.toList()),
-                  NoPositionInformation.getInstance());
+                  NoPositionInformation.getInstance(),
+                  fieldNode.value == null
+                      ? null
+                      : ConstantUtil.fromObject(fieldNode.value, signatureFactory));
             })
         .collect(Collectors.toSet());
   }
