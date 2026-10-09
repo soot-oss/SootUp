@@ -670,24 +670,37 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       return false;
     }
     raw.scanned.set(id);
+    if (raw.isInterface.get(id) != isInterface) {
+      // The type has been referenced with the other kind, e.g. by classes compiled against
+      // another version of it: its declaration decides the kind.
+      raw.changeKind(id, isInterface);
+    }
 
+    // References to a type of the other kind (which the JVM would reject) are no subtype
+    // relations
     if (isInterface) {
       for (ClassType extendedInterface : sootClass.getInterfaces()) {
         int extendedId = raw.getOrCreateId(extendedInterface, true);
-        raw.directExtendedInterfaces.get(id).add(extendedId);
-        raw.directSubinterfaces.get(extendedId).add(id);
+        if (raw.isInterface.get(extendedId)) {
+          raw.directExtendedInterfaces.get(id).add(extendedId);
+          raw.directSubinterfaces.get(extendedId).add(id);
+        }
       }
     } else {
       for (ClassType implementedInterface : sootClass.getInterfaces()) {
         int ifaceId = raw.getOrCreateId(implementedInterface, true);
-        raw.directImplementedInterfaces.get(id).add(ifaceId);
-        raw.directImplementers.get(ifaceId).add(id);
+        if (raw.isInterface.get(ifaceId)) {
+          raw.directImplementedInterfaces.get(id).add(ifaceId);
+          raw.directImplementers.get(ifaceId).add(id);
+        }
       }
       Optional<? extends ClassType> superClass = sootClass.getSuperclass();
       if (superClass.isPresent()) {
         int superId = raw.getOrCreateId(superClass.get(), false);
-        raw.superClassId.set(id, superId);
-        raw.directSubclasses.get(superId).add(id);
+        if (!raw.isInterface.get(superId)) {
+          raw.superClassId.set(id, superId);
+          raw.directSubclasses.get(superId).add(id);
+        }
       }
     }
     return true;
@@ -882,6 +895,17 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       data[index] = value;
     }
 
+    /** Removes all occurrences of the given value. */
+    void remove(int value) {
+      int kept = 0;
+      for (int i = 0; i < size; i++) {
+        if (data[i] != value) {
+          data[kept++] = data[i];
+        }
+      }
+      size = kept;
+    }
+
     int size() {
       return size;
     }
@@ -963,6 +987,35 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
     int size() {
       return classTypeOf.size();
+    }
+
+    /**
+     * Changes the kind of the type with the given id, which has only been referenced so far, and
+     * removes the references that need the previous kind.
+     */
+    void changeKind(int id, boolean asInterface) {
+      if (asInterface) {
+        // classes do not extend an interface
+        IntArrayList subclasses = directSubclasses.get(id);
+        for (int i = 0; i < subclasses.size(); i++) {
+          superClassId.set(subclasses.get(i), -1);
+        }
+        directSubclasses.set(id, new IntArrayList());
+        isInterface.set(id);
+      } else {
+        // classes do not implement or extend a class as an interface
+        IntArrayList implementers = directImplementers.get(id);
+        for (int i = 0; i < implementers.size(); i++) {
+          directImplementedInterfaces.get(implementers.get(i)).remove(id);
+        }
+        directImplementers.set(id, new IntArrayList());
+        IntArrayList subinterfaces = directSubinterfaces.get(id);
+        for (int i = 0; i < subinterfaces.size(); i++) {
+          directExtendedInterfaces.get(subinterfaces.get(i)).remove(id);
+        }
+        directSubinterfaces.set(id, new IntArrayList());
+        isInterface.clear(id);
+      }
     }
   }
 
