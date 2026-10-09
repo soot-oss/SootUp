@@ -42,6 +42,8 @@ public abstract class JavaSootClassSource implements SootClassSource {
   // holds information about the specific data unit where the information about a class is stored
   protected final Path sourcePath;
 
+  @NonNull private final JavaClassFileMetadata classFileMetadata;
+
   /**
    * Creates and a {@link SootClassSource} for a specific source file. The file should be passed as
    * {@link Path} and can be located in an arbitrary {@link java.nio.file.FileSystem}.
@@ -58,15 +60,37 @@ public abstract class JavaSootClassSource implements SootClassSource {
       @NonNull AnalysisInputLocation inputLocation,
       @NonNull ClassType classSignature,
       @NonNull Path sourcePath) {
+    this(inputLocation, classSignature, sourcePath, JavaClassFileMetadata.empty());
+  }
+
+  /** Creates a class source with immutable source and nesting attributes. */
+  public JavaSootClassSource(
+      @NonNull AnalysisInputLocation inputLocation,
+      @NonNull ClassType classSignature,
+      @NonNull Path sourcePath,
+      @NonNull JavaClassFileMetadata classFileMetadata) {
     this.analysisInputLocation = inputLocation;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;
+    this.classFileMetadata = classFileMetadata;
   }
 
   public JavaSootClassSource(SootClassSource delegate) {
-    this.analysisInputLocation = delegate.getAnalysisInputLocation();
-    this.classSignature = delegate.getClassType();
-    this.sourcePath = delegate.getSourcePath();
+    this(
+        delegate.getAnalysisInputLocation(),
+        delegate.getClassType(),
+        delegate.getSourcePath(),
+        delegate instanceof JavaSootClassSource
+            ? ((JavaSootClassSource) delegate).getClassFileMetadata()
+            : JavaClassFileMetadata.empty());
+  }
+
+  /**
+   * Returns immutable source and nesting attributes, empty for sources that do not provide them.
+   */
+  @NonNull
+  public JavaClassFileMetadata getClassFileMetadata() {
+    return classFileMetadata;
   }
 
   protected abstract Iterable<AnnotationUsage> resolveAnnotations();
