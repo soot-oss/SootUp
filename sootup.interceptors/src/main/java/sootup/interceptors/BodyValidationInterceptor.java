@@ -1,10 +1,10 @@
-package sootup.core.validation;
+package sootup.interceptors;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallée-Rai, Linghui Luo and others
+ * Copyright (C) 2025 Sahil Agichani
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,18 +23,26 @@ package sootup.core.validation;
  */
 
 import java.util.List;
+import org.jspecify.annotations.NonNull;
 import sootup.core.model.Body;
+import sootup.core.transform.BodyInterceptor;
+import sootup.core.validation.BodyValidator;
+import sootup.core.validation.ValidationException;
 import sootup.core.views.View;
 
-public class StmtsValidator implements BodyValidator {
+public class BodyValidationInterceptor implements BodyInterceptor {
 
-  /**
-   * Verifies that the Units of this Body all point to a Unit contained within this body.
-   *
-   * @return
-   */
+  List<BodyValidator> bodyValidators = BodyValidators.Default.getBodyValidators();
+
   @Override
-  public List<ValidationException> validate(Body body, View view) {
-    return null;
+  public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
+    for (BodyValidator bodyValidator : bodyValidators) {
+      try {
+        List<ValidationException> validationExceptionList =
+            bodyValidator.validate(builder.build(), view);
+      } catch (Exception e) {
+        throw new IllegalStateException("Failed to apply " + bodyValidator + " to " + builder, e);
+      }
+    }
   }
 }

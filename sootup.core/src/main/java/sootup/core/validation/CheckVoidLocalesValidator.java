@@ -4,7 +4,7 @@ package sootup.core.validation;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallée-Rai, linghui Luo
+ * Copyright (C) 2025 Sahil Agichani
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,17 +22,24 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.List;
+import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
+import sootup.core.types.VoidType;
 import sootup.core.views.View;
 
-/** Implement this interface if you want to provide your own body Validator */
-public interface BodyValidator extends Validator {
-  /**
-   * Validates the given body and saves all validation errors in the given list.
-   *
-   * @param body the body to check
-   * @param view the view
-   */
-  List<ValidationException> validate(Body body, View view);
+public class CheckVoidLocalesValidator implements BodyValidator {
+  @Override
+  public List<ValidationException> validate(Body body, View view) {
+    List<ValidationException> validationException = new ArrayList<>();
+    for (Local l : body.getLocals()) {
+      if (l.getType() instanceof VoidType) {
+        validationException.add(
+            new ValidationException(
+                l, "Local " + l + " in " + body.getMethodSignature() + " defined with void type"));
+      }
+    }
+    return validationException;
+  }
 }
