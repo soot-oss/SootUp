@@ -214,6 +214,19 @@ Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contain
     }
     ```
 
+## Reading Constant Field Values
+
+`JavaSootField.getConstantValue()` returns the classfile `ConstantValue` attribute as an
+`Optional<Constant>`, or an empty optional if absent. Field initializers are not evaluated.
+
+## Reading Annotation Visibility
+
+`AnnotationUsage.isRuntimeVisible()` distinguishes runtime-visible and runtime-invisible
+bytecode annotations on classes, fields, methods, and parameters. Parameter declaration
+queries support `"Any"`, `"RuntimeVisible"`, and `"RuntimeInvisible"`; type-use annotations
+remain on their existing targets. Nested annotation values inherit their container's
+visibility; the existing two-argument constructor defaults to runtime-visible.
+
 ## Reading Class Nesting and Source Metadata
 
 `JavaSootClass` exposes source filenames (`getSourceFile()`), raw source/debug text
