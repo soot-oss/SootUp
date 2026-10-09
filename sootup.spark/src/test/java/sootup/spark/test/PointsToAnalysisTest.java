@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.signatures.FieldSignature;
@@ -47,25 +48,26 @@ public class PointsToAnalysisTest {
 
     assertEquals(
         Collections.singleton(newField),
-        pta.reachingObjects(new Local("$stack5", fieldType), mainSig));
+        pta.reachingObjects(Jimple.newLocal("$stack5", fieldType), mainSig));
     assertEquals(
-        Collections.singleton(newField), pta.reachingObjects(new Local("l2", fieldType), mainSig));
-    assertEquals(
-        Collections.singleton(newContainer),
-        pta.reachingObjects(new Local("$stack6", containerType), mainSig));
+        Collections.singleton(newField),
+        pta.reachingObjects(Jimple.newLocal("l2", fieldType), mainSig));
     assertEquals(
         Collections.singleton(newContainer),
-        pta.reachingObjects(new Local("l3", containerType), mainSig));
+        pta.reachingObjects(Jimple.newLocal("$stack6", containerType), mainSig));
     assertEquals(
         Collections.singleton(newContainer),
-        pta.reachingObjects(new Local("l4", containerType), mainSig));
+        pta.reachingObjects(Jimple.newLocal("l3", containerType), mainSig));
+    assertEquals(
+        Collections.singleton(newContainer),
+        pta.reachingObjects(Jimple.newLocal("l4", containerType), mainSig));
 
     assertEquals(
         Collections.singleton((Type) fieldType),
-        pta.reachingTypes(new Local("l2", fieldType), mainSig));
+        pta.reachingTypes(Jimple.newLocal("l2", fieldType), mainSig));
     assertEquals(
         Collections.singleton((Type) containerType),
-        pta.reachingTypes(new Local("l3", containerType), mainSig));
+        pta.reachingTypes(Jimple.newLocal("l3", containerType), mainSig));
   }
 
   @Test
@@ -80,8 +82,8 @@ public class PointsToAnalysisTest {
     ClassType fieldType = SparkTestUtil.idFactory.getClassType("Basic$Field");
     ClassType containerType = SparkTestUtil.idFactory.getClassType("Basic$Container");
 
-    Local l2 = new Local("l2", fieldType);
-    Local l3 = new Local("l3", containerType);
+    Local l2 = Jimple.newLocal("l2", fieldType);
+    Local l3 = Jimple.newLocal("l3", containerType);
 
     Node stack5Node = SparkTestUtil.var(fieldType, "$stack5", mainSig);
     Node l2Node = SparkTestUtil.var(fieldType, "l2", mainSig);
@@ -117,7 +119,7 @@ public class PointsToAnalysisTest {
     FieldSignature fieldSig =
         SparkTestUtil.idFactory.getFieldSignature("field", containerType, fieldType);
     JInstanceFieldRef stack6FieldRef =
-        new JInstanceFieldRef(new Local("$stack6", containerType), fieldSig);
+        new JInstanceFieldRef(Jimple.newLocal("$stack6", containerType), fieldSig);
 
     AllocationNode newField = SparkTestUtil.alloc(fieldType, 1L, mainSig);
     assertEquals(Collections.singleton(newField), pta.reachingObjects(stack6FieldRef, mainSig));
@@ -138,9 +140,9 @@ public class PointsToAnalysisTest {
     AllocationNode newO1 = SparkTestUtil.alloc(oType, 1L, mainSig);
     AllocationNode newO2 = SparkTestUtil.alloc(oType, 2L, mainSig);
 
-    Local p = new Local("l1", oType);
-    Local r = new Local("l3", oType);
-    Local t = new Local("l4", oType);
+    Local p = Jimple.newLocal("l1", oType);
+    Local r = Jimple.newLocal("l3", oType);
+    Local t = Jimple.newLocal("l4", oType);
 
     Node rNode = SparkTestUtil.var(oType, "l3", mainSig);
 
@@ -175,9 +177,11 @@ public class PointsToAnalysisTest {
 
     // dst(l0) receives t (alloc3); src(l1) receives q which aliases p (alloc1)
     assertEquals(
-        Collections.singleton(newO3), pta.reachingObjects(new Local("l0", oType), copyValueSig));
+        Collections.singleton(newO3),
+        pta.reachingObjects(Jimple.newLocal("l0", oType), copyValueSig));
     assertEquals(
-        Collections.singleton(newO1), pta.reachingObjects(new Local("l1", oType), copyValueSig));
+        Collections.singleton(newO1),
+        pta.reachingObjects(Jimple.newLocal("l1", oType), copyValueSig));
   }
 
   /**
@@ -201,10 +205,10 @@ public class PointsToAnalysisTest {
 
     // q (passed as src) aliases copyValue:src; t (passed as dst) aliases copyValue:dst
     assertTrue(
-        pta.aliases(new Local("l2", oType), mainSig).contains(srcNode),
+        pta.aliases(Jimple.newLocal("l2", oType), mainSig).contains(srcNode),
         "q aliases copyValue:src across call boundary");
     assertTrue(
-        pta.aliases(new Local("l4", oType), mainSig).contains(dstNode),
+        pta.aliases(Jimple.newLocal("l4", oType), mainSig).contains(dstNode),
         "t aliases copyValue:dst across call boundary");
   }
 
@@ -228,7 +232,7 @@ public class PointsToAnalysisTest {
     // t.f must reach alloc2 via the inter-proc store chain: dst.f = src.f where src aliases p
     assertEquals(
         Collections.singleton(newO2),
-        pta.reachingObjects(new JInstanceFieldRef(new Local("l4", oType), fSig), mainSig));
+        pta.reachingObjects(new JInstanceFieldRef(Jimple.newLocal("l4", oType), fSig), mainSig));
   }
 
   /**
@@ -254,7 +258,7 @@ public class PointsToAnalysisTest {
 
     // x merges {a, b} from the branch, then "x = x.f" must pull in c (stored via a.f = c and
     // b.f = c) without dropping the pre-existing allocations.
-    Set<AllocationNode> reachingX = pta.reachingObjects(new Local("l4", nodeType), mainSig);
+    Set<AllocationNode> reachingX = pta.reachingObjects(Jimple.newLocal("l4", nodeType), mainSig);
     assertTrue(reachingX.containsAll(Set.of(newA, newB, newC)), reachingX::toString);
   }
 }

@@ -1,6 +1,7 @@
 package sootup.core;
 
 import java.util.Collections;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
@@ -81,7 +82,7 @@ public class TestUtil {
    * @return a dummy Local for an Object
    */
   public static Local createDummyLocalForObject() {
-    return new Local("a", TestUtil.createDummyClassType());
+    return Jimple.newLocal("a", TestUtil.createDummyClassType());
   }
 
   /**
@@ -90,7 +91,7 @@ public class TestUtil {
    * @return a dummy Local for a int value
    */
   public static Local createDummyLocalForInt() {
-    return new Local("b", IntType.getInstance());
+    return Jimple.newLocal("b", IntType.getInstance());
   }
 
   /**

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
@@ -73,12 +74,12 @@ public class MutableBlockControlFlowGraphTest {
 
   Stmt firstHandlerStmt =
       new JIdentityStmt(
-          new Local("ex", throwableSig),
+          Jimple.newLocal("ex", throwableSig),
           new JCaughtExceptionRef(throwableSig),
           StmtPositionInfo.getNoStmtPositionInfo());
   Stmt secondHandlerStmt =
       new JIdentityStmt(
-          new Local("ex2", throwableSig),
+          Jimple.newLocal("ex2", throwableSig),
           new JCaughtExceptionRef(ioExceptionSig),
           StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -592,7 +593,7 @@ public class MutableBlockControlFlowGraphTest {
           }
         };
 
-    Local exc = new Local("ex", UnknownType.getInstance());
+    Local exc = Jimple.newLocal("ex", UnknownType.getInstance());
     // hint: applied types make no sense in this test!
     Stmt catchStmt1 =
         new JIdentityStmt(
@@ -1046,7 +1047,7 @@ public class MutableBlockControlFlowGraphTest {
     JGotoStmt stmt2 = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
     Stmt handlerStmt =
         new JIdentityStmt(
-            new Local("ex", throwableSig),
+            Jimple.newLocal("ex", throwableSig),
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -1084,13 +1085,13 @@ public class MutableBlockControlFlowGraphTest {
 
     Stmt handlerStmt1 =
         new JIdentityStmt(
-            new Local("ex1", throwableSig),
+            Jimple.newLocal("ex1", throwableSig),
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
     Stmt handlerStmt2 =
         new JIdentityStmt(
-            new Local("ex2", ioExceptionSig),
+            Jimple.newLocal("ex2", ioExceptionSig),
             new JCaughtExceptionRef(ioExceptionSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -1131,13 +1132,13 @@ public class MutableBlockControlFlowGraphTest {
 
     Stmt handlerStmt1 =
         new JIdentityStmt(
-            new Local("ex1", throwableSig),
+            Jimple.newLocal("ex1", throwableSig),
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
     Stmt handlerStmt2 =
         new JIdentityStmt(
-            new Local("ex2", ioExceptionSig),
+            Jimple.newLocal("ex2", ioExceptionSig),
             new JCaughtExceptionRef(ioExceptionSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 

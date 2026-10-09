@@ -1,10 +1,10 @@
-package sootup.java.core.jimple.basic;
+package sootup.core.jimple.common;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2020 Markus Schmidt
+ * Copyright (C) 1999-2020 Patrick Lam, Linghui Luo, Markus Schmidt and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,22 +23,13 @@ package sootup.java.core.jimple.basic;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.common.Local;
 import sootup.core.types.Type;
-import sootup.java.core.AnnotationUsage;
-import sootup.java.core.HasAnnotation;
 
-/** A local with Java annotations, independent of its slot or operand stack provenance. */
-public interface JavaLocal extends Local, HasAnnotation {
+/** A temporary materialized from the JVM operand stack, with no JVM local variable slot. */
+public interface StackLocal extends Local {
   @Override
-  @NonNull Iterable<AnnotationUsage> getAnnotations();
+  @NonNull StackLocal withName(@NonNull String name);
 
   @Override
-  @NonNull JavaLocal withName(@NonNull String name);
-
-  @Override
-  @NonNull JavaLocal withType(@NonNull Type type);
-
-  /** Returns a copy with new annotations, preserving all other state and capabilities. */
-  @NonNull JavaLocal withAnnotations(@NonNull Iterable<AnnotationUsage> annotations);
+  @NonNull StackLocal withType(@NonNull Type type);
 }

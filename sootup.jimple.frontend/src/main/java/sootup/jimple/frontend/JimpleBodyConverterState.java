@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.types.ClassType;
@@ -87,6 +88,7 @@ public class JimpleBodyConverterState {
 
   @NonNull
   public Local getLocal(@NonNull String name) {
-    return locals.computeIfAbsent(name, (ignored) -> new Local(name, UnknownType.getInstance()));
+    return locals.computeIfAbsent(
+        name, (ignored) -> Jimple.newLocal(name, UnknownType.getInstance()));
   }
 }

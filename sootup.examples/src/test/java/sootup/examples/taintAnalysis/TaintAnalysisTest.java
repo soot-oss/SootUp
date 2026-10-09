@@ -19,8 +19,8 @@ import sootup.analysis.interprocedural.icfg.JimpleBasedInterproceduralCFG;
 import sootup.analysis.interprocedural.ifds.DefaultJimpleIFDSTabulationProblem;
 import sootup.analysis.interprocedural.ifds.JimpleIFDSSolver;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Immediate;
-import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -138,7 +138,7 @@ public class TaintAnalysisTest {
     // --8<-- [start:zero-value]
     @Override
     protected Value createZeroValue() {
-      return new Local("<<zero>>", NullType.getInstance());
+      return Jimple.newLocal("<<zero>>", NullType.getInstance());
     }
 
     // --8<-- [end:zero-value]

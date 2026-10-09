@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Local;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
@@ -182,7 +183,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     // Tests that the augmented integer types (which are based on the value of integer constants)
     // don't change the type of `a`.
-    assertLocals(body, new Local("l0", ArrayType.createArrayType(PrimitiveType.getInt(), 1)));
+    assertLocals(body, Jimple.newLocal("l0", ArrayType.createArrayType(PrimitiveType.getInt(), 1)));
   }
 
   @Test
@@ -193,11 +194,11 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     // source code/bytecode), results in the correct type.
     assertLocals(
         body,
-        new Local(
+        Jimple.newLocal(
             "l0",
             ArrayType.createArrayType(identifierFactory.getClassType("String", "java.lang"), 1)),
-        new Local("$stack1", PrimitiveType.getDouble()),
-        new Local("$stack2", PrimitiveType.getByte()));
+        Jimple.newLocal("$stack1", PrimitiveType.getDouble()),
+        Jimple.newLocal("$stack2", PrimitiveType.getByte()));
   }
 
   @Test
@@ -206,7 +207,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     // Tests that assignments to an array index before the array is initialized (in the order of
     // source code/bytecode), results in the correct type.
-    assertLocals(body, new Local("l0", ArrayType.createArrayType(objectType, 1)));
+    assertLocals(body, Jimple.newLocal("l0", ArrayType.createArrayType(objectType, 1)));
   }
 
   @Test
@@ -215,7 +216,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     // Tests that an array that gets both objects and primitives assigned to it,
     // gets the `TopType[]` type.
-    assertLocals(body, new Local("l0", ArrayType.createArrayType(TopType.getInstance(), 1)));
+    assertLocals(body, Jimple.newLocal("l0", ArrayType.createArrayType(TopType.getInstance(), 1)));
   }
 
   @Test
@@ -227,9 +228,9 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     // The original paper doesn't do that, and it would only make a difference for this edge case.
     assertLocals(
         body,
-        new Local("l0", objectType),
-        new Local("#l0", ArrayType.createArrayType(objectType, 1)),
-        new Local("l1", objectType));
+        Jimple.newLocal("l0", objectType),
+        Jimple.newLocal("#l0", ArrayType.createArrayType(objectType, 1)),
+        Jimple.newLocal("l1", objectType));
   }
 
   @Test
@@ -240,8 +241,8 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     // array of references.
     assertLocals(
         body,
-        new Local("l0", ArrayType.createArrayType(PrimitiveType.getInt(), 1)),
-        new Local("l1", PrimitiveType.getInt()));
+        Jimple.newLocal("l0", ArrayType.createArrayType(PrimitiveType.getInt(), 1)),
+        Jimple.newLocal("l1", PrimitiveType.getInt()));
   }
 
   @Test
@@ -250,8 +251,8 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     assertLocals(
         body,
-        new Local("l0", PrimitiveType.getInt()),
-        new Local("l1", ArrayType.createArrayType(PrimitiveType.getByte(), 1)));
+        Jimple.newLocal("l0", PrimitiveType.getInt()),
+        Jimple.newLocal("l1", ArrayType.createArrayType(PrimitiveType.getByte(), 1)));
   }
 
   @Test
@@ -262,9 +263,9 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     // But because it gets assigned to `a` which has to be `int`, `b` needs to be an `int` too.
     assertLocals(
         body,
-        new Local("l0", PrimitiveType.getInt()),
-        new Local("l1", TopType.getInstance()),
-        new Local("#l0", PrimitiveType.getBoolean()));
+        Jimple.newLocal("l0", PrimitiveType.getInt()),
+        Jimple.newLocal("l1", TopType.getInstance()),
+        Jimple.newLocal("#l0", PrimitiveType.getBoolean()));
   }
 
   @Test
@@ -272,7 +273,9 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     final Body body = getMiscBody("impossibleTyping");
 
     assertLocals(
-        body, new Local("l0", TopType.getInstance()), new Local("#l0", PrimitiveType.getBoolean()));
+        body,
+        Jimple.newLocal("l0", TopType.getInstance()),
+        Jimple.newLocal("#l0", PrimitiveType.getBoolean()));
   }
 
   @Test
@@ -281,8 +284,8 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     assertLocals(
         body,
-        new Local("l0", objectType),
-        new Local("#l0", ArrayType.createArrayType(PrimitiveType.getDouble(), 1)));
+        Jimple.newLocal("l0", objectType),
+        Jimple.newLocal("#l0", ArrayType.createArrayType(PrimitiveType.getDouble(), 1)));
   }
 
   @Test
@@ -290,9 +293,9 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     final Body body = getMiscBody("testStringDefaultMethodsTest");
     assertLocals(
         body,
-        new Local("#l0", charSequenceType),
-        new Local("l0", stringType),
-        new Local("l1", PrimitiveType.getBoolean()));
+        Jimple.newLocal("#l0", charSequenceType),
+        Jimple.newLocal("l0", stringType),
+        Jimple.newLocal("l1", PrimitiveType.getBoolean()));
   }
 
   @Test
@@ -314,10 +317,10 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     assertLocals(
         body,
-        new Local("l0", PrimitiveType.getInt()),
-        new Local("l1", PrimitiveType.getInt()),
-        new Local("l2", objectType),
-        new Local("$stack3", throwableType));
+        Jimple.newLocal("l0", PrimitiveType.getInt()),
+        Jimple.newLocal("l1", PrimitiveType.getInt()),
+        Jimple.newLocal("l2", objectType),
+        Jimple.newLocal("$stack3", throwableType));
 
     final MethodSignature methodSignature1 =
         view.getIdentifierFactory()
@@ -326,10 +329,10 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     assertLocals(
         body1,
-        new Local("l0", objectType),
-        new Local("l1", PrimitiveType.getLong()),
-        new Local("$stack3", numberType),
-        new Local("$stack4", throwableType));
+        Jimple.newLocal("l0", objectType),
+        Jimple.newLocal("l1", PrimitiveType.getLong()),
+        Jimple.newLocal("$stack3", numberType),
+        Jimple.newLocal("$stack4", throwableType));
 
     final MethodSignature methodSignature2 =
         view.getIdentifierFactory()
@@ -342,12 +345,12 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     assertLocals(
         body2,
-        new Local("this", miscType),
-        new Local("l1", dateType),
-        new Local("#l0", illegalArgumentType),
-        new Local("#l1", throwableType),
-        new Local("l2", dateType),
-        new Local("$stack3", objectType));
+        Jimple.newLocal("this", miscType),
+        Jimple.newLocal("l1", dateType),
+        Jimple.newLocal("#l0", illegalArgumentType),
+        Jimple.newLocal("#l1", throwableType),
+        Jimple.newLocal("l2", dateType),
+        Jimple.newLocal("$stack3", objectType));
   }
 
   @Test
@@ -369,12 +372,12 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     // completes, where a is its result. Both definitions reach a++, so they are one local, l0#0.
     assertLocals(
         body,
-        new Local("l0#0", PrimitiveType.getInt()),
-        new Local("l2#0", PrimitiveType.getInt()),
-        new Local("$stack3", sysoutType),
-        new Local("l0#1", PrimitiveType.getInt()),
-        new Local("l1", PrimitiveType.getInt()),
-        new Local("l2#1", throwableType));
+        Jimple.newLocal("l0#0", PrimitiveType.getInt()),
+        Jimple.newLocal("l2#0", PrimitiveType.getInt()),
+        Jimple.newLocal("$stack3", throwableType),
+        Jimple.newLocal("l0#1", PrimitiveType.getInt()),
+        Jimple.newLocal("l1", PrimitiveType.getInt()),
+        Jimple.newLocal("l2#1", throwableType));
   }
 
   private void assertLocals(Body body, Local... locals) {

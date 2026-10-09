@@ -23,22 +23,18 @@ package sootup.java.core.jimple.basic;
  */
 
 import org.jspecify.annotations.NonNull;
-import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.StackLocal;
 import sootup.core.types.Type;
 import sootup.java.core.AnnotationUsage;
-import sootup.java.core.HasAnnotation;
 
-/** A local with Java annotations, independent of its slot or operand stack provenance. */
-public interface JavaLocal extends Local, HasAnnotation {
+/** Combines Java annotations with operand stack provenance. */
+public interface JavaStackLocal extends JavaLocal, StackLocal {
   @Override
-  @NonNull Iterable<AnnotationUsage> getAnnotations();
-
-  @Override
-  @NonNull JavaLocal withName(@NonNull String name);
+  @NonNull JavaStackLocal withName(@NonNull String name);
 
   @Override
-  @NonNull JavaLocal withType(@NonNull Type type);
+  @NonNull JavaStackLocal withType(@NonNull Type type);
 
-  /** Returns a copy with new annotations, preserving all other state and capabilities. */
-  @NonNull JavaLocal withAnnotations(@NonNull Iterable<AnnotationUsage> annotations);
+  @Override
+  @NonNull JavaStackLocal withAnnotations(@NonNull Iterable<AnnotationUsage> annotations);
 }
