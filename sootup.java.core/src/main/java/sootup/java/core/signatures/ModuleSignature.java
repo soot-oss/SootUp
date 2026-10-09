@@ -23,6 +23,9 @@ package sootup.java.core.signatures;
  */
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Interner;
+import com.google.common.collect.Interners;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.Signature;
 
@@ -30,13 +33,16 @@ import sootup.core.signatures.Signature;
 
 /** Represents a Java 9 module. */
 public class ModuleSignature implements Signature {
+
+  @NonNull private static final Interner<ModuleSignature> INTERNER = Interners.newWeakInterner();
+
   /**
    * The unnamed module. If a request is made to load a type whose package is not defined in any
    * module then the module system load it from the classpath. To ensure that every type is
    * associated with a module, the type is associated with the unnamed module. @see <a
    * href=http://openjdk.java.net/projects/jigsaw/spec/sotms/#the-unnamed-module>http://openjdk.java.net/projects/jigsaw/spec/sotms/#the-unnamed-module</a>
    */
-  public static final ModuleSignature UNNAMED_MODULE = new ModuleSignature("");
+  public static final ModuleSignature UNNAMED_MODULE = of("");
 
   private final String moduleName;
 
@@ -46,8 +52,17 @@ public class ModuleSignature implements Signature {
    *
    * @param moduleName module's name
    */
-  public ModuleSignature(final String moduleName) {
+  protected ModuleSignature(final String moduleName) {
     this.moduleName = moduleName;
+  }
+
+  /**
+   * Returns the unique {@link ModuleSignature} for the given module name, so that equal module
+   * signatures are the same instance and may be compared with {@code ==}.
+   */
+  @NonNull
+  public static ModuleSignature of(@NonNull final String moduleName) {
+    return INTERNER.intern(new ModuleSignature(moduleName));
   }
 
   @Override

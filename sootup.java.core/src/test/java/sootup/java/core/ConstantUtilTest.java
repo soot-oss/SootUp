@@ -6,11 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.NullConstant;
 
 class ConstantUtilTest {
+
+  private final IdentifierFactory identifierFactory = new JavaIdentifierFactory();
 
   /**
    * Reproduces failure when converting Byte and Character boxed literals to Jimple Constants.
@@ -26,24 +29,26 @@ class ConstantUtilTest {
    */
   @Test
   void testFromObjectSupportsByteAndCharacter() {
-    Constant byteConst = ConstantUtil.fromObject((byte) 42);
+    Constant byteConst = ConstantUtil.fromObject((byte) 42, identifierFactory);
     IntConstant intConst1 = assertInstanceOf(IntConstant.class, byteConst);
     assertEquals(42, intConst1.getValue());
 
-    Constant charConst = ConstantUtil.fromObject('Z');
+    Constant charConst = ConstantUtil.fromObject('Z', identifierFactory);
     IntConstant intConst2 = assertInstanceOf(IntConstant.class, charConst);
     assertEquals((int) 'Z', intConst2.getValue());
   }
 
   @Test
   void testFromObjectNull() {
-    assertInstanceOf(NullConstant.class, ConstantUtil.fromObject(null));
+    assertInstanceOf(NullConstant.class, ConstantUtil.fromObject(null, identifierFactory));
   }
 
   @Test
   void testFromObjectUnsupportedThrowsWithClassName() {
     IllegalArgumentException ex =
-        assertThrows(IllegalArgumentException.class, () -> ConstantUtil.fromObject(new Object()));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> ConstantUtil.fromObject(new Object(), identifierFactory));
     assertTrue(ex.getMessage().contains("java.lang.Object"));
   }
 }

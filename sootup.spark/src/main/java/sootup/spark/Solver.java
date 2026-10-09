@@ -41,6 +41,10 @@ import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.GraphBasedCallGraph;
 import sootup.callgraph.MutableCallGraph;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.reflection.ReflectionModel;
+import sootup.callgraph.scope.DefaultCallResolver;
+import sootup.callgraph.scope.VirtualCallResolver;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -59,6 +63,8 @@ class Solver {
   private PAG pag;
   private List<MethodSignature> entryPoints;
   private SparkOptions sparkOptions;
+  private ReflectionModel reflectionModel;
+  private DynamicInvokeResolver dynamicInvokeResolver;
 
   /** Non-null only when {@link SparkOptions#isOnFlyCallGraph()} is set. */
   private IncrementalPointsToAnalysis incrementalAnalysis;
@@ -68,8 +74,15 @@ class Solver {
       View view,
       List<MethodSignature> entryPoints,
       SparkOptions sparkOptions,
-      CallGraph callGraph) {
+      CallGraph callGraph,
+      ReflectionModel reflectionModel,
+      DynamicInvokeResolver dynamicInvokeResolver) {
     this.view = view;
+    this.reflectionModel = reflectionModel != null ? reflectionModel : ReflectionModel.none();
+    this.dynamicInvokeResolver =
+        dynamicInvokeResolver != null
+            ? dynamicInvokeResolver
+            : DynamicInvokeResolver.bootstrapMethodHandles();
     this.entryPoints = entryPoints;
     this.sparkOptions = sparkOptions != null ? sparkOptions : SparkOptions.defaultOptions();
     this.pag = new PAG(this.sparkOptions);
@@ -91,7 +104,15 @@ class Solver {
       this.incrementalAnalysis = null;
     } else {
       requireEntryPoints(entryPoints);
-      this.callGraph = new ClassHierarchyAnalysisAlgorithm(view).initialize(entryPoints);
+      this.callGraph =
+          new ClassHierarchyAnalysisAlgorithm(
+                  view,
+                  new DefaultCallResolver(view),
+                  VirtualCallResolver.all(),
+                  true,
+                  this.reflectionModel,
+                  this.dynamicInvokeResolver)
+              .initialize(entryPoints);
       this.incrementalAnalysis = null;
     }
   }
@@ -122,9 +143,14 @@ class Solver {
             .PAG(pag)
             .callGraph(callGraph)
             .view(view)
-            .nodeFactory(new NodeFactory(sparkOptions))
+            .nodeFactory(new NodeFactory(sparkOptions, view.getIdentifierFactory()))
+            .reflectionModel(reflectionModel)
+            .dynamicInvokeResolver(dynamicInvokeResolver)
             .build();
-    method.getBody().getStmts().forEach(stmt -> stmt.accept(stmtVisitor));
+    reflectionModel
+        .resolve(method, method.getBody())
+        .getStmts()
+        .forEach(stmt -> stmt.accept(stmtVisitor));
   }
 
   /**
@@ -135,7 +161,7 @@ class Solver {
    */
   private void solveOnTheFly() {
     MutableCallGraph cg = (MutableCallGraph) callGraph;
-    NodeFactory nodeFactory = new NodeFactory(sparkOptions);
+    NodeFactory nodeFactory = new NodeFactory(sparkOptions, view.getIdentifierFactory());
     Deque<MethodSignature> worklist = new ArrayDeque<>(entryPoints);
     Set<MethodSignature> processed = new HashSet<>();
     Map<MethodSignature, MethodPAGStmtVisitor> visitors = new HashMap<>();
@@ -162,9 +188,14 @@ class Solver {
                 .nodeFactory(nodeFactory)
                 .otfContext(
                     new MethodPAGStmtVisitor.OtfContext(incrementalAnalysis, worklist, pending))
+                .reflectionModel(reflectionModel)
+                .dynamicInvokeResolver(dynamicInvokeResolver)
                 .build();
         visitors.put(sig, visitor);
-        method.getBody().getStmts().forEach(stmt -> stmt.accept(visitor));
+        reflectionModel
+            .resolve(method, method.getBody())
+            .getStmts()
+            .forEach(stmt -> stmt.accept(visitor));
         changed = true;
       }
 

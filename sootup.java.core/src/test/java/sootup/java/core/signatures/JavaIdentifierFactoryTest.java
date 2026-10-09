@@ -41,8 +41,8 @@ import sootup.java.core.types.JavaClassType;
 
 public class JavaIdentifierFactoryTest {
 
-  private final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-  private final JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
+  private final IdentifierFactory identifierFactory = new JavaIdentifierFactory();
+  private final JavaIdentifierFactory typeFactory = new JavaIdentifierFactory();
 
   @Test
   public void getSamePackageSignature() {
@@ -131,9 +131,9 @@ public class JavaIdentifierFactoryTest {
   public void getInnerClassSignature() {
     JavaClassType classSignature1 = typeFactory.getClassType("java.lang.System$MyClass");
     JavaClassType classSignature2 = typeFactory.getClassType("System$MyClass", "java.lang");
-    // Class Signatures are unique but not their package
-    assertNotSame(classSignature1, classSignature2);
-    assertEquals(classSignature1, classSignature2);
+    // the two spellings differ only in where the name is split; the inner-class normalization in
+    // the constructor makes them equal, and interning makes them the same instance
+    assertSame(classSignature1, classSignature2);
   }
 
   @Test
@@ -210,6 +210,59 @@ public class JavaIdentifierFactoryTest {
   }
 
   @Test
+  public void getSameMethodSignature() {
+    List<String> parameters = Collections.singletonList("java.lang.Class");
+    MethodSignature methodSignature1 =
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "java.lang.A", parameters);
+    MethodSignature methodSignature2 =
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "java.lang.A", parameters);
+    assertSame(methodSignature1, methodSignature2);
+  }
+
+  @Test
+  public void getSameMethodSignatureViaSubSignature() {
+    ClassType declClass = identifierFactory.getClassType("java.lang.System");
+    MethodSubSignature subSignature =
+        identifierFactory.getMethodSubSignature(
+            "foo", VoidType.getInstance(), Collections.emptyList());
+    MethodSignature methodSignature1 =
+        identifierFactory.getMethodSignature(declClass, subSignature);
+    MethodSignature methodSignature2 =
+        identifierFactory.getMethodSignature(declClass, subSignature);
+    assertSame(methodSignature1, methodSignature2);
+  }
+
+  @Test
+  public void getSameFieldSignature() {
+    ClassType classSignature = identifierFactory.getClassType("java.lang.System");
+    FieldSignature fieldSignature1 =
+        identifierFactory.getFieldSignature("foo", classSignature, "int");
+    FieldSignature fieldSignature2 =
+        identifierFactory.getFieldSignature("foo", classSignature, "int");
+    assertSame(fieldSignature1, fieldSignature2);
+  }
+
+  @Test
+  public void getSameMethodSubSignature() {
+    MethodSubSignature subSignature1 =
+        identifierFactory.getMethodSubSignature(
+            "foo", VoidType.getInstance(), Collections.singletonList(PrimitiveType.getInt()));
+    MethodSubSignature subSignature2 =
+        identifierFactory.getMethodSubSignature(
+            "foo", VoidType.getInstance(), Collections.singletonList(PrimitiveType.getInt()));
+    assertSame(subSignature1, subSignature2);
+  }
+
+  @Test
+  public void getSameFieldSubSignature() {
+    FieldSubSignature subSignature1 =
+        identifierFactory.getFieldSubSignature("foo", PrimitiveType.getInt());
+    FieldSubSignature subSignature2 =
+        identifierFactory.getFieldSubSignature("foo", PrimitiveType.getInt());
+    assertSame(subSignature1, subSignature2);
+  }
+
+  @Test
   public void compMethodSignature2() {
     List<String> parameters = new ArrayList<>();
 
@@ -232,7 +285,8 @@ public class JavaIdentifierFactoryTest {
     MethodSignature methodSignature2 =
         identifierFactory.getMethodSignature("java.lang.System", "foo", "void", parameters);
 
-    assertEquals(methodSignature, methodSignature2);
+    // now hash-consed: equal MethodSignatures are the same instance
+    assertSame(methodSignature, methodSignature2);
     assertEquals(methodSignature.hashCode(), methodSignature2.hashCode());
   }
 
@@ -343,7 +397,49 @@ public class JavaIdentifierFactoryTest {
     String fieldsSigStr = "<java.base/java.lang.String: [] value>";
     assertThrows(
         IllegalArgumentException.class,
-        () -> JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr));
+        () -> new JavaModuleIdentifierFactory().parseFieldSignature(fieldsSigStr));
+  }
+
+  @Test
+  public void classTypesWithAmbiguousNameSplitAreDistinct() {
+    // "AB" in the default package and "B.AB"... would collide under a cache keyed on the plain
+    // concatenation of class name and package name.
+    JavaClassType defaultPackaged = typeFactory.getClassType("AB", "");
+    JavaClassType packaged = typeFactory.getClassType("B", "A");
+    assertNotEquals(defaultPackaged, packaged);
+    assertNotSame(defaultPackaged, packaged);
+    assertEquals("AB", defaultPackaged.getFullyQualifiedName());
+    assertEquals("A.B", packaged.getFullyQualifiedName());
+  }
+
+  @Test
+  public void subSignatureIsSharedWithTheSignatureBuiltFromRawNames() {
+    MethodSignature methodSignature =
+        identifierFactory.getMethodSignature(
+            typeFactory.getClassType("some.Klass"),
+            "foo",
+            "void",
+            Collections.singletonList("int"));
+    MethodSubSignature subSignature =
+        identifierFactory.getMethodSubSignature(
+            "foo", VoidType.getInstance(), Collections.singletonList(PrimitiveType.getInt()));
+    assertSame(subSignature, methodSignature.getSubSignature());
+
+    FieldSignature fieldSignature =
+        identifierFactory.getFieldSignature(
+            "bar", typeFactory.getClassType("some.Klass"), PrimitiveType.getInt());
+    assertSame(
+        identifierFactory.getFieldSubSignature("bar", PrimitiveType.getInt()),
+        fieldSignature.getSubSignature());
+  }
+
+  @Test
+  public void packageNameEqualityIsSymmetric() {
+    PackageName packageName = identifierFactory.getPackageName("java.lang");
+    ModulePackageName modulePackageName =
+        new JavaModuleIdentifierFactory().getPackageName("java.lang", "java.base");
+    assertEquals(packageName.equals(modulePackageName), modulePackageName.equals(packageName));
+    assertNotSame(packageName, modulePackageName);
   }
 
   /**

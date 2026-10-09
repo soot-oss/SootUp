@@ -57,14 +57,16 @@ public class DexMethod {
     if (Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)) {
       List<Type> parameters =
           method.getParameters().stream()
-              .map(methodParameter -> DexUtil.toSootType(methodParameter.getType(), 0))
+              .map(
+                  methodParameter ->
+                      DexUtil.toSootType(methodParameter.getType(), 0, view.getIdentifierFactory()))
               .collect(Collectors.toList());
       MethodSignature methodSignature =
           view.getIdentifierFactory()
               .getMethodSignature(
                   declaringclassType,
                   method.getName(),
-                  DexUtil.toSootType(method.getReturnType(), 0),
+                  DexUtil.toSootType(method.getReturnType(), 0, view.getIdentifierFactory()),
                   parameters);
       DexMethodSource dexMethodSource =
           new DexMethodSource(
@@ -76,7 +78,7 @@ public class DexMethod {
               view);
       return dexMethodSource.makeSootMethod();
     } else {
-      DexBody dexBody = new DexBody(method, dexEntry, declaringclassType);
+      DexBody dexBody = new DexBody(method, dexEntry, declaringclassType, view);
       return dexBody.makeSootMethod(method, declaringclassType, bodyInterceptors, view);
     }
   }

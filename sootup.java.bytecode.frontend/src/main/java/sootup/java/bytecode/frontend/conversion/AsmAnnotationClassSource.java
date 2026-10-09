@@ -50,7 +50,6 @@ import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.util.Modifiers;
 import sootup.java.core.AnnotationUsage;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
@@ -58,14 +57,17 @@ import sootup.java.core.JavaSootMethod;
 public class AsmAnnotationClassSource extends JavaSootClassSource {
 
   @NonNull protected final ClassNode classNode;
+  @NonNull protected final IdentifierFactory identifierFactory;
 
   public AsmAnnotationClassSource(
       AnalysisInputLocation inputLocation,
       Path sourcePath,
       ClassType classType,
-      @NonNull ClassNode classNode) {
+      @NonNull ClassNode classNode,
+      @NonNull IdentifierFactory identifierFactory) {
     super(inputLocation, classType, sourcePath);
     this.classNode = classNode;
+    this.identifierFactory = identifierFactory;
   }
 
   private static Set<JavaSootField> resolveFields(
@@ -74,7 +76,7 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
         .map(
             fieldNode -> {
               String fieldName = fieldNode.name;
-              Type fieldType = AsmUtil.toJimpleType(fieldNode.desc);
+              Type fieldType = AsmUtil.toJimpleType(fieldNode.desc, signatureFactory);
               FieldSignature fieldSignature =
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<FieldModifier> modifiers = AsmUtil.getFieldModifiers(fieldNode.access);
@@ -83,7 +85,12 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
               return new JavaSootField(
                   fieldSignature,
                   modifiers,
-                  convertAnnotation(fieldNode.invisibleAnnotations),
+                  Stream.concat(
+                          convertAnnotation(fieldNode.visibleAnnotations, signatureFactory, true)
+                              .stream(),
+                          convertAnnotation(fieldNode.invisibleAnnotations, signatureFactory, false)
+                              .stream())
+                      .collect(Collectors.toList()),
                   NoPositionInformation.getInstance());
             })
         .collect(Collectors.toSet());
@@ -91,7 +98,6 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
 
   @NonNull
   public Collection<JavaSootMethod> resolveMethods() throws ResolveException {
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveMethods(classNode.methods, identifierFactory, classSignature)
         .collect(Collectors.toSet());
   }
@@ -105,23 +111,24 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
               asmClassClassSourceContent.setDeclaringClass(cs);
 
               List<ClassType> exceptions =
-                  new ArrayList<>(AsmUtil.asmIdToSignatures(methodSource.exceptions));
+                  new ArrayList<>(
+                      AsmUtil.asmIdToSignatures(methodSource.exceptions, signatureFactory));
 
               String methodName = methodSource.name;
               EnumSet<MethodModifier> modifiers = Modifiers.getMethodModifiers(methodSource.access);
-              List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc);
+              List<Type> sigTypes =
+                  AsmUtil.toJimpleSignatureDesc(methodSource.desc, signatureFactory);
               Type retType = sigTypes.remove(sigTypes.size() - 1);
 
               MethodSignature methodSignature =
                   signatureFactory.getMethodSignature(cs, methodName, retType, sigTypes);
 
-              List<AnnotationNode> annotations = new ArrayList<>();
-              if (methodSource.visibleAnnotations != null) {
-                annotations.addAll(methodSource.visibleAnnotations);
-              }
-              if (methodSource.invisibleAnnotations != null) {
-                annotations.addAll(methodSource.invisibleAnnotations);
-              }
+              List<AnnotationUsage> annotations = new ArrayList<>();
+              AsmClassSource.convertAnnotation(
+                  annotations, methodSource.visibleAnnotations, signatureFactory, true);
+              AsmClassSource.convertAnnotation(
+                  annotations, methodSource.invisibleAnnotations, signatureFactory, false);
+              asmClassClassSourceContent.collectReturnTypeAnnotations(annotations);
 
               // TODO: position/line numbers if possible
 
@@ -130,47 +137,46 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
                   methodSignature,
                   modifiers,
                   exceptions,
-                  convertAnnotation(annotations),
+                  annotations,
                   NoPositionInformation.getInstance());
             });
   }
 
-  protected static List<AnnotationUsage> convertAnnotation(List<AnnotationNode> nodes) {
+  protected static List<AnnotationUsage> convertAnnotation(
+      List<AnnotationNode> nodes, @NonNull IdentifierFactory identifierFactory) {
+    return convertAnnotation(nodes, identifierFactory, true);
+  }
+
+  protected static List<AnnotationUsage> convertAnnotation(
+      List<? extends AnnotationNode> nodes,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
     if (nodes == null) {
       return Collections.emptyList();
     }
-    return StreamSupport.stream(AsmUtil.createAnnotationUsage(nodes).spliterator(), false)
+    return StreamSupport.stream(
+            AsmUtil.createAnnotationUsage(nodes, identifierFactory, runtimeVisible).spliterator(),
+            false)
         .collect(Collectors.toList());
   }
 
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
-    List<AnnotationNode> annotationNodes = new ArrayList<>();
-
-    annotationNodes.addAll(
-        classNode.visibleAnnotations != null
-            ? classNode.visibleAnnotations
-            : Collections.emptyList());
-    annotationNodes.addAll(
-        classNode.visibleTypeAnnotations != null
-            ? classNode.visibleTypeAnnotations
-            : Collections.emptyList());
-    annotationNodes.addAll(
-        classNode.invisibleAnnotations != null
-            ? classNode.invisibleAnnotations
-            : Collections.emptyList());
-    annotationNodes.addAll(
-        classNode.invisibleTypeAnnotations != null
-            ? classNode.invisibleTypeAnnotations
-            : Collections.emptyList());
-
-    return convertAnnotation(annotationNodes);
+    List<AnnotationUsage> annotations = new ArrayList<>();
+    AsmClassSource.convertAnnotation(
+        annotations, classNode.visibleAnnotations, identifierFactory, true);
+    AsmClassSource.convertAnnotation(
+        annotations, classNode.visibleTypeAnnotations, identifierFactory, true);
+    AsmClassSource.convertAnnotation(
+        annotations, classNode.invisibleAnnotations, identifierFactory, false);
+    AsmClassSource.convertAnnotation(
+        annotations, classNode.invisibleTypeAnnotations, identifierFactory, false);
+    return annotations;
   }
 
   @Override
   @NonNull
   public Collection<? extends SootField> resolveFields() throws ResolveException {
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveFields(classNode.fields, identifierFactory, classSignature);
   }
 
@@ -181,7 +187,7 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
 
   @NonNull
   public Set<? extends ClassType> resolveInterfaces() {
-    return new HashSet<>(AsmUtil.asmIdToSignatures(classNode.interfaces));
+    return new HashSet<>(AsmUtil.asmIdToSignatures(classNode.interfaces, identifierFactory));
   }
 
   @NonNull
@@ -189,7 +195,7 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
     if (classNode.superName == null) {
       return Optional.empty();
     }
-    return Optional.of(AsmUtil.toJimpleClassType(classNode.superName));
+    return Optional.of(AsmUtil.toJimpleClassType(classNode.superName, identifierFactory));
   }
 
   @NonNull
@@ -197,7 +203,7 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
     if (classNode.outerClass == null) {
       return Optional.empty();
     }
-    return Optional.of(AsmUtil.toJimpleClassType(classNode.outerClass));
+    return Optional.of(AsmUtil.toJimpleClassType(classNode.outerClass, identifierFactory));
   }
 
   @NonNull

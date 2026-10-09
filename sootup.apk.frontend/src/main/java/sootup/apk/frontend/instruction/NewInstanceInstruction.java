@@ -43,7 +43,7 @@ public class NewInstanceInstruction extends DexLibAbstractInstruction {
     Instruction21c i = (Instruction21c) instruction;
     int dest = i.getRegisterA();
     String className = DexUtil.dottedClassName(((TypeReference) (i.getReference())).toString());
-    ClassType classType = DexUtil.getClassTypeFromClassName(className);
+    ClassType classType = DexUtil.getClassTypeFromClassName(className, body.getIdentifierFactory());
     JNewExpr jNewExpr = Jimple.newNewExpr(classType);
     JAssignStmt jAssignStmt =
         Jimple.newAssignStmt(

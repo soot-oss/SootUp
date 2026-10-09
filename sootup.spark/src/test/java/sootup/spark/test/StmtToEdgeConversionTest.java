@@ -31,13 +31,12 @@ import sootup.spark.node.Node;
 
 public class StmtToEdgeConversionTest {
 
+  JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
   ClassType aType = SparkTestUtil.simpleType("A");
   ClassType bType = SparkTestUtil.simpleType("B");
-  FieldSignature fieldSig =
-      JavaIdentifierFactory.getInstance().getFieldSignature("f", aType, bType);
+  FieldSignature fieldSig = identifierFactory.getFieldSignature("f", aType, bType);
   MethodSignature methodSig =
-      JavaIdentifierFactory.getInstance()
-          .getMethodSignature(aType, "test", "void", Collections.emptyList());
+      identifierFactory.getMethodSignature(aType, "test", "void", Collections.emptyList());
 
   @BeforeEach
   public void reset() {
@@ -117,7 +116,7 @@ public class StmtToEdgeConversionTest {
     MethodPAGStmtVisitor stmtVisitor =
         MethodPAGStmtVisitor.builder()
             .PAG(methodPAG)
-            .nodeFactory(new NodeFactory(SparkOptions.defaultOptions()))
+            .nodeFactory(new NodeFactory(SparkOptions.defaultOptions(), identifierFactory))
             .methodSignature(methodSig)
             .build();
     assignStmt.accept(stmtVisitor);

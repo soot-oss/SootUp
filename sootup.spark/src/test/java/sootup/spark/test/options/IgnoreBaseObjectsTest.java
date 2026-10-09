@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.spark.Engine;
 import sootup.spark.PAGEdge;
 import sootup.spark.SparkOptions;
@@ -24,7 +25,8 @@ public class IgnoreBaseObjectsTest {
 
   ClassType containerType = SparkTestUtil.idFactory.getClassType("IgnoreBaseObjects$Container");
   ClassType valueType = SparkTestUtil.idFactory.getClassType("IgnoreBaseObjects$Value");
-  FieldSignature valueField = new FieldSignature(containerType, "value", valueType);
+  FieldSignature valueField =
+      new JavaIdentifierFactory().getFieldSignature("value", containerType, valueType);
 
   @BeforeEach
   public void reset() {

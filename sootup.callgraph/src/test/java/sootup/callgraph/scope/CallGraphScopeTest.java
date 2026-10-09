@@ -27,7 +27,7 @@ import sootup.java.core.views.JavaView;
 @Tag("Java9")
 public class CallGraphScopeTest {
 
-  private final JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+  private final JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
 
   private JavaView createLibraryView() {
     String classPath = "src/test/resources/callgraph/Library/binary/";

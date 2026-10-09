@@ -18,6 +18,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import sootup.core.model.SourceType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.AnnotationUsage;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
@@ -49,7 +50,7 @@ class AsmAnnotationElementOrderTest {
             "optional", Boolean.FALSE,
             "dereference", Boolean.TRUE);
 
-    AnnotationUsage usage = AsmUtil.createAnnotationUsage(node);
+    AnnotationUsage usage = AsmUtil.createAnnotationUsage(node, new JavaIdentifierFactory());
     List<String> keys = new ArrayList<>(usage.getValues().keySet());
     assertEquals(Arrays.asList("selector", "strongRef", "optional", "dereference"), keys);
   }

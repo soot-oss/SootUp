@@ -21,6 +21,8 @@ package sootup.java.core;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import org.jspecify.annotations.NonNull;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.constant.BooleanConstant;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.Constant;
@@ -31,8 +33,19 @@ import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.java.core.language.JavaJimple;
 
+/** Converts plain Java objects - e.g. annotation values - into their Jimple {@link Constant}. */
 public class ConstantUtil {
-  public static Constant fromObject(Object obj) {
+
+  private ConstantUtil() {}
+
+  /**
+   * Converts the given object into the Jimple constant that represents it.
+   *
+   * @param obj the value to convert, may be {@code null}
+   * @param identifierFactory the factory that provides the types of reference constants
+   * @return the constant representing {@code obj}
+   */
+  public static Constant fromObject(Object obj, @NonNull IdentifierFactory identifierFactory) {
     if (obj == null) {
       return NullConstant.getInstance();
     }
@@ -61,7 +74,7 @@ public class ConstantUtil {
       return LongConstant.getInstance((Long) obj);
     }
     if (obj instanceof String) {
-      return JavaJimple.newStringConstant((String) obj);
+      return JavaJimple.newStringConstant((String) obj, identifierFactory);
     }
 
     if (obj instanceof String[]) {
@@ -69,11 +82,11 @@ public class ConstantUtil {
       // [0] is the fully qualified name of the enum
       // [1] is the value of the enum
       String[] enumData = (String[]) obj;
-      return JavaJimple.newEnumConstant(enumData[1], enumData[0]);
+      return JavaJimple.newEnumConstant(enumData[1], enumData[0], identifierFactory);
     }
 
     if (obj instanceof ClassConstant) {
-      return JavaJimple.newClassConstant(((ClassConstant) obj).getValue());
+      return JavaJimple.newClassConstant(((ClassConstant) obj).getValue(), identifierFactory);
     }
     // TODO: [bh] implement MethodHandle, MethodType?
 

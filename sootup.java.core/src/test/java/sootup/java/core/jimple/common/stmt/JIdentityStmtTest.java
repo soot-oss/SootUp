@@ -43,7 +43,7 @@ public class JIdentityStmtTest {
   @Test
   public void test() {
     StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
-    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory typeFactory = new JavaIdentifierFactory();
 
     Local thiz = new Local("r0", typeFactory.getType("somepackage.dummy.MyClass"));
     Stmt thisIdStmt =
@@ -55,7 +55,8 @@ public class JIdentityStmtTest {
         new JIdentityStmt(param, new JParameterRef(PrimitiveType.getInt(), 123), nop);
 
     Local exception = new Local("r1", typeFactory.getType("java.lang.Exception"));
-    Stmt exceptionIdStmt = new JIdentityStmt(exception, JavaJimple.newCaughtExceptionRef(), nop);
+    Stmt exceptionIdStmt =
+        new JIdentityStmt(exception, JavaJimple.newCaughtExceptionRef(typeFactory), nop);
 
     // toString
     assertEquals("r0 := @this: somepackage.dummy.MyClass", thisIdStmt.toString());
@@ -99,7 +100,7 @@ public class JIdentityStmtTest {
         thisIdStmt.equivTo(
             new JIdentityStmt(
                 new Local("r1", typeFactory.getType("somepckg.NotMyException")),
-                JavaJimple.newCaughtExceptionRef(),
+                JavaJimple.newCaughtExceptionRef(typeFactory),
                 nop)));
     assertFalse(paramIdStmt.equivTo(thisIdStmt));
     assertFalse(paramIdStmt.equivTo(exceptionIdStmt));

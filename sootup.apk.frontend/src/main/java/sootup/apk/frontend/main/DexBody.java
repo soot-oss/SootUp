@@ -34,12 +34,14 @@ import org.jf.dexlib2.immutable.debug.ImmutableLineNumber;
 import org.jf.dexlib2.immutable.debug.ImmutableRestartLocal;
 import org.jf.dexlib2.immutable.debug.ImmutableStartLocal;
 import org.jf.dexlib2.util.MethodUtil;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.dexpler.DexMethodSource;
 import sootup.apk.frontend.instruction.*;
+import sootup.core.IdentifierFactory;
 import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.Jimple;
@@ -55,7 +57,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
@@ -101,6 +102,20 @@ public class DexBody {
 
   LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap = LinkedListMultimap.create();
 
+  /** The address behind the last instruction of the code. */
+  private int codeEndAddress;
+
+  /**
+   * The end of a Trap whose range reaches the end of the code. It is never added to the body, and
+   * MutableBlockControlFlowGraph.initializeWith reads an end that is in no block as the end of the
+   * body.
+   */
+  private final Stmt endOfCode = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+
+  /** The caught exception Stmts addTraps() appends for handlers without a move-exception. */
+  private final Set<Stmt> caughtExceptionEntries =
+      Collections.newSetFromMap(new IdentityHashMap<>());
+
   protected class RegDbgEntry {
     public int startAddress;
     public int endAddress;
@@ -114,7 +129,7 @@ public class DexBody {
       this.endAddress = ea;
       this.register = reg;
       this.name = nam;
-      this.type = DexUtil.toSootType(ty, 0);
+      this.type = DexUtil.toSootType(ty, 0, identifierFactory);
       this.signature = sig;
     }
   }
@@ -129,7 +144,17 @@ public class DexBody {
 
   private final ArrayListMultimap<Integer, RegDbgEntry> localDebugs;
 
-  public DexBody(Method method, MultiDexContainer.DexEntry dexEntry, ClassType classType) {
+  @NonNull private final IdentifierFactory identifierFactory;
+
+  /** The {@link IdentifierFactory} of the view this body is converted for. */
+  @NonNull
+  public IdentifierFactory getIdentifierFactory() {
+    return identifierFactory;
+  }
+
+  public DexBody(
+      Method method, MultiDexContainer.DexEntry dexEntry, ClassType classType, @NonNull View view) {
+    this.identifierFactory = view.getIdentifierFactory();
     MethodImplementation code = method.getImplementation();
     if (code == null) {
       throw new RuntimeException("error: no code for method " + method.getName());
@@ -142,7 +167,7 @@ public class DexBody {
     parameterTypes = new ArrayList<Type>();
     for (MethodParameter param : method.getParameters()) {
       parameterNames.add(param.getName());
-      parameterTypes.add(DexUtil.toSootType(param.getType(), 0));
+      parameterTypes.add(DexUtil.toSootType(param.getType(), 0, identifierFactory));
     }
 
     takenLocalNames = new HashSet<>();
@@ -271,6 +296,7 @@ public class DexBody {
       instructionAtAddress.put(address, dexInstruction);
       address += instruction.getCodeUnits();
     }
+    codeEndAddress = address;
   }
 
   public List<DexLibAbstractInstruction> instructionsBefore(DexLibAbstractInstruction instruction) {
@@ -333,7 +359,7 @@ public class DexBody {
             .getMethodSignature(
                 classType,
                 method.getName(),
-                DexUtil.toSootType(method.getReturnType(), 0),
+                DexUtil.toSootType(method.getReturnType(), 0, identifierFactory),
                 parameterTypes);
     Map<BranchingStmt, List<Stmt>> branchingStmtListMap = convertMultimap(branchingMap);
     Set<Stmt> blockBegin = new HashSet<>();
@@ -378,11 +404,38 @@ public class DexBody {
     if (!currentList.isEmpty()) {
       listList.add(currentList);
     }
+    checkTrapRanges(listList, methodSignature);
     removeUnreachableBlocks(listList, branchingStmtListMap);
+    checkNothingFallsIntoACaughtExceptionEntry(listList);
     graph.initializeWith(listList, branchingStmtListMap, traps);
     DexMethodSource dexMethodSource =
         new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
     return dexMethodSource.makeSootMethod();
+  }
+
+  /**
+   * A Trap covers the Stmts from its begin up to its end in stmtList order, so an end that is not
+   * behind its begin covers nothing. Left alone, removeUnreachableBlocks would find no way into the
+   * handler and delete it, together with the Trap, and the body would carry on without them. This
+   * runs before that, so a wrong range fails here instead of as an unrelated error later on.
+   */
+  private void checkTrapRanges(List<List<Stmt>> blocks, MethodSignature methodSignature) {
+    Map<Stmt, Integer> blockOfHead = new IdentityHashMap<>();
+    for (int i = 0; i < blocks.size(); i++) {
+      blockOfHead.put(blocks.get(i).get(0), i);
+    }
+    for (Trap trap : traps) {
+      Integer begin = blockOfHead.get(trap.getBeginStmt());
+      Integer end = blockOfHead.get(trap.getEndStmt());
+      if (begin != null && end != null && end <= begin) {
+        throw new IllegalStateException(
+            "The Trap "
+                + trap
+                + " in "
+                + methodSignature
+                + " ends at or before its begin, so it would cover no Stmt.");
+      }
+    }
   }
 
   private void removeUnreachableBlocks(
@@ -429,32 +482,47 @@ public class DexBody {
 
     List<Trap> keptTraps = new ArrayList<>(traps.size());
     for (Trap trap : traps) {
-      if (removedStmts.contains(trap.getBeginStmt())
-          || removedStmts.contains(trap.getHandlerStmt())) {
-        // nothing is left of the covered range, or of the handler that would catch for it
+      if (removedStmts.contains(trap.getHandlerStmt())) {
+        // the handler is reached from any reachable block of the range, so none of it is left
         continue;
+      }
+      Integer endIndex = blockOfHead.get(trap.getEndStmt());
+      Stmt begin = trap.getBeginStmt();
+      if (removedStmts.contains(begin)) {
+        // control can enter a range in its middle, e.g. by a goto over a padding nop at its start,
+        // so the first blocks of a range may be dead while the rest of it is not: the range then
+        // begins at the first of its blocks that stayed
+        begin = null;
+        int rangeEnd = endIndex == null ? blocks.size() : endIndex;
+        for (int i = blockOfHead.get(trap.getBeginStmt()) + 1; i < rangeEnd; i++) {
+          if (reachable[i]) {
+            begin = blocks.get(i).get(0);
+            break;
+          }
+        }
+        if (begin == null) {
+          continue;
+        }
       }
       Stmt end = trap.getEndStmt();
       if (removedStmts.contains(end)) {
-        // the end is exclusive, so with the Stmt behind the range gone, the range grows up to the
-        // next block that stayed; a range that would reach the end of the body cannot be expressed
-        end = null;
-        Integer endIndex = blockOfHead.get(trap.getEndStmt());
+        // The end is exclusive and only marks where the range stops, so it moves forward to the
+        // next block that stayed: everything it moves over was removed as well, so the range
+        // covers the same Stmts as before. With no block left, the removed end is kept, and
+        // initializeWith reads an end that is in no block as the end of the body. Dropping the
+        // Trap instead would leave its handler without the exceptional edge that is its only way
+        // in.
         for (int i = endIndex == null ? blocks.size() : endIndex + 1; i < blocks.size(); i++) {
           if (reachable[i]) {
             end = blocks.get(i).get(0);
             break;
           }
         }
-        if (end == null || end == trap.getBeginStmt()) {
-          continue;
-        }
       }
       keptTraps.add(
-          end == trap.getEndStmt()
+          begin == trap.getBeginStmt() && end == trap.getEndStmt()
               ? trap
-              : Jimple.newTrap(
-                  trap.getExceptionType(), trap.getBeginStmt(), end, trap.getHandlerStmt()));
+              : Jimple.newTrap(trap.getExceptionType(), begin, end, trap.getHandlerStmt()));
     }
     traps.clear();
     traps.addAll(keptTraps);
@@ -677,46 +745,77 @@ public class DexBody {
     }
   }
 
+  /**
+   * A Jimple handler has to start with a {@code := @caughtexception} Stmt, but a dex handler only
+   * starts with move-exception when it uses the exception: without one (e.g. {@code catch
+   * (Exception ignored)}) it is ordinary code, often shared with the normal path, like the final
+   * return-void. So the entry is not put in front of the handler, where normal flow would fall into
+   * it, but appended to the body as {@code $x := @caughtexception; goto handler}.
+   */
+  private Stmt addCaughtExceptionEntry(ClassType type, Stmt handler) {
+    Local local = new LocalGenerator(locals).generateLocal(type);
+    locals.add(local);
+    Stmt caughtStmt =
+        Jimple.newIdentityStmt(
+            local,
+            JavaJimple.newCaughtExceptionRef(identifierFactory),
+            StmtPositionInfo.getNoStmtPositionInfo());
+    JGotoStmt gotoStmt = Jimple.newGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    add(caughtStmt);
+    add(gotoStmt);
+    addBranchingStmt(gotoStmt, Collections.singletonList(handler));
+    caughtExceptionEntries.add(caughtStmt);
+    return caughtStmt;
+  }
+
+  /**
+   * The entries sit behind the last Stmt of the dex code, which in verified dex never falls
+   * through. Dex that runs off the end of the method would otherwise fall into an entry instead of
+   * failing the way it does without one, when the graph finds no Block to fall into.
+   */
+  private void checkNothingFallsIntoACaughtExceptionEntry(List<List<Stmt>> blocks) {
+    for (int i = 1; i < blocks.size(); i++) {
+      if (!caughtExceptionEntries.contains(blocks.get(i).get(0))) {
+        continue;
+      }
+      List<Stmt> previous = blocks.get(i - 1);
+      Stmt tail = previous.get(previous.size() - 1);
+      if (tail.fallsThrough()) {
+        throw new IllegalStateException(
+            "FallsthroughStmt '"
+                + tail
+                + "' falls into the abyss - as there is no following Block of dex code!");
+      }
+    }
+  }
+
   private void addTraps() {
-    Set<String> exceptionTypeList = new HashSet<>();
+    // one entry per handler address and exception type, however many try blocks share them
+    Map<String, Stmt> entryOfHandler = new HashMap<>();
+    int codeStmtCount = stmtList.size();
     for (TryBlock<? extends ExceptionHandler> tryItem : tries) {
       int startAddress = tryItem.getStartCodeAddress();
       int length = tryItem.getCodeUnitCount(); // .getTryLength();
       int endAddress = startAddress + length; // - 1;
       Stmt beginStmt = instructionAtAddress(startAddress).getStmt();
-      // (startAddress + length) typically points to the first byte of the
-      // first instruction after the try block
-      // except if there is no instruction after the try block in which
-      // case it points to the last byte of the last
-      // instruction of the try block. Removing 1 from (startAddress +
-      // length) always points to "somewhere" in
-      // the last instruction of the try block since the smallest
-      // instruction is on two bytes (nop = 0x0000).
-      Stmt endStmt = instructionAtAddress(endAddress).getStmt();
-      // if the try block ends on the last instruction of the body, add a
-      // nop instruction so Soot can include
-      // the last instruction in the try block.
-      //      if (stmtList.get(stmtList.size() - 1) == endStmt
-      //          && instructionAtAddress(endAddress - 1).getStmt() == endStmt) {
-      //        Stmt nop = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
-      //        insertAfter(endStmt, endStmt);
-      //        endStmt = nop;
-      //      }
+      // (startAddress + length) is the first address behind the range. When the range reaches the
+      // end of the code, no instruction is there: instructionAtAddress would walk back to the last
+      // instruction and leave it out of the range. The range reaches the end of the body instead,
+      // expressed by an end that is in no block (see endOfCode).
+      Stmt endStmt =
+          endAddress >= codeEndAddress ? endOfCode : instructionAtAddress(endAddress).getStmt();
       List<? extends ExceptionHandler> hList = tryItem.getExceptionHandlers();
       for (ExceptionHandler handler : hList) {
         String exceptionType = handler.getExceptionType();
         if (exceptionType == null) {
-          exceptionType = "Ljava/lang/Throwable$CatchAll;";
+          // a catch-all handler (finally, or catch (Throwable) after d8), as the bytecode
+          // frontend reads a TryCatchBlockNode without a type
+          exceptionType = "Ljava/lang/Throwable;";
         }
-        if (exceptionTypeList.contains(exceptionType)) {
-          exceptionType = exceptionType + "$" + exceptionTypeList.size();
-        }
-        exceptionTypeList.add(exceptionType);
-        Type t = DexUtil.toSootType(exceptionType, 0);
+        Type t = DexUtil.toSootType(exceptionType, 0, identifierFactory);
         // exceptions can only be of ReferenceType
         if (t instanceof JavaClassType) {
-          JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-          JavaClassType type = identifierFactory.getClassType(((JavaClassType) t).getClassName());
+          ClassType type = (ClassType) t;
           DexLibAbstractInstruction instruction =
               instructionAtAddress(handler.getHandlerCodeAddress());
           if (!(instruction instanceof MoveExceptionInstruction)) {
@@ -726,19 +825,14 @@ public class DexBody {
                     instruction.getClass().getName()));
           }
           Stmt handlerStmt;
-          if (instruction.getStmt() instanceof JNopStmt || endStmt instanceof JNopStmt) {
-            Local local = new LocalGenerator(locals).generateLocal(type);
-            locals.add(local);
-            Stmt caughtStmt =
-                Jimple.newIdentityStmt(
-                    local,
-                    JavaJimple.newCaughtExceptionRef(),
-                    StmtPositionInfo.getNoStmtPositionInfo());
-            insertBefore(caughtStmt, instruction.getStmt());
-            handlerStmt = caughtStmt;
-            if (endStmt instanceof JNopStmt) {
-              endStmt = caughtStmt;
-            }
+          // The end of the range is left alone even when it is a nop: it is the Stmt behind the
+          // covered range in stmtList order, while the handler can sit anywhere in the body, so
+          // ending the range at the handler would cover the wrong Stmts (or none at all).
+          if (!(instruction instanceof MoveExceptionInstruction)) {
+            handlerStmt =
+                entryOfHandler.computeIfAbsent(
+                    handler.getHandlerCodeAddress() + " " + type,
+                    key -> addCaughtExceptionEntry(type, instruction.getStmt()));
           } else {
             handlerStmt = instruction.getStmt();
           }
@@ -760,6 +854,20 @@ public class DexBody {
 
         }
       }
+    }
+    if (stmtList.size() > codeStmtCount) {
+      // the caught exception entries are appended behind the code: a range reaching the end of the
+      // code stops in front of them instead of covering them as well
+      Stmt firstEntry = stmtList.get(codeStmtCount);
+      traps.replaceAll(
+          trap ->
+              trap.getEndStmt() == endOfCode
+                  ? Jimple.newTrap(
+                      trap.getExceptionType(),
+                      trap.getBeginStmt(),
+                      firstEntry,
+                      trap.getHandlerStmt())
+                  : trap);
     }
   }
 

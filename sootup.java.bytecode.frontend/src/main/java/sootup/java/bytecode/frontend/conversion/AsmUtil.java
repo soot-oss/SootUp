@@ -44,6 +44,7 @@ import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.model.FieldModifier;
@@ -101,23 +102,25 @@ public final class AsmUtil {
 
   @NonNull
   public static Collection<JavaClassType> asmIdToSignatures(
-      @Nullable Iterable<String> asmClassNames) {
+      @Nullable Iterable<String> asmClassNames, @NonNull IdentifierFactory identifierFactory) {
     if (asmClassNames == null) {
       return Collections.emptyList();
     }
 
     return StreamSupport.stream(asmClassNames.spliterator(), false)
-        .map(AsmUtil::toJimpleClassType)
+        .map(name -> toJimpleClassType(name, identifierFactory))
         .collect(Collectors.toList());
   }
 
   @NonNull
-  public static JavaClassType toJimpleClassType(@NonNull String asmClassName) {
-    return JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
+  public static JavaClassType toJimpleClassType(
+      @NonNull String asmClassName, @NonNull IdentifierFactory identifierFactory) {
+    return (JavaClassType) identifierFactory.getClassType(toQualifiedName(asmClassName));
   }
 
   @NonNull
-  public static Type toJimpleType(@NonNull String desc) {
+  public static Type toJimpleType(
+      @NonNull String desc, @NonNull IdentifierFactory identifierFactory) {
     int nrDims = countArrayDim(desc);
     if (nrDims > 0) {
       desc = desc.substring(nrDims);
@@ -132,22 +135,21 @@ public final class AsmUtil {
         throw new AssertionError("Invalid reference descriptor: " + desc);
       }
       String name = desc.substring(1, desc.length() - 1);
-      baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(name));
+      baseType = identifierFactory.getType(toQualifiedName(name));
     }
     if ((baseType instanceof PrimitiveType || baseType instanceof VoidType) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
-    return nrDims > 0
-        ? JavaIdentifierFactory.getInstance().getArrayType(baseType, nrDims)
-        : baseType;
+    return nrDims > 0 ? identifierFactory.getArrayType(baseType, nrDims) : baseType;
   }
 
   @NonNull
-  public static Type arrayTypetoJimpleType(@NonNull String desc) {
+  public static Type arrayTypetoJimpleType(
+      @NonNull String desc, @NonNull IdentifierFactory identifierFactory) {
     if (desc.charAt(0) == '[') {
-      return toJimpleType(desc);
+      return toJimpleType(desc, identifierFactory);
     }
-    return toJimpleClassType(desc);
+    return toJimpleClassType(desc, identifierFactory);
   }
 
   /** returns the amount of dimensions of a description. */
@@ -183,9 +185,16 @@ public final class AsmUtil {
     };
   }
 
-  /** Converts n types contained in desc to a list of Jimple Types */
+  /**
+   * Converts n types contained in desc to a list of Jimple Types
+   *
+   * @param desc the bytecode descriptor holding the types
+   * @param identifierFactory the factory that creates the reference types
+   * @return the converted types in the order they occur in {@code desc}
+   */
   @NonNull
-  public static List<Type> toJimpleSignatureDesc(@NonNull String desc) {
+  public static List<Type> toJimpleSignatureDesc(
+      @NonNull String desc, @NonNull IdentifierFactory identifierFactory) {
     // [ms] more types are possibly needed for method type which is ( arg-type* ) ret-type
     List<Type> types = new ArrayList<>(1);
     int len = desc.length();
@@ -235,7 +244,7 @@ public final class AsmUtil {
             int begin = idx;
             idx = desc.indexOf(';', begin);
             String cls = desc.substring(begin, idx++);
-            baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(cls));
+            baseType = identifierFactory.getType(toQualifiedName(cls));
             break this_type;
           default:
             throw new AssertionError("Unknown type: '" + c + "' in '" + desc + "'.");
@@ -243,7 +252,7 @@ public final class AsmUtil {
       }
 
       if (baseType != null && nrDims > 0) {
-        types.add(JavaIdentifierFactory.getInstance().getArrayType(baseType, nrDims));
+        types.add(identifierFactory.getArrayType(baseType, nrDims));
       } else {
         types.add(baseType);
       }
@@ -263,19 +272,39 @@ public final class AsmUtil {
         .reduce("", String::concat);
   }
 
-  public static AnnotationUsage createAnnotationUsage(AnnotationNode annotationNode) {
+  public static AnnotationUsage createAnnotationUsage(
+      AnnotationNode annotationNode, @NonNull IdentifierFactory identifierFactory) {
+    return createAnnotationUsage(annotationNode, identifierFactory, true);
+  }
+
+  public static AnnotationUsage createAnnotationUsage(
+      AnnotationNode annotationNode,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
     /* actually, we could move the inner loop's code (see below) here */
-    return createAnnotationUsage(Collections.singletonList(annotationNode)).iterator().next();
+    return createAnnotationUsage(
+            Collections.singletonList(annotationNode), identifierFactory, runtimeVisible)
+        .iterator()
+        .next();
   }
 
   public static Iterable<AnnotationUsage> createAnnotationUsage(
-      List<? extends AnnotationNode> invisibleParameterAnnotation) {
-    if (invisibleParameterAnnotation == null) {
+      List<? extends AnnotationNode> annotationNodes,
+      @NonNull IdentifierFactory identifierFactory) {
+    return createAnnotationUsage(annotationNodes, identifierFactory, true);
+  }
+
+  /** Converts annotations, propagating the containing attribute's visibility to nested values. */
+  public static Iterable<AnnotationUsage> createAnnotationUsage(
+      List<? extends AnnotationNode> annotationNodes,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
+    if (annotationNodes == null) {
       return Collections.emptyList();
     }
 
     List<AnnotationUsage> annotationUsages = new ArrayList<>();
-    for (AnnotationNode e : invisibleParameterAnnotation) {
+    for (AnnotationNode e : annotationNodes) {
 
       Map<String, Object> paramMap = new LinkedHashMap<>();
 
@@ -291,31 +320,40 @@ public final class AsmUtil {
             final List<AnnotationNode> annotationValueList =
                 ((ArrayList<?>) annotationValue).stream().map(av -> (AnnotationNode) av).toList();
 
-            paramMap.put(annotationName, createAnnotationUsage(annotationValueList));
+            paramMap.put(
+                annotationName,
+                createAnnotationUsage(annotationValueList, identifierFactory, runtimeVisible));
           } else if (annotationValue instanceof AnnotationNode) {
-            paramMap.put(annotationName, createAnnotationUsage((AnnotationNode) annotationValue));
+            paramMap.put(
+                annotationName,
+                createAnnotationUsage(
+                    (AnnotationNode) annotationValue, identifierFactory, runtimeVisible));
           } else {
             if (annotationValue instanceof ArrayList) {
               paramMap.put(
                   annotationName,
                   ((ArrayList<?>) annotationValue)
-                      .stream().map(AsmUtil::convertAnnotationValue).collect(Collectors.toList()));
+                      .stream()
+                          .map(av -> convertAnnotationValue(av, identifierFactory))
+                          .collect(Collectors.toList()));
             } else {
-              paramMap.put(annotationName, convertAnnotationValue(annotationValue));
+              paramMap.put(
+                  annotationName, convertAnnotationValue(annotationValue, identifierFactory));
             }
           }
         }
       }
 
       JavaClassType at =
-          JavaIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(e.desc));
-      annotationUsages.add(new AnnotationUsage(at, paramMap));
+          (JavaClassType) identifierFactory.getClassType(AsmUtil.toQualifiedName(e.desc));
+      annotationUsages.add(new AnnotationUsage(at, paramMap, runtimeVisible));
     }
 
     return annotationUsages;
   }
 
-  public static Object convertAnnotationValue(Object annotationValue) {
+  public static Object convertAnnotationValue(
+      Object annotationValue, @NonNull IdentifierFactory identifierFactory) {
     if (annotationValue instanceof String[]) {
       // is an enum
       // [0] is the type of the enum
@@ -323,17 +361,18 @@ public final class AsmUtil {
       // transform the enum type to a fully qualified name
       String[] enumData = (String[]) annotationValue;
       enumData[0] = AsmUtil.toQualifiedName(enumData[0]);
-      return ConstantUtil.fromObject(enumData);
+      return ConstantUtil.fromObject(enumData, identifierFactory);
     } else {
       if (annotationValue instanceof org.objectweb.asm.Type) {
         // is a class constant
         // transform asm Type to ClassConstant
         ClassConstant classConstant =
-            JavaJimple.newClassConstant(((org.objectweb.asm.Type) annotationValue).toString());
-        return ConstantUtil.fromObject(classConstant);
+            JavaJimple.newClassConstant(
+                ((org.objectweb.asm.Type) annotationValue).toString(), identifierFactory);
+        return ConstantUtil.fromObject(classConstant, identifierFactory);
       }
     }
-    return ConstantUtil.fromObject(annotationValue);
+    return ConstantUtil.fromObject(annotationValue, identifierFactory);
   }
 
   @NonNull

@@ -9,8 +9,8 @@ import sootup.core.TestUtil;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
+import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 
@@ -30,7 +30,7 @@ class JDynamicInvokeExprTest {
 
       @Override
       public PackageName getPackageName() {
-        return new PackageName("sootup.dummy");
+        return SignatureInterner.getPackageName("sootup.dummy");
       }
     };
   }
@@ -51,16 +51,17 @@ class JDynamicInvokeExprTest {
   @Test
   void testWithersPreserveTagAndMethodSignature() {
     MethodSignature dummyMethod =
-        new MethodSignature(
+        SignatureInterner.getMethodSignature(
             dummyClassType(), "call", Collections.emptyList(), VoidType.getInstance());
     MethodSignature dummyMethod2 =
-        new MethodSignature(
+        SignatureInterner.getMethodSignature(
             dummyClassType(), "call2", Collections.emptyList(), VoidType.getInstance());
     MethodSignature bootstrapSig = TestUtil.createDummyMethodSignature();
     MethodSignature bootstrapSig2 =
-        new MethodSignature(
+        SignatureInterner.getMethodSignature(
             TestUtil.createDummyClassType(),
-            new MethodSubSignature("bootstrap2", Collections.emptyList(), VoidType.getInstance()));
+            SignatureInterner.getMethodSubSignature(
+                "bootstrap2", VoidType.getInstance(), Collections.emptyList()));
 
     int originalTag = 7;
     List<Immediate> bsmArgs = Collections.singletonList(IntConstant.getInstance(1));

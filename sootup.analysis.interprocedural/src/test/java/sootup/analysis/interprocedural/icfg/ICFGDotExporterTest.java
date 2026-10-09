@@ -316,7 +316,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   }
 
   private MutableBlockControlFlowGraph createControlFlowGraph() {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
     JavaClassType intType = factory.getClassType("int");
     final MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Local l3 = JavaJimple.newLocal("l3", intType);

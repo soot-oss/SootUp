@@ -34,7 +34,6 @@ import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 public class NewArrayInstruction extends DexLibAbstractInstruction {
@@ -49,12 +48,14 @@ public class NewArrayInstruction extends DexLibAbstractInstruction {
     int dest = newArray.getRegisterA();
 
     Local size = body.getRegisterLocal(newArray.getRegisterB());
-    Type t = DexUtil.toSootType(((TypeReference) newArray.getReference()).getType(), 0);
+    Type t =
+        DexUtil.toSootType(
+            ((TypeReference) newArray.getReference()).getType(), 0, body.getIdentifierFactory());
     // NewArrayExpr needs the ElementType as it increases the array dimension by 1
     Type elementType = ((ArrayType) t).getElementType();
 
     JNewArrayExpr jNewArrayExpr =
-        JavaJimple.newNewArrayExpr(elementType, size, JavaIdentifierFactory.getInstance());
+        JavaJimple.newNewArrayExpr(elementType, size, body.getIdentifierFactory());
 
     Local l = body.getRegisterLocal(dest);
     JAssignStmt assign =
