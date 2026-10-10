@@ -28,7 +28,9 @@ import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sootup.core.cache.ClassCache;
 import sootup.core.cache.MutableClassCache;
+import sootup.core.cache.OverlayClassCache;
 import sootup.core.cache.provider.MutableFullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.MethodSubSignature;
@@ -83,6 +85,32 @@ public class MutableJavaView extends JavaView implements MutableView {
       ((MutableClassCache) this.cache).removeClass(removed);
     }
     return classes.stream();
+  }
+
+  /**
+   * Creates a mutable view on top of the given base view. The new view starts with the classes and
+   * input locations of the base view, and its changes (added, replaced or removed classes) are not
+   * visible in the base view. The classes of the base view are shared, so several mutable views,
+   * e.g. one per analysis run, can be created from one base view without loading the classes again.
+   * The base view resolves all of its classes first, and must not be changed afterwards.
+   *
+   * @param base the view whose classes this view starts with
+   */
+  public MutableJavaView(@NonNull JavaView base) {
+    super(
+        base.inputLocations,
+        () -> new OverlayClassCache(resolvedCacheOf(base)),
+        // the base view has resolved all classes of the input locations, so a class that is not in
+        // the cache does not exist (or was removed from this view)
+        (view, type) -> Optional.empty(),
+        base.getIdentifierFactory());
+    // all classes of the input locations are in the base cache
+    this.isFullyResolved = true;
+  }
+
+  private static ClassCache resolvedCacheOf(@NonNull JavaView base) {
+    base.getClasses().count();
+    return base.cache;
   }
 
   /**
