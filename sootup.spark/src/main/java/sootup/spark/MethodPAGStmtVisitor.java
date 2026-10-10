@@ -36,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
+import sootup.callgraph.MethodLookup;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.callgraph.invokedynamic.FunctionalObject;
@@ -105,7 +106,8 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   public record OtfContext(
       IncrementalPointsToAnalysis propagator,
       java.util.Deque<MethodSignature> worklist,
-      List<PendingVirtualCall> otfPendingVirtualCalls) {}
+      List<PendingVirtualCall> otfPendingVirtualCalls,
+      MethodLookup methodLookup) {}
 
   @Override
   public void caseAssignStmt(JAssignStmt stmt) {
@@ -209,7 +211,15 @@ public class MethodPAGStmtVisitor extends AbstractStmtVisitor {
   private void handleInvokeExprOtf(
       AbstractInvokeExpr expr, Optional<Value> lhs, InvokableStmt stmt) {
     if (expr instanceof JStaticInvokeExpr || expr instanceof JSpecialInvokeExpr) {
-      MethodSignature targetSig = expr.getMethodSignature();
+      // The invocation names the class through which the method is called, which can be a subclass
+      // of the class that declares it (e.g., a static method called through a subclass, or a super
+      // call to a method that the direct superclass inherits).
+      MethodSignature targetSig =
+          otfContext
+              .methodLookup()
+              .find(expr.getMethodSignature())
+              .map(SootMethod::getSignature)
+              .orElse(expr.getMethodSignature());
       installCallEdges(expr, lhs, targetSig);
       // Record direct call edge in the OTF call graph and enqueue the target.
       addOtfCallEdge(targetSig, stmt);
