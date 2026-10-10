@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
+import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.DefaultCallResolver;
@@ -47,6 +48,7 @@ import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
+import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
@@ -100,6 +102,17 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /** Decides the targets of invokedynamic call sites. */
   @NonNull private final DynamicInvokeResolver dynamicInvokeResolver;
+
+  /** Lambdas / method references created by the methods processed so far. */
+  @NonNull private List<FunctionalObject> functionalObjects = new ArrayList<>();
+
+  /**
+   * Interface calls processed so far, by called sub-signature - a lambda discovered later still
+   * reaches them (like RTA's ignored calls).
+   */
+  @NonNull private Map<MethodSubSignature, List<InterfaceCall>> interfaceCalls = new HashMap<>();
+
+  private record InterfaceCall(SootMethod source, InvokableStmt stmt, MethodSignature called) {}
 
   /** Creates a new call graph algorithm using the given view. */
   protected AbstractCallGraphAlgorithm(@NonNull View view) {
@@ -247,7 +260,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   @NonNull
   protected Body getBody(@NonNull SootMethod method) {
-    return reflectionModel.resolve(method, method.getBody());
+    return dynamicInvokeResolver.desugar(
+        method, reflectionModel.resolve(method, method.getBody()), view);
   }
 
   /**
@@ -262,6 +276,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   final CallGraph constructCompleteCallGraph(List<MethodSignature> entryPoints) {
     Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
     Set<MethodSignature> processed = new HashSet<>();
+    functionalObjects = new ArrayList<>();
+    interfaceCalls = new HashMap<>();
 
     // find additional entry points
     List<MethodSignature> clinits =
@@ -518,7 +534,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   protected void resolveAllCallsFromSourceMethod(
       @NonNull SootMethod sourceMethod, @NonNull MutableCallGraph cg, @NonNull Frontier frontier) {
-    getBody(sourceMethod).getStmts().stream()
+    Body body = getBody(sourceMethod);
+    for (Stmt stmt : body.getStmts()) {
+      FunctionalObject.of(stmt, dynamicInvokeResolver, view)
+          .ifPresent(fo -> addFunctionalObject(sourceMethod, fo, cg, frontier));
+    }
+    body.getStmts().stream()
         .filter(Stmt::isInvokableStmt)
         .map(Stmt::asInvokableStmt)
         .forEach(
@@ -530,7 +551,62 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   .forEach(
                       targetMethod ->
                           addResolvedCall(sourceMethod, targetMethod, stmt, cg, frontier));
+              resolveFunctionalObjectCalls(sourceMethod, stmt, cg, frontier);
             });
+  }
+
+  /**
+   * Registers a lambda created in {@code creator} and connects the interface calls seen so far that
+   * it answers.
+   */
+  private void addFunctionalObject(
+      @NonNull SootMethod creator,
+      @NonNull FunctionalObject fo,
+      @NonNull MutableCallGraph cg,
+      @NonNull Frontier frontier) {
+    if (functionalObjects.contains(fo)) {
+      return;
+    }
+    functionalObjects.add(fo);
+    onFunctionalObject(creator, fo, cg, frontier.workList);
+    MethodSignature implementation = fo.dispatchedImplementation(view);
+    Stream.concat(Stream.of(fo.sam()), fo.bridges().stream())
+        .flatMap(subSig -> interfaceCalls.getOrDefault(subSig, List.of()).stream())
+        .filter(call -> fo.answers(call.called(), typeHierarchy))
+        .toList()
+        .forEach(call -> addResolvedCall(call.source(), implementation, call.stmt(), cg, frontier));
+  }
+
+  /** Hook: a lambda created in {@code creator} was discovered. */
+  protected void onFunctionalObject(
+      @NonNull SootMethod creator,
+      @NonNull FunctionalObject fo,
+      @NonNull MutableCallGraph cg,
+      @NonNull Deque<MethodSignature> workList) {}
+
+  /**
+   * An interface call reaches the implementation of every known lambda it {@link
+   * FunctionalObject#answers}; it is remembered for lambdas discovered later.
+   */
+  private void resolveFunctionalObjectCalls(
+      @NonNull SootMethod sourceMethod,
+      @NonNull InvokableStmt stmt,
+      @NonNull MutableCallGraph cg,
+      @NonNull Frontier frontier) {
+    // a functional method is declared by an interface, so it is called via invokeinterface
+    Optional<AbstractInvokeExpr> invokeExpr = stmt.getInvokeExpr();
+    if (invokeExpr.isEmpty() || !(invokeExpr.get() instanceof JInterfaceInvokeExpr)) {
+      return;
+    }
+    MethodSignature called = invokeExpr.get().getMethodSignature();
+    interfaceCalls
+        .computeIfAbsent(called.getSubSignature(), k -> new ArrayList<>())
+        .add(new InterfaceCall(sourceMethod, stmt, called));
+    for (FunctionalObject fo : List.copyOf(functionalObjects)) {
+      if (fo.answers(called, typeHierarchy)) {
+        addResolvedCall(sourceMethod, fo.dispatchedImplementation(view), stmt, cg, frontier);
+      }
+    }
   }
 
   /**
@@ -994,7 +1070,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   @NonNull
   protected Stream<MethodSignature> resolveDynamicInvokeTargets(
       @NonNull JDynamicInvokeExpr dynamicInvokeExpr) {
-    return dynamicInvokeResolver.resolve(dynamicInvokeExpr).stream()
+    return dynamicInvokeResolver.creationSiteTargets(dynamicInvokeExpr).stream()
         .map(DynamicInvokeTarget::method)
         .map(sig -> resolveConcreteDispatch(view, sig).orElse(sig));
   }

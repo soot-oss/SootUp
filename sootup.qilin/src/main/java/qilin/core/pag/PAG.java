@@ -35,32 +35,35 @@ import qilin.util.JavaTypes;
 import qilin.util.Triple;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
+import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.reflection.TamiflexReflectionModel;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.constant.MethodHandle;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
-import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
+import sootup.java.core.JavaSootField;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -88,7 +91,12 @@ public class PAG {
   // instances can run independently/concurrently without sharing mutable state.
   private final ArrayElement arrayElement = new ArrayElement();
   private final Map<ReferenceType, MergedNewExpr> mergedNewExprs = new ConcurrentHashMap<>();
-  private final Map<Object, LambdaAllocNode.Target> lambdaTargets = new ConcurrentHashMap<>();
+  private final Map<Object, FunctionalObject> lambdaTargets = new ConcurrentHashMap<>();
+
+  /**
+   * Fields referenced but not in the view, one instance per signature (fields compare by identity).
+   */
+  private final Map<FieldSignature, SootField> phantomFields = new ConcurrentHashMap<>();
 
   // ========================= ir to Node ==============================================
   protected final Map<Object, AllocNode> valToAllocNode;
@@ -351,13 +359,27 @@ public class PAG {
    * instead of a plain one, bypassing the abstract-type guard - the type is deliberately the
    * functional interface, not a concrete class, and the target is already statically known.
    */
-  public void registerLambdaTarget(
-      Object newExpr, MethodSignature targetMethod, MethodHandle.Kind targetKind) {
-    lambdaTargets.put(newExpr, new LambdaAllocNode.Target(targetMethod, targetKind));
+  /** The field {@code sig} denotes: from the view, else a stable phantom stand-in. */
+  public SootField getField(FieldSignature sig) {
+    Optional<? extends SootField> field = pta.getView().getField(sig);
+    if (field.isPresent()) {
+      return field.get();
+    }
+    return phantomFields.computeIfAbsent(
+        sig,
+        k ->
+            new JavaSootField(
+                k,
+                Collections.singleton(FieldModifier.PUBLIC),
+                NoPositionInformation.getInstance()));
+  }
+
+  public void registerLambdaTarget(Object newExpr, FunctionalObject functionalObject) {
+    lambdaTargets.put(newExpr, functionalObject);
   }
 
   public AllocNode makeAllocNode(Object newExpr, Type type, SootMethod m) {
-    LambdaAllocNode.Target lambdaTarget = lambdaTargets.get(newExpr);
+    FunctionalObject lambdaTarget = lambdaTargets.get(newExpr);
     if (lambdaTarget == null && type instanceof ClassType rt) {
       View view = pta.getView();
       Optional<? extends SootClass> osc = view.getClass(rt);
@@ -371,7 +393,7 @@ public class PAG {
     if (ret == null) {
       ret =
           lambdaTarget != null
-              ? new LambdaAllocNode(newExpr, type, m, lambdaTarget.method(), lambdaTarget.kind())
+              ? new LambdaAllocNode(newExpr, type, m, lambdaTarget)
               : new AllocNode(newExpr, type, m);
       valToAllocNode.put(newExpr, ret);
       allocNodeNumberer.add(ret);

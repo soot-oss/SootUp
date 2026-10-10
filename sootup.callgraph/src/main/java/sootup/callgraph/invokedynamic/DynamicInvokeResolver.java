@@ -25,16 +25,20 @@ package sootup.callgraph.invokedynamic;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
+import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 /**
  * Decides which methods an invokedynamic call site transfers control to. Shared by CHA, RTA, Spark
  * and Qilin (configured via {@code CallGraphConfigBuilder.dynamicInvokeResolver(...)}), so all
  * algorithms agree on which lambda bodies / method references are reachable.
  *
- * <p>Edges to the returned targets are attributed to the invokedynamic statement itself, not to the
- * later functional-interface call site. Pointer analyses bind the call site's arguments (the
- * captured values) as {@link DynamicInvokeTarget#captureParameterIndex(int)} says; no return value
- * flows back, since the invokedynamic produces the functional object, not the target's result.
+ * <p>A {@code LambdaMetafactory} implementation is reached through the {@link FunctionalObject} the
+ * call site creates: calls on that object dispatch to it, with arguments and return value. Only
+ * with {@link #withCreationSiteEdges()} is it additionally called from the invokedynamic statement
+ * itself (for views that lack the code calling the lambda). All other targets are called from the
+ * invokedynamic statement, see {@link #creationSiteTargets}.
  */
 @FunctionalInterface
 public interface DynamicInvokeResolver {
@@ -64,5 +68,38 @@ public interface DynamicInvokeResolver {
   /** Whether this resolver is {@link #none()}. */
   default boolean isNone() {
     return this == NoDynamicInvokeResolver.INSTANCE;
+  }
+
+  /** Whether lambda implementations are also called from their invokedynamic statement. */
+  default boolean creationSiteEdges() {
+    return false;
+  }
+
+  /** This resolver, plus edges from each invokedynamic statement to its lambda implementation. */
+  @NonNull
+  default DynamicInvokeResolver withCreationSiteEdges() {
+    return new CreationSiteEdgesResolver(this);
+  }
+
+  /** Targets called from the invokedynamic statement itself (see class doc). */
+  @NonNull
+  default List<DynamicInvokeTarget> creationSiteTargets(@NonNull JDynamicInvokeExpr expr) {
+    List<DynamicInvokeTarget> targets = resolve(expr);
+    if (creationSiteEdges()) {
+      return targets;
+    }
+    return targets.stream().filter(t -> !t.lambdaImplementation()).toList();
+  }
+
+  /**
+   * Makes the implicit calls of other invokedynamics explicit (string concatenation's {@code
+   * toString()}, records' {@code equals}/{@code hashCode}/{@code toString}). Identity by default.
+   *
+   * @return {@code body} itself if nothing changed, else a rewritten copy - the same one on each
+   *     call, so statements of call graph edges and of later passes over the body match
+   */
+  @NonNull
+  default Body desugar(@NonNull SootMethod method, @NonNull Body body, @NonNull View view) {
+    return body;
   }
 }

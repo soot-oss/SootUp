@@ -18,7 +18,6 @@
 
 package qilin.core.builder;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Queue;
@@ -29,7 +28,6 @@ import qilin.core.pag.*;
 import qilin.util.FakeMainMethods;
 import qilin.util.JavaTypes;
 import qilin.util.queue.UniqueQueue;
-import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -63,7 +61,6 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaSootField;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -240,19 +237,7 @@ public class MethodNodeFactory {
   }
 
   private FieldRefNode caseInstanceFieldRef(JInstanceFieldRef ifr) {
-    FieldSignature fieldSig = ifr.getFieldSignature();
-    Optional<? extends SootField> osf = scene.getView().getField(fieldSig);
-    SootField sf;
-    if (osf.isEmpty()) {
-      sf =
-          new JavaSootField(
-              fieldSig,
-              Collections.singleton(FieldModifier.PUBLIC),
-              NoPositionInformation.getInstance());
-      // System.out.println("Warnning:" + ifr + " is resolved to be a null field in Scene.");
-    } else {
-      sf = osf.get();
-    }
+    SootField sf = pag.getField(ifr.getFieldSignature());
     Local base = ifr.getBase();
     return pag.makeFieldRefNode(
         pag.makeLocalVarNode(base, base.getType(), method), new ConcreteField(sf));
