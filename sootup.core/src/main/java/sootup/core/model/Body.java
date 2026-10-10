@@ -117,19 +117,43 @@ public class Body implements HasPosition {
   /** Return unit containing the \@this-assignment * */
   @Nullable
   public Stmt getThisStmt() {
+    JIdentityStmt leading = findLeadingIdentityStmt(stmt -> stmt.getRightOp() instanceof JThisRef);
+    if (leading != null) {
+      return leading;
+    }
     for (Stmt stmt : graph) {
       if (stmt instanceof JIdentityStmt) {
         if (((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
           return stmt;
         }
-      } else {
-        // TODO: possible optimisation see getParameterLocals()
-        //  break;
       }
     }
     return null;
-    //    throw new IllegalArgumentException("couldn't find this-assignment!" + " in " +
-    // getMethodSignature());
+  }
+
+  /**
+   * Finds an identity stmt among the identity stmts at the beginning of the body, where Jimple
+   * places them. This avoids iterating over the whole body; callers fall back to the whole body for
+   * bodies whose identity stmts are not at the beginning.
+   *
+   * @return the first leading identity stmt that matches, or null if there is none
+   */
+  @Nullable
+  private JIdentityStmt findLeadingIdentityStmt(
+      java.util.function.Predicate<JIdentityStmt> filter) {
+    Stmt stmt = graph.getStartingStmt();
+    Set<Stmt> visited = new HashSet<>();
+    while (stmt instanceof JIdentityStmt && visited.add(stmt)) {
+      if (filter.test((JIdentityStmt) stmt)) {
+        return (JIdentityStmt) stmt;
+      }
+      List<Stmt> successors = graph.successors(stmt);
+      if (successors.size() != 1) {
+        break;
+      }
+      stmt = successors.get(0);
+    }
+    return null;
   }
 
   /** Return LHS of the first identity stmt assigning from \@this. */
@@ -145,6 +169,14 @@ public class Body implements HasPosition {
   /** Return LHS of the first identity stmt assigning from \@parameter i. */
   @NonNull
   public Local getParameterLocal(int i) {
+    JIdentityStmt leading =
+        findLeadingIdentityStmt(
+            stmt ->
+                stmt.getRightOp() instanceof JParameterRef
+                    && ((JParameterRef) stmt.getRightOp()).getIndex() == i);
+    if (leading != null) {
+      return leading.getLeftOp();
+    }
     for (Stmt stmt : graph) {
       // TODO: possible optimisation see getParameterLocals()
       if (stmt instanceof JIdentityStmt) {
