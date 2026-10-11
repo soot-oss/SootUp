@@ -210,7 +210,7 @@ public class DexBodyEdgeCaseTest {
             });
 
     assertEquals(
-        List.of("$u0 = 0", "if $u0 == 0", "return", "nop", "nop", "$u0 = 1", "return"),
+        List.of("$u0#0 = 0", "if $u0#0 == 0", "return", "nop", "nop", "$u0#1 = 1", "return"),
         stmtsOf(body));
     // the second successor of the if is the branch target, which is the first of the two nops
     assertEquals(
