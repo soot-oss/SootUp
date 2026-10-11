@@ -78,7 +78,9 @@ public class Evaluator {
           return false;
         }
       }
-      return isOp1Constant && isOp2Constant;
+      return isOp1Constant
+          && isOp2Constant
+          && haveFoldableTypes(binExpr, getConstantValueOf(op1), getConstantValueOf(op2));
     }
     if (op instanceof JCastExpr) {
       final Value innerOp = ((JCastExpr) op).getOp();
@@ -87,6 +89,27 @@ public class Evaluator {
     }
 
     return false;
+  }
+
+  /**
+   * Checks whether the operation of the given expression is defined for the given constant
+   * operands. The operands of an arithmetic, logical or comparing operation have the same type,
+   * except for the shift distance, which is an int. Before the types are assigned, e.g., in dex
+   * code, where constants are untyped, the operands can have different types, e.g., an int and a
+   * float.
+   */
+  private static boolean haveFoldableTypes(AbstractBinopExpr op, Constant c1, Constant c2) {
+    if (c1 == null || c2 == null) {
+      return false;
+    }
+    if (op instanceof JShlExpr || op instanceof JShrExpr || op instanceof JUshrExpr) {
+      return c1 instanceof ShiftableConstant && c2 instanceof IntConstant;
+    }
+    if (op instanceof JEqExpr || op instanceof JNeExpr) {
+      // numbers are only compared with numbers of the same type, other constants with anything
+      return !(c1 instanceof NumericConstant) || c1.getClass() == c2.getClass();
+    }
+    return c1.getClass() == c2.getClass();
   }
 
   /**
