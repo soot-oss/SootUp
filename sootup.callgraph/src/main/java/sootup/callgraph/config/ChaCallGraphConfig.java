@@ -26,6 +26,7 @@ import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphConfig;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
+import sootup.callgraph.FastClassHierarchyAnalysisAlgorithm;
 
 /**
  * CHA-specific stage of the unified {@link CallGraphConfig} builder chain. Obtained via {@link
@@ -35,22 +36,32 @@ import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 public final class ChaCallGraphConfig implements CallGraphConfig {
 
   @NonNull private final CommonCallGraphSettings common;
+  private final boolean fast;
 
-  private ChaCallGraphConfig(@NonNull CommonCallGraphSettings common) {
+  private ChaCallGraphConfig(@NonNull CommonCallGraphSettings common, boolean fast) {
     this.common = common;
+    this.fast = fast;
   }
 
   @NonNull
   @Override
   public CallGraph computeCallGraph() {
     ClassHierarchyAnalysisAlgorithm cha =
-        new ClassHierarchyAnalysisAlgorithm(
-            common.getView(),
-            common.getCallResolver(),
-            common.getVirtualCallResolver(),
-            common.getSeedEntryPointClinits(true),
-            common.getReflectionModel(),
-            common.getDynamicInvokeResolver());
+        fast
+            ? new FastClassHierarchyAnalysisAlgorithm(
+                common.getView(),
+                common.getCallResolver(),
+                common.getVirtualCallResolver(),
+                common.getSeedEntryPointClinits(true),
+                common.getReflectionModel(),
+                common.getDynamicInvokeResolver())
+            : new ClassHierarchyAnalysisAlgorithm(
+                common.getView(),
+                common.getCallResolver(),
+                common.getVirtualCallResolver(),
+                common.getSeedEntryPointClinits(true),
+                common.getReflectionModel(),
+                common.getDynamicInvokeResolver());
     return common.getEntryPoints().isEmpty()
         ? cha.initialize()
         : cha.initialize(common.getEntryPoints());
@@ -59,14 +70,26 @@ public final class ChaCallGraphConfig implements CallGraphConfig {
   public static final class Builder {
 
     @NonNull private final CommonCallGraphSettings common;
+    private boolean fast;
 
     Builder(@NonNull CommonCallGraphSettings common) {
       this.common = common;
     }
 
+    /**
+     * Resolves virtual calls on the type of the receiver local, as Soot's CHA does, with a {@link
+     * FastClassHierarchyAnalysisAlgorithm}. Read its documentation for the caveats: the bodies of
+     * the view have to be typed after their locals were split.
+     */
+    @NonNull
+    public Builder fast() {
+      this.fast = true;
+      return this;
+    }
+
     @NonNull
     public ChaCallGraphConfig build() {
-      return new ChaCallGraphConfig(common);
+      return new ChaCallGraphConfig(common, fast);
     }
   }
 }
