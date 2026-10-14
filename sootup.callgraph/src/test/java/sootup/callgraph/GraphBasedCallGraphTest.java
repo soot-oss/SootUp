@@ -84,6 +84,19 @@ public class GraphBasedCallGraphTest {
     assertFalse(cg.containsCall(caller, unknown, stmt));
   }
 
+  /** A call that the graph already contains is not added again */
+  @Test
+  public void addCallIfAbsentAddsACallOnce() {
+    GraphBasedCallGraph cg = new GraphBasedCallGraph(List.of(caller));
+    InvokableStmt stmt = invokeOf(callee);
+
+    assertTrue(cg.addCallIfAbsent(caller, callee, stmt));
+    assertFalse(cg.addCallIfAbsent(caller, callee, stmt));
+    assertTrue(cg.containsCall(caller, callee, stmt));
+    assertTrue(cg.containsMethod(callee));
+    assertEquals(1, cg.callCount());
+  }
+
   /** A copy contains the calls of the original, and calls added to it stay in the copy */
   @Test
   public void copyContainsTheCallsOfTheOriginal() {

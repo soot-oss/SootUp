@@ -472,9 +472,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       // promotion: an earlier edge left this target unexpanded, but this edge wants it expanded
       frontier.workList.push(target);
     }
-    if (!cg.containsCall(source, target, invokeStmt)) {
-      cg.addCall(source, target, invokeStmt);
-    }
+    cg.addCallIfAbsent(source, target, invokeStmt);
   }
 
   /**
@@ -520,9 +518,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       cg.addMethod(target);
       workList.push(target);
     }
-    if (!cg.containsCall(source, target, invokeStmt)) {
-      cg.addCall(source, target, invokeStmt);
-    }
+    cg.addCallIfAbsent(source, target, invokeStmt);
   }
 
   /**
