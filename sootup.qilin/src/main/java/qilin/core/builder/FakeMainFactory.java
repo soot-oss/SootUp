@@ -161,7 +161,8 @@ public class FakeMainFactory extends ArtificialMethod {
           addAssign(getArrayRef(strArray), mockStr);
           addInvoke(entry.getSignature().toString(), strArray);
           implicitCallEdgeCount++;
-        } else if (config.isSeedEntryPointClinits() || !JavaTypes.isStaticInitializer(entry)) {
+        } else if (config.isSeedEntryPointClinits()
+            || !JavaTypes.isStaticInitializer(view, entry)) {
           // when not eagerly seeding, we won't add a call directly for <clinit> methods - they're
           // resolved on the fly instead.
           addInvoke(entry.getSignature().toString());

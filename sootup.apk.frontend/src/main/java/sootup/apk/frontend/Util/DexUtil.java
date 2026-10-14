@@ -31,18 +31,19 @@ import org.jf.dexlib2.iface.value.*;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 public class DexUtil {
 
   private static final Logger logger = LoggerFactory.getLogger(DexUtil.class);
 
-  public static Type toSootType(String typeDescriptor, int pos) {
+  public static Type toSootType(
+      String typeDescriptor, int pos, @NonNull IdentifierFactory identifierFactory) {
     Type type = null;
     char typeDesignator = typeDescriptor.charAt(pos);
     switch (typeDesignator) {
@@ -74,13 +75,13 @@ public class DexUtil {
         if (isByteCodeClassName(typeDescriptor)) {
           typeDescriptor = dottedClassName(typeDescriptor);
         }
-        type = getClassTypeFromClassName(typeDescriptor);
+        type = getClassTypeFromClassName(typeDescriptor, identifierFactory);
         break;
       case 'V': // void
         type = VoidType.getInstance();
         break;
       case '[': // array
-        Type sootType = toSootType(typeDescriptor, pos + 1);
+        Type sootType = toSootType(typeDescriptor, pos + 1, identifierFactory);
         if (sootType != null) {
           type = Type.createArrayType(sootType, 1);
         }
@@ -104,7 +105,8 @@ public class DexUtil {
    * (dalvik.annotation.*) describe class metadata such as inner classes or throws, so they are left
    * out.
    */
-  public static List<AnnotationUsage> createAnnotationUsage(Set<? extends Annotation> annotations) {
+  public static List<AnnotationUsage> createAnnotationUsage(
+      Set<? extends Annotation> annotations, @NonNull IdentifierFactory identifierFactory) {
     List<AnnotationUsage> usages = new ArrayList<>();
     for (Annotation annotation : annotations) {
       if (annotation.getVisibility() != AnnotationVisibility.SYSTEM) {
@@ -113,14 +115,15 @@ public class DexUtil {
                 ? AnnotationUsage.AnnotationUsageVisibility.RUNTIME
                 : AnnotationUsage.AnnotationUsageVisibility.BUILD;
         usages.add(
-            createAnnotationUsage(annotation.getType(), annotation.getElements(), visibility));
+            createAnnotationUsage(annotation.getType(), annotation.getElements(), visibility, identifierFactory));
       }
     }
     return usages;
   }
 
   /** The exceptions of a method, which dex stores in its dalvik.annotation.Throws annotation. */
-  public static List<ClassType> getThrownExceptions(Set<? extends Annotation> annotations) {
+  public static List<ClassType> getThrownExceptions(
+      Set<? extends Annotation> annotations, @NonNull IdentifierFactory identifierFactory) {
     List<ClassType> exceptions = new ArrayList<>();
     for (Annotation annotation : annotations) {
       if (!annotation.getType().equals("Ldalvik/annotation/Throws;")) {
@@ -131,8 +134,8 @@ public class DexUtil {
           for (EncodedValue value : ((ArrayEncodedValue) element.getValue()).getValue()) {
             if (value instanceof TypeEncodedValue) {
               exceptions.add(
-                  JavaIdentifierFactory.getInstance()
-                      .getClassType(toQualifiedName(((TypeEncodedValue) value).getValue())));
+                  identifierFactory.getClassType(
+                      toQualifiedName(((TypeEncodedValue) value).getValue())));
             }
           }
         }
@@ -145,17 +148,19 @@ public class DexUtil {
       String type,
       Set<? extends AnnotationElement> elements,
       AnnotationUsage.AnnotationUsageVisibility visibility) {
+      @NonNull IdentifierFactory identifierFactory) {
     Map<String, Object> values = new HashMap<>();
     for (AnnotationElement element : elements) {
-      values.put(element.getName(), convertAnnotationValue(element.getValue()));
+      values.put(element.getName(), convertAnnotationValue(element.getValue(), identifierFactory));
     }
+
     return new AnnotationUsage(
-        JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(type)),
+        identifierFactory.getClassType(toQualifiedName(type)),
         values,
         visibility);
   }
 
-  public static Object convertAnnotationValue(EncodedValue value) {
+  public static Object convertAnnotationValue(EncodedValue value, @NonNull IdentifierFactory identifierFactory) {
     if (value instanceof BooleanEncodedValue) {
       return BooleanConstant.getInstance(((BooleanEncodedValue) value).getValue());
     } else if (value instanceof ByteEncodedValue) {
@@ -173,28 +178,30 @@ public class DexUtil {
     } else if (value instanceof DoubleEncodedValue) {
       return DoubleConstant.getInstance(((DoubleEncodedValue) value).getValue());
     } else if (value instanceof StringEncodedValue) {
-      return JavaJimple.newStringConstant(((StringEncodedValue) value).getValue());
+      return JavaJimple.newStringConstant(
+          ((StringEncodedValue) value).getValue(), identifierFactory);
     } else if (value instanceof TypeEncodedValue) {
-      return JavaJimple.newClassConstant(((TypeEncodedValue) value).getValue());
+      return JavaJimple.newClassConstant(((TypeEncodedValue) value).getValue(), identifierFactory);
     } else if (value instanceof EnumEncodedValue) {
       FieldReference constant = ((EnumEncodedValue) value).getValue();
       return JavaJimple.newEnumConstant(
-          constant.getName(), toQualifiedName(constant.getDefiningClass()));
+          constant.getName(), toQualifiedName(constant.getDefiningClass()), identifierFactory);
     } else if (value instanceof AnnotationEncodedValue) {
       AnnotationEncodedValue nested = (AnnotationEncodedValue) value;
       return createAnnotationUsage(
-          nested.getType(), nested.getElements(), AnnotationUsage.AnnotationUsageVisibility.NONE);
+          nested.getType(), nested.getElements(), AnnotationUsage.AnnotationUsageVisibility.NONE, identifierFactory);
+
     } else if (value instanceof ArrayEncodedValue) {
       List<Object> elements = new ArrayList<>();
       for (EncodedValue element : ((ArrayEncodedValue) value).getValue()) {
-        elements.add(convertAnnotationValue(element));
+        elements.add(convertAnnotationValue(element, identifierFactory));
       }
       return elements;
     } else if (value instanceof NullEncodedValue) {
       return NullConstant.getInstance();
     }
     // method, field, method type and method handle values only occur in system annotations
-    return JavaJimple.newStringConstant(value.toString());
+    return JavaJimple.newStringConstant(value.toString(), identifierFactory);
   }
 
   public static ClassType stringToJimpleType(View view, String className) {
@@ -222,14 +229,15 @@ public class DexUtil {
         && ((className.indexOf('/') != -1 || className.indexOf('.') == -1)));
   }
 
-  public static ClassType getClassTypeFromClassName(String name) {
+  public static ClassType getClassTypeFromClassName(
+      String name, @NonNull IdentifierFactory identifierFactory) {
     if (name.startsWith("[")) {
       name = "java.lang.Object";
     } else if (isByteCodeClassName(name)) {
       name = dottedClassName(name);
     }
     try {
-      return JavaIdentifierFactory.getInstance().getClassType(name);
+      return identifierFactory.getClassType(name);
     } catch (RuntimeException e) {
       logger.warn("Could not build a class type from '{}'", name, e);
       throw e;

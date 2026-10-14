@@ -30,7 +30,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.java.core.JavaIdentifierFactory;
@@ -39,8 +41,8 @@ import sootup.java.core.types.JavaClassType;
 
 public class JavaIdentifierFactoryTest {
 
-  private final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-  private final JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
+  private final IdentifierFactory identifierFactory = new JavaIdentifierFactory();
+  private final JavaIdentifierFactory typeFactory = new JavaIdentifierFactory();
 
   @Test
   public void getSamePackageSignature() {
@@ -129,9 +131,9 @@ public class JavaIdentifierFactoryTest {
   public void getInnerClassSignature() {
     JavaClassType classSignature1 = typeFactory.getClassType("java.lang.System$MyClass");
     JavaClassType classSignature2 = typeFactory.getClassType("System$MyClass", "java.lang");
-    // Class Signatures are unique but not their package
-    assertNotSame(classSignature1, classSignature2);
-    assertEquals(classSignature1, classSignature2);
+    // the two spellings differ only in where the name is split; the inner-class normalization in
+    // the constructor makes them equal, and interning makes them the same instance
+    assertSame(classSignature1, classSignature2);
   }
 
   @Test
@@ -208,6 +210,59 @@ public class JavaIdentifierFactoryTest {
   }
 
   @Test
+  public void getSameMethodSignature() {
+    List<String> parameters = Collections.singletonList("java.lang.Class");
+    MethodSignature methodSignature1 =
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "java.lang.A", parameters);
+    MethodSignature methodSignature2 =
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "java.lang.A", parameters);
+    assertSame(methodSignature1, methodSignature2);
+  }
+
+  @Test
+  public void getSameMethodSignatureViaSubSignature() {
+    ClassType declClass = identifierFactory.getClassType("java.lang.System");
+    MethodSubSignature subSignature =
+        identifierFactory.getMethodSubSignature(
+            "foo", VoidType.getInstance(), Collections.emptyList());
+    MethodSignature methodSignature1 =
+        identifierFactory.getMethodSignature(declClass, subSignature);
+    MethodSignature methodSignature2 =
+        identifierFactory.getMethodSignature(declClass, subSignature);
+    assertSame(methodSignature1, methodSignature2);
+  }
+
+  @Test
+  public void getSameFieldSignature() {
+    ClassType classSignature = identifierFactory.getClassType("java.lang.System");
+    FieldSignature fieldSignature1 =
+        identifierFactory.getFieldSignature("foo", classSignature, "int");
+    FieldSignature fieldSignature2 =
+        identifierFactory.getFieldSignature("foo", classSignature, "int");
+    assertSame(fieldSignature1, fieldSignature2);
+  }
+
+  @Test
+  public void getSameMethodSubSignature() {
+    MethodSubSignature subSignature1 =
+        identifierFactory.getMethodSubSignature(
+            "foo", VoidType.getInstance(), Collections.singletonList(PrimitiveType.getInt()));
+    MethodSubSignature subSignature2 =
+        identifierFactory.getMethodSubSignature(
+            "foo", VoidType.getInstance(), Collections.singletonList(PrimitiveType.getInt()));
+    assertSame(subSignature1, subSignature2);
+  }
+
+  @Test
+  public void getSameFieldSubSignature() {
+    FieldSubSignature subSignature1 =
+        identifierFactory.getFieldSubSignature("foo", PrimitiveType.getInt());
+    FieldSubSignature subSignature2 =
+        identifierFactory.getFieldSubSignature("foo", PrimitiveType.getInt());
+    assertSame(subSignature1, subSignature2);
+  }
+
+  @Test
   public void compMethodSignature2() {
     List<String> parameters = new ArrayList<>();
 
@@ -230,7 +285,8 @@ public class JavaIdentifierFactoryTest {
     MethodSignature methodSignature2 =
         identifierFactory.getMethodSignature("java.lang.System", "foo", "void", parameters);
 
-    assertEquals(methodSignature, methodSignature2);
+    // now hash-consed: equal MethodSignatures are the same instance
+    assertSame(methodSignature, methodSignature2);
     assertEquals(methodSignature.hashCode(), methodSignature2.hashCode());
   }
 
@@ -341,6 +397,81 @@ public class JavaIdentifierFactoryTest {
     String fieldsSigStr = "<java.base/java.lang.String: [] value>";
     assertThrows(
         IllegalArgumentException.class,
-        () -> JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr));
+        () -> new JavaModuleIdentifierFactory().parseFieldSignature(fieldsSigStr));
+  }
+
+  @Test
+  public void classTypesWithAmbiguousNameSplitAreDistinct() {
+    // "AB" in the default package and "B.AB"... would collide under a cache keyed on the plain
+    // concatenation of class name and package name.
+    JavaClassType defaultPackaged = typeFactory.getClassType("AB", "");
+    JavaClassType packaged = typeFactory.getClassType("B", "A");
+    assertNotEquals(defaultPackaged, packaged);
+    assertNotSame(defaultPackaged, packaged);
+    assertEquals("AB", defaultPackaged.getFullyQualifiedName());
+    assertEquals("A.B", packaged.getFullyQualifiedName());
+  }
+
+  @Test
+  public void subSignatureIsSharedWithTheSignatureBuiltFromRawNames() {
+    MethodSignature methodSignature =
+        identifierFactory.getMethodSignature(
+            typeFactory.getClassType("some.Klass"),
+            "foo",
+            "void",
+            Collections.singletonList("int"));
+    MethodSubSignature subSignature =
+        identifierFactory.getMethodSubSignature(
+            "foo", VoidType.getInstance(), Collections.singletonList(PrimitiveType.getInt()));
+    assertSame(subSignature, methodSignature.getSubSignature());
+
+    FieldSignature fieldSignature =
+        identifierFactory.getFieldSignature(
+            "bar", typeFactory.getClassType("some.Klass"), PrimitiveType.getInt());
+    assertSame(
+        identifierFactory.getFieldSubSignature("bar", PrimitiveType.getInt()),
+        fieldSignature.getSubSignature());
+  }
+
+  @Test
+  public void packageNameEqualityIsSymmetric() {
+    PackageName packageName = identifierFactory.getPackageName("java.lang");
+    ModulePackageName modulePackageName =
+        new JavaModuleIdentifierFactory().getPackageName("java.lang", "java.base");
+    assertEquals(packageName.equals(modulePackageName), modulePackageName.equals(packageName));
+    assertNotSame(packageName, modulePackageName);
+  }
+
+  /**
+   * Reproduces failure when parsing quoted Jimple keyword method and field signatures:
+   *
+   * <p>Subject pattern: Java or Kotlin classes with method/field names that match Jimple reserved
+   * keywords: public class Test { public long from() { return 0; } public long to() { return 1; }
+   * public int default; }
+   *
+   * <p>1. Printed signatures must quote reserved keywords (e.g. long 'from'(), int 'default') so
+   * that Jimple parser does not treat them as syntax tokens. 2. When parsed by
+   * JavaIdentifierFactory, quotes must be unescaped so getName() returns "from", "to", and
+   * "default", matching the declared class member identifiers.
+   */
+  @Test
+  public void testParseQuotedKeywordMethodAndFieldSignatures() {
+    MethodSubSignature subSig = identifierFactory.parseMethodSubSignature("long 'from'()");
+    assertEquals("from", subSig.getName());
+    assertEquals("long 'from'()", subSig.toString());
+
+    MethodSignature methodSig =
+        identifierFactory.parseMethodSignature("<com.example.Test: long 'to'()>");
+    assertEquals("to", methodSig.getName());
+    assertEquals("<com.example.Test: long 'to'()>", methodSig.toString());
+
+    FieldSubSignature fieldSubSig = identifierFactory.parseFieldSubSignature("int 'default'");
+    assertEquals("default", fieldSubSig.getName());
+    assertEquals("int 'default'", fieldSubSig.toString());
+
+    FieldSignature fieldSig =
+        identifierFactory.parseFieldSignature("<com.example.Test: int 'default'>");
+    assertEquals("default", fieldSig.getName());
+    assertEquals("<com.example.Test: int 'default'>", fieldSig.toString());
   }
 }

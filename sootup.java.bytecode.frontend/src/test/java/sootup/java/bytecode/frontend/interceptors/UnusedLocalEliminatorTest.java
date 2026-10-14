@@ -37,8 +37,8 @@ public class UnusedLocalEliminatorTest {
 
     Set<Local> originalLocals = originalBody.getLocals();
     Set<Local> processedLocals = processedBody.getLocals();
-    JavaClassType objectType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
-    JavaClassType stringType = JavaIdentifierFactory.getInstance().getClassType("java.lang.String");
+    JavaClassType objectType = new JavaIdentifierFactory().getClassType("java.lang.Object");
+    JavaClassType stringType = new JavaIdentifierFactory().getClassType("java.lang.String");
 
     assertEquals(4, originalLocals.size());
     assertEquals(2, processedLocals.size());
@@ -58,7 +58,7 @@ public class UnusedLocalEliminatorTest {
   }
 
   private static Body.BodyBuilder createBody(boolean unusedLocals) {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
@@ -75,7 +75,7 @@ public class UnusedLocalEliminatorTest {
     }
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str", factory), noPositionInfo);
     FallsThroughStmt bToA =
         JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
@@ -90,7 +90,7 @@ public class UnusedLocalEliminatorTest {
     controlFlowGraph.putEdge(bToA, ret);
 
     builder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
+        new JavaIdentifierFactory()
             .getMethodSignature("a.b.c", "test", "void", Collections.emptyList()));
     return builder;
   }

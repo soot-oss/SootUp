@@ -64,10 +64,10 @@ public abstract class ClassVisitor extends JimpleBaseVisitor<Boolean> {
   public ClassVisitor(
       @NonNull Path path, @NonNull List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
     this.path = path;
-    util = new JimpleConverterUtil(path);
     this.bodyInterceptors = bodyInterceptors;
     this.view = view;
     this.identifierFactory = view.getIdentifierFactory();
+    util = new JimpleConverterUtil(path, identifierFactory);
   }
 
   protected abstract MethodVisitor createMethodVisitor();

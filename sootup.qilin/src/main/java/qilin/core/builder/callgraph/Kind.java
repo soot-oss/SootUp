@@ -56,6 +56,12 @@ public final class Kind implements Numberable {
   /** Implicit call to constructor from java.lang.Class.newInstance(). */
   public static final Kind NEWINSTANCE = new Kind("NEWINSTANCE");
 
+  /**
+   * Due to an invokedynamic instruction: its target (lambda body, method reference), with the
+   * captured values as the only arguments passed.
+   */
+  public static final Kind INVOKE_DYNAMIC = new Kind("INVOKE_DYNAMIC");
+
   /** Due to call to Method.invoke(..). */
   public static final Kind REFL_INVOKE = new Kind("REFL_METHOD_INVOKE");
 

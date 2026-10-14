@@ -125,7 +125,7 @@ public class StmtVisitor extends JimpleBaseVisitor<Stmt> {
             IdentityRef ref;
             final JimpleParser.Identity_refContext identityRefCtx = assignments.identity_ref();
             if (identityRefCtx.caught != null) {
-              ref = JavaJimple.newCaughtExceptionRef();
+              ref = JavaJimple.newCaughtExceptionRef(state.getIdentifierFactory());
             } else {
               final String type = assignments.identity_ref().type().getText();
               if (identityRefCtx.parameter_idx != null) {

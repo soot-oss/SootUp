@@ -7,8 +7,8 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
+import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.*;
 
 public class AbstractStmtJimplePrinterTest {
@@ -16,9 +16,9 @@ public class AbstractStmtJimplePrinterTest {
   @Test
   public void addImportTest() {
 
-    PackageName abc = new PackageName("a.b.c");
-    PackageName def = new PackageName("d.e.f");
-    PackageName anotherAbc = new PackageName("a.b.c");
+    PackageName abc = SignatureInterner.getPackageName("a.b.c");
+    PackageName def = SignatureInterner.getPackageName("d.e.f");
+    PackageName anotherAbc = SignatureInterner.getPackageName("a.b.c");
 
     ClassType classOneFromAbc = generateClass("ClassOne", abc);
     ClassType classOneFromDef = generateClass("ClassOne", def);
@@ -26,9 +26,10 @@ public class AbstractStmtJimplePrinterTest {
     ClassType classTwoFromAbc = generateClass("ClassTwo", abc);
 
     MethodSignature ms =
-        new MethodSignature(
+        SignatureInterner.getMethodSignature(
             classOneFromAbc,
-            new MethodSubSignature("banana", Collections.emptyList(), VoidType.getInstance()));
+            SignatureInterner.getMethodSubSignature(
+                "banana", VoidType.getInstance(), Collections.emptyList()));
     final Body body =
         Body.builder().setModifiers(Collections.emptySet()).setMethodSignature(ms).build();
     NormalStmtPrinter p = new NormalStmtPrinter();

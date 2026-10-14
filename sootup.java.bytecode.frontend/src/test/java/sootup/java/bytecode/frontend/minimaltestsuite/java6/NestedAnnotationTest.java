@@ -24,7 +24,8 @@ public class NestedAnnotationTest extends MinimalBytecodeTestSuiteBase {
     ClassType mySecondInnerAnnotationType =
         identifierFactory.getClassType("MySecondInnerAnnotation");
     Map<String, Object> secondInnerAnnotationParamMap = new LinkedHashMap<>();
-    secondInnerAnnotationParamMap.put("value", JavaJimple.newStringConstant("second"));
+    secondInnerAnnotationParamMap.put(
+        "value", JavaJimple.newStringConstant("second", identifierFactory));
     AnnotationUsage secondInnerAnnotation =
         new AnnotationUsage(mySecondInnerAnnotationType, secondInnerAnnotationParamMap);
 

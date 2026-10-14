@@ -47,7 +47,7 @@ public abstract class AnalysisInputLocationTest {
   final Path cls = Paths.get("src/test/resources/miniTestSuite/java6/binary/Employee.class");
 
   protected IdentifierFactory getIdentifierFactory() {
-    return JavaIdentifierFactory.getInstance();
+    return new JavaIdentifierFactory();
   }
 
   protected void testClassReceival(

@@ -30,7 +30,7 @@ import sootup.java.core.views.JavaView;
 public abstract class CallGraphTest {
 
   protected AbstractCallGraphAlgorithm algorithm;
-  protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+  protected JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
   protected JavaClassType mainClassSignature;
   protected MethodSignature mainMethodSignature;
   protected JavaView view;

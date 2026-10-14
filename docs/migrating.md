@@ -1,5 +1,19 @@
 # Migration Help
 
+### Version 3.0.2
+- Identifiers are hash-consed: the `IdentifierFactory` hands out the same instance for equal `ClassType`s, `MethodSignature`s, `FieldSignature`s, their sub signatures and `PackageName`s. They can therefore be compared with `==` and used as keys of an `IdentityHashMap`.
+- As a consequence the constructors of these classes are not public anymore. Obtain them from the `IdentifierFactory` of the `View` that the identifiers are used with:
+```java
+ClassType classType = view.getIdentifierFactory().getClassType("example.HelloWorld");
+```
+- `JavaIdentifierFactory.getInstance()` and `JavaModuleIdentifierFactory.getInstance()` were removed - the factory belongs to a `View` now. Use `view.getIdentifierFactory()`; if there is no `View` at hand (e.g. while setting one up), instantiate it with `new JavaIdentifierFactory()`.
+- `JavaModuleIdentifierFactory.getInstance(module)` was replaced by the instance method `forModule(module)`:
+```java
+JavaModuleIdentifierFactory factory =
+        (JavaModuleIdentifierFactory) moduleView.getIdentifierFactory();
+JavaModuleIdentifierFactory factoryOfModule = factory.forModule("mymodule");
+```
+
 ### Version 1.3.0
 - The Typehierarchy API is now returning `Stream<ClassType>` instead of `Collection<ClassType>`. The simplest fix to have the same behaviour as before would be to collect the Stream on your own ( e.g. via `.collect(Collectors.toList())` ).
 - Default BytecodeBodyinterceptors are enabled to improve Jimple. To mitigate that adapt the List of BodyInterceptors to your needs.

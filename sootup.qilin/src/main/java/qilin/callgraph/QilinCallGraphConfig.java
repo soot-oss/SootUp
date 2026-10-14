@@ -51,6 +51,11 @@ import sootup.core.types.ClassType;
  * CommonCallGraphSettings}, which this stage overrides onto whatever {@link
  * PointerAnalysisConfig.Builder} the caller supplies (or a fresh default one).
  *
+ * <p>A reflection model set on the common stage overrides the {@link PointerAnalysisConfig}'s own
+ * {@code reflectionModel}/{@code reflectionLogPath}; if unset, those apply unchanged. Likewise, an
+ * invokedynamic resolver set on the common stage overrides the {@link PointerAnalysisConfig}'s own
+ * {@code dynamicInvokeResolver}; if unset, that applies unchanged.
+ *
  * <p>The common stage's {@code CallResolver} (pre-dispatch) is <b>not</b> consulted: qilin's own
  * dispatch resolution ({@code qilin.core.VirtualCalls}) doesn't integrate with {@code
  * sootup.callgraph.scope.CallResolver}.
@@ -79,11 +84,16 @@ public final class QilinCallGraphConfig implements CallGraphConfig {
   @NonNull
   @Override
   public CallGraph computeCallGraph() {
-    PointerAnalysisConfig config =
-        configBuilder
-            .seedEntryPointClinits(common.getSeedEntryPointClinits(false))
-            .clinitVirtualCallResolver(common.getVirtualCallResolver())
-            .build();
+    configBuilder
+        .seedEntryPointClinits(common.getSeedEntryPointClinits(false))
+        .clinitVirtualCallResolver(common.getVirtualCallResolver());
+    if (common.isReflectionModelSet()) {
+      configBuilder.reflectionModel(common.getReflectionModel());
+    }
+    if (common.isDynamicInvokeResolverSet()) {
+      configBuilder.dynamicInvokeResolver(common.getDynamicInvokeResolver());
+    }
+    PointerAnalysisConfig config = configBuilder.build();
     PTA pta = PointerAnalysisFactory.create(common.getView(), mainClass, config);
     pta.run();
     return pta.getCallGraph();

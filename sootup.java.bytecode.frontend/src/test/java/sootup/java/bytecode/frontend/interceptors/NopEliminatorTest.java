@@ -73,7 +73,7 @@ public class NopEliminatorTest {
    * @return the generated {@link Body}
    */
   private static Body.BodyBuilder createBody(boolean withNop) {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+    JavaIdentifierFactory factory = new JavaIdentifierFactory();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
@@ -83,7 +83,7 @@ public class NopEliminatorTest {
     Local b = JavaJimple.newLocal("b", stringType);
 
     FallsThroughStmt strToA =
-        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str"), noPositionInfo);
+        JavaJimple.newAssignStmt(a, JavaJimple.newStringConstant("str", factory), noPositionInfo);
     FallsThroughStmt bToA =
         JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
@@ -93,7 +93,7 @@ public class NopEliminatorTest {
 
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(
-        JavaIdentifierFactory.getInstance()
+        new JavaIdentifierFactory()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
     final MutableControlFlowGraph controlFlowGraph = builder.getControlFlowGraph();

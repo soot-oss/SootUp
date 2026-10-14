@@ -23,11 +23,14 @@ package sootup.java.core.types;
  */
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Interner;
+import com.google.common.collect.Interners;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.ClassUtils;
 import org.jspecify.annotations.NonNull;
-import sootup.core.IdentifierFactory;
 import sootup.core.signatures.PackageName;
+import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.*;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
@@ -46,13 +49,68 @@ public class JavaClassType extends ClassType {
   private final int hashCode;
 
   /**
-   * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
-   * {@link IdentifierFactory}
+   * Hash-conses every {@link JavaClassType} and its subclasses. Interning happens on the
+   * constructed object, so identity follows {@link #equals}, which compares the exact class - a
+   * {@link sootup.java.core.types.ModuleJavaClassType} therefore never aliases a plain {@link
+   * JavaClassType} with the same name.
+   */
+  @NonNull private static final Interner<JavaClassType> INTERNER = Interners.newWeakInterner();
+
+  /**
+   * Returns the unique {@link JavaClassType} for the given class and package, so that equal class
+   * types are the same instance and may be compared with {@code ==}.
+   *
+   * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
+   * @param packageName the package the class is contained in
+   * @return the hash-consed class type for {@code packageName.className}
+   */
+  @NonNull
+  public static JavaClassType of(
+      @NonNull final String className, @NonNull final PackageName packageName) {
+    return intern(new JavaClassType(className, packageName));
+  }
+
+  /**
+   * Returns the unique {@link JavaClassType} for the given fully-qualified class name.
+   *
+   * <p>Prefer {@link sootup.core.IdentifierFactory#getClassType(String)} obtained from a {@link
+   * sootup.core.views.View}; this overload exists for the few well-known JDK types that are needed
+   * as {@code static final} constants, where no view is available.
+   *
+   * @param fullyQualifiedClassName the fully-qualified class name, e.g., my.package.ClassA
+   * @return the hash-consed class type for the given name
+   */
+  @NonNull
+  public static JavaClassType of(@NonNull final String fullyQualifiedClassName) {
+    return of(
+        ClassUtils.getShortClassName(fullyQualifiedClassName),
+        SignatureInterner.getPackageName(ClassUtils.getPackageName(fullyQualifiedClassName)));
+  }
+
+  /**
+   * Interns an already constructed class type. Subclasses construct themselves and pass the result
+   * through here so that they share the interning invariant.
+   *
+   * @param <T> the concrete class type that is interned
+   * @param classType the freshly constructed class type
+   * @return the canonical instance that is equal to {@code classType}
+   */
+  @NonNull
+  protected static <T extends JavaClassType> T intern(@NonNull T classType) {
+    @SuppressWarnings("unchecked")
+    T interned = (T) INTERNER.intern(classType);
+    return interned;
+  }
+
+  /**
+   * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created via
+   * {@link #of(String, PackageName)} or an {@link sootup.core.IdentifierFactory}, so that they stay
+   * hash-consed.
    *
    * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
    * @param packageName the corresponding package
    */
-  public JavaClassType(@NonNull final String className, @NonNull final PackageName packageName) {
+  protected JavaClassType(@NonNull final String className, @NonNull final PackageName packageName) {
     String realClassName = className;
     // TODO: [ms] we shouldnt do that inner class conversion here? -> IdentifierFactory
     if (realClassName.contains(".")) {

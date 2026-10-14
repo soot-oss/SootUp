@@ -18,24 +18,33 @@
 
 package qilin.core.effect;
 
-import qilin.core.reflection.ReflectionModel;
+import qilin.core.PTAScene;
+import qilin.core.pag.PAG;
+import sootup.callgraph.reflection.ReflectionModel;
 import sootup.core.model.SootMethod;
 
-/** Adapts {@link ReflectionModel} to {@link MethodEffectModel}; delegate is unmodified. */
+/** Applies a shared {@link ReflectionModel} to qilin's (possibly already rewritten) PAG bodies. */
 public class ReflectionEffectModel implements MethodEffectModel {
   private final ReflectionModel delegate;
+  private final PTAScene ptaScene;
+  private final PAG pag;
 
-  public ReflectionEffectModel(ReflectionModel delegate) {
+  public ReflectionEffectModel(ReflectionModel delegate, PTAScene ptaScene, PAG pag) {
     this.delegate = delegate;
+    this.ptaScene = ptaScene;
+    this.pag = pag;
   }
 
   @Override
   public boolean appliesTo(SootMethod m) {
-    return m.isConcrete();
+    return m.isConcrete() && !delegate.isNone();
   }
 
   @Override
   public void apply(SootMethod m) {
-    delegate.buildReflection(m);
+    if (!ptaScene.reflectionBuilt.add(m)) {
+      return;
+    }
+    pag.updateMethodBody(m, delegate.resolve(m, pag.getMethodBody(m)));
   }
 }

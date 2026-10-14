@@ -28,13 +28,14 @@ import sootup.java.core.types.JavaClassType;
 public class LocalLivenessAnalyserTest {
 
   // Preparation
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
   JavaClassType intType = factory.getClassType("int");
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
-      new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
+      new JavaIdentifierFactory()
+          .getMethodSignature(classType, "test", VoidType.getInstance(), Collections.emptyList());
 
   // build locals
   Local a = JavaJimple.newLocal("a", intType);

@@ -33,7 +33,7 @@ import sootup.java.core.views.JavaView;
 public class StaticSingleAssignmentFormerTest {
 
   // Preparation
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
   final String location = "src/test/resources/bugfixes/";
 
@@ -41,10 +41,11 @@ public class StaticSingleAssignmentFormerTest {
   JavaClassType classType = factory.getClassType("Test");
   JavaClassType refType = factory.getClassType("ref");
   MethodSignature methodSignature =
-      new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
+      new JavaIdentifierFactory()
+          .getMethodSignature(classType, "test", VoidType.getInstance(), Collections.emptyList());
   IdentityRef identityRef = JavaJimple.newThisRef(classType);
   ClassType exceptionType = factory.getClassType("Exception");
-  IdentityRef caughtExceptionRef = JavaJimple.newCaughtExceptionRef();
+  IdentityRef caughtExceptionRef = JavaJimple.newCaughtExceptionRef(factory);
 
   // build locals
   Local l0 = JavaJimple.newLocal("l0", classType);

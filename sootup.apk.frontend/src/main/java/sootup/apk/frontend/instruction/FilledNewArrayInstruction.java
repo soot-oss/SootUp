@@ -37,7 +37,6 @@ import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 public class FilledNewArrayInstruction extends FilledArrayInstruction {
@@ -54,12 +53,12 @@ public class FilledNewArrayInstruction extends FilledArrayInstruction {
     int usedRegister = filledNewArrayInstr.getRegisterCount();
 
     TypeReference reference = (TypeReference) ((ReferenceInstruction) instruction).getReference();
-    Type t = DexUtil.toSootType(reference.getType(), 0);
+    Type t = DexUtil.toSootType(reference.getType(), 0, body.getIdentifierFactory());
     // NewArrayExpr needs the ElementType as it increases the array dimension by 1
     Type arrayType = ((ArrayType) t).getElementType();
     JNewArrayExpr arrayExpr =
         JavaJimple.newNewArrayExpr(
-            arrayType, IntConstant.getInstance(usedRegister), JavaIdentifierFactory.getInstance());
+            arrayType, IntConstant.getInstance(usedRegister), body.getIdentifierFactory());
     // new local generated intentional, will be moved to real register by MoveResult
     Local arrayLocal = body.getStoreResultLocal();
     JAssignStmt assign =

@@ -33,11 +33,12 @@ public class UnreachableCodeEliminatorTest {
 
   public final BriefStmtPrinter briefStmtPrinter = new BriefStmtPrinter();
 
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
-      new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
+      new JavaIdentifierFactory()
+          .getMethodSignature(classType, "test", VoidType.getInstance(), Collections.emptyList());
   JavaClassType refType = factory.getClassType("ref");
   ClassType exception = factory.getClassType("RuntimeException");
 
@@ -50,7 +51,7 @@ public class UnreachableCodeEliminatorTest {
   Local l3 = JavaJimple.newLocal("l3", PrimitiveType.getInt());
   Local l4 = JavaJimple.newLocal("l3", PrimitiveType.getInt());
   Local stack0 = JavaJimple.newLocal("stack0", refType);
-  IdentityRef idRef = JavaJimple.newCaughtExceptionRef();
+  IdentityRef idRef = JavaJimple.newCaughtExceptionRef(factory);
 
   // build stmts
   FallsThroughStmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);

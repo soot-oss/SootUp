@@ -8,6 +8,7 @@
 !sootup.tests/src/test/resources/**/*.class
 !sootup.java.bytecode.frontend/src/test/resources/**/*.class
 !sootup.spark/src/test/resources/pta/binary/**/*.class
+!sootup.examples/src/test/resources/**/*.class
 
 # Log file
 *.log

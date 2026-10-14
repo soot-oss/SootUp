@@ -46,7 +46,8 @@ public class ConstClassInstruction extends DexLibAbstractInstruction {
     ReferenceInstruction constClass = (ReferenceInstruction) this.instruction;
 
     TypeReference tidi = (TypeReference) (constClass.getReference());
-    ClassConstant classConstant = JavaJimple.newClassConstant(tidi.getType());
+    ClassConstant classConstant =
+        JavaJimple.newClassConstant(tidi.getType(), body.getIdentifierFactory());
     int dest = ((OneRegisterInstruction) instruction).getRegisterA();
 
     JAssignStmt jAssignStmt =

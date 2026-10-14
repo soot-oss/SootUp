@@ -63,7 +63,6 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.language.JavaJimple;
 
@@ -265,7 +264,7 @@ public class MethodNodeFactory {
     AllocNode prevAn =
         pag.makeAllocNode(
             JavaJimple.newNewArrayExpr(
-                type, nmae.getSize(pos), JavaIdentifierFactory.getInstance()),
+                type, nmae.getSize(pos), scene.getView().getIdentifierFactory()),
             type,
             method);
     VarNode prevVn = pag.makeLocalVarNode(prevAn.getNewExpr(), prevAn.getType(), method);
@@ -286,7 +285,7 @@ public class MethodNodeFactory {
       }
       AllocNode an =
           pag.makeAllocNode(
-              JavaJimple.newNewArrayExpr(type, sizeVal, JavaIdentifierFactory.getInstance()),
+              JavaJimple.newNewArrayExpr(type, sizeVal, scene.getView().getIdentifierFactory()),
               type,
               method);
       VarNode vn = pag.makeLocalVarNode(an.getNewExpr(), an.getType(), method);

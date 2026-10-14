@@ -73,7 +73,7 @@ public class DexMethodSource implements BodySource {
     Set<MethodModifier> modifiersSet =
         StreamSupport.stream(modifiers.spliterator(), false).collect(Collectors.toSet());
     try {
-      DexBody dexBody = new DexBody(method, dexEntry, methodSignature.getDeclClassType());
+      DexBody dexBody = new DexBody(method, dexEntry, methodSignature.getDeclClassType(), view);
       Body.BodyBuilder bodyBuilder =
           Body.builder(dexBody.buildControlFlowGraph())
               .setModifiers(modifiersSet)
@@ -98,8 +98,8 @@ public class DexMethodSource implements BodySource {
         this,
         methodSignature,
         methodModifiers,
-        DexUtil.getThrownExceptions(method.getAnnotations()),
-        DexUtil.createAnnotationUsage(method.getAnnotations()),
+        DexUtil.getThrownExceptions(method.getAnnotations(), view.getIdentifierFactory()),
+        DexUtil.createAnnotationUsage(method.getAnnotations(), view.getIdentifierFactory()),
         NoPositionInformation.getInstance());
   }
 

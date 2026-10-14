@@ -14,6 +14,7 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.core.validation.IdentityStmtsValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
@@ -43,7 +44,7 @@ public class IdentityStmtsValidatorTest {
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("");
+            return new JavaIdentifierFactory().getPackageName("");
           }
         };
 

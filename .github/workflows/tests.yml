@@ -38,7 +38,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
-          distribution: 'zulu'
+          distribution: temurin
           java-version: '17'
           cache: 'maven'
 
@@ -78,7 +78,7 @@ jobs:
           jacoco-csv-file: sootup.report/target/jacoco-aggregate/jacoco.csv
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@0b35c9ecc4f0529d0eb674914510c22f85b196b4 # v7.1.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           files: sootup.report/target/jacoco-aggregate/jacoco.xml
           token: ${{ secrets.CODECOV_TOKEN }}

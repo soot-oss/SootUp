@@ -37,7 +37,6 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
@@ -49,12 +48,13 @@ import sootup.jimple.JimpleParser;
  */
 public class JimpleConverterUtil {
 
-  private final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+  @NonNull private final IdentifierFactory identifierFactory;
   private final Map<String, PackageName> imports = new HashMap<>();
   @NonNull private final Path fileUri;
 
-  public JimpleConverterUtil(@NonNull Path file) {
+  public JimpleConverterUtil(@NonNull Path file, @NonNull IdentifierFactory identifierFactory) {
     this.fileUri = file;
+    this.identifierFactory = identifierFactory;
   }
 
   public IdentifierFactory getIdentifierFactory() {

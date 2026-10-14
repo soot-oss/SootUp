@@ -38,7 +38,7 @@ import sootup.java.core.views.JavaView;
 
 public class StmtExceptionAnalyzerTest {
 
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   ClassType clazzType = factory.getClassType("StmtExceptions");
   String location = "src/test/resources/exceptions/";
   final Path path = Paths.get(location + "StmtExceptions.class");

@@ -83,7 +83,7 @@ public class Conch extends AbstractConch {
           SootMethod target = pta.getView().getMethod(iie.getMethodSignature()).get();
           if (v1pts.size() == 1
               && v1pts.toCIPointsToSet().contains(heap)
-              && JavaTypes.isConstructor(target)) {
+              && JavaTypes.isConstructor(pta.getView(), target)) {
             return target;
           }
         }
@@ -218,7 +218,7 @@ public class Conch extends AbstractConch {
 
   private Trilean isCommingFromParams(LocalVarNode from, SootMethod method, AllocNode heap) {
     Set<PagNode> ret = this.pfg.fetchReachableParamsOf(from);
-    if (JavaTypes.isConstructor(method)) {
+    if (JavaTypes.isConstructor(pta.getView(), method)) {
       return handleTransitiveConstructors(method, heap, ret);
     } else {
       return checkResult(ret);
@@ -316,7 +316,7 @@ public class Conch extends AbstractConch {
             ciHeaps.add(heap);
           } else {
             SootMethod mthd = heap.getMethod();
-            if (JavaTypes.isStaticInitializer(mthd)) {
+            if (JavaTypes.isStaticInitializer(pta.getView(), mthd)) {
               ciHeaps.add(heap);
             } else {
               remainToSolve.add(heap);

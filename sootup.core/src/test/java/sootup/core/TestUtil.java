@@ -19,6 +19,7 @@ import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
+import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.*;
 import sootup.core.types.PrimitiveType.IntType;
 
@@ -40,7 +41,7 @@ public class TestUtil {
    * @return a dummy method signature
    */
   public static MethodSignature createDummyMethodSignature() {
-    return new MethodSignature(
+    return SignatureInterner.getMethodSignature(
         TestUtil.createDummyClassType(), TestUtil.createDummyMethodSubSignature());
   }
 
@@ -50,7 +51,8 @@ public class TestUtil {
    * @return a dummy method sub signature
    */
   public static MethodSubSignature createDummyMethodSubSignature() {
-    return new MethodSubSignature("test", Collections.emptyList(), IntType.getInstance());
+    return SignatureInterner.getMethodSubSignature(
+        "test", IntType.getInstance(), Collections.emptyList());
   }
 
   /**
@@ -60,7 +62,7 @@ public class TestUtil {
    * @return a dummy field signature
    */
   public static FieldSignature createDummyFieldSignature() {
-    return new FieldSignature(
+    return SignatureInterner.getFieldSignature(
         TestUtil.createDummyClassType(), TestUtil.createDummyFieldSubSignature());
   }
 
@@ -70,7 +72,7 @@ public class TestUtil {
    * @return a dummy field sub signature
    */
   public static FieldSubSignature createDummyFieldSubSignature() {
-    return new FieldSubSignature("test", IntType.getInstance());
+    return SignatureInterner.getFieldSubSignature("test", IntType.getInstance());
   }
 
   /**
@@ -169,7 +171,7 @@ public class TestUtil {
 
       @Override
       public PackageName getPackageName() {
-        return new PackageName("test");
+        return SignatureInterner.getPackageName("test");
       }
     };
   }

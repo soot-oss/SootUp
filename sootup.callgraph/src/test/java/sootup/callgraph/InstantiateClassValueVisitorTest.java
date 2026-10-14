@@ -57,12 +57,12 @@ import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.views.JavaView;
 
@@ -131,8 +131,11 @@ public class InstantiateClassValueVisitorTest {
     ClassType StringClass = identifierFactory.getClassType("java.lang.String");
     MethodSignature toStringMethod =
         identifierFactory.getMethodSignature(
-            StringClass, new MethodSubSignature("toString", Collections.emptyList(), StringClass));
-    FieldSignature stringField = new FieldSignature(StringClass, "a", StringClass);
+            StringClass,
+            new JavaIdentifierFactory()
+                .getMethodSubSignature("toString", StringClass, Collections.emptyList()));
+    FieldSignature stringField =
+        new JavaIdentifierFactory().getFieldSignature("a", StringClass, StringClass);
     Immediate stringConstant = new StringConstant("String", StringClass);
     listWithAllValues.add(BooleanConstant.getInstance(true));
     listWithAllValues.add(DoubleConstant.getInstance(2.5));
@@ -140,9 +143,9 @@ public class InstantiateClassValueVisitorTest {
     listWithAllValues.add(IntConstant.getInstance(3));
     listWithAllValues.add(LongConstant.getInstance(3L));
     listWithAllValues.add(stringConstant);
-    listWithAllValues.add(JavaJimple.newEnumConstant("3", "EnumTest"));
-    listWithAllValues.add(JavaJimple.newClassConstant("java/lang/String"));
-    listWithAllValues.add(JavaJimple.newMethodHandle(toStringMethod, 5));
+    listWithAllValues.add(JavaJimple.newEnumConstant("3", "EnumTest", identifierFactory));
+    listWithAllValues.add(JavaJimple.newClassConstant("java/lang/String", identifierFactory));
+    listWithAllValues.add(JavaJimple.newMethodHandle(toStringMethod, 5, identifierFactory));
     listWithAllValues.add(new MethodType(toStringMethod.getSubSignature(), StringClass));
     listWithAllValues.add(new JAddExpr(stringConstant, stringConstant));
     listWithAllValues.add(new JAndExpr(stringConstant, stringConstant));
@@ -182,9 +185,11 @@ public class InstantiateClassValueVisitorTest {
         new JDynamicInvokeExpr(
             toStringMethod,
             Collections.singletonList(stringConstant),
-            new MethodSignature(
-                identifierFactory.getClassType(JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
-                toStringMethod.getSubSignature()),
+            new JavaIdentifierFactory()
+                .getMethodSignature(
+                    identifierFactory.getClassType(
+                        JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
+                    toStringMethod.getSubSignature()),
             Collections.singletonList(stringConstant)));
     listWithAllValues.add(new JCastExpr(stringConstant, StringClass));
     listWithAllValues.add(new JInstanceOfExpr(stringConstant, StringClass));

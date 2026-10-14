@@ -39,7 +39,9 @@ public class InstanceOfInstruction extends DexLibAbstractInstruction {
     Instruction22c i = (Instruction22c) instruction;
     int dest = i.getRegisterA();
     int source = i.getRegisterB();
-    Type sootType = DexUtil.toSootType(((TypeReference) i.getReference()).getType(), 0);
+    Type sootType =
+        DexUtil.toSootType(
+            ((TypeReference) i.getReference()).getType(), 0, body.getIdentifierFactory());
 
     JInstanceOfExpr jInstanceOfExpr =
         Jimple.newInstanceOfExpr(body.getRegisterLocal(source), sootType);

@@ -16,10 +16,9 @@ import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.VoidType;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.types.JavaClassType;
 
 public abstract class GraphTestSuiteBase {
 
@@ -46,12 +45,13 @@ public abstract class GraphTestSuiteBase {
 
   protected SootMethod createSootMethod(
       MutableControlFlowGraph controlFlowGraph, String methodName) {
+    JavaIdentifierFactory identifierFactory = new JavaIdentifierFactory();
     MethodSignature methodSignature =
-        new MethodSignature(
-            new JavaClassType("TestClass", new PackageName("pkg")),
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("TestClass", "pkg"),
             methodName,
-            Collections.emptyList(),
-            VoidType.getInstance());
+            VoidType.getInstance(),
+            Collections.emptyList());
 
     return new JavaSootMethod(
         new OverridingBodySource(

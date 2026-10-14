@@ -52,7 +52,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
    * @param parameterTypes The signatures of the method parameters.
    * @param type The return type signature.
    */
-  public MethodSubSignature(
+  MethodSubSignature(
       @NonNull String name, @NonNull Iterable<? extends Type> parameterTypes, @NonNull Type type) {
     super(name, type);
 
@@ -105,7 +105,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
           () ->
               getType()
                   + " "
-                  + getName()
+                  + JimpleUtils.quotedNameOf(getName())
                   + "("
                   + getParameterTypes().stream()
                       .map(Object::toString)
@@ -122,7 +122,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
   public void toString(StmtPrinter printer) {
     printer.typeSignature(getType());
     printer.literal(" ");
-    printer.literal(JimpleUtils.escape(getName()));
+    printer.literal(JimpleUtils.quotedNameOf(getName()));
     printer.literal("(");
 
     Iterator<Type> it = getParameterTypes().iterator();

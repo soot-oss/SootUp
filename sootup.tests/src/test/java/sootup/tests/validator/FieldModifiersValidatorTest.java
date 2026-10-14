@@ -17,7 +17,6 @@ import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.validation.FieldModifiersValidator;
@@ -26,7 +25,6 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public class FieldModifiersValidatorTest {
@@ -68,10 +66,11 @@ public class FieldModifiersValidatorTest {
     assertEquals(1, body.getLocalCount());
 
     FieldSignature fieldSignature =
-        new FieldSignature(
-            new JavaClassType("FieldModifiersValidator", PackageName.DEFAULT_PACKAGE),
-            "i",
-            PrimitiveType.IntType.getInstance());
+        view.getIdentifierFactory()
+            .getFieldSignature(
+                "i",
+                view.getIdentifierFactory().getClassType("FieldModifiersValidator"),
+                PrimitiveType.IntType.getInstance());
     JavaSootField dummyField =
         JavaSootField.JavaSootFieldBuilder.builder()
             .withSignature(fieldSignature)

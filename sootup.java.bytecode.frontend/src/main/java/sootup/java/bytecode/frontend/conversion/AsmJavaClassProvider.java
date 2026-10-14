@@ -35,6 +35,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.PathbasedClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -55,17 +56,20 @@ public class AsmJavaClassProvider implements PathbasedClassProvider {
     this.view = view;
   }
 
-  public static SootClassSource createClassSource(
+  public SootClassSource createClassSource(
       @NonNull final AnalysisInputLocation analysisInputLocation,
       @NonNull final Path sourcePath,
       @NonNull final ClassType classType,
       @NonNull final ClassNode classNode) {
+    final IdentifierFactory identifierFactory = view.getIdentifierFactory();
     if ((classNode.access & Opcodes.ACC_ANNOTATION) == Opcodes.ACC_ANNOTATION) {
-      return new AsmAnnotationClassSource(analysisInputLocation, sourcePath, classType, classNode);
+      return new AsmAnnotationClassSource(
+          analysisInputLocation, sourcePath, classType, classNode, identifierFactory);
     }
 
     AsmClassSource asmClassSource =
-        new AsmClassSource(analysisInputLocation, sourcePath, classType, classNode);
+        new AsmClassSource(
+            analysisInputLocation, sourcePath, classType, classNode, identifierFactory);
 
     // copy and load the complete class at once into memory so the newly created asmClassSource can
     // release the memory and structures from the asm library

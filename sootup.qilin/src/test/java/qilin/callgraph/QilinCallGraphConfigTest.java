@@ -18,16 +18,22 @@
 
 package qilin.callgraph;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import qilin.core.config.ContextSensitivity;
 import qilin.test.util.QilinFrameworkTests;
 import qilin.util.ViewFactory;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphConfig;
+import sootup.callgraph.reflection.ReflectionModel;
+import sootup.callgraph.reflection.TamiflexReflectionModel;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -67,5 +73,46 @@ public class QilinCallGraphConfigTest extends QilinFrameworkTests {
                 .entryPoints(Collections.emptyList())
                 .into(QilinCallGraphConfig::from)
                 .build());
+  }
+
+  /** Reflection model set on the common stage reaches qilin's PAG. */
+  @Test
+  public void testCommonReflectionModelResolvesMethodInvoke() {
+    View view = ViewFactory.createView(appPath, null);
+    String cls = "qilin.microben.core.reflog.MethodInvoke";
+    ClassType mainClassType = view.getIdentifierFactory().getClassType(cls);
+    MethodSignature main =
+        view.getIdentifierFactory()
+            .getMethodSignature(cls, "main", "void", List.of("java.lang.String[]"));
+    MethodSignature target =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                cls + "$MethodInvokeInstance",
+                "id",
+                "java.lang.Object",
+                List.of("java.lang.Object"));
+
+    CallGraph without = qilinCallGraph(view, mainClassType, ReflectionModel.none());
+    assertFalse(without.callTargetsFrom(main).contains(target));
+
+    CallGraph with =
+        qilinCallGraph(
+            view,
+            mainClassType,
+            new TamiflexReflectionModel(view, refLogPath + File.separator + "Reflection.log"));
+    assertTrue(with.callTargetsFrom(main).contains(target));
+  }
+
+  private CallGraph qilinCallGraph(View view, ClassType mainClass, ReflectionModel model) {
+    return CallGraphConfig.builder()
+        .view(view)
+        .reflectionModel(model)
+        .into(QilinCallGraphConfig::from)
+        .mainClass(mainClass)
+        // no log path: reflection comes only from the common stage
+        .pointerAnalysisConfig(
+            configBuilder(ContextSensitivity.insensitive()).reflectionLogPath(null))
+        .build()
+        .computeCallGraph();
   }
 }

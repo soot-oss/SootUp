@@ -33,6 +33,7 @@ import qilin.core.config.PointerAnalysisConfig;
 import qilin.test.util.AssertionsParser;
 import qilin.test.util.IAssertion;
 import qilin.util.ViewFactory;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -59,10 +60,16 @@ public class InvokeDynamicTests {
   }
 
   private PTA run(String mainClass, ContextSensitivity contextSensitivity) {
+    return run(mainClass, contextSensitivity, DynamicInvokeResolver.bootstrapMethodHandles());
+  }
+
+  private PTA run(
+      String mainClass, ContextSensitivity contextSensitivity, DynamicInvokeResolver resolver) {
     PointerAnalysisConfig config =
         PointerAnalysisConfig.builder()
             .contextSensitivity(contextSensitivity)
             .singleEntry(true)
+            .dynamicInvokeResolver(resolver)
             .build();
     View view = ViewFactory.createView(appPath, null);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
@@ -90,6 +97,36 @@ public class InvokeDynamicTests {
   public void testStaticMethodRef() {
     checkAssertions(
         run("qilin.microben.core.invokedynamic.StaticMethodRef", ContextSensitivity.insensitive()));
+  }
+
+  @Test
+  public void testCapturingLambda() {
+    checkAssertions(
+        run("qilin.microben.core.invokedynamic.CapturingLambda", ContextSensitivity.insensitive()));
+  }
+
+  @Test
+  public void testInstanceLambda() {
+    checkAssertions(
+        run("qilin.microben.core.invokedynamic.InstanceLambda", ContextSensitivity.insensitive()));
+  }
+
+  @Test
+  public void testBoundMethodRef() {
+    checkAssertions(
+        run("qilin.microben.core.invokedynamic.BoundMethodRef", ContextSensitivity.insensitive()));
+  }
+
+  @Test
+  public void testNoneResolverLeavesLambdaBodiesUnreachable() {
+    for (String cls : new String[] {"CapturingLambda", "InstanceLambda"}) {
+      PTA pta =
+          run(
+              "qilin.microben.core.invokedynamic." + cls,
+              ContextSensitivity.insensitive(),
+              DynamicInvokeResolver.none());
+      assertTrue(AssertionsParser.retrieveQueryInfo(pta).isEmpty(), cls);
+    }
   }
 
   // Object-sensitive analysis over the full JDK runtime image is memory-hungry enough to OOM the

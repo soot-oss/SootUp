@@ -30,7 +30,7 @@ import sootup.java.core.types.JavaClassType;
  */
 public class ReplaceUseExprVisitorTest {
 
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  JavaIdentifierFactory factory = new JavaIdentifierFactory();
   JavaClassType intType = factory.getClassType("int");
   JavaClassType testClass = factory.getClassType("TestClass");
   JavaClassType voidType = factory.getClassType("void");
@@ -61,7 +61,8 @@ public class ReplaceUseExprVisitorTest {
       new MutableBasicBlockImpl(Arrays.asList(stmt3, stmt3), Collections.emptyMap());
 
   MethodSignature methodeWithOutParas =
-      new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
+      new JavaIdentifierFactory()
+          .getMethodSignature(testClass, "invokeExpr", voidType, Collections.emptyList());
 
   /** Test use replacing in case BinopExpr. JaddExpr is as an example. */
   @Test
@@ -111,7 +112,9 @@ public class ReplaceUseExprVisitorTest {
     parameters.add(intType);
     parameters.add(intType);
 
-    MethodSignature method = new MethodSignature(testClass, "invokeExpr", parameters, voidType);
+    MethodSignature method =
+        new JavaIdentifierFactory()
+            .getMethodSignature(testClass, "invokeExpr", voidType, parameters);
 
     ReplaceUseExprVisitor visitor = new ReplaceUseExprVisitor();
     visitor.init(arg1, newArg);
@@ -155,7 +158,9 @@ public class ReplaceUseExprVisitorTest {
     parameters.add(intType);
     parameters.add(intType);
 
-    MethodSignature method = new MethodSignature(testClass, "invokeExpr", parameters, voidType);
+    MethodSignature method =
+        new JavaIdentifierFactory()
+            .getMethodSignature(testClass, "invokeExpr", voidType, parameters);
 
     ReplaceUseExprVisitor visitor = new ReplaceUseExprVisitor();
     visitor.init(arg1, newArg);
