@@ -1,6 +1,7 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.apk.backend.*;
+import sootup.apk.frontend.ApkAnalysisInputLocation;
+import sootup.apk.frontend.DexBodyInterceptors;
+import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.MutableBasicBlockImpl;
 import sootup.core.jimple.Jimple;
@@ -24,9 +28,9 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.*;
-import sootup.java.core.JavaIdentifierFactory;
+import sootup.core.views.View;
+import sootup.java.core.views.JavaView;
 
 public class ExprTest {
 
@@ -37,16 +41,23 @@ public class ExprTest {
   static DexExprVisitor dexExprVisitor;
   static RegisterAllocator registerAllocator;
   static Register targetRegister;
+  static View view;
 
   @BeforeAll
   static void initAll() {
     methodImplementationBuilder = new MethodImplementationBuilder(2);
     labelAssigner = new LabelAssigner(methodImplementationBuilder);
+    view =
+        new JavaView(
+            new ApkAnalysisInputLocation(
+                Paths.get("src/test/resources/FlowSensitivity1.apk"),
+                new AndroidVersionInfo(null, ""),
+                DexBodyInterceptors.Default.bodyInterceptors()));
   }
 
   @BeforeEach
   void init() {
-    dexMethodBuilder = new DexMethodBuilder(null);
+    dexMethodBuilder = new DexMethodBuilder(view);
     DexConstantVisitor dexConstantVisitor = new DexConstantVisitor(dexMethodBuilder);
     registerAllocator = new RegisterAllocator(dexConstantVisitor);
     dexMethodBuilder.setRegisterAllocator(registerAllocator);
@@ -253,7 +264,7 @@ public class ExprTest {
 
   @Test
   public void testInstanceOf() {
-    ClassType classType = JavaIdentifierFactory.getInstance().getClassType("java.lang.String");
+    ClassType classType = view.getIdentifierFactory().getClassType("java.lang.String");
 
     Local local = Jimple.newLocal("x", classType);
 
@@ -279,7 +290,7 @@ public class ExprTest {
 
   @Test
   public void testNewArray() {
-    IdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
+    IdentifierFactory idFactory = view.getIdentifierFactory();
     JNewArrayExpr newArrayExpr =
         Jimple.newNewArrayExpr(PrimitiveType.getInt(), IntConstant.getInstance(10), idFactory);
 
@@ -304,7 +315,7 @@ public class ExprTest {
 
   @Test
   public void testNewArray2() {
-    IdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
+    IdentifierFactory idFactory = view.getIdentifierFactory();
     Type type1 = PrimitiveType.getInt();
     Type type2 = ArrayType.createArrayType(type1, 2);
     JNewArrayExpr newArrayExpr =
@@ -409,7 +420,7 @@ public class ExprTest {
 
   @Test
   public void testNewInstance() {
-    ClassType type = JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
+    ClassType type = view.getIdentifierFactory().getClassType("java.lang.Object");
     JNewExpr newExpr = Jimple.newNewExpr(type);
 
     targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
@@ -432,11 +443,10 @@ public class ExprTest {
 
   @Test
   public void testInvokeStatic() {
-    ClassType type = JavaIdentifierFactory.getInstance().getClassType("com.example.MyClass");
+    ClassType type = view.getIdentifierFactory().getClassType("com.example.MyClass");
     MethodSignature methodSignature =
-        new MethodSignature(
-            type, new MethodSubSignature("myStaticMethod", List.of(), VoidType.getInstance()));
-
+        view.getIdentifierFactory()
+            .getMethodSignature(type, "myStaticMethod", VoidType.getInstance(), List.of());
     JStaticInvokeExpr invokeExpr = Jimple.newStaticInvokeExpr(methodSignature, List.of());
 
     targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
@@ -461,16 +471,16 @@ public class ExprTest {
 
   @Test
   public void testInvokeStatic2() {
-    ClassType type = JavaIdentifierFactory.getInstance().getClassType("com.example.MyClass");
+    ClassType type = view.getIdentifierFactory().getClassType("com.example.MyClass");
     MethodSignature methodSignature =
-        new MethodSignature(
-            type,
-            new MethodSubSignature(
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                type,
                 "myStaticMethod",
+                PrimitiveType.getInt(),
                 List.of(
                     PrimitiveType.getInt(),
-                    JavaIdentifierFactory.getInstance().getClassType("java.lang.String")),
-                PrimitiveType.getInt()));
+                    view.getIdentifierFactory().getClassType("java.lang.String")));
 
     JStaticInvokeExpr invokeExpr =
         Jimple.newStaticInvokeExpr(
@@ -478,8 +488,7 @@ public class ExprTest {
             List.of(
                 IntConstant.getInstance(42),
                 new StringConstant(
-                    "hello",
-                    JavaIdentifierFactory.getInstance().getClassType("java.lang.String"))));
+                    "hello", view.getIdentifierFactory().getClassType("java.lang.String"))));
 
     targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
     dexExprVisitor.setTargetRegister(targetRegister);
@@ -503,20 +512,20 @@ public class ExprTest {
 
   @Test
   public void testInvokeStatic3() {
-    ClassType type = JavaIdentifierFactory.getInstance().getClassType("com.example.MyClass");
+    ClassType type = view.getIdentifierFactory().getClassType("com.example.MyClass");
     MethodSignature methodSignature =
-        new MethodSignature(
-            type,
-            new MethodSubSignature(
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                type,
                 "myStaticMethod",
+                PrimitiveType.getInt(),
                 List.of(
                     PrimitiveType.getInt(),
                     PrimitiveType.getInt(),
                     PrimitiveType.getInt(),
                     PrimitiveType.getInt(),
                     PrimitiveType.getInt(),
-                    PrimitiveType.getInt()),
-                PrimitiveType.getInt()));
+                    PrimitiveType.getInt()));
 
     JStaticInvokeExpr invokeExpr =
         Jimple.newStaticInvokeExpr(

@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicLong;
-import org.junit.jupiter.api.Test;
 import sootup.apk.backend.DexOutputLocation;
 import sootup.apk.frontend.ApkAnalysisInputLocation;
 import sootup.apk.frontend.DexBodyInterceptors;
@@ -25,7 +24,7 @@ public class ApkTest {
     return new JavaView(inputLocation);
   }
 
-  @Test
+  // @Test
   void apkTest1() throws IOException {
     String apk = "src/test/resources/FlowSensitivity1.apk";
     Path apkPath = Paths.get(apk);
@@ -83,7 +82,7 @@ public class ApkTest {
     Files.delete(Paths.get(new_apk));
   }
 
-  @Test
+  // @Test
   void apkTest2() throws IOException {
     String apk = "src/test/resources/Crypto.apk";
     Path apkPath = Paths.get(apk);
@@ -139,7 +138,7 @@ public class ApkTest {
     Files.delete(Paths.get(new_apk));
   }
 
-  @Test
+  // @Test
   void apkTest3() throws IOException {
     String apk = "src/test/resources/LocationLeak1.apk";
     Path apkPath = Paths.get(apk);

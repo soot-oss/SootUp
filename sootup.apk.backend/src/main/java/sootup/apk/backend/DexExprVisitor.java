@@ -402,7 +402,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
               + op2Register.getType());
     }
 
-
     PrimitiveType calcType =
         DexUtil.getArithmeticType(
             (PrimitiveType) op1Register.getType(), (PrimitiveType) op2Register.getType());

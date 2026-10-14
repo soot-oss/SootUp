@@ -39,7 +39,7 @@ import sootup.java.core.JavaSootMethod;
 public class DexMethodBuilder {
 
   private static final Logger log = LoggerFactory.getLogger(DexMethodBuilder.class);
-  private final View view;
+  private View view;
 
   private LinkedHashMap<BasicBlock<?>, List<AbstractInstruction>> instructions;
   private HashMap<AbstractInstruction, Stmt> instructionMap;
@@ -439,7 +439,7 @@ public class DexMethodBuilder {
       }
 
       // Adjust the registers to the required instruction formats
-      RegisterAssigner registerAssigner = new RegisterAssigner(registerAllocator);
+      RegisterAssigner registerAssigner = new RegisterAssigner(registerAllocator, this);
       registerAssigner.prepareRegisters(instructions.values(), instructionMap);
 
       for (Map.Entry<BasicBlock<?>, List<AbstractInstruction>> entry : instructions.entrySet()) {
@@ -895,5 +895,9 @@ public class DexMethodBuilder {
 
   public void setCurrentBlock(BasicBlock<?> block) {
     this.currentBlock = block;
+  }
+
+  protected View getView() {
+    return view;
   }
 }

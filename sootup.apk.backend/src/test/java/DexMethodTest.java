@@ -2,6 +2,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 import org.jf.dexlib2.Format;
@@ -13,6 +14,10 @@ import org.jf.dexlib2.immutable.instruction.ImmutableInstruction;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import sootup.apk.backend.DexMethodBuilder;
+import sootup.apk.frontend.ApkAnalysisInputLocation;
+import sootup.apk.frontend.DexBodyInterceptors;
+import sootup.apk.frontend.main.AndroidVersionInfo;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.graph.*;
@@ -26,13 +31,21 @@ import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.PrimitiveType;
+import sootup.core.views.View;
 import sootup.java.core.*;
+import sootup.java.core.views.JavaView;
 
 public class DexMethodTest {
 
   @Test
   public void testMethodCreation() {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+    View view =
+        new JavaView(
+            new ApkAnalysisInputLocation(
+                Paths.get("src/test/resources/FlowSensitivity1.apk"),
+                new AndroidVersionInfo(null, ""),
+                DexBodyInterceptors.Default.bodyInterceptors()));
+    IdentifierFactory factory = view.getIdentifierFactory();
 
     MethodSignature methodSig =
         factory.getMethodSignature("com.example.Example", "testMethod", "int", List.of());
@@ -75,7 +88,7 @@ public class DexMethodTest {
             List.of(),
             NoPositionInformation.getInstance());
 
-    DexMethodBuilder dexMethodBuilder = new DexMethodBuilder(null);
+    DexMethodBuilder dexMethodBuilder = new DexMethodBuilder(view);
     ImmutableMethod dexMethod = dexMethodBuilder.createMethod(method);
 
     assertEquals("testMethod", dexMethod.getName());
@@ -96,7 +109,13 @@ public class DexMethodTest {
 
   @Test
   public void testIf() {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
+    View view =
+        new JavaView(
+            new ApkAnalysisInputLocation(
+                Paths.get("src/test/resources/FlowSensitivity1.apk"),
+                new AndroidVersionInfo(null, ""),
+                DexBodyInterceptors.Default.bodyInterceptors()));
+    IdentifierFactory factory = view.getIdentifierFactory();
 
     MethodSignature methodSig =
         factory.getMethodSignature("com.example.Example", "testMethod", "int", List.of());
@@ -157,7 +176,7 @@ public class DexMethodTest {
             List.of(),
             NoPositionInformation.getInstance());
 
-    DexMethodBuilder dexMethodBuilder = new DexMethodBuilder(null);
+    DexMethodBuilder dexMethodBuilder = new DexMethodBuilder(view);
     ImmutableMethod dexMethod = dexMethodBuilder.createMethod(method);
 
     assertEquals("testMethod", dexMethod.getName());

@@ -1,5 +1,6 @@
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import org.jf.dexlib2.Opcode;
@@ -10,6 +11,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.apk.backend.*;
+import sootup.apk.frontend.ApkAnalysisInputLocation;
+import sootup.apk.frontend.DexBodyInterceptors;
+import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.graph.MutableBasicBlockImpl;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -26,11 +30,11 @@ import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
-import sootup.java.core.JavaIdentifierFactory;
+import sootup.core.views.View;
+import sootup.java.core.views.JavaView;
 
 public class StmtTest {
 
@@ -38,16 +42,23 @@ public class StmtTest {
   static DexMethodBuilder dexMethodBuilder;
   static MethodImplementationBuilder methodImplementationBuilder;
   static LabelAssigner labelAssigner;
+  static View view;
 
   @BeforeAll
   static void initAll() {
     methodImplementationBuilder = new MethodImplementationBuilder(2);
     labelAssigner = new LabelAssigner(methodImplementationBuilder);
+    view =
+        new JavaView(
+            new ApkAnalysisInputLocation(
+                Paths.get("src/test/resources/FlowSensitivity1.apk"),
+                new AndroidVersionInfo(null, ""),
+                DexBodyInterceptors.Default.bodyInterceptors()));
   }
 
   @BeforeEach
   void init() {
-    dexMethodBuilder = new DexMethodBuilder(null);
+    dexMethodBuilder = new DexMethodBuilder(view);
     DexConstantVisitor dexConstantVisitor = new DexConstantVisitor(dexMethodBuilder);
     RegisterAllocator registerAllocator = new RegisterAllocator(dexConstantVisitor);
     dexMethodBuilder.setRegisterAllocator(registerAllocator);
@@ -203,16 +214,17 @@ public class StmtTest {
 
   @Test
   public void testAssignInvokeVirtual() {
-    ClassType type = JavaIdentifierFactory.getInstance().getClassType("com.example.MyClass");
+
+    ClassType type = view.getIdentifierFactory().getClassType("com.example.MyClass");
     MethodSignature methodSignature =
-        new MethodSignature(
-            type,
-            new MethodSubSignature(
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                type,
                 "myVirtualMethod",
+                PrimitiveType.getInt(),
                 List.of(
                     PrimitiveType.getInt(),
-                    JavaIdentifierFactory.getInstance().getClassType("java.lang.String")),
-                PrimitiveType.getInt()));
+                    view.getIdentifierFactory().getClassType("java.lang.String")));
 
     Local base = Jimple.newLocal("obj", type);
     JNewExpr newExpr = Jimple.newNewExpr(type);
@@ -227,8 +239,7 @@ public class StmtTest {
             List.of(
                 IntConstant.getInstance(42),
                 new StringConstant(
-                    "hello",
-                    JavaIdentifierFactory.getInstance().getClassType("java.lang.String"))));
+                    "hello", view.getIdentifierFactory().getClassType("java.lang.String"))));
 
     Local target = Jimple.newLocal("target", PrimitiveType.getInt());
     JAssignStmt jAssignStmt2 =
@@ -252,16 +263,16 @@ public class StmtTest {
 
   @Test
   public void testInvokeStmt() {
-    ClassType type = JavaIdentifierFactory.getInstance().getClassType("com.example.MyClass");
+    ClassType type = view.getIdentifierFactory().getClassType("com.example.MyClass");
     MethodSignature methodSignature =
-        new MethodSignature(
-            type,
-            new MethodSubSignature(
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                type,
                 "myVirtualMethod",
+                PrimitiveType.getInt(),
                 List.of(
                     PrimitiveType.getInt(),
-                    JavaIdentifierFactory.getInstance().getClassType("java.lang.String")),
-                PrimitiveType.getInt()));
+                    view.getIdentifierFactory().getClassType("java.lang.String")));
     Local base = Jimple.newLocal("obj", type);
     JVirtualInvokeExpr invokeExpr =
         Jimple.newVirtualInvokeExpr(
@@ -270,8 +281,7 @@ public class StmtTest {
             List.of(
                 IntConstant.getInstance(42),
                 new StringConstant(
-                    "hello",
-                    JavaIdentifierFactory.getInstance().getClassType("java.lang.String"))));
+                    "hello", view.getIdentifierFactory().getClassType("java.lang.String"))));
 
     JInvokeStmt jInvokeStmt = new JInvokeStmt(invokeExpr, StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -349,8 +359,7 @@ public class StmtTest {
   @Test
   public void testThrowStmt() {
     Local local =
-        new Local(
-            "r0", JavaIdentifierFactory.getInstance().getClassType("java.lang.RuntimeException"));
+        new Local("r0", view.getIdentifierFactory().getClassType("java.lang.RuntimeException"));
     JThrowStmt throwStmt = new JThrowStmt(local, StmtPositionInfo.getNoStmtPositionInfo());
 
     throwStmt.accept(dexStmtVisitor);
@@ -369,24 +378,23 @@ public class StmtTest {
 
   @Test
   public void testMonitor() {
-    Local lock =
-        new Local("r0", JavaIdentifierFactory.getInstance().getClassType("java.lang.Object"));
+    Local lock = new Local("r0", view.getIdentifierFactory().getClassType("java.lang.Object"));
 
     JEnterMonitorStmt jEnterMonitorStmt =
         new JEnterMonitorStmt(lock, StmtPositionInfo.getNoStmtPositionInfo());
 
     jEnterMonitorStmt.accept(dexStmtVisitor);
 
-    ClassType type = JavaIdentifierFactory.getInstance().getClassType("com.example.MyClass");
+    ClassType type = view.getIdentifierFactory().getClassType("com.example.MyClass");
     MethodSignature methodSignature =
-        new MethodSignature(
-            type,
-            new MethodSubSignature(
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                type,
                 "myVirtualMethod",
+                PrimitiveType.getInt(),
                 List.of(
                     PrimitiveType.getInt(),
-                    JavaIdentifierFactory.getInstance().getClassType("java.lang.String")),
-                PrimitiveType.getInt()));
+                    view.getIdentifierFactory().getClassType("java.lang.String")));
     Local base = Jimple.newLocal("obj", type);
     JVirtualInvokeExpr invokeExpr =
         Jimple.newVirtualInvokeExpr(
@@ -395,8 +403,7 @@ public class StmtTest {
             List.of(
                 IntConstant.getInstance(42),
                 new StringConstant(
-                    "hello",
-                    JavaIdentifierFactory.getInstance().getClassType("java.lang.String"))));
+                    "hello", view.getIdentifierFactory().getClassType("java.lang.String"))));
 
     JInvokeStmt jInvokeStmt = new JInvokeStmt(invokeExpr, StmtPositionInfo.getNoStmtPositionInfo());
 

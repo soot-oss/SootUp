@@ -67,9 +67,7 @@ public class DexOutputLocation {
     view.getClasses()
         .forEach(
             c -> {
-              if (!c.getName().startsWith("kotlin.internal.PlatformImplementationsKt")) {
-                dexClassBuilder.createClass(c);
-              }
+              dexClassBuilder.createClass(c);
             });
 
     String newApkName = apkFile == null ? "out.apk" : apkFile.getName();
@@ -96,7 +94,7 @@ public class DexOutputLocation {
           copyExistingFiles(zipOutputStream);
         }
 
-        addExistingClasses("kotlin.internal.PlatformImplementationsKt");
+        // addExistingClasses("kotlin.internal.PlatformImplementationsKt");
         writeDexFiles(zipOutputStream);
         log.info(
             "APK successfully created. The .apk still needs to be aligned with zipalign and signed with jarsigner");

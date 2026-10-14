@@ -109,7 +109,9 @@ public class DexLocalSplitterTest {
     // the default pipeline splits locals first; run that split with the flow under test instead
     interceptors.replaceAll(
         interceptor ->
-            interceptor instanceof LocalSplitter ? new LocalSplitter(exceptionalFlow) : interceptor);
+            interceptor instanceof LocalSplitter
+                ? new LocalSplitter(exceptionalFlow)
+                : interceptor);
     JavaView view =
         new JavaView(
             List.of(

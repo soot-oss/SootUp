@@ -1,5 +1,6 @@
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import org.jf.dexlib2.MethodHandleType;
@@ -14,7 +15,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.apk.backend.*;
-import sootup.core.IdentifierFactory;
+import sootup.apk.frontend.ApkAnalysisInputLocation;
+import sootup.apk.frontend.DexBodyInterceptors;
+import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.graph.MutableBasicBlockImpl;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.signatures.MethodSignature;
@@ -22,7 +25,8 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
-import sootup.java.core.JavaIdentifierFactory;
+import sootup.core.views.View;
+import sootup.java.core.views.JavaView;
 
 public class ConstantTest {
   static DexConstantVisitor dexConstantVisitor;
@@ -31,16 +35,23 @@ public class ConstantTest {
   static DexMethodBuilder dexMethodBuilder;
   static MethodImplementationBuilder methodImplementationBuilder;
   static LabelAssigner labelAssigner;
+  static View view;
 
   @BeforeAll
   static void initAll() {
     methodImplementationBuilder = new MethodImplementationBuilder(2);
     labelAssigner = new LabelAssigner(methodImplementationBuilder);
+    view =
+        new JavaView(
+            new ApkAnalysisInputLocation(
+                Paths.get("src/test/resources/FlowSensitivity1.apk"),
+                new AndroidVersionInfo(null, ""),
+                DexBodyInterceptors.Default.bodyInterceptors()));
   }
 
   @BeforeEach
   void init() {
-    dexMethodBuilder = new DexMethodBuilder(null);
+    dexMethodBuilder = new DexMethodBuilder(view);
     dexConstantVisitor = new DexConstantVisitor(dexMethodBuilder);
     registerAllocator = new RegisterAllocator(dexConstantVisitor);
     dexMethodBuilder.setRegisterAllocator(registerAllocator);
@@ -237,8 +248,7 @@ public class ConstantTest {
 
   @Test
   public void testString() {
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    ClassType stringClass = identifierFactory.getClassType("java.lang.String");
+    ClassType stringClass = view.getIdentifierFactory().getClassType("java.lang.String");
     Register targetRegister = registerAllocator.getRegisterForType(stringClass);
     dexConstantVisitor.setTargetRegister(targetRegister);
     Constant stringConstant = new StringConstant("test", stringClass);
@@ -262,9 +272,8 @@ public class ConstantTest {
   public void testEnum() {
     Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
     dexConstantVisitor.setTargetRegister(targetRegister);
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    ClassType myEnumType = identifierFactory.getClassType("com.example.MyEnum");
-    EnumConstant enumConstant = new EnumConstant("VALUE", myEnumType);
+    ClassType myEnumType = view.getIdentifierFactory().getClassType("com.example.MyEnum");
+    EnumConstant enumConstant = new EnumConstant("VALUE", myEnumType, view.getIdentifierFactory());
     enumConstant.accept(dexConstantVisitor);
 
     List<BuilderInstruction> instructions =
@@ -289,8 +298,7 @@ public class ConstantTest {
 
   @Test
   public void testClassConstant() {
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    ClassType classType = identifierFactory.getClassType("java.lang.String");
+    ClassType classType = view.getIdentifierFactory().getClassType("java.lang.String");
     Register targetRegister = registerAllocator.getRegisterForType(classType);
     dexConstantVisitor.setTargetRegister(targetRegister);
     Constant classConstant = new ClassConstant("java/lang/String", classType);
@@ -319,14 +327,15 @@ public class ConstantTest {
   public void testMethodType() {
     Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
     dexConstantVisitor.setTargetRegister(targetRegister);
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     MethodSubSignature subSig =
-        identifierFactory.getMethodSubSignature(
-            "foo",
-            identifierFactory.getType("java.lang.String"),
-            List.of(identifierFactory.getType("int")));
+        view.getIdentifierFactory()
+            .getMethodSubSignature(
+                "foo",
+                view.getIdentifierFactory().getType("java.lang.String"),
+                List.of(view.getIdentifierFactory().getType("int")));
 
-    ClassType methodTypeClass = identifierFactory.getClassType("java.lang.invoke.MethodType");
+    ClassType methodTypeClass =
+        view.getIdentifierFactory().getClassType("java.lang.invoke.MethodType");
     Constant methodTypeConstant = new MethodType(subSig, methodTypeClass);
 
     methodTypeConstant.accept(dexConstantVisitor);
@@ -354,18 +363,18 @@ public class ConstantTest {
   public void testMethodHandle() {
     Register targetRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
     dexConstantVisitor.setTargetRegister(targetRegister);
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
-    ClassType owner = identifierFactory.getClassType("com.example.Foo");
+    ClassType owner = view.getIdentifierFactory().getClassType("com.example.Foo");
 
     MethodSignature methodSig =
-        identifierFactory.getMethodSignature(owner, "bar", "void", List.of("java.lang.String"));
+        view.getIdentifierFactory()
+            .getMethodSignature(owner, "bar", "void", List.of("java.lang.String"));
 
     MethodHandle methodHandleConstant =
         new MethodHandle(
             methodSig,
             MethodHandle.Kind.REF_INVOKE_STATIC,
-            identifierFactory.getClassType("java.lang.invoke.MethodHandle"));
+            view.getIdentifierFactory().getClassType("java.lang.invoke.MethodHandle"));
 
     methodHandleConstant.accept(dexConstantVisitor);
 

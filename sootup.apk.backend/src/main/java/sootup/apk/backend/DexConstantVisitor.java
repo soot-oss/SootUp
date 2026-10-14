@@ -16,7 +16,6 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.AbstractConstantVisitor;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.*;
-import sootup.java.core.JavaIdentifierFactory;
 
 public class DexConstantVisitor extends AbstractConstantVisitor {
 
@@ -105,7 +104,11 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
 
   @Override
   public void caseStringConstant(@NonNull StringConstant constant) {
-    fixObjectType(JavaIdentifierFactory.getInstance().getClassType(Constants.JIMPLE_STRING_TYPE));
+    fixObjectType(
+        dexMethodBuilder
+            .getView()
+            .getIdentifierFactory()
+            .getClassType(Constants.JIMPLE_STRING_TYPE));
     dexMethodBuilder.addInstruction(
         new Instruction21c(
             Opcode.CONST_STRING, targetRegister, new ImmutableStringReference(constant.getValue())),
@@ -125,7 +128,8 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
 
   @Override
   public void caseClassConstant(@NonNull ClassConstant constant) {
-    fixObjectType(JavaIdentifierFactory.getInstance().getClassType(constant.getValue()));
+    fixObjectType(
+        dexMethodBuilder.getView().getIdentifierFactory().getClassType(constant.getValue()));
     TypeReference referencedClass =
         new ImmutableTypeReference(DexUtil.toDexClassName(constant.getValue()));
     dexMethodBuilder.addInstruction(

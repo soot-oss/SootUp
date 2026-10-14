@@ -115,7 +115,8 @@ public class DexUtil {
                 ? AnnotationUsage.AnnotationUsageVisibility.RUNTIME
                 : AnnotationUsage.AnnotationUsageVisibility.BUILD;
         usages.add(
-            createAnnotationUsage(annotation.getType(), annotation.getElements(), visibility, identifierFactory));
+            createAnnotationUsage(
+                annotation.getType(), annotation.getElements(), visibility, identifierFactory));
       }
     }
     return usages;
@@ -147,7 +148,7 @@ public class DexUtil {
   private static AnnotationUsage createAnnotationUsage(
       String type,
       Set<? extends AnnotationElement> elements,
-      AnnotationUsage.AnnotationUsageVisibility visibility) {
+      AnnotationUsage.AnnotationUsageVisibility visibility,
       @NonNull IdentifierFactory identifierFactory) {
     Map<String, Object> values = new HashMap<>();
     for (AnnotationElement element : elements) {
@@ -155,12 +156,11 @@ public class DexUtil {
     }
 
     return new AnnotationUsage(
-        identifierFactory.getClassType(toQualifiedName(type)),
-        values,
-        visibility);
+        identifierFactory.getClassType(toQualifiedName(type)), values, visibility);
   }
 
-  public static Object convertAnnotationValue(EncodedValue value, @NonNull IdentifierFactory identifierFactory) {
+  public static Object convertAnnotationValue(
+      EncodedValue value, @NonNull IdentifierFactory identifierFactory) {
     if (value instanceof BooleanEncodedValue) {
       return BooleanConstant.getInstance(((BooleanEncodedValue) value).getValue());
     } else if (value instanceof ByteEncodedValue) {
@@ -189,7 +189,10 @@ public class DexUtil {
     } else if (value instanceof AnnotationEncodedValue) {
       AnnotationEncodedValue nested = (AnnotationEncodedValue) value;
       return createAnnotationUsage(
-          nested.getType(), nested.getElements(), AnnotationUsage.AnnotationUsageVisibility.NONE, identifierFactory);
+          nested.getType(),
+          nested.getElements(),
+          AnnotationUsage.AnnotationUsageVisibility.NONE,
+          identifierFactory);
 
     } else if (value instanceof ArrayEncodedValue) {
       List<Object> elements = new ArrayList<>();

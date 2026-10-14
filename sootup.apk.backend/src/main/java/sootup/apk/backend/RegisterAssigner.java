@@ -79,9 +79,11 @@ public class RegisterAssigner {
   }
 
   private final RegisterAllocator registerAllocator;
+  private final DexMethodBuilder dexMethodBuilder;
 
-  public RegisterAssigner(RegisterAllocator registerAllocator) {
+  public RegisterAssigner(RegisterAllocator registerAllocator, DexMethodBuilder dexMethodBuilder) {
     this.registerAllocator = registerAllocator;
+    this.dexMethodBuilder = dexMethodBuilder;
   }
 
   public void prepareRegisters(
@@ -361,7 +363,8 @@ public class RegisterAssigner {
             generateMoveInstruction(
                 originalRegister,
                 tmpRegister,
-                sootup.apk.frontend.Util.DexUtil.toSootType(typeReference.getType(), 0),
+                sootup.apk.frontend.Util.DexUtil.toSootType(
+                    typeReference.getType(), 0, dexMethodBuilder.getView().getIdentifierFactory()),
                 false,
                 null,
                 null);
@@ -506,7 +509,10 @@ public class RegisterAssigner {
                 generateMoveInstruction(
                     source,
                     destination,
-                    sootup.apk.frontend.Util.DexUtil.toSootType(typeReference.getType(), 0),
+                    sootup.apk.frontend.Util.DexUtil.toSootType(
+                        typeReference.getType(),
+                        0,
+                        dexMethodBuilder.getView().getIdentifierFactory()),
                     false,
                     null,
                     null);
