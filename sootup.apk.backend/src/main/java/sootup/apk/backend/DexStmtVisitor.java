@@ -232,7 +232,6 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     Immediate op = stmt.getOp();
     Register register = registerAllocator.getRegisterForImmediate(op, false, stmt);
     String dexType = DexUtil.toDexType(register.getType());
-    log.info("return stmt {} with value type {}", stmt, dexType);
     Opcode opcode;
     if (DexUtil.isObject(dexType)) {
       opcode = Opcode.RETURN_OBJECT;

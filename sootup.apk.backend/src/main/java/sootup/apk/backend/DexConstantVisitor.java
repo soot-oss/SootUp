@@ -99,7 +99,6 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
 
   @Override
   public void caseNullConstant(@NonNull NullConstant constant) {
-    // fixObjectType(NullType.getInstance());
     dexMethodBuilder.addInstruction(
         new Instruction21s(Opcode.CONST_16, targetRegister, 0), currentStmt);
   }
@@ -112,7 +111,6 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
             Opcode.CONST_STRING, targetRegister, new ImmutableStringReference(constant.getValue())),
         currentStmt);
     new ImmutableStringReference(constant.getValue());
-    // const-string/jumbo --> if application has > 65,535 strings total
   }
 
   @Override

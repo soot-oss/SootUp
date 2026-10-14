@@ -25,13 +25,9 @@ import org.slf4j.LoggerFactory;
 import sootup.apk.backend.instructions.*;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
-import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
-import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
-import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
-import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
@@ -186,9 +182,9 @@ public class DexMethodBuilder {
       Set<BasicBlock<?>> inWorklist =
           new HashSet<>(List.of(controlFlowGraph.getStartingStmtBlock()));
       Set<BasicBlock<?>> visitedBlocks = new HashSet<>();
-      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtStart = new HashMap<>();
-      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtEnd = new HashMap<>();
-      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtEndExceptional = new HashMap<>();
+      Map<BasicBlock<?>, Map<Local, Register>> registerMapAtStartOfBlock = new HashMap<>();
+      Map<BasicBlock<?>, Map<Local, Register>> registerMapAtEndOfBlock = new HashMap<>();
+      Map<BasicBlock<?>, Map<Local, Register>> registerMapAtEndOfBlockExceptional = new HashMap<>();
 
       while (!worklist.isEmpty()) {
         currentBlock = worklist.pollFirst();
@@ -200,6 +196,7 @@ public class DexMethodBuilder {
 
         log.info("BLOCK {}", currentBlock);
 
+        // Merge register maps of previous blocks
         Set<BasicBlock<?>> previousBlocks =
             controlFlowGraph.predecessors(currentBlock.getHead()).stream()
                 .map(controlFlowGraph::getBlockOf)
@@ -209,8 +206,8 @@ public class DexMethodBuilder {
         log.info("Previous locals:");
         previousBlocks.forEach(
             b -> {
-              if (blockRegisterMapAtEnd.containsKey(b)) {
-                log.info("{}", blockRegisterMapAtEnd.get(b).keySet());
+              if (registerMapAtEndOfBlock.containsKey(b)) {
+                log.info("{}", registerMapAtEndOfBlock.get(b).keySet());
               }
             });
 
@@ -224,9 +221,9 @@ public class DexMethodBuilder {
           Map<Local, Register> merged =
               mergeIncomingRegisterMaps(
                   new HashSet<>(predecessors),
-                  blockRegisterMapAtEnd,
-                  blockRegisterMapAtEndExceptional,
-                  blockRegisterMapAtStart,
+                  registerMapAtEndOfBlock,
+                  registerMapAtEndOfBlockExceptional,
+                  registerMapAtStartOfBlock,
                   controlFlowGraph,
                   currentBlock);
           registerAllocator.setRegisterMap(merged);
@@ -236,13 +233,10 @@ public class DexMethodBuilder {
               .forEach(
                   (key, value) ->
                       log.info("{}:{}:{}", key.getName(), value.getNumber(), value.getType()));
-          blockRegisterMapAtStart.put(currentBlock, new HashMap<>(merged));
+          registerMapAtStartOfBlock.put(currentBlock, new HashMap<>(merged));
         }
 
         List<Stmt> stmts = new ArrayList<>(currentBlock.getStmts());
-        if (sootMethod.getName().equals(Constants.DEX_INIT_METHOD)) {
-          stmts = fixInitMethod(stmts);
-        }
 
         boolean manuallyInsertMonitorEnter =
             sootMethod.isSynchronized()
@@ -258,10 +252,18 @@ public class DexMethodBuilder {
           log.info("Process stmt: {}", stmt);
           dexStmtVisitor.newStmt();
 
-          if (i == stmts.size() - 1) {
-            log.info("Insert into block register map at end");
-            blockRegisterMapAtEndExceptional.put(
-                currentBlock, new HashMap<>(registerAllocator.getRegisterMap()));
+          // if the last statement of the block is going to be processed (or the second to last stmt
+          // if the last statement is a return stmt)
+          // insert the current register map into the registerMapAtEndOfBlockExceptional (as the
+          // return value of the last stmt of the block cannot flow to the exceptional successor)
+          if (i == stmts.size() - 1
+              || (stmts.size() > 1 && i == stmts.size() - 2)
+                  && (stmts.get(stmts.size() - 1) instanceof JReturnStmt
+                      || stmts.get(stmts.size() - 1) instanceof JReturnVoidStmt)) {
+            if (!registerMapAtEndOfBlockExceptional.containsKey(currentBlock)) {
+              registerMapAtEndOfBlockExceptional.put(
+                  currentBlock, new HashMap<>(registerAllocator.getRegisterMap()));
+            }
           }
 
           // insert a monitor-enter if method is synchronized
@@ -304,12 +306,10 @@ public class DexMethodBuilder {
               Register register =
                   registerAllocator.getRegisterForImmediate(
                       jReturnStmt.getOp(), false, jReturnStmt);
-              // if (register.getType() != returnType || register.isTypeGuessed()) {
               TypeReference castTypeReference =
                   new ImmutableTypeReference(DexUtil.toDexType(returnType));
               dexStmtVisitor.addInstruction(
                   new Instruction21c(Opcode.CHECK_CAST, register, castTypeReference), jReturnStmt);
-              // }
             }
           }
 
@@ -329,11 +329,11 @@ public class DexMethodBuilder {
             .forEach(
                 (key, value) ->
                     log.info("{}:{}:{}", key.getName(), value.getNumber(), value.getType()));
-        blockRegisterMapAtEnd.put(currentBlock, registerAllocator.getRegisterMap());
+        registerMapAtEndOfBlock.put(currentBlock, registerAllocator.getRegisterMap());
         registerAllocator.resetRegisterMap();
 
         log.info("Locals at end of block exceptional:");
-        blockRegisterMapAtEndExceptional
+        registerMapAtEndOfBlockExceptional
             .get(currentBlock)
             .forEach(
                 (key, value) ->
@@ -357,13 +357,15 @@ public class DexMethodBuilder {
                 worklist.addLast(b);
                 inWorklist.add(b);
               }
-              if (blockRegisterMapAtStart.containsKey(b) && visitedBlocks.contains(b)) {
+              // if the successor has already been processed -> match the registers of the current
+              // block to the successor block
+              if (registerMapAtStartOfBlock.containsKey(b) && visitedBlocks.contains(b)) {
                 mergeCurrentRegisterMapToSuccessor(
                     currentBlock,
                     b,
-                    blockRegisterMapAtStart,
-                    blockRegisterMapAtEnd,
-                    blockRegisterMapAtEndExceptional);
+                    registerMapAtStartOfBlock,
+                    registerMapAtEndOfBlock,
+                    registerMapAtEndOfBlockExceptional);
               }
             }
           } else {
@@ -377,13 +379,13 @@ public class DexMethodBuilder {
                 inWorklist.add(block);
               }
 
-              if (blockRegisterMapAtStart.containsKey(block) && visitedBlocks.contains(block)) {
+              if (registerMapAtStartOfBlock.containsKey(block) && visitedBlocks.contains(block)) {
                 mergeCurrentRegisterMapToSuccessor(
                     currentBlock,
                     block,
-                    blockRegisterMapAtStart,
-                    blockRegisterMapAtEnd,
-                    blockRegisterMapAtEndExceptional);
+                    registerMapAtStartOfBlock,
+                    registerMapAtEndOfBlock,
+                    registerMapAtEndOfBlockExceptional);
               }
             }
           }
@@ -401,7 +403,7 @@ public class DexMethodBuilder {
                         e.getFullyQualifiedName().matches(".*\\$\\d+$")
                             // the current apk.frontend makes each Exception class unique by adding
                             // a $<number> to the class name
-                            // if this is the case, remove the number in oder to get the real fully
+                            // if this is the case, remove the number in order to get the real fully
                             // qualified class name
                             ? e.getFullyQualifiedName()
                                 .substring(0, e.getFullyQualifiedName().lastIndexOf('$'))
@@ -414,14 +416,14 @@ public class DexMethodBuilder {
                       worklist.addLast(b);
                       inWorklist.add(b);
                     }
-                    if (blockRegisterMapAtEnd.containsKey(b) && visitedBlocks.contains(b)) {
+                    if (registerMapAtEndOfBlock.containsKey(b) && visitedBlocks.contains(b)) {
                       log.info("Merge current register map to successor");
                       mergeCurrentRegisterMapToSuccessor(
                           currentBlock,
                           b,
-                          blockRegisterMapAtStart,
-                          blockRegisterMapAtEnd,
-                          blockRegisterMapAtEndExceptional);
+                          registerMapAtStartOfBlock,
+                          registerMapAtEndOfBlock,
+                          registerMapAtEndOfBlockExceptional);
                     }
                   });
         }
@@ -436,23 +438,14 @@ public class DexMethodBuilder {
         log.info("Instruction {} of stmt {}", ins.getOpcode(), instructionMap.get(ins));
       }
 
+      // Adjust the registers to the required instruction formats
       RegisterAssigner registerAssigner = new RegisterAssigner(registerAllocator);
-      for (AbstractInstruction ins :
-          instructions.values().stream().flatMap(Collection::stream).toList()) {
-        log.info("Instruction {} of stmt {}", ins.getOpcode(), instructionMap.get(ins));
-      }
       registerAssigner.prepareRegisters(instructions.values(), instructionMap);
-      for (AbstractInstruction ins :
-          instructions.values().stream().flatMap(Collection::stream).toList()) {
-        log.info("Instruction {} of stmt {}", ins.getOpcode(), instructionMap.get(ins));
-      }
+
       for (Map.Entry<BasicBlock<?>, List<AbstractInstruction>> entry : instructions.entrySet()) {
         List<AbstractInstruction> insns =
             registerAssigner.finishRegs(entry.getValue(), instructionMap);
         entry.setValue(insns);
-        for (AbstractInstruction s : insns) {
-          log.info("Instruction {} of stmt {}", s.getOpcode(), instructionMap.get(s));
-        }
       }
 
       int registerCount = registerAllocator.getRegisterCount();
@@ -463,9 +456,11 @@ public class DexMethodBuilder {
       LabelAssigner labelAssigner = new LabelAssigner(methodImplementationBuilder);
 
       this.addBuilderInstructions(
-          methodImplementationBuilder, labelAssigner, blockRegisterMapAtStart);
+          methodImplementationBuilder, labelAssigner, registerMapAtStartOfBlock);
 
-      labelAssigner.areLabelsNotYetPlaced();
+      if (labelAssigner.areLabelsNotYetPlaced()) {
+        throw new RuntimeException("Not all reserved labels are placed");
+      }
 
       return methodImplementationBuilder.getMethodImplementation();
 
@@ -512,8 +507,6 @@ public class DexMethodBuilder {
                 })
             .orElse(Collections.emptySet());
 
-    log.info("Intersection of locals: {}", locals);
-
     HashMap<Local, Register> result = new HashMap<>();
 
     for (Local local : locals) {
@@ -526,12 +519,6 @@ public class DexMethodBuilder {
 
       List<Register> regs =
           registerMaps.stream().map(m -> m.get(local)).filter(Objects::nonNull).toList();
-
-      // if a local has the same register in all registerMaps, there is nothing to do
-      if (regs.stream().allMatch(r -> r.equals(regs.get(0)))) {
-        // result.put(local, regs.get(0));
-        // continue;
-      }
 
       log.info(
           "Merge local {} with registers {}",
@@ -574,7 +561,6 @@ public class DexMethodBuilder {
         for (BasicBlock<?> block : previousBlocks) {
           Map<Local, Register> localRegisterMap = blockRegisterMapAtEnd.get(block);
           if (localRegisterMap == null) {
-            log.info("local register map is null");
             continue;
           }
           Register old = localRegisterMap.get(local);
@@ -584,10 +570,8 @@ public class DexMethodBuilder {
         }
       } else {
         for (BasicBlock<?> block : previousBlocks) {
-          log.info("Exceptional block: {}", block);
           Map<Local, Register> localRegisterMap = blockRegisterMapAtEndExceptional.get(block);
           if (localRegisterMap == null) {
-            log.info("local register map is null");
             continue;
           }
           addExceptionalMoves(local, block, newRegister, blockRegisterMapAtStart);
@@ -719,7 +703,6 @@ public class DexMethodBuilder {
       BasicBlock<?> block,
       Register target,
       Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtStart) {
-    log.info("ADD EXCEPTIONAL MOVE for local {}", local);
     var i = instructions.get(block);
     if (blockRegisterMapAtStart.get(block).containsKey(local)) {
       Register previous = blockRegisterMapAtStart.get(block).get(local);
@@ -727,12 +710,7 @@ public class DexMethodBuilder {
         AbstractInstruction moveInstruction = generateMoveInstructionToSuccessor(previous, target);
         instructionMap.put(moveInstruction, instructionMap.get(instructions.get(block).get(0)));
         i.add(0, moveInstruction);
-        log.info("Add move instruction from {} to {}", previous.getNumber(), target.getNumber());
-      } else {
-        log.info("Previous equals target: {}, {}", target.getNumber(), previous.getNumber());
       }
-    } else {
-      log.info("Local is not included in register map at start");
     }
 
     // loop at instructions of block
@@ -760,7 +738,7 @@ public class DexMethodBuilder {
           }
         }
       } else {
-        log.info("Local {} not used in instructin {} of stmt {}", local, ins, stmt);
+        log.info("Local {} not used in instruction {} of stmt {}", local, ins, stmt);
       }
     }
   }
@@ -792,70 +770,10 @@ public class DexMethodBuilder {
     }
   }
 
-  // Remove casts of p0 (this) until it is initialized
-  private List<Stmt> fixInitMethod(List<Stmt> stmts) {
-    stmts = new ArrayList<>(stmts);
-    Local thisVariable = null;
-    LinkedHashSet<Local> thisReferences = new LinkedHashSet<>();
-    int targetIndex = -1;
-    for (int i = 0; i < stmts.size(); i++) {
-      Stmt stmt = stmts.get(i);
-      if (stmt instanceof JIdentityStmt jIdentityStmt
-          && jIdentityStmt.getRightOp() instanceof JThisRef) {
-        thisVariable = jIdentityStmt.getLeftOp();
-        thisReferences.add(thisVariable);
-      } else if (stmt instanceof JAssignStmt jAssignStmt) {
-        if (jAssignStmt.getRightOp() instanceof Local local && thisReferences.contains(local)) {
-          thisReferences.add((Local) jAssignStmt.getLeftOp());
-        } else if (jAssignStmt.getRightOp() instanceof JCastExpr jCastExpr
-            && thisReferences.contains(jCastExpr.getOp())) {
-          thisReferences.add((Local) jAssignStmt.getLeftOp());
-        }
-      }
-
-      if ((stmt instanceof JInvokeStmt jInvokeStmt
-              && jInvokeStmt.getInvokeExpr().isPresent()
-              && jInvokeStmt.getInvokeExpr().get() instanceof JSpecialInvokeExpr expr
-              && thisReferences.contains(expr.getBase())
-              && expr.getMethodSignature().getName().equals(Constants.DEX_INIT_METHOD))
-          || (stmt instanceof JAssignStmt jAssignStmt
-              && jAssignStmt.getRightOp() instanceof JSpecialInvokeExpr expr2
-              && thisReferences.contains(expr2.getBase())
-              && expr2.getMethodSignature().getName().equals(Constants.DEX_INIT_METHOD))) {
-        targetIndex = i;
-        break;
-      }
-    }
-
-    if (targetIndex > 0) {
-
-      Immediate finalThisVariable = thisVariable;
-      for (int i = Math.min(targetIndex - 1, stmts.size() - 1); i >= 0; i--) {
-        Stmt stmt = stmts.get(i);
-        if (!(stmt instanceof JIdentityStmt)
-            && !(stmt instanceof JInvokeStmt)
-            && stmt.getUses().stream().anyMatch(value -> value.equals(finalThisVariable))) {
-
-          if (stmt instanceof JAssignStmt jAssignStmt) {
-            if (jAssignStmt.getRightOp() instanceof JCastExpr jCastExpr) {
-              JAssignStmt jAssignStmt1 =
-                  new JAssignStmt(
-                      jAssignStmt.getLeftOp(), jCastExpr.getOp(), jAssignStmt.getPositionInfo());
-              stmts.set(i, jAssignStmt1);
-            }
-          }
-        }
-      }
-    }
-    return stmts;
-  }
-
   public List<BuilderInstruction> addBuilderInstructions(
       MethodImplementationBuilder methodImplementationBuilder,
       LabelAssigner labelAssigner,
       Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMap) {
-
-    log.info("ADD BUILDER INSTRUCTIONS");
 
     // Reserve labels
     LinkedHashMap<AbstractPayload, BuilderInstruction> payloadInstructions = new LinkedHashMap<>();
@@ -865,7 +783,6 @@ public class DexMethodBuilder {
     }
 
     for (AbstractInstruction ins : instructions.values().stream().flatMap(List::stream).toList()) {
-      log.info("Get label for all instructions");
       if (ins instanceof Instruction10t instruction) {
         labelAssigner.getOrCreateLabel(instruction.getTargetStmt());
       } else if (ins instanceof Instruction21t instruction) {
@@ -875,7 +792,6 @@ public class DexMethodBuilder {
       }
     }
 
-    log.info("Get label for try block");
     tryBlocks.forEach(
         b -> {
           labelAssigner.getOrCreateLabel(b.startStmt);
@@ -883,7 +799,6 @@ public class DexMethodBuilder {
           labelAssigner.getOrCreateLabel(b.catchStmt);
         });
 
-    log.info("Process instructions");
     // Process instructions
     List<BuilderInstruction> builderInstructions = new ArrayList<>();
     for (Map.Entry<BasicBlock<?>, List<AbstractInstruction>> entry : instructions.entrySet()) {
@@ -913,9 +828,7 @@ public class DexMethodBuilder {
 
         if (i + 1 >= instructionsOfBlock.size()
             || currentStmt != instructionMap.get(instructionsOfBlock.get(i + 1))) {
-          log.info("test end label");
           if (labelAssigner.hasLabelAfterStmt(currentStmt)) {
-            log.info("Has label true");
             labelAssigner.setLabelAfterStmt(currentStmt);
           }
         }
@@ -934,7 +847,6 @@ public class DexMethodBuilder {
     // add catch
     tryBlocks.forEach(
         b -> {
-          log.info("Create label for try blocks");
           if (b.jimpleExceptionType.equals("java.lang.Throwable$CatchAll")) {
             methodImplementationBuilder.addCatch(
                 labelAssigner.getOrCreateLabel(b.startStmt),
@@ -948,8 +860,6 @@ public class DexMethodBuilder {
                 labelAssigner.getOrCreateLabel(b.catchStmt));
           }
         });
-
-    log.info("Builder instructions created");
 
     return builderInstructions;
   }

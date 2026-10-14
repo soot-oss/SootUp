@@ -241,26 +241,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
               + op2Register.getType());
     }
 
-    if (op1Register.getType().equals(PrimitiveType.getInt())
-        && op1Register.getUses().isEmpty()
-        && op2Register.getType().equals(PrimitiveType.getFloat())) {
-      op1Register.setType(PrimitiveType.getFloat());
-    } else if (op1Register.getType().equals(PrimitiveType.getLong())
-        && op1Register.getUses().isEmpty()
-        && op2Register.getType().equals(PrimitiveType.getDouble())) {
-      op1Register.setType(PrimitiveType.getDouble());
-    } else if (op1Register.getType().equals(PrimitiveType.getFloat())
-        && op2Register.getType().equals(PrimitiveType.getInt())
-        && op2Register.getUses().isEmpty()
-        && !List.of(BinopExprOperation.SHL, BinopExprOperation.SHR, BinopExprOperation.USHR)
-            .contains(operation)) {
-      op2Register.setType(PrimitiveType.getFloat());
-    } else if (op1Register.getType().equals(PrimitiveType.getDouble())
-        && op2Register.getType().equals(PrimitiveType.getLong())
-        && op2Register.getUses().isEmpty()) {
-      op2Register.setType(PrimitiveType.getDouble());
-    }
-
     PrimitiveType calcType =
         DexUtil.getArithmeticType(
             (PrimitiveType) op1Register.getType(), (PrimitiveType) op2Register.getType());
@@ -400,24 +380,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
     Immediate op2 = abstractIntBinopExpr.getOp2();
     Register op2Register = registerAllocator.getRegisterForImmediate(op2, false, currentStmt);
 
-    if (op1Register.getType().equals(PrimitiveType.getInt())
-        && op1Register.getUses().isEmpty()
-        && op2Register.getType().equals(PrimitiveType.getFloat())) {
-      op1Register.setType(PrimitiveType.getFloat());
-    } else if (op1Register.getType().equals(PrimitiveType.getLong())
-        && op1Register.getUses().isEmpty()
-        && op2Register.getType().equals(PrimitiveType.getDouble())) {
-      op1Register.setType(PrimitiveType.getDouble());
-    } else if (op1Register.getType().equals(PrimitiveType.getFloat())
-        && op2Register.getType().equals(PrimitiveType.getInt())
-        && op2Register.getUses().isEmpty()) {
-      op2Register.setType(PrimitiveType.getFloat());
-    } else if (op1Register.getType().equals(PrimitiveType.getDouble())
-        && op2Register.getType().equals(PrimitiveType.getLong())
-        && op2Register.getUses().isEmpty()) {
-      op2Register.setType(PrimitiveType.getDouble());
-    }
-
     if (op1Register == targetRegister || op2Register == targetRegister) {
       if (currentStmt.isJAssignStmt()) {
         targetRegister =
@@ -440,74 +402,31 @@ public class DexExprVisitor extends AbstractExprVisitor {
               + op2Register.getType());
     }
 
-    log.info("Operation {}", operation);
-    log.info("Op 1 register type {}", op1Register.getType());
-    log.info("Op 2 register type {}", op1Register.getType());
-
-    Register op1PrepRegister = null;
-    Register op2PrepRegister = null;
-
-    if (!operation.equals(IntBinopExprOperation.CMP)) {
-      if (DexUtil.isTypeSmallerOrEqual(op1Register.getType(), PrimitiveType.getInt())
-          && op1Register.isTypeGuessed()) {
-        op1PrepRegister = registerAllocator.getRegisterForType(PrimitiveType.getFloat());
-        castPrimitive(
-            op1Register, op1PrepRegister, op1Register.getType(), PrimitiveType.getFloat());
-      } else if (op1Register.getType().equals(PrimitiveType.getLong())
-          && op1Register.isTypeGuessed()) {
-        op1PrepRegister = registerAllocator.getRegisterForType(PrimitiveType.getDouble());
-        castPrimitive(
-            op1Register, op1PrepRegister, op1Register.getType(), PrimitiveType.getDouble());
-      }
-
-      if (DexUtil.isTypeSmallerOrEqual(op2Register.getType(), PrimitiveType.getInt())
-          && op2Register.isTypeGuessed()) {
-        op2PrepRegister = registerAllocator.getRegisterForType(PrimitiveType.getFloat());
-        castPrimitive(
-            op2Register, op2PrepRegister, op2Register.getType(), PrimitiveType.getFloat());
-      } else if (op2Register.getType().equals(PrimitiveType.getLong())
-          && op2Register.isTypeGuessed()) {
-        op2PrepRegister = registerAllocator.getRegisterForType(PrimitiveType.getDouble());
-        castPrimitive(
-            op2Register, op2PrepRegister, op2Register.getType(), PrimitiveType.getDouble());
-      }
-    }
-
-    if (op1PrepRegister == null) {
-      log.info("op1Prep register is null");
-      op1PrepRegister = op1Register;
-    }
-    if (op2PrepRegister == null) {
-      op2PrepRegister = op2Register;
-    }
 
     PrimitiveType calcType =
         DexUtil.getArithmeticType(
-            (PrimitiveType) op1PrepRegister.getType(), (PrimitiveType) op2PrepRegister.getType());
+            (PrimitiveType) op1Register.getType(), (PrimitiveType) op2Register.getType());
 
     log.info("Calc type: {}", calcType);
 
     Register op1CastRegister;
     Register op2CastRegister;
 
-    if (DexUtil.isTypeBiggerOrEqual(op1PrepRegister.getType(), PrimitiveType.getInt())
-        && DexUtil.isTypeSmaller(op1PrepRegister.getType(), calcType)) {
+    if (DexUtil.isTypeBiggerOrEqual(op1Register.getType(), PrimitiveType.getInt())
+        && DexUtil.isTypeSmaller(op1Register.getType(), calcType)) {
       op1CastRegister = registerAllocator.getRegisterForType(calcType);
-      castPrimitive(op1PrepRegister, op1CastRegister, op1PrepRegister.getType(), calcType);
+      castPrimitive(op1Register, op1CastRegister, op1Register.getType(), calcType);
     } else {
-      op1CastRegister = op1PrepRegister;
+      op1CastRegister = op1Register;
     }
 
-    if (DexUtil.isTypeBiggerOrEqual(op2PrepRegister.getType(), PrimitiveType.getInt())
-        && DexUtil.isTypeSmaller(op2PrepRegister.getType(), calcType)) {
+    if (DexUtil.isTypeBiggerOrEqual(op2Register.getType(), PrimitiveType.getInt())
+        && DexUtil.isTypeSmaller(op2Register.getType(), calcType)) {
       op2CastRegister = registerAllocator.getRegisterForType(calcType);
-      castPrimitive(op2PrepRegister, op2CastRegister, op2PrepRegister.getType(), calcType);
+      castPrimitive(op2Register, op2CastRegister, op2Register.getType(), calcType);
     } else {
-      op2CastRegister = op2PrepRegister;
+      op2CastRegister = op2Register;
     }
-
-    log.info("Op 1 cast register type {}", op1CastRegister.getType());
-    log.info("Op 2 cast register type {}", op1CastRegister.getType());
 
     Opcode opcode;
     if (operation.equals(IntBinopExprOperation.CMP)) {
@@ -531,7 +450,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
               + "/"
               + op2Register.getType());
     }
-    log.info("Opcode: {}", opcode);
     Register targetTmpRegister = getTargetTmpRegister(PrimitiveType.getInt());
     dexStmtVisitor.addInstruction(
         new Instruction23x(opcode, targetTmpRegister, op1CastRegister, op2CastRegister),
@@ -600,26 +518,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
     log.info("Return type: {}", expr.getMethodSignature().getType());
     List<Register> argumentRegisters = getVirtualInvokeArgumentRegisters(expr);
 
-    if (DexUtil.isObject(expr.getBase().getType())
-        && !(DexUtil.toDexType(expr.getBase().getType()).equals("Ljava/lang/Object;"))) {
-      TypeReference castTypeReference =
-          new ImmutableTypeReference(DexUtil.toDexType(expr.getBase().getType()));
-      /*dexStmtVisitor.addInstruction(
-      new Instruction21c(Opcode.CHECK_CAST, argumentRegisters.get(0), castTypeReference),
-      currentStmt);*/
-    }
-    var parameterTypes = methodReference.getParameterTypes();
-    for (int i = 0; i < parameterTypes.size(); i++) {
-      var parameterType = parameterTypes.get(i);
-      if (DexUtil.isObject(parameterType.toString())
-          && !(parameterType.toString().equals("Ljava/lang/Object;"))) {
-        TypeReference castTypeReference = new ImmutableTypeReference(parameterType.toString());
-        /*dexStmtVisitor.addInstruction(
-        new Instruction21c(Opcode.CHECK_CAST, argumentRegisters.get(i + 1), castTypeReference),
-        currentStmt);*/
-      }
-    }
-
     buildInvokeInstruction(
         InvokeOpcode.INVOKE_VIRTUAL,
         argumentRegisters,
@@ -633,26 +531,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
     MethodReference methodReference = buildMethodReference(methodSignature);
     List<Register> argumentRegisters = getVirtualInvokeArgumentRegisters(expr);
 
-    if (DexUtil.isObject(expr.getBase().getType())
-        && !(expr.getBase().getType().toString().startsWith(JIMPLE_OBJECT_TYPE))) {
-      TypeReference castTypeReference =
-          new ImmutableTypeReference(DexUtil.toDexType(expr.getBase().getType()));
-      /* dexStmtVisitor.addInstruction(
-      new Instruction21c(Opcode.CHECK_CAST, argumentRegisters.get(0), castTypeReference),
-      currentStmt);*/
-    }
-    var parameterTypes = methodReference.getParameterTypes();
-    for (int i = 0; i < parameterTypes.size(); i++) {
-      var parameterType = parameterTypes.get(i);
-      if (DexUtil.isObject(parameterType.toString())
-          && !(parameterType.toString().equals(Constants.DEX_OBJECT_TYPE))) {
-        TypeReference castTypeReference = new ImmutableTypeReference(parameterType.toString());
-        /*dexStmtVisitor.addInstruction(
-        new Instruction21c(Opcode.CHECK_CAST, argumentRegisters.get(i + 1), castTypeReference),
-        currentStmt);*/
-      }
-    }
-
     buildInvokeInstruction(
         InvokeOpcode.INVOKE_INTERFACE,
         argumentRegisters,
@@ -665,18 +543,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
     MethodSignature methodSignature = expr.getMethodSignature();
     MethodReference methodReference = buildMethodReference(methodSignature);
     List<Register> argumentRegisters = getInvokeArgumentRegisters(expr);
-
-    var parameterTypes = methodReference.getParameterTypes();
-    for (int i = 0; i < parameterTypes.size(); i++) {
-      var parameterType = parameterTypes.get(i);
-      if (DexUtil.isObject(parameterType.toString())
-          && !(parameterType.toString().equals(Constants.DEX_OBJECT_TYPE))) {
-        TypeReference castTypeReference = new ImmutableTypeReference(parameterType.toString());
-        /*dexStmtVisitor.addInstruction(
-        new Instruction21c(Opcode.CHECK_CAST, argumentRegisters.get(i), castTypeReference),
-        currentStmt);*/
-      }
-    }
 
     buildInvokeInstruction(
         InvokeOpcode.INVOKE_STATIC,
@@ -886,7 +752,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
     if (register.getType() instanceof PrimitiveType
         && type.toString().startsWith(JIMPLE_OBJECT_TYPE)) {
-      log.info("Move instruction because of unnecessary cast");
       dexStmtVisitor.addInstruction(
           generateMoveInstruction(
               targetRegister,
@@ -907,30 +772,8 @@ public class DexExprVisitor extends AbstractExprVisitor {
         targetRegister.getNumber());
     log.info("Cast type: {}", type);
 
-
-    if (!register.isInitialized()) {
-      // no not check-cast on uninitialized reference
-      dexStmtVisitor.addInstruction(
-          generateMoveInstruction(
-              targetRegister,
-              register,
-              register.getType(),
-              true,
-              currentStmt.asJAssignStmt().getLeftOp(),
-              registerAllocator),
-          currentStmt);
-    } else if (register.getType() instanceof PrimitiveType && type instanceof PrimitiveType) {
+    if (register.getType() instanceof PrimitiveType && type instanceof PrimitiveType) {
       castPrimitive(register, targetRegister, register.getType(), type);
-    } else if (!DexUtil.isObject(type)) {
-      dexStmtVisitor.addInstruction(
-          generateMoveInstruction(
-              targetRegister,
-              register,
-              register.getType(),
-              true,
-              currentStmt.asJAssignStmt().getLeftOp(),
-              registerAllocator),
-          currentStmt);
     } else {
       castObject(register, type);
     }
@@ -939,6 +782,21 @@ public class DexExprVisitor extends AbstractExprVisitor {
   private void castObject(Register sourceRegister, Type castType) {
     String dexType = DexUtil.toDexType(castType);
     TypeReference castTypeReference = new ImmutableTypeReference(dexType);
+
+    if (!DexUtil.isObject(castType)
+        || !sourceRegister.isInitialized()) { // no not check-cast on uninitialized reference
+      dexStmtVisitor.addInstruction(
+          generateMoveInstruction(
+              targetRegister,
+              sourceRegister,
+              sourceRegister.getType(),
+              true,
+              currentStmt.asJAssignStmt().getLeftOp(),
+              registerAllocator),
+          currentStmt);
+      return;
+    }
+
     fixObjectType(castType);
 
     if (sourceRegister.equals(targetRegister)) {
@@ -946,15 +804,12 @@ public class DexExprVisitor extends AbstractExprVisitor {
           new Instruction21c(Opcode.CHECK_CAST, targetRegister, castTypeReference), currentStmt);
     } else {
       Register tmpRegister = registerAllocator.getRegisterForType(sourceRegister.getType());
-      log.info("Move instruction cast object");
       dexStmtVisitor.addInstruction(
           generateMoveInstruction(
               tmpRegister, sourceRegister, sourceRegister.getType(), false, null, null),
           currentStmt);
       dexStmtVisitor.addInstruction(
           new Instruction21c(Opcode.CHECK_CAST, tmpRegister, castTypeReference), currentStmt);
-      log.info("Check cast on tmp register type  {}", tmpRegister.getType());
-      log.info("Move instruction cast object");
       dexStmtVisitor.addInstruction(
           generateMoveInstruction(targetRegister, tmpRegister, castType, false, null, null),
           currentStmt);
@@ -1155,66 +1010,63 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
   protected static AbstractInstruction generateMoveInstruction(
       Register targetR,
-      Register sourceRegister,
+      Register sourceR,
       Type valueType,
       boolean fixObjectType,
       Value local,
       RegisterAllocator registerAllocator) {
 
-    if (sourceRegister.equals(targetR)) {
+    if (sourceR.equals(targetR)) {
       return new Instruction10x(Opcode.NOP);
     }
 
-    if (fixObjectType
-        && (sourceRegister.getType() != targetR.getType() || targetR.isTypeGuessed())) {
-      if (!(sourceRegister.getType() instanceof PrimitiveType
+    if (fixObjectType && (sourceR.getType() != targetR.getType() || targetR.isTypeGuessed())) {
+      if (!(sourceR.getType() instanceof PrimitiveType
           && targetR.getType() instanceof PrimitiveType)) {
         log.info(
             "Change type of target register from {} to {} with guessed {}",
             targetR.getType(),
-            sourceRegister.getType(),
-            sourceRegister.isTypeGuessed());
+            sourceR.getType(),
+            sourceR.isTypeGuessed());
 
         if (!targetR.getDefs().isEmpty()) {
           targetR =
-              registerAllocator.getRegisterForValueWithNewType(
-                  local, sourceRegister.getType(), false);
+              registerAllocator.getRegisterForValueWithNewType(local, sourceR.getType(), false);
         } else {
-          targetR.setType(sourceRegister.getType());
+          targetR.setType(sourceR.getType());
         }
         targetR.setIsTypeGuessed(true);
       }
     }
 
-    targetR.setIsInitialized(sourceRegister.isInitialized());
-    log.info(
-        "Source register {} with type {}", sourceRegister.getNumber(), sourceRegister.getType());
+    targetR.setIsInitialized(sourceR.isInitialized());
+    log.info("Source register {} with type {}", sourceR.getNumber(), sourceR.getType());
     log.info("Move type {}", valueType);
     log.info("Target register {} with type {}", targetR.getNumber(), targetR.getType());
 
     if (valueType instanceof ReferenceType) {
-      if (sourceRegister.is4BitRegister() && targetR.is4BitRegister()) {
-        return new Instruction12x(Opcode.MOVE_OBJECT, targetR, sourceRegister);
-      } else if (sourceRegister.is8BitRegister() && targetR.is8BitRegister()) {
-        return new Instruction22x(Opcode.MOVE_OBJECT_FROM16, targetR, sourceRegister);
+      if (sourceR.is4BitRegister() && targetR.is4BitRegister()) {
+        return new Instruction12x(Opcode.MOVE_OBJECT, targetR, sourceR);
+      } else if (sourceR.is8BitRegister() && targetR.is8BitRegister()) {
+        return new Instruction22x(Opcode.MOVE_OBJECT_FROM16, targetR, sourceR);
       } else {
-        return new Instruction32x(Opcode.MOVE_OBJECT_16, targetR, sourceRegister);
+        return new Instruction32x(Opcode.MOVE_OBJECT_16, targetR, sourceR);
       }
     } else if (DexUtil.isWide(valueType)) {
-      if (sourceRegister.is4BitRegister() && targetR.is4BitRegister()) {
-        return new Instruction12x(Opcode.MOVE_WIDE, targetR, sourceRegister);
-      } else if (sourceRegister.is8BitRegister() && targetR.is8BitRegister()) {
-        return new Instruction22x(Opcode.MOVE_WIDE_FROM16, targetR, sourceRegister);
+      if (sourceR.is4BitRegister() && targetR.is4BitRegister()) {
+        return new Instruction12x(Opcode.MOVE_WIDE, targetR, sourceR);
+      } else if (sourceR.is8BitRegister() && targetR.is8BitRegister()) {
+        return new Instruction22x(Opcode.MOVE_WIDE_FROM16, targetR, sourceR);
       } else {
-        return new Instruction32x(Opcode.MOVE_WIDE_16, targetR, sourceRegister);
+        return new Instruction32x(Opcode.MOVE_WIDE_16, targetR, sourceR);
       }
     } else {
-      if (sourceRegister.is4BitRegister() && targetR.is4BitRegister()) {
-        return new Instruction12x(Opcode.MOVE, targetR, sourceRegister);
-      } else if (sourceRegister.is8BitRegister() && targetR.is8BitRegister()) {
-        return new Instruction22x(Opcode.MOVE_FROM16, targetR, sourceRegister);
+      if (sourceR.is4BitRegister() && targetR.is4BitRegister()) {
+        return new Instruction12x(Opcode.MOVE, targetR, sourceR);
+      } else if (sourceR.is8BitRegister() && targetR.is8BitRegister()) {
+        return new Instruction22x(Opcode.MOVE_FROM16, targetR, sourceR);
       } else {
-        return new Instruction32x(Opcode.MOVE_16, targetR, sourceRegister);
+        return new Instruction32x(Opcode.MOVE_16, targetR, sourceR);
       }
     }
   }

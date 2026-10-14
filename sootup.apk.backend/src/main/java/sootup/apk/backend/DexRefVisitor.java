@@ -33,7 +33,7 @@ public class DexRefVisitor extends AbstractRefVisitor {
     GET
   }
 
-  private String methodName;
+  private String currentMethodName;
   private Stmt currentStmt;
   private RefOperation operation;
   private Register targetRegister;
@@ -45,7 +45,7 @@ public class DexRefVisitor extends AbstractRefVisitor {
   }
 
   public void setCurrentMethodName(String name) {
-    this.methodName = name;
+    this.currentMethodName = name;
   }
 
   public void setCurrentStmt(Stmt stmt) {
@@ -145,7 +145,7 @@ public class DexRefVisitor extends AbstractRefVisitor {
   @Override
   public void caseThisRef(@NonNull JThisRef ref) {
     Register r = registerAllocator.allocateRegisterForParameter(immediate);
-    if (methodName.equals(Constants.DEX_INIT_METHOD)) {
+    if (currentMethodName.equals(Constants.DEX_INIT_METHOD)) {
       r.setIsInitialized(false);
     }
   }

@@ -30,7 +30,6 @@ public class LabelAssigner {
     if (stmt == null) {
       throw new RuntimeException("Statement is null");
     }
-    log.info("get label at stmt {}", stmt);
     return getOrCreateLabelObject(stmt);
   }
 
@@ -38,11 +37,9 @@ public class LabelAssigner {
     if (stmt == null) {
       throw new RuntimeException("Statement is null");
     }
-    log.info("get label after stmt {}", stmt);
     Label label = labelMapAfterStmt.get(stmt);
     if (label == null) {
       String labelName = "l" + lastLabelId++;
-      log.info("Reserve new label {}", labelName);
       label = methodImplementationBuilder.getLabel(labelName);
       labelMapAfterStmt.put(stmt, label);
       labelNameMapAfterStmt.put(stmt, labelName);
@@ -61,7 +58,6 @@ public class LabelAssigner {
     Label label = labelMapBeforeStmt.get(object);
     if (label == null) {
       String labelName = "l" + lastLabelId++;
-      log.info("Reserve new label {}", labelName);
       label = methodImplementationBuilder.getLabel(labelName);
       labelMapBeforeStmt.put(object, label);
       labelNameMapBeforeStmt.put(object, labelName);
@@ -74,23 +70,14 @@ public class LabelAssigner {
   }
 
   public boolean hasLabel(Stmt stmt) {
-    log.info("Test start label for stmt: {}", stmt);
     return labelMapBeforeStmt.containsKey(stmt);
   }
 
   public boolean hasLabelAfterStmt(Stmt stmt) {
-    log.info("Test end label for stmt: {}", stmt);
     return labelMapAfterStmt.containsKey(stmt);
   }
 
   public void setLabel(Object object) {
-    log.info("Set label at {}", object);
-    log.info("Want to set label: {}", labelNameMapBeforeStmt.get(object));
-    log.info("has key: {}", addedLabelsBeforeStmt.contains(labelNameMapBeforeStmt.get(object)));
-    log.info(
-        "label already set: {}",
-        addedLabelsBeforeStmt.contains(labelNameMapBeforeStmt.get(object)));
-    addedLabelsBeforeStmt.forEach(l -> log.info("{}", l));
     if (labelMapBeforeStmt.containsKey(object)
         && (!addedLabelsBeforeStmt.contains(labelNameMapBeforeStmt.get(object)))) {
       String labelName = labelNameMapBeforeStmt.get(object);
@@ -101,7 +88,6 @@ public class LabelAssigner {
   }
 
   public void setLabelAfterStmt(Object object) {
-    log.info("Set label after {}", object);
     if (labelMapAfterStmt.containsKey(object)
         && !addedLabelsAfterStmt.contains(labelNameMapAfterStmt.get(object))) {
       String labelName = labelNameMapAfterStmt.get(object);

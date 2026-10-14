@@ -45,7 +45,7 @@ public class DexOutputLocation {
     var classes = view.getClasses().toList();
     classes.forEach(
         c -> {
-          if (c.getName().startsWith("com.example.exampleapp.MainActivity")) {
+          if (c.getName().startsWith("androidx.recyclerview.widget.RecyclerView")) {
             dexClassBuilder.createClass(c);
           }
         });
@@ -67,7 +67,7 @@ public class DexOutputLocation {
     view.getClasses()
         .forEach(
             c -> {
-              if (c.getName().startsWith("com.example.exampleapp.MainActivity")) {
+              if (!c.getName().startsWith("kotlin.internal.PlatformImplementationsKt")) {
                 dexClassBuilder.createClass(c);
               }
             });
@@ -96,19 +96,18 @@ public class DexOutputLocation {
           copyExistingFiles(zipOutputStream);
         }
 
-        addExistingClasses();
+        addExistingClasses("kotlin.internal.PlatformImplementationsKt");
         writeDexFiles(zipOutputStream);
         log.info(
             "APK successfully created. The .apk still needs to be aligned with zipalign and signed with jarsigner");
       }
     } catch (IOException e) {
-      e.printStackTrace();
       throw new RuntimeException("An exception occurred during creation of .apk file");
     }
   }
 
   // adds all classes to classes.dex except from com.example.exampleapp.MainActivity
-  private void addExistingClasses() throws IOException {
+  private void addExistingClasses(String classNamePrefix) throws IOException {
 
     try (ZipFile apk = new ZipFile(apkFile)) {
 
@@ -131,7 +130,7 @@ public class DexOutputLocation {
 
           for (ClassDef classDef : dexFile.getClasses()) {
             String dexClassName = classDef.getType();
-            if (!dexClassName.startsWith(("Lcom/example/exampleapp/MainActivity"))) {
+            if (dexClassName.startsWith(DexUtil.toDexClassName(classNamePrefix))) {
               addClass(classDef);
             }
           }
