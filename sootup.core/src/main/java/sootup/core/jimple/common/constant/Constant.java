@@ -34,10 +34,10 @@ import sootup.core.util.printer.StmtPrinter;
 public interface Constant extends Immediate, Acceptor<ConstantVisitor> {
 
   @Override
-  default void collectUses(List<Value> collector) {}
+  default void collectUses(final List<Value> collector) {}
 
   @Override
-  default boolean equivTo(Object o, @NonNull JimpleComparator comparator) {
+  default boolean equivTo(final Object o, @NonNull final JimpleComparator comparator) {
     return comparator.caseConstant(this, o);
   }
 
@@ -51,7 +51,15 @@ public interface Constant extends Immediate, Acceptor<ConstantVisitor> {
   }
 
   @Override
-  default void toString(@NonNull StmtPrinter up) {
+  default void toString(@NonNull final StmtPrinter up) {
     up.constant(this);
   }
+
+  /**
+   * Obtain the runtime value of the Constant. E.g. IntConstant.getInstance(42).getValue() will
+   * return Integer.valueOf(42).
+   *
+   * @return the runtime value of the Constant
+   */
+  Object getValue();
 }
