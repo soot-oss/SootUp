@@ -22,6 +22,7 @@ package sootup.apk.frontend.dexpler;
  * #L%
  */
 
+import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
@@ -32,11 +33,17 @@ import org.jf.dexlib2.iface.MultiDexContainer;
 import org.jspecify.annotations.NonNull;
 import sootup.apk.frontend.Util.DexUtil;
 import sootup.apk.frontend.main.DexBody;
+import sootup.core.frontend.BodySource;
+import sootup.core.frontend.ResolveException;
 import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.model.Body;
+import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootMethod;
 
@@ -53,21 +60,21 @@ public class DexMethod {
 
   public JavaSootMethod makeSootMethod(
       final Method method, List<BodyInterceptor> bodyInterceptors, @NonNull View view) {
+    List<Type> parameters =
+        method.getParameters().stream()
+            .map(
+                methodParameter ->
+                    DexUtil.toSootType(methodParameter.getType(), 0, view.getIdentifierFactory()))
+            .collect(Collectors.toList());
+    MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                declaringclassType,
+                method.getName(),
+                DexUtil.toSootType(method.getReturnType(), 0, view.getIdentifierFactory()),
+                parameters);
     int modifierFlags = method.getAccessFlags();
     if (Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)) {
-      List<Type> parameters =
-          method.getParameters().stream()
-              .map(
-                  methodParameter ->
-                      DexUtil.toSootType(methodParameter.getType(), 0, view.getIdentifierFactory()))
-              .collect(Collectors.toList());
-      MethodSignature methodSignature =
-          view.getIdentifierFactory()
-              .getMethodSignature(
-                  declaringclassType,
-                  method.getName(),
-                  DexUtil.toSootType(method.getReturnType(), 0, view.getIdentifierFactory()),
-                  parameters);
       DexMethodSource dexMethodSource =
           new DexMethodSource(
               Collections.emptySet(),
@@ -77,9 +84,54 @@ public class DexMethod {
               bodyInterceptors,
               view);
       return dexMethodSource.makeSootMethod();
-    } else {
-      DexBody dexBody = new DexBody(method, dexEntry, declaringclassType, view);
-      return dexBody.makeSootMethod(method, declaringclassType, bodyInterceptors, view);
+    }
+    // the code is converted when the body is requested for the first time
+    return new JavaSootMethod(
+        new LazyBodySource(method, methodSignature, bodyInterceptors, view),
+        methodSignature,
+        Modifiers.getMethodModifiers(modifierFlags),
+        Collections.emptyList(),
+        Collections.emptySet(),
+        NoPositionInformation.getInstance());
+  }
+
+  /** Converts the code of a method into its body when the body is resolved. */
+  private class LazyBodySource implements BodySource {
+
+    private final Method method;
+    private final MethodSignature signature;
+    private final List<BodyInterceptor> bodyInterceptors;
+    private final View view;
+
+    LazyBodySource(
+        Method method,
+        MethodSignature signature,
+        List<BodyInterceptor> bodyInterceptors,
+        View view) {
+      this.method = method;
+      this.signature = signature;
+      this.bodyInterceptors = bodyInterceptors;
+      this.view = view;
+    }
+
+    @NonNull
+    @Override
+    public Body resolveBody(@NonNull Iterable<MethodModifier> modifiers)
+        throws ResolveException, IOException {
+      return new DexBody(method, dexEntry, declaringclassType, view)
+          .makeMethodSource(method, declaringclassType, bodyInterceptors, view)
+          .resolveBody(modifiers);
+    }
+
+    @Override
+    public Object resolveAnnotationsDefaultValue() {
+      return null;
+    }
+
+    @NonNull
+    @Override
+    public MethodSignature getSignature() {
+      return signature;
     }
   }
 }

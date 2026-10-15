@@ -351,6 +351,12 @@ public class DexBody {
 
   public JavaSootMethod makeSootMethod(
       Method method, ClassType classType, List<BodyInterceptor> bodyInterceptors, View view) {
+    return makeMethodSource(method, classType, bodyInterceptors, view).makeSootMethod();
+  }
+
+  /** Converts the code of the method into a statement graph; the body source builds the body. */
+  public DexMethodSource makeMethodSource(
+      Method method, ClassType classType, List<BodyInterceptor> bodyInterceptors, View view) {
     jimplify();
     // All the statements are converted, it is time to create a mutable statement graph
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
@@ -408,9 +414,7 @@ public class DexBody {
     removeUnreachableBlocks(listList, branchingStmtListMap);
     checkNothingFallsIntoACaughtExceptionEntry(listList);
     graph.initializeWith(listList, branchingStmtListMap, traps);
-    DexMethodSource dexMethodSource =
-        new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
-    return dexMethodSource.makeSootMethod();
+    return new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
   }
 
   /**
