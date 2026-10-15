@@ -271,11 +271,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
       op2CastRegister = op2Register;
     }
 
-    log.info(
-        "Target register type: {} guessed: {}",
-        targetRegister.getType(),
-        targetRegister.isTypeGuessed());
-    log.info("Calc type: {}", calcType);
     fixObjectType(calcType);
 
     Register targetTmpRegister = getTargetTmpRegister(op1CastRegister.getType());
@@ -406,8 +401,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
         DexUtil.getArithmeticType(
             (PrimitiveType) op1Register.getType(), (PrimitiveType) op2Register.getType());
 
-    log.info("Calc type: {}", calcType);
-
     Register op1CastRegister;
     Register op2CastRegister;
 
@@ -514,7 +507,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
       }
       return;
     }
-    log.info("Return type: {}", expr.getMethodSignature().getType());
+
     List<Register> argumentRegisters = getVirtualInvokeArgumentRegisters(expr);
 
     buildInvokeInstruction(
@@ -679,7 +672,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
           .map(
               r -> {
                 Register reg = registerAllocator.getRegisterForType(r.getType());
-                log.info("Move instruction invoke");
                 dexStmtVisitor.addInstruction(
                     generateMoveInstruction(reg, r, r.getType(), false, null, null), currentStmt);
                 return reg;
@@ -723,10 +715,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
   @Override
   public void caseCastExpr(@NonNull JCastExpr expr) {
 
-    if (currentStmt != null) {
-      log.info("Cast expr: {}", currentStmt);
-    }
-
     Immediate op = expr.getOp();
     Type type = expr.getType();
     Register register = registerAllocator.getRegisterForImmediate(op, false, currentStmt);
@@ -741,10 +729,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
           registerAllocator.getRegisterForValueWithNewType(
               currentStmt.asJAssignStmt().getLeftOp(), type, false);
       targetRegister.setIsTypeGuessed(true);
-      log.info(
-          "New target register for cast expression with type {} and number {}",
-          type,
-          targetRegister.getNumber());
     }
 
     fixObjectType(type);
@@ -762,14 +746,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
           currentStmt);
       return;
     }
-
-    log.info("Cast expr");
-    log.info("Source register type: {} number: {}", register.getType(), register.getNumber());
-    log.info(
-        "Target register type: {}, number: {}",
-        targetRegister.getType(),
-        targetRegister.getNumber());
-    log.info("Cast type: {}", type);
 
     if (register.getType() instanceof PrimitiveType && type instanceof PrimitiveType) {
       castPrimitive(register, targetRegister, register.getType(), type);
@@ -846,7 +822,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
     if (sourceTypeP == castTypeP) {
       if (targetR.getNumber() != sourceRegister.getNumber()) {
-        log.info("Move instruction cast primitive");
         dexStmtVisitor.addInstruction(
             generateMoveInstruction(targetR, sourceRegister, sourceTypeP, false, null, null),
             currentStmt);
@@ -1022,12 +997,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
     if (fixObjectType && (sourceR.getType() != targetR.getType() || targetR.isTypeGuessed())) {
       if (!(sourceR.getType() instanceof PrimitiveType
           && targetR.getType() instanceof PrimitiveType)) {
-        log.info(
-            "Change type of target register from {} to {} with guessed {}",
-            targetR.getType(),
-            sourceR.getType(),
-            sourceR.isTypeGuessed());
-
         if (!targetR.getDefs().isEmpty()) {
           targetR =
               registerAllocator.getRegisterForValueWithNewType(local, sourceR.getType(), false);
@@ -1039,9 +1008,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
     }
 
     targetR.setIsInitialized(sourceR.isInitialized());
-    log.info("Source register {} with type {}", sourceR.getNumber(), sourceR.getType());
-    log.info("Move type {}", valueType);
-    log.info("Target register {} with type {}", targetR.getNumber(), targetR.getType());
 
     if (valueType instanceof ReferenceType) {
       if (sourceR.is4BitRegister() && targetR.is4BitRegister()) {
@@ -1101,7 +1067,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
   private void fixObjectType(Type defaultType) {
     if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
         || targetRegister.isTypeGuessed()) {
-      log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
 
       if (targetRegister.getType() != defaultType && currentStmt.isJAssignStmt()) {
         targetRegister =
@@ -1110,11 +1075,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
       } else {
         targetRegister.setType(defaultType);
       }
-      log.info(
-          "Set target register {} with type {} guessed true",
-          targetRegister.getNumber(),
-          targetRegister.getType());
-      targetRegister.setIsTypeGuessed(true);
     }
   }
 }

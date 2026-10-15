@@ -48,22 +48,10 @@ public class RegisterAllocator {
 
   private Register getRegisterForLocal(Local local, boolean isParameter) {
     if (registerMap.containsKey(local)) {
-      log.info(
-          "Local {} present in registerMap {} with type {} and guessed {}",
-          local.getName(),
-          registerMap.get(local).getNumber(),
-          registerMap.get(local).getType(),
-          registerMap.get(local).isTypeGuessed());
-
       return registerMap.get(local);
     } else {
       Register register = allocateNewRegister(local.getType(), isParameter, false);
       registerMap.put(local, register);
-      log.info(
-          "Local {} not present in registerMap. Allocate new register {} with type {}",
-          local.getName(),
-          register.getNumber(),
-          register.getType());
       return register;
     }
   }
@@ -73,7 +61,6 @@ public class RegisterAllocator {
     if (value instanceof Local local) {
       registerMap.put(local, register);
     }
-    log.info("Put {} {} into register map", value, register.getNumber());
     return register;
   }
 

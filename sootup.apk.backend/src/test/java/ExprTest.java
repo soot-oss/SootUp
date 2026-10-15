@@ -3,7 +3,6 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
@@ -78,7 +77,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(2, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(1);
@@ -101,7 +100,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(3, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(1);
@@ -123,7 +122,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(2, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(1);
@@ -145,7 +144,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(3, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(2);
@@ -168,7 +167,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(2, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(1);
@@ -192,7 +191,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(2, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(1);
@@ -223,7 +222,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(3, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(2);
@@ -249,7 +248,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(4, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(2);
@@ -275,7 +274,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -300,7 +299,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(2, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(1);
@@ -327,7 +326,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(2, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(1);
@@ -354,7 +353,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(4, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(2);
@@ -382,7 +381,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(5, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(3);
@@ -406,7 +405,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -429,7 +428,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -455,7 +454,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(2, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -496,7 +495,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(4, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(2);
@@ -544,7 +543,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(8, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(6);
@@ -568,7 +567,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(2, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(1);
@@ -590,7 +589,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(2, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(1);
@@ -612,7 +611,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(2, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(1);
@@ -634,7 +633,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -659,7 +658,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -685,7 +684,7 @@ public class ExprTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);

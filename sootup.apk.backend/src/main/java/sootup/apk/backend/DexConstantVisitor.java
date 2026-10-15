@@ -194,7 +194,6 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
   private void fixObjectType(Type defaultType) {
     if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
         || targetRegister.isTypeGuessed()) {
-      log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
       targetRegister.setType(defaultType);
     }
   }

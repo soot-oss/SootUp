@@ -4,6 +4,7 @@ import static sootup.apk.backend.Constants.JIMPLE_OBJECT_TYPE;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jf.dexlib2.AnnotationVisibility;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.*;
@@ -11,11 +12,13 @@ import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.MethodImplementation;
 import org.jf.dexlib2.iface.MethodParameter;
+import org.jf.dexlib2.iface.reference.StringReference;
 import org.jf.dexlib2.iface.reference.TypeReference;
 import org.jf.dexlib2.immutable.ImmutableAnnotation;
 import org.jf.dexlib2.immutable.ImmutableAnnotationElement;
 import org.jf.dexlib2.immutable.ImmutableMethod;
 import org.jf.dexlib2.immutable.ImmutableMethodParameter;
+import org.jf.dexlib2.immutable.reference.ImmutableStringReference;
 import org.jf.dexlib2.immutable.reference.ImmutableTypeReference;
 import org.jf.dexlib2.immutable.value.ImmutableArrayEncodedValue;
 import org.jf.dexlib2.immutable.value.ImmutableEncodedValue;
@@ -25,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import sootup.apk.backend.instructions.*;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.ControlFlowGraph;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
@@ -173,10 +177,6 @@ public class DexMethodBuilder {
 
       ControlFlowGraph<?> controlFlowGraph = sootMethod.getBody().getControlFlowGraph();
 
-      Collection<? extends BasicBlock<?>> blocks = controlFlowGraph.getBlocks();
-
-      log.info("BLOCKS: {}", blocks.size());
-
       Deque<BasicBlock<?>> worklist =
           new ArrayDeque<>(List.of(controlFlowGraph.getStartingStmtBlock()));
       Set<BasicBlock<?>> inWorklist =
@@ -194,22 +194,11 @@ public class DexMethodBuilder {
         inWorklist.remove(currentBlock);
         visitedBlocks.add(currentBlock);
 
-        log.info("BLOCK {}", currentBlock);
-
         // Merge register maps of previous blocks
         Set<BasicBlock<?>> previousBlocks =
             controlFlowGraph.predecessors(currentBlock.getHead()).stream()
                 .map(controlFlowGraph::getBlockOf)
                 .collect(Collectors.toSet());
-
-        log.info("Previous blocks {}", previousBlocks.size());
-        log.info("Previous locals:");
-        previousBlocks.forEach(
-            b -> {
-              if (registerMapAtEndOfBlock.containsKey(b)) {
-                log.info("{}", registerMapAtEndOfBlock.get(b).keySet());
-              }
-            });
 
         if (previousBlocks.isEmpty()) {
           registerAllocator.setRegisterMap(new HashMap<>());
@@ -227,12 +216,6 @@ public class DexMethodBuilder {
                   controlFlowGraph,
                   currentBlock);
           registerAllocator.setRegisterMap(merged);
-          log.info("Locals at start of block:");
-          registerAllocator
-              .getRegisterMap()
-              .forEach(
-                  (key, value) ->
-                      log.info("{}:{}:{}", key.getName(), value.getNumber(), value.getType()));
           registerMapAtStartOfBlock.put(currentBlock, new HashMap<>(merged));
         }
 
@@ -249,7 +232,6 @@ public class DexMethodBuilder {
 
         for (int i = 0; i < stmts.size(); i++) {
           Stmt stmt = stmts.get(i);
-          log.info("Process stmt: {}", stmt);
           dexStmtVisitor.newStmt();
 
           // if the last statement of the block is going to be processed (or the second to last stmt
@@ -323,21 +305,8 @@ public class DexMethodBuilder {
         }
 
         // save the register map of current block
-        log.info("Locals at end of block:");
-        registerAllocator
-            .getRegisterMap()
-            .forEach(
-                (key, value) ->
-                    log.info("{}:{}:{}", key.getName(), value.getNumber(), value.getType()));
         registerMapAtEndOfBlock.put(currentBlock, registerAllocator.getRegisterMap());
         registerAllocator.resetRegisterMap();
-
-        log.info("Locals at end of block exceptional:");
-        registerMapAtEndOfBlockExceptional
-            .get(currentBlock)
-            .forEach(
-                (key, value) ->
-                    log.info("{}:{}:{}", key.getName(), value.getNumber(), value.getType()));
 
         // Add successors of the current block to the worklist
         List<? extends BasicBlock<?>> successors = currentBlock.getSuccessors();
@@ -417,7 +386,6 @@ public class DexMethodBuilder {
                       inWorklist.add(b);
                     }
                     if (registerMapAtEndOfBlock.containsKey(b) && visitedBlocks.contains(b)) {
-                      log.info("Merge current register map to successor");
                       mergeCurrentRegisterMapToSuccessor(
                           currentBlock,
                           b,
@@ -432,11 +400,6 @@ public class DexMethodBuilder {
       int parameterSizeCount =
           DexUtil.getRegisterSizeCount(sootMethod.getParameterTypes())
               + (sootMethod.isStatic() ? 0 : 1);
-
-      for (AbstractInstruction ins :
-          instructions.values().stream().flatMap(Collection::stream).toList()) {
-        log.info("Instruction {} of stmt {}", ins.getOpcode(), instructionMap.get(ins));
-      }
 
       // Adjust the registers to the required instruction formats
       RegisterAssigner registerAssigner = new RegisterAssigner(registerAllocator, this);
@@ -455,8 +418,7 @@ public class DexMethodBuilder {
 
       LabelAssigner labelAssigner = new LabelAssigner(methodImplementationBuilder);
 
-      this.addBuilderInstructions(
-          methodImplementationBuilder, labelAssigner, registerMapAtStartOfBlock);
+      this.addBuilderInstructions(methodImplementationBuilder, labelAssigner, dexStmtVisitor);
 
       if (labelAssigner.areLabelsNotYetPlaced()) {
         throw new RuntimeException("Not all reserved labels are placed");
@@ -513,17 +475,11 @@ public class DexMethodBuilder {
 
       // if local is not used anywhere later in the control flow graph --> continue
       if (!isUsedLater(controlFlowGraph, newBlock.getHead(), local)) {
-        log.info("Local {} is not used later", local);
         continue;
       }
 
       List<Register> regs =
           registerMaps.stream().map(m -> m.get(local)).filter(Objects::nonNull).toList();
-
-      log.info(
-          "Merge local {} with registers {}",
-          local,
-          regs.stream().map(Register::getNumber).collect(Collectors.toSet()));
 
       // a local has different types in different registerMap
       Type objectType = view.getIdentifierFactory().getClassType(JIMPLE_OBJECT_TYPE);
@@ -550,8 +506,6 @@ public class DexMethodBuilder {
                                     .findFirst()
                                     .orElseThrow());
                   });
-
-      log.info("Merge local {} with type {}", local.getName(), newRegister.getType());
 
       result.put(local, newRegister);
 
@@ -633,14 +587,7 @@ public class DexMethodBuilder {
       Register register = registerMapCurrent.get(local);
       Register registerSuccessor = registerMapSuccessor.get(local);
 
-      log.info(
-          "Merge local {} to successor. Current register {}, register successor {}",
-          local,
-          register.getNumber(),
-          registerSuccessor == null ? "null" : registerSuccessor.getNumber());
-
       if (registerSuccessor == null) {
-        log.error("Local {} not included in successor", local);
         continue;
       }
 
@@ -734,11 +681,8 @@ public class DexMethodBuilder {
             instructionMap.put(moveInstruction, instructionMap.get(ins));
             i.add(ins_index, moveInstruction);
             ins_index++;
-            log.info("Add move instruction from {} to {}", r, target);
           }
         }
-      } else {
-        log.info("Local {} not used in instruction {} of stmt {}", local, ins, stmt);
       }
     }
   }
@@ -773,7 +717,7 @@ public class DexMethodBuilder {
   public List<BuilderInstruction> addBuilderInstructions(
       MethodImplementationBuilder methodImplementationBuilder,
       LabelAssigner labelAssigner,
-      Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMap) {
+      DexStmtVisitor dexStmtVisitor) {
 
     // Reserve labels
     LinkedHashMap<AbstractPayload, BuilderInstruction> payloadInstructions = new LinkedHashMap<>();
@@ -799,23 +743,25 @@ public class DexMethodBuilder {
           labelAssigner.getOrCreateLabel(b.catchStmt);
         });
 
+    Map<Local, Integer> seenRegisters = new HashMap<>();
+
+    Map<AbstractInstruction, Pair<Local, Register>> instructionRegisterMap =
+        dexStmtVisitor.getInstructionRegisterMap();
+    List<Pair<Local, Register>> parameterRegisterMap =
+        dexStmtVisitor.getParameterInstructionRegisterList();
+    for (var parameter : parameterRegisterMap) {
+      addRegisterAssignmentDebugInfo(parameter, seenRegisters, methodImplementationBuilder);
+    }
+
     // Process instructions
     List<BuilderInstruction> builderInstructions = new ArrayList<>();
     for (Map.Entry<BasicBlock<?>, List<AbstractInstruction>> entry : instructions.entrySet()) {
       currentBlock = entry.getKey();
-      log.info("Locals at start of block:");
-      blockRegisterMap
-          .getOrDefault(currentBlock, new HashMap<>())
-          .forEach(
-              (key, value) ->
-                  log.info("{}:{}:{}", key.getName(), value.getNumber(), value.getType()));
       List<AbstractInstruction> instructionsOfBlock = entry.getValue();
 
       for (int i = 0; i < instructionsOfBlock.size(); i++) {
         AbstractInstruction instruction = instructionsOfBlock.get(i);
         instruction.setLabelAssigner(labelAssigner);
-        log.info("Original instruction: {}", instruction.getOpcode());
-        log.info("Original stmt: {}", instructionMap.get(instruction));
 
         Stmt currentStmt = instructionMap.get(instruction);
 
@@ -823,8 +769,24 @@ public class DexMethodBuilder {
           labelAssigner.setLabel(currentStmt);
         }
 
+        if (instructionMap.containsKey(instruction)
+            && instructionMap.get(instruction) != null
+            && instructionMap
+                .get(instruction)
+                .getPositionInfo()
+                .equals(StmtPositionInfo.getNoStmtPositionInfo())) {
+          methodImplementationBuilder.addLineNumber(
+              instructionMap.get(instruction).getPositionInfo().getStmtPosition().getFirstLine());
+        }
+
         builderInstructions.add(instruction.getBuilderInstruction());
         methodImplementationBuilder.addInstruction(instruction.getBuilderInstruction());
+
+        Pair<Local, Register> registerAssignment = instructionRegisterMap.get(instruction);
+        if (registerAssignment != null) {
+          addRegisterAssignmentDebugInfo(
+              registerAssignment, seenRegisters, methodImplementationBuilder);
+        }
 
         if (i + 1 >= instructionsOfBlock.size()
             || currentStmt != instructionMap.get(instructionsOfBlock.get(i + 1))) {
@@ -833,6 +795,10 @@ public class DexMethodBuilder {
           }
         }
       }
+    }
+
+    for (int registersLeft : seenRegisters.values()) {
+      methodImplementationBuilder.addEndLocal(registersLeft);
     }
 
     // add payloads
@@ -862,6 +828,31 @@ public class DexMethodBuilder {
         });
 
     return builderInstructions;
+  }
+
+  private void addRegisterAssignmentDebugInfo(
+      Pair<Local, Register> registerAssignment,
+      Map<Local, Integer> seenRegisters,
+      MethodImplementationBuilder builder) {
+    Local local = registerAssignment.getLeft();
+    StringReference localName = new ImmutableStringReference(local.getName());
+    Register register = registerAssignment.getRight();
+    String dexLocalType = DexUtil.toDexType(register.getType());
+    int registerNumber = register.getNumber();
+
+    Integer beforeRegister = seenRegisters.get(local);
+    if (beforeRegister != null) {
+      if (beforeRegister == registerNumber) {
+        return;
+      }
+      builder.addEndLocal(beforeRegister);
+    }
+    builder.addStartLocal(
+        registerNumber,
+        localName,
+        new ImmutableTypeReference(dexLocalType),
+        new ImmutableStringReference(""));
+    seenRegisters.put(local, registerNumber);
   }
 
   protected void addInstruction(AbstractInstruction instruction, Stmt stmt) {

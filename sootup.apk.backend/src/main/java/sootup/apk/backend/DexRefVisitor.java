@@ -172,8 +172,6 @@ public class DexRefVisitor extends AbstractRefVisitor {
   private void fixObjectType(Type defaultType) {
     if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
         || targetRegister.isTypeGuessed()) {
-      log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
-
       if (targetRegister.getType() != defaultType) {
         if (currentStmt.isJAssignStmt()) {
           targetRegister =

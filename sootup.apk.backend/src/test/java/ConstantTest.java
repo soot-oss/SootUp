@@ -1,7 +1,6 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
 import org.jf.dexlib2.MethodHandleType;
 import org.jf.dexlib2.Opcode;
@@ -69,7 +68,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
 
     assertEquals(1, instructions.size());
 
@@ -91,7 +90,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -112,7 +111,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -133,7 +132,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -154,7 +153,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -170,7 +169,7 @@ public class ConstantTest {
 
     instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(2, instructions.size());
 
     builderInstruction = instructions.get(1);
@@ -191,7 +190,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -213,7 +212,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -234,7 +233,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -256,7 +255,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -278,7 +277,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -306,7 +305,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -342,7 +341,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);
@@ -380,7 +379,7 @@ public class ConstantTest {
 
     List<BuilderInstruction> instructions =
         dexMethodBuilder.addBuilderInstructions(
-            methodImplementationBuilder, labelAssigner, new HashMap<>());
+            methodImplementationBuilder, labelAssigner, dexStmtVisitor);
     assertEquals(1, instructions.size());
 
     BuilderInstruction builderInstruction = instructions.get(0);

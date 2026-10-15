@@ -3,6 +3,7 @@ package sootup.apk.backend;
 import static sootup.apk.backend.Constants.JIMPLE_OBJECT_TYPE;
 
 import java.util.*;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jf.dexlib2.Opcode;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
@@ -35,6 +36,10 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   private final RegisterAllocator registerAllocator;
   private final View view;
   private final SootMethod sootMethod;
+  private final Map<Stmt, AbstractInstruction> lastMappedInstructionByStmt =
+      new IdentityHashMap<>();
+  private final Map<AbstractInstruction, Pair<Local, Register>> instructionRegisterMap;
+  private final List<Pair<Local, Register>> parameterInstructionRegisterList;
 
   public DexStmtVisitor(
       View view,
@@ -53,6 +58,8 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     this.registerAllocator = registerAllocator;
     this.dexConstantVisitor = dexConstantVisitor;
     this.sootMethod = sootMethod;
+    this.instructionRegisterMap = new HashMap<>();
+    parameterInstructionRegisterList = new ArrayList<>();
   }
 
   public void newStmt() {
@@ -149,7 +156,6 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
           Register sourceRegister =
               registerAllocator.getRegisterForImmediate(sourceLocal, false, stmt);
           targetRegister = fixObjectType(sourceRegister.getType(), stmt, targetRegister);
-          log.info("{}", stmt);
           this.addInstruction(
               DexExprVisitor.generateMoveInstruction(
                   targetRegister,
@@ -173,7 +179,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
 
   @Override
   public void caseIdentityStmt(@NonNull JIdentityStmt stmt) {
-    Immediate op1 = stmt.getLeftOp();
+    Local op1 = stmt.getLeftOp();
     IdentityRef op2 = stmt.getRightOp();
     if (op2 instanceof JCaughtExceptionRef) {
       Register register = registerAllocator.getRegisterForImmediate(stmt.getLeftOp(), false, stmt);
@@ -182,6 +188,11 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     }
     dexRefVisitor.setImmediate(op1);
     op2.accept(dexRefVisitor);
+
+    if (op2 instanceof JParameterRef) {
+      parameterInstructionRegisterList.add(
+          Pair.of(op1, registerAllocator.getRegisterForImmediate(op1, true, stmt)));
+    }
   }
 
   @Override
@@ -333,6 +344,13 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
               && jCastExpr.getOp() instanceof IntConstant intConstant) {
             arraySize = intConstant.getValue();
           }
+        } else if (previousStmt instanceof JAssignStmt jAssignStmt
+            && jAssignStmt.getRightOp() instanceof IntConstant intConstant) {
+          arraySize = intConstant.getValue();
+        } else if (previousStmt instanceof JAssignStmt jAssignStmt
+            && jAssignStmt.getRightOp() instanceof JCastExpr jCastExpr
+            && jCastExpr.getOp() instanceof IntConstant intConstant) {
+          arraySize = intConstant.getValue();
         }
       }
     }
@@ -351,6 +369,19 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     #l12[2] = 30;
     #l11 = (int[]) a;
     #l11[3] = 40;
+
+    or
+
+    input#0 = 8;
+    input#1 = newarray (int)[input#0];
+    input#1[0] = 10;
+    input#1[1] = 9;
+    input#1[2] = 2;
+    input#1[3] = 5;
+    input#1[4] = 3;
+    input#1[5] = 7;
+    input#1[6] = 101;
+    input#1[7] = 18;
      */
     for (int i = index + 1; i < stmtsOfBlock.size(); i++) {
       Stmt currStmt = stmtsOfBlock.get(i);
@@ -442,6 +473,22 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   }
 
   protected void addInstruction(AbstractInstruction instruction, Stmt stmt) {
+    if (stmt instanceof JAssignStmt && ((JAssignStmt) stmt).getLeftOp() instanceof Local local) {
+      // only store the register of the last instruction of the stmt in the instructionRegisterMap
+      AbstractInstruction previous = lastMappedInstructionByStmt.put(stmt, instruction);
+      if (previous != null) {
+        instructionRegisterMap.remove(previous);
+      }
+
+      if (!instruction.getRegisters().isEmpty()) {
+        instructionRegisterMap.put(instruction, Pair.of(local, instruction.getRegisters().get(0)));
+      }
+    } else if (stmt instanceof JIdentityStmt jIdentityStmt
+        && jIdentityStmt.getRightOp() instanceof JCaughtExceptionRef) {
+      this.instructionRegisterMap.put(
+          instruction, Pair.of(jIdentityStmt.getLeftOp(), instruction.getRegisters().get(0)));
+    }
+
     dexMethodBuilder.addInstruction(instruction, stmt);
   }
 
@@ -452,8 +499,6 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   private Register fixObjectType(Type defaultType, Stmt currentStmt, Register targetRegister) {
     if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
         || targetRegister.isTypeGuessed()) {
-      log.info("Set target register {} to type {}", targetRegister.getNumber(), defaultType);
-
       if (targetRegister.getType() != defaultType && currentStmt.isJAssignStmt()) {
         targetRegister =
             registerAllocator.getRegisterForValueWithNewType(
@@ -461,12 +506,16 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
       } else {
         targetRegister.setType(defaultType);
       }
-      log.info(
-          "Set target register {} with type {} guessed true",
-          targetRegister.getNumber(),
-          targetRegister.getType());
       targetRegister.setIsTypeGuessed(true);
     }
     return targetRegister;
+  }
+
+  protected Map<AbstractInstruction, Pair<Local, Register>> getInstructionRegisterMap() {
+    return instructionRegisterMap;
+  }
+
+  protected List<Pair<Local, Register>> getParameterInstructionRegisterList() {
+    return parameterInstructionRegisterList;
   }
 }

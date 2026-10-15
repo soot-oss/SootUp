@@ -43,12 +43,7 @@ public class DexOutputLocation {
     dexPoolList.add(currentDexPool);
 
     var classes = view.getClasses().toList();
-    classes.forEach(
-        c -> {
-          if (c.getName().startsWith("androidx.recyclerview.widget.RecyclerView")) {
-            dexClassBuilder.createClass(c);
-          }
-        });
+    classes.forEach(dexClassBuilder::createClass);
     try {
       writeDexFiles(outputDir);
     } catch (IOException e) {
@@ -64,11 +59,7 @@ public class DexOutputLocation {
     currentDexPool = new DexPool(opcodes);
     dexPoolList.add(currentDexPool);
 
-    view.getClasses()
-        .forEach(
-            c -> {
-              dexClassBuilder.createClass(c);
-            });
+    view.getClasses().forEach(dexClassBuilder::createClass);
 
     String newApkName = apkFile == null ? "out.apk" : apkFile.getName();
     Path outputFile = Paths.get(outputDir, newApkName);

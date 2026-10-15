@@ -78,6 +78,7 @@ public class ApkTest {
 
     assertEquals(classCount, classCount_new);
     assertEquals(methodCount.get(), methodCount_new.get());
+    System.out.println(stmtCount.get());
     System.out.println(stmtCount_new.get());
     Files.delete(Paths.get(new_apk));
   }

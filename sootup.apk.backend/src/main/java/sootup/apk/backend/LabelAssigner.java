@@ -103,7 +103,7 @@ public class LabelAssigner {
     boolean labelsNotPlaced = false;
     for (String label : labelNames) {
       if (!addedLabelsBeforeStmt.contains(label) && !addedLabelsAfterStmt.contains(label)) {
-        log.info("Unset label: {}", label);
+        log.error("Label not set: {}", label);
         labelsNotPlaced = true;
       }
     }
