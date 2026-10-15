@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import sootup.callgraph.CallGraph.Call;
 import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.invokedynamic.FunctionalObject;
 import sootup.callgraph.reflection.ReflectionModel;
 import sootup.callgraph.scope.CallResolver;
 import sootup.callgraph.scope.VirtualCallResolver;
@@ -489,6 +490,19 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
                           instantiatedClasses.add(classType);
                           includeIgnoredCallsToClass(classType, cg, workList);
                         }));
+  }
+
+  /** A constructor reference ({@code Foo::new}) instantiates its class. */
+  @Override
+  protected void onFunctionalObject(
+      @NonNull SootMethod creator,
+      @NonNull FunctionalObject fo,
+      @NonNull MutableCallGraph cg,
+      @NonNull Deque<MethodSignature> workList) {
+    ClassType created = fo.implementationMethod().getDeclClassType();
+    if (fo.isConstructorReference() && instantiatedClasses.add(created)) {
+      includeIgnoredCallsToClass(created, cg, workList);
+    }
   }
 
   /**

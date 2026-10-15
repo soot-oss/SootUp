@@ -25,12 +25,18 @@ package sootup.callgraph.invokedynamic;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.constant.MethodHandle;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
+import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.views.View;
+import sootup.interceptors.InvokeDynamicDesugarer;
 
 /**
  * Resolves an invokedynamic call site to every method referenced by a {@link MethodHandle} among
@@ -45,7 +51,32 @@ public final class BootstrapMethodHandleResolver implements DynamicInvokeResolve
 
   private static final String LAMBDA_METAFACTORY = "java.lang.invoke.LambdaMetafactory";
 
+  /** Lowers string concatenation and record methods. */
+  private static final InvokeDynamicDesugarer DESUGARER = new InvokeDynamicDesugarer();
+
+  /** Desugared bodies by original body (identity); see {@link #desugar}. */
+  private final Map<Body, Body> desugared = Collections.synchronizedMap(new WeakHashMap<>());
+
   private BootstrapMethodHandleResolver() {}
+
+  /**
+   * Applies {@link InvokeDynamicDesugarer} (string concatenation, record methods) unless the view's
+   * frontend already did.
+   */
+  @NonNull
+  @Override
+  public Body desugar(@NonNull SootMethod method, @NonNull Body body, @NonNull View view) {
+    if (!DESUGARER.appliesTo(body.getStmts())) {
+      return body; // common case, and bodies the frontend desugared already
+    }
+    return desugared.computeIfAbsent(
+        body,
+        b -> {
+          Body.BodyBuilder builder = Body.builder(b, Collections.emptySet());
+          DESUGARER.interceptBody(builder, view);
+          return builder.build();
+        });
+  }
 
   @NonNull
   @Override
