@@ -375,6 +375,8 @@ public class DexExprVisitor extends AbstractExprVisitor {
     Immediate op2 = abstractIntBinopExpr.getOp2();
     Register op2Register = registerAllocator.getRegisterForImmediate(op2, false, currentStmt);
 
+    fixObjectType(PrimitiveType.getInt());
+
     if (op1Register == targetRegister || op2Register == targetRegister) {
       if (currentStmt.isJAssignStmt()) {
         targetRegister =
@@ -385,8 +387,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
       }
       targetRegister.setIsTypeGuessed(true);
     }
-
-    fixObjectType(PrimitiveType.getInt());
 
     if (!(op1Register.getType() instanceof PrimitiveType)
         || !(op2Register.getType() instanceof PrimitiveType)) {
@@ -467,7 +467,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
     } else if (expr.getMethodSignature().getDeclClassType().getClass().isInterface()) {
       opcode = InvokeOpcode.INVOKE_SUPER;
     } else {
-      opcode = InvokeOpcode.INVOKE_VIRTUAL;
+      opcode = InvokeOpcode.INVOKE_SUPER;
     }
 
     List<Register> argumentRegisters = getVirtualInvokeArgumentRegisters(expr);
@@ -487,7 +487,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
       }
       current = sc.getSuperclass().get();
 
-      if ((current == targetClassType)) {
+      if ((current.equals(targetClassType))) {
         return true;
       }
     }
@@ -735,6 +735,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
     if (register.getType() instanceof PrimitiveType
         && type.toString().startsWith(JIMPLE_OBJECT_TYPE)) {
+      fixObjectType(register.getType());
       dexStmtVisitor.addInstruction(
           generateMoveInstruction(
               targetRegister,
@@ -746,6 +747,8 @@ public class DexExprVisitor extends AbstractExprVisitor {
           currentStmt);
       return;
     }
+
+    fixObjectType(type);
 
     if (register.getType() instanceof PrimitiveType && type instanceof PrimitiveType) {
       castPrimitive(register, targetRegister, register.getType(), type);
@@ -1067,7 +1070,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
   private void fixObjectType(Type defaultType) {
     if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
         || targetRegister.isTypeGuessed()) {
-
       if (targetRegister.getType() != defaultType && currentStmt.isJAssignStmt()) {
         targetRegister =
             registerAllocator.getRegisterForValueWithNewType(

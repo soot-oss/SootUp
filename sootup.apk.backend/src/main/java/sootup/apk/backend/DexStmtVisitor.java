@@ -400,9 +400,9 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
           } else if (rightOp instanceof LongConstant longConstant) {
             arrayValues.add(longConstant.getValue());
           } else if (rightOp instanceof FloatConstant floatConstant) {
-            arrayValues.add(floatConstant.getValue());
+            arrayValues.add(Float.floatToRawIntBits(floatConstant.getValue()) & 0xffffffffL);
           } else if (rightOp instanceof DoubleConstant doubleConstant) {
-            arrayValues.add(doubleConstant.getValue());
+            arrayValues.add(Double.doubleToRawLongBits(doubleConstant.getValue()));
           } else {
             break;
           }

@@ -22,7 +22,7 @@ public class RegisterAllocator {
 
   private int reservedRegisters;
 
-  private Map<Local, Register> registerMap = new LinkedHashMap<>();
+  private Map<Local, Register> registerMap;
   private final List<Register> registerList = new LinkedList<>();
 
   private final Map<Class<?>, List<Register>> constantRegisterPools = new HashMap<>();
@@ -33,6 +33,7 @@ public class RegisterAllocator {
   public RegisterAllocator(DexConstantVisitor dexConstantVisitor) {
     this.dexConstantVisitor = dexConstantVisitor;
     this.reservedRegisters = 0;
+    this.registerMap = new LinkedHashMap<>();
   }
 
   private Register allocateNewRegister(Type type, boolean isParameter, boolean isTmp) {
@@ -67,25 +68,18 @@ public class RegisterAllocator {
   public Register getRegisterForConstant(Constant constant, Stmt currentStmt) {
     Type type;
     boolean guessed;
-    boolean n = false;
     if (constant.getType().toString().equals(JIMPLE_OBJECT_TYPE)) {
       guessed = true;
-      if (constant instanceof IntConstant intConstant) {
+      if (constant instanceof IntConstant) {
         type = PrimitiveType.getInt();
-        if (intConstant.getValue() == 0) {
-          n = true;
-        }
       } else if (constant instanceof FloatConstant) {
         type = PrimitiveType.getFloat();
       } else if (constant instanceof DoubleConstant) {
         type = PrimitiveType.getDouble();
       } else if (constant instanceof LongConstant) {
         type = PrimitiveType.getLong();
-      } else if (constant instanceof BooleanConstant booleanConstant) {
+      } else if (constant instanceof BooleanConstant) {
         type = PrimitiveType.getBoolean();
-        if (!booleanConstant.getValue()) {
-          n = true;
-        }
       } else {
         type = constant.getType();
       }
@@ -95,7 +89,7 @@ public class RegisterAllocator {
     }
 
     try {
-      Register register = getReusableConstantRegister(constant, type, guessed, n);
+      Register register = getReusableConstantRegister(constant, type, guessed);
 
       register.setIsTypeGuessed(guessed);
 
@@ -128,8 +122,7 @@ public class RegisterAllocator {
     return constantRegisterPools.computeIfAbsent(constant.getClass(), key -> new LinkedList<>());
   }
 
-  private Register getReusableConstantRegister(
-      Constant constant, Type type, boolean guessed, boolean potentialNull) {
+  private Register getReusableConstantRegister(Constant constant, Type type, boolean guessed) {
 
     List<Register> pool = getConstantPool(constant);
 

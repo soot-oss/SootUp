@@ -85,7 +85,7 @@ public class DexOutputLocation {
           copyExistingFiles(zipOutputStream);
         }
 
-        // addExistingClasses("kotlin.internal.PlatformImplementationsKt");
+        // addExistingClasses("");
         writeDexFiles(zipOutputStream);
         log.info(
             "APK successfully created. The .apk still needs to be aligned with zipalign and signed with jarsigner");
@@ -95,7 +95,6 @@ public class DexOutputLocation {
     }
   }
 
-  // adds all classes to classes.dex except from com.example.exampleapp.MainActivity
   private void addExistingClasses(String classNamePrefix) throws IOException {
 
     try (ZipFile apk = new ZipFile(apkFile)) {
@@ -119,7 +118,9 @@ public class DexOutputLocation {
 
           for (ClassDef classDef : dexFile.getClasses()) {
             String dexClassName = classDef.getType();
-            if (dexClassName.startsWith(DexUtil.toDexClassName(classNamePrefix))) {
+            String dexClassNamePrefix = DexUtil.toDexClassName(classNamePrefix);
+            if (dexClassName.startsWith(
+                dexClassNamePrefix.substring(0, dexClassNamePrefix.length() - 2))) {
               addClass(classDef);
             }
           }

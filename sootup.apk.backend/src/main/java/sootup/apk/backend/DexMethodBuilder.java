@@ -298,7 +298,8 @@ public class DexMethodBuilder {
           // process stmt via stmtVisitor
           if (stmt instanceof JAssignStmt jAssignStmt
               && jAssignStmt.getRightOp() instanceof JNewArrayExpr) {
-            stmts = dexStmtVisitor.newArrayInit(jAssignStmt, stmts);
+            // stmts = dexStmtVisitor.newArrayInit(jAssignStmt, stmts);
+            stmt.accept(dexStmtVisitor);
           } else {
             stmt.accept(dexStmtVisitor);
           }
