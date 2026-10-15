@@ -138,4 +138,27 @@ class DexNullTransformerTest {
 
     assertEquals(NullConstant.getInstance(), ((JReturnStmt) builder.getStmts().get(0)).getOp());
   }
+
+  @Test
+  void firstUseInProgramOrderDecides() {
+    // l = 0; useInt(l); use(l); return; - the uses disagree, the first one decides, like in Soot.
+    // Statements and locals are hashed by identity, so the order must not come from hash sets.
+    MethodSignature useInt = FACTORY.parseMethodSignature("<example.Test: void use(int)>");
+    for (int i = 0; i < 200; i++) {
+      Local l = Jimple.newLocal("l", UnknownType.getInstance());
+      var builder =
+          builder(
+              "void",
+              List.of(l),
+              Jimple.newAssignStmt(l, IntConstant.getInstance(0), POS),
+              Jimple.newInvokeStmt(Jimple.newStaticInvokeExpr(useInt, l), POS),
+              Jimple.newInvokeStmt(Jimple.newStaticInvokeExpr(USE_OBJECT, l), POS),
+              Jimple.newReturnVoidStmt(POS));
+
+      transform(builder);
+
+      assertEquals(
+          IntConstant.getInstance(0), ((JAssignStmt) builder.getStmts().get(0)).getRightOp());
+    }
+  }
 }

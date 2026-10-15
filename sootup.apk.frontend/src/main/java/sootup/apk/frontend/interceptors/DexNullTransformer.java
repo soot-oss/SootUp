@@ -438,7 +438,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
         if ((r instanceof IntConstant && ((IntConstant) r).getValue() == 0)
             || (r instanceof LongConstant && ((LongConstant) r).getValue() == 0)) {
           if (candidates == null) {
-            candidates = new HashSet<>();
+            candidates = new LinkedHashSet<>();
           }
           candidates.add(l);
         }
@@ -446,7 +446,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
         AbstractConditionExpr expr = ((JIfStmt) stmt).getCondition();
         if (isZeroComparison(expr) && expr.getOp1() instanceof Local) {
           if (candidates == null) {
-            candidates = new HashSet<>();
+            candidates = new LinkedHashSet<>();
           }
           candidates.add((Local) expr.getOp1());
         }

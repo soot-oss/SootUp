@@ -240,7 +240,7 @@ public class DexNumberTranformer extends DexTransformer {
    * @param bodyBuilder the bodyBuilder to analyze
    */
   private Set<Local> getNumCandidates(Body.BodyBuilder bodyBuilder) {
-    Set<Local> candidates = new HashSet<>();
+    Set<Local> candidates = new LinkedHashSet<>();
     for (Stmt u : bodyBuilder.getStmts()) {
       if (u instanceof JAssignStmt) {
         JAssignStmt a = (JAssignStmt) u;
