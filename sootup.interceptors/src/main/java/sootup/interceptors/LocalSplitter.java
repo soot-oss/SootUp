@@ -376,16 +376,20 @@ public class LocalSplitter implements BodyInterceptor {
       final int[] nextId = {0}; // Java quirk; just an `int` doesn't work
 
       Function<PartialStmt, Local> getNewLocal =
-          partialStmt ->
-              representativeToNewLocal.computeIfAbsent(
-                  disjointSet.find(partialStmt),
-                  s -> {
-                    Local newLocal;
-                    do {
-                      newLocal = local.withName(local.getName() + "#" + (nextId[0]++));
-                    } while (locals.contains(newLocal));
-                    return newLocal;
-                  });
+          partialStmt -> {
+            // A use that no definition reaches at all, e.g. in dead code that no statement and no
+            // handler leads to, gets a local of its own
+            disjointSet.add(partialStmt);
+            return representativeToNewLocal.computeIfAbsent(
+                disjointSet.find(partialStmt),
+                s -> {
+                  Local newLocal;
+                  do {
+                    newLocal = local.withName(local.getName() + "#" + (nextId[0]++));
+                  } while (locals.contains(newLocal));
+                  return newLocal;
+                });
+          };
 
       for (int i = 0; i < stmts.size(); i++) {
         Stmt stmt = stmts.get(i);
