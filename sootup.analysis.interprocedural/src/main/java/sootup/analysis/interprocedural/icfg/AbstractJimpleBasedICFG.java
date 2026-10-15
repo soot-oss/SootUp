@@ -24,7 +24,6 @@ package sootup.analysis.interprocedural.icfg;
 
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import heros.DontSynchronize;
 import heros.SynchronizedBy;
 import heros.solver.IDESolver;
 import java.util.*;
@@ -45,7 +44,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   protected View view;
 
-  @DontSynchronize("written by single thread; read afterwards")
+  @SynchronizedBy("concurrent map; owners can be registered lazily while the ICFG is in use")
   private final Map<Stmt, Body> stmtToOwner = createStmtToOwnerMap();
 
   @SynchronizedBy("by use of synchronized LoadingCache class")
@@ -100,6 +99,10 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   public Body getBodyOf(Stmt stmt) {
     Body body = stmtToOwner.get(stmt);
+    if (body == null) {
+      registerRemainingOwners();
+      body = stmtToOwner.get(stmt);
+    }
     assert body != null : "Statement " + stmt + " not in Stmt-to-owner mapping";
     return body;
   }
@@ -155,6 +158,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public ControlFlowGraph<?> getOrCreateControlFlowGraph(SootMethod method) {
+    registerOwnersOf(method);
     return getOrCreateControlFlowGraph(method.getBody());
   }
 
@@ -167,6 +171,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   }
 
   protected Set<Stmt> getCallsFromWithinMethod(SootMethod method) {
+    registerOwnersOf(method);
     return method.getBody().getStmts().stream()
         .filter(this::isCallStmt)
         .collect(Collectors.toSet());
@@ -238,6 +243,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (!m.hasBody()) {
       return Collections.emptySet();
     }
+    registerOwnersOf(m);
     return getStartPoints(m.getBody());
   }
 
@@ -252,6 +258,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public Set<Stmt> allNonCallStartNodes() {
+    registerRemainingOwners();
     return stmtToOwner.keySet().stream()
         .filter(u -> !(isStartPoint(u) || isCallStmt(u)))
         .collect(Collectors.toSet());
@@ -259,6 +266,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public Set<Stmt> allNonCallEndNodes() {
+    registerRemainingOwners();
     return stmtToOwner.keySet().stream()
         .filter(u -> !(isExitStmt(u) || isCallStmt(u)))
         .collect(Collectors.toSet());
@@ -273,6 +281,20 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   public Set<Stmt> getCallsFromWithin(SootMethod m) {
     return methodToCallsFromWithin.getUnchecked(m);
   }
+
+  /**
+   * Registers the statements of the given method as owned by its body, if they are registered
+   * lazily and not yet known. Called before the statements of a method are handed out.
+   *
+   * @param m the method whose statements are about to be used
+   */
+  protected void registerOwnersOf(SootMethod m) {}
+
+  /**
+   * Registers the statements of all methods that are registered lazily and not yet known. Called
+   * when a statement is not known, and before all known statements are enumerated.
+   */
+  protected void registerRemainingOwners() {}
 
   public void initializeStmtToOwner(SootMethod m) {
     if (!m.hasBody()) {
@@ -314,6 +336,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (!m.hasBody()) {
       return Collections.emptySet();
     }
+    registerOwnersOf(m);
     Body body = m.getBody();
     ControlFlowGraph<?> controlFlowGraph = getOrCreateControlFlowGraph(body);
     return controlFlowGraph.getTails();
@@ -331,6 +354,10 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public boolean isReachable(Stmt u) {
+    if (stmtToOwner.containsKey(u)) {
+      return true;
+    }
+    registerRemainingOwners();
     return stmtToOwner.containsKey(u);
   }
 }
