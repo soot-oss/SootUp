@@ -60,6 +60,12 @@ public class DexNullTransformer extends AbstractNullTransformer {
 
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
+    // The fields hold the state of one body. The interceptors of an input location are shared by
+    // its bodies, which may be resolved concurrently, so each body gets its own instance.
+    new DexNullTransformer().transform(builder, view);
+  }
+
+  private void transform(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
     // Statements are immutable: collect the changed statements of the body and replace them at
     // the end, after all analyses of the original statements are done
