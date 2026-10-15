@@ -40,6 +40,18 @@ public class DefaultCallResolver implements CallResolver {
   @Override
   public ExplorationVerdict tryAdvance(
       @NonNull SootMethod method, @NonNull InvokableStmt statement) {
+    return verdictFor(method);
+  }
+
+  /** Excludes the calls of library methods as a whole, so that their bodies are not loaded. */
+  @Override
+  @NonNull
+  public ExplorationVerdict tryAdvanceMethod(@NonNull SootMethod method) {
+    return verdictFor(method);
+  }
+
+  @NonNull
+  private ExplorationVerdict verdictFor(@NonNull SootMethod method) {
     return view.getClass(method.getDeclaringClassType())
         .filter(SootClass::isLibraryClass)
         .map(sc -> ExplorationVerdict.STOP_AFTER_CALL)

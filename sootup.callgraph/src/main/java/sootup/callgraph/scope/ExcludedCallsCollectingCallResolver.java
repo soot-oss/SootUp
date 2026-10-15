@@ -55,6 +55,13 @@ public class ExcludedCallsCollectingCallResolver extends DefaultCallResolver {
     return strategy;
   }
 
+  /** Examines each method statement by statement, so that excluded methods are recorded. */
+  @Override
+  @NonNull
+  public ExplorationVerdict tryAdvanceMethod(@NonNull SootMethod method) {
+    return ExplorationVerdict.EXPLORE_METHOD;
+  }
+
   /**
    * Returns the signatures of the methods whose calls were excluded from expansion so far.
    *
