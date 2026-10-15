@@ -27,7 +27,6 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.TwoRegisterInstruction;
 import sootup.apk.frontend.main.DexBody;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.types.PrimitiveType;
@@ -42,8 +41,7 @@ public class CastInstruction extends DexLibAbstractInstruction {
     Type targetType = getTargetType();
     JCastExpr jCastExpr = Jimple.newCastExpr(body.getRegisterLocal(source), targetType);
     JAssignStmt jAssignStmt =
-        Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), jCastExpr, new SimpleStmtPositionInfo(lineNumber));
+        Jimple.newAssignStmt(body.getRegisterLocal(dest), jCastExpr, opTagPositionInfo());
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }

@@ -34,9 +34,11 @@ import sootup.core.views.View;
 
 public class DexClassProvider implements PathbasedClassProvider {
   @NonNull private final View view;
+  @NonNull private final DexLibWrapper dexLibWrapper;
 
-  public DexClassProvider(@NonNull View view) {
+  public DexClassProvider(@NonNull View view, @NonNull DexLibWrapper dexLibWrapper) {
     this.view = view;
+    this.dexLibWrapper = dexLibWrapper;
   }
 
   @Override
@@ -44,12 +46,13 @@ public class DexClassProvider implements PathbasedClassProvider {
       @NonNull AnalysisInputLocation inputLocation,
       @NonNull Path sourcePath,
       @NonNull ClassType classSignature) {
-    DexClassSource dexClassSource =
-        new DexClassSource(view, inputLocation, classSignature, sourcePath);
-    if (dexClassSource.classInformation != null) {
-      return Optional.of(dexClassSource);
+    DexLibWrapper.ClassInformation classInformation =
+        dexLibWrapper.getClassInformation(classSignature);
+    if (classInformation == null) {
+      return Optional.empty();
     }
-    return Optional.empty();
+    return Optional.of(
+        new DexClassSource(view, inputLocation, classSignature, sourcePath, classInformation));
   }
 
   @Override

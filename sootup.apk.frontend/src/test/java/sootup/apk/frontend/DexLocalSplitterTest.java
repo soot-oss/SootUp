@@ -106,7 +106,10 @@ public class DexLocalSplitterTest {
 
     List<BodyInterceptor> interceptors =
         new ArrayList<>(DexBodyInterceptors.Default.bodyInterceptors());
-    interceptors.add(new LocalSplitter(exceptionalFlow));
+    // the default pipeline splits locals first; run that split with the flow under test instead
+    interceptors.replaceAll(
+        interceptor ->
+            interceptor instanceof LocalSplitter ? new LocalSplitter(exceptionalFlow) : interceptor);
     JavaView view =
         new JavaView(
             List.of(
@@ -200,7 +203,9 @@ public class DexLocalSplitterTest {
     for (Stmt stmt : body.getStmts()) {
       String text = stmt.toString();
       if (text.contains("void use(java.lang.Object)")) {
-        reads.add(text.substring(text.lastIndexOf('(') + 1, text.lastIndexOf(')')));
+        String local = text.substring(text.lastIndexOf('(') + 1, text.lastIndexOf(')'));
+        // drop the _n of DexSharedInitializationLocalSplitter's copies of a shared constant
+        reads.add(local.replaceFirst("_\\d+$", ""));
       }
     }
     // the normal path's use comes first in the dex code, the handler's second
