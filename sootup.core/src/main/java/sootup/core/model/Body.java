@@ -37,6 +37,7 @@ import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
+import sootup.core.jimple.common.Trap;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
@@ -210,6 +211,14 @@ public class Body implements HasPosition {
   // TODO: [ms] should be an ImmutableControlFlowGraph!
   public ControlFlowGraph<?> getControlFlowGraph() {
     return graph;
+  }
+
+  /**
+   * returns the traps of this body like the trap table in the bytecode
+   */
+  @NonNull
+  public List<Trap> getTraps() {
+    return getControlFlowGraph().getTraps();
   }
 
   /** {@inheritDoc} */
