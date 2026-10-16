@@ -22,6 +22,8 @@ package sootup.callgraph;
  * #L%
  */
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.SetMultimap;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.graph4j.DirectedPseudograph;
@@ -40,6 +42,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @NonNull private final DirectedPseudograph<MethodSignature, Call> graph;
   @NonNull private final List<MethodSignature> entryMethods;
+  @NonNull private final SetMultimap<Call, CallLabel> labels;
 
   /** The constructor of the graph based call graph. it initializes the call graph object. */
   @SuppressWarnings("unchecked")
@@ -53,8 +56,16 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   protected GraphBasedCallGraph(
       @NonNull DirectedPseudograph<MethodSignature, Call> graph,
       @NonNull List<MethodSignature> entryMethods) {
+    this(graph, entryMethods, LinkedHashMultimap.create());
+  }
+
+  protected GraphBasedCallGraph(
+      @NonNull DirectedPseudograph<MethodSignature, Call> graph,
+      @NonNull List<MethodSignature> entryMethods,
+      @NonNull SetMultimap<Call, CallLabel> labels) {
     this.graph = graph;
     this.entryMethods = entryMethods;
+    this.labels = labels;
   }
 
   @Override
@@ -84,6 +95,20 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     }
     int target = vertexOf(call.targetMethodSignature());
     graph.addLabeledEdge(source, target, call);
+  }
+
+  @Override
+  public void addLabel(@NonNull Call call, @NonNull CallLabel label) {
+    if (!containsCall(call)) {
+      throw new IllegalArgumentException("Call " + call + " is not contained in the call graph");
+    }
+    labels.put(call, label);
+  }
+
+  @NonNull
+  @Override
+  public Set<CallLabel> getLabels(@NonNull Call call) {
+    return Collections.unmodifiableSet(labels.get(call));
   }
 
   @NonNull
@@ -186,7 +211,8 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @NonNull
   @Override
   public MutableCallGraph copy() {
-    return new GraphBasedCallGraph(graph.copy(), new ArrayList<>(entryMethods));
+    return new GraphBasedCallGraph(
+        graph.copy(), new ArrayList<>(entryMethods), LinkedHashMultimap.create(labels));
   }
 
   @NonNull
@@ -312,7 +338,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
    *     a specific method
    */
   protected String printCallingMethods(CallGraph.Call call) {
-    return call.sourceMethodSignature().toString();
+    return call.sourceMethodSignature().toString() + printLabels(call);
   }
 
   /**
@@ -322,7 +348,19 @@ public class GraphBasedCallGraph implements MutableCallGraph {
    * @return The returned String will be used in the toString method to define the called methods
    */
   protected String printCalledMethods(CallGraph.Call call) {
-    return call.targetMethodSignature().toString();
+    return call.targetMethodSignature().toString() + printLabels(call);
+  }
+
+  /**
+   * This returns the string that is used in the toString Method to print the labels of a call
+   *
+   * @param call The data of the call
+   * @return the labels of the call prefixed by a space, or an empty string if the call has no
+   *     labels
+   */
+  protected String printLabels(CallGraph.Call call) {
+    Set<CallLabel> callLabels = getLabels(call);
+    return callLabels.isEmpty() ? "" : " " + callLabels;
   }
 
   @Override
