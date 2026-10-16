@@ -22,6 +22,7 @@ package sootup.core.graph;
  * #L%
  */
 
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Iterators;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -37,7 +38,7 @@ import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.types.ClassType;
 import sootup.core.util.DotExporter;
 import sootup.core.util.EscapedWriter;
-import sootup.core.util.printer.BriefStmtPrinter;
+import sootup.core.util.printer.BlockGraphIteratorAndTrapAggregator;
 import sootup.core.util.printer.JimplePrinter;
 
 /**
@@ -93,6 +94,50 @@ public abstract class ControlFlowGraph<V extends BasicBlock<V>> implements Itera
 
   public Iterator<BasicBlock<?>> getBlockIterator() {
     return new BlockGraphIterator(this);
+  }
+
+  /**
+   * returns the traps of this graph like the trap table in the bytecode, sorted by the position
+   * of the begin statement, then the end statement and the exception type (same order as used
+   * for Jimple printing)
+   *
+   * <p>Note: a trap whose protected range extends to the end of the graph is closed with a
+   * synthetic end statement that is not part of the graph
+   */
+  @NonNull
+  public List<Trap> getTraps() {
+    BlockGraphIteratorAndTrapAggregator aggregator = new BlockGraphIteratorAndTrapAggregator(this);
+    Map<Stmt, Integer> stmtToBlockIdx = new IdentityHashMap<>();
+    int blockIdx = 0;
+    // collect the block indices of the block head/tail stmts to sort the traps by position
+    while (aggregator.hasNext()) {
+      final BasicBlock<?> block = aggregator.next();
+      stmtToBlockIdx.put(block.getHead(), blockIdx);
+      stmtToBlockIdx.put(block.getTail(), blockIdx);
+      blockIdx++;
+    }
+
+    final List<Trap> traps = aggregator.getTraps();
+    final JNopStmt danglingEndStmt = aggregator.getLastStmt();
+    if (danglingEndStmt != null) {
+      // a trap that was still open at the end of the graph was closed with a synthetic stmt
+      // that is not part of the graph - give it the index after the last block
+      stmtToBlockIdx.put(danglingEndStmt, blockIdx);
+    }
+    traps.sort(getTrapComparator(stmtToBlockIdx));
+    return traps;
+  }
+
+  /** Comparator which sorts the trap output of {@link #getTraps()} */
+  @NonNull
+  private static Comparator<Trap> getTrapComparator(@NonNull Map<Stmt, Integer> stmtToBlockIdx) {
+    return (a, b) ->
+        ComparisonChain.start()
+            .compare(stmtToBlockIdx.get(a.getBeginStmt()), stmtToBlockIdx.get(b.getBeginStmt()))
+            .compare(stmtToBlockIdx.get(a.getEndStmt()), stmtToBlockIdx.get(b.getEndStmt()))
+            // [ms] would be nice to have the traps ordered by exception hierarchy as well
+            .compare(a.getExceptionType().toString(), b.getExceptionType().toString())
+            .result();
   }
 
   public abstract BasicBlock<?> getBlockOf(@NonNull Stmt stmt);
@@ -354,8 +399,8 @@ public abstract class ControlFlowGraph<V extends BasicBlock<V>> implements Itera
       return false;
     }
 
-    List<Trap> currTraps = new BriefStmtPrinter(this).getTraps();
-    List<Trap> otherGraphTraps = new BriefStmtPrinter(otherGraph).getTraps();
+    List<Trap> currTraps = getTraps();
+    List<Trap> otherGraphTraps = otherGraph.getTraps();
     if (!currTraps.equals(otherGraphTraps)) {
       return false;
     }
