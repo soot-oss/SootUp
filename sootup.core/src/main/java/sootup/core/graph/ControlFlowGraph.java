@@ -97,9 +97,9 @@ public abstract class ControlFlowGraph<V extends BasicBlock<V>> implements Itera
   }
 
   /**
-   * returns the traps of this graph like the trap table in the bytecode, sorted by the position
-   * of the begin statement, then the end statement and the exception type (same order as used
-   * for Jimple printing)
+   * returns the traps of this graph like the trap table in the bytecode, sorted by the position of
+   * the begin statement, then the end statement and the exception type (same order as used for
+   * Jimple printing)
    *
    * <p>Note: a trap whose protected range extends to the end of the graph is closed with a
    * synthetic end statement that is not part of the graph
@@ -109,6 +109,7 @@ public abstract class ControlFlowGraph<V extends BasicBlock<V>> implements Itera
     BlockGraphIteratorAndTrapAggregator aggregator = new BlockGraphIteratorAndTrapAggregator(this);
     Map<Stmt, Integer> stmtToBlockIdx = new IdentityHashMap<>();
     int blockIdx = 0;
+
     // collect the block indices of the block head/tail stmts to sort the traps by position
     while (aggregator.hasNext()) {
       final BasicBlock<?> block = aggregator.next();
@@ -120,11 +121,12 @@ public abstract class ControlFlowGraph<V extends BasicBlock<V>> implements Itera
     final List<Trap> traps = aggregator.getTraps();
     final JNopStmt danglingEndStmt = aggregator.getLastStmt();
     if (danglingEndStmt != null) {
-      // a trap that was still open at the end of the graph was closed with a synthetic stmt
-      // that is not part of the graph - give it the index after the last block
+      // a trap that was still open at the end of the graph was closed with a synthetic stmt that is
+      // not part of the graph - give it the index after the last block
       stmtToBlockIdx.put(danglingEndStmt, blockIdx);
     }
     traps.sort(getTrapComparator(stmtToBlockIdx));
+
     return traps;
   }
 
@@ -135,8 +137,10 @@ public abstract class ControlFlowGraph<V extends BasicBlock<V>> implements Itera
         ComparisonChain.start()
             .compare(stmtToBlockIdx.get(a.getBeginStmt()), stmtToBlockIdx.get(b.getBeginStmt()))
             .compare(stmtToBlockIdx.get(a.getEndStmt()), stmtToBlockIdx.get(b.getEndStmt()))
-            // [ms] would be nice to have the traps ordered by exception hierarchy as well
-            .compare(a.getExceptionType().toString(), b.getExceptionType().toString())
+            .compare(
+                a.getExceptionType().toString(),
+                // [ms] would be nice to have the traps ordered by exception hierarchy as well
+                b.getExceptionType().toString())
             .result();
   }
 
