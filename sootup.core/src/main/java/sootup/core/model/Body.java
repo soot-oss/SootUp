@@ -213,9 +213,7 @@ public class Body implements HasPosition {
     return graph;
   }
 
-  /**
-   * returns the traps of this body like the trap table in the bytecode
-   */
+  /** returns the traps of this body like the trap table in the bytecode */
   @NonNull
   public List<Trap> getTraps() {
     return getControlFlowGraph().getTraps();

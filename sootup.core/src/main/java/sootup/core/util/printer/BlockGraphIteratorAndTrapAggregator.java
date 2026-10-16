@@ -41,7 +41,7 @@ import sootup.core.types.ClassType;
 /**
  * Iterates over the Blocks and collects/aggregates Trap information. It is used to collect and
  * aggregate traps for serializing Jimple in the JimplePrinter and by {@link
- * sootup.core.util.TrapAggregator}
+ * sootup.core.graph.ControlFlowGraph#getTraps()}
  */
 public class BlockGraphIteratorAndTrapAggregator extends BlockGraphIterator {
 

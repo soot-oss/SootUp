@@ -102,7 +102,8 @@ public abstract class ControlFlowGraph<V extends BasicBlock<V>> implements Itera
    * Jimple printing)
    *
    * <p>Note: a trap whose protected range extends to the end of the graph is closed with a
-   * synthetic end statement that is not part of the graph
+   * synthetic end statement that is not part of the graph. This method requires a full iteration
+   * over the blocks of the graph
    */
   @NonNull
   public List<Trap> getTraps() {
