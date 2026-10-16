@@ -25,6 +25,7 @@ package sootup.java.core;
 import com.google.common.base.Objects;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.frontend.PathbasedClassProvider;
@@ -42,6 +43,8 @@ public abstract class JavaSootClassSource implements SootClassSource {
   // holds information about the specific data unit where the information about a class is stored
   protected final Path sourcePath;
 
+  @Nullable private final String genericSignature;
+
   /**
    * Creates and a {@link SootClassSource} for a specific source file. The file should be passed as
    * {@link Path} and can be located in an arbitrary {@link java.nio.file.FileSystem}.
@@ -58,15 +61,42 @@ public abstract class JavaSootClassSource implements SootClassSource {
       @NonNull AnalysisInputLocation inputLocation,
       @NonNull ClassType classSignature,
       @NonNull Path sourcePath) {
+    this(inputLocation, classSignature, sourcePath, null);
+  }
+
+  /**
+   * Creates a class source with an optional classfile Signature attribute.
+   *
+   * @param inputLocation the input location containing the class
+   * @param classSignature the class type
+   * @param sourcePath the path to the source
+   * @param genericSignature the unparsed Signature attribute, or {@code null} if absent
+   */
+  public JavaSootClassSource(
+      @NonNull AnalysisInputLocation inputLocation,
+      @NonNull ClassType classSignature,
+      @NonNull Path sourcePath,
+      @Nullable String genericSignature) {
     this.analysisInputLocation = inputLocation;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;
+    this.genericSignature = genericSignature;
   }
 
   public JavaSootClassSource(SootClassSource delegate) {
-    this.analysisInputLocation = delegate.getAnalysisInputLocation();
-    this.classSignature = delegate.getClassType();
-    this.sourcePath = delegate.getSourcePath();
+    this(
+        delegate.getAnalysisInputLocation(),
+        delegate.getClassType(),
+        delegate.getSourcePath(),
+        delegate instanceof JavaSootClassSource
+            ? ((JavaSootClassSource) delegate).getGenericSignature().orElse(null)
+            : null);
+  }
+
+  /** Returns the unparsed classfile Signature attribute, or an empty optional if absent. */
+  @NonNull
+  public Optional<String> getGenericSignature() {
+    return Optional.ofNullable(genericSignature);
   }
 
   protected abstract Iterable<AnnotationUsage> resolveAnnotations();
