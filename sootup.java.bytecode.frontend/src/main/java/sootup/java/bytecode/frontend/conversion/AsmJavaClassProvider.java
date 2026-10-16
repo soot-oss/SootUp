@@ -171,7 +171,8 @@ public class AsmJavaClassProvider implements PathbasedClassProvider {
               signature,
               exceptions,
               view,
-              analysisInputLocation.getBodyInterceptors());
+              analysisInputLocation.getBodyInterceptors(),
+              analysisInputLocation.getExtendedScope());
       methods.add(mn);
       return mn;
     }
