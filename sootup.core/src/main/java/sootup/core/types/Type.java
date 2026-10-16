@@ -46,6 +46,18 @@ public abstract class Type implements Acceptor<TypeVisitor> {
     */
   }
 
+  /** Converts the int-like types (short, byte, boolean and char) to IntType. */
+  public static Type toMachineType(Type t) {
+    if (t.equals(PrimitiveType.ShortType.getInstance())
+        || t.equals(PrimitiveType.ByteType.getInstance())
+        || t.equals(PrimitiveType.BooleanType.getInstance())
+        || t.equals(PrimitiveType.CharType.getInstance())) {
+      return PrimitiveType.IntType.getInstance();
+    } else {
+      return t;
+    }
+  }
+
   public static boolean isObject(Type type) {
     return type.toString().equals("java.lang.Object");
   }
