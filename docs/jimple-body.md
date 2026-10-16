@@ -59,7 +59,7 @@ In serialized(!) Jimple Labels are used to denote from,to and handler Stmts.
       }
     }
     /*
-      By calling getTraps() method, we can get the Traip chain.
+      By calling getTraps() method, we can get the Trap chain.
       For the above jimple code, we have the below trap:
       Trap :
       begin  : $stack5 = <java.lang.System: java.io.PrintStream out>
