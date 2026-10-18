@@ -195,10 +195,19 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   @NonNull
   public JavaClassType getBoxedType(@NonNull PrimitiveType primitiveType) {
-    String name = primitiveType.getName();
-    StringBuilder boxedname = new StringBuilder(name);
-    boxedname.setCharAt(0, Character.toUpperCase(boxedname.charAt(0)));
-    return getClassType(boxedname.toString(), "java.lang");
+    String boxedName =
+        switch (primitiveType.getName()) {
+          case "boolean" -> "java.lang.Boolean";
+          case "byte" -> "java.lang.Byte";
+          case "short" -> "java.lang.Short";
+          case "char" -> "java.lang.Character";
+          case "int" -> "java.lang.Integer";
+          case "long" -> "java.lang.Long";
+          case "float" -> "java.lang.Float";
+          case "double" -> "java.lang.Double";
+          default -> throw new IllegalArgumentException();
+        };
+    return getClassType(boxedName);
   }
 
   @Override
