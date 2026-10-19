@@ -34,14 +34,6 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
-import sootup.core.types.PrimitiveType.BooleanType;
-import sootup.core.types.PrimitiveType.ByteType;
-import sootup.core.types.PrimitiveType.CharType;
-import sootup.core.types.PrimitiveType.DoubleType;
-import sootup.core.types.PrimitiveType.FloatType;
-import sootup.core.types.PrimitiveType.IntType;
-import sootup.core.types.PrimitiveType.LongType;
-import sootup.core.types.PrimitiveType.ShortType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 
@@ -240,7 +232,7 @@ public interface IdentifierFactory {
    *     Primitive Types and Values</a>
    * @return the primitive type instance for {@code boolean}
    */
-  @NonNull BooleanType getBooleanPrimitiveType();
+  @NonNull PrimitiveType getBooleanPrimitiveType();
 
   /**
    * Get the {@code boolean} primitive type.
@@ -249,7 +241,7 @@ public interface IdentifierFactory {
    *     Primitive Types and Values</a>
    * @return the primitive type instance for {@code boolean}
    */
-  @NonNull ByteType getBytePrimitiveType();
+  @NonNull PrimitiveType getBytePrimitiveType();
 
   /**
    * Get the {@code short} primitive type.
@@ -258,7 +250,7 @@ public interface IdentifierFactory {
    *     Primitive Types and Values</a>
    * @return the primitive type instance for {@code short}
    */
-  @NonNull ShortType getShortPrimitiveType();
+  @NonNull PrimitiveType getShortPrimitiveType();
 
   /**
    * Get the {@code char} primitive type.
@@ -267,7 +259,7 @@ public interface IdentifierFactory {
    *     Primitive Types and Values</a>
    * @return the primitive type instance for {@code char}
    */
-  @NonNull CharType getCharPrimitiveType();
+  @NonNull PrimitiveType getCharPrimitiveType();
 
   /**
    * Get the {@code int} primitive type.
@@ -276,7 +268,7 @@ public interface IdentifierFactory {
    *     Primitive Types and Values</a>
    * @return the primitive type instance for {@code int}
    */
-  @NonNull IntType getIntPrimitiveType();
+  @NonNull PrimitiveType getIntPrimitiveType();
 
   /**
    * Get the {@code long} primitive type.
@@ -285,7 +277,7 @@ public interface IdentifierFactory {
    *     Primitive Types and Values</a>
    * @return the primitive type instance for {@code long}
    */
-  @NonNull LongType getLongPrimitiveType();
+  @NonNull PrimitiveType getLongPrimitiveType();
 
   /**
    * Get the {@code float} primitive type.
@@ -294,7 +286,7 @@ public interface IdentifierFactory {
    *     Primitive Types and Values</a>
    * @return the primitive type instance for {@code float}
    */
-  @NonNull FloatType getFloatPrimitiveType();
+  @NonNull PrimitiveType getFloatPrimitiveType();
 
   /**
    * Get the {@code double} primitive type.
@@ -303,7 +295,7 @@ public interface IdentifierFactory {
    *     Primitive Types and Values</a>
    * @return the primitive type instance for {@code double}
    */
-  @NonNull DoubleType getDoublePrimitiveType();
+  @NonNull PrimitiveType getDoublePrimitiveType();
 
   /**
    * Get the ClassType for the boxed primitiveType.

@@ -203,49 +203,49 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   @Override
   @NonNull
-  public final BooleanType getBooleanPrimitiveType() {
+  public final PrimitiveType getBooleanPrimitiveType() {
     return BooleanType.getInstance();
   }
 
   @Override
   @NonNull
-  public final ByteType getBytePrimitiveType() {
+  public final PrimitiveType getBytePrimitiveType() {
     return ByteType.getInstance();
   }
 
   @Override
   @NonNull
-  public final ShortType getShortPrimitiveType() {
+  public final PrimitiveType getShortPrimitiveType() {
     return ShortType.getInstance();
   }
 
   @Override
   @NonNull
-  public final CharType getCharPrimitiveType() {
+  public final PrimitiveType getCharPrimitiveType() {
     return CharType.getInstance();
   }
 
   @Override
   @NonNull
-  public final IntType getIntPrimitiveType() {
+  public final PrimitiveType getIntPrimitiveType() {
     return IntType.getInstance();
   }
 
   @Override
   @NonNull
-  public final LongType getLongPrimitiveType() {
+  public final PrimitiveType getLongPrimitiveType() {
     return LongType.getInstance();
   }
 
   @Override
   @NonNull
-  public final FloatType getFloatPrimitiveType() {
+  public final PrimitiveType getFloatPrimitiveType() {
     return FloatType.getInstance();
   }
 
   @Override
   @NonNull
-  public final DoubleType getDoublePrimitiveType() {
+  public final PrimitiveType getDoublePrimitiveType() {
     return DoubleType.getInstance();
   }
 

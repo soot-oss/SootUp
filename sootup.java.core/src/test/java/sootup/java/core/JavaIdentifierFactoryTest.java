@@ -15,14 +15,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import sootup.core.types.PrimitiveType;
-import sootup.core.types.PrimitiveType.BooleanType;
-import sootup.core.types.PrimitiveType.ByteType;
-import sootup.core.types.PrimitiveType.CharType;
-import sootup.core.types.PrimitiveType.DoubleType;
-import sootup.core.types.PrimitiveType.FloatType;
-import sootup.core.types.PrimitiveType.IntType;
-import sootup.core.types.PrimitiveType.LongType;
-import sootup.core.types.PrimitiveType.ShortType;
 import sootup.java.core.types.JavaClassType;
 
 public class JavaIdentifierFactoryTest {
@@ -102,7 +94,7 @@ public class JavaIdentifierFactoryTest {
 
   @Test
   void testBooleanPrimitiveType() {
-    BooleanType jiPrimitiveType1 = javaIdentifierFactory.getBooleanPrimitiveType();
+    PrimitiveType jiPrimitiveType1 = javaIdentifierFactory.getBooleanPrimitiveType();
     assertNotNull(jiPrimitiveType1);
     Optional<PrimitiveType> jiPrimitiveType2O =
         javaIdentifierFactory.getPrimitiveType(jiPrimitiveType1.getName());
@@ -112,7 +104,7 @@ public class JavaIdentifierFactoryTest {
 
   @Test
   void testBytePrimitiveType() {
-    ByteType jiPrimitiveType1 = javaIdentifierFactory.getBytePrimitiveType();
+    PrimitiveType jiPrimitiveType1 = javaIdentifierFactory.getBytePrimitiveType();
     assertNotNull(jiPrimitiveType1);
     Optional<PrimitiveType> jiPrimitiveType2O =
         javaIdentifierFactory.getPrimitiveType(jiPrimitiveType1.getName());
@@ -122,7 +114,7 @@ public class JavaIdentifierFactoryTest {
 
   @Test
   void testShortPrimitiveType() {
-    ShortType jiPrimitiveType1 = javaIdentifierFactory.getShortPrimitiveType();
+    PrimitiveType jiPrimitiveType1 = javaIdentifierFactory.getShortPrimitiveType();
     assertNotNull(jiPrimitiveType1);
     Optional<PrimitiveType> jiPrimitiveType2O =
         javaIdentifierFactory.getPrimitiveType(jiPrimitiveType1.getName());
@@ -132,7 +124,7 @@ public class JavaIdentifierFactoryTest {
 
   @Test
   void testCharPrimitiveType() {
-    CharType jiPrimitiveType1 = javaIdentifierFactory.getCharPrimitiveType();
+    PrimitiveType jiPrimitiveType1 = javaIdentifierFactory.getCharPrimitiveType();
     assertNotNull(jiPrimitiveType1);
     Optional<PrimitiveType> jiPrimitiveType2O =
         javaIdentifierFactory.getPrimitiveType(jiPrimitiveType1.getName());
@@ -142,7 +134,7 @@ public class JavaIdentifierFactoryTest {
 
   @Test
   void testIntPrimitiveType() {
-    IntType jiPrimitiveType1 = javaIdentifierFactory.getIntPrimitiveType();
+    PrimitiveType jiPrimitiveType1 = javaIdentifierFactory.getIntPrimitiveType();
     assertNotNull(jiPrimitiveType1);
     Optional<PrimitiveType> jiPrimitiveType2O =
         javaIdentifierFactory.getPrimitiveType(jiPrimitiveType1.getName());
@@ -152,7 +144,7 @@ public class JavaIdentifierFactoryTest {
 
   @Test
   void testLongPrimitiveType() {
-    LongType jiPrimitiveType1 = javaIdentifierFactory.getLongPrimitiveType();
+    PrimitiveType jiPrimitiveType1 = javaIdentifierFactory.getLongPrimitiveType();
     assertNotNull(jiPrimitiveType1);
     Optional<PrimitiveType> jiPrimitiveType2O =
         javaIdentifierFactory.getPrimitiveType(jiPrimitiveType1.getName());
@@ -162,7 +154,7 @@ public class JavaIdentifierFactoryTest {
 
   @Test
   void testFloatPrimitiveType() {
-    FloatType jiPrimitiveType1 = javaIdentifierFactory.getFloatPrimitiveType();
+    PrimitiveType jiPrimitiveType1 = javaIdentifierFactory.getFloatPrimitiveType();
     assertNotNull(jiPrimitiveType1);
     Optional<PrimitiveType> jiPrimitiveType2O =
         javaIdentifierFactory.getPrimitiveType(jiPrimitiveType1.getName());
@@ -172,7 +164,7 @@ public class JavaIdentifierFactoryTest {
 
   @Test
   void testDoublePrimitiveType() {
-    DoubleType jiPrimitiveType1 = javaIdentifierFactory.getDoublePrimitiveType();
+    PrimitiveType jiPrimitiveType1 = javaIdentifierFactory.getDoublePrimitiveType();
     assertNotNull(jiPrimitiveType1);
     Optional<PrimitiveType> jiPrimitiveType2O =
         javaIdentifierFactory.getPrimitiveType(jiPrimitiveType1.getName());
