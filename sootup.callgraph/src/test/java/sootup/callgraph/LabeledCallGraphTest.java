@@ -15,16 +15,20 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-public class CallLabelTest {
+public class LabeledCallGraphTest {
 
-  enum Hotness implements CallLabel {
+  /** combines several kinds of labels in one label type */
+  sealed interface MyLabel permits Hotness, TaintFlow {}
+
+  enum Hotness implements MyLabel {
     HOT,
     COLD
   }
 
-  record TaintFlow(String source, String sink) implements CallLabel {}
+  record TaintFlow(String source, String sink) implements MyLabel {}
 
-  private MutableCallGraph cg;
+  private CallGraph plainCg;
+  private LabeledGraphBasedCallGraph<MyLabel> cg;
   private MethodSignature mainMethod;
   private MethodSignature staticDispatchB;
   private MethodSignature virtualDispatchB;
@@ -51,8 +55,8 @@ public class CallLabelTest {
 
     CallGraph callGraph =
         new ClassHierarchyAnalysisAlgorithm(view).initialize(Collections.singletonList(mainMethod));
-    assertInstanceOf(MutableCallGraph.class, callGraph);
-    cg = (MutableCallGraph) callGraph;
+    plainCg = callGraph;
+    cg = LabeledGraphBasedCallGraph.of(callGraph);
 
     staticCall = callFromMainTo(staticDispatchB);
     virtualCall = callFromMainTo(virtualDispatchB);
@@ -106,7 +110,7 @@ public class CallLabelTest {
   @Test
   public void testLabelsAreUnmodifiable() {
     cg.addLabel(staticCall, Hotness.HOT);
-    Set<CallLabel> labels = cg.getLabels(staticCall);
+    Set<MyLabel> labels = cg.getLabels(staticCall);
     assertThrows(UnsupportedOperationException.class, () -> labels.add(Hotness.COLD));
     assertThrows(
         UnsupportedOperationException.class, () -> cg.getLabels(virtualCall).add(Hotness.COLD));
@@ -162,7 +166,7 @@ public class CallLabelTest {
   @Test
   public void testCopyContainsIndependentLabels() {
     cg.addLabel(staticCall, Hotness.HOT);
-    MutableCallGraph copy = cg.copy();
+    MutableLabeledCallGraph<MyLabel> copy = cg.copy();
 
     assertEquals(Set.of(Hotness.HOT), copy.getLabels(staticCall));
 
@@ -210,5 +214,49 @@ public class CallLabelTest {
     assertTrue(cgString.contains("\tto " + staticDispatchB + " [HOT]"));
     assertTrue(cgString.contains("\tfrom " + mainMethod + " [HOT]"));
     assertTrue(cgString.contains("\tto " + virtualDispatchB + "\n"));
+  }
+
+  @Test
+  public void testPlainCallGraphHasNoLabels() {
+    assertFalse(plainCg instanceof LabeledCallGraph);
+    assertEquals(plainCg.getCalls(), cg.getCalls());
+    assertEquals(plainCg.getMethodSignatures(), cg.getMethodSignatures());
+    assertEquals(plainCg.getEntryMethods(), cg.getEntryMethods());
+    assertTrue(plainCg.diff(cg).uniqueBaseGraphCalls().isEmpty());
+
+    // labeling the copy does not change the original call graph
+    Call newCall =
+        new Call(
+            staticCall.targetMethodSignature(),
+            staticCall.sourceMethodSignature(),
+            staticCall.invokableStmt());
+    cg.addCall(newCall, Hotness.HOT);
+    assertFalse(plainCg.containsCall(newCall));
+  }
+
+  @Test
+  public void testTypedLabelsWithoutCast() {
+    LabeledGraphBasedCallGraph<Hotness> hotnessCg = LabeledGraphBasedCallGraph.of(plainCg);
+    hotnessCg.addLabel(staticCall, Hotness.HOT);
+    Hotness hotness = hotnessCg.getLabels(staticCall).iterator().next();
+    assertEquals(Hotness.HOT, hotness);
+    assertEquals(Set.of(staticCall), hotnessCg.callsFrom(mainMethod, h -> h == Hotness.HOT));
+  }
+
+  @Test
+  public void testOfCopiesLabels() {
+    cg.addLabel(staticCall, Hotness.HOT);
+    LabeledGraphBasedCallGraph<MyLabel> relabeled = LabeledGraphBasedCallGraph.of(cg);
+    assertEquals(Set.of(Hotness.HOT), relabeled.getLabels(staticCall));
+    relabeled.addLabel(staticCall, Hotness.COLD);
+    assertEquals(Set.of(Hotness.HOT), cg.getLabels(staticCall));
+  }
+
+  @Test
+  public void testRemoveLabel() {
+    cg.addLabel(staticCall, Hotness.HOT);
+    assertFalse(cg.removeLabel(staticCall, Hotness.COLD));
+    assertTrue(cg.removeLabel(staticCall, Hotness.HOT));
+    assertTrue(cg.getLabels(staticCall).isEmpty());
   }
 }
