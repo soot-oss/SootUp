@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.core.TestUtil;
-import sootup.core.jimple.common.Local;
+import sootup.core.jimple.Jimple;
 import sootup.core.types.PrimitiveType.IntType;
 
 public class JFieldRefTest {
@@ -32,7 +32,7 @@ public class JFieldRefTest {
     JInstanceFieldRef sameBase =
         new JInstanceFieldRef(TestUtil.createDummyLocalForInt(), a.getFieldSignature());
     JInstanceFieldRef otherBase =
-        new JInstanceFieldRef(new Local("c", IntType.getInstance()), a.getFieldSignature());
+        new JInstanceFieldRef(Jimple.newLocal("c", IntType.getInstance()), a.getFieldSignature());
 
     assertEquals(a, sameBase);
     assertEquals(a.hashCode(), sameBase.hashCode());

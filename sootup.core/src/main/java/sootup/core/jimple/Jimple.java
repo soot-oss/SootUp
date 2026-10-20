@@ -23,6 +23,7 @@ package sootup.core.jimple;
  */
 
 import java.util.*;
+import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.BasicBlock;
 import sootup.core.jimple.basic.*;
@@ -477,7 +478,27 @@ public abstract class Jimple {
 
   /** Constructs a Local with the given name and type. */
   public static Local newLocal(String name, Type t) {
-    return new Local(name, t);
+    return new LocalImpl(name, t);
+  }
+
+  /**
+   * Constructs a local from a bytecode slot index, or a generic local for {@code -1}.
+   *
+   * @deprecated Use {@link #newSlotLocal(String, Type, int)} or {@link #newLocal(String, Type)}.
+   */
+  @Deprecated
+  public static Local newLocal(String name, Type t, int slotIndex) {
+    return slotIndex == -1 ? newLocal(name, t) : newSlotLocal(name, t, slotIndex);
+  }
+
+  /** Constructs a temporary originating from the JVM operand stack. */
+  public static StackLocal newStackLocal(String name, Type t) {
+    return new StackLocalImpl(name, t);
+  }
+
+  /** Constructs a local originating from the given nonnegative JVM local variable slot. */
+  public static SlotLocal newSlotLocal(String name, Type t, int slotIndex) {
+    return new SlotLocalImpl(name, t, slotIndex);
   }
 
   /** Constructs a JStaticFieldRef(FieldSignature) grammar chunk. */
@@ -516,5 +537,72 @@ public abstract class Jimple {
 
   public static Trap newTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
     return new Trap(exception, beginStmt, endStmt, handlerStmt);
+  }
+
+  /** Generic local without JVM slot or operand stack provenance. */
+  private static class LocalImpl extends AbstractLocal {
+    private LocalImpl(@NonNull String name, @NonNull Type type) {
+      super(name, type);
+    }
+
+    @Override
+    public @NonNull Local withName(@NonNull String name) {
+      return new LocalImpl(name, getType());
+    }
+
+    @Override
+    public @NonNull Local withType(@NonNull Type type) {
+      return new LocalImpl(getName(), type);
+    }
+  }
+
+  /** Temporary materialized from the JVM operand stack. */
+  private static final class StackLocalImpl extends LocalImpl implements StackLocal {
+    private StackLocalImpl(@NonNull String name, @NonNull Type type) {
+      super(name, type);
+    }
+
+    @Override
+    public @NonNull StackLocal withName(@NonNull String name) {
+      return new StackLocalImpl(name, getType());
+    }
+
+    @Override
+    public @NonNull StackLocal withType(@NonNull Type type) {
+      return new StackLocalImpl(getName(), type);
+    }
+  }
+
+  /** Local preserving its original JVM local variable slot index. */
+  private static final class SlotLocalImpl extends LocalImpl implements SlotLocal {
+    private final int slotIndex;
+
+    private SlotLocalImpl(@NonNull String name, @NonNull Type type, int slotIndex) {
+      super(name, type);
+      if (slotIndex < 0) {
+        throw new IllegalArgumentException("Slot index must be nonnegative");
+      }
+      this.slotIndex = slotIndex;
+    }
+
+    @Override
+    public int getSlotIndex() {
+      return slotIndex;
+    }
+
+    @Override
+    public @NonNull SlotLocal withName(@NonNull String name) {
+      return new SlotLocalImpl(name, getType(), slotIndex);
+    }
+
+    @Override
+    public @NonNull SlotLocal withType(@NonNull Type type) {
+      return new SlotLocalImpl(getName(), type, slotIndex);
+    }
+
+    @Override
+    public @NonNull SlotLocal withSlotIndex(int slotIndex) {
+      return new SlotLocalImpl(getName(), getType(), slotIndex);
+    }
   }
 }
