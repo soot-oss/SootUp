@@ -19,43 +19,64 @@
 package qilin.core.invokedynamic;
 
 import java.util.Collections;
-import java.util.Set;
 import qilin.core.PTAScene;
 import qilin.core.effect.MethodEffectModel;
 import qilin.core.pag.PAG;
+import sootup.callgraph.invokedynamic.DynamicInvokeResolver;
+import sootup.callgraph.invokedynamic.DynamicInvokeTarget;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.MethodHandle;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 
 /**
- * Resolves invokedynamic call sites bootstrapped by {@code java.lang.invoke.LambdaMetafactory}
- * whose target is a plain static method - every non-capturing lambda body and every static method
- * reference - by reading the target directly out of the bootstrap's {@link MethodHandle} constant.
- * Unlike reflection this needs no external trace/log - the compiler emits the exact target as
- * constant bootstrap data - so the resolution is sound, not heuristic. Splices in a synthetic
- * allocation of the functional-interface type (registered with {@link PAG#registerLambdaTarget} so
- * it becomes a {@link qilin.core.pag.LambdaAllocNode} instead of a plain one) before the original
- * invokedynamic statement, which is left untouched - mirroring how {@link
- * qilin.core.reflection.ReflectionModel} augments rather than replaces the original call.
+ * Precisely models invokedynamic call sites whose {@link DynamicInvokeResolver} target is a
+ * non-capturing static {@code LambdaMetafactory} implementation - every non-capturing lambda body
+ * and every static method reference. Splices in a synthetic allocation of the functional-interface
+ * type (registered with {@link PAG#registerLambdaTarget} so it becomes a {@link
+ * qilin.core.pag.LambdaAllocNode} instead of a plain one) before the original invokedynamic
+ * statement, which is left untouched - mirroring how {@link
+ * sootup.callgraph.reflection.ReflectionModel} augments rather than replaces the original call.
+ * Calls on that object then dispatch straight to the target, with the functional interface's
+ * arguments bound.
+ *
+ * <p>All other targets (captured values, instance/constructor refs) are called from the
+ * invokedynamic statement itself, like CHA/RTA/Spark do - see {@code
+ * CallGraphBuilder#addDynamicInvokeEdge}.
  */
 public class LambdaMetafactoryModel implements MethodEffectModel {
-  private static final String LAMBDA_METAFACTORY = "java.lang.invoke.LambdaMetafactory";
-  private static final Set<String> BOOTSTRAP_METHOD_NAMES = Set.of("metafactory", "altMetafactory");
 
   private final PTAScene ptaScene;
   private final PAG pag;
+  private final DynamicInvokeResolver resolver;
 
-  public LambdaMetafactoryModel(PTAScene ptaScene, PAG pag) {
+  public LambdaMetafactoryModel(PTAScene ptaScene, PAG pag, DynamicInvokeResolver resolver) {
     this.ptaScene = ptaScene;
     this.pag = pag;
+    this.resolver = resolver;
+  }
+
+  /**
+   * Whether this model handles {@code target} of the invokedynamic {@code stmt}: a non-capturing
+   * static lambda implementation whose functional object is assigned to a local.
+   */
+  public static boolean handles(InvokableStmt stmt, DynamicInvokeTarget target) {
+    // Captured (closure) lambdas offset the target's parameters by the captured values, and
+    // instance/constructor refs need a different edge shape (receiver from the SAM's own argument
+    // or a fresh allocation) - those go through the invokedynamic-statement edge instead.
+    return stmt instanceof JAssignStmt assign
+        && assign.getLeftOp().getType() instanceof ClassType
+        && assign.getRightOp() instanceof JDynamicInvokeExpr die
+        && die.getArgCount() == 0
+        && target.lambdaImplementation()
+        && target.kind() == MethodHandle.Kind.REF_INVOKE_STATIC;
   }
 
   @Override
@@ -71,65 +92,28 @@ public class LambdaMetafactoryModel implements MethodEffectModel {
     Body body = pag.getMethodBody(m);
     Body.BodyBuilder builder = null;
     for (Stmt u : body.getStmts()) {
-      if (!(u instanceof JAssignStmt assign)) {
+      if (!(u instanceof JAssignStmt assign)
+          || !(assign.getRightOp() instanceof JDynamicInvokeExpr die)) {
         continue;
       }
-      if (!(assign.getRightOp() instanceof JDynamicInvokeExpr die)) {
-        continue;
+      for (DynamicInvokeTarget target : resolver.resolve(die)) {
+        if (!handles(assign, target)) {
+          continue;
+        }
+        JNewExpr syntheticAlloc = new JNewExpr((ClassType) assign.getLeftOp().getType());
+        pag.registerLambdaTarget(syntheticAlloc, target.method(), target.kind());
+        if (builder == null) {
+          builder = Body.builder(body, Collections.emptySet());
+        }
+        MutableControlFlowGraph cfg = builder.getControlFlowGraph();
+        cfg.insertBefore(
+            u,
+            new JAssignStmt(
+                assign.getLeftOp(), syntheticAlloc, StmtPositionInfo.getNoStmtPositionInfo()));
       }
-      if (!isLambdaMetafactoryBootstrap(die)) {
-        continue;
-      }
-      if (!(assign.getLeftOp().getType() instanceof ClassType functionalInterfaceType)) {
-        continue;
-      }
-      if (die.getArgCount() > 0) {
-        // Captured (closure) lambda/method-ref: the target's parameter list is offset by the
-        // captured values bound at invokedynamic time, which aren't modeled here yet - skip
-        // rather than wire an edge with the wrong arity. Documented gap, not a correctness bug:
-        // this call site simply keeps today's (empty) points-to result for it.
-        continue;
-      }
-      MethodHandle implHandle = findImplMethodHandle(die);
-      if (implHandle == null || implHandle.getKind() != MethodHandle.Kind.REF_INVOKE_STATIC) {
-        // Only plain static targets are redirected here: this covers every non-capturing lambda
-        // body (javac always compiles those to a private static synthetic method) and explicit
-        // static method references. Instance/virtual/interface/special refs need the SAM's own
-        // argument as the receiver (not this lambda object) and constructor refs need a fresh
-        // allocation + <init> call - both are a different edge shape, not handled here yet.
-        // Documented gap, not a correctness bug: these call sites keep today's (empty) result.
-        continue;
-      }
-      MethodSignature target = (MethodSignature) implHandle.getReferenceSignature();
-      JNewExpr syntheticAlloc = new JNewExpr(functionalInterfaceType);
-      pag.registerLambdaTarget(syntheticAlloc, target, implHandle.getKind());
-      if (builder == null) {
-        builder = Body.builder(body, Collections.emptySet());
-      }
-      MutableControlFlowGraph cfg = builder.getControlFlowGraph();
-      cfg.insertBefore(
-          u,
-          new JAssignStmt(
-              assign.getLeftOp(), syntheticAlloc, StmtPositionInfo.getNoStmtPositionInfo()));
     }
     if (builder != null) {
       pag.updateMethodBody(m, builder.build());
     }
-  }
-
-  private boolean isLambdaMetafactoryBootstrap(JDynamicInvokeExpr die) {
-    MethodSignature bsm = die.getBootstrapMethodSignature();
-    return bsm.getDeclClassType().getFullyQualifiedName().equals(LAMBDA_METAFACTORY)
-        && BOOTSTRAP_METHOD_NAMES.contains(bsm.getName());
-  }
-
-  /** Picks the first {@link MethodHandle} bootstrap arg - the lambda's implementation method. */
-  private MethodHandle findImplMethodHandle(JDynamicInvokeExpr die) {
-    for (int i = 0; i < die.getBootstrapArgCount(); i++) {
-      if (die.getBootstrapArg(i) instanceof MethodHandle mh) {
-        return mh;
-      }
-    }
-    return null;
   }
 }

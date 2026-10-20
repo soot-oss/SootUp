@@ -56,7 +56,9 @@ public final class RtaCallGraphConfig implements CallGraphConfig {
             preInstantiatedClasses,
             common.getCallResolver(),
             common.getVirtualCallResolver(),
-            common.getSeedEntryPointClinits(true));
+            common.getSeedEntryPointClinits(true),
+            common.getReflectionModel(),
+            common.getDynamicInvokeResolver());
     return common.getEntryPoints().isEmpty()
         ? rta.initialize()
         : rta.initialize(common.getEntryPoints());

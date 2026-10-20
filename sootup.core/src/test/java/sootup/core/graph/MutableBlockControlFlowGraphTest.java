@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
@@ -73,12 +74,12 @@ public class MutableBlockControlFlowGraphTest {
 
   Stmt firstHandlerStmt =
       new JIdentityStmt(
-          new Local("ex", throwableSig),
+          Jimple.newLocal("ex", throwableSig),
           new JCaughtExceptionRef(throwableSig),
           StmtPositionInfo.getNoStmtPositionInfo());
   Stmt secondHandlerStmt =
       new JIdentityStmt(
-          new Local("ex2", throwableSig),
+          Jimple.newLocal("ex2", throwableSig),
           new JCaughtExceptionRef(ioExceptionSig),
           StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -592,7 +593,7 @@ public class MutableBlockControlFlowGraphTest {
           }
         };
 
-    Local exc = new Local("ex", UnknownType.getInstance());
+    Local exc = Jimple.newLocal("ex", UnknownType.getInstance());
     // hint: applied types make no sense in this test!
     Stmt catchStmt1 =
         new JIdentityStmt(
@@ -1046,7 +1047,7 @@ public class MutableBlockControlFlowGraphTest {
     JGotoStmt stmt2 = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
     Stmt handlerStmt =
         new JIdentityStmt(
-            new Local("ex", throwableSig),
+            Jimple.newLocal("ex", throwableSig),
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -1084,13 +1085,13 @@ public class MutableBlockControlFlowGraphTest {
 
     Stmt handlerStmt1 =
         new JIdentityStmt(
-            new Local("ex1", throwableSig),
+            Jimple.newLocal("ex1", throwableSig),
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
     Stmt handlerStmt2 =
         new JIdentityStmt(
-            new Local("ex2", ioExceptionSig),
+            Jimple.newLocal("ex2", ioExceptionSig),
             new JCaughtExceptionRef(ioExceptionSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -1131,13 +1132,13 @@ public class MutableBlockControlFlowGraphTest {
 
     Stmt handlerStmt1 =
         new JIdentityStmt(
-            new Local("ex1", throwableSig),
+            Jimple.newLocal("ex1", throwableSig),
             new JCaughtExceptionRef(throwableSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
     Stmt handlerStmt2 =
         new JIdentityStmt(
-            new Local("ex2", ioExceptionSig),
+            Jimple.newLocal("ex2", ioExceptionSig),
             new JCaughtExceptionRef(ioExceptionSig),
             StmtPositionInfo.getNoStmtPositionInfo());
 
@@ -1224,5 +1225,93 @@ public class MutableBlockControlFlowGraphTest {
                 + handler.getStmts());
       }
     }
+  }
+
+  private static JNopStmt nop() {
+    return new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+  }
+
+  private static JReturnVoidStmt ret() {
+    return new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+  }
+
+  /**
+   * A Trap ends at the head of a Block, and the Block that its end heads is not covered anymore.
+   */
+  @Test
+  public void initializeWithClosesATrapAtTheBlockItsEndHeads() {
+    JNopStmt begin = nop();
+    JNopStmt end = nop();
+    JReturnVoidStmt afterEnd = ret();
+    JReturnVoidStmt handlerReturn = ret();
+    Trap trap = new Trap(throwableSig, begin, end, firstHandlerStmt);
+
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+    graph.initializeWith(
+        List.of(List.of(begin), List.of(end, afterEnd), List.of(firstHandlerStmt, handlerReturn)),
+        Collections.emptyMap(),
+        new ArrayList<>(List.of(trap)));
+
+    assertEquals(
+        Collections.singletonMap(throwableSig, firstHandlerStmt),
+        graph.exceptionalSuccessors(begin));
+    assertEquals(Collections.emptyMap(), graph.exceptionalSuccessors(end));
+    assertEquals(Collections.emptyMap(), graph.exceptionalSuccessors(afterEnd));
+  }
+
+  /**
+   * A Trap whose end is in no Block at all, e.g. because the frontend removed the unreachable Stmt
+   * behind the covered range, reaches the end of the body: it covers every Block from its begin to
+   * the last one.
+   */
+  @Test
+  public void initializeWithKeepsATrapWhoseEndIsInNoBlockOpenToTheEndOfTheBody() {
+    JGotoStmt jump = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    JReturnVoidStmt handlerReturn = ret();
+    JNopStmt work = nop();
+    JReturnVoidStmt workReturn = ret();
+    JNopStmt removedEnd = nop();
+    Trap trap = new Trap(throwableSig, work, removedEnd, firstHandlerStmt);
+
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+    graph.initializeWith(
+        List.of(List.of(jump), List.of(firstHandlerStmt, handlerReturn), List.of(work, workReturn)),
+        Collections.singletonMap(jump, List.of(work)),
+        new ArrayList<>(List.of(trap)));
+
+    assertEquals(Collections.emptyMap(), graph.exceptionalSuccessors(jump));
+    assertEquals(Collections.emptyMap(), graph.exceptionalSuccessors(firstHandlerStmt));
+    assertEquals(
+        Collections.singletonMap(throwableSig, firstHandlerStmt),
+        graph.exceptionalSuccessors(work));
+    assertEquals(
+        Collections.singletonMap(throwableSig, firstHandlerStmt),
+        graph.exceptionalSuccessors(workReturn));
+  }
+
+  /**
+   * A Trap cannot end in the middle of a Block: it would cover only part of it, which the Block's
+   * exceptional successors cannot express.
+   */
+  @Test
+  public void initializeWithRejectsATrapEndingInTheMiddleOfABlock() {
+    JNopStmt begin = nop();
+    JNopStmt middle = nop();
+    JReturnVoidStmt blockReturn = ret();
+    JReturnVoidStmt handlerReturn = ret();
+    Trap trap = new Trap(throwableSig, begin, middle, firstHandlerStmt);
+
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+    IllegalArgumentException e =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                graph.initializeWith(
+                    List.of(
+                        List.of(begin, middle, blockReturn),
+                        List.of(firstHandlerStmt, handlerReturn)),
+                    Collections.emptyMap(),
+                    new ArrayList<>(List.of(trap))));
+    assertTrue(e.getMessage().contains("middle of a Block"), e.getMessage());
   }
 }

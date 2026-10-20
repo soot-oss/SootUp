@@ -101,7 +101,7 @@ public class JFieldRefTest {
                 Collections.emptyList(),
                 Collections.emptyList()),
             SourceType.Application);
-    Local base = new Local("obj", declaringClassSignature);
+    Local base = Jimple.newLocal("obj", declaringClassSignature);
     JInstanceFieldRef ref = Jimple.newInstanceFieldRef(base, fieldSig);
     assertEquals("obj.<dummyMainClass: int dummyField>", ref.toString());
 

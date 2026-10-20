@@ -57,8 +57,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import sootup.apk.frontend.main.AndroidVersionInfo;
 import sootup.core.jimple.common.Trap;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.util.printer.BriefStmtPrinter;
+import sootup.core.validation.JimpleTrapValidator;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -401,6 +403,329 @@ public class DexBodyEdgeCaseTest {
     assertEquals("nop", trapsOf(body).get(0).getBeginStmt().toString());
   }
 
+  /**
+   * The layout obfuscators produce: the handler is stored at a lower address than the try block it
+   * catches for, and the range ends on a nop. The Trap must end at that nop and not at the handler,
+   * which would make it run backwards, cover nothing, and get the handler deleted as unreachable.
+   */
+  @Test
+  public void handlerStoredBeforeItsTryBlockKeepsItsRange() {
+    Body body =
+        convert(
+            "HandlerBeforeTry",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction10t(Opcode.GOTO, b.getLabel("try")));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 0));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    assertTrue(stmtsOf(body).contains("$u0 := @caughtexception"));
+    assertEquals(1, trapsOf(body).size());
+    Trap trap = trapsOf(body).get(0);
+    assertEquals("$u1 = 0", trap.getBeginStmt().toString());
+    assertEquals("nop", trap.getEndStmt().toString());
+    assertEquals("$u0 := @caughtexception", trap.getHandlerStmt().toString());
+  }
+
+  private static long caughtExceptionStmts(Body body) {
+    return stmtsOf(body).stream().filter(s -> s.endsWith(":= @caughtexception")).count();
+  }
+
+  /**
+   * move-exception is optional: a handler that never reads the exception starts with ordinary code.
+   * Its Trap still has to point at a caught exception Stmt, so one is added, followed by a goto to
+   * the handler code.
+   */
+  @Test
+  public void handlerWithoutMoveExceptionGetsACaughtExceptionEntry() {
+    Body body =
+        convert(
+            "HandlerWithoutMoveException",
+            2,
+            b -> {
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    assertEquals(1, trapsOf(body).size());
+    Stmt handler = trapsOf(body).get(0).getHandlerStmt();
+    assertTrue(handler.toString().endsWith(":= @caughtexception"));
+    assertEquals(1, body.getControlFlowGraph().exceptionalPredecessors(handler).size());
+    Stmt jump = body.getControlFlowGraph().successors(handler).get(0);
+    assertEquals("goto", jump.toString());
+    assertEquals("$u1 = 1", body.getControlFlowGraph().successors(jump).get(0).toString());
+    assertEquals(List.of(), new JimpleTrapValidator().validate(body, null));
+  }
+
+  /**
+   * A handler without move-exception is often the code the normal path continues with anyway, here
+   * the final return. The caught exception Stmt must not sit in front of it, or the normal path
+   * would run into it.
+   */
+  @Test
+  public void handlerSharedWithTheNormalPathKeepsTheNormalPathClean() {
+    Body body =
+        convert(
+            "HandlerSharedWithNormalPath",
+            1,
+            b -> {
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("end"));
+            });
+
+    List<String> stmts = stmtsOf(body);
+    assertEquals("$u0 = 0", stmts.get(0));
+    assertEquals("return", stmts.get(1));
+    Stmt ret = body.getStmts().get(1);
+    // reached by falling through from the try block and by the goto behind the caught exception
+    assertEquals(2, body.getControlFlowGraph().predecessors(ret).size());
+    assertEquals(1, caughtExceptionStmts(body));
+    assertEquals(List.of(), new JimpleTrapValidator().validate(body, null));
+  }
+
+  /** Two try blocks that share one handler without move-exception share its entry, too. */
+  @Test
+  public void tryBlocksSharingAHandlerWithoutMoveExceptionShareOneEntry() {
+    Body body =
+        convert(
+            "SharedHandlerWithoutMoveException",
+            2,
+            b -> {
+              b.addLabel("try1");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end1");
+              b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+              b.addLabel("try2");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 1));
+              b.addLabel("end2");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              ImmutableTypeReference exception =
+                  new ImmutableTypeReference("Ljava/lang/Exception;");
+              b.addCatch(exception, b.getLabel("try1"), b.getLabel("end1"), b.getLabel("handler"));
+              b.addCatch(exception, b.getLabel("try2"), b.getLabel("end2"), b.getLabel("handler"));
+            });
+
+    assertEquals(1, caughtExceptionStmts(body));
+    List<Trap> traps = trapsOf(body);
+    assertEquals(2, traps.size());
+    Stmt entry = traps.get(0).getHandlerStmt();
+    assertTrue(entry.toString().endsWith(":= @caughtexception"));
+    assertEquals(entry, traps.get(1).getHandlerStmt());
+    assertEquals(2, body.getControlFlowGraph().exceptionalPredecessors(entry).size());
+    assertEquals(List.of(), new JimpleTrapValidator().validate(body, null));
+  }
+
+  /**
+   * Exception types are taken as they are, like the bytecode frontend does: a type that two try
+   * blocks catch keeps its name in both Traps, and a catch-all handler catches java.lang.Throwable.
+   */
+  @Test
+  public void exceptionTypesAreKeptAsTheyAre() {
+    Body body =
+        convert(
+            "ExceptionTypes",
+            3,
+            b -> {
+              b.addLabel("try1");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end1");
+              b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+              b.addLabel("try2");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 1));
+              b.addLabel("end2");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler1");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 2));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler2");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 2));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              ImmutableTypeReference io = new ImmutableTypeReference("Ljava/io/IOException;");
+              b.addCatch(io, b.getLabel("try1"), b.getLabel("end1"), b.getLabel("handler1"));
+              b.addCatch(b.getLabel("try1"), b.getLabel("end1"), b.getLabel("handler2"));
+              b.addCatch(io, b.getLabel("try2"), b.getLabel("end2"), b.getLabel("handler1"));
+            });
+
+    List<String> types =
+        trapsOf(body).stream()
+            .map(trap -> trap.getExceptionType().getFullyQualifiedName())
+            .sorted()
+            .collect(Collectors.toList());
+    assertEquals(
+        List.of("java.io.IOException", "java.io.IOException", "java.lang.Throwable"), types);
+  }
+
+  /**
+   * A goto can enter a try block in its middle, jumping over a padding nop at its start. The nop is
+   * dead and removed, but the rest of the range is not: the Trap then begins at the first Stmt of
+   * the range that stayed, instead of being dropped with its handler left behind unreachable.
+   */
+  @Test
+  public void trapWhoseFirstStmtIsDeadBeginsAtItsFirstReachableStmt() {
+    Body body =
+        convert(
+            "DeadBegin",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction10t(Opcode.GOTO, b.getLabel("in")));
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+              b.addLabel("in");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    assertEquals(
+        List.of("goto", "$u0 = 0", "return", "$u1 := @caughtexception", "return"), stmtsOf(body));
+    assertEquals(1, trapsOf(body).size());
+    Trap trap = trapsOf(body).get(0);
+    assertEquals("$u0 = 0", trap.getBeginStmt().toString());
+    assertEquals("$u1 := @caughtexception", trap.getHandlerStmt().toString());
+    Stmt covered = body.getStmts().get(1);
+    assertEquals(1, body.getControlFlowGraph().exceptionalSuccessors(covered).size());
+  }
+
+  /** When nothing of a try block is reachable, its Trap goes, and so does its handler. */
+  @Test
+  public void trapWhoseWholeRangeIsDeadIsDroppedWithItsHandler() {
+    Body body =
+        convert(
+            "DeadRange",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction10t(Opcode.GOTO, b.getLabel("end")));
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addLabel("end");
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    assertEquals(List.of("goto", "return"), stmtsOf(body));
+    assertEquals(0, trapsOf(body).size());
+  }
+
+  private static Stmt stmtStartingWith(Body body, String prefix) {
+    return body.getStmts().stream().filter(s -> s.toString().startsWith(prefix)).findFirst().get();
+  }
+
+  /**
+   * A try block reaching the very end of the code has no instruction behind it to end at. It must
+   * still cover its last Stmt: here a throw whose exception would otherwise bypass the handler.
+   */
+  @Test
+  public void trapReachingTheEndOfTheCodeCoversItsLastStmt() {
+    Body body =
+        convert(
+            "TrapToEndOfCode",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction10t(Opcode.GOTO, b.getLabel("try")));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11x(Opcode.MOVE_EXCEPTION, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addInstruction(new BuilderInstruction11x(Opcode.THROW, 0));
+              b.addLabel("end");
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    assertEquals(1, trapsOf(body).size());
+    Stmt thrower = stmtStartingWith(body, "throw");
+    assertEquals(1, body.getControlFlowGraph().exceptionalSuccessors(thrower).size());
+    assertEquals(List.of(), new JimpleTrapValidator().validate(body, null));
+  }
+
+  /**
+   * The same with a handler without move-exception: its caught exception entry is appended behind
+   * the code, and the range stops in front of it instead of covering the entry as well.
+   */
+  @Test
+  public void trapReachingTheEndOfTheCodeStopsBeforeTheCaughtExceptionEntries() {
+    Body body =
+        convert(
+            "TrapToEndOfCodeWithEntry",
+            2,
+            b -> {
+              b.addInstruction(new BuilderInstruction10t(Opcode.GOTO, b.getLabel("try")));
+              b.addLabel("handler");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 1));
+              b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+              b.addLabel("try");
+              b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+              b.addInstruction(new BuilderInstruction11x(Opcode.THROW, 0));
+              b.addLabel("end");
+              b.addCatch(
+                  new ImmutableTypeReference("Ljava/lang/Exception;"),
+                  b.getLabel("try"),
+                  b.getLabel("end"),
+                  b.getLabel("handler"));
+            });
+
+    Stmt thrower = stmtStartingWith(body, "throw");
+    Stmt entry =
+        body.getStmts().stream()
+            .filter(s -> s.toString().endsWith(":= @caughtexception"))
+            .findFirst()
+            .get();
+    assertEquals(1, body.getControlFlowGraph().exceptionalSuccessors(thrower).size());
+    assertEquals(0, body.getControlFlowGraph().exceptionalSuccessors(entry).size());
+    assertEquals(List.of(), new JimpleTrapValidator().validate(body, null));
+  }
+
   /** A try block whose whole range is nops still covers them: they are reachable code. */
   @Test
   public void trapCoveringOnlyNopsIsKept() {
@@ -455,12 +780,12 @@ public class DexBodyEdgeCaseTest {
                   b.getLabel("handler"));
             });
 
-    // addTraps() answers a Trap that ends on a nop by inserting a caught exception Stmt of its own
-    // and ending the Trap there, so the body holds that Stmt next to the move-exception it covers
-    assertEquals(
-        List.of("$u0 = 0", "goto", "r0 := @caughtexception", "$u1 := @caughtexception", "return"),
-        stmtsOf(body));
+    // the trailing nops are unreachable and removed, which leaves nothing behind the range to end
+    // it at: the Trap is kept and runs to the end of the body, handler included
+    assertEquals(List.of("$u0 = 0", "goto", "$u1 := @caughtexception", "return"), stmtsOf(body));
     assertEquals(1, trapsOf(body).size());
+    assertEquals("$u0 = 0", trapsOf(body).get(0).getBeginStmt().toString());
+    assertEquals("$u1 := @caughtexception", trapsOf(body).get(0).getHandlerStmt().toString());
   }
 
   /** An endless loop, which is a body without any return at all. */
@@ -553,6 +878,40 @@ public class DexBodyEdgeCaseTest {
                           new BuilderInstruction21t(Opcode.IF_EQZ, 0, b.getLabel("l")));
                       b.addLabel("l");
                       b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+                    }));
+
+    assertTrue(
+        messagesOf(e).stream().anyMatch(m -> m.contains("falls into the abyss")),
+        messagesOf(e).toString());
+  }
+
+  /**
+   * The same with a handler without move-exception in the method: its caught exception entry is
+   * appended behind the dex code, so the trailing nop would fall into the entry instead of off the
+   * end. It must fail all the same.
+   */
+  @Test
+  public void trailingNopInFrontOfACaughtExceptionEntryStillRunsOffTheEnd() {
+    RuntimeException e =
+        assertThrows(
+            RuntimeException.class,
+            () ->
+                convert(
+                    "TrailingNopBeforeEntry",
+                    2,
+                    b -> {
+                      b.addLabel("try");
+                      b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 0, 0));
+                      b.addLabel("end");
+                      b.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+                      b.addLabel("handler");
+                      b.addInstruction(new BuilderInstruction11n(Opcode.CONST_4, 1, 1));
+                      b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
+                      b.addCatch(
+                          new ImmutableTypeReference("Ljava/lang/Exception;"),
+                          b.getLabel("try"),
+                          b.getLabel("end"),
+                          b.getLabel("handler"));
                     }));
 
     assertTrue(

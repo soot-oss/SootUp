@@ -22,11 +22,11 @@ package sootup.core.jimple.common;
  * #L%
  */
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -34,157 +34,27 @@ import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.ImmediateVisitor;
 import sootup.core.model.Body;
 import sootup.core.types.Type;
-import sootup.core.types.VoidType;
-import sootup.core.util.printer.StmtPrinter;
 
 /**
- * Local variable in {@link Body}. Use {@link LocalGenerator} to generate locals.
+ * Local variable in a {@link Body}. Use {@link LocalGenerator} or the factories in {@link Jimple}
+ * to create locals. JVM slot provenance is available through {@link SlotLocal}.
  *
- * <p>Prefer to use the factory methods in {@link Jimple}.
- *
- * @author Linghui Luo
+ * <p>Implementations must compare locals by name in {@link Object#equals(Object)} and {@link
+ * Object#hashCode()}, and by name and type for Jimple equivalence. Extend {@link AbstractLocal} to
+ * inherit this contract.
  */
-public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
+public interface Local extends Immediate, LValue, Acceptor<ImmediateVisitor> {
+  @NonNull String getName();
 
-  @NonNull private final String name;
-  @NonNull private final Type type;
+  /** Returns a copy with a new name, preserving all other state and capabilities. */
+  @NonNull Local withName(@NonNull String name);
 
-  /** Constructs a JimpleLocal of the given name and type. */
-  public Local(@NonNull String name, @NonNull Type type) {
-    this.name = name;
-    if (type instanceof VoidType) {
-      throw new RuntimeException("Type should not be VoidType");
-    } else {
-      this.type = type;
-    }
-  }
+  /** Returns a copy with a new type, preserving all other state and capabilities. */
+  @NonNull Local withType(@NonNull Type type);
 
-  @Override
-  public final boolean equals(Object o) {
-    if (!(o instanceof Local)) {
-      return false;
-    }
-    return name.equals(((Local) o).getName());
-  }
+  List<AbstractDefinitionStmt> getDefs(Collection<Stmt> defs);
 
-  @Override
-  public final int hashCode() {
-    return Objects.hashCode(name);
-  }
+  List<Stmt> getDefsForLocalUse(ControlFlowGraph<?> graph, Stmt stmt);
 
-  @Override
-  public boolean equivTo(@NonNull Object o, @NonNull JimpleComparator comparator) {
-    return comparator.caseLocal(this, o);
-  }
-
-  @Override
-  public int equivHashCode() {
-    return Objects.hash(name, type);
-  }
-
-  /** Returns the name of this object. */
-  @NonNull
-  public String getName() {
-    return name;
-  }
-
-  /** Returns the type of this local. */
-  @NonNull
-  @Override
-  public Type getType() {
-    return type;
-  }
-
-  @Override
-  public String toString() {
-    return getName();
-  }
-
-  @Override
-  public void toString(@NonNull StmtPrinter up) {
-    up.local(this);
-  }
-
-  @Override
-  public void collectUses(List<Value> collector) {}
-
-  /** returns a List that can contain: Locals, JFieldRefs, JArrayRefs */
-  public List<AbstractDefinitionStmt> getDefs(Collection<Stmt> defs) {
-    List<AbstractDefinitionStmt> localDefs = new ArrayList<>();
-    for (Stmt stmt : defs) {
-      if (stmt instanceof AbstractDefinitionStmt
-          && ((AbstractDefinitionStmt) stmt).getLeftOp().equals(this)) {
-        localDefs.add((AbstractDefinitionStmt) stmt);
-      }
-    }
-    return localDefs;
-  }
-
-  /**
-   * Get all definition-stmts which define the given local used by the given stmt.
-   *
-   * @param graph a stmt graph which contains the given stmts.
-   * @param stmt a stmt which uses the given local.
-   */
-  public List<Stmt> getDefsForLocalUse(ControlFlowGraph<?> graph, Stmt stmt) {
-    if (stmt.getUses().stream().noneMatch(v -> v == this)) {
-      throw new RuntimeException(stmt + " doesn't use the local " + this);
-    }
-    List<Stmt> defStmts = new ArrayList<>();
-    Set<Stmt> visited = new HashSet<>();
-
-    Deque<Stmt> queue = new ArrayDeque<>();
-    // Seed the search queue with predecessors of 'stmt' rather than 'stmt' itself.
-    // When a statement both uses and defines the same local (e.g. `x = x + 1`), starting at `stmt`
-    // immediately matched `stmt` as a definition, short-circuiting and erroneously reporting that
-    // `x` is defined by `stmt` itself before it is evaluated. Seeding with predecessors searches
-    // the reaching definitions flowing into `stmt`.
-    if (graph.containsNode(stmt)) {
-      queue.addAll(graph.predecessors(stmt));
-    }
-    while (!queue.isEmpty()) {
-      Stmt s = queue.removeFirst();
-      if (!visited.contains(s)) {
-        visited.add(s);
-        if (s instanceof AbstractDefinitionStmt && s.getDef().get().equivTo(this)) {
-          defStmts.add(s);
-        } else {
-          if (graph.containsNode(s)) {
-            queue.addAll(graph.predecessors(s));
-          }
-        }
-      }
-    }
-    return defStmts;
-  }
-
-  public List<Stmt> getStmtsUsingOrDefiningthisLocal(Collection<Stmt> stmts, Stmt removedStmt) {
-    List<Stmt> localOccurrences = new ArrayList<>();
-    for (Stmt stmt : stmts) {
-      if (stmt.equivTo(removedStmt)) continue;
-      List<Value> stmtUsesAndDefs = stmt.getUsesAndDefs();
-      for (Value stmtUse : stmtUsesAndDefs) {
-        if (stmtUse instanceof Local && stmtUse.equivTo(this)) {
-          localOccurrences.add(stmt);
-        }
-      }
-    }
-    return localOccurrences;
-  }
-
-  @Override
-  public <V extends ImmediateVisitor> V accept(@NonNull V v) {
-    v.caseLocal(this);
-    return v;
-  }
-
-  @NonNull
-  public Local withName(@NonNull String name) {
-    return new Local(name, type);
-  }
-
-  @NonNull
-  public Local withType(@NonNull Type type) {
-    return new Local(name, type);
-  }
+  List<Stmt> getStmtsUsingOrDefiningthisLocal(Collection<Stmt> stmts, Stmt removedStmt);
 }
