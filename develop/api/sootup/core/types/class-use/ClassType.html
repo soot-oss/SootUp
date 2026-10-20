@@ -634,7 +634,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">IdentifierFactory.</span><code><a href="../../IdentifierFactory.html#getBoxedType(sootup.core.types.PrimitiveType)" class="member-name-link">getBoxedType</a><wbr>(@NonNull <a href="../PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&nbsp;primitiveType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Get the ClassType for the boxed primitiveType.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../ClassType.html" title="class in sootup.core.types">ClassType</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">IdentifierFactory.</span><code><a href="../../IdentifierFactory.html#getClassType(java.lang.String)" class="member-name-link">getClassType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;fullyQualifiedClassName)</code></div>
 <div class="col-last odd-row-color">
@@ -698,6 +700,11 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><span class="type-name-label">IdentifierFactory.</span><code><a href="../../IdentifierFactory.html#getStaticInitializerSignature(sootup.core.types.ClassType)" class="member-name-link">getStaticInitializerSignature</a><wbr>(<a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClassSignature)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Gets the static initializer method signature.</div>
+</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IdentifierFactory.</span><code><a href="../../IdentifierFactory.html#getUnboxedType(sootup.core.types.ClassType)" class="member-name-link">getUnboxedType</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;boxedType)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Get the PrimitiveType of a boxed type, if it is defined.</div>
 </div>
 </div>
 </section>
@@ -1838,20 +1845,23 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code><a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">JavaIdentifierFactory.</span><code><a href="../../../java/core/JavaIdentifierFactory.html#getStaticInitializerSignature(sootup.core.types.ClassType)" class="member-name-link">getStaticInitializerSignature</a><wbr>(<a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClassSignature)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>boolean</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">JavaSootClass.</span><code><a href="../../../java/core/JavaSootClass.html#implementsInterface(sootup.core.types.ClassType)" class="member-name-link">implementsInterface</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classSignature)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JavaIdentifierFactory.</span><code><a href="../../../java/core/JavaIdentifierFactory.html#getUnboxedType(sootup.core.types.ClassType)" class="member-name-link">getUnboxedType</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;boxedType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>boolean</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JavaSootClass.</span><code><a href="../../../java/core/JavaSootClass.html#implementsInterface(sootup.core.types.ClassType)" class="member-name-link">implementsInterface</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classSignature)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Does this class directly implement the given interface?</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../../../java/core/JavaSootClass.JavaSootClassBuilder.CompleteStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.CompleteStep</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">JavaSootClass.JavaSootClassBuilder.ClassTypeStep.</span><code><a href="../../../java/core/JavaSootClass.JavaSootClassBuilder.ClassTypeStep.html#withClassType(sootup.core.types.ClassType)" class="member-name-link">withClassType</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../../../java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.CompleteStep.html" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.CompleteStep</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ClassTypeStep.</span><code><a href="../../../java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ClassTypeStep.html#withClassType(sootup.core.types.ClassType)" class="member-name-link">withClassType</a><wbr>(@Nullable <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classType)</code></div>
+<div class="col-first odd-row-color"><code><a href="../../../java/core/JavaSootClass.JavaSootClassBuilder.CompleteStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.CompleteStep</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JavaSootClass.JavaSootClassBuilder.ClassTypeStep.</span><code><a href="../../../java/core/JavaSootClass.JavaSootClassBuilder.ClassTypeStep.html#withClassType(sootup.core.types.ClassType)" class="member-name-link">withClassType</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../java/core/JavaSootClass.JavaSootClassBuilder.CompleteStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.CompleteStep</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">JavaSootClass.JavaSootClassBuilder.InterfaceStep.</span><code><a href="../../../java/core/JavaSootClass.JavaSootClassBuilder.InterfaceStep.html#withInterface(sootup.core.types.ClassType)" class="member-name-link">withInterface</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;interfaceType)</code></div>
+<div class="col-first even-row-color"><code><a href="../../../java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.CompleteStep.html" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.CompleteStep</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ClassTypeStep.</span><code><a href="../../../java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ClassTypeStep.html#withClassType(sootup.core.types.ClassType)" class="member-name-link">withClassType</a><wbr>(@Nullable <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../../../java/core/JavaSootClass.JavaSootClassBuilder.CompleteStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.CompleteStep</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JavaSootClass.JavaSootClassBuilder.InterfaceStep.</span><code><a href="../../../java/core/JavaSootClass.JavaSootClassBuilder.InterfaceStep.html#withInterface(sootup.core.types.ClassType)" class="member-name-link">withInterface</a><wbr>(@NonNull <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;interfaceType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <div class="caption"><span>Method parameters in <a href="../../../java/core/package-summary.html">sootup.java.core</a> with type arguments of type <a href="../ClassType.html" title="class in sootup.core.types">ClassType</a></span></div>
 <div class="summary-table three-column-summary">

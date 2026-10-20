@@ -102,12 +102,9 @@ implements <a href="../../core/IdentifierFactory.html" title="interface in sootu
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>protected final @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&gt;</code></div>
-<div class="col-second even-row-color"><code><a href="#primitiveTypeMap" class="member-name-link">primitiveTypeMap</a></code></div>
+<div class="col-first even-row-color"><code>static final @NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a></code></div>
+<div class="col-second even-row-color"><code><a href="#STATIC_INITIALIZER" class="member-name-link">STATIC_INITIALIZER</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>static final @NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#STATIC_INITIALIZER" class="member-name-link">STATIC_INITIALIZER</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -146,19 +143,41 @@ implements <a href="../../core/IdentifierFactory.html" title="interface in sootu
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the array type.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="types/JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBoxedType(sootup.core.types.PrimitiveType)" class="member-name-link">getBoxedType</a><wbr>(@NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&nbsp;primitiveType)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="types/JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getClassType(java.lang.String)" class="member-name-link">getClassType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;fullyQualifiedClassName)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final @NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBooleanPrimitiveType()" class="member-name-link">getBooleanPrimitiveType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the <code>boolean</code> primitive type.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="types/JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBoxedType(sootup.core.types.PrimitiveType)" class="member-name-link">getBoxedType</a><wbr>(@NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&nbsp;primitiveType)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Always creates a new ClassSignature.</div>
+<div class="block">Get the ClassType for the boxed primitiveType.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final @NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBytePrimitiveType()" class="member-name-link">getBytePrimitiveType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the <code>boolean</code> primitive type.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final @NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCharPrimitiveType()" class="member-name-link">getCharPrimitiveType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the <code>char</code> primitive type.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="types/JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getClassType(java.lang.String,java.lang.String)" class="member-name-link">getClassType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;packageName)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getClassType(java.lang.String)" class="member-name-link">getClassType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;fullyQualifiedClassName)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Always creates a new ClassSignature.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="types/JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getClassType(java.lang.String,java.lang.String)" class="member-name-link">getClassType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;className,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;packageName)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a unique ClassType.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final @NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDoublePrimitiveType()" class="member-name-link">getDoublePrimitiveType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the <code>double</code> primitive type.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/FieldSignature.html" title="class in sootup.core.signatures">FieldSignature</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFieldSignature(sootup.core.types.ClassType,sootup.core.signatures.FieldSubSignature)" class="member-name-link">getFieldSignature</a><wbr>(@NonNull <a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClassSignature,
@@ -187,53 +206,73 @@ implements <a href="../../core/IdentifierFactory.html" title="interface in sootu
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the field sub signature.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMethodSignature(sootup.core.types.ClassType,sootup.core.signatures.MethodSubSignature)" class="member-name-link">getMethodSignature</a><wbr>(@NonNull <a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClassSignature,
- @NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a>&nbsp;subSignature)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final @NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFloatPrimitiveType()" class="member-name-link">getFloatPrimitiveType</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the <code>float</code> primitive type.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final @NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIntPrimitiveType()" class="member-name-link">getIntPrimitiveType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the <code>int</code> primitive type.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final @NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLongPrimitiveType()" class="member-name-link">getLongPrimitiveType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the <code>long</code> primitive type.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMethodSignature(sootup.core.types.ClassType,sootup.core.signatures.MethodSubSignature)" class="member-name-link">getMethodSignature</a><wbr>(@NonNull <a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClassSignature,
+ @NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a>&nbsp;subSignature)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Always returns the same, hash-consed MethodSignature for equal (declaringClass, subSignature)
  pairs, so callers may compare MethodSignatures with <code>==</code>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMethodSignature(java.lang.String,java.lang.String,java.lang.String,java.util.List)" class="member-name-link">getMethodSignature</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;fullyQualifiedNameDeclClass,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodName,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;fqReturnType,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;parameters)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Always creates a new MethodSignature AND a new ClassSignature.</div>
-</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMethodSignature(sootup.core.types.ClassType,java.lang.String,java.lang.String,java.util.List)" class="member-name-link">getMethodSignature</a><wbr>(<a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClassSignature,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMethodSignature(java.lang.String,java.lang.String,java.lang.String,java.util.List)" class="member-name-link">getMethodSignature</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;fullyQualifiedNameDeclClass,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodName,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;fqReturnType,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;parameters)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Always creates a new MethodSignature reusing the given ClassSignature.</div>
+<div class="block">Always creates a new MethodSignature AND a new ClassSignature.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMethodSignature(sootup.core.types.ClassType,java.lang.String,sootup.core.types.Type,java.util.List)" class="member-name-link">getMethodSignature</a><wbr>(<a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClassSignature,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMethodSignature(sootup.core.types.ClassType,java.lang.String,java.lang.String,java.util.List)" class="member-name-link">getMethodSignature</a><wbr>(<a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClassSignature,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodName,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;fqReturnType,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;parameters)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Always creates a new MethodSignature reusing the given ClassSignature.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMethodSignature(sootup.core.types.ClassType,java.lang.String,sootup.core.types.Type,java.util.List)" class="member-name-link">getMethodSignature</a><wbr>(<a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClassSignature,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodName,
  <a href="../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;fqReturnType,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../core/types/Type.html" title="class in sootup.core.types">Type</a>&gt;&nbsp;parameters)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the method signature.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMethodSubSignature(java.lang.String,sootup.core.types.Type,java.lang.Iterable)" class="member-name-link">getMethodSubSignature</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMethodSubSignature(java.lang.String,sootup.core.types.Type,java.lang.Iterable)" class="member-name-link">getMethodSubSignature</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  @NonNull <a href="../../core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;returnType,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;? extends <a href="../../core/types/Type.html" title="class in sootup.core.types">Type</a>&gt;&nbsp;parameterSignatures)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the method sub signature.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/signatures/PackageName.html" title="class in sootup.core.signatures">PackageName</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPackageName(java.lang.String)" class="member-name-link">getPackageName</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;packageName)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/signatures/PackageName.html" title="class in sootup.core.signatures">PackageName</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPackageName(java.lang.String)" class="member-name-link">getPackageName</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;packageName)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a unique PackageName.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPrimitiveType(java.lang.String)" class="member-name-link">getPrimitiveType</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPrimitiveType(java.lang.String)" class="member-name-link">getPrimitiveType</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the primitive type.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final @NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getShortPrimitiveType()" class="member-name-link">getShortPrimitiveType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the <code>short</code> primitive type.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getStaticInitializerSignature(sootup.core.types.ClassType)" class="member-name-link">getStaticInitializerSignature</a><wbr>(<a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClassSignature)</code></div>
@@ -246,47 +285,52 @@ implements <a href="../../core/IdentifierFactory.html" title="interface in sootu
 <div class="block">Returns a Type which can be a <a href="types/JavaClassType.html" title="class in sootup.java.core.types"><code>JavaClassType</code></a>,<a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types"><code>PrimitiveType</code></a>, <a href="../../core/types/VoidType.html" title="class in sootup.core.types"><code>VoidType</code></a>, or
  <a href="../../core/types/NullType.html" title="class in sootup.core.types"><code>NullType</code></a>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isConstructorSignature(sootup.core.signatures.MethodSignature)" class="member-name-link">isConstructorSignature</a><wbr>(@NonNull <a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;methodSignature)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getUnboxedType(sootup.core.types.ClassType)" class="member-name-link">getUnboxedType</a><wbr>(@NonNull <a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;boxedType)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the PrimitiveType of a boxed type, if it is defined.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isConstructorSignature(sootup.core.signatures.MethodSignature)" class="member-name-link">isConstructorSignature</a><wbr>(@NonNull <a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;methodSignature)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Checks whether the given method signature is a constructor</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isConstructorSubSignature(sootup.core.signatures.MethodSubSignature)" class="member-name-link">isConstructorSubSignature</a><wbr>(@NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a>&nbsp;methodSubSignature)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isConstructorSubSignature(sootup.core.signatures.MethodSubSignature)" class="member-name-link">isConstructorSubSignature</a><wbr>(@NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a>&nbsp;methodSubSignature)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Checks whether the given method sub signature is a constructor</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isMainSubSignature(sootup.core.signatures.MethodSubSignature)" class="member-name-link">isMainSubSignature</a><wbr>(@NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a>&nbsp;methodSubSignature)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isMainSubSignature(sootup.core.signatures.MethodSubSignature)" class="member-name-link">isMainSubSignature</a><wbr>(@NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a>&nbsp;methodSubSignature)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Checks whether the given method sub signature is the main method signature</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isStaticInitializerSubSignature(sootup.core.signatures.MethodSubSignature)" class="member-name-link">isStaticInitializerSubSignature</a><wbr>(@NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a>&nbsp;methodSubSignature)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isStaticInitializerSubSignature(sootup.core.signatures.MethodSubSignature)" class="member-name-link">isStaticInitializerSubSignature</a><wbr>(@NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a>&nbsp;methodSubSignature)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Checks whether the given method sub signature is a static initializer</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/FieldSignature.html" title="class in sootup.core.signatures">FieldSignature</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseFieldSignature(java.lang.String)" class="member-name-link">parseFieldSignature</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;fieldSignature)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/FieldSignature.html" title="class in sootup.core.signatures">FieldSignature</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseFieldSignature(java.lang.String)" class="member-name-link">parseFieldSignature</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;fieldSignature)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Parses a <a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures"><code>MethodSignature</code></a> either from a Soot or from a JavaDoc-like signature
  specification.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/FieldSubSignature.html" title="class in sootup.core.signatures">FieldSubSignature</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseFieldSubSignature(java.lang.String)" class="member-name-link">parseFieldSubSignature</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;subSignature)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/FieldSubSignature.html" title="class in sootup.core.signatures">FieldSubSignature</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseFieldSubSignature(java.lang.String)" class="member-name-link">parseFieldSubSignature</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;subSignature)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Parses a <a href="../../core/signatures/FieldSubSignature.html" title="class in sootup.core.signatures"><code>FieldSubSignature</code></a> either from a Soot or from a JavaDoc-like signature
  specification.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseMethodSignature(java.lang.String)" class="member-name-link">parseMethodSignature</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodSignature)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseMethodSignature(java.lang.String)" class="member-name-link">parseMethodSignature</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodSignature)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Parses a <a href="../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures"><code>MethodSignature</code></a> either from a Soot or from a JavaDoc-like signature
  specification.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseMethodSubSignature(java.lang.String)" class="member-name-link">parseMethodSubSignature</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;subSignature)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parseMethodSubSignature(java.lang.String)" class="member-name-link">parseMethodSubSignature</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;subSignature)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Parses a <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures"><code>MethodSubSignature</code></a> either from a Soot or from a JavaDoc-like signature
  specification.</div>
 </div>
@@ -314,12 +358,6 @@ implements <a href="../../core/IdentifierFactory.html" title="interface in sootu
 <section class="detail" id="STATIC_INITIALIZER">
 <h3>STATIC_INITIALIZER</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">@NonNull <a href="../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a></span>&nbsp;<span class="element-name">STATIC_INITIALIZER</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="primitiveTypeMap">
-<h3>primitiveTypeMap</h3>
-<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&gt;</span>&nbsp;<span class="element-name">primitiveTypeMap</span></div>
 </section>
 </li>
 </ul>
@@ -404,7 +442,7 @@ implements <a href="../../core/IdentifierFactory.html" title="interface in sootu
 <li>
 <section class="detail" id="getPrimitiveType(java.lang.String)">
 <h3>getPrimitiveType</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&gt;</span>&nbsp;<span class="element-name">getPrimitiveType</span><wbr><span class="parameters">(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName)</span></div>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&gt;</span>&nbsp;<span class="element-name">getPrimitiveType</span><wbr><span class="parameters">(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName)</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../core/IdentifierFactory.html#getPrimitiveType(java.lang.String)">IdentifierFactory</a></code></span></div>
 <div class="block">Gets the primitive type.</div>
 <dl class="notes">
@@ -418,6 +456,174 @@ implements <a href="../../core/IdentifierFactory.html" title="interface in sootu
 </section>
 </li>
 <li>
+<section class="detail" id="getBooleanPrimitiveType()">
+<h3>getBooleanPrimitiveType</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">@NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></span>&nbsp;<span class="element-name">getBooleanPrimitiveType</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../core/IdentifierFactory.html#getBooleanPrimitiveType()">IdentifierFactory</a></code></span></div>
+<div class="block">Get the <code>boolean</code> primitive type.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../core/IdentifierFactory.html#getBooleanPrimitiveType()">getBooleanPrimitiveType</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
+<dt>Returns:</dt>
+<dd>the primitive type instance for <code>boolean</code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+     Primitive Types and Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getBytePrimitiveType()">
+<h3>getBytePrimitiveType</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">@NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></span>&nbsp;<span class="element-name">getBytePrimitiveType</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../core/IdentifierFactory.html#getBytePrimitiveType()">IdentifierFactory</a></code></span></div>
+<div class="block">Get the <code>boolean</code> primitive type.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../core/IdentifierFactory.html#getBytePrimitiveType()">getBytePrimitiveType</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
+<dt>Returns:</dt>
+<dd>the primitive type instance for <code>boolean</code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+     Primitive Types and Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getShortPrimitiveType()">
+<h3>getShortPrimitiveType</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">@NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></span>&nbsp;<span class="element-name">getShortPrimitiveType</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../core/IdentifierFactory.html#getShortPrimitiveType()">IdentifierFactory</a></code></span></div>
+<div class="block">Get the <code>short</code> primitive type.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../core/IdentifierFactory.html#getShortPrimitiveType()">getShortPrimitiveType</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
+<dt>Returns:</dt>
+<dd>the primitive type instance for <code>short</code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+     Primitive Types and Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getCharPrimitiveType()">
+<h3>getCharPrimitiveType</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">@NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></span>&nbsp;<span class="element-name">getCharPrimitiveType</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../core/IdentifierFactory.html#getCharPrimitiveType()">IdentifierFactory</a></code></span></div>
+<div class="block">Get the <code>char</code> primitive type.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../core/IdentifierFactory.html#getCharPrimitiveType()">getCharPrimitiveType</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
+<dt>Returns:</dt>
+<dd>the primitive type instance for <code>char</code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+     Primitive Types and Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getIntPrimitiveType()">
+<h3>getIntPrimitiveType</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">@NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></span>&nbsp;<span class="element-name">getIntPrimitiveType</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../core/IdentifierFactory.html#getIntPrimitiveType()">IdentifierFactory</a></code></span></div>
+<div class="block">Get the <code>int</code> primitive type.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../core/IdentifierFactory.html#getIntPrimitiveType()">getIntPrimitiveType</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
+<dt>Returns:</dt>
+<dd>the primitive type instance for <code>int</code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+     Primitive Types and Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getLongPrimitiveType()">
+<h3>getLongPrimitiveType</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">@NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></span>&nbsp;<span class="element-name">getLongPrimitiveType</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../core/IdentifierFactory.html#getLongPrimitiveType()">IdentifierFactory</a></code></span></div>
+<div class="block">Get the <code>long</code> primitive type.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../core/IdentifierFactory.html#getLongPrimitiveType()">getLongPrimitiveType</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
+<dt>Returns:</dt>
+<dd>the primitive type instance for <code>long</code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+     Primitive Types and Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getFloatPrimitiveType()">
+<h3>getFloatPrimitiveType</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">@NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></span>&nbsp;<span class="element-name">getFloatPrimitiveType</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../core/IdentifierFactory.html#getFloatPrimitiveType()">IdentifierFactory</a></code></span></div>
+<div class="block">Get the <code>float</code> primitive type.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../core/IdentifierFactory.html#getFloatPrimitiveType()">getFloatPrimitiveType</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
+<dt>Returns:</dt>
+<dd>the primitive type instance for <code>float</code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+     Primitive Types and Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getDoublePrimitiveType()">
+<h3>getDoublePrimitiveType</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">@NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a></span>&nbsp;<span class="element-name">getDoublePrimitiveType</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../core/IdentifierFactory.html#getDoublePrimitiveType()">IdentifierFactory</a></code></span></div>
+<div class="block">Get the <code>double</code> primitive type.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../core/IdentifierFactory.html#getDoublePrimitiveType()">getDoublePrimitiveType</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
+<dt>Returns:</dt>
+<dd>the primitive type instance for <code>double</code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+     Primitive Types and Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="getAllPrimitiveTypes()">
 <h3>getAllPrimitiveTypes</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&gt;</span>&nbsp;<span class="element-name">getAllPrimitiveTypes</span>()</div>
@@ -427,9 +633,44 @@ implements <a href="../../core/IdentifierFactory.html" title="interface in sootu
 <section class="detail" id="getBoxedType(sootup.core.types.PrimitiveType)">
 <h3>getBoxedType</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="types/JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a></span>&nbsp;<span class="element-name">getBoxedType</span><wbr><span class="parameters">(@NonNull <a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&nbsp;primitiveType)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../core/IdentifierFactory.html#getBoxedType(sootup.core.types.PrimitiveType)">IdentifierFactory</a></code></span></div>
+<div class="block">Get the ClassType for the boxed primitiveType.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../core/IdentifierFactory.html#getBoxedType(sootup.core.types.PrimitiveType)">getBoxedType</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
+<dt>Returns:</dt>
+<dd>a ClassType for the boxed type</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-5.html#jls-5.1.7">5.1.7.
+     Boxing Conversion</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getUnboxedType(sootup.core.types.ClassType)">
+<h3>getUnboxedType</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../core/types/PrimitiveType.html" title="class in sootup.core.types">PrimitiveType</a>&gt;</span>&nbsp;<span class="element-name">getUnboxedType</span><wbr><span class="parameters">(@NonNull <a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;boxedType)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../core/IdentifierFactory.html#getUnboxedType(sootup.core.types.ClassType)">IdentifierFactory</a></code></span></div>
+<div class="block">Get the PrimitiveType of a boxed type, if it is defined.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../core/IdentifierFactory.html#getUnboxedType(sootup.core.types.ClassType)">getUnboxedType</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>boxedType</code> - any type</dd>
+<dt>Returns:</dt>
+<dd>the PrimitiveType instance corresponding to the boxedType, or empty if such is not
+     defined.</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-5.html#jls-5.1.8">5.1.8.
+     Unboxing Conversion</a></li>
+</ul>
+</dd>
 </dl>
 </section>
 </li>
@@ -566,17 +807,21 @@ implements <a href="../../core/IdentifierFactory.html" title="interface in sootu
 
  <p><b><i>Soot syntax examples:</i></b>
 
- <pre><code>
+ <pre>
+ <code>
  &lt;de.upb.sootup.signatures.Remove: de.upb.sootup.signatures.MethodSignature parseMethodSignature(java.lang.String)&gt;
  &lt;de.upb.sootup.signatures.Remove: de.upb.sootup.signatures.MethodSignature getMethodSignature(java.lang.String, de.upb.sootup.types.JavaClassType)&gt;
- </code></pre>
+ </code>
+ </pre>
 
  <p><b><i>JavaDoc-like syntax examples:</i></b>
 
- <pre><code>
+ <pre>
+ <code>
  de.upb.sootup.signatures.Remove#parseMethodSignature(java.lang.String): de.upb.sootup.signatures.MethodSignature
  de.upb.sootup.signatures.Remove#getMethodSignature(java.lang.String, de.upb.sootup.types.JavaClassType): de.upb.sootup.signatures.MethodSignature
- </code></pre></div>
+ </code>
+ </pre></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../core/IdentifierFactory.html#parseMethodSignature(java.lang.String)">parseMethodSignature</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
@@ -620,17 +865,21 @@ implements <a href="../../core/IdentifierFactory.html" title="interface in sootu
 
  <p><b><i>Soot syntax examples:</i></b>
 
- <pre><code>
+ <pre>
+ <code>
  &gt;de.upb.sootup.signatures.MethodSignature parseMethodSignature(java.lang.String)&gt;
  &gt;de.upb.sootup.signatures.MethodSignature getMethodSignature(java.lang.String, de.upb.sootup.types.JavaClassType)&gt;
- </code></pre>
+ </code>
+ </pre>
 
  <p><b><i>JavaDoc-like syntax examples:</i></b>
 
- <pre><code>
+ <pre>
+ <code>
  #parseMethodSignature(java.lang.String): de.upb.sootup.signatures.MethodSignature
  #getMethodSignature(java.lang.String, de.upb.sootup.types.JavaClassType): de.upb.sootup.signatures.MethodSignature
- </code></pre></div>
+ </code>
+ </pre></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../core/IdentifierFactory.html#parseMethodSubSignature(java.lang.String)">parseMethodSubSignature</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
@@ -654,15 +903,19 @@ implements <a href="../../core/IdentifierFactory.html" title="interface in sootu
 
  <p><b><i>Soot syntax examples:</i></b>
 
- <pre><code>
+ <pre>
+ <code>
  &lt;de.upb.sootup.signatures.Remove: de.upb.sootup.signatures.Remove INSTANCE&gt;
- </code></pre>
+ </code>
+ </pre>
 
  <p><b><i>JavaDoc-like syntax examples:</i></b>
 
- <pre><code>
+ <pre>
+ <code>
  de.upb.sootup.signatures.Remove#INSTANCE: de.upb.sootup.signatures.Remove
- </code></pre></div>
+ </code>
+ </pre></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../core/IdentifierFactory.html#parseFieldSignature(java.lang.String)">parseFieldSignature</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
@@ -762,15 +1015,19 @@ implements <a href="../../core/IdentifierFactory.html" title="interface in sootu
 
  <p><b><i>Soot syntax example:</i></b>
 
- <pre><code>
+ <pre>
+ <code>
  &lt;de.upb.sootup.signatures.Remove INSTANCE&gt;
- </code></pre>
+ </code>
+ </pre>
 
  <p><b><i>JavaDoc-like syntax example:</i></b>
 
- <pre><code>
+ <pre>
+ <code>
  #INSTANCE: de.upb.sootup.signatures.Remove
- </code></pre></div>
+ </code>
+ </pre></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../core/IdentifierFactory.html#parseFieldSubSignature(java.lang.String)">parseFieldSubSignature</a></code>&nbsp;in interface&nbsp;<code><a href="../../core/IdentifierFactory.html" title="interface in sootup.core">IdentifierFactory</a></code></dd>
