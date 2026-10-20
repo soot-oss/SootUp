@@ -25,8 +25,6 @@ package sootup.apk.frontend.instruction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.jf.dexlib2.dexbacked.instruction.DexBackedPackedSwitchPayload;
-import org.jf.dexlib2.dexbacked.instruction.DexBackedSparseSwitchPayload;
 import org.jf.dexlib2.iface.instruction.*;
 import org.jf.dexlib2.iface.instruction.formats.PackedSwitchPayload;
 import org.jf.dexlib2.iface.instruction.formats.SparseSwitchPayload;
@@ -74,9 +72,9 @@ public abstract class SwitchInstruction extends DexLibAbstractInstruction
   }
 
   public void computeLookUpValues(Instruction targetData) {
-    if (targetData instanceof DexBackedSparseSwitchPayload) {
+    if (targetData instanceof SparseSwitchPayload) {
       switchPayload = (SparseSwitchPayload) targetData;
-    } else if (targetData instanceof DexBackedPackedSwitchPayload) {
+    } else if (targetData instanceof PackedSwitchPayload) {
       switchPayload = (PackedSwitchPayload) targetData;
     }
     assert switchPayload != null;
@@ -106,10 +104,10 @@ public abstract class SwitchInstruction extends DexLibAbstractInstruction
 
   public void addBranchingStmts(DexBody body) {
     computeBranchingStmts(body);
-    if (targetData instanceof DexBackedPackedSwitchPayload) {
+    if (targetData instanceof PackedSwitchPayload) {
       body.addBranchingStmt((BranchingStmt) switchStmt, targets);
       body.addBranchingStmt((BranchingStmt) switchStmt, Collections.singletonList(defaultTarget));
-    } else if (targetData instanceof DexBackedSparseSwitchPayload) {
+    } else if (targetData instanceof SparseSwitchPayload) {
       body.addBranchingStmt((BranchingStmt) switchStmt, targets);
     }
   }

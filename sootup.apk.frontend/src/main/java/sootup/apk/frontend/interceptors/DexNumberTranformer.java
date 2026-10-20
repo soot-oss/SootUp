@@ -24,6 +24,7 @@ package sootup.apk.frontend.interceptors;
 
 import java.util.*;
 import org.jspecify.annotations.NonNull;
+import sootup.apk.frontend.tag.OpTagPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.constant.DoubleConstant;
@@ -57,6 +58,7 @@ public class DexNumberTranformer extends DexTransformer {
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
+    final Map<Stmt, Stmt> rewrites = new IdentityHashMap<>();
 
     for (Local local : getNumCandidates(builder)) {
       usedAsFloatingPoint = false;
@@ -75,7 +77,11 @@ public class DexNumberTranformer extends DexTransformer {
               public void caseAssignStmt(@NonNull JAssignStmt stmt) {
                 {
                   Value rightOp = stmt.getRightOp();
-                  if (rightOp instanceof JFieldRef) {
+                  if ((rightOp instanceof AbstractBinopExpr && !isCompare(rightOp))
+                      || rightOp instanceof JNegExpr) {
+                    usedAsFloatingPoint = OpTagPositionInfo.isFloatingPointOp(stmt);
+                    doBreak = true;
+                  } else if (rightOp instanceof JFieldRef) {
                     usedAsFloatingPoint = isFloatingPointLike(rightOp.getType());
                     doBreak = true;
                   } else if (rightOp instanceof JNewArrayExpr) {
@@ -87,7 +93,7 @@ public class DexNumberTranformer extends DexTransformer {
                     JArrayRef ar = (JArrayRef) rightOp;
                     Type arType = ar.getType();
                     if (arType instanceof UnknownType) {
-                      Type t = findArrayType(localDefs, stmt, 0, Collections.emptySet());
+                      Type t = arrayElementType(localDefs, stmt);
                       usedAsFloatingPoint = isFloatingPointLike(t);
                     } else {
                       usedAsFloatingPoint = isFloatingPointLike(ar.getType());
@@ -163,13 +169,11 @@ public class DexNumberTranformer extends DexTransformer {
                     } else if (r instanceof AbstractInvokeExpr) {
                       usedAsFloatingPoint = examineInvokeExpr((AbstractInvokeExpr) r, l);
                       doBreak = true;
-                    } else if (r instanceof AbstractBinopExpr) {
-                      //                                usedAsFloatingPoint =
-                      // examineBinopExpr(stmt);
-                      doBreak = true;
-                    } else if (r instanceof JCastExpr) {
-                      //                                usedAsFloatingPoint =
-                      // stmt.hasTag(FloatOpTag.NAME) || stmt.hasTag(DoubleOpTag.NAME);
+                    } else if (r instanceof AbstractBinopExpr
+                        || r instanceof JCastExpr
+                        || r instanceof JNegExpr) {
+                      // the tag holds the operand kind; for a cast the source type
+                      usedAsFloatingPoint = OpTagPositionInfo.isFloatingPointOp(stmt);
                       doBreak = true;
                     } else if (r instanceof Local && r == l) {
                       if (left instanceof JFieldRef) {
@@ -182,7 +186,7 @@ public class DexNumberTranformer extends DexTransformer {
                         JArrayRef jArrayRef = (JArrayRef) left;
                         Type arType = jArrayRef.getType();
                         if (arType instanceof UnknownType) {
-                          arType = findArrayType(localDefs, stmt, 0, Collections.emptySet());
+                          arType = arrayElementType(localDefs, stmt);
                         }
                         usedAsFloatingPoint = isFloatingPointLike(arType);
                         doBreak = true;
@@ -202,29 +206,29 @@ public class DexNumberTranformer extends DexTransformer {
 
       if (usedAsFloatingPoint) {
         for (Stmt defStmt : defs) {
-          replaceWithFloatingPoint(defStmt);
+          replaceWithFloatingPoint(defStmt, rewrites);
         }
+      }
+    }
+    applyRewrites(builder, rewrites);
+  }
+
+  /** Reinterpret the int/long constant assigned in the given stmt as float/double bits. */
+  private void replaceWithFloatingPoint(Stmt stmt, Map<Stmt, Stmt> rewrites) {
+    if (current(rewrites, stmt) instanceof JAssignStmt s) {
+      Value v = s.getRightOp();
+      if ((v instanceof IntConstant)) {
+        int vVal = ((IntConstant) v).getValue();
+        rewrites.put(stmt, s.withRValue(FloatConstant.getInstance(Float.intBitsToFloat(vVal))));
+      } else if (v instanceof LongConstant) {
+        long vVal = ((LongConstant) v).getValue();
+        rewrites.put(stmt, s.withRValue(DoubleConstant.getInstance(Double.longBitsToDouble(vVal))));
       }
     }
   }
 
-  /**
-   * Replace 0 with null in the given unit.
-   *
-   * @param stmt the stmt where 0 will be replaced with null.
-   */
-  private void replaceWithFloatingPoint(Stmt stmt) {
-    if (stmt instanceof JAssignStmt) {
-      JAssignStmt s = (JAssignStmt) stmt;
-      Value v = s.getRightOp();
-      if ((v instanceof IntConstant)) {
-        int vVal = ((IntConstant) v).getValue();
-        s.withRValue(FloatConstant.getInstance(Float.intBitsToFloat(vVal)));
-      } else if (v instanceof LongConstant) {
-        long vVal = ((LongConstant) v).getValue();
-        s.withRValue(DoubleConstant.getInstance(Double.longBitsToDouble(vVal)));
-      }
-    }
+  private static boolean isCompare(Value value) {
+    return value instanceof JCmpExpr || value instanceof JCmplExpr || value instanceof JCmpgExpr;
   }
 
   /**

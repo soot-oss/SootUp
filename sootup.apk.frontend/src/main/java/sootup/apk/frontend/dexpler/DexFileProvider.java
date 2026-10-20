@@ -33,20 +33,10 @@ import org.jf.dexlib2.iface.MultiDexContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** Loads the dex files of a source. It keeps no state, so nothing outlives the caller. */
 public class DexFileProvider {
 
   private final Logger logger = LoggerFactory.getLogger(DexFileProvider.class);
-
-  private int api_version;
-
-  private static DexFileProvider instance;
-
-  public static DexFileProvider getInstance() {
-    if (instance == null) {
-      instance = new DexFileProvider();
-    }
-    return instance;
-  }
 
   public static final class DexContainer<T extends DexFile> {
     private final MultiDexContainer.DexEntry<T> base;
@@ -68,121 +58,72 @@ public class DexFileProvider {
     }
   }
 
-  /** Mapping of filesystem file (apk, dex, etc.) to mapping of dex name to dex file */
-  private final Map<String, Map<String, DexContainer<? extends DexFile>>> dexMap = new HashMap<>();
-
   /**
    * Returns all dex files found in dex source
    *
    * @param dexSource Path to a jar, apk, dex, odex or a directory containing multiple dex files
-   * @param api_version the version of the currently instrumenting APK
-   * @return List of dex files derived from source
+   * @param apiVersion the API level, only used for odex files
+   * @return List of dex files derived from source, lowest priority first
    * @throws IOException if the dex source is not parsed properly
    */
-  public List<DexContainer<? extends DexFile>> getDexFromSource(File dexSource, int api_version)
+  public List<DexContainer<? extends DexFile>> getDexFromSource(File dexSource, int apiVersion)
       throws IOException {
-    this.api_version = api_version;
-    return getDexFromSource(dexSource, DEFAULT_PRIORITIZER);
+    return getDexFromSource(dexSource, apiVersion, DEFAULT_PRIORITIZER);
   }
 
   public List<DexContainer<? extends DexFile>> getDexFromSource(
-      File dexSource, Comparator<DexContainer<? extends DexFile>> prioritizer) throws IOException {
+      File dexSource, int apiVersion, Comparator<DexContainer<? extends DexFile>> prioritizer)
+      throws IOException {
     ArrayList<DexContainer<? extends DexFile>> resultList = new ArrayList<>();
-    List<File> allSources = allSourcesFromFile(dexSource);
-    updateIndex(allSources);
-    for (File theSource : allSources) {
-      resultList.addAll(dexMap.get(theSource.getCanonicalPath()).values());
+    for (File theSource : allSourcesFromFile(dexSource)) {
+      resultList.addAll(mappingForFile(theSource, apiVersion).values());
     }
 
+    // lowest priority first, because later dex files overwrite earlier ones when indexed
     if (resultList.size() > 1) {
       resultList.sort(Collections.reverseOrder(prioritizer));
     }
     return resultList;
   }
 
-  private void updateIndex(List<File> dexSources) throws IOException {
-    for (File theSource : dexSources) {
-      String key = theSource.getCanonicalPath();
-      Map<String, DexContainer<? extends DexFile>> dexFiles = dexMap.get(key);
-      if (dexFiles == null) {
-        try {
-          dexFiles = mappingForFile(theSource);
-          dexMap.put(key, dexFiles);
-        } catch (IOException e) {
-          throw new IllegalStateException("Error parsing dex source", e);
-        }
-      }
-    }
-  }
-
   /**
    * @param dexSourceFile A file containing either one or multiple dex files (apk, zip, etc.) but no
    *     directory!
-   * @return
-   * @throws IOException
    */
-  private Map<String, DexContainer<? extends DexFile>> mappingForFile(File dexSourceFile)
-      throws IOException {
-    // load dex files from apk/folder/file
-    boolean multiple_dex = true;
+  private Map<String, DexContainer<? extends DexFile>> mappingForFile(
+      File dexSourceFile, int apiVersion) throws IOException {
+    // dex files carry their version in the header; only odex needs the device API level
+    Opcodes opcodes =
+        dexSourceFile.getName().toLowerCase().endsWith(".odex") ? Opcodes.forApi(apiVersion) : null;
     MultiDexContainer<? extends DexBackedDexFile> dexContainer =
-        DexFileFactory.loadDexContainer(dexSourceFile, Opcodes.forApi(api_version));
+        DexFileFactory.loadDexContainer(dexSourceFile, opcodes);
 
     List<String> dexEntryNameList = dexContainer.getDexEntryNames();
-    int dexFileCount = dexEntryNameList.size();
-
-    if (dexFileCount < 1) {
-      return Collections.emptyMap();
-    }
-
-    Map<String, DexContainer<? extends DexFile>> dexMap = new HashMap<>(dexFileCount);
-
-    // report found dex files and add to list.
-    // We do this in reverse order to make sure that we add the first entry if there is no
-    // classes.dex file in single dex
-    // mode
-    ListIterator<String> entryNameIterator = dexEntryNameList.listIterator(dexFileCount);
-    while (entryNameIterator.hasPrevious()) {
-      String entryName = entryNameIterator.previous();
+    // keyed by the full entry path, not just its basename: an archive can hold two dex entries
+    // whose basenames collide (e.g. "classes.dex" and "assets/x/classes.dex"), and keying by
+    // basename would silently drop one of them instead of just ranking it behind the other
+    Map<String, DexContainer<? extends DexFile>> dexMap = new HashMap<>(dexEntryNameList.size());
+    for (String entryName : dexEntryNameList) {
       MultiDexContainer.DexEntry<? extends DexFile> entry = dexContainer.getEntry(entryName);
-      entryName = deriveDexName(entryName);
+      String name = deriveDexName(entryName);
       logger.debug(
-          String.format(
-              "Found dex file '%s' with %d classes in '%s'",
-              entryName, entry.getDexFile().getClasses().size(), dexSourceFile.getCanonicalPath()));
-
-      if (multiple_dex) {
-        dexMap.put(entryName, new DexContainer<>(entry, entryName, dexSourceFile));
-      } else if (dexMap.isEmpty()
-          && (entryName.equals("classes.dex") || !entryNameIterator.hasPrevious())) {
-        // We prefer to have classes.dex in single dex mode.
-        // If we haven't found a classes.dex until the last element, take the last!
-        dexMap =
-            Collections.singletonMap(
-                entryName, new DexContainer<>(entry, entryName, dexSourceFile));
-        if (dexFileCount > 1) {
-          logger.warn(
-              "Multiple dex files detected, only processing '"
-                  + entryName
-                  + "'. Use '-process-multiple-dex' option to process them all.");
-        }
-      }
+          "Found dex file '{}' with {} classes in '{}'",
+          entryName,
+          entry.getDexFile().getClasses().size(),
+          dexSourceFile.getCanonicalPath());
+      dexMap.put(entryName, new DexContainer<>(entry, name, dexSourceFile));
     }
     return Collections.unmodifiableMap(dexMap);
   }
 
   public List<File> allSourcesFromFile(File dexSource) {
     if (dexSource.isDirectory()) {
-      List<File> dexFiles = getAllDexFilesInDirectory(dexSource);
-      return dexFiles;
-    } else {
-      String ext = com.google.common.io.Files.getFileExtension(dexSource.getName()).toLowerCase();
-      if ((ext.equals("jar") || ext.equals("zip"))) {
-        return Collections.emptyList();
-      } else {
-        return Collections.singletonList(dexSource);
-      }
+      return getAllDexFilesInDirectory(dexSource);
     }
+    // dexlib2 sniffs the actual format (zip/apk, dex, odex, oat) itself and throws
+    // UnsupportedFileTypeException for anything else, so no extension needs special-casing here;
+    // a .jar or .zip with no dex entries inside just yields nothing, the same as today
+    return Collections.singletonList(dexSource);
   }
 
   private List<File> getAllDexFilesInDirectory(File path) {
@@ -209,28 +150,38 @@ public class DexFileProvider {
     return new File(entryName).getName();
   }
 
-  private static final Comparator<DexContainer<? extends DexFile>> DEFAULT_PRIORITIZER =
+  /**
+   * Orders dex files like Android's class loader: classes.dex, classes2.dex, classes3.dex, ... and
+   * then everything else. A smaller value means a higher priority.
+   */
+  static final Comparator<DexContainer<? extends DexFile>> DEFAULT_PRIORITIZER =
       (o1, o2) -> {
         String s1 = o1.getDexName(), s2 = o2.getDexName();
-
-        // "classes.dex" has highest priority
         if (s1.equals("classes.dex")) {
-          return 1;
+          return s2.equals("classes.dex") ? 0 : -1;
         } else if (s2.equals("classes.dex")) {
-          return -1;
-        }
-
-        // if one of the strings starts with "classes", we give it the edge right here
-        boolean s1StartsClasses = s1.startsWith("classes");
-        boolean s2StartsClasses = s2.startsWith("classes");
-
-        if (s1StartsClasses && !s2StartsClasses) {
           return 1;
-        } else if (s2StartsClasses && !s1StartsClasses) {
-          return -1;
         }
 
-        // otherwise, use natural string ordering
+        boolean s1IsMultiDex = isSecondaryDexName(s1);
+        boolean s2IsMultiDex = isSecondaryDexName(s2);
+        if (s1IsMultiDex && s2IsMultiDex) {
+          // numeric, so classes9.dex comes before classes10.dex
+          return Long.compare(secondaryDexNumber(s1), secondaryDexNumber(s2));
+        } else if (s1IsMultiDex) {
+          return -1;
+        } else if (s2IsMultiDex) {
+          return 1;
+        }
         return s1.compareTo(s2);
       };
+
+  private static boolean isSecondaryDexName(String name) {
+    // Android skips classes1.dex
+    return name.matches("classes([2-9]|[1-9]\\d+)\\.dex");
+  }
+
+  private static long secondaryDexNumber(String name) {
+    return Long.parseLong(name.substring("classes".length(), name.length() - ".dex".length()));
+  }
 }
