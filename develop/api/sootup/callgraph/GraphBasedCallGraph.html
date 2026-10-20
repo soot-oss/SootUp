@@ -80,6 +80,10 @@ loadScripts(document, 'script');</script>
 <dt>All Implemented Interfaces:</dt>
 <dd><code><a href="CallGraph.html" title="interface in sootup.callgraph">CallGraph</a></code>, <code><a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a></code></dd>
 </dl>
+<dl class="notes">
+<dt>Direct Known Subclasses:</dt>
+<dd><code><a href="LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a></code></dd>
+</dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">GraphBasedCallGraph</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
@@ -115,6 +119,11 @@ implements <a href="MutableCallGraph.html" title="interface in sootup.callgraph"
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(org.graph4j.DirectedPseudograph,java.util.List)" class="member-name-link">GraphBasedCallGraph</a><wbr>(@NonNull org.graph4j.DirectedPseudograph&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>,<wbr><a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;&nbsp;graph,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;entryMethods)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected </code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(sootup.callgraph.GraphBasedCallGraph)" class="member-name-link">GraphBasedCallGraph</a><wbr>(@NonNull <a href="GraphBasedCallGraph.html" title="class in sootup.callgraph">GraphBasedCallGraph</a>&nbsp;other)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates a deep copy of the given call graph.</div>
+</div>
 </div>
 </section>
 </li>
@@ -280,6 +289,18 @@ implements <a href="MutableCallGraph.html" title="interface in sootup.callgraph"
 <h3>GraphBasedCallGraph</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="element-name">GraphBasedCallGraph</span><wbr><span class="parameters">(@NonNull org.graph4j.DirectedPseudograph&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>,<wbr><a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;&nbsp;graph,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;entryMethods)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(sootup.callgraph.GraphBasedCallGraph)">
+<h3>GraphBasedCallGraph</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="element-name">GraphBasedCallGraph</span><wbr><span class="parameters">(@NonNull <a href="GraphBasedCallGraph.html" title="class in sootup.callgraph">GraphBasedCallGraph</a>&nbsp;other)</span></div>
+<div class="block">Creates a deep copy of the given call graph. Subclasses use it to take over the nodes and edges
+ of an existing call graph.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>other</code> - the call graph that is copied</dd>
+</dl>
 </section>
 </li>
 </ul>

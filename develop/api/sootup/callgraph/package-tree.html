@@ -73,7 +73,11 @@ loadScripts(document, 'script');</script>
 </li>
 <li class="circle">sootup.callgraph.<a href="CallGraphDifference.html" class="type-name-link" title="class in sootup.callgraph">CallGraphDifference</a></li>
 <li class="circle">sootup.callgraph.<a href="CallSequenceComparator.html" class="type-name-link" title="class in sootup.callgraph">CallSequenceComparator</a> (implements java.util.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Comparator.html" title="class or interface in java.util" class="external-link">Comparator</a>&lt;T&gt;)</li>
-<li class="circle">sootup.callgraph.<a href="GraphBasedCallGraph.html" class="type-name-link" title="class in sootup.callgraph">GraphBasedCallGraph</a> (implements sootup.callgraph.<a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>)</li>
+<li class="circle">sootup.callgraph.<a href="GraphBasedCallGraph.html" class="type-name-link" title="class in sootup.callgraph">GraphBasedCallGraph</a> (implements sootup.callgraph.<a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>)
+<ul>
+<li class="circle">sootup.callgraph.<a href="LabeledGraphBasedCallGraph.html" class="type-name-link" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a>&lt;L&gt; (implements sootup.callgraph.<a href="MutableLabeledCallGraph.html" title="interface in sootup.callgraph">MutableLabeledCallGraph</a>&lt;L&gt;)</li>
+</ul>
+</li>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html" class="type-name-link external-link" title="class or interface in java.lang">Record</a>
 <ul>
 <li class="circle">sootup.callgraph.<a href="CallGraph.Call.html" class="type-name-link" title="class in sootup.callgraph">CallGraph.Call</a></li>
@@ -88,7 +92,16 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">sootup.callgraph.<a href="CallGraph.html" class="type-name-link" title="interface in sootup.callgraph">CallGraph</a>
 <ul>
-<li class="circle">sootup.callgraph.<a href="MutableCallGraph.html" class="type-name-link" title="interface in sootup.callgraph">MutableCallGraph</a></li>
+<li class="circle">sootup.callgraph.<a href="LabeledCallGraph.html" class="type-name-link" title="interface in sootup.callgraph">LabeledCallGraph</a>&lt;L&gt;
+<ul>
+<li class="circle">sootup.callgraph.<a href="MutableLabeledCallGraph.html" class="type-name-link" title="interface in sootup.callgraph">MutableLabeledCallGraph</a>&lt;L&gt; (also extends sootup.callgraph.<a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>)</li>
+</ul>
+</li>
+<li class="circle">sootup.callgraph.<a href="MutableCallGraph.html" class="type-name-link" title="interface in sootup.callgraph">MutableCallGraph</a>
+<ul>
+<li class="circle">sootup.callgraph.<a href="MutableLabeledCallGraph.html" class="type-name-link" title="interface in sootup.callgraph">MutableLabeledCallGraph</a>&lt;L&gt; (also extends sootup.callgraph.<a href="LabeledCallGraph.html" title="interface in sootup.callgraph">LabeledCallGraph</a>&lt;L&gt;)</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="circle">sootup.callgraph.<a href="CallGraphAlgorithm.html" class="type-name-link" title="interface in sootup.callgraph">CallGraphAlgorithm</a></li>

@@ -658,6 +658,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">This method enables to add calls that are edges in the call graph.</div>
 </dd>
+<dt><a href="sootup/callgraph/MutableLabeledCallGraph.html#addCall(sootup.callgraph.CallGraph.Call,L)" class="member-name-link">addCall(CallGraph.Call, L)</a> - Method in interface sootup.callgraph.<a href="sootup/callgraph/MutableLabeledCallGraph.html" title="interface in sootup.callgraph">MutableLabeledCallGraph</a></dt>
+<dd>
+<div class="block">This method adds a call to the call graph if it is not contained yet and attaches the given
+ label to it.</div>
+</dd>
 <dt><a href="qilin/core/builder/callgraph/OnFlyCallGraph.html#addCall(sootup.core.signatures.MethodSignature,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">addCall(MethodSignature, MethodSignature, InvokableStmt)</a> - Method in class qilin.core.builder.callgraph.<a href="qilin/core/builder/callgraph/OnFlyCallGraph.html" title="class in qilin.core.builder.callgraph">OnFlyCallGraph</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/GraphBasedCallGraph.html#addCall(sootup.core.signatures.MethodSignature,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">addCall(MethodSignature, MethodSignature, InvokableStmt)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/GraphBasedCallGraph.html" title="class in sootup.callgraph">GraphBasedCallGraph</a></dt>
@@ -797,6 +802,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/util/printer/JimplePrinter.Option.html#AddJimpleLn" class="member-name-link">AddJimpleLn</a> - Enum constant in enum class sootup.core.util.printer.<a href="sootup/core/util/printer/JimplePrinter.Option.html" title="enum class in sootup.core.util.printer">JimplePrinter.Option</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/LabeledGraphBasedCallGraph.html#addLabel(sootup.callgraph.CallGraph.Call,L)" class="member-name-link">addLabel(CallGraph.Call, L)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/MutableLabeledCallGraph.html#addLabel(sootup.callgraph.CallGraph.Call,L)" class="member-name-link">addLabel(CallGraph.Call, L)</a> - Method in interface sootup.callgraph.<a href="sootup/callgraph/MutableLabeledCallGraph.html" title="interface in sootup.callgraph">MutableLabeledCallGraph</a></dt>
+<dd>
+<div class="block">This method attaches a label to a call in the call graph.</div>
+</dd>
 <dt><a href="qilin/stat/Exporter.html#addLine(java.lang.String)" class="member-name-link">addLine(String)</a> - Method in class qilin.stat.<a href="qilin/stat/Exporter.html" title="class in qilin.stat">Exporter</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/conch/AbstractPAG.html#addLoadEdge(qilin.core.pag.LocalVarNode,qilin.core.pag.LocalVarNode)" class="member-name-link">addLoadEdge(LocalVarNode, LocalVarNode)</a> - Method in class qilin.pta.toolkits.conch.<a href="qilin/pta/toolkits/conch/AbstractPAG.html" title="class in qilin.pta.toolkits.conch">AbstractPAG</a></dt>
@@ -2263,6 +2274,11 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/callgraph/GraphBasedCallGraph.html#callsFrom(sootup.core.signatures.MethodSignature)" class="member-name-link">callsFrom(MethodSignature)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/GraphBasedCallGraph.html" title="class in sootup.callgraph">GraphBasedCallGraph</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/LabeledCallGraph.html#callsFrom(sootup.core.signatures.MethodSignature,java.util.function.Predicate)" class="member-name-link">callsFrom(MethodSignature, Predicate&lt;? super L&gt;)</a> - Method in interface sootup.callgraph.<a href="sootup/callgraph/LabeledCallGraph.html" title="interface in sootup.callgraph">LabeledCallGraph</a></dt>
+<dd>
+<div class="block">This method returns all outgoing calls of a given method signature that carry at least one
+ label matching the given filter.</div>
+</dd>
 <dt><a href="qilin/core/config/ContextSensitivity.html#callSite(int)" class="member-name-link">callSite(int)</a> - Static method in class qilin.core.config.<a href="qilin/core/config/ContextSensitivity.html" title="class in qilin.core.config">ContextSensitivity</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/config/ContextSensitivity.html#callSite(int,int)" class="member-name-link">callSite(int, int)</a> - Static method in class qilin.core.config.<a href="qilin/core/config/ContextSensitivity.html" title="class in qilin.core.config">ContextSensitivity</a></dt>
@@ -2297,6 +2313,11 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/callgraph/GraphBasedCallGraph.html#callsTo(sootup.core.signatures.MethodSignature)" class="member-name-link">callsTo(MethodSignature)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/GraphBasedCallGraph.html" title="class in sootup.callgraph">GraphBasedCallGraph</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/LabeledCallGraph.html#callsTo(sootup.core.signatures.MethodSignature,java.util.function.Predicate)" class="member-name-link">callsTo(MethodSignature, Predicate&lt;? super L&gt;)</a> - Method in interface sootup.callgraph.<a href="sootup/callgraph/LabeledCallGraph.html" title="interface in sootup.callgraph">LabeledCallGraph</a></dt>
+<dd>
+<div class="block">This method returns all incoming calls of a given method signature that carry at least one
+ label matching the given filter.</div>
+</dd>
 <dt><a href="qilin/core/builder/callgraph/OnFlyCallGraph.html#callTargetsFrom(sootup.core.signatures.MethodSignature)" class="member-name-link">callTargetsFrom(MethodSignature)</a> - Method in class qilin.core.builder.callgraph.<a href="qilin/core/builder/callgraph/OnFlyCallGraph.html" title="class in qilin.core.builder.callgraph">OnFlyCallGraph</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/CallGraph.html#callTargetsFrom(sootup.core.signatures.MethodSignature)" class="member-name-link">callTargetsFrom(MethodSignature)</a> - Method in interface sootup.callgraph.<a href="sootup/callgraph/CallGraph.html" title="interface in sootup.callgraph">CallGraph</a></dt>
@@ -4294,6 +4315,12 @@ loadScripts(document, 'script');</script>
 <div class="block">This method copies a call graph.</div>
 </dd>
 <dt><a href="sootup/callgraph/GraphBasedCallGraph.html#copy()" class="member-name-link">copy()</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/GraphBasedCallGraph.html" title="class in sootup.callgraph">GraphBasedCallGraph</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/LabeledCallGraph.html#copy()" class="member-name-link">copy()</a> - Method in interface sootup.callgraph.<a href="sootup/callgraph/LabeledCallGraph.html" title="interface in sootup.callgraph">LabeledCallGraph</a></dt>
+<dd>
+<div class="block">This method copies the call graph including the labels of its calls.</div>
+</dd>
+<dt><a href="sootup/callgraph/LabeledGraphBasedCallGraph.html#copy()" class="member-name-link">copy()</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/analysis/intraprocedural/AbstractFlowAnalysis.html#copy(F,F)" class="member-name-link">copy(F, F)</a> - Method in class sootup.analysis.intraprocedural.<a href="sootup/analysis/intraprocedural/AbstractFlowAnalysis.html" title="class in sootup.analysis.intraprocedural">AbstractFlowAnalysis</a></dt>
 <dd>
@@ -8858,6 +8885,12 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/core/util/printer/LabeledStmtPrinter.html#getLabels()" class="member-name-link">getLabels()</a> - Method in class sootup.core.util.printer.<a href="sootup/core/util/printer/LabeledStmtPrinter.html" title="class in sootup.core.util.printer">LabeledStmtPrinter</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/LabeledCallGraph.html#getLabels(sootup.callgraph.CallGraph.Call)" class="member-name-link">getLabels(CallGraph.Call)</a> - Method in interface sootup.callgraph.<a href="sootup/callgraph/LabeledCallGraph.html" title="interface in sootup.callgraph">LabeledCallGraph</a></dt>
+<dd>
+<div class="block">This method returns all labels attached to a call in the call graph.</div>
+</dd>
+<dt><a href="sootup/callgraph/LabeledGraphBasedCallGraph.html#getLabels(sootup.callgraph.CallGraph.Call)" class="member-name-link">getLabels(CallGraph.Call)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/inputlocation/MultiReleaseJarAnalysisInputLocation.html#getLanguageVersions(java.nio.file.Path)" class="member-name-link">getLanguageVersions(Path)</a> - Method in class sootup.java.bytecode.frontend.inputlocation.<a href="sootup/java/bytecode/frontend/inputlocation/MultiReleaseJarAnalysisInputLocation.html" title="class in sootup.java.bytecode.frontend.inputlocation">MultiReleaseJarAnalysisInputLocation</a></dt>
 <dd>
 <div class="block">lists all versions from the version directories inside the META-INF/ directory - excluding the
@@ -10635,6 +10668,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/callgraph/GraphBasedCallGraph.html#%3Cinit%3E(org.graph4j.DirectedPseudograph,java.util.List)" class="member-name-link">GraphBasedCallGraph(DirectedPseudograph&lt;MethodSignature, CallGraph.Call&gt;, List&lt;MethodSignature&gt;)</a> - Constructor for class sootup.callgraph.<a href="sootup/callgraph/GraphBasedCallGraph.html" title="class in sootup.callgraph">GraphBasedCallGraph</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/GraphBasedCallGraph.html#%3Cinit%3E(sootup.callgraph.GraphBasedCallGraph)" class="member-name-link">GraphBasedCallGraph(GraphBasedCallGraph)</a> - Constructor for class sootup.callgraph.<a href="sootup/callgraph/GraphBasedCallGraph.html" title="class in sootup.callgraph">GraphBasedCallGraph</a></dt>
+<dd>
+<div class="block">Creates a deep copy of the given call graph.</div>
+</dd>
 <dt><a href="sootup/core/jimple/common/constant/NumericConstant.html#greaterThan(N)" class="member-name-link">greaterThan(N)</a> - Method in interface sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/NumericConstant.html" title="interface in sootup.core.jimple.common.constant">NumericConstant</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/constant/DoubleConstant.html#greaterThan(sootup.core.jimple.common.constant.DoubleConstant)" class="member-name-link">greaterThan(DoubleConstant)</a> - Method in class sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/DoubleConstant.html" title="class in sootup.core.jimple.common.constant">DoubleConstant</a></dt>
@@ -10937,6 +10974,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/spark/node/AllocationNode.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class sootup.spark.node.<a href="sootup/spark/node/AllocationNode.html" title="class in sootup.spark.node">AllocationNode</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/LabeledCallGraph.html#hasLabel(sootup.callgraph.CallGraph.Call,L)" class="member-name-link">hasLabel(CallGraph.Call, L)</a> - Method in interface sootup.callgraph.<a href="sootup/callgraph/LabeledCallGraph.html" title="interface in sootup.callgraph">LabeledCallGraph</a></dt>
+<dd>
+<div class="block">This method checks if a given label is attached to a call in the call graph.</div>
+</dd>
 <dt><a href="qilin/pta/toolkits/moon/support/FieldRecorder.html#hasLoad(qilin.core.pag.LocalVarNode,qilin.core.pag.AllocNode)" class="member-name-link">hasLoad(LocalVarNode, AllocNode)</a> - Method in class qilin.pta.toolkits.moon.support.<a href="qilin/pta/toolkits/moon/support/FieldRecorder.html" title="class in qilin.pta.toolkits.moon.support">FieldRecorder</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/conch/AbstractConch.html#hasLoadOn(qilin.core.pag.AllocNode,qilin.core.pag.SparkField)" class="member-name-link">hasLoadOn(AllocNode, SparkField)</a> - Method in class qilin.pta.toolkits.conch.<a href="qilin/pta/toolkits/conch/AbstractConch.html" title="class in qilin.pta.toolkits.conch">AbstractConch</a></dt>
@@ -14103,6 +14144,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/jimple/JimpleParser.StatementContext.html#label_name" class="member-name-link">label_name</a> - Variable in class sootup.jimple.<a href="sootup/jimple/JimpleParser.StatementContext.html" title="class in sootup.jimple">JimpleParser.StatementContext</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/LabeledCallGraph.html" class="type-name-link" title="interface in sootup.callgraph">LabeledCallGraph</a>&lt;<a href="sootup/callgraph/LabeledCallGraph.html" title="type parameter in LabeledCallGraph">L</a>&gt; - Interface in <a href="sootup/callgraph/package-summary.html">sootup.callgraph</a></dt>
+<dd>
+<div class="block">A call graph whose calls (edges) can carry labels of type <code>L</code>.</div>
+</dd>
 <dt><a href="qilin/pta/toolkits/moon/graph/LabeledGraph.LabelEdge.html#%3Cinit%3E(N,N,L)" class="member-name-link">LabelEdge(N, N, L)</a> - Constructor for class qilin.pta.toolkits.moon.graph.<a href="qilin/pta/toolkits/moon/graph/LabeledGraph.LabelEdge.html" title="class in qilin.pta.toolkits.moon.graph">LabeledGraph.LabelEdge</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/moon/graph/LabeledGraph.html" class="type-name-link" title="class in qilin.pta.toolkits.moon.graph">LabeledGraph</a>&lt;<a href="qilin/pta/toolkits/moon/graph/LabeledGraph.html" title="type parameter in LabeledGraph">N</a>,<wbr><a href="qilin/pta/toolkits/moon/graph/LabeledGraph.html" title="type parameter in LabeledGraph">L</a>&gt; - Class in <a href="qilin/pta/toolkits/moon/graph/package-summary.html">qilin.pta.toolkits.moon.graph</a></dt>
@@ -14110,6 +14155,17 @@ loadScripts(document, 'script');</script>
 <dt><a href="qilin/pta/toolkits/moon/graph/LabeledGraph.html#%3Cinit%3E()" class="member-name-link">LabeledGraph()</a> - Constructor for class qilin.pta.toolkits.moon.graph.<a href="qilin/pta/toolkits/moon/graph/LabeledGraph.html" title="class in qilin.pta.toolkits.moon.graph">LabeledGraph</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/moon/graph/LabeledGraph.LabelEdge.html" class="type-name-link" title="class in qilin.pta.toolkits.moon.graph">LabeledGraph.LabelEdge</a> - Class in <a href="qilin/pta/toolkits/moon/graph/package-summary.html">qilin.pta.toolkits.moon.graph</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" class="type-name-link" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a>&lt;<a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" title="type parameter in LabeledGraphBasedCallGraph">L</a>&gt; - Class in <a href="sootup/callgraph/package-summary.html">sootup.callgraph</a></dt>
+<dd>
+<div class="block">This class implements a mutable call graph as a graph whose calls can carry labels of type <code>
+ L</code>.</div>
+</dd>
+<dt><a href="sootup/callgraph/LabeledGraphBasedCallGraph.html#%3Cinit%3E(java.util.List)" class="member-name-link">LabeledGraphBasedCallGraph(List&lt;MethodSignature&gt;)</a> - Constructor for class sootup.callgraph.<a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a></dt>
+<dd>
+<div class="block">The constructor of the labeled graph based call graph. it initializes an empty call graph.</div>
+</dd>
+<dt><a href="sootup/callgraph/LabeledGraphBasedCallGraph.html#%3Cinit%3E(sootup.callgraph.GraphBasedCallGraph,com.google.common.collect.SetMultimap)" class="member-name-link">LabeledGraphBasedCallGraph(GraphBasedCallGraph, SetMultimap&lt;CallGraph.Call, L&gt;)</a> - Constructor for class sootup.callgraph.<a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/util/printer/LabeledStmtPrinter.html" class="type-name-link" title="class in sootup.core.util.printer">LabeledStmtPrinter</a> - Class in <a href="sootup/core/util/printer/package-summary.html">sootup.core.util.printer</a></dt>
 <dd>&nbsp;</dd>
@@ -15033,6 +15089,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/views/MutableJavaView.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation)" class="member-name-link">MutableJavaView(AnalysisInputLocation)</a> - Constructor for class sootup.java.core.views.<a href="sootup/java/core/views/MutableJavaView.html" title="class in sootup.java.core.views">MutableJavaView</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/MutableLabeledCallGraph.html" class="type-name-link" title="interface in sootup.callgraph">MutableLabeledCallGraph</a>&lt;<a href="sootup/callgraph/MutableLabeledCallGraph.html" title="type parameter in MutableLabeledCallGraph">L</a>&gt; - Interface in <a href="sootup/callgraph/package-summary.html">sootup.callgraph</a></dt>
+<dd>
+<div class="block">A mutable call graph whose calls (edges) can carry labels of type <code>L</code>.</div>
+</dd>
 <dt><a href="sootup/core/typehierarchy/MutableTypeHierarchy.html" class="type-name-link" title="interface in sootup.core.typehierarchy">MutableTypeHierarchy</a> - Interface in <a href="sootup/core/typehierarchy/package-summary.html">sootup.core.typehierarchy</a></dt>
 <dd>
 <div class="block">For internal use only.</div>
@@ -15799,6 +15859,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the unique <a href="sootup/java/core/signatures/ModulePackageName.html" title="class in sootup.java.core.signatures"><code>ModulePackageName</code></a> for the given package and module, so that equal
  module-scoped package names are the same instance and may be compared with <code>==</code>.</div>
+</dd>
+<dt><a href="sootup/callgraph/LabeledGraphBasedCallGraph.html#of(sootup.callgraph.CallGraph)" class="member-name-link">of(CallGraph)</a> - Static method in class sootup.callgraph.<a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a></dt>
+<dd>
+<div class="block">Creates a labeled copy of the given call graph.</div>
 </dd>
 <dt><a href="sootup/analysis/intraprocedural/UniverseSortedPriorityQueue.html#of(java.util.List)" class="member-name-link">of(List&lt;? extends E&gt;)</a> - Static method in class sootup.analysis.intraprocedural.<a href="sootup/analysis/intraprocedural/UniverseSortedPriorityQueue.html" title="class in sootup.analysis.intraprocedural">UniverseSortedPriorityQueue</a></dt>
 <dd>
@@ -16649,10 +16713,18 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">This returns the string that is used in the toString Method to define the called methods</div>
 </dd>
+<dt><a href="sootup/callgraph/LabeledGraphBasedCallGraph.html#printCalledMethods(sootup.callgraph.CallGraph.Call)" class="member-name-link">printCalledMethods(CallGraph.Call)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/GraphBasedCallGraph.html#printCallingMethods(sootup.callgraph.CallGraph.Call)" class="member-name-link">printCallingMethods(CallGraph.Call)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/GraphBasedCallGraph.html" title="class in sootup.callgraph">GraphBasedCallGraph</a></dt>
 <dd>
 <div class="block">This returns the string that is used in the toString Method to define the methods that call a
  specific method</div>
+</dd>
+<dt><a href="sootup/callgraph/LabeledGraphBasedCallGraph.html#printCallingMethods(sootup.callgraph.CallGraph.Call)" class="member-name-link">printCallingMethods(CallGraph.Call)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/LabeledGraphBasedCallGraph.html#printLabels(sootup.callgraph.CallGraph.Call)" class="member-name-link">printLabels(CallGraph.Call)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a></dt>
+<dd>
+<div class="block">This returns the string that is used in the toString Method to print the labels of a call</div>
 </dd>
 <dt><a href="qilin/util/PagQueries.html#printPts(qilin.core.PTA,qilin.util.sets.PointsToSet)" class="member-name-link">printPts(PTA, PointsToSet)</a> - Static method in class qilin.util.<a href="qilin/util/PagQueries.html" title="class in qilin.util">PagQueries</a></dt>
 <dd>&nbsp;</dd>
@@ -17418,6 +17490,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/graph/MutableBasicBlockImpl.html#removeFromSuccessorBlocks(sootup.core.graph.MutableBasicBlock)" class="member-name-link">removeFromSuccessorBlocks(MutableBasicBlock)</a> - Method in class sootup.core.graph.<a href="sootup/core/graph/MutableBasicBlockImpl.html" title="class in sootup.core.graph">MutableBasicBlockImpl</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/LabeledGraphBasedCallGraph.html#removeLabel(sootup.callgraph.CallGraph.Call,L)" class="member-name-link">removeLabel(CallGraph.Call, L)</a> - Method in class sootup.callgraph.<a href="sootup/callgraph/LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/callgraph/MutableLabeledCallGraph.html#removeLabel(sootup.callgraph.CallGraph.Call,L)" class="member-name-link">removeLabel(CallGraph.Call, L)</a> - Method in interface sootup.callgraph.<a href="sootup/callgraph/MutableLabeledCallGraph.html" title="interface in sootup.callgraph">MutableLabeledCallGraph</a></dt>
+<dd>
+<div class="block">This method removes a label from a call in the call graph.</div>
+</dd>
 <dt><a href="sootup/java/core/views/MutableJavaView.html#removeMethod(sootup.java.core.JavaSootMethod)" class="member-name-link">removeMethod(JavaSootMethod)</a> - Method in class sootup.java.core.views.<a href="sootup/java/core/views/MutableJavaView.html" title="class in sootup.java.core.views">MutableJavaView</a></dt>
 <dd>
 <div class="block">Removes the provided method from the respective class it belongs to that is within the view.</div>
@@ -19561,6 +19639,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/callgraph/CallGraph.html#toDotEdge(sootup.callgraph.CallGraph.Call)" class="member-name-link">toDotEdge(CallGraph.Call)</a> - Method in interface sootup.callgraph.<a href="sootup/callgraph/CallGraph.html" title="interface in sootup.callgraph">CallGraph</a></dt>
 <dd>
 <div class="block">exports a call of the call graph to an edge in a dot file</div>
+</dd>
+<dt><a href="sootup/callgraph/LabeledCallGraph.html#toDotEdge(sootup.callgraph.CallGraph.Call)" class="member-name-link">toDotEdge(CallGraph.Call)</a> - Method in interface sootup.callgraph.<a href="sootup/callgraph/LabeledCallGraph.html" title="interface in sootup.callgraph">LabeledCallGraph</a></dt>
+<dd>
+<div class="block">exports a call of the call graph to an edge in a dot file.</div>
 </dd>
 <dt><a href="sootup/codepropertygraph/propertygraph/AstPropertyGraph.html#toDotGraph()" class="member-name-link">toDotGraph()</a> - Method in class sootup.codepropertygraph.propertygraph.<a href="sootup/codepropertygraph/propertygraph/AstPropertyGraph.html" title="class in sootup.codepropertygraph.propertygraph">AstPropertyGraph</a></dt>
 <dd>&nbsp;</dd>

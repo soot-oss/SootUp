@@ -192,10 +192,20 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Interface</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>interface&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../MutableCallGraph.html" class="type-name-link" title="interface in sootup.callgraph">MutableCallGraph</a></code></div>
+<div class="col-second even-row-color"><code><a href="../LabeledCallGraph.html" class="type-name-link" title="interface in sootup.callgraph">LabeledCallGraph</a>&lt;L&gt;</code></div>
 <div class="col-last even-row-color">
+<div class="block">A call graph whose calls (edges) can carry labels of type <code>L</code>.</div>
+</div>
+<div class="col-first odd-row-color"><code>interface&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../MutableCallGraph.html" class="type-name-link" title="interface in sootup.callgraph">MutableCallGraph</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">This interface defines a mutable call graph. this means a call graph that can be modified after
  the creation.</div>
+</div>
+<div class="col-first even-row-color"><code>interface&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../MutableLabeledCallGraph.html" class="type-name-link" title="interface in sootup.callgraph">MutableLabeledCallGraph</a>&lt;L&gt;</code></div>
+<div class="col-last even-row-color">
+<div class="block">A mutable call graph whose calls (edges) can carry labels of type <code>L</code>.</div>
 </div>
 </div>
 <div class="caption"><span>Classes in <a href="../package-summary.html">sootup.callgraph</a> that implement <a href="../CallGraph.html" title="interface in sootup.callgraph">CallGraph</a></span></div>
@@ -207,6 +217,12 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="../GraphBasedCallGraph.html" class="type-name-link" title="class in sootup.callgraph">GraphBasedCallGraph</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">This class implements a mutable call graph as a graph.</div>
+</div>
+<div class="col-first odd-row-color"><code>class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../LabeledGraphBasedCallGraph.html" class="type-name-link" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a>&lt;L&gt;</code></div>
+<div class="col-last odd-row-color">
+<div class="block">This class implements a mutable call graph as a graph whose calls can carry labels of type <code>
+ L</code>.</div>
 </div>
 </div>
 <div class="caption"><span>Methods in <a href="../package-summary.html">sootup.callgraph</a> that return <a href="../CallGraph.html" title="interface in sootup.callgraph">CallGraph</a></span></div>
@@ -282,6 +298,11 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>@NonNull <a href="../CallGraphDifference.html" title="class in sootup.callgraph">CallGraphDifference</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">GraphBasedCallGraph.</span><code><a href="../GraphBasedCallGraph.html#diff(sootup.callgraph.CallGraph)" class="member-name-link">diff</a><wbr>(@NonNull <a href="../CallGraph.html" title="interface in sootup.callgraph">CallGraph</a>&nbsp;callGraph)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static &lt;L&gt;&nbsp;@NonNull <a href="../LabeledGraphBasedCallGraph.html" title="class in sootup.callgraph">LabeledGraphBasedCallGraph</a>&lt;L&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">LabeledGraphBasedCallGraph.</span><code><a href="../LabeledGraphBasedCallGraph.html#of(sootup.callgraph.CallGraph)" class="member-name-link">of</a><wbr>(@NonNull <a href="../CallGraph.html" title="interface in sootup.callgraph">CallGraph</a>&nbsp;callGraph)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates a labeled copy of the given call graph.</div>
+</div>
 </div>
 <div class="caption"><span>Constructors in <a href="../package-summary.html">sootup.callgraph</a> with parameters of type <a href="../CallGraph.html" title="interface in sootup.callgraph">CallGraph</a></span></div>
 <div class="summary-table three-column-summary">
