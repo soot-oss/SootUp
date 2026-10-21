@@ -43,7 +43,7 @@ public class VirtualCalls {
 
   public VirtualCalls(View view) {
     this.view = view;
-    this.typeToVtbl = new HashMap<>((int) view.getClasses().count());
+    this.typeToVtbl = new HashMap<>();
   }
 
   public SootMethod resolveSpecial(
