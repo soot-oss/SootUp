@@ -109,6 +109,14 @@ public class Evaluator {
       // numbers are only compared with numbers of the same type, other constants with anything
       return !(c1 instanceof NumericConstant) || c1.getClass() == c2.getClass();
     }
+    if (op instanceof JCmpExpr) {
+      // cmp compares longs
+      return c1 instanceof LongConstant && c2 instanceof LongConstant;
+    }
+    if (op instanceof JCmplExpr || op instanceof JCmpgExpr) {
+      // cmpl and cmpg compare floats or doubles
+      return c1 instanceof RealConstant && c1.getClass() == c2.getClass();
+    }
     return c1.getClass() == c2.getClass();
   }
 

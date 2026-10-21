@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.JAddExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
+import sootup.core.jimple.common.expr.JCmpExpr;
+import sootup.core.jimple.common.expr.JCmpgExpr;
+import sootup.core.jimple.common.expr.JCmplExpr;
 import sootup.core.jimple.common.expr.JDivExpr;
 import sootup.core.jimple.common.expr.JEqExpr;
 import sootup.core.jimple.common.expr.JLtExpr;
@@ -136,5 +139,44 @@ public class EvaluatorTest {
         IntConstant.getInstance(0),
         Evaluator.getConstantValueOf(
             new JEqExpr(new StringConstant("a", STRING), new StringConstant("b", STRING))));
+  }
+
+  /**
+   * {@code cmp} compares longs, {@code cmpl} and {@code cmpg} compare floats or doubles. Other
+   * constants, e.g., the untyped int constants that hold a float's bits in dex code before the
+   * types are assigned, are not folded.
+   */
+  @Test
+  public void testComparisonsOfOtherConstantsAreNotFolded() {
+    assertNull(
+        Evaluator.getConstantValueOf(
+            new JCmplExpr(IntConstant.getInstance(1), IntConstant.getInstance(2))));
+    assertNull(
+        Evaluator.getConstantValueOf(
+            new JCmpgExpr(LongConstant.getInstance(1L), LongConstant.getInstance(2L))));
+    assertNull(
+        Evaluator.getConstantValueOf(
+            new JCmpExpr(IntConstant.getInstance(1), IntConstant.getInstance(2))));
+    assertNull(
+        Evaluator.getConstantValueOf(
+            new JCmpExpr(DoubleConstant.getInstance(1.0), DoubleConstant.getInstance(2.0))));
+  }
+
+  @Test
+  public void testComparisonsAreFolded() {
+    assertEquals(
+        IntConstant.getInstance(-1),
+        Evaluator.getConstantValueOf(
+            new JCmpExpr(LongConstant.getInstance(1L), LongConstant.getInstance(2L))));
+    // a comparison with NaN is -1 for cmpl and 1 for cmpg
+    assertEquals(
+        IntConstant.getInstance(-1),
+        Evaluator.getConstantValueOf(
+            new JCmplExpr(FloatConstant.getInstance(Float.NaN), FloatConstant.getInstance(1.0f))));
+    assertEquals(
+        IntConstant.getInstance(1),
+        Evaluator.getConstantValueOf(
+            new JCmpgExpr(
+                DoubleConstant.getInstance(Double.NaN), DoubleConstant.getInstance(1.0))));
   }
 }
