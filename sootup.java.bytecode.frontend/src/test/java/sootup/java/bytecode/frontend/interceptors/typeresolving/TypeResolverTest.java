@@ -215,8 +215,11 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     final Body body = getMiscBody("objectPrimitiveArray");
 
     // Tests that an array that gets both objects and primitives assigned to it,
-    // gets the `TopType[]` type.
-    assertLocals(body, Jimple.newLocal("l0", ArrayType.createArrayType(TopType.getInstance(), 1)));
+    // gets the `TopType[]` type. The cast of the primitive element goes into a temp local.
+    assertLocals(
+        body,
+        Jimple.newLocal("l0", ArrayType.createArrayType(TopType.getInstance(), 1)),
+        Jimple.newLocal("#l0", objectType));
   }
 
   @Test
@@ -249,10 +252,64 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   public void testMixedPrimitiveArray() {
     final Body body = getMiscBody("mixedPrimitiveArray");
 
+    // `b[0] = a` needs `(byte) a`, which goes into a temp local.
     assertLocals(
         body,
         Jimple.newLocal("l0", PrimitiveType.getInt()),
+        Jimple.newLocal("#l0", PrimitiveType.getByte()),
         Jimple.newLocal("l1", ArrayType.createArrayType(PrimitiveType.getByte(), 1)));
+  }
+
+  // A cast is only valid Jimple as the whole right-hand side of an assignment to a local. When the
+  // stored value of a field or array store needs one, it has to go into a temp local.
+
+  @Test
+  public void testCastInStaticFieldStore() {
+    assertEquals(
+        Stream.of(
+                "byte #l0",
+                "int l0",
+                "l0 = 65537",
+                "l0 = 1",
+                "#l0 = (byte) l0",
+                "<CastInStore: byte staticField> = #l0",
+                "return")
+            .collect(Collectors.toList()),
+        Utils.filterJimple(getCastInStoreBody("staticFieldStore").toString()));
+  }
+
+  @Test
+  public void testCastInInstanceFieldStore() {
+    assertEquals(
+        Stream.of(
+                "CastInStore this",
+                "byte #l0",
+                "int l1",
+                "this := @this: CastInStore",
+                "l1 = 65537",
+                "l1 = 1",
+                "#l0 = (byte) l1",
+                "this.<CastInStore: byte instanceField> = #l0",
+                "return")
+            .collect(Collectors.toList()),
+        Utils.filterJimple(getCastInStoreBody("instanceFieldStore").toString()));
+  }
+
+  @Test
+  public void testCastInArrayStore() {
+    assertEquals(
+        Stream.of(
+                "byte #l0",
+                "byte[] l1",
+                "int l0",
+                "l0 = 65537",
+                "l0 = 1",
+                "l1 = newarray (byte)[1]",
+                "#l0 = (byte) l0",
+                "l1[0] = #l0",
+                "return")
+            .collect(Collectors.toList()),
+        Utils.filterJimple(getCastInStoreBody("arrayStore").toString()));
   }
 
   @Test
@@ -382,6 +439,19 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   private void assertLocals(Body body, Local... locals) {
     assertEquals(new HashSet<>(Arrays.asList(locals)), body.getLocals());
+  }
+
+  private Body getCastInStoreBody(String name) {
+    final JavaView view =
+        new JavaView(
+            new JavaClassPathAnalysisInputLocation(
+                baseDir + "Misc/",
+                SourceType.Application,
+                Collections.singletonList(new TypeAssigner())));
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature("CastInStore", name, "void", Collections.emptyList());
+    return view.getMethod(methodSignature).get().getBody();
   }
 
   private Body getMiscBody(String name) {
