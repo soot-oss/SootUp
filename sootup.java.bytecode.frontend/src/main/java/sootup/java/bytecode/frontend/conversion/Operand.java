@@ -221,4 +221,12 @@ class Operand {
   public boolean equals(Object other) {
     return other instanceof Operand && equivTo((Operand) other);
   }
+
+  @Override
+  public int hashCode() {
+    if (this == DWORD_DUMMY) {
+      return 0;
+    }
+    return (stackLocal == null ? value : stackLocal).equivHashCode();
+  }
 }

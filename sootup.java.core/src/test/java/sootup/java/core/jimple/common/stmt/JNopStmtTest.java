@@ -25,8 +25,8 @@ package sootup.java.core.jimple.common.stmt;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
@@ -49,7 +49,7 @@ public class JNopStmtTest {
     assertFalse(
         nop.equivTo(
             new JIdentityStmt(
-                new Local("i0", PrimitiveType.getInt()),
+                Jimple.newLocal("i0", PrimitiveType.getInt()),
                 new JParameterRef(PrimitiveType.getInt(), 123),
                 nopos)));
 

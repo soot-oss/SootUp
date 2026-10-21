@@ -25,6 +25,7 @@ package sootup.java.core.jimple.javabytecode.stmt;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -39,9 +40,9 @@ public class JExitMonitorStmtTest {
   @Test
   public void test() {
     StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
-    Local sandman = new Local("sandman", PrimitiveType.getInt());
-    Local night = new Local("night", PrimitiveType.getBoolean());
-    Local light = new Local("light", PrimitiveType.getBoolean());
+    Local sandman = Jimple.newLocal("sandman", PrimitiveType.getInt());
+    Local night = Jimple.newLocal("night", PrimitiveType.getBoolean());
+    Local light = Jimple.newLocal("light", PrimitiveType.getBoolean());
 
     Stmt stmt = new JExitMonitorStmt(sandman, nop);
     Stmt nightStmt = new JExitMonitorStmt(night, nop);

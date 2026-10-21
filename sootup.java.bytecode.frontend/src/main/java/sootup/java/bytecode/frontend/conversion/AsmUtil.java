@@ -274,21 +274,37 @@ public final class AsmUtil {
 
   public static AnnotationUsage createAnnotationUsage(
       AnnotationNode annotationNode, @NonNull IdentifierFactory identifierFactory) {
+    return createAnnotationUsage(annotationNode, identifierFactory, true);
+  }
+
+  public static AnnotationUsage createAnnotationUsage(
+      AnnotationNode annotationNode,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
     /* actually, we could move the inner loop's code (see below) here */
-    return createAnnotationUsage(Collections.singletonList(annotationNode), identifierFactory)
+    return createAnnotationUsage(
+            Collections.singletonList(annotationNode), identifierFactory, runtimeVisible)
         .iterator()
         .next();
   }
 
   public static Iterable<AnnotationUsage> createAnnotationUsage(
-      List<? extends AnnotationNode> invisibleParameterAnnotation,
+      List<? extends AnnotationNode> annotationNodes,
       @NonNull IdentifierFactory identifierFactory) {
-    if (invisibleParameterAnnotation == null) {
+    return createAnnotationUsage(annotationNodes, identifierFactory, true);
+  }
+
+  /** Converts annotations, propagating the containing attribute's visibility to nested values. */
+  public static Iterable<AnnotationUsage> createAnnotationUsage(
+      List<? extends AnnotationNode> annotationNodes,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
+    if (annotationNodes == null) {
       return Collections.emptyList();
     }
 
     List<AnnotationUsage> annotationUsages = new ArrayList<>();
-    for (AnnotationNode e : invisibleParameterAnnotation) {
+    for (AnnotationNode e : annotationNodes) {
 
       Map<String, Object> paramMap = new LinkedHashMap<>();
 
@@ -305,11 +321,13 @@ public final class AsmUtil {
                 ((ArrayList<?>) annotationValue).stream().map(av -> (AnnotationNode) av).toList();
 
             paramMap.put(
-                annotationName, createAnnotationUsage(annotationValueList, identifierFactory));
+                annotationName,
+                createAnnotationUsage(annotationValueList, identifierFactory, runtimeVisible));
           } else if (annotationValue instanceof AnnotationNode) {
             paramMap.put(
                 annotationName,
-                createAnnotationUsage((AnnotationNode) annotationValue, identifierFactory));
+                createAnnotationUsage(
+                    (AnnotationNode) annotationValue, identifierFactory, runtimeVisible));
           } else {
             if (annotationValue instanceof ArrayList) {
               paramMap.put(
@@ -328,7 +346,7 @@ public final class AsmUtil {
 
       JavaClassType at =
           (JavaClassType) identifierFactory.getClassType(AsmUtil.toQualifiedName(e.desc));
-      annotationUsages.add(new AnnotationUsage(at, paramMap));
+      annotationUsages.add(new AnnotationUsage(at, paramMap, runtimeVisible));
     }
 
     return annotationUsages;

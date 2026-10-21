@@ -24,11 +24,17 @@ package sootup.core.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import javax.tools.ToolProvider;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import sootup.core.graph.MutableBlockControlFlowGraph;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -43,7 +49,7 @@ public class JimpleBodySerializerTest {
 
   @Test
   public void testLinearBody() {
-    Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
+    Local l1 = Jimple.newLocal("l1", PrimitiveType.IntType.getInstance());
     JAssignStmt assign = new JAssignStmt(l1, IntConstant.getInstance(42), NO_POS);
     JReturnStmt ret = new JReturnStmt(l1, NO_POS);
 
@@ -55,7 +61,8 @@ public class JimpleBodySerializerTest {
     String code = JimpleBodySerializer.serialize(graph, locals);
 
     assertTrue(
-        code.contains("Local local_l1 = new Local(\"l1\", PrimitiveType.IntType.getInstance())"));
+        code.contains(
+            "Local local_l1 = Jimple.newLocal(\"l1\", PrimitiveType.IntType.getInstance())"));
     assertTrue(
         code.contains(
             "JAssignStmt assignStmt_0 = new JAssignStmt(local_l1, IntConstant.getInstance(42), noPos)"));
@@ -66,7 +73,7 @@ public class JimpleBodySerializerTest {
 
   @Test
   public void testIfElseBody() {
-    Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
+    Local l1 = Jimple.newLocal("l1", PrimitiveType.IntType.getInstance());
     JAssignStmt assign = new JAssignStmt(l1, IntConstant.getInstance(0), NO_POS);
     JIfStmt ifStmt = new JIfStmt(new JEqExpr(l1, IntConstant.getInstance(0)), NO_POS);
     JReturnStmt retTrue = new JReturnStmt(IntConstant.getInstance(1), NO_POS);
@@ -91,7 +98,7 @@ public class JimpleBodySerializerTest {
 
   @Test
   public void testLoopWithGoto() {
-    Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
+    Local l1 = Jimple.newLocal("l1", PrimitiveType.IntType.getInstance());
     JAssignStmt init = new JAssignStmt(l1, IntConstant.getInstance(0), NO_POS);
     JAssignStmt inc = new JAssignStmt(l1, new JAddExpr(l1, IntConstant.getInstance(1)), NO_POS);
     JGotoStmt gotoStmt = new JGotoStmt(NO_POS);
@@ -151,5 +158,60 @@ public class JimpleBodySerializerTest {
     assertEquals(
         "PrimitiveType.DoubleType.getInstance()",
         JimpleBodySerializer.serializeType(PrimitiveType.DoubleType.getInstance()));
+  }
+
+  @Test
+  public void serializedProvenanceCompiles(@TempDir Path directory) throws Exception {
+    Local generic = Jimple.newLocal("generic", PrimitiveType.getInt());
+    Local stack = Jimple.newStackLocal("stack", PrimitiveType.getInt());
+    Local slot = Jimple.newSlotLocal("slot", PrimitiveType.getInt(), 4);
+    var ret = new JReturnVoidStmt(NO_POS);
+    var graph = new MutableBlockControlFlowGraph();
+    graph.addNode(ret);
+    graph.setStartingStmt(ret);
+    String code =
+        JimpleBodySerializer.serialize(graph, new LinkedHashSet<>(List.of(generic, stack, slot)));
+    assertTrue(
+        code.contains("Jimple.newStackLocal(\"stack\", PrimitiveType.IntType.getInstance())"));
+    assertTrue(
+        code.contains("Jimple.newSlotLocal(\"slot\", PrimitiveType.IntType.getInstance(), 4)"));
+    String source =
+        """
+        import java.util.*;
+        import sootup.core.jimple.Jimple;
+        import sootup.core.jimple.basic.*;
+        import sootup.core.jimple.common.*;
+        import sootup.core.jimple.common.stmt.*;
+        import sootup.core.graph.*;
+        import sootup.core.types.*;
+        import sootup.core.model.*;
+        import sootup.core.signatures.MethodSignature;
+        public class SerializedBody {
+          public static Body build(MethodSignature signature) {
+        """
+            + code.replace("/* provide MethodSignature here */", "signature")
+            + "return body; } }";
+    Path file = directory.resolve("SerializedBody.java");
+    Files.writeString(file, source);
+    var compiler = ToolProvider.getSystemJavaCompiler();
+    assertNotNull(compiler);
+    var diagnostics = new javax.tools.DiagnosticCollector<javax.tools.JavaFileObject>();
+    try (var manager = compiler.getStandardFileManager(diagnostics, null, null)) {
+      assertTrue(
+          compiler
+              .getTask(
+                  null,
+                  manager,
+                  diagnostics,
+                  List.of(
+                      "-classpath",
+                      System.getProperty("java.class.path"),
+                      "-d",
+                      directory.toString()),
+                  null,
+                  manager.getJavaFileObjects(file.toFile()))
+              .call(),
+          diagnostics.getDiagnostics().toString());
+    }
   }
 }
