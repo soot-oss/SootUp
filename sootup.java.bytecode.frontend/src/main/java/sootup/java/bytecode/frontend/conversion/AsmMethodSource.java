@@ -36,8 +36,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypeReference;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
@@ -155,6 +158,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private final JavaIdentifierFactory identifierFactory;
   private final Supplier<MethodSignature> lazyMethodSignature;
 
+  /**
+   * Bytes of the declaring class file if this node was read with {@link ClassReader#SKIP_CODE}:
+   * code is then re-read on demand by {@link #resolveBody(Iterable)}, so unresolved methods don't
+   * hold an ASM instruction tree. {@code null}: code already present in this node.
+   */
+  @Nullable private final byte[] classBytes;
+
   AsmMethodSource(
       int access,
       @NonNull String name,
@@ -162,10 +172,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @NonNull String signature,
       @NonNull String[] exceptions,
       View view,
-      @NonNull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @Nullable byte[] classBytes) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
     this.bodyInterceptors = bodyInterceptors;
     this.view = view;
+    this.classBytes = classBytes;
 
     identifierFactory = (JavaIdentifierFactory) view.getIdentifierFactory();
     lazyMethodSignature =
@@ -207,6 +219,36 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Override
   @NonNull
   public Body resolveBody(@NonNull Iterable<MethodModifier> modifierIt) {
+    if (classBytes == null) {
+      return convertBody(modifierIt);
+    }
+    // fresh throwaway node per call: reentrant, and the instruction tree is garbage afterwards
+    AsmMethodSource withCode =
+        new AsmMethodSource(
+            access,
+            name,
+            desc,
+            signature,
+            exceptions.toArray(new String[0]),
+            view,
+            bodyInterceptors,
+            null);
+    withCode.setDeclaringClass(declaringClass);
+    new ClassReader(classBytes)
+        .accept(
+            new ClassVisitor(AsmUtil.SUPPORTED_ASM_OPCODE) {
+              @Override
+              public MethodVisitor visitMethod(
+                  int access, String name, String desc, String signature, String[] exceptions) {
+                return name.equals(withCode.name) && desc.equals(withCode.desc) ? withCode : null;
+              }
+            },
+            ClassReader.SKIP_FRAMES);
+    return withCode.convertBody(modifierIt);
+  }
+
+  @NonNull
+  private Body convertBody(@NonNull Iterable<MethodModifier> modifierIt) {
 
     /* initialize */
     nextLocal = maxLocals;
