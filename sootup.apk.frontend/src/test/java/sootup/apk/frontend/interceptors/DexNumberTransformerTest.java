@@ -37,6 +37,8 @@ class DexNumberTransformerTest {
       FACTORY.parseMethodSignature("<example.Test: void use(float)>");
   private static final MethodSignature USE_INT =
       FACTORY.parseMethodSignature("<example.Test: void use(int)>");
+  private static final MethodSignature USE_INT_FLOAT =
+      FACTORY.parseMethodSignature("<example.Test: void use(int,float)>");
   private static final FieldSignature DOUBLE_FIELD =
       FACTORY.parseFieldSignature("<example.Test: double d>");
 
@@ -124,6 +126,89 @@ class DexNumberTransformerTest {
             List.of(l),
             Jimple.newAssignStmt(l, IntConstant.getInstance(7), POS),
             Jimple.newInvokeStmt(Jimple.newStaticInvokeExpr(USE_INT, l), POS),
+            Jimple.newReturnVoidStmt(POS));
+
+    transform(builder);
+
+    assertEquals(IntConstant.getInstance(7), constantOfFirstStmt(builder));
+  }
+
+  @Test
+  void intBitsDividedByAFloatParameterBecomeAFloat() {
+    // l = <bits of 6500.0f>; r = l / x; use(0, r); return;  -- x is a float
+    Local l = Jimple.newLocal("l", UnknownType.getInstance());
+    Local x = Jimple.newLocal("x", UnknownType.getInstance());
+    Local r = Jimple.newLocal("r", UnknownType.getInstance());
+    var builder =
+        builder(
+            "void",
+            List.of(l, x, r),
+            Jimple.newAssignStmt(l, IntConstant.getInstance(Float.floatToIntBits(6500f)), POS),
+            Jimple.newAssignStmt(r, Jimple.newDivExpr(l, x), POS),
+            Jimple.newInvokeStmt(
+                Jimple.newStaticInvokeExpr(USE_INT_FLOAT, List.of(IntConstant.getInstance(0), r)),
+                POS),
+            Jimple.newReturnVoidStmt(POS));
+
+    transform(builder);
+
+    assertEquals(FloatConstant.getInstance(6500f), constantOfFirstStmt(builder));
+  }
+
+  @Test
+  void intBitsComparedWithCmplBecomeAFloat() {
+    // l = <bits of 1.5f>; c = l cmpl x; use(c); return;
+    Local l = Jimple.newLocal("l", UnknownType.getInstance());
+    Local x = Jimple.newLocal("x", UnknownType.getInstance());
+    Local c = Jimple.newLocal("c", UnknownType.getInstance());
+    var builder =
+        builder(
+            "void",
+            List.of(l, x, c),
+            Jimple.newAssignStmt(l, IntConstant.getInstance(Float.floatToIntBits(1.5f)), POS),
+            Jimple.newAssignStmt(c, Jimple.newCmplExpr(l, x), POS),
+            Jimple.newInvokeStmt(Jimple.newStaticInvokeExpr(USE_INT, c), POS),
+            Jimple.newReturnVoidStmt(POS));
+
+    transform(builder);
+
+    assertEquals(FloatConstant.getInstance(1.5f), constantOfFirstStmt(builder));
+  }
+
+  @Test
+  void longBitsInArithmeticOnAReturnedDoubleBecomeADouble() {
+    // l = <bits of 0.5>; r = l * y; s = -r; return s;  -- in a method that returns a double
+    Local l = Jimple.newLocal("l", UnknownType.getInstance());
+    Local y = Jimple.newLocal("y", UnknownType.getInstance());
+    Local r = Jimple.newLocal("r", UnknownType.getInstance());
+    Local s = Jimple.newLocal("s", UnknownType.getInstance());
+    var builder =
+        builder(
+            "double",
+            List.of(l, y, r, s),
+            Jimple.newAssignStmt(l, LongConstant.getInstance(Double.doubleToLongBits(0.5)), POS),
+            Jimple.newAssignStmt(r, Jimple.newMulExpr(l, y), POS),
+            Jimple.newAssignStmt(s, Jimple.newNegExpr(r), POS),
+            Jimple.newReturnStmt(s, POS));
+
+    transform(builder);
+
+    assertEquals(DoubleConstant.getInstance(0.5), constantOfFirstStmt(builder));
+  }
+
+  @Test
+  void intInIntArithmeticStaysAnInt() {
+    // l = 7; r = l + y; use(r); return;
+    Local l = Jimple.newLocal("l", UnknownType.getInstance());
+    Local y = Jimple.newLocal("y", UnknownType.getInstance());
+    Local r = Jimple.newLocal("r", UnknownType.getInstance());
+    var builder =
+        builder(
+            "void",
+            List.of(l, y, r),
+            Jimple.newAssignStmt(l, IntConstant.getInstance(7), POS),
+            Jimple.newAssignStmt(r, Jimple.newAddExpr(l, y), POS),
+            Jimple.newInvokeStmt(Jimple.newStaticInvokeExpr(USE_INT, r), POS),
             Jimple.newReturnVoidStmt(POS));
 
     transform(builder);
