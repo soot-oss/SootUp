@@ -19,15 +19,12 @@ public class Instruction22t extends TwoRegisterInstruction {
 
   @Override
   public BuilderInstruction getBuilderInstruction() {
-    log.info("get builder instruction");
-    BuilderInstruction builderInstruction =
-        new BuilderInstruction22t(
-            getOpcode(),
-            getRegisterA().getNumber(),
-            getRegisterB().getNumber(),
-            getLabelAssigner().getOrCreateLabel(targetStmt));
     logSmali();
-    return builderInstruction;
+    return new BuilderInstruction22t(
+        getOpcode(),
+        getRegisterA().getNumber(),
+        getRegisterB().getNumber(),
+        getLabelAssigner().getOrCreateLabel(targetStmt));
   }
 
   @Override

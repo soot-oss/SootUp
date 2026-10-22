@@ -58,8 +58,8 @@ public class RegisterAllocator {
   }
 
   /**
-   * Returns a register for a SootUp local If the local is already assigned to a register, the
-   * register is returned Else a new register is created
+   * Returns a register for a SootUp local. If the local is already assigned to a register, the
+   * register is returned. Else a new register is created
    *
    * @param local The SootUp local stored in the register
    * @param isParameter Is the local a method parameter
@@ -77,7 +77,7 @@ public class RegisterAllocator {
 
   /**
    * Assign a SootUp value to a new register, regardless of whether the value is already known by a
-   * different register Used in cases where a local is assigned to different types (e.g.,
+   * different register. Used in cases where a local is assigned to different types (e.g.,
    * primitive/object) within one method
    *
    * @param value The SootUp value
@@ -94,37 +94,46 @@ public class RegisterAllocator {
   }
 
   /**
-   * Get a register for a temporary constant Uses a constant pool in order to reuse registers
+   * Get a register for a temporary constant. Uses a constant pool in order to reuse registers
    *
    * @param constant The SootUp constant
    * @param currentStmt The statement where the constant is needed
    * @return A reusable register
    */
   public Register getRegisterForConstant(Constant constant, Stmt currentStmt) {
-    Type type;
-    boolean guessed;
-    if (constant.getType().toString().equals(JIMPLE_OBJECT_TYPE)) {
-      guessed = true;
-      if (constant instanceof IntConstant) {
-        type = PrimitiveType.getInt();
-      } else if (constant instanceof FloatConstant) {
-        type = PrimitiveType.getFloat();
-      } else if (constant instanceof DoubleConstant) {
-        type = PrimitiveType.getDouble();
-      } else if (constant instanceof LongConstant) {
-        type = PrimitiveType.getLong();
-      } else if (constant instanceof BooleanConstant) {
-        type = PrimitiveType.getBoolean();
-      } else {
-        type = constant.getType();
-      }
-    } else {
-      type = constant.getType();
-      guessed = false;
+    boolean guessed = constant.getType().toString().equals(JIMPLE_OBJECT_TYPE);
+    Type type = constant.getType();
+
+    if (guessed) {
+      if (constant instanceof IntConstant) type = PrimitiveType.getInt();
+      else if (constant instanceof FloatConstant) type = PrimitiveType.getFloat();
+      else if (constant instanceof DoubleConstant) type = PrimitiveType.getDouble();
+      else if (constant instanceof LongConstant) type = PrimitiveType.getLong();
+      else if (constant instanceof BooleanConstant) type = PrimitiveType.getBoolean();
     }
 
     try {
-      Register register = getReusableConstantRegister(constant, type, guessed);
+      Register register;
+      List<Register> pool = getConstantPool(constant);
+      int index = constantPoolIndices.getOrDefault(constant.getClass(), 0);
+
+      while (true) {
+        if (index >= pool.size()) {
+          register = allocateNewRegister(type, false, false);
+          register.setIsTypeGuessed(guessed);
+          pool.add(register);
+          constantPoolIndices.put(constant.getClass(), index + 1);
+          break;
+        }
+
+        register = pool.get(index);
+        index++;
+        constantPoolIndices.put(constant.getClass(), index);
+        if (lockedRegisters.contains(register)) {
+          continue;
+        }
+        break;
+      }
 
       register.setIsTypeGuessed(guessed);
 
@@ -164,40 +173,11 @@ public class RegisterAllocator {
     return constantRegisterPools.computeIfAbsent(constant.getClass(), key -> new LinkedList<>());
   }
 
-  private Register getReusableConstantRegister(Constant constant, Type type, boolean guessed) {
-
-    List<Register> pool = getConstantPool(constant);
-
-    int index = constantPoolIndices.getOrDefault(constant.getClass(), 0);
-
-    while (true) {
-
-      if (index >= pool.size()) {
-        Register register = allocateNewRegister(type, false, false);
-
-        register.setIsTypeGuessed(guessed);
-
-        pool.add(register);
-        constantPoolIndices.put(constant.getClass(), index + 1);
-
-        return register;
-      }
-
-      Register register = pool.get(index);
-      index++;
-
-      constantPoolIndices.put(constant.getClass(), index);
-
-      if (lockedRegisters.contains(register)) {
-        continue;
-      }
-
-      register.setIsTypeGuessed(guessed);
-
-      return register;
-    }
-  }
-
+  /**
+   * Lock the register of enter-monitor instructions
+   *
+   * @param register the register representing the monitor
+   */
   public void lockRegister(Register register) {
     lockedRegisters.add(register);
   }

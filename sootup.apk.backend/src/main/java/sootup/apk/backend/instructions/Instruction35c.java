@@ -76,20 +76,17 @@ public class Instruction35c extends FiveRegisterInstruction {
         Stream.of(getRegisterA(), getRegisterB(), getRegisterC(), getRegisterD(), getRegisterE())
             .filter(Objects::nonNull)
             .toList();
-    String var1 = null;
-    String var2 = null;
-    if (reference instanceof MethodReference methodReference) {
 
-      var1 = methodReference.getDefiningClass();
-      var2 =
-          methodReference.getName()
-              + "("
-              + String.join("", methodReference.getParameterTypes())
-              + ")"
-              + methodReference.getReturnType();
-    } else if (reference instanceof TypeReference typeReference) {
-      var1 = typeReference.getType();
-      var2 = typeReference.getType();
+    String var1;
+    String var2;
+
+    if (reference instanceof MethodReference m) {
+      var1 = m.getDefiningClass();
+      var2 = m.getName() + "(" + String.join("", m.getParameterTypes()) + ")" + m.getReturnType();
+    } else if (reference instanceof TypeReference t) {
+      var1 = var2 = t.getType();
+    } else {
+      var1 = var2 = null;
     }
 
     log.info(

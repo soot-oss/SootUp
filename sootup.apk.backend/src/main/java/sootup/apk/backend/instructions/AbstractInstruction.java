@@ -2,6 +2,7 @@ package sootup.apk.backend.instructions;
 
 import java.util.BitSet;
 import java.util.List;
+import java.util.stream.IntStream;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.builder.BuilderInstruction;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ public abstract class AbstractInstruction {
     this.registers = registers;
   }
 
+  /** Replaces one register of an instruction by another register */
   public abstract void changeRegister(Register oldRegister, Register newRegister);
 
   public abstract void logSmali();
@@ -61,17 +63,17 @@ public abstract class AbstractInstruction {
     return getIncompatibleRegs().cardinality() > 0;
   }
 
+  /**
+   * Evaluates how many temporary registers with low register numbers are needed. Counts
+   * incompatible registers
+   *
+   * @return The summed size of incompatible registers
+   */
   public int getMinimumRegsNeeded() {
     BitSet incompatible = getIncompatibleRegs();
-    int result = 0;
-    int misc = 0;
-
-    for (int i = 0; i < registers.size(); i++) {
-      if (incompatible.get(i)) {
-        misc += DexUtil.getRegisterSizeCount(registers.get(i).getType());
-      }
-    }
-
-    return opcode.name.endsWith("/2addr") ? result + misc : Math.max(result, misc);
+    return IntStream.range(0, registers.size())
+        .filter(incompatible::get)
+        .map(i -> DexUtil.getRegisterSizeCount(registers.get(i).getType()))
+        .sum();
   }
 }

@@ -49,7 +49,13 @@ public class DexOutputLocation {
     var classes = view.getClasses().toList();
     classes.forEach(dexClassBuilder::createClass);
     try {
-      writeDexFiles(outputDir);
+      for (int i = 0; i < dexPoolList.size(); i++) {
+        DexPool dexPool = dexPoolList.get(i);
+        File file = new File(outputDir, (i == 0) ? "classes.dex" : "classes" + (i + 1) + ".dex");
+        FileDataStore fds = new FileDataStore(file);
+        dexPool.writeTo(fds);
+        fds.close();
+      }
     } catch (IOException e) {
       throw new RuntimeException("An exception occurred during creation of dex files");
     }
@@ -96,7 +102,17 @@ public class DexOutputLocation {
           copyExistingFiles(zipOutputStream);
         }
 
-        writeDexFiles(zipOutputStream);
+        for (int j = 0; j < dexPoolList.size(); j++) {
+          MemoryDataStore dataStore = new MemoryDataStore();
+          dexPoolList.get(j).writeTo(dataStore);
+
+          String dexName = (j == 0) ? "classes.dex" : "classes" + (j + 1) + ".dex";
+          ZipEntry entry = new ZipEntry(dexName);
+          zipOutputStream.putNextEntry(entry);
+
+          zipOutputStream.write(dataStore.getData());
+          zipOutputStream.closeEntry();
+        }
         log.info(
             "APK successfully created. The .apk still needs to be aligned with zipalign and signed with jarsigner");
       }
@@ -148,31 +164,6 @@ public class DexOutputLocation {
         zipOutputStream.write(data);
         zipOutputStream.closeEntry();
       }
-    }
-  }
-
-  private void writeDexFiles(ZipOutputStream zipOutputStream) throws IOException {
-
-    for (int i = 0; i < dexPoolList.size(); i++) {
-      MemoryDataStore dataStore = new MemoryDataStore();
-      dexPoolList.get(i).writeTo(dataStore);
-
-      String dexName = (i == 0) ? "classes.dex" : "classes" + (i + 1) + ".dex";
-      ZipEntry entry = new ZipEntry(dexName);
-      zipOutputStream.putNextEntry(entry);
-
-      zipOutputStream.write(dataStore.getData());
-      zipOutputStream.closeEntry();
-    }
-  }
-
-  private void writeDexFiles(String folder) throws IOException {
-    for (int i = 0; i < dexPoolList.size(); i++) {
-      DexPool dexPool = dexPoolList.get(i);
-      File file = new File(folder, (i == 0) ? "classes.dex" : "classes" + (i + 1) + ".dex");
-      FileDataStore fds = new FileDataStore(file);
-      dexPool.writeTo(fds);
-      fds.close();
     }
   }
 

@@ -37,13 +37,12 @@ import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
 import sootup.core.types.*;
 import sootup.core.views.View;
-import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootMethod;
 
 public class DexMethodBuilder {
 
   private static final Logger log = LoggerFactory.getLogger(DexMethodBuilder.class);
-  private View view;
+  private final View view;
 
   private LinkedHashMap<BasicBlock<?>, List<AbstractInstruction>> instructions;
   private HashMap<AbstractInstruction, Stmt> instructionMap;
@@ -141,14 +140,15 @@ public class DexMethodBuilder {
                   entry.getKey(), DexUtil.buildEncodedValueForAnnotation(entry.getValue()));
           annotationElements.add(annotationElement);
         }
-        ImmutableAnnotation ann =
-            new ImmutableAnnotation(
-                annotation.getVisibility() == AnnotationUsage.AnnotationUsageVisibility.RUNTIME
-                    ? AnnotationVisibility.RUNTIME
-                    : AnnotationVisibility.BUILD,
-                DexUtil.toDexClassName(annotation.getAnnotation().getFullyQualifiedName()),
-                annotationElements);
-        annotations.add(ann);
+        int annotationVisibility = DexUtil.convertAnnotationVisibility(annotation.getVisibility());
+        if (annotationVisibility > 0) {
+          ImmutableAnnotation ann =
+              new ImmutableAnnotation(
+                  annotationVisibility,
+                  DexUtil.toDexClassName(annotation.getAnnotation().getFullyQualifiedName()),
+                  annotationElements);
+          annotations.add(ann);
+        }
       }
     }
 
@@ -451,9 +451,9 @@ public class DexMethodBuilder {
   }
 
   /**
-   * Merge register maps at branching points If a local is assigned to different registers at
+   * Merge register maps at branching points. If a local is assigned to different registers at
    * multiple predecessors (and is used later in the control flow graph), move instructions are
-   * inserted to reconcile all predecessors to a common register
+   * inserted to reconcile all predecessors to a common register.
    */
   private Map<Local, Register> mergeIncomingRegisterMaps(
       Set<BasicBlock<?>> previousBlocks,
@@ -597,7 +597,7 @@ public class DexMethodBuilder {
 
   /**
    * If a successor block has already been processed but the local is there used under a different
-   * register compared to the current block Create move instructions from the current registers to
+   * register compared to the current block: Create move instructions from the current registers to
    * the registers of the successor block
    */
   private void mergeCurrentRegisterMapToSuccessor(
@@ -753,8 +753,8 @@ public class DexMethodBuilder {
 
   /**
    * When all AbstractInstructions have been created, the instructions are converted to dex
-   * BuilderInstructions First, labels are reserved Instructions are converted into
-   * builderInstructions and labels are set at their corresponding instructions Finally, payloads
+   * BuilderInstructions. First, labels are reserved. Instructions are converted into
+   * builderInstructions and labels are set at their corresponding instructions. Finally, payloads
    * and catch blocks are inserted
    */
   public List<BuilderInstruction> addBuilderInstructions(
@@ -873,6 +873,7 @@ public class DexMethodBuilder {
     return builderInstructions;
   }
 
+  /** Adds dex debug infos, e.g., '.local p0, "$u1":I, ""' */
   private void addRegisterAssignmentDebugInfo(
       Pair<Local, Register> registerAssignment,
       Map<Local, Integer> seenRegisters,

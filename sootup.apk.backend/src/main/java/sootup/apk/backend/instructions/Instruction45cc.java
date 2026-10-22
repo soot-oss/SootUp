@@ -63,11 +63,8 @@ public class Instruction45cc extends FiveRegisterInstruction {
   @Override
   public BitSet getIncompatibleRegs() {
     BitSet incompatRegs = new BitSet(5);
-    for (int i = 0; i < getRegisters().size(); i++) {
-      if (!getRegisters().get(i).fitsByte()) {
-        incompatRegs.set(i);
-      }
-    }
+    for (int i = 0; i < getRegisters().size(); i++)
+      if (!getRegisters().get(i).fitsByte()) incompatRegs.set(i);
     return incompatRegs;
   }
 

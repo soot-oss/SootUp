@@ -144,14 +144,17 @@ public class DexClassBuilder {
                   entry.getKey(), DexUtil.buildEncodedValueForAnnotation(entry.getValue()));
           annotationElements.add(annotationElement);
         }
-        ImmutableAnnotation ann =
-            new ImmutableAnnotation(
-                annotation.getVisibility() == AnnotationUsage.AnnotationUsageVisibility.RUNTIME
-                    ? AnnotationVisibility.RUNTIME
-                    : AnnotationVisibility.BUILD,
-                DexUtil.toDexClassName(annotation.getAnnotation().getFullyQualifiedName()),
-                annotationElements);
-        annotations.add(ann);
+
+        int annotationVisibility = DexUtil.convertAnnotationVisibility(annotation.getVisibility());
+
+        if (annotationVisibility >= 0) {
+          ImmutableAnnotation ann =
+              new ImmutableAnnotation(
+                  annotationVisibility,
+                  DexUtil.toDexClassName(annotation.getAnnotation().getFullyQualifiedName()),
+                  annotationElements);
+          annotations.add(ann);
+        }
       }
     }
 
@@ -261,14 +264,16 @@ public class DexClassBuilder {
                   entry.getKey(), DexUtil.buildEncodedValueForAnnotation(entry.getValue()));
           annotationElements.add(annotationElement);
         }
-        ImmutableAnnotation ann =
-            new ImmutableAnnotation(
-                annotation.getVisibility() == AnnotationUsage.AnnotationUsageVisibility.RUNTIME
-                    ? AnnotationVisibility.RUNTIME
-                    : AnnotationVisibility.BUILD,
-                DexUtil.toDexClassName(annotation.getAnnotation().getFullyQualifiedName()),
-                annotationElements);
-        annotations.add(ann);
+
+        int annotationVisibility = DexUtil.convertAnnotationVisibility(annotation.getVisibility());
+        if (annotationVisibility > 0) {
+          ImmutableAnnotation ann =
+              new ImmutableAnnotation(
+                  annotationVisibility,
+                  DexUtil.toDexClassName(annotation.getAnnotation().getFullyQualifiedName()),
+                  annotationElements);
+          annotations.add(ann);
+        }
       }
     }
     return annotations;

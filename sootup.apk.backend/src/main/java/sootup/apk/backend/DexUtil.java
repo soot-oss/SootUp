@@ -1,7 +1,10 @@
 package sootup.apk.backend;
 
+import static sootup.java.core.AnnotationUsage.AnnotationUsageVisibility.BUILD;
+
 import java.util.*;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jf.dexlib2.AnnotationVisibility;
 import org.jf.dexlib2.immutable.ImmutableAnnotationElement;
 import org.jf.dexlib2.immutable.reference.ImmutableFieldReference;
 import org.jf.dexlib2.immutable.value.*;
@@ -42,21 +45,16 @@ public class DexUtil {
    * @return The dex Type
    */
   protected static String toDexType(Type type) {
-    if (type == null) {
-      throw new NullPointerException("Type is null");
-    } else if (type instanceof PrimitiveType primitiveType) {
-      return toDexPrimitiveType(primitiveType);
-    } else if (type instanceof NullType) {
-      return "Ljava/lang/Object;";
-    } else if (type instanceof VoidType) {
-      return "V";
-    } else if (type instanceof ClassType classType) {
+    if (type == null) throw new NullPointerException("Type is null");
+    if (type instanceof PrimitiveType primitiveType) return toDexPrimitiveType(primitiveType);
+    if (type instanceof NullType) return "Ljava/lang/Object;";
+    if (type instanceof VoidType) return "V";
+    if (type instanceof ClassType classType)
       return toDexClassName(classType.getFullyQualifiedName());
-    } else if (type instanceof ArrayType arrayType) {
+    if (type instanceof ArrayType arrayType)
       return toDexArrayType(arrayType.getDimension(), arrayType);
-    } else {
-      throw new RuntimeException("Type could not be converted to dex: " + type);
-    }
+
+    throw new RuntimeException("Type could not be converted to dex: " + type);
   }
 
   /**
@@ -66,30 +64,14 @@ public class DexUtil {
    * @return The dex type
    */
   protected static String toDexPrimitiveType(PrimitiveType primitiveType) {
-    if (primitiveType instanceof PrimitiveType.BooleanType) {
-      return "Z";
-    }
-    if (primitiveType instanceof PrimitiveType.ByteType) {
-      return "B";
-    }
-    if (primitiveType instanceof PrimitiveType.CharType) {
-      return "C";
-    }
-    if (primitiveType instanceof PrimitiveType.ShortType) {
-      return "S";
-    }
-    if (primitiveType instanceof PrimitiveType.IntType) {
-      return "I";
-    }
-    if (primitiveType instanceof PrimitiveType.LongType) {
-      return "J";
-    }
-    if (primitiveType instanceof PrimitiveType.DoubleType) {
-      return "D";
-    }
-    if (primitiveType instanceof PrimitiveType.FloatType) {
-      return "F";
-    }
+    if (primitiveType instanceof PrimitiveType.BooleanType) return "Z";
+    if (primitiveType instanceof PrimitiveType.ByteType) return "B";
+    if (primitiveType instanceof PrimitiveType.CharType) return "C";
+    if (primitiveType instanceof PrimitiveType.ShortType) return "S";
+    if (primitiveType instanceof PrimitiveType.IntType) return "I";
+    if (primitiveType instanceof PrimitiveType.LongType) return "J";
+    if (primitiveType instanceof PrimitiveType.DoubleType) return "D";
+    if (primitiveType instanceof PrimitiveType.FloatType) return "F";
     return null;
   }
 
@@ -216,11 +198,7 @@ public class DexUtil {
         && isTypeSmallerOrEqual(op2, PrimitiveType.getInt())) {
       return PrimitiveType.getInt();
     }
-    if (isTypeSmaller(op1, op2)) {
-      return op2;
-    } else {
-      return op1;
-    }
+    return isTypeSmaller(op1, op2) ? op2 : op1;
   }
 
   /**
@@ -230,14 +208,9 @@ public class DexUtil {
    * @return true if the type is of an object type
    */
   protected static boolean isObject(String dexType) {
-    if (dexType == null) {
-      return false;
-    }
-    if (dexType.isEmpty()) {
-      return false;
-    }
-    char first = dexType.charAt(0);
-    return first == 'L' || first == '[';
+    return dexType != null
+        && !dexType.isEmpty()
+        && (dexType.charAt(0) == 'L' || dexType.charAt(0) == '[');
   }
 
   /**
@@ -316,6 +289,23 @@ public class DexUtil {
 
   protected static boolean inSigned32Bit(long number) {
     return number >= -2147483648 && number <= 2147483647;
+  }
+
+  /**
+   * Converts a jimple annotation visibility into a dex annotation visibility
+   *
+   * @param annotationUsageVisibility Jimple annotation visibility
+   * @return enum element dex annotation visibility
+   */
+  protected static int convertAnnotationVisibility(
+      AnnotationUsage.AnnotationUsageVisibility annotationUsageVisibility) {
+    return switch (annotationUsageVisibility) {
+      case BUILD -> AnnotationVisibility.BUILD;
+      case RUNTIME -> AnnotationVisibility.RUNTIME;
+
+      case SYSTEM -> AnnotationVisibility.SYSTEM;
+      case NONE -> -1;
+    };
   }
 
   /**

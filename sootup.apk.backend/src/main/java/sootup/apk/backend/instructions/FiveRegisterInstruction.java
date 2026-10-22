@@ -62,20 +62,18 @@ public abstract class FiveRegisterInstruction extends AbstractInstruction {
     if (index != -1) {
       mutableList.set(index, newRegister);
     }
-    if (registerA != null && registerA.equals(oldRegister)) {
-      registerA = newRegister;
-    } else if (registerB != null && registerB.equals(oldRegister)) {
-      registerB = newRegister;
-    } else if (registerC != null && registerC.equals(oldRegister)) {
-      registerC = newRegister;
-    } else if (registerD != null && registerD.equals(oldRegister)) {
-      registerD = newRegister;
-    } else if (registerE != null && registerE.equals(oldRegister)) {
-      registerE = newRegister;
-    }
+    if (Objects.equals(registerA, oldRegister)) registerA = newRegister;
+    else if (Objects.equals(registerB, oldRegister)) registerB = newRegister;
+    else if (Objects.equals(registerC, oldRegister)) registerC = newRegister;
+    else if (Objects.equals(registerD, oldRegister)) registerD = newRegister;
+    else if (Objects.equals(registerE, oldRegister)) registerE = newRegister;
     super.setRegisters(List.copyOf(mutableList));
   }
 
+  /**
+   * @return A list of maximum five elements. Representing the parameter registers of method
+   *     invocations
+   */
   public List<Integer> getInvokeRegisterNumbers() {
     return Stream.concat(
             Stream.of(registerA, registerB, registerC, registerD, registerE)

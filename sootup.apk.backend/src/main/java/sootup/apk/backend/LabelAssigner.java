@@ -9,8 +9,8 @@ import sootup.apk.backend.instructions.AbstractPayload;
 import sootup.core.jimple.common.stmt.Stmt;
 
 /**
- * Organizes the allocation and setting of labels LabelMapBeforeStmt: Allocates labels for
- * if,switch,goto, try-start, catch, stmts LabelMapAfterStmt: Allocates labels for try-end stmts
+ * Organizes the allocation and setting of labels LabelMapBeforeStmt: Allocates labels for if,
+ * switch, goto, try-start, catch, stmts. LabelMapAfterStmt: Allocates labels for try-end stmts
  */
 public class LabelAssigner {
 
@@ -44,7 +44,8 @@ public class LabelAssigner {
   }
 
   /**
-   * Reserve a label at a specific stmt
+   * Reserve a label after a specific stmt This method is used for stmts representing the end of a
+   * try block
    *
    * @param stmt The stmt AFTER a label should be set
    * @return The label created
@@ -77,7 +78,7 @@ public class LabelAssigner {
   }
 
   /**
-   * Reserve a label before a object(stmt/payload)
+   * Reserve a label before an object(stmt/payload)
    *
    * @param object A stmt or a payload
    * @return The label created
@@ -147,13 +148,13 @@ public class LabelAssigner {
   public boolean areLabelsNotYetPlaced() {
     Set<String> labelNames = new HashSet<>(labelNameMapBeforeStmt.values());
     labelNames.addAll(labelNameMapAfterStmt.values());
-    boolean labelsNotPlaced = false;
-    for (String label : labelNames) {
-      if (!addedLabelsBeforeStmt.contains(label) && !addedLabelsAfterStmt.contains(label)) {
-        log.error("Label not set: {}", label);
-        labelsNotPlaced = true;
-      }
-    }
-    return labelsNotPlaced;
+
+    return labelNames.stream()
+            .filter(
+                label ->
+                    !addedLabelsBeforeStmt.contains(label) && !addedLabelsAfterStmt.contains(label))
+            .peek(label -> log.error("Label not set: {}", label))
+            .count()
+        > 0;
   }
 }

@@ -32,16 +32,12 @@ public class Instruction21c extends OneRegisterInstruction {
   @Override
   public List<Register> getDefRegisters() {
     String opcodeLower = getOpcode().name.toLowerCase();
-    log.info("{}", opcodeLower);
     if (opcodeLower.startsWith("const")
         || opcodeLower.equals("check-cast")
         || opcodeLower.equals("new-instance")
         || opcodeLower.startsWith("sget")) {
-      log.info("true");
-      log.info("{}, with number {}", getRegisterA(), getRegisterA().getNumber());
       return List.of(getRegisterA());
     }
-    log.info("false");
     return List.of();
   }
 
@@ -72,7 +68,7 @@ public class Instruction21c extends OneRegisterInstruction {
               + "->"
               + fieldReference.getName() // out
               + ":"
-              + fieldReference.getType(); // Ljava/io/PrintStream; correct
+              + fieldReference.getType(); // Ljava/io/PrintStream;
     } else if (reference instanceof TypeReference typeReference) {
       value = typeReference.getType();
     } else if (reference instanceof MethodProtoReference methodProtoReference) {

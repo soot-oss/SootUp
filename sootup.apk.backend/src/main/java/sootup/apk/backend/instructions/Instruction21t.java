@@ -15,18 +15,14 @@ public class Instruction21t extends OneRegisterInstruction {
   public Instruction21t(Opcode opcode, Register registerA, Stmt targetStmt) {
     super(opcode, registerA);
     this.targetStmt = targetStmt;
+    logSmali();
   }
 
   @Override
   public BuilderInstruction getBuilderInstruction() {
-    log.info("get builder instruction");
-    BuilderInstruction builderInstruction =
-        new BuilderInstruction21t(
-            getOpcode(),
-            getRegisterA().getNumber(),
-            getLabelAssigner().getOrCreateLabel(targetStmt));
     logSmali();
-    return builderInstruction;
+    return new BuilderInstruction21t(
+        getOpcode(), getRegisterA().getNumber(), getLabelAssigner().getOrCreateLabel(targetStmt));
   }
 
   @Override

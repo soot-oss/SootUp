@@ -472,6 +472,16 @@ public class DexExprVisitor extends AbstractExprVisitor {
         opcode, argumentRegisters, methodReference, expr.getMethodSignature().getType());
   }
 
+  /**
+   * Evaluates whether one class is a superclass of another class A return value of true represents
+   * a lower bound: Due to phantom classes, targetClassType can still be a super class, even though
+   * this method returns false
+   *
+   * @param currentClassType The jimple ClassType of the class to be evaluated
+   * @param targetClassType The jimple ClassType to evaluate for whether it is a superClass of
+   *     currentClassType
+   * @return true if it is approved that targetClassType is a super class of currentClassType
+   */
   private boolean isCallToSuperClass(ClassType currentClassType, ClassType targetClassType) {
     ClassType current = currentClassType;
 
@@ -540,7 +550,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
   @Override
   public void caseDynamicInvokeExpr(@NonNull JDynamicInvokeExpr expr) {
-    // TODO
+    // dynamicInvoke expressions are currently not created in the apk.frontend
   }
 
   private enum InvokeOpcode {
@@ -712,6 +722,11 @@ public class DexExprVisitor extends AbstractExprVisitor {
     return true;
   }
 
+  /**
+   * Generates a MOVE_RESULT_* instruction based on the method return type
+   *
+   * @param methodReturnType the jimple type that the method returns
+   */
   private void buildMoveResult(Type methodReturnType) {
     fixObjectType(methodReturnType);
     if (targetRegister != null) {

@@ -18,13 +18,11 @@ public class Instruction31t extends OneRegisterInstruction {
 
   @Override
   public BuilderInstruction getBuilderInstruction() {
-    BuilderInstruction builderInstruction =
-        new BuilderInstruction31t(
-            super.getOpcode(),
-            getRegisterA().getNumber(),
-            getLabelAssigner().getOrCreateLabel(payload));
     logSmali();
-    return builderInstruction;
+    return new BuilderInstruction31t(
+        super.getOpcode(),
+        getRegisterA().getNumber(),
+        getLabelAssigner().getOrCreateLabel(payload));
   }
 
   @Override

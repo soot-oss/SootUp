@@ -49,8 +49,6 @@ public class Instruction3rc extends AbstractInstruction {
 
   @Override
   public BitSet getIncompatibleRegs() {
-    // if there is one problem -> all regs are incompatible (this could be optimized in reg
-    // allocation, probably)
     int regCount = DexUtil.getRegisterSizeCount(registers);
     if (hasHoleInRange()) {
       return getAllIncompatible(regCount);
@@ -76,23 +74,11 @@ public class Instruction3rc extends AbstractInstruction {
   }
 
   private boolean hasHoleInRange() {
-    // the only "hole" that is allowed: if regN is wide -> regN+1 must not be there
-    Register startReg = registers.get(0);
-    int nextExpectedRegNum = startReg.getNumber() + 1;
-    if (startReg.isWide()) {
-      nextExpectedRegNum++;
-    }
-    // loop starts at 1, since the first reg alone cannot have a hole
-    for (int i = 1; i < registers.size(); i++) {
-      Register r = registers.get(i);
-      int regNum = r.getNumber();
-      if (regNum != nextExpectedRegNum) {
-        return true;
-      }
-      nextExpectedRegNum++;
-      if (r.isWide()) {
-        nextExpectedRegNum++;
-      }
+    int nextRegisterNumber = registers.get(0).getNumber() + registers.get(0).getSize();
+
+    for (Register r : registers.subList(1, registers.size())) {
+      if (r.getNumber() != nextRegisterNumber) return true;
+      nextRegisterNumber += r.getSize();
     }
     return false;
   }

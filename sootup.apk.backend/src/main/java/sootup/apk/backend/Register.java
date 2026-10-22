@@ -9,8 +9,8 @@ import sootup.core.types.Type;
  * A single register object with a unique number and type
  *
  * <p>Number: A unique number for each register. The number might be changed later in the
- * RegisterAllocator Type: Each register has a fixed type IsTypeGuessed: Jimple locals of type
- * 'java.lang.Object' IsParameter: Register for method parameters isTmp: Temporary registers
+ * RegisterAllocator. Type: Each register has a fixed type. IsTypeGuessed: Jimple locals of type
+ * 'java.lang.Object'. IsParameter: Register for method parameters. isTmp: Temporary registers.
  * isInitialized: Default is true. In case of JNewExpr set to false. Value is evaluated at
  * check-cast operations
  */

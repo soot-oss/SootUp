@@ -2,6 +2,7 @@ package sootup.apk.backend.instructions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.jf.dexlib2.Opcode;
 import sootup.apk.backend.Register;
 
@@ -21,13 +22,8 @@ public abstract class OneRegisterInstruction extends AbstractInstruction {
   @Override
   public void changeRegister(Register oldRegister, Register newRegister) {
     List<Register> mutableList = new ArrayList<>(super.getRegisters());
-    int index = mutableList.indexOf(oldRegister);
-    if (index != -1) {
-      mutableList.set(index, newRegister);
-    }
-    if (registerA != null && registerA.equals(oldRegister)) {
-      registerA = newRegister;
-    }
+    mutableList.replaceAll(r -> r.equals(oldRegister) ? newRegister : r);
+    if (Objects.equals(registerA, oldRegister)) registerA = newRegister;
     super.setRegisters(List.copyOf(mutableList));
   }
 }
