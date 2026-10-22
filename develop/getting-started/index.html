@@ -500,6 +500,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reading-class-nesting-and-source-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading Class Nesting and Source Metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#retrieving-the-control-flow-graph-of-a-method" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1538,6 +1549,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reading-class-nesting-and-source-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading Class Nesting and Source Metadata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#retrieving-the-control-flow-graph-of-a-method" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1861,6 +1883,12 @@ bytecode annotations on classes, fields, methods, and parameters. Parameter decl
 queries support <code>"Any"</code>, <code>"RuntimeVisible"</code>, and <code>"RuntimeInvisible"</code>; type-use annotations
 remain on their existing targets. Nested annotation values inherit their container's
 visibility; the existing two-argument constructor defaults to runtime-visible.</p>
+<h2 id="reading-class-nesting-and-source-metadata">Reading Class Nesting and Source Metadata</h2>
+<p><code>JavaSootClass</code> exposes source filenames (<code>getSourceFile()</code>), raw source/debug text
+(<code>getSourceDebugExtension()</code>), enclosing classes/methods (<code>getEnclosingClass()</code> /
+<code>getEnclosingMethod()</code>), and ordered <code>InnerClasses</code> entries (<code>getInnerClasses()</code>).
+Missing attributes return empty optionals or lists; SMAP text is preserved without
+remapping statement positions.</p>
 <h2 id="retrieving-the-control-flow-graph-of-a-method">Retrieving the Control-Flow Graph of a Method</h2>
 <p>Each <code>SootMethod</code> contains a Control-Flow Graph (CFG) which is represented via the <code>ControlFlowGraph</code>. This structure is usually used for program analysis. You can retrieve the CFG of a <code>SootMethod</code> as follows:</p>
 <div class="admonition example">

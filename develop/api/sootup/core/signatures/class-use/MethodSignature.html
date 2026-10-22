@@ -1396,6 +1396,22 @@ loadScripts(document, 'script');</script>
  specification.</div>
 </div>
 </div>
+<div class="caption"><span>Methods in <a href="../../../java/core/package-summary.html">sootup.java.core</a> that return types with arguments of type <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JavaClassFileMetadata.</span><code><a href="../../../java/core/JavaClassFileMetadata.html#getEnclosingMethod()" class="member-name-link">getEnclosingMethod</a>()</code></div>
+<div class="col-last even-row-color">
+<div class="block">Returns the enclosing method or constructor; initializers have no method signature.</div>
+</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JavaSootClass.</span><code><a href="../../../java/core/JavaSootClass.html#getEnclosingMethod()" class="member-name-link">getEnclosingMethod</a>()</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Returns the enclosing method or constructor; classes declared in initializers have none.</div>
+</div>
+</div>
 <div class="caption"><span>Methods in <a href="../../../java/core/package-summary.html">sootup.java.core</a> with parameters of type <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></span></div>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -1414,20 +1430,27 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../../../java/core/JavaSootMethod.html#%3Cinit%3E(sootup.core.frontend.BodySource,sootup.core.signatures.MethodSignature,java.lang.Iterable,java.lang.Iterable,java.lang.Iterable,sootup.core.model.Position)" class="member-name-link">JavaSootMethod</a><wbr>(@NonNull <a href="../../frontend/BodySource.html" title="interface in sootup.core.frontend">BodySource</a>&nbsp;source,
+<div class="col-second even-row-color"><code><a href="../../../java/core/JavaClassFileMetadata.html#%3Cinit%3E(java.lang.String,java.lang.String,sootup.java.core.types.JavaClassType,sootup.core.signatures.MethodSignature,java.util.List)" class="member-name-link">JavaClassFileMetadata</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;sourceFile,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;sourceDebugExtension,
+ @Nullable <a href="../../../java/core/types/JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&nbsp;enclosingClass,
+ @Nullable <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;enclosingMethod,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../java/core/JavaInnerClassInfo.html" title="class in sootup.java.core">JavaInnerClassInfo</a>&gt;&nbsp;innerClasses)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../../../java/core/JavaSootMethod.html#%3Cinit%3E(sootup.core.frontend.BodySource,sootup.core.signatures.MethodSignature,java.lang.Iterable,java.lang.Iterable,java.lang.Iterable,sootup.core.model.Position)" class="member-name-link">JavaSootMethod</a><wbr>(@NonNull <a href="../../frontend/BodySource.html" title="interface in sootup.core.frontend">BodySource</a>&nbsp;source,
  @NonNull <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;methodSignature,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../model/MethodModifier.html" title="enum class in sootup.core.model">MethodModifier</a>&gt;&nbsp;modifiers,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../types/ClassType.html" title="class in sootup.core.types">ClassType</a>&gt;&nbsp;thrownExceptions,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../../java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations,
  @NonNull <a href="../../model/Position.html" title="class in sootup.core.model">Position</a>&nbsp;position)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="../../../java/core/JavaSootMethod.html#%3Cinit%3E(sootup.core.frontend.BodySource,sootup.core.signatures.MethodSignature,java.lang.Iterable,java.lang.Iterable,sootup.core.model.Position)" class="member-name-link">JavaSootMethod</a><wbr>(@NonNull <a href="../../frontend/BodySource.html" title="interface in sootup.core.frontend">BodySource</a>&nbsp;source,
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../../../java/core/JavaSootMethod.html#%3Cinit%3E(sootup.core.frontend.BodySource,sootup.core.signatures.MethodSignature,java.lang.Iterable,java.lang.Iterable,sootup.core.model.Position)" class="member-name-link">JavaSootMethod</a><wbr>(@NonNull <a href="../../frontend/BodySource.html" title="interface in sootup.core.frontend">BodySource</a>&nbsp;source,
  @NonNull <a href="../MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;methodSignature,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../model/MethodModifier.html" title="enum class in sootup.core.model">MethodModifier</a>&gt;&nbsp;modifiers,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../types/ClassType.html" title="class in sootup.core.types">ClassType</a>&gt;&nbsp;thrownExceptions,
  @NonNull <a href="../../model/Position.html" title="class in sootup.core.model">Position</a>&nbsp;position)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Constructs a SootMethod object with the given attributes.</div>
 </div>
 </div>

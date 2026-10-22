@@ -126,8 +126,15 @@ implements <a href="../../core/frontend/SootClassSource.html" title="interface i
 <div class="col-last even-row-color">
 <div class="block">Creates and a <a href="../../core/frontend/SootClassSource.html" title="interface in sootup.core.frontend"><code>SootClassSource</code></a> for a specific source file.</div>
 </div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(sootup.core.frontend.SootClassSource)" class="member-name-link">JavaSootClassSource</a><wbr>(<a href="../../core/frontend/SootClassSource.html" title="interface in sootup.core.frontend">SootClassSource</a>&nbsp;delegate)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,sootup.core.types.ClassType,java.nio.file.Path,sootup.java.core.JavaClassFileMetadata)" class="member-name-link">JavaSootClassSource</a><wbr>(@NonNull <a href="../../core/inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;inputLocation,
+ @NonNull <a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classSignature,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;sourcePath,
+ @NonNull <a href="JavaClassFileMetadata.html" title="class in sootup.java.core">JavaClassFileMetadata</a>&nbsp;classFileMetadata)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a class source with immutable source and nesting attributes.</div>
+</div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(sootup.core.frontend.SootClassSource)" class="member-name-link">JavaSootClassSource</a><wbr>(<a href="../../core/frontend/SootClassSource.html" title="interface in sootup.core.frontend">SootClassSource</a>&nbsp;delegate)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -154,18 +161,23 @@ implements <a href="../../core/frontend/SootClassSource.html" title="interface i
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAnalysisInputLocation()" class="member-name-link">getAnalysisInputLocation</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getClassType()" class="member-name-link">getClassType</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSourcePath()" class="member-name-link">getSourcePath</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="JavaClassFileMetadata.html" title="class in sootup.java.core">JavaClassFileMetadata</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getClassFileMetadata()" class="member-name-link">getClassFileMetadata</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns immutable source and nesting attributes, empty for sources that do not provide them.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getClassType()" class="member-name-link">getClassType</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSourcePath()" class="member-name-link">getSourcePath</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#resolveAnnotations()" class="member-name-link">resolveAnnotations</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#resolveAnnotations()" class="member-name-link">resolveAnnotations</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -233,6 +245,16 @@ implements <a href="../../core/frontend/SootClassSource.html" title="interface i
 </section>
 </li>
 <li>
+<section class="detail" id="&lt;init&gt;(sootup.core.inputlocation.AnalysisInputLocation,sootup.core.types.ClassType,java.nio.file.Path,sootup.java.core.JavaClassFileMetadata)">
+<h3>JavaSootClassSource</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JavaSootClassSource</span><wbr><span class="parameters">(@NonNull <a href="../../core/inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;inputLocation,
+ @NonNull <a href="../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classSignature,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;sourcePath,
+ @NonNull <a href="JavaClassFileMetadata.html" title="class in sootup.java.core">JavaClassFileMetadata</a>&nbsp;classFileMetadata)</span></div>
+<div class="block">Creates a class source with immutable source and nesting attributes.</div>
+</section>
+</li>
+<li>
 <section class="detail" id="&lt;init&gt;(sootup.core.frontend.SootClassSource)">
 <h3>JavaSootClassSource</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JavaSootClassSource</span><wbr><span class="parameters">(<a href="../../core/frontend/SootClassSource.html" title="interface in sootup.core.frontend">SootClassSource</a>&nbsp;delegate)</span></div>
@@ -246,6 +268,13 @@ implements <a href="../../core/frontend/SootClassSource.html" title="interface i
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="getClassFileMetadata()">
+<h3>getClassFileMetadata</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="JavaClassFileMetadata.html" title="class in sootup.java.core">JavaClassFileMetadata</a></span>&nbsp;<span class="element-name">getClassFileMetadata</span>()</div>
+<div class="block">Returns immutable source and nesting attributes, empty for sources that do not provide them.</div>
+</section>
+</li>
 <li>
 <section class="detail" id="resolveAnnotations()">
 <h3>resolveAnnotations</h3>

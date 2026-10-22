@@ -160,25 +160,43 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns a unique ClassType.</div>
 </div>
 <div class="col-first odd-row-color"><code>@NonNull <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">JavaModuleInfo.InterfaceReference.</span><code><a href="../../JavaModuleInfo.InterfaceReference.html#getInterfaceImplementation()" class="member-name-link">getInterfaceImplementation</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JavaInnerClassInfo.</span><code><a href="../../JavaInnerClassInfo.html#getInnerClass()" class="member-name-link">getInnerClass</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>@NonNull <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">JavaModuleInfo.InterfaceReference.</span><code><a href="../../JavaModuleInfo.InterfaceReference.html#getInterfaceType()" class="member-name-link">getInterfaceType</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JavaModuleInfo.InterfaceReference.</span><code><a href="../../JavaModuleInfo.InterfaceReference.html#getInterfaceImplementation()" class="member-name-link">getInterfaceImplementation</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JavaModuleInfo.InterfaceReference.</span><code><a href="../../JavaModuleInfo.InterfaceReference.html#getInterfaceType()" class="member-name-link">getInterfaceType</a>()</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../package-summary.html">sootup.java.core</a> that return types with arguments of type <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a></span></div>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">JavaSootClass.</span><code><a href="../../JavaSootClass.html#getSuperclass()" class="member-name-link">getSuperclass</a>()</code></div>
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JavaClassFileMetadata.</span><code><a href="../../JavaClassFileMetadata.html#getEnclosingClass()" class="member-name-link">getEnclosingClass</a>()</code></div>
 <div class="col-last even-row-color">
+<div class="block">Returns the EnclosingMethod owner, including when the class is declared in an initializer.</div>
+</div>
+<div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JavaSootClass.</span><code><a href="../../JavaSootClass.html#getEnclosingClass()" class="member-name-link">getEnclosingClass</a>()</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Returns the owner from EnclosingMethod, including for classes declared in initializers.</div>
+</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JavaInnerClassInfo.</span><code><a href="../../JavaInnerClassInfo.html#getOuterClass()" class="member-name-link">getOuterClass</a>()</code></div>
+<div class="col-last even-row-color">
+<div class="block">Returns the recorded outer class, absent for local and anonymous classes.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JavaSootClass.</span><code><a href="../../JavaSootClass.html#getSuperclass()" class="member-name-link">getSuperclass</a>()</code></div>
+<div class="col-last odd-row-color">
 <div class="block">WARNING: interfaces in Java are subclasses of the java.lang.Object class!</div>
 </div>
-<div class="col-first odd-row-color"><code>abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">JavaModuleInfo.</span><code><a href="../../JavaModuleInfo.html#uses()" class="member-name-link">uses</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>abstract <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JavaModuleInfo.</span><code><a href="../../JavaModuleInfo.html#uses()" class="member-name-link">uses</a>()</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../package-summary.html">sootup.java.core</a> with parameters of type <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a></span></div>
 <div class="summary-table three-column-summary">
@@ -229,6 +247,19 @@ loadScripts(document, 'script');</script>
  @NonNull <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&nbsp;interfaceImplementation)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../../JavaClassFileMetadata.html#%3Cinit%3E(java.lang.String,java.lang.String,sootup.java.core.types.JavaClassType,sootup.core.signatures.MethodSignature,java.util.List)" class="member-name-link">JavaClassFileMetadata</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;sourceFile,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;sourceDebugExtension,
+ @Nullable <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&nbsp;enclosingClass,
+ @Nullable <a href="../../../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;enclosingMethod,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JavaInnerClassInfo.html" title="class in sootup.java.core">JavaInnerClassInfo</a>&gt;&nbsp;innerClasses)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../../JavaInnerClassInfo.html#%3Cinit%3E(sootup.java.core.types.JavaClassType,sootup.java.core.types.JavaClassType,java.lang.String,int)" class="member-name-link">JavaInnerClassInfo</a><wbr>(@NonNull <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&nbsp;innerClass,
+ @Nullable <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&nbsp;outerClass,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;innerName,
+ int&nbsp;accessFlags)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../OverridingJavaClassSource.html#%3Cinit%3E(java.util.Set,java.util.Set,java.util.EnumSet,java.util.Set,sootup.java.core.types.JavaClassType,sootup.java.core.types.JavaClassType,sootup.core.model.Position,java.nio.file.Path,sootup.core.types.ClassType,sootup.core.inputlocation.AnalysisInputLocation)" class="member-name-link">OverridingJavaClassSource</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../JavaSootMethod.html" title="class in sootup.java.core">JavaSootMethod</a>&gt;&nbsp;sootMethods,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../JavaSootField.html" title="class in sootup.java.core">JavaSootField</a>&gt;&nbsp;sootFields,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/EnumSet.html" title="class or interface in java.util" class="external-link">EnumSet</a>&lt;<a href="../../../../core/model/ClassModifier.html" title="enum class in sootup.core.model">ClassModifier</a>&gt;&nbsp;modifiers,
@@ -257,6 +288,24 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Class source where all information already available</div>
 </div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../../OverridingJavaClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,java.nio.file.Path,sootup.core.types.ClassType,sootup.java.core.types.JavaClassType,java.util.Set,sootup.java.core.types.JavaClassType,java.util.Set,java.util.Set,sootup.core.model.Position,java.util.EnumSet,java.lang.Iterable,java.lang.Iterable,java.lang.Iterable,sootup.java.core.JavaClassFileMetadata)" class="member-name-link">OverridingJavaClassSource</a><wbr>(@NonNull <a href="../../../../core/inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;srcNamespace,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;sourcePath,
+ @NonNull <a href="../../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classType,
+ @Nullable <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&nbsp;superClass,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&gt;&nbsp;interfaces,
+ @Nullable <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&nbsp;outerClass,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../JavaSootField.html" title="class in sootup.java.core">JavaSootField</a>&gt;&nbsp;sootFields,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../JavaSootMethod.html" title="class in sootup.java.core">JavaSootMethod</a>&gt;&nbsp;sootMethods,
+ @NonNull <a href="../../../../core/model/Position.html" title="class in sootup.core.model">Position</a>&nbsp;position,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/EnumSet.html" title="class or interface in java.util" class="external-link">EnumSet</a>&lt;<a href="../../../../core/model/ClassModifier.html" title="enum class in sootup.core.model">ClassModifier</a>&gt;&nbsp;modifiers,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;methodAnnotations,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;fieldAnnotations,
+ @NonNull <a href="../../JavaClassFileMetadata.html" title="class in sootup.java.core">JavaClassFileMetadata</a>&nbsp;classFileMetadata)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a fully resolved class source with immutable source and nesting attributes.</div>
+</div>
 </div>
 <div class="caption"><span>Constructor parameters in <a href="../../package-summary.html">sootup.java.core</a> with type arguments of type <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a></span></div>
 <div class="summary-table three-column-summary">
@@ -279,6 +328,24 @@ loadScripts(document, 'script');</script>
  @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;fieldAnnotations)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Class source where all information already available</div>
+</div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../../OverridingJavaClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,java.nio.file.Path,sootup.core.types.ClassType,sootup.java.core.types.JavaClassType,java.util.Set,sootup.java.core.types.JavaClassType,java.util.Set,java.util.Set,sootup.core.model.Position,java.util.EnumSet,java.lang.Iterable,java.lang.Iterable,java.lang.Iterable,sootup.java.core.JavaClassFileMetadata)" class="member-name-link">OverridingJavaClassSource</a><wbr>(@NonNull <a href="../../../../core/inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;srcNamespace,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;sourcePath,
+ @NonNull <a href="../../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classType,
+ @Nullable <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&nbsp;superClass,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&gt;&nbsp;interfaces,
+ @Nullable <a href="../JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&nbsp;outerClass,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../JavaSootField.html" title="class in sootup.java.core">JavaSootField</a>&gt;&nbsp;sootFields,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../JavaSootMethod.html" title="class in sootup.java.core">JavaSootMethod</a>&gt;&nbsp;sootMethods,
+ @NonNull <a href="../../../../core/model/Position.html" title="class in sootup.core.model">Position</a>&nbsp;position,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/EnumSet.html" title="class or interface in java.util" class="external-link">EnumSet</a>&lt;<a href="../../../../core/model/ClassModifier.html" title="enum class in sootup.core.model">ClassModifier</a>&gt;&nbsp;modifiers,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;annotations,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;methodAnnotations,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;fieldAnnotations,
+ @NonNull <a href="../../JavaClassFileMetadata.html" title="class in sootup.java.core">JavaClassFileMetadata</a>&nbsp;classFileMetadata)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a fully resolved class source with immutable source and nesting attributes.</div>
 </div>
 </div>
 </section>
