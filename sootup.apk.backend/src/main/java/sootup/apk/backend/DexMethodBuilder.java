@@ -73,6 +73,7 @@ public class DexMethodBuilder {
 
   /**
    * Creates a dex ImmutableMethod for a SootMethod
+   *
    * @param sootMethod The SootUp method
    * @return The dex method
    */
@@ -173,6 +174,7 @@ public class DexMethodBuilder {
 
   /**
    * Creates a dex MethodImplementation for a SootMethod
+   *
    * @param sootMethod The SootMethod
    * @return The dex MethodImplementation
    */
@@ -449,9 +451,9 @@ public class DexMethodBuilder {
   }
 
   /**
-   * Merge register maps at branching points
-   * If a local is assigned to different registers at multiple predecessors (and is used later in the control flow graph),
-   * move instructions are inserted to reconcile all predecessors to a common register
+   * Merge register maps at branching points If a local is assigned to different registers at
+   * multiple predecessors (and is used later in the control flow graph), move instructions are
+   * inserted to reconcile all predecessors to a common register
    */
   private Map<Local, Register> mergeIncomingRegisterMaps(
       Set<BasicBlock<?>> previousBlocks,
@@ -560,6 +562,7 @@ public class DexMethodBuilder {
   /**
    * Evaluates if a jimple local is used (before a new definition) in the control flow graph
    * Starting at a specific stmt
+   *
    * @param controlFlowGraph The control flow graph of the method
    * @param start The stmt to evaluate its successors
    * @param local The local to be evaluated
@@ -593,8 +596,9 @@ public class DexMethodBuilder {
   }
 
   /**
-   * If a successor block has already been processed but the local is there used under a different register compared to the current block
-   * Create move instructions from the current registers to the registers of the successor block
+   * If a successor block has already been processed but the local is there used under a different
+   * register compared to the current block Create move instructions from the current registers to
+   * the registers of the successor block
    */
   private void mergeCurrentRegisterMapToSuccessor(
       BasicBlock<?> cBlock,
@@ -748,10 +752,10 @@ public class DexMethodBuilder {
   }
 
   /**
-   * When all AbstractInstructions have been created, the instructions are converted to dex BuilderInstructions
-   *  First, labels are reserved
-   *  Instructions are converted into builderInstructions and labels are set at their corresponding instructions
-   *  Finally, payloads and catch blocks are inserted
+   * When all AbstractInstructions have been created, the instructions are converted to dex
+   * BuilderInstructions First, labels are reserved Instructions are converted into
+   * builderInstructions and labels are set at their corresponding instructions Finally, payloads
+   * and catch blocks are inserted
    */
   public List<BuilderInstruction> addBuilderInstructions(
       MethodImplementationBuilder methodImplementationBuilder,

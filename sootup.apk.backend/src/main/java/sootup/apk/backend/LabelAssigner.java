@@ -9,9 +9,8 @@ import sootup.apk.backend.instructions.AbstractPayload;
 import sootup.core.jimple.common.stmt.Stmt;
 
 /**
- * Organizes the allocation and setting of labels
- * LabelMapBeforeStmt: Allocates labels for if,switch,goto, try-start, catch, stmts
- * LabelMapAfterStmt: Allocates labels for try-end stmts
+ * Organizes the allocation and setting of labels LabelMapBeforeStmt: Allocates labels for
+ * if,switch,goto, try-start, catch, stmts LabelMapAfterStmt: Allocates labels for try-end stmts
  */
 public class LabelAssigner {
 
@@ -79,6 +78,7 @@ public class LabelAssigner {
 
   /**
    * Reserve a label before a object(stmt/payload)
+   *
    * @param object A stmt or a payload
    * @return The label created
    */
@@ -103,22 +103,19 @@ public class LabelAssigner {
     return labelNameMapBeforeStmt.get(object);
   }
 
-  /**
-   * Has a label been reserved BEFORE a specific stmt
-   */
+  /** Has a label been reserved BEFORE a specific stmt */
   public boolean hasLabel(Stmt stmt) {
     return labelMapBeforeStmt.containsKey(stmt);
   }
 
-  /**
-   * Has a label been reserved AFTER a specific stmt
-   */
+  /** Has a label been reserved AFTER a specific stmt */
   public boolean hasLabelAfterStmt(Stmt stmt) {
     return labelMapAfterStmt.containsKey(stmt);
   }
 
   /**
    * Places an already reserved label at the current instruction of the methodImplementationBuilder
+   *
    * @param object A stmt or a payload
    */
   public void setLabel(Object object) {
@@ -133,6 +130,7 @@ public class LabelAssigner {
 
   /**
    * Places an already reserved label at the current instruction of the methodImplementationBuilder
+   *
    * @param object A stmt or a payload
    */
   public void setLabelAfterStmt(Object object) {
@@ -145,9 +143,7 @@ public class LabelAssigner {
     }
   }
 
-  /**
-   * Evaluates whether labels have been reserved but not set
-   */
+  /** Evaluates whether labels have been reserved but not set */
   public boolean areLabelsNotYetPlaced() {
     Set<String> labelNames = new HashSet<>(labelNameMapBeforeStmt.values());
     labelNames.addAll(labelNameMapAfterStmt.values());

@@ -282,6 +282,7 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
 
   /**
    * Decides which switch opcode to use based on the size of the values to store
+   *
    * @param values The switch values
    * @return The suitable opcode: sparse_switch or packed_switch
    */
@@ -498,8 +499,8 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
   }
 
   /**
-   * If the SootUp type of a local is 'java.lang.Object' but actually has a different type (e.g, primitive)
-   * Get a new register for the needed type
+   * If the SootUp type of a local is 'java.lang.Object' but actually has a different type (e.g,
+   * primitive) Get a new register for the needed type
    *
    * @param defaultType The type of the local
    */

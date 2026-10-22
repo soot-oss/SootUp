@@ -12,8 +12,9 @@ import sootup.java.core.AnnotationUsage;
 public class DexUtil {
 
   /**
-   * Converts a SootUp class name into a dex class name
-   * E.g., by prepending an "L", changing '.' to '/', and appending an ';'
+   * Converts a SootUp class name into a dex class name E.g., by prepending an "L", changing '.' to
+   * '/', and appending an ';'
+   *
    * @param s The SootUp class name
    * @return The dex class name
    */
@@ -36,6 +37,7 @@ public class DexUtil {
 
   /**
    * Converts a SootUp type into a dex type
+   *
    * @param type The SootUp type
    * @return The dex Type
    */
@@ -59,6 +61,7 @@ public class DexUtil {
 
   /**
    * Converts a SootUp primitive type into a dex type
+   *
    * @param primitiveType The SootUp primitive type
    * @return The dex type
    */
@@ -92,6 +95,7 @@ public class DexUtil {
 
   /**
    * Evaluates whether a dex type is primitive
+   *
    * @param dexType A dex type
    * @return boolean true if the type is primitive
    */
@@ -101,6 +105,7 @@ public class DexUtil {
 
   /**
    * Converts a SootUp arrayType into a dex arrayType
+   *
    * @param dimensions The number of dimensions of the array
    * @param arrayType The SootUp array type
    * @return The dex array type
@@ -137,6 +142,7 @@ public class DexUtil {
 
   /**
    * Evaluates if a SootUp primitive type is smaller than another primitive type
+   *
    * @param sourceType The first SootUp type
    * @param compareType The second SootUp type
    * @return true if the first parameter has a smaller type than the second one
@@ -152,6 +158,7 @@ public class DexUtil {
 
   /**
    * Evaluates if a SootUp primitive type is smaller or equal than another primitive type
+   *
    * @param sourceType The first SootUp type
    * @param compareType The second SootUp type
    * @return true if the first parameter has a smaller or equal type than the second one
@@ -167,6 +174,7 @@ public class DexUtil {
 
   /**
    * Evaluates if a SootUp primitive type is bigger or equal than another primitive type
+   *
    * @param sourceType The first SootUp type
    * @param compareType The second SootUp type
    * @return true if the first parameter has a bigger or equal type than the second one
@@ -182,6 +190,7 @@ public class DexUtil {
 
   /**
    * Evaluates if a SootUp primitive type is bigger or equal than another primitive type
+   *
    * @param sourceType The first SootUp type
    * @param compareType The second SootUp type
    * @return true if the first parameter has a bigger or equal type than the second one
@@ -197,6 +206,7 @@ public class DexUtil {
 
   /**
    * Returns the biggest type of two SootUp primitive types
+   *
    * @param op1 The first SootUp type
    * @param op2 The second SootUp type
    * @return The type of the two parameters that is the biggest
@@ -215,6 +225,7 @@ public class DexUtil {
 
   /**
    * Evaluates whether a dex type is of an object type
+   *
    * @param dexType The dex type
    * @return true if the type is of an object type
    */
@@ -231,6 +242,7 @@ public class DexUtil {
 
   /**
    * Evaluates whether a SootUp type is of an object type
+   *
    * @param sootType The SootUp type
    * @return true if the type is of an object type
    */
@@ -240,6 +252,7 @@ public class DexUtil {
 
   /**
    * Evaluates whether a dex type is wide (of type long or double)
+   *
    * @param dexType The dex type
    * @return True if the type is long or double
    */
@@ -249,6 +262,7 @@ public class DexUtil {
 
   /**
    * Evaluates whether a SootUp type is wide (of type long or double)
+   *
    * @param sootType The SootUp type
    * @return True if the type is long or double
    */
@@ -259,6 +273,7 @@ public class DexUtil {
 
   /**
    * Returns the size of the register for a SootUp type
+   *
    * @param sootType The SootUp type
    * @return 2 if the type is long or double, else 1
    */
@@ -268,6 +283,7 @@ public class DexUtil {
 
   /**
    * Sum of the register sizes for a collection of SootUp types
+   *
    * @param sootTypes A collection of SootUp types
    * @return A summed register size needed to store all types of the collection
    */
@@ -276,8 +292,9 @@ public class DexUtil {
   }
 
   /**
-   * Sum of the register sizes for a collection of Register
-   * if register type is long or double -> count 2 registers; else 1 register
+   * Sum of the register sizes for a collection of Register if register type is long or double ->
+   * count 2 registers; else 1 register
+   *
    * @param registers A list of Register objects
    * @return The sum of the register sizes
    */
@@ -303,7 +320,9 @@ public class DexUtil {
 
   /**
    * Converts SootUp annotation values into dex ImmutableEncodedValue
-   * @param elem A SootUp annotation value (created in sootup.apk.frontend.Util->convertAnnotationValue()
+   *
+   * @param elem A SootUp annotation value (created in
+   *     sootup.apk.frontend.Util->convertAnnotationValue()
    * @return A dex ImmutableEncodedValue
    */
   public static ImmutableEncodedValue buildEncodedValueForAnnotation(Object elem) {

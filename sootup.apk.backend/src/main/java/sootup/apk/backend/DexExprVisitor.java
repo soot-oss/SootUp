@@ -624,9 +624,8 @@ public class DexExprVisitor extends AbstractExprVisitor {
   }
 
   /**
-   * Returns a list of argument registers for virtual invoke instructions
-   * First register represents the base of the instruction
-   * Further registers are the parameters
+   * Returns a list of argument registers for virtual invoke instructions First register represents
+   * the base of the instruction Further registers are the parameters
    */
   private List<Register> getVirtualInvokeArgumentRegisters(
       AbstractInstanceInvokeExpr abstractInstanceInvokeExpr) {
@@ -638,9 +637,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
     return argumentRegisters;
   }
 
-  /**
-   * Returns a list of argument registers for invoke instructions
-   */
+  /** Returns a list of argument registers for invoke instructions */
   private List<Register> getInvokeArgumentRegisters(AbstractInvokeExpr abstractInvokeExpr) {
     return abstractInvokeExpr.getArgs().stream()
         .map(a -> registerAllocator.getRegisterForImmediate(a, false, currentStmt))
@@ -658,8 +655,9 @@ public class DexExprVisitor extends AbstractExprVisitor {
   }
 
   /**
-   * Creates an array of five elements
-   * Puts the registers into the array and fills remaining registers with null values
+   * Creates an array of five elements Puts the registers into the array and fills remaining
+   * registers with null values
+   *
    * @param registers Up to five Register objects
    * @return An array of five Register/null objects
    */
@@ -674,8 +672,9 @@ public class DexExprVisitor extends AbstractExprVisitor {
   }
 
   /**
-   * Invoke opcodes with > 5 register require that the registers have successive numbers
-   * If the condition is not true, the method allocates new temporary registers with successive numbers
+   * Invoke opcodes with > 5 register require that the registers have successive numbers If the
+   * condition is not true, the method allocates new temporary registers with successive numbers
+   *
    * @param registers The registers of the method parameters
    * @return The registers with successive numbers (could be the same or new registers)
    */
@@ -695,9 +694,7 @@ public class DexExprVisitor extends AbstractExprVisitor {
     }
   }
 
-  /**
-   * Evaluates whether register numbers are successive
-   */
+  /** Evaluates whether register numbers are successive */
   private boolean areRegistersNextToEachOther(List<Register> registers) {
     if (registers == null || registers.size() < 2) {
       return true;
@@ -780,9 +777,10 @@ public class DexExprVisitor extends AbstractExprVisitor {
     TypeReference castTypeReference = new ImmutableTypeReference(dexType);
 
     if (!DexUtil.isObject(castType)
-            // do no not check-cast on uninitialized reference, else the Android verifier will fail
-            //TODO the current implementation is quite simple and does not work if a local is initialized in an aliased local
-            // a typestate analysis should evaluate the initialization state across locals
+        // do no not check-cast on uninitialized reference, else the Android verifier will fail
+        // TODO the current implementation is quite simple and does not work if a local is
+        // initialized in an aliased local
+        // a typestate analysis should evaluate the initialization state across locals
         || !sourceRegister.isInitialized()) {
       dexStmtVisitor.addInstruction(
           generateMoveInstruction(
@@ -1061,8 +1059,9 @@ public class DexExprVisitor extends AbstractExprVisitor {
   }
 
   /**
-   * if the target register has a smaller type than the operands
-   * a tmp register is used and the result later cast back into the target register
+   * if the target register has a smaller type than the operands a tmp register is used and the
+   * result later cast back into the target register
+   *
    * @param opType The type of the tmp register
    * @return The tmp register
    */
@@ -1093,8 +1092,8 @@ public class DexExprVisitor extends AbstractExprVisitor {
   }
 
   /**
-   * If the SootUp type of a local is 'java.lang.Object' but actually has a different type (e.g, primitive)
-   * Get a new register for the needed type
+   * If the SootUp type of a local is 'java.lang.Object' but actually has a different type (e.g,
+   * primitive) Get a new register for the needed type
    *
    * @param defaultType The type of the local
    */

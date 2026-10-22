@@ -58,9 +58,8 @@ public class RegisterAllocator {
   }
 
   /**
-   * Returns a register for a SootUp local
-   * If the local is already assigned to a register, the register is returned
-   * Else a new register is created
+   * Returns a register for a SootUp local If the local is already assigned to a register, the
+   * register is returned Else a new register is created
    *
    * @param local The SootUp local stored in the register
    * @param isParameter Is the local a method parameter
@@ -77,8 +76,9 @@ public class RegisterAllocator {
   }
 
   /**
-   * Assign a SootUp value to a new register, regardless of whether the value is already known by a different register
-   * Used in cases where a local is assigned to different types (e.g., primitive/object) within one method
+   * Assign a SootUp value to a new register, regardless of whether the value is already known by a
+   * different register Used in cases where a local is assigned to different types (e.g.,
+   * primitive/object) within one method
    *
    * @param value The SootUp value
    * @param type The new type for the register
@@ -94,8 +94,7 @@ public class RegisterAllocator {
   }
 
   /**
-   * Get a register for a temporary constant
-   * Uses a constant pool in order to reuse registers
+   * Get a register for a temporary constant Uses a constant pool in order to reuse registers
    *
    * @param constant The SootUp constant
    * @param currentStmt The statement where the constant is needed
@@ -125,41 +124,7 @@ public class RegisterAllocator {
     }
 
     try {
-      Register register;
-
-      List<Register> pool = constantRegisterPools.computeIfAbsent(constant.getClass(), key -> new LinkedList<>());
-
-      int index = constantPoolIndices.getOrDefault(constant.getClass(), 0);
-
-      while (true) {
-
-        if (index >= pool.size()) {
-          register = allocateNewRegister(type, false, false);
-
-          register.setIsTypeGuessed(guessed);
-
-          pool.add(register);
-          constantPoolIndices.put(constant.getClass(), index + 1);
-
-          return register;
-        }
-
-        register = pool.get(index);
-        index++;
-
-        constantPoolIndices.put(constant.getClass(), index);
-
-        if (lockedRegisters.contains(register)) {
-          continue;
-        }
-
-        register.setIsTypeGuessed(guessed);
-
-        break;
-      }
-
-
-
+      Register register = getReusableConstantRegister(constant, type, guessed);
 
       register.setIsTypeGuessed(guessed);
 
@@ -174,9 +139,7 @@ public class RegisterAllocator {
     }
   }
 
-  /**
-   * Gets a register for a SootUp Immediate
-   */
+  /** Gets a register for a SootUp Immediate */
   public Register getRegisterForImmediate(
       Immediate immediate, boolean isParameter, Stmt currentStmt) {
     if (immediate instanceof Local local) {
@@ -195,6 +158,44 @@ public class RegisterAllocator {
    */
   public Register allocateRegisterForParameter(Immediate immediate) {
     return getRegisterForImmediate(immediate, true, null);
+  }
+
+  private List<Register> getConstantPool(Constant constant) {
+    return constantRegisterPools.computeIfAbsent(constant.getClass(), key -> new LinkedList<>());
+  }
+
+  private Register getReusableConstantRegister(Constant constant, Type type, boolean guessed) {
+
+    List<Register> pool = getConstantPool(constant);
+
+    int index = constantPoolIndices.getOrDefault(constant.getClass(), 0);
+
+    while (true) {
+
+      if (index >= pool.size()) {
+        Register register = allocateNewRegister(type, false, false);
+
+        register.setIsTypeGuessed(guessed);
+
+        pool.add(register);
+        constantPoolIndices.put(constant.getClass(), index + 1);
+
+        return register;
+      }
+
+      Register register = pool.get(index);
+      index++;
+
+      constantPoolIndices.put(constant.getClass(), index);
+
+      if (lockedRegisters.contains(register)) {
+        continue;
+      }
+
+      register.setIsTypeGuessed(guessed);
+
+      return register;
+    }
   }
 
   public void lockRegister(Register register) {

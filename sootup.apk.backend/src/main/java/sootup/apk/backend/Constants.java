@@ -1,8 +1,6 @@
 package sootup.apk.backend;
 
-/**
- * String constants used in the apkBackend
- */
+/** String constants used in the apkBackend */
 public class Constants {
 
   public static final String JIMPLE_OBJECT_TYPE = "java.lang.Object";

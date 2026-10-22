@@ -188,8 +188,8 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
   }
 
   /**
-   * If the SootUp type of the local is 'java.lang.Object' but the constant assigned to this local is primitive:
-   * Change the type of the register
+   * If the SootUp type of the local is 'java.lang.Object' but the constant assigned to this local
+   * is primitive: Change the type of the register
    *
    * @param defaultType The type of the constant created
    */
