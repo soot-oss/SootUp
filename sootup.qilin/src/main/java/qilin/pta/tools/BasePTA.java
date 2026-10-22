@@ -54,9 +54,12 @@ public abstract class BasePTA extends CorePTA {
   public BasePTA(PTAScene scene) {
     super(scene);
     this.evaluator =
-        getConfig().isDumpStats() ? new PTAEvaluator(this) : new SimplifiedEvaluator(this);
+        getConfig().isDumpStats()
+            ? new PTAEvaluator(this)
+            : getConfig().isEvaluate() ? new SimplifiedEvaluator(this) : null;
   }
 
+  /** {@code null} if {@link qilin.core.config.PointerAnalysisConfig#isEvaluate()} is off. */
   public IEvaluator evaluator() {
     return this.evaluator;
   }
@@ -78,6 +81,11 @@ public abstract class BasePTA extends CorePTA {
 
   @Override
   public void run() {
+    if (evaluator == null) {
+      pureRun();
+      dumpStats();
+      return;
+    }
     evaluator.begin();
     pureRun();
     evaluator.end();
