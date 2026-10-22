@@ -27,7 +27,7 @@ import sootup.core.model.Body;
 import sootup.core.views.View;
 
 /** Implement this interface if you want to provide your own body Validator */
-public interface BodyValidator {
+public interface BodyValidator extends Validator {
   /**
    * Validates the given body and saves all validation errors in the given list.
    *
