@@ -24,6 +24,7 @@ package sootup.apk.frontend.interceptors;
 
 import java.util.*;
 import org.jspecify.annotations.NonNull;
+import sootup.apk.frontend.main.DexCastExpr;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -180,8 +181,9 @@ public class DexNumberTranformer extends DexTransformer {
                       usedAsFloatingPoint = floatingPointLocals.contains(l);
                       doBreak = true;
                     } else if (r instanceof JCastExpr) {
-                      //                                usedAsFloatingPoint =
-                      // stmt.hasTag(FloatOpTag.NAME) || stmt.hasTag(DoubleOpTag.NAME);
+                      // Soot's dexpler: stmt.hasTag(FloatOpTag.NAME) ||
+                      // stmt.hasTag(DoubleOpTag.NAME)
+                      usedAsFloatingPoint = floatingPointLocals.contains(l);
                       doBreak = true;
                     } else if (r instanceof Local && r == l) {
                       if (left instanceof JFieldRef) {
@@ -252,9 +254,10 @@ public class DexNumberTranformer extends DexTransformer {
   /**
    * The locals that hold floats or doubles as far as arithmetic shows. The operands of {@code cmpl}
    * and {@code cmpg} are floats or doubles, and so are locals that a statement uses or defines as
-   * one: a field, a parameter of the method or of a call, a return value or a cast of such a type.
-   * The operands and the result of {@code + - * / %}, negation and copies have one type, so they
-   * are floating point together.
+   * one: a field, a parameter of the method or of a call, a return value or a cast of such a type,
+   * and the operand of a dex conversion from float or double ({@link DexCastExpr}). The operands
+   * and the result of {@code + - * / %}, negation and copies have one type, so they are floating
+   * point together.
    */
   private Set<Local> floatingPointLocals(Body.BodyBuilder bodyBuilder) {
     Map<Local, List<Local>> sameType = new HashMap<>();
@@ -303,6 +306,12 @@ public class DexNumberTranformer extends DexTransformer {
         continue;
       }
       Local result = (Local) left;
+      if (right instanceof DexCastExpr
+          && ((DexCastExpr) right).getOp() instanceof Local
+          && isFloatingPointLike(((DexCastExpr) right).getSourceType())) {
+        // A conversion from float or double, e.g. float-to-int: its operand is floating point
+        work.add((Local) ((DexCastExpr) right).getOp());
+      }
       if (right instanceof JCmplExpr || right instanceof JCmpgExpr) {
         for (Value op :
             List.of(((AbstractBinopExpr) right).getOp1(), ((AbstractBinopExpr) right).getOp2())) {

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import sootup.apk.frontend.main.DexCastExpr;
 import sootup.core.graph.MutableBlockControlFlowGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -232,6 +233,75 @@ class DexNumberTransformerTest {
             Jimple.newAssignStmt(r, Jimple.newAddExpr(l, y), POS),
             Jimple.newInvokeStmt(Jimple.newStaticInvokeExpr(USE_INT, r), POS),
             Jimple.newReturnVoidStmt(POS));
+
+    transform(builder);
+
+    assertEquals(IntConstant.getInstance(7), constantOfFirstStmt(builder));
+  }
+
+  @Test
+  void intBitsConvertedFromFloatToIntBecomeAFloat() {
+    // l = <bits of 9.99f>; r = (int) l;  (float-to-int)  return r;  -- in a method that returns an
+    // int
+    Local l = Jimple.newLocal("l", UnknownType.getInstance());
+    Local r = Jimple.newLocal("r", UnknownType.getInstance());
+    var builder =
+        builder(
+            "int",
+            List.of(l, r),
+            Jimple.newAssignStmt(l, IntConstant.getInstance(Float.floatToIntBits(9.99f)), POS),
+            Jimple.newAssignStmt(
+                r,
+                new DexCastExpr(
+                    l, PrimitiveType.IntType.getInstance(), PrimitiveType.FloatType.getInstance()),
+                POS),
+            Jimple.newReturnStmt(r, POS));
+
+    transform(builder);
+
+    assertEquals(FloatConstant.getInstance(9.99f), constantOfFirstStmt(builder));
+  }
+
+  @Test
+  void longBitsConvertedFromDoubleToFloatBecomeADouble() {
+    // l = <bits of 2.5>; r = (float) l;  (double-to-float)  return r;
+    Local l = Jimple.newLocal("l", UnknownType.getInstance());
+    Local r = Jimple.newLocal("r", UnknownType.getInstance());
+    var builder =
+        builder(
+            "float",
+            List.of(l, r),
+            Jimple.newAssignStmt(l, LongConstant.getInstance(Double.doubleToLongBits(2.5)), POS),
+            Jimple.newAssignStmt(
+                r,
+                new DexCastExpr(
+                    l,
+                    PrimitiveType.FloatType.getInstance(),
+                    PrimitiveType.DoubleType.getInstance()),
+                POS),
+            Jimple.newReturnStmt(r, POS));
+
+    transform(builder);
+
+    assertEquals(DoubleConstant.getInstance(2.5), constantOfFirstStmt(builder));
+  }
+
+  @Test
+  void intConvertedFromIntToFloatStaysAnInt() {
+    // l = 7; r = (float) l;  (int-to-float)  return r;
+    Local l = Jimple.newLocal("l", UnknownType.getInstance());
+    Local r = Jimple.newLocal("r", UnknownType.getInstance());
+    var builder =
+        builder(
+            "float",
+            List.of(l, r),
+            Jimple.newAssignStmt(l, IntConstant.getInstance(7), POS),
+            Jimple.newAssignStmt(
+                r,
+                new DexCastExpr(
+                    l, PrimitiveType.FloatType.getInstance(), PrimitiveType.IntType.getInstance()),
+                POS),
+            Jimple.newReturnStmt(r, POS));
 
     transform(builder);
 
