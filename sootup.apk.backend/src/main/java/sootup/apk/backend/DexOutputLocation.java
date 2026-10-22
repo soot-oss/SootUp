@@ -34,6 +34,12 @@ public class DexOutputLocation {
     this.apkFile = apkFile;
   }
 
+  /**
+   * Creates a classes.dex
+   *
+   * @param outputDir The directory the classes.dex should be written into
+   * @param androidVersionInfo The same AndroidVersionInfo object as used in the ApkFrontend
+   */
   public void writeDex(String outputDir, AndroidVersionInfo androidVersionInfo) {
     int minSdkVersion = androidVersionInfo.minSdkVersion;
 
@@ -45,12 +51,25 @@ public class DexOutputLocation {
     var classes = view.getClasses().toList();
     classes.forEach(dexClassBuilder::createClass);
     try {
-      writeDexFiles(outputDir);
+      for (int i = 0; i < dexPoolList.size(); i++) {
+        DexPool dexPool = dexPoolList.get(i);
+        File file = new File(outputDir, (i == 0) ? "classes.dex" : "classes" + (i + 1) + ".dex");
+        FileDataStore fds = new FileDataStore(file);
+        dexPool.writeTo(fds);
+        fds.close();
+      }
     } catch (IOException e) {
       throw new RuntimeException("An exception occurred during creation of dex files");
     }
   }
 
+  /**
+   *  Creates a .apk file including a newly generated classes.dex file and copies further resources from the input apk
+   *  The generated apk still needs to be aligned and signed
+   *
+   * @param outputDir The directory the classes.dex should be written into
+   * @param androidVersionInfo The same AndroidVersionInfo object as used in the ApkFrontend
+   */
   public void writeApk(String outputDir, AndroidVersionInfo androidVersionInfo) {
     int minSdkVersion = androidVersionInfo.minSdkVersion;
 
@@ -67,9 +86,9 @@ public class DexOutputLocation {
     int i = 1;
     while (Files.exists(outputFile, LinkOption.NOFOLLOW_LINKS) && i < 100) {
       newApkName =
-          apkFile == null
-              ? "out"
-              : apkFile.getName().substring(0, apkFile.getName().indexOf(".")) + i + ".apk";
+              apkFile == null
+                      ? "out"
+                      : apkFile.getName().substring(0, apkFile.getName().indexOf(".")) + i + ".apk";
       outputFile = Paths.get(outputDir, newApkName);
       i++;
     }
@@ -79,59 +98,36 @@ public class DexOutputLocation {
 
     try {
       try (ZipOutputStream zipOutputStream =
-          new ZipOutputStream(Files.newOutputStream(outputFile, StandardOpenOption.CREATE_NEW))) {
+                   new ZipOutputStream(Files.newOutputStream(outputFile, StandardOpenOption.CREATE_NEW))) {
 
         if (apkFile != null) {
           copyExistingFiles(zipOutputStream);
         }
 
-        // addExistingClasses("");
-        writeDexFiles(zipOutputStream);
+        for (int j = 0; i < dexPoolList.size(); j++) {
+          MemoryDataStore dataStore = new MemoryDataStore();
+          dexPoolList.get(i).writeTo(dataStore);
+
+          String dexName = (j == 0) ? "classes.dex" : "classes" + (j + 1) + ".dex";
+          ZipEntry entry = new ZipEntry(dexName);
+          zipOutputStream.putNextEntry(entry);
+
+          zipOutputStream.write(dataStore.getData());
+          zipOutputStream.closeEntry();
+        }
+
         log.info(
-            "APK successfully created. The .apk still needs to be aligned with zipalign and signed with jarsigner");
+                "APK successfully created. The .apk still needs to be aligned with zipalign and signed with jarsigner");
       }
     } catch (IOException e) {
       throw new RuntimeException("An exception occurred during creation of .apk file");
     }
   }
 
-  private void addExistingClasses(String classNamePrefix) throws IOException {
-
-    try (ZipFile apk = new ZipFile(apkFile)) {
-
-      Enumeration<? extends ZipEntry> entries = apk.entries();
-
-      while (entries.hasMoreElements()) {
-        ZipEntry entry = entries.nextElement();
-
-        if (entry.getName().matches("classes(\\d*)\\.dex")) {
-
-          File dexTemp = File.createTempFile("classes", ".dex");
-
-          try (InputStream in = apk.getInputStream(entry);
-              OutputStream out = new FileOutputStream(dexTemp)) {
-
-            in.transferTo(out);
-          }
-
-          DexFile dexFile = DexFileFactory.loadDexFile(dexTemp, opcodes);
-
-          for (ClassDef classDef : dexFile.getClasses()) {
-            String dexClassName = classDef.getType();
-            String dexClassNamePrefix = DexUtil.toDexClassName(classNamePrefix);
-            if (dexClassName.startsWith(
-                dexClassNamePrefix.substring(0, dexClassNamePrefix.length() - 2))) {
-              addClass(classDef);
-            }
-          }
-
-          dexTemp.delete();
-        }
-      }
-    }
-  }
-
-  // copy all existing files of the previous apk to the new apk except the classes.dex and metadata
+  /**
+   * Copies all existing files of the previous apk to the new apk except the classes.dex and metadata
+   *
+   */
   private void copyExistingFiles(ZipOutputStream zipOutputStream) throws IOException {
     try (ZipFile sourceApk = new ZipFile(apkFile)) {
 
@@ -174,31 +170,11 @@ public class DexOutputLocation {
     }
   }
 
-  private void writeDexFiles(ZipOutputStream zipOutputStream) throws IOException {
-
-    for (int i = 0; i < dexPoolList.size(); i++) {
-      MemoryDataStore dataStore = new MemoryDataStore();
-      dexPoolList.get(i).writeTo(dataStore);
-
-      String dexName = (i == 0) ? "classes.dex" : "classes" + (i + 1) + ".dex";
-      ZipEntry entry = new ZipEntry(dexName);
-      zipOutputStream.putNextEntry(entry);
-
-      zipOutputStream.write(dataStore.getData());
-      zipOutputStream.closeEntry();
-    }
-  }
-
-  private void writeDexFiles(String folder) throws IOException {
-    for (int i = 0; i < dexPoolList.size(); i++) {
-      DexPool dexPool = dexPoolList.get(i);
-      File file = new File(folder, (i == 0) ? "classes.dex" : "classes" + (i + 1) + ".dex");
-      FileDataStore fds = new FileDataStore(file);
-      dexPool.writeTo(fds);
-      fds.close();
-    }
-  }
-
+  /**
+   * Adds a new classDef to the dexPool
+   *
+   * @param classDef the class object created by the apkBackend
+   */
   protected void addClass(final ClassDef classDef) {
     currentDexPool.mark();
     currentDexPool.internClass(classDef);
@@ -206,8 +182,8 @@ public class DexOutputLocation {
     if (currentDexPool.hasOverflowed()) {
       if (!opcodes.isArt()) {
         log.warn(
-            "Multiple classes.dex created. Multidex is only supported after Android 5.0 (Api level 21) "
-                + "and will therefore not run on older devices");
+                "Multiple classes.dex created. Multidex is only supported after Android 5.0 (Api level 21) "
+                        + "and will therefore not run on older devices");
       }
       currentDexPool.reset();
       currentDexPool = new DexPool(opcodes);
@@ -215,7 +191,7 @@ public class DexOutputLocation {
       currentDexPool.internClass(classDef);
       if (currentDexPool.hasOverflowed()) {
         throw new RuntimeException(
-            "Class " + classDef.getType() + " has too many methods (> 65536)");
+                "Class " + classDef.getType() + " has too many methods (> 65536)");
       }
     }
   }

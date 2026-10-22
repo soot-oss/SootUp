@@ -3,8 +3,6 @@ package sootup.apk.backend;
 import static sootup.apk.backend.Constants.JIMPLE_OBJECT_TYPE;
 
 import java.util.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
@@ -14,8 +12,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 
 public class RegisterAllocator {
-
-  private static final Logger log = LoggerFactory.getLogger(RegisterAllocator.class);
 
   private int nextRegisterNumber = 0;
   private final DexConstantVisitor dexConstantVisitor;
@@ -36,6 +32,14 @@ public class RegisterAllocator {
     this.registerMap = new LinkedHashMap<>();
   }
 
+  /**
+   * Creates a new register with a unique register number
+   *
+   * @param type Jimple type of the value stored in the register
+   * @param isParameter Is the local a parameter
+   * @param isTmp Is the register temporary
+   * @return The new register
+   */
   private Register allocateNewRegister(Type type, boolean isParameter, boolean isTmp) {
     Register newRegister = new Register(nextRegisterNumber, type, isParameter, isTmp);
     registerList.add(newRegister);
@@ -43,10 +47,25 @@ public class RegisterAllocator {
     return newRegister;
   }
 
+  /**
+   * Creates a temporary register with a specific type
+   *
+   * @param type The type of the register
+   * @return The new register
+   */
   public Register getRegisterForType(Type type) {
     return allocateNewRegister(type, false, true);
   }
 
+  /**
+   * Returns a register for a SootUp local
+   * If the local is already assigned to a register, the register is returned
+   * Else a new register is created
+   *
+   * @param local The SootUp local stored in the register
+   * @param isParameter Is the local a method parameter
+   * @return The new/reused register
+   */
   private Register getRegisterForLocal(Local local, boolean isParameter) {
     if (registerMap.containsKey(local)) {
       return registerMap.get(local);
@@ -57,6 +76,15 @@ public class RegisterAllocator {
     }
   }
 
+  /**
+   * Assign a SootUp value to a new register, regardless of whether the value is already known by a different register
+   * Used in cases where a local is assigned to different types (e.g., primitive/object) within one method
+   *
+   * @param value The SootUp value
+   * @param type The new type for the register
+   * @param isParameter Is the value a method parameter
+   * @return The generated register
+   */
   public Register getRegisterForValueWithNewType(Value value, Type type, boolean isParameter) {
     Register register = allocateNewRegister(type, isParameter, false);
     if (value instanceof Local local) {
@@ -65,6 +93,14 @@ public class RegisterAllocator {
     return register;
   }
 
+  /**
+   * Get a register for a temporary constant
+   * Uses a constant pool in order to reuse registers
+   *
+   * @param constant The SootUp constant
+   * @param currentStmt The statement where the constant is needed
+   * @return A reusable register
+   */
   public Register getRegisterForConstant(Constant constant, Stmt currentStmt) {
     Type type;
     boolean guessed;
@@ -89,7 +125,41 @@ public class RegisterAllocator {
     }
 
     try {
-      Register register = getReusableConstantRegister(constant, type, guessed);
+      Register register;
+
+      List<Register> pool = constantRegisterPools.computeIfAbsent(constant.getClass(), key -> new LinkedList<>());
+
+      int index = constantPoolIndices.getOrDefault(constant.getClass(), 0);
+
+      while (true) {
+
+        if (index >= pool.size()) {
+          register = allocateNewRegister(type, false, false);
+
+          register.setIsTypeGuessed(guessed);
+
+          pool.add(register);
+          constantPoolIndices.put(constant.getClass(), index + 1);
+
+          return register;
+        }
+
+        register = pool.get(index);
+        index++;
+
+        constantPoolIndices.put(constant.getClass(), index);
+
+        if (lockedRegisters.contains(register)) {
+          continue;
+        }
+
+        register.setIsTypeGuessed(guessed);
+
+        break;
+      }
+
+
+
 
       register.setIsTypeGuessed(guessed);
 
@@ -104,6 +174,9 @@ public class RegisterAllocator {
     }
   }
 
+  /**
+   * Gets a register for a SootUp Immediate
+   */
   public Register getRegisterForImmediate(
       Immediate immediate, boolean isParameter, Stmt currentStmt) {
     if (immediate instanceof Local local) {
@@ -114,46 +187,14 @@ public class RegisterAllocator {
     throw new RuntimeException("Immediate is neither local nor constant: " + immediate);
   }
 
+  /**
+   * Reserve a register for a method parameter
+   *
+   * @param immediate The SootUp method parameter
+   * @return The reserved register
+   */
   public Register allocateRegisterForParameter(Immediate immediate) {
     return getRegisterForImmediate(immediate, true, null);
-  }
-
-  private List<Register> getConstantPool(Constant constant) {
-    return constantRegisterPools.computeIfAbsent(constant.getClass(), key -> new LinkedList<>());
-  }
-
-  private Register getReusableConstantRegister(Constant constant, Type type, boolean guessed) {
-
-    List<Register> pool = getConstantPool(constant);
-
-    int index = constantPoolIndices.getOrDefault(constant.getClass(), 0);
-
-    while (true) {
-
-      if (index >= pool.size()) {
-        Register register = allocateNewRegister(type, false, false);
-
-        register.setIsTypeGuessed(guessed);
-
-        pool.add(register);
-        constantPoolIndices.put(constant.getClass(), index + 1);
-
-        return register;
-      }
-
-      Register register = pool.get(index);
-      index++;
-
-      constantPoolIndices.put(constant.getClass(), index);
-
-      if (lockedRegisters.contains(register)) {
-        continue;
-      }
-
-      register.setIsTypeGuessed(guessed);
-
-      return register;
-    }
   }
 
   public void lockRegister(Register register) {

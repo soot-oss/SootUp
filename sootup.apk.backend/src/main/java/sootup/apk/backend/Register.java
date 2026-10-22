@@ -5,6 +5,16 @@ import java.util.List;
 import sootup.apk.backend.instructions.AbstractInstruction;
 import sootup.core.types.Type;
 
+/**
+ * A single register object with a unique number and type
+ *
+ * Number: A unique number for each register. The number might be changed later in the RegisterAllocator
+ * Type: Each register has a fixed type
+ * IsTypeGuessed: Jimple locals of type 'java.lang.Object'
+ * IsParameter: Register for method parameters
+ * isTmp: Temporary registers
+ * isInitialized: Default is true. In case of JNewExpr set to false. Value is evaluated at check-cast operations
+ */
 public class Register {
 
   private int number;
@@ -12,10 +22,10 @@ public class Register {
   private boolean isTypeGuessed = false;
   private final boolean isParameter;
   private final boolean isTmp;
+  private boolean isInitialized;
 
   private final List<AbstractInstruction> defs;
   private final List<AbstractInstruction> uses;
-  private boolean isInitialized;
 
   protected Register(int number, Type type, boolean isParameter, boolean isTmp) {
     this.number = number;

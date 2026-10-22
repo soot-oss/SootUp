@@ -8,8 +8,6 @@ import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.reference.*;
 import org.jf.dexlib2.immutable.reference.*;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sootup.apk.backend.instructions.*;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -18,8 +16,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.*;
 
 public class DexConstantVisitor extends AbstractConstantVisitor {
-
-  private static final Logger log = LoggerFactory.getLogger(DexConstantVisitor.class);
 
   private Stmt currentStmt;
   private Register targetRegister;
@@ -191,6 +187,12 @@ public class DexConstantVisitor extends AbstractConstantVisitor {
     throw new IllegalArgumentException("Unknown Constant " + constant.getType());
   }
 
+  /**
+   * If the SootUp type of the local is 'java.lang.Object' but the constant assigned to this local is primitive:
+   * Change the type of the register
+   *
+   * @param defaultType The type of the constant created
+   */
   private void fixObjectType(Type defaultType) {
     if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
         || targetRegister.isTypeGuessed()) {

@@ -36,6 +36,11 @@ public class DexClassBuilder {
     this.dexMethodBuilder = new DexMethodBuilder(getView());
   }
 
+  /**
+   * Converts a SootClass into a dex ClassDef
+   *
+   * @param c the SootClass to be converted
+   */
   public void createClass(SootClass c) {
     log.info("Creating class {}", c.getName());
     String sourceFile = c.getClassSource().getClassType().getClassName();
@@ -85,6 +90,13 @@ public class DexClassBuilder {
     }
   }
 
+  /**
+   * Converts a SootField into a dex Field
+   *
+   * @param classType The type of the class in form of a dex String
+   * @param f The jimple field
+   * @return The dex field
+   */
   private Field createField(String classType, SootField f) {
     String fieldName = f.getName();
     String fieldType = DexUtil.toDexType(f.getType());
@@ -114,6 +126,12 @@ public class DexClassBuilder {
         classType, fieldName, fieldType, accessFlags, initialValue, fieldAnnotations, null);
   }
 
+  /**
+   * Creates dex class annotations
+   *
+   * @param c The jimple class
+   * @return A list of annotations of this class
+   */
   private List<Annotation> createClassAnnotations(SootClass c) {
     List<Annotation> annotations = new ArrayList<>();
     if (c instanceof JavaSootClass javaSootClass) {
@@ -222,6 +240,12 @@ public class DexClassBuilder {
     return annotations;
   }
 
+  /**
+   * Creates dex field annotations
+   *
+   * @param f The jimple field
+   * @return A set of dex annotations for this field
+   */
   private Set<Annotation> createFieldAnnotations(SootField f) {
     Set<Annotation> annotations = new HashSet<>();
     if (f instanceof JavaSootField javaSootField) {

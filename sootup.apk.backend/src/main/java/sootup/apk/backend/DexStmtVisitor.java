@@ -6,8 +6,6 @@ import java.util.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jf.dexlib2.Opcode;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sootup.apk.backend.instructions.*;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.LValue;
@@ -26,8 +24,6 @@ import sootup.core.types.Type;
 import sootup.core.views.View;
 
 public class DexStmtVisitor extends AbstractStmtVisitor {
-
-  private static final Logger log = LoggerFactory.getLogger(DexStmtVisitor.class);
 
   private final DexMethodBuilder dexMethodBuilder;
   private final DexConstantVisitor dexConstantVisitor;
@@ -284,6 +280,11 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
         value -> dexMethodBuilder.addInstruction(new Instruction10t(Opcode.GOTO, value), stmt));
   }
 
+  /**
+   * Decides which switch opcode to use based on the size of the values to store
+   * @param values The switch values
+   * @return The suitable opcode: sparse_switch or packed_switch
+   */
   private Opcode getSwitchOpcode(List<IntConstant> values) {
     if (values.isEmpty()) {
       return Opcode.SPARSE_SWITCH;
@@ -496,6 +497,12 @@ public class DexStmtVisitor extends AbstractStmtVisitor {
     dexMethodBuilder.addPayload(switchPayload);
   }
 
+  /**
+   * If the SootUp type of a local is 'java.lang.Object' but actually has a different type (e.g, primitive)
+   * Get a new register for the needed type
+   *
+   * @param defaultType The type of the local
+   */
   private Register fixObjectType(Type defaultType, Stmt currentStmt, Register targetRegister) {
     if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
         || targetRegister.isTypeGuessed()) {

@@ -8,8 +8,6 @@ import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.reference.*;
 import org.jf.dexlib2.immutable.reference.*;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sootup.apk.backend.instructions.*;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Value;
@@ -22,8 +20,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.*;
 
 public class DexExprVisitor extends AbstractExprVisitor {
-
-  private static final Logger log = LoggerFactory.getLogger(DexExprVisitor.class);
 
   private Register targetRegister;
   private Stmt currentStmt;
@@ -170,7 +166,6 @@ public class DexExprVisitor extends AbstractExprVisitor {
 
   private void generateBinopExpr(AbstractBinopExpr expr, BinopExprOperation operation) {
 
-    // Get operands and ensure that they are primitive
     Immediate op1 = expr.getOp1();
     Immediate op2 = expr.getOp2();
 
@@ -628,6 +623,11 @@ public class DexExprVisitor extends AbstractExprVisitor {
     }
   }
 
+  /**
+   * Returns a list of argument registers for virtual invoke instructions
+   * First register represents the base of the instruction
+   * Further registers are the parameters
+   */
   private List<Register> getVirtualInvokeArgumentRegisters(
       AbstractInstanceInvokeExpr abstractInstanceInvokeExpr) {
     List<Register> argumentRegisters = getInvokeArgumentRegisters(abstractInstanceInvokeExpr);
@@ -638,6 +638,9 @@ public class DexExprVisitor extends AbstractExprVisitor {
     return argumentRegisters;
   }
 
+  /**
+   * Returns a list of argument registers for invoke instructions
+   */
   private List<Register> getInvokeArgumentRegisters(AbstractInvokeExpr abstractInvokeExpr) {
     return abstractInvokeExpr.getArgs().stream()
         .map(a -> registerAllocator.getRegisterForImmediate(a, false, currentStmt))
@@ -654,6 +657,12 @@ public class DexExprVisitor extends AbstractExprVisitor {
     return new ImmutableMethodReference(className, methodName, methodParameters, methodReturnType);
   }
 
+  /**
+   * Creates an array of five elements
+   * Puts the registers into the array and fills remaining registers with null values
+   * @param registers Up to five Register objects
+   * @return An array of five Register/null objects
+   */
   private Register[] getInvokeFiveRegisters(List<Register> registers) {
     Register[] packedRegisters = new Register[5];
     packedRegisters[0] = !registers.isEmpty() ? registers.get(0) : null;
@@ -664,6 +673,12 @@ public class DexExprVisitor extends AbstractExprVisitor {
     return packedRegisters;
   }
 
+  /**
+   * Invoke opcodes with > 5 register require that the registers have successive numbers
+   * If the condition is not true, the method allocates new temporary registers with successive numbers
+   * @param registers The registers of the method parameters
+   * @return The registers with successive numbers (could be the same or new registers)
+   */
   private List<Register> getRegisterNextToEachOther(List<Register> registers) {
     if (areRegistersNextToEachOther(registers)) {
       return registers;
@@ -680,6 +695,9 @@ public class DexExprVisitor extends AbstractExprVisitor {
     }
   }
 
+  /**
+   * Evaluates whether register numbers are successive
+   */
   private boolean areRegistersNextToEachOther(List<Register> registers) {
     if (registers == null || registers.size() < 2) {
       return true;
@@ -762,7 +780,10 @@ public class DexExprVisitor extends AbstractExprVisitor {
     TypeReference castTypeReference = new ImmutableTypeReference(dexType);
 
     if (!DexUtil.isObject(castType)
-        || !sourceRegister.isInitialized()) { // no not check-cast on uninitialized reference
+            // do no not check-cast on uninitialized reference, else the Android verifier will fail
+            //TODO the current implementation is quite simple and does not work if a local is initialized in an aliased local
+            // a typestate analysis should evaluate the initialization state across locals
+        || !sourceRegister.isInitialized()) {
       dexStmtVisitor.addInstruction(
           generateMoveInstruction(
               targetRegister,
@@ -831,8 +852,8 @@ public class DexExprVisitor extends AbstractExprVisitor {
       } else {
         dexStmtVisitor.addInstruction(new Instruction10x(Opcode.NOP), currentStmt);
       }
-    } else if (DexUtil.isTypeEqualOrBigger(sourceTypeP, PrimitiveType.getLong())
-        && !DexUtil.isTypeEqualOrBigger(castTypeP, PrimitiveType.getInt())) {
+    } else if (DexUtil.isTypeBiggerOrEqual(sourceTypeP, PrimitiveType.getLong())
+        && !DexUtil.isTypeBiggerOrEqual(castTypeP, PrimitiveType.getInt())) {
       // Cast not supported (e.g. source >= long && cast < int)
       // //therefore split into tmp = (int) src and taret = (cast) tmp
       Register tmpRegister = registerAllocator.getRegisterForType(PrimitiveType.getInt());
@@ -1039,9 +1060,13 @@ public class DexExprVisitor extends AbstractExprVisitor {
     }
   }
 
+  /**
+   * if the target register has a smaller type than the operands
+   * a tmp register is used and the result later cast back into the target register
+   * @param opType The type of the tmp register
+   * @return The tmp register
+   */
   private Register getTargetTmpRegister(Type opType) {
-    // if the target register has a smaller type than the operands
-    // a tmp register is used and the result later cast back into the target register
     if (opType.toString().startsWith(JIMPLE_OBJECT_TYPE)) {
       return targetRegister;
     }
@@ -1067,6 +1092,12 @@ public class DexExprVisitor extends AbstractExprVisitor {
     }
   }
 
+  /**
+   * If the SootUp type of a local is 'java.lang.Object' but actually has a different type (e.g, primitive)
+   * Get a new register for the needed type
+   *
+   * @param defaultType The type of the local
+   */
   private void fixObjectType(Type defaultType) {
     if (targetRegister.getType().toString().startsWith(JIMPLE_OBJECT_TYPE)
         || targetRegister.isTypeGuessed()) {

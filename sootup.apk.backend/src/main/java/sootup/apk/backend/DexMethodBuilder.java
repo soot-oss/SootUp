@@ -71,6 +71,11 @@ public class DexMethodBuilder {
     this.payloads = new ArrayList<>();
   }
 
+  /**
+   * Creates a dex ImmutableMethod for a SootMethod
+   * @param sootMethod The SootUp method
+   * @return The dex method
+   */
   public ImmutableMethod createMethod(SootMethod sootMethod) {
     String className =
         DexUtil.toDexClassName(sootMethod.getDeclaringClassType().getFullyQualifiedName());
@@ -93,8 +98,8 @@ public class DexMethodBuilder {
       parameters = new ArrayList<>();
       for (Type parameterType : sootMethod.getParameterTypes()) {
         String dexParamType = DexUtil.toDexType(parameterType);
-        Set<Annotation> annotations = null; // TODO
-        String parameterName = null; // TODO
+        Set<Annotation> annotations = null; // TODO (not yet represented in SootUp?)
+        String parameterName = null; // TODO (not yet represented in SootUp?)
         parameters.add(new ImmutableMethodParameter(dexParamType, annotations, parameterName));
       }
     }
@@ -117,6 +122,12 @@ public class DexMethodBuilder {
         methodImplementation);
   }
 
+  /**
+   * Creates dex method annotations
+   *
+   * @param m The jimple method
+   * @return A list of annotations of this method
+   */
   private Set<Annotation> createMethodAnnotations(SootMethod m) {
     Set<Annotation> annotations = new HashSet<>();
     if (m instanceof JavaSootMethod javaSootMethod) {
@@ -160,6 +171,11 @@ public class DexMethodBuilder {
     return annotations;
   }
 
+  /**
+   * Creates a dex MethodImplementation for a SootMethod
+   * @param sootMethod The SootMethod
+   * @return The dex MethodImplementation
+   */
   private MethodImplementation createMethodImplementation(SootMethod sootMethod) {
     instructions = new LinkedHashMap<>();
     instructionMap = new HashMap<>();
@@ -432,7 +448,11 @@ public class DexMethodBuilder {
     }
   }
 
-  // merge register maps at branching points
+  /**
+   * Merge register maps at branching points
+   * If a local is assigned to different registers at multiple predecessors (and is used later in the control flow graph),
+   * move instructions are inserted to reconcile all predecessors to a common register
+   */
   private Map<Local, Register> mergeIncomingRegisterMaps(
       Set<BasicBlock<?>> previousBlocks,
       Map<BasicBlock<?>, Map<Local, Register>> blockRegisterMapAtEnd,
@@ -537,7 +557,15 @@ public class DexMethodBuilder {
     return result;
   }
 
-  boolean isUsedLater(ControlFlowGraph<?> controlFlowGraph, Stmt start, Local variable) {
+  /**
+   * Evaluates if a jimple local is used (before a new definition) in the control flow graph
+   * Starting at a specific stmt
+   * @param controlFlowGraph The control flow graph of the method
+   * @param start The stmt to evaluate its successors
+   * @param local The local to be evaluated
+   * @return True if the local is used later
+   */
+  private boolean isUsedLater(ControlFlowGraph<?> controlFlowGraph, Stmt start, Local local) {
     Set<Stmt> visited = new HashSet<>();
     Deque<Stmt> worklist = new ArrayDeque<>();
     worklist.add(start);
@@ -550,11 +578,11 @@ public class DexMethodBuilder {
         continue;
       }
 
-      if (stmt.getUses().stream().anyMatch(variable::equals)) {
+      if (stmt.getUses().stream().anyMatch(local::equals)) {
         return true;
       }
 
-      if (stmt.getDef().isPresent() && stmt.getDef().get().equals(variable)) {
+      if (stmt.getDef().isPresent() && stmt.getDef().get().equals(local)) {
         continue;
       }
 
@@ -564,6 +592,10 @@ public class DexMethodBuilder {
     return false;
   }
 
+  /**
+   * If a successor block has already been processed but the local is there used under a different register compared to the current block
+   * Create move instructions from the current registers to the registers of the successor block
+   */
   private void mergeCurrentRegisterMapToSuccessor(
       BasicBlock<?> cBlock,
       BasicBlock<?> successorBlock,
@@ -715,6 +747,12 @@ public class DexMethodBuilder {
     }
   }
 
+  /**
+   * When all AbstractInstructions have been created, the instructions are converted to dex BuilderInstructions
+   *  First, labels are reserved
+   *  Instructions are converted into builderInstructions and labels are set at their corresponding instructions
+   *  Finally, payloads and catch blocks are inserted
+   */
   public List<BuilderInstruction> addBuilderInstructions(
       MethodImplementationBuilder methodImplementationBuilder,
       LabelAssigner labelAssigner,

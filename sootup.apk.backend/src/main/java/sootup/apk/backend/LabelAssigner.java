@@ -8,6 +8,11 @@ import org.slf4j.LoggerFactory;
 import sootup.apk.backend.instructions.AbstractPayload;
 import sootup.core.jimple.common.stmt.Stmt;
 
+/**
+ * Organizes the allocation and setting of labels
+ * LabelMapBeforeStmt: Allocates labels for if,switch,goto, try-start, catch, stmts
+ * LabelMapAfterStmt: Allocates labels for try-end stmts
+ */
 public class LabelAssigner {
 
   private static final Logger log = LoggerFactory.getLogger(LabelAssigner.class);
@@ -26,6 +31,12 @@ public class LabelAssigner {
     this.methodImplementationBuilder = methodImplementationBuilder;
   }
 
+  /**
+   * Reserve a label at a specific stmt
+   *
+   * @param stmt The stmt BEFORE a label should be set
+   * @return The label created
+   */
   public Label getOrCreateLabel(Stmt stmt) {
     if (stmt == null) {
       throw new RuntimeException("Statement is null");
@@ -33,6 +44,12 @@ public class LabelAssigner {
     return getOrCreateLabelObject(stmt);
   }
 
+  /**
+   * Reserve a label at a specific stmt
+   *
+   * @param stmt The stmt AFTER a label should be set
+   * @return The label created
+   */
   public Label getOrCreateLabelAfterStmt(Stmt stmt) {
     if (stmt == null) {
       throw new RuntimeException("Statement is null");
@@ -47,6 +64,12 @@ public class LabelAssigner {
     return label;
   }
 
+  /**
+   * Reserve a label for a payload
+   *
+   * @param payload The stmt before a label should be set
+   * @return The label created
+   */
   public Label getOrCreateLabel(AbstractPayload payload) {
     if (payload == null) {
       throw new RuntimeException("Payload is null");
@@ -54,6 +77,11 @@ public class LabelAssigner {
     return getOrCreateLabelObject(payload);
   }
 
+  /**
+   * Reserve a label before a object(stmt/payload)
+   * @param object A stmt or a payload
+   * @return The label created
+   */
   private Label getOrCreateLabelObject(Object object) {
     Label label = labelMapBeforeStmt.get(object);
     if (label == null) {
@@ -65,18 +93,34 @@ public class LabelAssigner {
     return label;
   }
 
+  /**
+   * Get the reserved label name for a stmt or payload
+   *
+   * @param object A stmt or a payload
+   * @return The label name
+   */
   public String getLabelName(Object object) {
     return labelNameMapBeforeStmt.get(object);
   }
 
+  /**
+   * Has a label been reserved BEFORE a specific stmt
+   */
   public boolean hasLabel(Stmt stmt) {
     return labelMapBeforeStmt.containsKey(stmt);
   }
 
+  /**
+   * Has a label been reserved AFTER a specific stmt
+   */
   public boolean hasLabelAfterStmt(Stmt stmt) {
     return labelMapAfterStmt.containsKey(stmt);
   }
 
+  /**
+   * Places an already reserved label at the current instruction of the methodImplementationBuilder
+   * @param object A stmt or a payload
+   */
   public void setLabel(Object object) {
     if (labelMapBeforeStmt.containsKey(object)
         && (!addedLabelsBeforeStmt.contains(labelNameMapBeforeStmt.get(object)))) {
@@ -87,6 +131,10 @@ public class LabelAssigner {
     }
   }
 
+  /**
+   * Places an already reserved label at the current instruction of the methodImplementationBuilder
+   * @param object A stmt or a payload
+   */
   public void setLabelAfterStmt(Object object) {
     if (labelMapAfterStmt.containsKey(object)
         && !addedLabelsAfterStmt.contains(labelNameMapAfterStmt.get(object))) {
@@ -97,6 +145,9 @@ public class LabelAssigner {
     }
   }
 
+  /**
+   * Evaluates whether labels have been reserved but not set
+   */
   public boolean areLabelsNotYetPlaced() {
     Set<String> labelNames = new HashSet<>(labelNameMapBeforeStmt.values());
     labelNames.addAll(labelNameMapAfterStmt.values());

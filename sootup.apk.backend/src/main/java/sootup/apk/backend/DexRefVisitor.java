@@ -6,8 +6,6 @@ import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.reference.FieldReference;
 import org.jf.dexlib2.immutable.reference.ImmutableFieldReference;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sootup.apk.backend.instructions.Instruction11x;
 import sootup.apk.backend.instructions.Instruction21c;
 import sootup.apk.backend.instructions.Instruction22c;
@@ -22,8 +20,6 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
 
 public class DexRefVisitor extends AbstractRefVisitor {
-
-  private static final Logger log = LoggerFactory.getLogger(DexRefVisitor.class);
 
   private final RegisterAllocator registerAllocator;
   private final DexStmtVisitor dexStmtVisitor;

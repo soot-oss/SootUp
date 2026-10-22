@@ -11,6 +11,12 @@ import sootup.java.core.AnnotationUsage;
 
 public class DexUtil {
 
+  /**
+   * Converts a SootUp class name into a dex class name
+   * E.g., by prepending an "L", changing '.' to '/', and appending an ';'
+   * @param s The SootUp class name
+   * @return The dex class name
+   */
   protected static String toDexClassName(String s) {
     int i = 0;
     while (i < s.length() && s.charAt(i) == '[') i++;
@@ -28,6 +34,11 @@ public class DexUtil {
     return prefix + name.replace('.', '/');
   }
 
+  /**
+   * Converts a SootUp type into a dex type
+   * @param type The SootUp type
+   * @return The dex Type
+   */
   protected static String toDexType(Type type) {
     if (type == null) {
       throw new NullPointerException("Type is null");
@@ -46,6 +57,11 @@ public class DexUtil {
     }
   }
 
+  /**
+   * Converts a SootUp primitive type into a dex type
+   * @param primitiveType The SootUp primitive type
+   * @return The dex type
+   */
   protected static String toDexPrimitiveType(PrimitiveType primitiveType) {
     if (primitiveType instanceof PrimitiveType.BooleanType) {
       return "Z";
@@ -74,10 +90,21 @@ public class DexUtil {
     return null;
   }
 
+  /**
+   * Evaluates whether a dex type is primitive
+   * @param dexType A dex type
+   * @return boolean true if the type is primitive
+   */
   private static boolean isDexTypePrimitive(String dexType) {
     return Set.of("Z", "B", "C", "S", "I", "J", "D", "F").contains(dexType);
   }
 
+  /**
+   * Converts a SootUp arrayType into a dex arrayType
+   * @param dimensions The number of dimensions of the array
+   * @param arrayType The SootUp array type
+   * @return The dex array type
+   */
   protected static String toDexArrayType(int dimensions, ArrayType arrayType) {
     if (arrayType.getDimension() > 255) {
       throw new RuntimeException("Array " + arrayType + " has more than 255 dimensions");
@@ -108,6 +135,12 @@ public class DexUtil {
     return Pair.of(indexA, indexB);
   }
 
+  /**
+   * Evaluates if a SootUp primitive type is smaller than another primitive type
+   * @param sourceType The first SootUp type
+   * @param compareType The second SootUp type
+   * @return true if the first parameter has a smaller type than the second one
+   */
   protected static boolean isTypeSmaller(Type sourceType, Type compareType) {
     if (!(sourceType instanceof PrimitiveType sourceTypeP)
         || !(compareType instanceof PrimitiveType compareTypeP)) {
@@ -117,6 +150,12 @@ public class DexUtil {
     return indexes.getLeft() < indexes.getRight();
   }
 
+  /**
+   * Evaluates if a SootUp primitive type is smaller or equal than another primitive type
+   * @param sourceType The first SootUp type
+   * @param compareType The second SootUp type
+   * @return true if the first parameter has a smaller or equal type than the second one
+   */
   protected static boolean isTypeSmallerOrEqual(Type sourceType, Type compareType) {
     if (!(sourceType instanceof PrimitiveType sourceTypeP)
         || !(compareType instanceof PrimitiveType compareTypeP)) {
@@ -126,6 +165,12 @@ public class DexUtil {
     return indexes.getLeft() <= indexes.getRight();
   }
 
+  /**
+   * Evaluates if a SootUp primitive type is bigger or equal than another primitive type
+   * @param sourceType The first SootUp type
+   * @param compareType The second SootUp type
+   * @return true if the first parameter has a bigger or equal type than the second one
+   */
   protected static boolean isTypeBiggerOrEqual(Type sourceType, Type compareType) {
     if (!(sourceType instanceof PrimitiveType sourceTypeP)
         || !(compareType instanceof PrimitiveType compareTypeP)) {
@@ -135,6 +180,12 @@ public class DexUtil {
     return indexes.getLeft() >= indexes.getRight();
   }
 
+  /**
+   * Evaluates if a SootUp primitive type is bigger or equal than another primitive type
+   * @param sourceType The first SootUp type
+   * @param compareType The second SootUp type
+   * @return true if the first parameter has a bigger or equal type than the second one
+   */
   protected static boolean isTypeBigger(Type sourceType, Type compareType) {
     if (!(sourceType instanceof PrimitiveType sourceTypeP)
         || !(compareType instanceof PrimitiveType compareTypeP)) {
@@ -144,15 +195,12 @@ public class DexUtil {
     return indexes.getLeft() > indexes.getRight();
   }
 
-  protected static boolean isTypeEqualOrBigger(Type sourceType, Type compareType) {
-    if (!(sourceType instanceof PrimitiveType sourceTypeP)
-        || !(compareType instanceof PrimitiveType compareTypeP)) {
-      return false;
-    }
-    Pair<Integer, Integer> indexes = getTypeIndexes(sourceTypeP, compareTypeP);
-    return indexes.getLeft() >= indexes.getRight();
-  }
-
+  /**
+   * Returns the biggest type of two SootUp primitive types
+   * @param op1 The first SootUp type
+   * @param op2 The second SootUp type
+   * @return The type of the two parameters that is the biggest
+   */
   protected static PrimitiveType getArithmeticType(PrimitiveType op1, PrimitiveType op2) {
     if (isTypeSmallerOrEqual(op1, PrimitiveType.getInt())
         && isTypeSmallerOrEqual(op2, PrimitiveType.getInt())) {
@@ -165,6 +213,11 @@ public class DexUtil {
     }
   }
 
+  /**
+   * Evaluates whether a dex type is of an object type
+   * @param dexType The dex type
+   * @return true if the type is of an object type
+   */
   protected static boolean isObject(String dexType) {
     if (dexType == null) {
       return false;
@@ -176,29 +229,59 @@ public class DexUtil {
     return first == 'L' || first == '[';
   }
 
+  /**
+   * Evaluates whether a SootUp type is of an object type
+   * @param sootType The SootUp type
+   * @return true if the type is of an object type
+   */
   protected static boolean isObject(Type sootType) {
     return isObject(toDexType(sootType));
   }
 
+  /**
+   * Evaluates whether a dex type is wide (of type long or double)
+   * @param dexType The dex type
+   * @return True if the type is long or double
+   */
   protected static boolean isWide(String dexType) {
     return dexType != null && (dexType.equals("J") || dexType.equals("D"));
   }
 
+  /**
+   * Evaluates whether a SootUp type is wide (of type long or double)
+   * @param sootType The SootUp type
+   * @return True if the type is long or double
+   */
   protected static boolean isWide(Type sootType) {
     return sootType instanceof PrimitiveType.LongType
         || sootType instanceof PrimitiveType.DoubleType;
   }
 
+  /**
+   * Returns the size of the register for a SootUp type
+   * @param sootType The SootUp type
+   * @return 2 if the type is long or double, else 1
+   */
   public static int getRegisterSizeCount(Type sootType) {
     return isWide(sootType) ? 2 : 1;
   }
 
+  /**
+   * Sum of the register sizes for a collection of SootUp types
+   * @param sootTypes A collection of SootUp types
+   * @return A summed register size needed to store all types of the collection
+   */
   public static int getRegisterSizeCount(Collection<Type> sootTypes) {
     return sootTypes.stream().mapToInt(DexUtil::getRegisterSizeCount).sum();
   }
 
+  /**
+   * Sum of the register sizes for a collection of Register
+   * if register type is long or double -> count 2 registers; else 1 register
+   * @param registers A list of Register objects
+   * @return The sum of the register sizes
+   */
   public static int getRegisterSizeCount(List<Register> registers) {
-    // if register type is long or double -> count 2 registers; else 1 register
     return registers.stream().mapToInt(Register::getSize).sum();
   }
 
@@ -218,6 +301,11 @@ public class DexUtil {
     return number >= -2147483648 && number <= 2147483647;
   }
 
+  /**
+   * Converts SootUp annotation values into dex ImmutableEncodedValue
+   * @param elem A SootUp annotation value (created in sootup.apk.frontend.Util->convertAnnotationValue()
+   * @return A dex ImmutableEncodedValue
+   */
   public static ImmutableEncodedValue buildEncodedValueForAnnotation(Object elem) {
     if (elem instanceof BooleanConstant booleanConstant) {
       return booleanConstant.getValue()
