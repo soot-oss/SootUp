@@ -63,6 +63,8 @@ public class DexNumberTranformer extends DexTransformer {
   private void transform(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
+    // original statement -> its current version
+    final Map<Stmt, Stmt> replacements = new LinkedHashMap<>();
 
     for (Local local : getNumCandidates(builder)) {
       usedAsFloatingPoint = false;
@@ -208,29 +210,39 @@ public class DexNumberTranformer extends DexTransformer {
 
       if (usedAsFloatingPoint) {
         for (Stmt defStmt : defs) {
-          replaceWithFloatingPoint(defStmt);
+          Stmt current = replacements.getOrDefault(defStmt, defStmt);
+          Stmt changed = withFloatingPoint(current);
+          if (changed != current) {
+            replacements.put(defStmt, changed);
+          }
         }
       }
+    }
+
+    // Statements are immutable: put the changed ones into the body. The analysis above refers to
+    // the original statements, so they are replaced at the end.
+    for (Map.Entry<Stmt, Stmt> replacement : replacements.entrySet()) {
+      builder.getControlFlowGraph().replaceNode(replacement.getKey(), replacement.getValue());
     }
   }
 
   /**
-   * Replace 0 with null in the given unit.
-   *
-   * @param stmt the stmt where 0 will be replaced with null.
+   * Returns the statement with its int or long constant replaced by the float or double with the
+   * same bits, or the statement itself if it assigns no such constant.
    */
-  private void replaceWithFloatingPoint(Stmt stmt) {
+  private static Stmt withFloatingPoint(Stmt stmt) {
     if (stmt instanceof JAssignStmt) {
       JAssignStmt s = (JAssignStmt) stmt;
       Value v = s.getRightOp();
       if ((v instanceof IntConstant)) {
         int vVal = ((IntConstant) v).getValue();
-        s.withRValue(FloatConstant.getInstance(Float.intBitsToFloat(vVal)));
+        return s.withRValue(FloatConstant.getInstance(Float.intBitsToFloat(vVal)));
       } else if (v instanceof LongConstant) {
         long vVal = ((LongConstant) v).getValue();
-        s.withRValue(DoubleConstant.getInstance(Double.longBitsToDouble(vVal)));
+        return s.withRValue(DoubleConstant.getInstance(Double.longBitsToDouble(vVal)));
       }
     }
+    return stmt;
   }
 
   /**
