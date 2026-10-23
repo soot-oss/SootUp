@@ -36,7 +36,8 @@ public class MethodType implements Constant {
   private final Type type;
   private final MethodSubSignature methodSig;
 
-  public MethodType(@NonNull MethodSubSignature methodSubSignature, @NonNull ClassType type) {
+  public MethodType(
+      @NonNull final MethodSubSignature methodSubSignature, @NonNull final ClassType type) {
     this.methodSig = methodSubSignature;
     this.type = type;
   }
@@ -69,20 +70,25 @@ public class MethodType implements Constant {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }
     if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
-    MethodType other = (MethodType) obj;
+    final MethodType other = (MethodType) obj;
     return Objects.equals(methodSig, other.methodSig);
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@NonNull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull final V v) {
     v.caseMethodType(this);
     return v;
+  }
+
+  @Override
+  public String getValue() {
+    return toString();
   }
 }
