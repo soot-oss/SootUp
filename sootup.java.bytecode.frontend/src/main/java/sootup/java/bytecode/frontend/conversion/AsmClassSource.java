@@ -55,7 +55,12 @@ class AsmClassSource extends JavaSootClassSource {
       @NonNull final ClassType javaClassType,
       @NonNull final ClassNode classNode,
       @NonNull final IdentifierFactory identifierFactory) {
-    super(inputLocation, javaClassType, sourcePath, classNode.signature);
+    super(
+        inputLocation,
+        javaClassType,
+        sourcePath,
+        classNode.signature,
+        AsmClassMetadata.read(classNode, identifierFactory));
     this.classNode = classNode;
     this.identifierFactory = identifierFactory;
   }
@@ -207,10 +212,7 @@ class AsmClassSource extends JavaSootClassSource {
 
   @NonNull
   public Optional<JavaClassType> resolveOuterClass() {
-    if (classNode.outerClass == null) {
-      return Optional.empty();
-    }
-    return Optional.of(AsmUtil.toJimpleClassType(classNode.outerClass, identifierFactory));
+    return AsmClassMetadata.resolveOuterClass(getClassFileMetadata(), classSignature);
   }
 
   @NonNull
