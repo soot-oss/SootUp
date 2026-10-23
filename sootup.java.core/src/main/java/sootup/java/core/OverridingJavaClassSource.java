@@ -138,6 +138,58 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
         annotations,
         methodAnnotations,
         fieldAnnotations,
+        null,
+        JavaClassFileMetadata.empty());
+  }
+
+  /**
+   * Creates a fully resolved class source with an optional unparsed classfile Signature attribute.
+   *
+   * @param srcNamespace the input location containing the class
+   * @param sourcePath the path to the source
+   * @param classType the class type
+   * @param superClass the superclass, or {@code null} if absent
+   * @param interfaces the implemented interfaces
+   * @param outerClass the outer class, or {@code null} if absent
+   * @param sootFields the fields
+   * @param sootMethods the methods
+   * @param position the source position
+   * @param modifiers the class modifiers
+   * @param annotations the class annotations
+   * @param methodAnnotations the method annotations
+   * @param fieldAnnotations the field annotations
+   * @param genericSignature the Signature attribute, or {@code null} if absent
+   */
+  public OverridingJavaClassSource(
+      @NonNull AnalysisInputLocation srcNamespace,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classType,
+      @Nullable JavaClassType superClass,
+      @NonNull Set<JavaClassType> interfaces,
+      @Nullable JavaClassType outerClass,
+      @NonNull Set<JavaSootField> sootFields,
+      @NonNull Set<JavaSootMethod> sootMethods,
+      @NonNull Position position,
+      @NonNull EnumSet<ClassModifier> modifiers,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Iterable<AnnotationUsage> methodAnnotations,
+      @Nullable Iterable<AnnotationUsage> fieldAnnotations,
+      @Nullable String genericSignature) {
+    this(
+        srcNamespace,
+        sourcePath,
+        classType,
+        superClass,
+        interfaces,
+        outerClass,
+        sootFields,
+        sootMethods,
+        position,
+        modifiers,
+        annotations,
+        methodAnnotations,
+        fieldAnnotations,
+        genericSignature,
         JavaClassFileMetadata.empty());
   }
 
@@ -174,7 +226,61 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       @NonNull Iterable<AnnotationUsage> methodAnnotations,
       @Nullable Iterable<AnnotationUsage> fieldAnnotations,
       @NonNull JavaClassFileMetadata classFileMetadata) {
-    super(srcNamespace, classType, sourcePath, classFileMetadata);
+    this(
+        srcNamespace,
+        sourcePath,
+        classType,
+        superClass,
+        interfaces,
+        outerClass,
+        sootFields,
+        sootMethods,
+        position,
+        modifiers,
+        annotations,
+        methodAnnotations,
+        fieldAnnotations,
+        null,
+        classFileMetadata);
+  }
+
+  /**
+   * Creates a fully resolved class source with an optional unparsed classfile Signature attribute
+   * and immutable source and nesting attributes.
+   *
+   * @param srcNamespace the input location containing the class
+   * @param sourcePath the path to the classfile
+   * @param classType the class type
+   * @param superClass the superclass, or {@code null} if absent
+   * @param interfaces the implemented interfaces
+   * @param outerClass the outer class, or {@code null} if absent
+   * @param sootFields the fields
+   * @param sootMethods the methods
+   * @param position the source position
+   * @param modifiers the class modifiers
+   * @param annotations the class annotations
+   * @param methodAnnotations the method annotations
+   * @param fieldAnnotations the field annotations
+   * @param genericSignature the Signature attribute, or {@code null} if absent
+   * @param classFileMetadata the source and nesting attributes
+   */
+  public OverridingJavaClassSource(
+      @NonNull AnalysisInputLocation srcNamespace,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classType,
+      @Nullable JavaClassType superClass,
+      @NonNull Set<JavaClassType> interfaces,
+      @Nullable JavaClassType outerClass,
+      @NonNull Set<JavaSootField> sootFields,
+      @NonNull Set<JavaSootMethod> sootMethods,
+      @NonNull Position position,
+      @NonNull EnumSet<ClassModifier> modifiers,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Iterable<AnnotationUsage> methodAnnotations,
+      @Nullable Iterable<AnnotationUsage> fieldAnnotations,
+      @Nullable String genericSignature,
+      @NonNull JavaClassFileMetadata classFileMetadata) {
+    super(srcNamespace, classType, sourcePath, genericSignature, classFileMetadata);
 
     this.delegate = null;
     this.overriddenSootMethods = sootMethods;
