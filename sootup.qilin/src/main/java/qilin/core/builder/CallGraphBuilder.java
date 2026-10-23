@@ -71,7 +71,7 @@ public class CallGraphBuilder {
     this.ptaScene = pta.getScene();
     ptaScene.setCallGraph(new OnFlyCallGraph());
     this.virtualCalls = new VirtualCalls(ptaScene.getView());
-    receiverToSites = new HashMap<>((int) ptaScene.getView().getClasses().count());
+    receiverToSites = new HashMap<>();
     methodToInvokeStmt = new HashMap<>();
     reachMethods = new HashSet<>();
     calledges = new HashSet<>();

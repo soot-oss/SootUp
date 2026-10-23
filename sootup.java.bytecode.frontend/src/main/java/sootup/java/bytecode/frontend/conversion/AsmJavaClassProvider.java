@@ -21,9 +21,7 @@ package sootup.java.bytecode.frontend.conversion;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -86,7 +84,8 @@ public class AsmJavaClassProvider implements PathbasedClassProvider {
         asmClassSource.resolveModifiers(),
         asmClassSource.resolveAnnotations(),
         Collections.emptyList(), // TODO! implement
-        Collections.emptyList());
+        Collections.emptyList(),
+        asmClassSource.getClassFileMetadata());
 
     //    return asmClassSource;
   }
@@ -130,6 +129,7 @@ public class AsmJavaClassProvider implements PathbasedClassProvider {
   class SootClassNode extends ClassNode {
 
     private final AnalysisInputLocation analysisInputLocation;
+    private byte[] classBytes;
 
     SootClassNode(AnalysisInputLocation analysisInputLocation) {
       super(AsmUtil.SUPPORTED_ASM_OPCODE);
@@ -143,10 +143,11 @@ public class AsmJavaClassProvider implements PathbasedClassProvider {
      * @return the actual class signature found in the compilation unit
      */
     protected Optional<String> readClassName(@NonNull final Path classSource) {
-      try (InputStream sourceFileInputStream = Files.newInputStream(classSource);
-          BufferedInputStream bis = new BufferedInputStream(sourceFileInputStream)) {
-        ClassReader classReader = new ClassReader(bis);
-        classReader.accept(this, ClassReader.SKIP_FRAMES);
+      try {
+        classBytes = Files.readAllBytes(classSource);
+        ClassReader classReader = new ClassReader(classBytes);
+        // method code is re-read from classBytes on body resolution, see AsmMethodSource
+        classReader.accept(this, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
         return Optional.of(classReader.getClassName().replace('/', '.'));
       } catch (IOException | IllegalArgumentException exception) {
         logger.debug("Cannot create class source for {}", classSource, exception);
@@ -172,7 +173,8 @@ public class AsmJavaClassProvider implements PathbasedClassProvider {
               exceptions,
               view,
               analysisInputLocation.getBodyInterceptors(),
-              analysisInputLocation.getExtendedScope());
+              analysisInputLocation.getExtendedScope(),
+              classBytes);
       methods.add(mn);
       return mn;
     }

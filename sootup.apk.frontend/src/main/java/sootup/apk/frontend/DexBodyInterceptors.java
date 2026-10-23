@@ -26,12 +26,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
+import sootup.apk.frontend.interceptors.DexArrayIndexConstantInliner;
 import sootup.apk.frontend.interceptors.DexNullTransformer;
 import sootup.apk.frontend.interceptors.DexNumberTranformer;
 import sootup.core.interceptor.BodyInterceptor;
 
 public enum DexBodyInterceptors {
-  Default(new DexNumberTranformer(), new DexNullTransformer());
+  Default(new DexNumberTranformer(), new DexNullTransformer(), new DexArrayIndexConstantInliner());
 
   @NonNull private final List<BodyInterceptor> bodyInterceptors;
 
