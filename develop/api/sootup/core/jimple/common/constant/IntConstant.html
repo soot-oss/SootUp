@@ -81,7 +81,7 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="../../basic/EquivTo.html" title="interface in sootup.core.jimple.basic">EquivTo</a></code>, <code><a href="ComparableConstant.html" title="interface in sootup.core.jimple.common.constant">ComparableConstant</a>&lt;<a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&gt;</code>, <code><a href="Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></code>, <code><a href="LogicalConstant.html" title="interface in sootup.core.jimple.common.constant">LogicalConstant</a>&lt;<a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&gt;</code>, <code><a href="NumericConstant.html" title="interface in sootup.core.jimple.common.constant">NumericConstant</a>&lt;<a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&gt;</code>, <code><a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;<a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&gt;</code>, <code><a href="../Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a></code>, <code><a href="../Value.html" title="interface in sootup.core.jimple.common">Value</a></code>, <code><a href="../../JimpleIR.html" title="interface in sootup.core.jimple">JimpleIR</a></code>, <code><a href="../../visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;<a href="../../visitor/ConstantVisitor.html" title="interface in sootup.core.jimple.visitor">ConstantVisitor</a>&gt;</code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">IntConstant</span>
+<div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">IntConstant</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;<a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&gt;</span></div>
 <div class="block">A 32-bit integer constant.</div>
@@ -142,9 +142,11 @@ implements <a href="ShiftableConstant.html" title="interface in sootup.core.jimp
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the Soot type of this Value.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValue()" class="member-name-link">getValue</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Obtain the runtime value of the Constant.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#greaterThan(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">greaterThan</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -154,45 +156,48 @@ implements <a href="ShiftableConstant.html" title="interface in sootup.core.jimp
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lessThan(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">lessThan</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#intValue()" class="member-name-link">intValue</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lessThanOrEqual(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">lessThanOrEqual</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#multiply(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">multiply</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#negate()" class="member-name-link">negate</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lessThan(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">lessThan</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#notEqual(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">notEqual</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lessThanOrEqual(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">lessThanOrEqual</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#or(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">or</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#multiply(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">multiply</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#remainder(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">remainder</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#negate()" class="member-name-link">negate</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#shiftLeft(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">shiftLeft</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#notEqual(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">notEqual</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#shiftRight(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">shiftRight</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#or(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">or</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#subtract(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">subtract</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unsignedShiftRight(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">unsignedShiftRight</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#remainder(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">remainder</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#xor(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">xor</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#shiftLeft(sootup.core.jimple.common.constant.ShiftableConstant)" class="member-name-link">shiftLeft</a><wbr>(@NonNull <a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;?&gt;&nbsp;c)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#shiftRight(sootup.core.jimple.common.constant.ShiftableConstant)" class="member-name-link">shiftRight</a><wbr>(@NonNull <a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;?&gt;&nbsp;c)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#subtract(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">subtract</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unsignedShiftRight(sootup.core.jimple.common.constant.ShiftableConstant)" class="member-name-link">unsignedShiftRight</a><wbr>(@NonNull <a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;?&gt;&nbsp;c)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#xor(sootup.core.jimple.common.constant.IntConstant)" class="member-name-link">xor</a><wbr>(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -410,32 +415,32 @@ implements <a href="ShiftableConstant.html" title="interface in sootup.core.jimp
 </section>
 </li>
 <li>
-<section class="detail" id="shiftLeft(sootup.core.jimple.common.constant.IntConstant)">
+<section class="detail" id="shiftLeft(sootup.core.jimple.common.constant.ShiftableConstant)">
 <h3>shiftLeft</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></span>&nbsp;<span class="element-name">shiftLeft</span><wbr><span class="parameters">(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></span>&nbsp;<span class="element-name">shiftLeft</span><wbr><span class="parameters">(@NonNull <a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;?&gt;&nbsp;c)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="ShiftableConstant.html#shiftLeft(sootup.core.jimple.common.constant.IntConstant)">shiftLeft</a></code>&nbsp;in interface&nbsp;<code><a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;<a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&gt;</code></dd>
+<dd><code><a href="ShiftableConstant.html#shiftLeft(sootup.core.jimple.common.constant.ShiftableConstant)">shiftLeft</a></code>&nbsp;in interface&nbsp;<code><a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;<a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="shiftRight(sootup.core.jimple.common.constant.IntConstant)">
+<section class="detail" id="shiftRight(sootup.core.jimple.common.constant.ShiftableConstant)">
 <h3>shiftRight</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></span>&nbsp;<span class="element-name">shiftRight</span><wbr><span class="parameters">(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></span>&nbsp;<span class="element-name">shiftRight</span><wbr><span class="parameters">(@NonNull <a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;?&gt;&nbsp;c)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="ShiftableConstant.html#shiftRight(sootup.core.jimple.common.constant.IntConstant)">shiftRight</a></code>&nbsp;in interface&nbsp;<code><a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;<a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&gt;</code></dd>
+<dd><code><a href="ShiftableConstant.html#shiftRight(sootup.core.jimple.common.constant.ShiftableConstant)">shiftRight</a></code>&nbsp;in interface&nbsp;<code><a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;<a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="unsignedShiftRight(sootup.core.jimple.common.constant.IntConstant)">
+<section class="detail" id="unsignedShiftRight(sootup.core.jimple.common.constant.ShiftableConstant)">
 <h3>unsignedShiftRight</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></span>&nbsp;<span class="element-name">unsignedShiftRight</span><wbr><span class="parameters">(@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&nbsp;c)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a></span>&nbsp;<span class="element-name">unsignedShiftRight</span><wbr><span class="parameters">(@NonNull <a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;?&gt;&nbsp;c)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="ShiftableConstant.html#unsignedShiftRight(sootup.core.jimple.common.constant.IntConstant)">unsignedShiftRight</a></code>&nbsp;in interface&nbsp;<code><a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;<a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&gt;</code></dd>
+<dd><code><a href="ShiftableConstant.html#unsignedShiftRight(sootup.core.jimple.common.constant.ShiftableConstant)">unsignedShiftRight</a></code>&nbsp;in interface&nbsp;<code><a href="ShiftableConstant.html" title="interface in sootup.core.jimple.common.constant">ShiftableConstant</a>&lt;<a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
@@ -484,7 +489,24 @@ implements <a href="ShiftableConstant.html" title="interface in sootup.core.jimp
 <li>
 <section class="detail" id="getValue()">
 <h3>getValue</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getValue</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></span>&nbsp;<span class="element-name">getValue</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="Constant.html#getValue()">Constant</a></code></span></div>
+<div class="block">Obtain the runtime value of the Constant. E.g. IntConstant.getInstance(42).getValue() will
+ return Integer.valueOf(42).</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="Constant.html#getValue()">getValue</a></code>&nbsp;in interface&nbsp;<code><a href="Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></code></dd>
+<dt>Specified by:</dt>
+<dd><code><a href="NumericConstant.html#getValue()">getValue</a></code>&nbsp;in interface&nbsp;<code><a href="NumericConstant.html" title="interface in sootup.core.jimple.common.constant">NumericConstant</a>&lt;<a href="IntConstant.html" title="class in sootup.core.jimple.common.constant">IntConstant</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd>the runtime value of the Constant</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="intValue()">
+<h3>intValue</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">intValue</span>()</div>
 </section>
 </li>
 </ul>

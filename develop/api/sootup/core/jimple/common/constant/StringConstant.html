@@ -81,7 +81,7 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="../../basic/EquivTo.html" title="interface in sootup.core.jimple.basic">EquivTo</a></code>, <code><a href="Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></code>, <code><a href="../Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a></code>, <code><a href="../Value.html" title="interface in sootup.core.jimple.common">Value</a></code>, <code><a href="../../JimpleIR.html" title="interface in sootup.core.jimple">JimpleIR</a></code>, <code><a href="../../visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;<a href="../../visitor/ConstantVisitor.html" title="interface in sootup.core.jimple.visitor">ConstantVisitor</a>&gt;</code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">StringConstant</span>
+<div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">StringConstant</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></span></div>
 </section>
@@ -127,7 +127,9 @@ implements <a href="Constant.html" title="interface in sootup.core.jimple.common
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValue()" class="member-name-link">getValue</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Obtain the runtime value of the Constant.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -244,6 +246,15 @@ implements <a href="Constant.html" title="interface in sootup.core.jimple.common
 <section class="detail" id="getValue()">
 <h3>getValue</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getValue</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="Constant.html#getValue()">Constant</a></code></span></div>
+<div class="block">Obtain the runtime value of the Constant. E.g. IntConstant.getInstance(42).getValue() will
+ return Integer.valueOf(42).</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="Constant.html#getValue()">getValue</a></code>&nbsp;in interface&nbsp;<code><a href="Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></code></dd>
+<dt>Returns:</dt>
+<dd>the runtime value of the Constant</dd>
+</dl>
 </section>
 </li>
 </ul>

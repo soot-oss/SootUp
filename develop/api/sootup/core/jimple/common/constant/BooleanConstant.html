@@ -81,7 +81,7 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="../../basic/EquivTo.html" title="interface in sootup.core.jimple.basic">EquivTo</a></code>, <code><a href="ComparableConstant.html" title="interface in sootup.core.jimple.common.constant">ComparableConstant</a>&lt;<a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&gt;</code>, <code><a href="Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></code>, <code><a href="LogicalConstant.html" title="interface in sootup.core.jimple.common.constant">LogicalConstant</a>&lt;<a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&gt;</code>, <code><a href="../Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a></code>, <code><a href="../Value.html" title="interface in sootup.core.jimple.common">Value</a></code>, <code><a href="../../JimpleIR.html" title="interface in sootup.core.jimple">JimpleIR</a></code>, <code><a href="../../visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;<a href="../../visitor/ConstantVisitor.html" title="interface in sootup.core.jimple.visitor">ConstantVisitor</a>&gt;</code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">BooleanConstant</span>
+<div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">BooleanConstant</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="LogicalConstant.html" title="interface in sootup.core.jimple.common.constant">LogicalConstant</a>&lt;<a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&gt;, <a href="ComparableConstant.html" title="interface in sootup.core.jimple.common.constant">ComparableConstant</a>&lt;<a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&gt;</span></div>
 <div class="block">BooleanConstant didn't exist in old soot, because in Java byte code boolean values are
@@ -113,41 +113,46 @@ implements <a href="LogicalConstant.html" title="interface in sootup.core.jimple
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#and(sootup.core.jimple.common.constant.BooleanConstant)" class="member-name-link">and</a><wbr>(@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&nbsp;c)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equalEqual(sootup.core.jimple.common.constant.BooleanConstant)" class="member-name-link">equalEqual</a><wbr>(@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&nbsp;c)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getFalse()" class="member-name-link">getFalse</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getInstance(boolean)" class="member-name-link">getInstance</a><wbr>(boolean&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getInstance(int)" class="member-name-link">getInstance</a><wbr>(int&nbsp;value)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getTrue()" class="member-name-link">getTrue</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../../types/Type.html" title="class in sootup.core.types">Type</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getType()" class="member-name-link">getType</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the Soot type of this Value.</div>
-</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValue()" class="member-name-link">getValue</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#booleanValue()" class="member-name-link">booleanValue</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#notEqual(sootup.core.jimple.common.constant.BooleanConstant)" class="member-name-link">notEqual</a><wbr>(@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&nbsp;c)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equalEqual(sootup.core.jimple.common.constant.BooleanConstant)" class="member-name-link">equalEqual</a><wbr>(@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&nbsp;c)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getFalse()" class="member-name-link">getFalse</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static final <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getInstance(boolean)" class="member-name-link">getInstance</a><wbr>(boolean&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getInstance(int)" class="member-name-link">getInstance</a><wbr>(int&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getTrue()" class="member-name-link">getTrue</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../../types/Type.html" title="class in sootup.core.types">Type</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getType()" class="member-name-link">getType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the Soot type of this Value.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValue()" class="member-name-link">getValue</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Obtain the runtime value of the Constant.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#or(sootup.core.jimple.common.constant.BooleanConstant)" class="member-name-link">or</a><wbr>(@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&nbsp;c)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#notEqual(sootup.core.jimple.common.constant.BooleanConstant)" class="member-name-link">notEqual</a><wbr>(@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&nbsp;c)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#or(sootup.core.jimple.common.constant.BooleanConstant)" class="member-name-link">or</a><wbr>(@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&nbsp;c)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#xor(sootup.core.jimple.common.constant.BooleanConstant)" class="member-name-link">xor</a><wbr>(@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&nbsp;c)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#xor(sootup.core.jimple.common.constant.BooleanConstant)" class="member-name-link">xor</a><wbr>(@NonNull <a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a>&nbsp;c)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -177,7 +182,7 @@ implements <a href="LogicalConstant.html" title="interface in sootup.core.jimple
 <li>
 <section class="detail" id="getInstance(boolean)">
 <h3>getInstance</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></span>&nbsp;<span class="element-name">getInstance</span><wbr><span class="parameters">(boolean&nbsp;value)</span></div>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="BooleanConstant.html" title="class in sootup.core.jimple.common.constant">BooleanConstant</a></span>&nbsp;<span class="element-name">getInstance</span><wbr><span class="parameters">(boolean&nbsp;value)</span></div>
 </section>
 </li>
 <li>
@@ -283,7 +288,22 @@ implements <a href="LogicalConstant.html" title="interface in sootup.core.jimple
 <li>
 <section class="detail" id="getValue()">
 <h3>getValue</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">getValue</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">getValue</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="Constant.html#getValue()">Constant</a></code></span></div>
+<div class="block">Obtain the runtime value of the Constant. E.g. IntConstant.getInstance(42).getValue() will
+ return Integer.valueOf(42).</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="Constant.html#getValue()">getValue</a></code>&nbsp;in interface&nbsp;<code><a href="Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a></code></dd>
+<dt>Returns:</dt>
+<dd>the runtime value of the Constant</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="booleanValue()">
+<h3>booleanValue</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">booleanValue</span>()</div>
 </section>
 </li>
 <li>
