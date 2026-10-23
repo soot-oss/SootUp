@@ -23,7 +23,6 @@ package sootup.core.jimple.basic;
  */
 
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import sootup.core.model.LinePosition;
 import sootup.core.model.Position;
 
@@ -33,7 +32,7 @@ import sootup.core.model.Position;
  *
  * @author Markus Schmidt
  */
-public class SimpleStmtPositionInfo extends StmtPositionInfo {
+public class SimpleStmtPositionInfo implements StmtPositionInfo {
 
   @NonNull protected final Position stmtPosition;
 
@@ -56,9 +55,17 @@ public class SimpleStmtPositionInfo extends StmtPositionInfo {
     return stmtPosition;
   }
 
-  @Nullable
+  /** Custom subclasses must override this method to supply a factory preserving their state. */
+  @NonNull
   @Override
-  public Position getOperandPosition(int index) {
-    return null;
+  public StmtPositionInfoFactory getFactory() {
+    return DefaultStmtPositionInfoFactory.getInstance();
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder s = new StringBuilder();
+    s.append("stmt at:").append(getStmtPosition());
+    return s.toString();
   }
 }

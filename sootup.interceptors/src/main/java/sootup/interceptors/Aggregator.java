@@ -224,7 +224,13 @@ public class Aggregator implements BodyInterceptor {
         // have we been able to inline the value into the newStmt?
         if (stmt != newStmt) {
           if (wasSimpleCopy && newStmt instanceof JAssignStmt) {
-            newStmt = ((JAssignStmt) newStmt).withPositionInfo(relevantDef.getPositionInfo());
+            // Adopt the definition's source line while preserving the destination statement's
+            // existing metadata (such as local variable debug scopes).
+            newStmt =
+                newStmt.withPositionInfo(
+                    newStmt
+                        .getPositionInfo()
+                        .withStmtPosition(relevantDef.getPositionInfo().getStmtPosition()));
           }
 
           // respect trapranges - check if at least the same exceptional flows exist in the block
