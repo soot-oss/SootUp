@@ -165,7 +165,7 @@ public class LazyJimpleMethodSource implements BodySource {
               for (JimpleParser.ImmediateContext immediate : immediates) {
                 if (immediate != null && immediate.local != null) {
                   String localname = immediate.local.getText();
-                  locals.put(localname, new Local(localname, localtype));
+                  locals.put(localname, Jimple.newLocal(localname, localtype));
                 } else {
                   throw new ResolveException(
                       "Thats not a Local in the Local Declaration.",

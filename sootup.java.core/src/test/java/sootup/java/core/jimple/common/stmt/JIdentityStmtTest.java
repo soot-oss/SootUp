@@ -25,6 +25,7 @@ package sootup.java.core.jimple.common.stmt;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.ref.JParameterRef;
@@ -45,16 +46,16 @@ public class JIdentityStmtTest {
     StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     JavaIdentifierFactory typeFactory = new JavaIdentifierFactory();
 
-    Local thiz = new Local("r0", typeFactory.getType("somepackage.dummy.MyClass"));
+    Local thiz = Jimple.newLocal("r0", typeFactory.getType("somepackage.dummy.MyClass"));
     Stmt thisIdStmt =
         new JIdentityStmt(
             thiz, new JThisRef(typeFactory.getClassType("somepackage.dummy.MyClass")), nop);
 
-    Local param = new Local("i0", PrimitiveType.getInt());
+    Local param = Jimple.newLocal("i0", PrimitiveType.getInt());
     Stmt paramIdStmt =
         new JIdentityStmt(param, new JParameterRef(PrimitiveType.getInt(), 123), nop);
 
-    Local exception = new Local("r1", typeFactory.getType("java.lang.Exception"));
+    Local exception = Jimple.newLocal("r1", typeFactory.getType("java.lang.Exception"));
     Stmt exceptionIdStmt =
         new JIdentityStmt(exception, JavaJimple.newCaughtExceptionRef(typeFactory), nop);
 
@@ -67,13 +68,13 @@ public class JIdentityStmtTest {
     assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
-                new Local("r5", typeFactory.getType("somepackage.NotMyClass")),
+                Jimple.newLocal("r5", typeFactory.getType("somepackage.NotMyClass")),
                 new JThisRef(typeFactory.getClassType("somepackage.NotMyClass")),
                 nop)));
     assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
-                new Local("r42", typeFactory.getType("somepackage.dummy.MyClass")),
+                Jimple.newLocal("r42", typeFactory.getType("somepackage.dummy.MyClass")),
                 new JThisRef(typeFactory.getClassType("somepackage.dummy.MyClass")),
                 nop)));
     assertTrue(thisIdStmt.equivTo(thisIdStmt));
@@ -83,13 +84,13 @@ public class JIdentityStmtTest {
     assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
-                new Local("i1", PrimitiveType.getInt()),
+                Jimple.newLocal("i1", PrimitiveType.getInt()),
                 new JParameterRef(PrimitiveType.getInt(), 123),
                 nop)));
     assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
-                new Local("i0", PrimitiveType.getInt()),
+                Jimple.newLocal("i0", PrimitiveType.getInt()),
                 new JParameterRef(PrimitiveType.getInt(), 42),
                 nop)));
     assertFalse(exceptionIdStmt.equivTo(thisIdStmt));
@@ -99,7 +100,7 @@ public class JIdentityStmtTest {
     assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
-                new Local("r1", typeFactory.getType("somepckg.NotMyException")),
+                Jimple.newLocal("r1", typeFactory.getType("somepckg.NotMyException")),
                 JavaJimple.newCaughtExceptionRef(typeFactory),
                 nop)));
     assertFalse(paramIdStmt.equivTo(thisIdStmt));

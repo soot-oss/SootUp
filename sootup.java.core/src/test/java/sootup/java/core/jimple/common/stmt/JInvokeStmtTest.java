@@ -35,10 +35,10 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.EagerInputLocation;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.Immediate;
-import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -113,7 +113,7 @@ public class JInvokeStmtTest {
     Stmt specialInvokeStmt =
         new JInvokeStmt(
             new JSpecialInvokeExpr(
-                new Local("r0", sootClass.getType()), smethodSig, Collections.emptyList()),
+                Jimple.newLocal("r0", sootClass.getType()), smethodSig, Collections.emptyList()),
             nop);
 
     // toString
@@ -130,7 +130,7 @@ public class JInvokeStmtTest {
     Stmt interfaceInvokeStmt =
         new JInvokeStmt(
             new JInterfaceInvokeExpr(
-                new Local("r2", sootClass.getType()), imethodSig, Collections.emptyList()),
+                Jimple.newLocal("r2", sootClass.getType()), imethodSig, Collections.emptyList()),
             nop);
 
     // toString

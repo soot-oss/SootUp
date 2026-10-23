@@ -71,6 +71,7 @@ public final class PointerAnalysisConfig {
   private final boolean dumpPointsToSet;
   private final boolean dumpLibraryPointsToSet;
   private final boolean dumpStats;
+  private final boolean evaluate;
 
   private PointerAnalysisConfig(Builder b) {
     this.contextSensitivity = b.contextSensitivity;
@@ -96,6 +97,7 @@ public final class PointerAnalysisConfig {
     this.dumpPointsToSet = b.dumpPointsToSet;
     this.dumpLibraryPointsToSet = b.dumpLibraryPointsToSet;
     this.dumpStats = b.dumpStats;
+    this.evaluate = b.evaluate;
   }
 
   public static Builder builder() {
@@ -231,6 +233,15 @@ public final class PointerAnalysisConfig {
     return dumpStats;
   }
 
+  /**
+   * Whether to compute and print post-analysis statistics (reachable methods, alias stats, ...).
+   * Off: no evaluator work at all - the alias stats are quadratic in #locals. Ignored if {@link
+   * #isDumpStats()}.
+   */
+  public boolean isEvaluate() {
+    return evaluate || dumpStats;
+  }
+
   public static final class Builder {
     private ContextSensitivity contextSensitivity = ContextSensitivity.insensitive();
     private HeapAbstractionPolicy heapAbstractionPolicy = HeapAbstractionPolicy.ALLOC_SITE;
@@ -256,6 +267,7 @@ public final class PointerAnalysisConfig {
     private boolean dumpPointsToSet = false;
     private boolean dumpLibraryPointsToSet = false;
     private boolean dumpStats = false;
+    private boolean evaluate = true;
 
     private Builder() {}
 
@@ -373,6 +385,12 @@ public final class PointerAnalysisConfig {
 
     public Builder dumpStats(boolean dumpStats) {
       this.dumpStats = dumpStats;
+      return this;
+    }
+
+    /** See {@link PointerAnalysisConfig#isEvaluate()}. */
+    public Builder evaluate(boolean evaluate) {
+      this.evaluate = evaluate;
       return this;
     }
 

@@ -55,7 +55,11 @@ class AsmClassSource extends JavaSootClassSource {
       @NonNull final ClassType javaClassType,
       @NonNull final ClassNode classNode,
       @NonNull final IdentifierFactory identifierFactory) {
-    super(inputLocation, javaClassType, sourcePath);
+    super(
+        inputLocation,
+        javaClassType,
+        sourcePath,
+        AsmClassMetadata.read(classNode, identifierFactory));
     this.classNode = classNode;
     this.identifierFactory = identifierFactory;
   }
@@ -76,21 +80,33 @@ class AsmClassSource extends JavaSootClassSource {
                   fieldSignature,
                   modifiers,
                   Streams.concat(
-                          convertAnnotation(fieldNode.visibleAnnotations, signatureFactory),
-                          convertAnnotation(fieldNode.invisibleAnnotations, signatureFactory))
+                          convertAnnotation(fieldNode.visibleAnnotations, signatureFactory, true),
+                          convertAnnotation(
+                              fieldNode.invisibleAnnotations, signatureFactory, false))
                       .collect(Collectors.toList()),
-                  NoPositionInformation.getInstance());
+                  NoPositionInformation.getInstance(),
+                  fieldNode.value == null
+                      ? null
+                      : ConstantUtil.fromObject(fieldNode.value, signatureFactory));
             })
         .collect(Collectors.toSet());
   }
 
   protected static Stream<AnnotationUsage> convertAnnotation(
       List<? extends AnnotationNode> nodes, @NonNull IdentifierFactory identifierFactory) {
+    return convertAnnotation(nodes, identifierFactory, true);
+  }
+
+  protected static Stream<AnnotationUsage> convertAnnotation(
+      List<? extends AnnotationNode> nodes,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
     if (nodes == null) {
       return Stream.empty();
     }
     return StreamSupport.stream(
-        AsmUtil.createAnnotationUsage(nodes, identifierFactory).spliterator(), false);
+        AsmUtil.createAnnotationUsage(nodes, identifierFactory, runtimeVisible).spliterator(),
+        false);
   }
 
   /** Appends the converted annotations of {@code nodes} to {@code out} (no intermediate Stream). */
@@ -98,17 +114,25 @@ class AsmClassSource extends JavaSootClassSource {
       @NonNull List<AnnotationUsage> out,
       List<? extends AnnotationNode> nodes,
       @NonNull IdentifierFactory identifierFactory) {
-    AsmUtil.createAnnotationUsage(nodes, identifierFactory).forEach(out::add);
+    convertAnnotation(out, nodes, identifierFactory, true);
+  }
+
+  protected static void convertAnnotation(
+      @NonNull List<AnnotationUsage> out,
+      List<? extends AnnotationNode> nodes,
+      @NonNull IdentifierFactory identifierFactory,
+      boolean runtimeVisible) {
+    AsmUtil.createAnnotationUsage(nodes, identifierFactory, runtimeVisible).forEach(out::add);
   }
 
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
     Stream<AnnotationUsage> annotations =
         Streams.concat(
-            convertAnnotation(classNode.visibleAnnotations, identifierFactory),
-            convertAnnotation(classNode.invisibleAnnotations, identifierFactory),
-            convertAnnotation(classNode.visibleTypeAnnotations, identifierFactory),
-            convertAnnotation(classNode.invisibleTypeAnnotations, identifierFactory));
+            convertAnnotation(classNode.visibleAnnotations, identifierFactory, true),
+            convertAnnotation(classNode.invisibleAnnotations, identifierFactory, false),
+            convertAnnotation(classNode.visibleTypeAnnotations, identifierFactory, true),
+            convertAnnotation(classNode.invisibleTypeAnnotations, identifierFactory, false));
     return annotations.collect(Collectors.toList());
   }
 
@@ -142,8 +166,10 @@ class AsmClassSource extends JavaSootClassSource {
               // Locals instead (see AsmMethodSource#buildPreambleLocals). Collected into one list
               // (in/out) to avoid intermediate Stream allocation.
               List<AnnotationUsage> annotations = new ArrayList<>();
-              convertAnnotation(annotations, methodSource.visibleAnnotations, identifierFactory);
-              convertAnnotation(annotations, methodSource.invisibleAnnotations, identifierFactory);
+              convertAnnotation(
+                  annotations, methodSource.visibleAnnotations, identifierFactory, true);
+              convertAnnotation(
+                  annotations, methodSource.invisibleAnnotations, identifierFactory, false);
               asmClassClassSourceContent.collectReturnTypeAnnotations(annotations);
 
               return new JavaSootMethod(
@@ -183,10 +209,7 @@ class AsmClassSource extends JavaSootClassSource {
 
   @NonNull
   public Optional<JavaClassType> resolveOuterClass() {
-    if (classNode.outerClass == null) {
-      return Optional.empty();
-    }
-    return Optional.of(AsmUtil.toJimpleClassType(classNode.outerClass, identifierFactory));
+    return AsmClassMetadata.resolveOuterClass(getClassFileMetadata(), classSignature);
   }
 
   @NonNull

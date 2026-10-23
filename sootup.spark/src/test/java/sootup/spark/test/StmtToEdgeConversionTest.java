@@ -9,9 +9,9 @@ import org.graph4j.Digraph;
 import org.graph4j.Edge;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.LValue;
-import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Value;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
@@ -45,7 +45,7 @@ public class StmtToEdgeConversionTest {
 
   @Test
   public void testAllocEdge() {
-    LValue left = new Local("a", aType);
+    LValue left = Jimple.newLocal("a", aType);
     Value right = new JNewExpr(SparkTestUtil.simpleType("A"));
     val methodPAG = new PAG(SparkOptions.defaultOptions());
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.ALLOCATION);
@@ -58,8 +58,8 @@ public class StmtToEdgeConversionTest {
 
   @Test
   public void testAssignEdge() {
-    LValue left = new Local("b", aType);
-    Value right = new Local("a", aType);
+    LValue left = Jimple.newLocal("b", aType);
+    Value right = Jimple.newLocal("a", aType);
     val methodPAG = new PAG(SparkOptions.defaultOptions());
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.ASSIGNMENT);
 
@@ -71,9 +71,9 @@ public class StmtToEdgeConversionTest {
 
   @Test
   public void testStoreEdge() {
-    val base = new Local("someB", aType);
+    val base = Jimple.newLocal("someB", aType);
     val right = new JInstanceFieldRef(base, fieldSig);
-    LValue left = new Local("b", aType);
+    LValue left = Jimple.newLocal("b", aType);
     val methodPAG = new PAG(SparkOptions.defaultOptions());
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.LOAD);
 
@@ -92,9 +92,9 @@ public class StmtToEdgeConversionTest {
 
   @Test
   public void testLoadEdge() {
-    val base = new Local("someB", aType);
+    val base = Jimple.newLocal("someB", aType);
     val left = new JInstanceFieldRef(base, fieldSig);
-    LValue right = new Local("b", aType);
+    LValue right = Jimple.newLocal("b", aType);
     val methodPAG = new PAG(SparkOptions.defaultOptions());
     val edge = doAssignment(right, left, methodPAG, PAGEdge.EdgeType.STORE);
 

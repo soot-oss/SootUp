@@ -35,7 +35,8 @@ public class ClinitNewExpr {
   }
 
   public static void main(String[] ps) {
-    A a = new A();
-    System.out.println("hello2" + a);
+    // no "hello2" + a: String.valueOf(Object) -> toString() pulls in ~13k JDK methods
+    new A();
+    System.out.println("hello2");
   }
 }

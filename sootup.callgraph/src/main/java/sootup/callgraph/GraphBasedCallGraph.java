@@ -57,6 +57,16 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     this.entryMethods = entryMethods;
   }
 
+  /**
+   * Creates a deep copy of the given call graph. Subclasses use it to take over the nodes and edges
+   * of an existing call graph.
+   *
+   * @param other the call graph that is copied
+   */
+  protected GraphBasedCallGraph(@NonNull GraphBasedCallGraph other) {
+    this(other.graph.copy(), new ArrayList<>(other.entryMethods));
+  }
+
   @Override
   public void addMethod(@NonNull MethodSignature calledMethod) {
     if (containsMethod(calledMethod)) {

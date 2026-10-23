@@ -375,6 +375,11 @@ public abstract class ControlFlowGraph<V extends BasicBlock<V>> implements Itera
   }
 
   @Override
+  public int hashCode() {
+    return 31 * System.identityHashCode(getStartingStmt()) + getNodes().size();
+  }
+
+  @Override
   @NonNull
   public Iterator<Stmt> iterator() {
     return new BlockControlFlowGraphIterator();

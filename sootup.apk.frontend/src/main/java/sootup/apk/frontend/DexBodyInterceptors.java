@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
+import sootup.apk.frontend.interceptors.DexArrayIndexConstantInliner;
 import sootup.apk.frontend.interceptors.DexNullTransformer;
 import sootup.apk.frontend.interceptors.DexNumberTranformer;
 import sootup.apk.frontend.interceptors.DexSharedInitializationLocalSplitter;
@@ -47,12 +48,14 @@ public enum DexBodyInterceptors {
   // equivalent javac-side wiring), so a consumer that needs every local to carry a concrete,
   // non-Unknown type (e.g. FAIR's TypeExtension.toFairType(), which has no case for UnknownType)
   // doesn't need every downstream caller to remember to run its own type-resolution pass over dex
-  // bodies.
+  // bodies. DexArrayIndexConstantInliner runs after the null/number passes, which settle which
+  // constants are ints, and before UnusedLocalEliminator drops the index locals it inlines away.
   Default(
       new LocalSplitter(),
       new DexSharedInitializationLocalSplitter(),
       new DexNumberTranformer(),
       new DexNullTransformer(),
+      new DexArrayIndexConstantInliner(),
       new UnusedLocalEliminator(),
       new TypeAssigner());
 

@@ -31,7 +31,11 @@ import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
-import sootup.core.types.*;
+import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
+import sootup.core.types.PrimitiveType;
+import sootup.core.types.Type;
+import sootup.core.types.VoidType;
 
 /**
  * A factory used for creating language-specific objects representing entities of the language, for
@@ -221,7 +225,98 @@ public interface IdentifierFactory {
    */
   @NonNull Optional<PrimitiveType> getPrimitiveType(@NonNull String typeName);
 
+  /**
+   * Get the {@code boolean} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code boolean}
+   */
+  @NonNull PrimitiveType getBooleanPrimitiveType();
+
+  /**
+   * Get the {@code boolean} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code boolean}
+   */
+  @NonNull PrimitiveType getBytePrimitiveType();
+
+  /**
+   * Get the {@code short} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code short}
+   */
+  @NonNull PrimitiveType getShortPrimitiveType();
+
+  /**
+   * Get the {@code char} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code char}
+   */
+  @NonNull PrimitiveType getCharPrimitiveType();
+
+  /**
+   * Get the {@code int} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code int}
+   */
+  @NonNull PrimitiveType getIntPrimitiveType();
+
+  /**
+   * Get the {@code long} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code long}
+   */
+  @NonNull PrimitiveType getLongPrimitiveType();
+
+  /**
+   * Get the {@code float} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code float}
+   */
+  @NonNull PrimitiveType getFloatPrimitiveType();
+
+  /**
+   * Get the {@code double} primitive type.
+   *
+   * @see <a href= "https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.2">4.2.
+   *     Primitive Types and Values</a>
+   * @return the primitive type instance for {@code double}
+   */
+  @NonNull PrimitiveType getDoublePrimitiveType();
+
+  /**
+   * Get the ClassType for the boxed primitiveType.
+   *
+   * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-5.html#jls-5.1.7">5.1.7.
+   *     Boxing Conversion</a>
+   * @param primitiveType
+   * @return a ClassType for the boxed type
+   */
   @NonNull ClassType getBoxedType(@NonNull PrimitiveType primitiveType);
+
+  /**
+   * Get the PrimitiveType of a boxed type, if it is defined.
+   *
+   * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-5.html#jls-5.1.8">5.1.8.
+   *     Unboxing Conversion</a>
+   * @param boxedType any type
+   * @return the PrimitiveType instance corresponding to the boxedType, or empty if such is not
+   *     defined.
+   */
+  @NonNull Optional<PrimitiveType> getUnboxedType(@NonNull ClassType boxedType);
 
   /**
    * Gets the array type.

@@ -27,7 +27,7 @@ import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.NullType;
 import sootup.core.types.Type;
 
-public class NullConstant implements Constant {
+public final class NullConstant implements Constant {
 
   private static final NullConstant INSTANCE = new NullConstant();
 
@@ -39,7 +39,7 @@ public class NullConstant implements Constant {
 
   @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
   @Override
-  public boolean equals(Object c) {
+  public boolean equals(final Object c) {
     return c == getInstance();
   }
 
@@ -55,7 +55,7 @@ public class NullConstant implements Constant {
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@NonNull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull final V v) {
     v.caseNullConstant(this);
     return v;
   }
@@ -63,5 +63,10 @@ public class NullConstant implements Constant {
   @Override
   public String toString() {
     return getType().toString();
+  }
+
+  @Override
+  public Object getValue() {
+    return null;
   }
 }

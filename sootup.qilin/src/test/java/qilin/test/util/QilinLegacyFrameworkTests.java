@@ -48,9 +48,13 @@ public abstract class QilinLegacyFrameworkTests {
   protected static String appPath, jrePath, refLogPath;
   protected static boolean isSetUp = false;
 
+  /** One view per test class, see {@link QilinFrameworkTests#view}. */
+  protected static View view;
+
   @BeforeAll
   public static void setUp() throws IOException {
     if (isSetUp) {
+      view = ViewFactory.createView(appPath, null, jrePath);
       return;
     }
     File rootDir = new File("../");
@@ -80,6 +84,7 @@ public abstract class QilinLegacyFrameworkTests {
     File jreFile = new File(testDir, "jre1.6.0_45-min");
     jrePath = jreFile.getCanonicalPath();
     isSetUp = true;
+    view = ViewFactory.createView(appPath, null, jrePath);
   }
 
   protected PTA run(String mainClass) {
@@ -89,7 +94,6 @@ public abstract class QilinLegacyFrameworkTests {
   protected PTA run(String mainClass, ContextSensitivity contextSensitivity) {
     PointerAnalysisConfig config =
         QilinFrameworkTests.configBuilder(contextSensitivity, refLogPath).build();
-    View view = ViewFactory.createView(appPath, null, jrePath);
     ClassType mainClassType = view.getIdentifierFactory().getClassType(mainClass);
     PTA pta = PointerAnalysisFactory.create(view, mainClassType, config);
     // see QilinFrameworkTests#run(String, PointerAnalysisConfig) for why not pureRun()

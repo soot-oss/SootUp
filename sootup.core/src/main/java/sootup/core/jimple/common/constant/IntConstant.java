@@ -28,20 +28,28 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 
 /** A 32-bit integer constant. */
-public class IntConstant implements ShiftableConstant<IntConstant> {
+public final class IntConstant implements ShiftableConstant<IntConstant> {
 
+  private static final IntConstant MINUS_ONE = new IntConstant(-1);
+  private static final IntConstant ZERO = new IntConstant(0);
+  private static final IntConstant ONE = new IntConstant(1);
   private final int value;
 
-  protected IntConstant(int value) {
+  protected IntConstant(final int value) {
     this.value = value;
   }
 
-  public static IntConstant getInstance(int value) {
-    return new IntConstant(value);
+  public static IntConstant getInstance(final int value) {
+    return switch (value) {
+      case -1 -> MINUS_ONE;
+      case 0 -> ZERO;
+      case 1 -> ONE;
+      default -> new IntConstant(value);
+    };
   }
 
   @Override
-  public boolean equals(Object c) {
+  public boolean equals(final Object c) {
     return c instanceof IntConstant && ((IntConstant) c).value == value;
   }
 
@@ -53,67 +61,67 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
   // PTC 1999/06/28
   @NonNull
   @Override
-  public IntConstant add(@NonNull IntConstant c) {
+  public IntConstant add(@NonNull final IntConstant c) {
     return IntConstant.getInstance(value + c.value);
   }
 
   @NonNull
   @Override
-  public IntConstant subtract(@NonNull IntConstant c) {
+  public IntConstant subtract(@NonNull final IntConstant c) {
     return IntConstant.getInstance(value - c.value);
   }
 
   @NonNull
   @Override
-  public IntConstant multiply(@NonNull IntConstant c) {
+  public IntConstant multiply(@NonNull final IntConstant c) {
     return IntConstant.getInstance(value * c.value);
   }
 
   @NonNull
   @Override
-  public IntConstant divide(@NonNull IntConstant c) {
+  public IntConstant divide(@NonNull final IntConstant c) {
     return IntConstant.getInstance(value / c.value);
   }
 
   @NonNull
   @Override
-  public IntConstant remainder(@NonNull IntConstant c) {
+  public IntConstant remainder(@NonNull final IntConstant c) {
     return IntConstant.getInstance(value % c.value);
   }
 
   @NonNull
   @Override
-  public BooleanConstant equalEqual(@NonNull IntConstant c) {
+  public BooleanConstant equalEqual(@NonNull final IntConstant c) {
     return BooleanConstant.getInstance(value == c.value);
   }
 
   @NonNull
   @Override
-  public BooleanConstant notEqual(@NonNull IntConstant c) {
+  public BooleanConstant notEqual(@NonNull final IntConstant c) {
     return BooleanConstant.getInstance(value != c.value);
   }
 
   @NonNull
   @Override
-  public BooleanConstant lessThan(@NonNull IntConstant c) {
+  public BooleanConstant lessThan(@NonNull final IntConstant c) {
     return BooleanConstant.getInstance(value < c.value);
   }
 
   @NonNull
   @Override
-  public BooleanConstant lessThanOrEqual(@NonNull IntConstant c) {
+  public BooleanConstant lessThanOrEqual(@NonNull final IntConstant c) {
     return BooleanConstant.getInstance(value <= c.value);
   }
 
   @NonNull
   @Override
-  public BooleanConstant greaterThan(@NonNull IntConstant c) {
+  public BooleanConstant greaterThan(@NonNull final IntConstant c) {
     return BooleanConstant.getInstance(value > c.value);
   }
 
   @NonNull
   @Override
-  public BooleanConstant greaterThanOrEqual(@NonNull IntConstant c) {
+  public BooleanConstant greaterThanOrEqual(@NonNull final IntConstant c) {
     return BooleanConstant.getInstance(value >= c.value);
   }
 
@@ -125,38 +133,38 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
 
   @NonNull
   @Override
-  public IntConstant and(@NonNull IntConstant c) {
+  public IntConstant and(@NonNull final IntConstant c) {
     return IntConstant.getInstance(value & c.value);
   }
 
   @NonNull
   @Override
-  public IntConstant or(@NonNull IntConstant c) {
+  public IntConstant or(@NonNull final IntConstant c) {
     return IntConstant.getInstance(value | c.value);
   }
 
   @NonNull
   @Override
-  public IntConstant xor(@NonNull IntConstant c) {
+  public IntConstant xor(@NonNull final IntConstant c) {
     return IntConstant.getInstance(value ^ c.value);
   }
 
   @NonNull
   @Override
-  public IntConstant shiftLeft(@NonNull IntConstant c) {
-    return IntConstant.getInstance(value << c.value);
+  public IntConstant shiftLeft(@NonNull final ShiftableConstant<?> c) {
+    return IntConstant.getInstance(value << c.getValue().intValue());
   }
 
   @NonNull
   @Override
-  public IntConstant shiftRight(@NonNull IntConstant c) {
-    return IntConstant.getInstance(value >> c.value);
+  public IntConstant shiftRight(@NonNull final ShiftableConstant<?> c) {
+    return IntConstant.getInstance(value >> c.getValue().intValue());
   }
 
   @NonNull
   @Override
-  public IntConstant unsignedShiftRight(@NonNull IntConstant c) {
-    return IntConstant.getInstance(value >>> c.value);
+  public IntConstant unsignedShiftRight(@NonNull final ShiftableConstant<?> c) {
+    return IntConstant.getInstance(value >>> c.getValue().intValue());
   }
 
   @Override
@@ -171,12 +179,18 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@NonNull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull final V v) {
     v.caseIntConstant(this);
     return v;
   }
 
-  public int getValue() {
+  @NonNull
+  @Override
+  public Integer getValue() {
+    return value;
+  }
+
+  public int intValue() {
     return value;
   }
 }

@@ -30,6 +30,7 @@ import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -42,6 +43,7 @@ import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSubSignature;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -218,6 +220,49 @@ public class JavaSootClass implements SootClass, HasAnnotation {
   @NonNull
   public Set<ClassModifier> getModifiers() {
     return lazyModifiers.get();
+  }
+
+  /** Returns the SourceFile attribute, distinct from the filesystem path of the classfile. */
+  @NonNull
+  public Optional<String> getSourceFile() {
+    return getClassFileMetadata().getSourceFile();
+  }
+
+  /**
+   * Returns decoded, unparsed SourceDebugExtension text, such as SMAP; no line remapping is done.
+   */
+  @NonNull
+  public Optional<String> getSourceDebugExtension() {
+    return getClassFileMetadata().getSourceDebugExtension();
+  }
+
+  /**
+   * Returns the owner from EnclosingMethod, including for classes declared in initializers. Member
+   * classes instead describe their declaring class in InnerClasses and {@link #getOuterClass()}.
+   */
+  @NonNull
+  public Optional<JavaClassType> getEnclosingClass() {
+    return getClassFileMetadata().getEnclosingClass();
+  }
+
+  /** Returns the enclosing method or constructor; classes declared in initializers have none. */
+  @NonNull
+  public Optional<MethodSignature> getEnclosingMethod() {
+    return getClassFileMetadata().getEnclosingMethod();
+  }
+
+  /**
+   * Returns immutable InnerClasses entries in classfile order, including referenced nested classes.
+   */
+  @NonNull
+  public List<JavaInnerClassInfo> getInnerClasses() {
+    return getClassFileMetadata().getInnerClasses();
+  }
+
+  private JavaClassFileMetadata getClassFileMetadata() {
+    return classSource instanceof JavaSootClassSource
+        ? ((JavaSootClassSource) classSource).getClassFileMetadata()
+        : JavaClassFileMetadata.empty();
   }
 
   /**
