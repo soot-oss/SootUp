@@ -73,8 +73,10 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><a href="#sootup.core.model">sootup.core.model</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#sootup.java.core.jimple.basic">sootup.java.core.jimple.basic</a></div>
+<div class="col-first even-row-color"><a href="#sootup.interceptors.invokedynamic">sootup.interceptors.invokedynamic</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#sootup.java.core.jimple.basic">sootup.java.core.jimple.basic</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -287,6 +289,39 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../LValue.html" title="interface in sootup.core.jimple.common">LValue</a>&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">Body.</span><code><a href="../../../model/Body.html#getDefs(sootup.core.graph.ControlFlowGraph)" class="member-name-link">getDefs</a><wbr>(<a href="../../../graph/ControlFlowGraph.html" title="class in sootup.core.graph">ControlFlowGraph</a>&lt;?&gt;&nbsp;graph)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="sootup.interceptors.invokedynamic">
+<h2>Uses of <a href="../LValue.html" title="interface in sootup.core.jimple.common">LValue</a> in <a href="../../../../interceptors/invokedynamic/package-summary.html">sootup.interceptors.invokedynamic</a></h2>
+<div class="caption"><span>Methods in <a href="../../../../interceptors/invokedynamic/package-summary.html">sootup.interceptors.invokedynamic</a> with parameters of type <a href="../LValue.html" title="interface in sootup.core.jimple.common">LValue</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Fragment.</span><code><a href="../../../../interceptors/invokedynamic/Fragment.html#assign(sootup.core.jimple.common.LValue,sootup.core.jimple.common.Value)" class="member-name-link">assign</a><wbr>(@NonNull <a href="../LValue.html" title="interface in sootup.core.jimple.common">LValue</a>&nbsp;target,
+ @NonNull <a href="../Value.html" title="interface in sootup.core.jimple.common">Value</a>&nbsp;value)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>boolean</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">InvokeDynamicDesugarizer.</span><code><a href="../../../../interceptors/invokedynamic/InvokeDynamicDesugarizer.html#desugar(sootup.core.jimple.common.expr.JDynamicInvokeExpr,sootup.core.jimple.common.LValue,sootup.interceptors.invokedynamic.Fragment)" class="member-name-link">desugar</a><wbr>(@NonNull <a href="../expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;expr,
+ @Nullable <a href="../LValue.html" title="interface in sootup.core.jimple.common">LValue</a>&nbsp;result,
+ @NonNull <a href="../../../../interceptors/invokedynamic/Fragment.html" title="class in sootup.interceptors.invokedynamic">Fragment</a>&nbsp;code)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Emits code into <code>code</code> that does what <code>expr</code> does and stores its value into <code>
+ result</code>.</div>
+</div>
+<div class="col-first even-row-color"><code>boolean</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">RecordMethodsDesugarizer.</span><code><a href="../../../../interceptors/invokedynamic/RecordMethodsDesugarizer.html#desugar(sootup.core.jimple.common.expr.JDynamicInvokeExpr,sootup.core.jimple.common.LValue,sootup.interceptors.invokedynamic.Fragment)" class="member-name-link">desugar</a><wbr>(@NonNull <a href="../expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;expr,
+ @Nullable <a href="../LValue.html" title="interface in sootup.core.jimple.common">LValue</a>&nbsp;result,
+ @NonNull <a href="../../../../interceptors/invokedynamic/Fragment.html" title="class in sootup.interceptors.invokedynamic">Fragment</a>&nbsp;code)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>boolean</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">StringConcatDesugarizer.</span><code><a href="../../../../interceptors/invokedynamic/StringConcatDesugarizer.html#desugar(sootup.core.jimple.common.expr.JDynamicInvokeExpr,sootup.core.jimple.common.LValue,sootup.interceptors.invokedynamic.Fragment)" class="member-name-link">desugar</a><wbr>(@NonNull <a href="../expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;expr,
+ @Nullable <a href="../LValue.html" title="interface in sootup.core.jimple.common">LValue</a>&nbsp;result,
+ @NonNull <a href="../../../../interceptors/invokedynamic/Fragment.html" title="class in sootup.interceptors.invokedynamic">Fragment</a>&nbsp;code)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>

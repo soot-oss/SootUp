@@ -73,8 +73,10 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Package</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><a href="typeresolving/package-summary.html">sootup.interceptors.typeresolving</a></div>
+<div class="col-first even-row-color"><a href="invokedynamic/package-summary.html">sootup.interceptors.invokedynamic</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="typeresolving/package-summary.html">sootup.interceptors.typeresolving</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </div>
 </li>
@@ -120,52 +122,57 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">Evaluates, whether a value is constant and computes its constant value, if possible.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="JimpleSemanticsChecker.html" title="class in sootup.interceptors">JimpleSemanticsChecker</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="InvokeDynamicDesugarer.html" title="class in sootup.interceptors">InvokeDynamicDesugarer</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Replaces invokedynamic statements by equivalent plain Jimple, one <a href="invokedynamic/InvokeDynamicDesugarizer.html" title="interface in sootup.interceptors.invokedynamic"><code>InvokeDynamicDesugarizer</code></a> per kind of bootstrap - by default string concatenation and record
+ methods.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="JimpleSemanticsChecker.html" title="class in sootup.interceptors">JimpleSemanticsChecker</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">This Interceptor executes validations on Jimple semantics</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="JimpleSemanticsChecker.LoggingJimpleChecker.html" title="class in sootup.interceptors">JimpleSemanticsChecker.LoggingJimpleChecker</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="JimpleSemanticsChecker.ThrowingJimpleChecker.html" title="class in sootup.interceptors">JimpleSemanticsChecker.ThrowingJimpleChecker</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="JimpleSemanticsChecker.LoggingJimpleChecker.html" title="class in sootup.interceptors">JimpleSemanticsChecker.LoggingJimpleChecker</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="LocalLivenessAnalyser.html" title="class in sootup.interceptors">LocalLivenessAnalyser</a></div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="JimpleSemanticsChecker.ThrowingJimpleChecker.html" title="class in sootup.interceptors">JimpleSemanticsChecker.ThrowingJimpleChecker</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="LocalNameStandardizer.html" title="class in sootup.interceptors">LocalNameStandardizer</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="LocalLivenessAnalyser.html" title="class in sootup.interceptors">LocalLivenessAnalyser</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="LocalNameStandardizer.LocalComparator.html" title="class in sootup.interceptors">LocalNameStandardizer.LocalComparator</a></div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="LocalNameStandardizer.html" title="class in sootup.interceptors">LocalNameStandardizer</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="LocalPacker.html" title="class in sootup.interceptors">LocalPacker</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="LocalNameStandardizer.LocalComparator.html" title="class in sootup.interceptors">LocalNameStandardizer.LocalComparator</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="LocalSplitter.html" title="class in sootup.interceptors">LocalSplitter</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="LocalPacker.html" title="class in sootup.interceptors">LocalPacker</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="LocalSplitter.html" title="class in sootup.interceptors">LocalSplitter</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">A BodyInterceptor that attempts to identify and separate uses of a local variable (definition)
  that are independent of each other.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab3"><a href="LocalSplitter.ExceptionalFlow.html" title="enum class in sootup.interceptors">LocalSplitter.ExceptionalFlow</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab3">
+<div class="col-first even-row-color class-summary class-summary-tab3"><a href="LocalSplitter.ExceptionalFlow.html" title="enum class in sootup.interceptors">LocalSplitter.ExceptionalFlow</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab3">
 <div class="block">Which Stmts can enter an exception handler.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="NopEliminator.html" title="class in sootup.interceptors">NopEliminator</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="NopEliminator.html" title="class in sootup.interceptors">NopEliminator</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">This class removes <a href="../core/jimple/common/stmt/JNopStmt.html" title="class in sootup.core.jimple.common.stmt"><code>JNopStmt</code></a>s from a given <a href="../core/model/Body.html" title="class in sootup.core.model"><code>Body</code></a>.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="StaticSingleAssignmentFormer.html" title="class in sootup.interceptors">StaticSingleAssignmentFormer</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="StaticSingleAssignmentFormer.html" title="class in sootup.interceptors">StaticSingleAssignmentFormer</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">In Static Single Assignment Form, each variable be assigned exactly once, and every variable be
  defined before it is used.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="TrapTightener.html" title="class in sootup.interceptors">TrapTightener</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="TypeAssigner.html" title="class in sootup.interceptors">TypeAssigner</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="TrapTightener.html" title="class in sootup.interceptors">TrapTightener</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="TypeAssigner.html" title="class in sootup.interceptors">TypeAssigner</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">This transformer assigns types to local variables.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="UnreachableCodeEliminator.html" title="class in sootup.interceptors">UnreachableCodeEliminator</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="UnreachableCodeEliminator.html" title="class in sootup.interceptors">UnreachableCodeEliminator</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">A BodyInterceptor that removes all unreachable stmts from the given Body.</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="UnusedLocalEliminator.html" title="class in sootup.interceptors">UnusedLocalEliminator</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="UnusedLocalEliminator.html" title="class in sootup.interceptors">UnusedLocalEliminator</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">The UnusedLocalEliminator removes any unused locals from the method.</div>
 </div>
 </div>

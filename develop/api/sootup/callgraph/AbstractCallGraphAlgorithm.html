@@ -309,61 +309,69 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns true if the given class type represents an interface.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#postProcessingMethod(sootup.core.signatures.MethodSignature,java.util.Deque,sootup.callgraph.MutableCallGraph)" class="member-name-link">postProcessingMethod</a><wbr>(@NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onFunctionalObject(sootup.core.model.SootMethod,sootup.callgraph.invokedynamic.FunctionalObject,sootup.callgraph.MutableCallGraph,java.util.Deque)" class="member-name-link">onFunctionalObject</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;creator,
+ @NonNull <a href="invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
+ @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Deque.html" title="class or interface in java.util" class="external-link">Deque</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;workList)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Hook: a lambda created in <code>creator</code> was discovered.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#postProcessingMethod(sootup.core.signatures.MethodSignature,java.util.Deque,sootup.callgraph.MutableCallGraph)" class="member-name-link">postProcessingMethod</a><wbr>(@NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Deque.html" title="class or interface in java.util" class="external-link">Deque</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;workList,
  @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">This method enables optional post-processing of a method in the call graph algorithm</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#postProcessingStaticInitializerCalls(com.google.common.collect.ArrayListMultimap)" class="member-name-link">postProcessingStaticInitializerCalls</a><wbr>(@NonNull com.google.common.collect.ArrayListMultimap&lt;<a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;&nbsp;potentialStaticInitializerCalls)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#postProcessingStaticInitializerCalls(com.google.common.collect.ArrayListMultimap)" class="member-name-link">postProcessingStaticInitializerCalls</a><wbr>(@NonNull com.google.common.collect.ArrayListMultimap&lt;<a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;&nbsp;potentialStaticInitializerCalls)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">This method enables optional post-processing of potential static initializer call edges.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#preProcessingMethod(sootup.core.signatures.MethodSignature,java.util.Deque,sootup.callgraph.MutableCallGraph)" class="member-name-link">preProcessingMethod</a><wbr>(@NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#preProcessingMethod(sootup.core.signatures.MethodSignature,java.util.Deque,sootup.callgraph.MutableCallGraph)" class="member-name-link">preProcessingMethod</a><wbr>(@NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Deque.html" title="class or interface in java.util" class="external-link">Deque</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;workList,
  @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">This method enables optional pre-processing of a method in the call graph algorithm</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveAllCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllCallsFromSourceMethod</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveAllCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllCallsFromSourceMethod</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
  @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">This method resolves all calls from a given source method. resolveCall is called for each
  invokable statements in the body of the source method that is implemented in the corresponding
  call graph algorithm.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveAllImplicitCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllImplicitCallsFromSourceMethod</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveAllImplicitCallsFromSourceMethod(sootup.core.model.SootMethod,sootup.callgraph.MutableCallGraph,sootup.callgraph.AbstractCallGraphAlgorithm.Frontier)" class="member-name-link">resolveAllImplicitCallsFromSourceMethod</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
  @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
  @NonNull sootup.callgraph.AbstractCallGraphAlgorithm.Frontier&nbsp;frontier)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Resolves all implicit calls caused by the given source method.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected com.google.common.collect.ArrayListMultimap&lt;<a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveAllStaticInitializerCalls(sootup.core.model.SootMethod)" class="member-name-link">resolveAllStaticInitializerCalls</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected com.google.common.collect.ArrayListMultimap&lt;<a href="../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="CallGraph.Call.html" title="class in sootup.callgraph">CallGraph.Call</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveAllStaticInitializerCalls(sootup.core.model.SootMethod)" class="member-name-link">resolveAllStaticInitializerCalls</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Resolves all potential static initializer calls caused by the given source method.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#resolveCall(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">resolveCall</a><wbr>(<a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#resolveCall(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">resolveCall</a><wbr>(<a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
  <a href="../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">This method resolves the possible targets of a given invoke expression.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#resolveConcreteDispatch(sootup.core.views.View,sootup.core.signatures.MethodSignature)" class="member-name-link">resolveConcreteDispatch</a><wbr>(<a href="../core/views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#resolveConcreteDispatch(sootup.core.views.View,sootup.core.signatures.MethodSignature)" class="member-name-link">resolveConcreteDispatch</a><wbr>(<a href="../core/views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view,
  <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;m)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Searches for the signature of the method that is the concrete implementation of <code>m</code>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveDynamicInvokeTargets(sootup.core.jimple.common.expr.JDynamicInvokeExpr)" class="member-name-link">resolveDynamicInvokeTargets</a><wbr>(@NonNull <a href="../core/jimple/common/expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;dynamicInvokeExpr)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveDynamicInvokeTargets(sootup.core.jimple.common.expr.JDynamicInvokeExpr)" class="member-name-link">resolveDynamicInvokeTargets</a><wbr>(@NonNull <a href="../core/jimple/common/expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;dynamicInvokeExpr)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Resolves the targets of an invokedynamic expression via the configured <a href="invokedynamic/DynamicInvokeResolver.html" title="interface in sootup.callgraph.invokedynamic"><code>DynamicInvokeResolver</code></a> (by default: the methods referenced by its bootstrap method handles,
  e.g. the synthetic lambda body passed to <code>LambdaMetafactory</code>).</div>
 </div>
@@ -643,6 +651,16 @@ implements <a href="CallGraphAlgorithm.html" title="interface in sootup.callgrap
 <dd><code>cg</code> - the call graph that will receive the found calls</dd>
 <dd><code>frontier</code> - the work-list state that will be updated with found target methods</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="onFunctionalObject(sootup.core.model.SootMethod,sootup.callgraph.invokedynamic.FunctionalObject,sootup.callgraph.MutableCallGraph,java.util.Deque)">
+<h3>onFunctionalObject</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onFunctionalObject</span><wbr><span class="parameters">(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;creator,
+ @NonNull <a href="invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
+ @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Deque.html" title="class or interface in java.util" class="external-link">Deque</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;workList)</span></div>
+<div class="block">Hook: a lambda created in <code>creator</code> was discovered.</div>
 </section>
 </li>
 <li>

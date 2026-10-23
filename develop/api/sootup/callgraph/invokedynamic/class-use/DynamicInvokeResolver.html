@@ -248,6 +248,25 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">
 <div class="block">Resolves nothing: invokedynamic call sites get no call targets.</div>
 </div>
+<div class="col-first even-row-color"><code>default @NonNull <a href="../DynamicInvokeResolver.html" title="interface in sootup.callgraph.invokedynamic">DynamicInvokeResolver</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DynamicInvokeResolver.</span><code><a href="../DynamicInvokeResolver.html#withCreationSiteEdges()" class="member-name-link">withCreationSiteEdges</a>()</code></div>
+<div class="col-last even-row-color">
+<div class="block">This resolver, plus edges from each invokedynamic statement to its lambda implementation.</div>
+</div>
+</div>
+<div class="caption"><span>Methods in <a href="../package-summary.html">sootup.callgraph.invokedynamic</a> with parameters of type <a href="../DynamicInvokeResolver.html" title="interface in sootup.callgraph.invokedynamic">DynamicInvokeResolver</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">FunctionalObject.</span><code><a href="../FunctionalObject.html#of(sootup.core.jimple.common.stmt.Stmt,sootup.callgraph.invokedynamic.DynamicInvokeResolver,sootup.core.views.View)" class="member-name-link">of</a><wbr>(@NonNull <a href="../../../core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmt,
+ @NonNull <a href="../DynamicInvokeResolver.html" title="interface in sootup.callgraph.invokedynamic">DynamicInvokeResolver</a>&nbsp;resolver,
+ @NonNull <a href="../../../core/views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last even-row-color">
+<div class="block">The object <code>stmt</code> creates, if it assigns a <code>LambdaMetafactory</code> invokedynamic whose
+ implementation <code>resolver</code> reports.</div>
+</div>
 </div>
 </section>
 </li>

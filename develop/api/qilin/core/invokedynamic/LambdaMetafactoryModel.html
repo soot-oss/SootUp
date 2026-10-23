@@ -84,17 +84,19 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">LambdaMetafactoryModel</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="../effect/MethodEffectModel.html" title="interface in qilin.core.effect">MethodEffectModel</a></span></div>
-<div class="block">Precisely models invokedynamic call sites whose <a href="../../../sootup/callgraph/invokedynamic/DynamicInvokeResolver.html" title="interface in sootup.callgraph.invokedynamic"><code>DynamicInvokeResolver</code></a> target is a
- non-capturing static <code>LambdaMetafactory</code> implementation - every non-capturing lambda body
- and every static method reference. Splices in a synthetic allocation of the functional-interface
- type (registered with <a href="../pag/PAG.html#registerLambdaTarget(java.lang.Object,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.constant.MethodHandle.Kind)"><code>PAG.registerLambdaTarget(java.lang.Object, sootup.core.signatures.MethodSignature, sootup.core.jimple.common.constant.MethodHandle.Kind)</code></a> so it becomes a <a href="../pag/LambdaAllocNode.html" title="class in qilin.core.pag"><code>LambdaAllocNode</code></a> instead of a plain one) before the original invokedynamic
- statement, which is left untouched - mirroring how <a href="../../../sootup/callgraph/reflection/ReflectionModel.html" title="interface in sootup.callgraph.reflection"><code>ReflectionModel</code></a> augments rather than replaces the original call.
- Calls on that object then dispatch straight to the target, with the functional interface's
- arguments bound.
+<div class="block">Models the objects <code>LambdaMetafactory</code> invokedynamic call sites create (lambdas and method
+ references, see <a href="../../../sootup/callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic"><code>FunctionalObject</code></a>). Before each such call site <code>r = indy(c_0, ...)</code>,
+ splices in a synthetic allocation of the functional-interface type (registered with <a href="../pag/PAG.html#registerLambdaTarget(java.lang.Object,sootup.callgraph.invokedynamic.FunctionalObject)"><code>PAG.registerLambdaTarget(java.lang.Object, sootup.callgraph.invokedynamic.FunctionalObject)</code></a> so it becomes a <a href="../pag/LambdaAllocNode.html" title="class in qilin.core.pag"><code>LambdaAllocNode</code></a>) and stores the
+ captured values into it: <code>r = new FI; r.&lt;capture field 0&gt; = c_0; ...</code>. The original
+ statement is left untouched - mirroring how <a href="../../../sootup/callgraph/reflection/ReflectionModel.html" title="interface in sootup.callgraph.reflection"><code>ReflectionModel</code></a>
+ augments rather than replaces the original call.
 
- <p>All other targets (captured values, instance/constructor refs) are called from the
- invokedynamic statement itself, like CHA/RTA/Spark do - see <code>
- CallGraphBuilder#addDynamicInvokeEdge</code>.</div>
+ <p>First <a href="../../../sootup/callgraph/invokedynamic/DynamicInvokeResolver.html#desugar(sootup.core.model.SootMethod,sootup.core.model.Body,sootup.core.views.View)"><code>desugars</code></a> the body (string concatenation, record
+ methods).
+
+ <p>Calls on the object dispatch to the implementation (<code>CallGraphBuilder</code>), loading the
+ captured values back from the receiver - so they stay with their object under context
+ sensitivity.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -130,12 +132,14 @@ implements <a href="../effect/MethodEffectModel.html" title="interface in qilin.
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#apply(sootup.core.model.SootMethod)" class="member-name-link">apply</a><wbr>(<a href="../../../sootup/core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;m)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#handles(sootup.core.jimple.common.stmt.InvokableStmt,sootup.callgraph.invokedynamic.DynamicInvokeTarget)" class="member-name-link">handles</a><wbr>(<a href="../../../sootup/core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;stmt,
- <a href="../../../sootup/callgraph/invokedynamic/DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&nbsp;target)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../../../sootup/core/signatures/FieldSignature.html" title="class in sootup.core.signatures">FieldSignature</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#captureField(sootup.core.views.View,sootup.callgraph.invokedynamic.FunctionalObject,int)" class="member-name-link">captureField</a><wbr>(<a href="../../../sootup/core/views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view,
+ <a href="../../../sootup/callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
+ int&nbsp;i)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Whether this model handles <code>target</code> of the invokedynamic <code>stmt</code>: a non-capturing
- static lambda implementation whose functional object is assigned to a local.</div>
+<div class="block">The synthetic field holding the <code>i</code>-th value captured for <code>fo</code>: declared by the
+ functional interface, named after the implementation so different lambdas keep their captures
+ apart.</div>
 </div>
 </div>
 </div>
@@ -171,12 +175,14 @@ implements <a href="../effect/MethodEffectModel.html" title="interface in qilin.
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="handles(sootup.core.jimple.common.stmt.InvokableStmt,sootup.callgraph.invokedynamic.DynamicInvokeTarget)">
-<h3>handles</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">handles</span><wbr><span class="parameters">(<a href="../../../sootup/core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;stmt,
- <a href="../../../sootup/callgraph/invokedynamic/DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&nbsp;target)</span></div>
-<div class="block">Whether this model handles <code>target</code> of the invokedynamic <code>stmt</code>: a non-capturing
- static lambda implementation whose functional object is assigned to a local.</div>
+<section class="detail" id="captureField(sootup.core.views.View,sootup.callgraph.invokedynamic.FunctionalObject,int)">
+<h3>captureField</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../../../sootup/core/signatures/FieldSignature.html" title="class in sootup.core.signatures">FieldSignature</a></span>&nbsp;<span class="element-name">captureField</span><wbr><span class="parameters">(<a href="../../../sootup/core/views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view,
+ <a href="../../../sootup/callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
+ int&nbsp;i)</span></div>
+<div class="block">The synthetic field holding the <code>i</code>-th value captured for <code>fo</code>: declared by the
+ functional interface, named after the implementation so different lambdas keep their captures
+ apart.</div>
 </section>
 </li>
 <li>

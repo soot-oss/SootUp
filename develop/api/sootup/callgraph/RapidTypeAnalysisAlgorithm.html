@@ -238,23 +238,31 @@ loadScripts(document, 'script');</script>
 <div class="block">This method initializes and starts the call graph algorithm with given entry points.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#postProcessingMethod(sootup.core.signatures.MethodSignature,java.util.Deque,sootup.callgraph.MutableCallGraph)" class="member-name-link">postProcessingMethod</a><wbr>(@NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod,
- @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Deque.html" title="class or interface in java.util" class="external-link">Deque</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;workList,
- @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onFunctionalObject(sootup.core.model.SootMethod,sootup.callgraph.invokedynamic.FunctionalObject,sootup.callgraph.MutableCallGraph,java.util.Deque)" class="member-name-link">onFunctionalObject</a><wbr>(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;creator,
+ @NonNull <a href="invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
+ @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Deque.html" title="class or interface in java.util" class="external-link">Deque</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;workList)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Postprocessing is not needed in RTA</div>
+<div class="block">A constructor reference (<code>Foo::new</code>) instantiates its class.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#preProcessingMethod(sootup.core.signatures.MethodSignature,java.util.Deque,sootup.callgraph.MutableCallGraph)" class="member-name-link">preProcessingMethod</a><wbr>(@NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#postProcessingMethod(sootup.core.signatures.MethodSignature,java.util.Deque,sootup.callgraph.MutableCallGraph)" class="member-name-link">postProcessingMethod</a><wbr>(@NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Deque.html" title="class or interface in java.util" class="external-link">Deque</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;workList,
  @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Postprocessing is not needed in RTA</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#preProcessingMethod(sootup.core.signatures.MethodSignature,java.util.Deque,sootup.callgraph.MutableCallGraph)" class="member-name-link">preProcessingMethod</a><wbr>(@NonNull <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;sourceMethod,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Deque.html" title="class or interface in java.util" class="external-link">Deque</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;workList,
+ @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Preprocessing of a method in the RTA call graph algorithm</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveCall(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">resolveCall</a><wbr>(<a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/stream/Stream.html" title="class or interface in java.util.stream" class="external-link">Stream</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveCall(sootup.core.model.SootMethod,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">resolveCall</a><wbr>(<a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;sourceMethod,
  <a href="../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;invokableStmt)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">In the RTA algorithm, every virtual call is resolved by using the hierarchy and a hashset
  containing every instantiated class.</div>
 </div>
@@ -542,6 +550,20 @@ loadScripts(document, 'script');</script>
 <dd><code>sourceMethod</code> - the processed method</dd>
 <dd><code>workList</code> - the current work list</dd>
 <dd><code>cg</code> - the current cg</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="onFunctionalObject(sootup.core.model.SootMethod,sootup.callgraph.invokedynamic.FunctionalObject,sootup.callgraph.MutableCallGraph,java.util.Deque)">
+<h3>onFunctionalObject</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onFunctionalObject</span><wbr><span class="parameters">(@NonNull <a href="../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;creator,
+ @NonNull <a href="invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
+ @NonNull <a href="MutableCallGraph.html" title="interface in sootup.callgraph">MutableCallGraph</a>&nbsp;cg,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Deque.html" title="class or interface in java.util" class="external-link">Deque</a>&lt;<a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&gt;&nbsp;workList)</span></div>
+<div class="block">A constructor reference (<code>Foo::new</code>) instantiates its class.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="AbstractCallGraphAlgorithm.html#onFunctionalObject(sootup.core.model.SootMethod,sootup.callgraph.invokedynamic.FunctionalObject,sootup.callgraph.MutableCallGraph,java.util.Deque)">onFunctionalObject</a></code>&nbsp;in class&nbsp;<code><a href="AbstractCallGraphAlgorithm.html" title="class in sootup.callgraph">AbstractCallGraphAlgorithm</a></code></dd>
 </dl>
 </section>
 </li>

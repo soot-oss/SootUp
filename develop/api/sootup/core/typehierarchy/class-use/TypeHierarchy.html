@@ -57,12 +57,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><a href="#sootup.callgraph">sootup.callgraph</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.core.typehierarchy">sootup.core.typehierarchy</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.callgraph.invokedynamic">sootup.callgraph.invokedynamic</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#sootup.core.views">sootup.core.views</a></div>
+<div class="col-first even-row-color"><a href="#sootup.core.typehierarchy">sootup.core.typehierarchy</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.java.core.exceptions">sootup.java.core.exceptions</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.core.views">sootup.core.views</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#sootup.java.core.exceptions">sootup.java.core.exceptions</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -78,6 +80,24 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><span class="type-name-label">AbstractCallGraphAlgorithm.</span><code><a href="../../../callgraph/AbstractCallGraphAlgorithm.html#typeHierarchy" class="member-name-link">typeHierarchy</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">The type hierarchy derived from the view.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="sootup.callgraph.invokedynamic">
+<h2>Uses of <a href="../TypeHierarchy.html" title="interface in sootup.core.typehierarchy">TypeHierarchy</a> in <a href="../../../callgraph/invokedynamic/package-summary.html">sootup.callgraph.invokedynamic</a></h2>
+<div class="caption"><span>Methods in <a href="../../../callgraph/invokedynamic/package-summary.html">sootup.callgraph.invokedynamic</a> with parameters of type <a href="../TypeHierarchy.html" title="interface in sootup.core.typehierarchy">TypeHierarchy</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>boolean</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">FunctionalObject.</span><code><a href="../../../callgraph/invokedynamic/FunctionalObject.html#answers(sootup.core.signatures.MethodSignature,sootup.core.typehierarchy.TypeHierarchy)" class="member-name-link">answers</a><wbr>(@NonNull <a href="../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;called,
+ @NonNull <a href="../TypeHierarchy.html" title="interface in sootup.core.typehierarchy">TypeHierarchy</a>&nbsp;hierarchy)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Whether a call of <code>called</code> on this object reaches <a href="../../../callgraph/invokedynamic/FunctionalObject.html#implementation()"><code>FunctionalObject.implementation()</code></a>: same
+ functional method (or bridge), declared by the functional interface, a marker, or a supertype.</div>
 </div>
 </div>
 </section>

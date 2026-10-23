@@ -66,6 +66,8 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><a href="#sootup.core.jimple.common.expr">sootup.core.jimple.common.expr</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#sootup.spark">sootup.spark</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -149,6 +151,29 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="../JVirtualInvokeExpr.html" class="type-name-link" title="class in sootup.core.jimple.common.expr">JVirtualInvokeExpr</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">An expression that invokes a virtual method.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="sootup.spark">
+<h2>Uses of <a href="../AbstractInstanceInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInstanceInvokeExpr</a> in <a href="../../../../../spark/package-summary.html">sootup.spark</a></h2>
+<div class="caption"><span>Methods in <a href="../../../../../spark/package-summary.html">sootup.spark</a> with parameters of type <a href="../AbstractInstanceInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInstanceInvokeExpr</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">MethodPAGStmtVisitor.</span><code><a href="../../../../../spark/MethodPAGStmtVisitor.html#installLambdaCallEdges(sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr,java.util.Optional,sootup.core.jimple.common.stmt.InvokableStmt,sootup.callgraph.invokedynamic.FunctionalObject,sootup.core.signatures.MethodSignature)" class="member-name-link">installLambdaCallEdges</a><wbr>(<a href="../AbstractInstanceInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInstanceInvokeExpr</a>&nbsp;expr,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../Value.html" title="interface in sootup.core.jimple.common">Value</a>&gt;&nbsp;lhs,
+ <a href="../../stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;stmt,
+ <a href="../../../../../callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
+ <a href="../../../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;targetMethodSig)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Installs the PAG edges of a call that reaches the body of <code>fo</code> (<code>targetMethodSig</code>):
+ the call's arguments go to the parameters / receiver <a href="../../../../../callgraph/invokedynamic/FunctionalObject.html#samArgumentIndex(int)"><code>FunctionalObject.samArgumentIndex(int)</code></a>
+ names; the result flows to <code>lhs</code>: the body's return value or, for a constructor
+ reference, a fresh object (also bound to the constructor's receiver).</div>
 </div>
 </div>
 </section>

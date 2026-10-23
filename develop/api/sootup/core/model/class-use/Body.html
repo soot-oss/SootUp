@@ -66,28 +66,30 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><a href="#sootup.callgraph">sootup.callgraph</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#sootup.callgraph.reflection">sootup.callgraph.reflection</a></div>
+<div class="col-first even-row-color"><a href="#sootup.callgraph.invokedynamic">sootup.callgraph.invokedynamic</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.core.frontend">sootup.core.frontend</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.callgraph.reflection">sootup.callgraph.reflection</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#sootup.core.jimple.common.stmt">sootup.core.jimple.common.stmt</a></div>
+<div class="col-first even-row-color"><a href="#sootup.core.frontend">sootup.core.frontend</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.core.jimple.javabytecode.stmt">sootup.core.jimple.javabytecode.stmt</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.core.jimple.common.stmt">sootup.core.jimple.common.stmt</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#sootup.core.model">sootup.core.model</a></div>
+<div class="col-first even-row-color"><a href="#sootup.core.jimple.javabytecode.stmt">sootup.core.jimple.javabytecode.stmt</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.core.util">sootup.core.util</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.core.model">sootup.core.model</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#sootup.core.util.printer">sootup.core.util.printer</a></div>
+<div class="col-first even-row-color"><a href="#sootup.core.util">sootup.core.util</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.core.validation">sootup.core.validation</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.core.util.printer">sootup.core.util.printer</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#sootup.java.bytecode.frontend.conversion">sootup.java.bytecode.frontend.conversion</a></div>
+<div class="col-first even-row-color"><a href="#sootup.core.validation">sootup.core.validation</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.java.core">sootup.java.core</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.java.bytecode.frontend.conversion">sootup.java.bytecode.frontend.conversion</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#sootup.jimple.frontend">sootup.jimple.frontend</a></div>
+<div class="col-first even-row-color"><a href="#sootup.java.core">sootup.java.core</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#sootup.jimple.frontend">sootup.jimple.frontend</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -210,6 +212,55 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Body of <code>method</code> as the algorithm sees it: the stored body, rewritten by the configured
  <a href="../../../callgraph/reflection/ReflectionModel.html" title="interface in sootup.callgraph.reflection"><code>ReflectionModel</code></a>.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="sootup.callgraph.invokedynamic">
+<h2>Uses of <a href="../Body.html" title="class in sootup.core.model">Body</a> in <a href="../../../callgraph/invokedynamic/package-summary.html">sootup.callgraph.invokedynamic</a></h2>
+<div class="caption"><span>Methods in <a href="../../../callgraph/invokedynamic/package-summary.html">sootup.callgraph.invokedynamic</a> that return <a href="../Body.html" title="class in sootup.core.model">Body</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="../Body.html" title="class in sootup.core.model">Body</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BootstrapMethodHandleResolver.</span><code><a href="../../../callgraph/invokedynamic/BootstrapMethodHandleResolver.html#desugar(sootup.core.model.SootMethod,sootup.core.model.Body,sootup.core.views.View)" class="member-name-link">desugar</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
+ @NonNull <a href="../Body.html" title="class in sootup.core.model">Body</a>&nbsp;body,
+ @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Applies <a href="../../../interceptors/InvokeDynamicDesugarer.html" title="class in sootup.interceptors"><code>InvokeDynamicDesugarer</code></a> (string concatenation, record methods) unless the view's
+ frontend already did.</div>
+</div>
+<div class="col-first odd-row-color"><code>default @NonNull <a href="../Body.html" title="class in sootup.core.model">Body</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DynamicInvokeResolver.</span><code><a href="../../../callgraph/invokedynamic/DynamicInvokeResolver.html#desugar(sootup.core.model.SootMethod,sootup.core.model.Body,sootup.core.views.View)" class="member-name-link">desugar</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
+ @NonNull <a href="../Body.html" title="class in sootup.core.model">Body</a>&nbsp;body,
+ @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Makes the implicit calls of other invokedynamics explicit (string concatenation's <code>
+ toString()</code>, records' <code>equals</code>/<code>hashCode</code>/<code>toString</code>).</div>
+</div>
+</div>
+<div class="caption"><span>Methods in <a href="../../../callgraph/invokedynamic/package-summary.html">sootup.callgraph.invokedynamic</a> with parameters of type <a href="../Body.html" title="class in sootup.core.model">Body</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="../Body.html" title="class in sootup.core.model">Body</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BootstrapMethodHandleResolver.</span><code><a href="../../../callgraph/invokedynamic/BootstrapMethodHandleResolver.html#desugar(sootup.core.model.SootMethod,sootup.core.model.Body,sootup.core.views.View)" class="member-name-link">desugar</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
+ @NonNull <a href="../Body.html" title="class in sootup.core.model">Body</a>&nbsp;body,
+ @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Applies <a href="../../../interceptors/InvokeDynamicDesugarer.html" title="class in sootup.interceptors"><code>InvokeDynamicDesugarer</code></a> (string concatenation, record methods) unless the view's
+ frontend already did.</div>
+</div>
+<div class="col-first odd-row-color"><code>default @NonNull <a href="../Body.html" title="class in sootup.core.model">Body</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DynamicInvokeResolver.</span><code><a href="../../../callgraph/invokedynamic/DynamicInvokeResolver.html#desugar(sootup.core.model.SootMethod,sootup.core.model.Body,sootup.core.views.View)" class="member-name-link">desugar</a><wbr>(@NonNull <a href="../SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
+ @NonNull <a href="../Body.html" title="class in sootup.core.model">Body</a>&nbsp;body,
+ @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Makes the implicit calls of other invokedynamics explicit (string concatenation's <code>
+ toString()</code>, records' <code>equals</code>/<code>hashCode</code>/<code>toString</code>).</div>
 </div>
 </div>
 </section>

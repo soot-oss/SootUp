@@ -148,48 +148,54 @@ loadScripts(document, 'script');</script>
 <div class="block">Implicit call to finalize() from java.lang.ref.Finalizer.invokeFinalizeMethod().</div>
 </div>
 <div class="col-first even-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#NEWINSTANCE" class="member-name-link">NEWINSTANCE</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#LAMBDA" class="member-name-link">LAMBDA</a></code></div>
 <div class="col-last even-row-color">
+<div class="block">Call on a lambda / method reference object reaching its implementation, with the call's
+ arguments, the captured values and the result bound as the functional object prescribes.</div>
+</div>
+<div class="col-first odd-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#NEWINSTANCE" class="member-name-link">NEWINSTANCE</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Implicit call to constructor from java.lang.Class.newInstance().</div>
 </div>
-<div class="col-first odd-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#PRIVILEGED" class="member-name-link">PRIVILEGED</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#PRIVILEGED" class="member-name-link">PRIVILEGED</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">Implicit call to run() through AccessController.doPrivileged().</div>
 </div>
-<div class="col-first even-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#REFL_CLASS_NEWINSTANCE" class="member-name-link">REFL_CLASS_NEWINSTANCE</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#REFL_CLASS_NEWINSTANCE" class="member-name-link">REFL_CLASS_NEWINSTANCE</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Due to call to Class.newInstance(..) when reflection log is enabled.</div>
 </div>
-<div class="col-first odd-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#REFL_CONSTR_NEWINSTANCE" class="member-name-link">REFL_CONSTR_NEWINSTANCE</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#REFL_CONSTR_NEWINSTANCE" class="member-name-link">REFL_CONSTR_NEWINSTANCE</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">Due to call to Constructor.newInstance(..).</div>
 </div>
-<div class="col-first even-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#REFL_INVOKE" class="member-name-link">REFL_INVOKE</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#REFL_INVOKE" class="member-name-link">REFL_INVOKE</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Due to call to Method.invoke(..).</div>
 </div>
-<div class="col-first odd-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#SPECIAL" class="member-name-link">SPECIAL</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#SPECIAL" class="member-name-link">SPECIAL</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">Due to explicit invokespecial instruction.</div>
 </div>
-<div class="col-first even-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#STATIC" class="member-name-link">STATIC</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#STATIC" class="member-name-link">STATIC</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Due to explicit invokestatic instruction.</div>
 </div>
-<div class="col-first odd-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#THREAD" class="member-name-link">THREAD</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#THREAD" class="member-name-link">THREAD</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">Implicit call to Thread.run() due to Thread.start() call.</div>
 </div>
-<div class="col-first even-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#VIRTUAL" class="member-name-link">VIRTUAL</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>static final <a href="../Kind.html" title="class in qilin.core.builder.callgraph">Kind</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Kind.</span><code><a href="../Kind.html#VIRTUAL" class="member-name-link">VIRTUAL</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Due to explicit invokevirtual instruction.</div>
 </div>
 </div>

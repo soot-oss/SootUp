@@ -57,10 +57,8 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><a href="#qilin.core.builder">qilin.core.builder</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#qilin.core.invokedynamic">qilin.core.invokedynamic</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.callgraph.invokedynamic">sootup.callgraph.invokedynamic</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#sootup.callgraph.invokedynamic">sootup.callgraph.invokedynamic</a></div>
-<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -85,37 +83,52 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="qilin.core.invokedynamic">
-<h2>Uses of <a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a> in <a href="../../../../qilin/core/invokedynamic/package-summary.html">qilin.core.invokedynamic</a></h2>
-<div class="caption"><span>Methods in <a href="../../../../qilin/core/invokedynamic/package-summary.html">qilin.core.invokedynamic</a> with parameters of type <a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a></span></div>
+<section class="detail" id="sootup.callgraph.invokedynamic">
+<h2>Uses of <a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a> in <a href="../package-summary.html">sootup.callgraph.invokedynamic</a></h2>
+<div class="caption"><span>Methods in <a href="../package-summary.html">sootup.callgraph.invokedynamic</a> that return <a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a></span></div>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static boolean</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">LambdaMetafactoryModel.</span><code><a href="../../../../qilin/core/invokedynamic/LambdaMetafactoryModel.html#handles(sootup.core.jimple.common.stmt.InvokableStmt,sootup.callgraph.invokedynamic.DynamicInvokeTarget)" class="member-name-link">handles</a><wbr>(<a href="../../../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;stmt,
- <a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&nbsp;target)</code></div>
+<div class="col-first even-row-color"><code>@NonNull <a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">FunctionalObject.</span><code><a href="../FunctionalObject.html#implementation()" class="member-name-link">implementation</a>()</code></div>
 <div class="col-last even-row-color">
-<div class="block">Whether this model handles <code>target</code> of the invokedynamic <code>stmt</code>: a non-capturing
- static lambda implementation whose functional object is assigned to a local.</div>
+<div class="block">Returns the value of the <a href="../../../../sootup/callgraph/invokedynamic/FunctionalObject.html#param-implementation"><code>implementation</code></a> record component.</div>
 </div>
 </div>
-</section>
-</li>
-<li>
-<section class="detail" id="sootup.callgraph.invokedynamic">
-<h2>Uses of <a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a> in <a href="../package-summary.html">sootup.callgraph.invokedynamic</a></h2>
 <div class="caption"><span>Methods in <a href="../package-summary.html">sootup.callgraph.invokedynamic</a> that return types with arguments of type <a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a></span></div>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BootstrapMethodHandleResolver.</span><code><a href="../BootstrapMethodHandleResolver.html#resolve(sootup.core.jimple.common.expr.JDynamicInvokeExpr)" class="member-name-link">resolve</a><wbr>(@NonNull <a href="../../../core/jimple/common/expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;expr)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>default @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DynamicInvokeResolver.</span><code><a href="../DynamicInvokeResolver.html#creationSiteTargets(sootup.core.jimple.common.expr.JDynamicInvokeExpr)" class="member-name-link">creationSiteTargets</a><wbr>(@NonNull <a href="../../../core/jimple/common/expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;expr)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Targets called from the invokedynamic statement itself (see class doc).</div>
+</div>
 <div class="col-first odd-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DynamicInvokeResolver.</span><code><a href="../DynamicInvokeResolver.html#resolve(sootup.core.jimple.common.expr.JDynamicInvokeExpr)" class="member-name-link">resolve</a><wbr>(@NonNull <a href="../../../core/jimple/common/expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;expr)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BootstrapMethodHandleResolver.</span><code><a href="../BootstrapMethodHandleResolver.html#resolve(sootup.core.jimple.common.expr.JDynamicInvokeExpr)" class="member-name-link">resolve</a><wbr>(@NonNull <a href="../../../core/jimple/common/expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;expr)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DynamicInvokeResolver.</span><code><a href="../DynamicInvokeResolver.html#resolve(sootup.core.jimple.common.expr.JDynamicInvokeExpr)" class="member-name-link">resolve</a><wbr>(@NonNull <a href="../../../core/jimple/common/expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;expr)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+<div class="caption"><span>Constructors in <a href="../package-summary.html">sootup.callgraph.invokedynamic</a> with parameters of type <a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier</div>
+<div class="table-header col-second">Constructor</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../FunctionalObject.html#%3Cinit%3E(sootup.core.jimple.common.stmt.Stmt,sootup.core.types.ClassType,java.util.Set,sootup.core.signatures.MethodSubSignature,java.util.Set,sootup.callgraph.invokedynamic.DynamicInvokeTarget,int)" class="member-name-link">FunctionalObject</a><wbr>(@NonNull <a href="../../../core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;site,
+ @NonNull <a href="../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;functionalInterface,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&gt;&nbsp;markerInterfaces,
+ @NonNull <a href="../../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a>&nbsp;sam,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../core/signatures/MethodSubSignature.html" title="class in sootup.core.signatures">MethodSubSignature</a>&gt;&nbsp;bridges,
+ @NonNull <a href="../DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&nbsp;implementation,
+ int&nbsp;captureCount)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates an instance of a <code>FunctionalObject</code> record class.</div>
+</div>
 </div>
 </section>
 </li>

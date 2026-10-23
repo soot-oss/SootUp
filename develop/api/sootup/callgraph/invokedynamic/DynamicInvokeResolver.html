@@ -88,10 +88,11 @@ loadScripts(document, 'script');</script>
  and Qilin (configured via <code>CallGraphConfigBuilder.dynamicInvokeResolver(...)</code>), so all
  algorithms agree on which lambda bodies / method references are reachable.
 
- <p>Edges to the returned targets are attributed to the invokedynamic statement itself, not to the
- later functional-interface call site. Pointer analyses bind the call site's arguments (the
- captured values) as <a href="DynamicInvokeTarget.html#captureParameterIndex(int)"><code>DynamicInvokeTarget.captureParameterIndex(int)</code></a> says; no return value
- flows back, since the invokedynamic produces the functional object, not the target's result.</div>
+ <p>A <code>LambdaMetafactory</code> implementation is reached through the <a href="FunctionalObject.html" title="class in sootup.callgraph.invokedynamic"><code>FunctionalObject</code></a> the
+ call site creates: calls on that object dispatch to it, with arguments and return value. Only
+ with <a href="#withCreationSiteEdges()"><code>withCreationSiteEdges()</code></a> is it additionally called from the invokedynamic statement
+ itself (for views that lack the code calling the lambda). All other targets are called from the
+ invokedynamic statement, see <a href="#creationSiteTargets(sootup.core.jimple.common.expr.JDynamicInvokeExpr)"><code>creationSiteTargets(sootup.core.jimple.common.expr.JDynamicInvokeExpr)</code></a>.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -113,18 +114,41 @@ loadScripts(document, 'script');</script>
  argument is a target, e.g. the synthetic lambda body passed to <code>LambdaMetafactory</code>.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isNone()" class="member-name-link">isNone</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#creationSiteEdges()" class="member-name-link">creationSiteEdges</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Whether lambda implementations are also called from their invokedynamic statement.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#creationSiteTargets(sootup.core.jimple.common.expr.JDynamicInvokeExpr)" class="member-name-link">creationSiteTargets</a><wbr>(@NonNull <a href="../../core/jimple/common/expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;expr)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Targets called from the invokedynamic statement itself (see class doc).</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default @NonNull <a href="../../core/model/Body.html" title="class in sootup.core.model">Body</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#desugar(sootup.core.model.SootMethod,sootup.core.model.Body,sootup.core.views.View)" class="member-name-link">desugar</a><wbr>(@NonNull <a href="../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
+ @NonNull <a href="../../core/model/Body.html" title="class in sootup.core.model">Body</a>&nbsp;body,
+ @NonNull <a href="../../core/views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Makes the implicit calls of other invokedynamics explicit (string concatenation's <code>
+ toString()</code>, records' <code>equals</code>/<code>hashCode</code>/<code>toString</code>).</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isNone()" class="member-name-link">isNone</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Whether this resolver is <a href="#none()"><code>none()</code></a>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static @NonNull <a href="DynamicInvokeResolver.html" title="interface in sootup.callgraph.invokedynamic">DynamicInvokeResolver</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#none()" class="member-name-link">none</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static @NonNull <a href="DynamicInvokeResolver.html" title="interface in sootup.callgraph.invokedynamic">DynamicInvokeResolver</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#none()" class="member-name-link">none</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Resolves nothing: invokedynamic call sites get no call targets.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#resolve(sootup.core.jimple.common.expr.JDynamicInvokeExpr)" class="member-name-link">resolve</a><wbr>(@NonNull <a href="../../core/jimple/common/expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;expr)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#resolve(sootup.core.jimple.common.expr.JDynamicInvokeExpr)" class="member-name-link">resolve</a><wbr>(@NonNull <a href="../../core/jimple/common/expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;expr)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default @NonNull <a href="DynamicInvokeResolver.html" title="interface in sootup.callgraph.invokedynamic">DynamicInvokeResolver</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#withCreationSiteEdges()" class="member-name-link">withCreationSiteEdges</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">This resolver, plus edges from each invokedynamic statement to its lambda implementation.</div>
+</div>
 </div>
 </div>
 </div>
@@ -172,6 +196,42 @@ loadScripts(document, 'script');</script>
 <h3>isNone</h3>
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isNone</span>()</div>
 <div class="block">Whether this resolver is <a href="#none()"><code>none()</code></a>.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="creationSiteEdges()">
+<h3>creationSiteEdges</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">creationSiteEdges</span>()</div>
+<div class="block">Whether lambda implementations are also called from their invokedynamic statement.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="withCreationSiteEdges()">
+<h3>withCreationSiteEdges</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">@NonNull <a href="DynamicInvokeResolver.html" title="interface in sootup.callgraph.invokedynamic">DynamicInvokeResolver</a></span>&nbsp;<span class="element-name">withCreationSiteEdges</span>()</div>
+<div class="block">This resolver, plus edges from each invokedynamic statement to its lambda implementation.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="creationSiteTargets(sootup.core.jimple.common.expr.JDynamicInvokeExpr)">
+<h3>creationSiteTargets</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&gt;</span>&nbsp;<span class="element-name">creationSiteTargets</span><wbr><span class="parameters">(@NonNull <a href="../../core/jimple/common/expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a>&nbsp;expr)</span></div>
+<div class="block">Targets called from the invokedynamic statement itself (see class doc).</div>
+</section>
+</li>
+<li>
+<section class="detail" id="desugar(sootup.core.model.SootMethod,sootup.core.model.Body,sootup.core.views.View)">
+<h3>desugar</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">@NonNull <a href="../../core/model/Body.html" title="class in sootup.core.model">Body</a></span>&nbsp;<span class="element-name">desugar</span><wbr><span class="parameters">(@NonNull <a href="../../core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;method,
+ @NonNull <a href="../../core/model/Body.html" title="class in sootup.core.model">Body</a>&nbsp;body,
+ @NonNull <a href="../../core/views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</span></div>
+<div class="block">Makes the implicit calls of other invokedynamics explicit (string concatenation's <code>
+ toString()</code>, records' <code>equals</code>/<code>hashCode</code>/<code>toString</code>). Identity by default.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd><code>body</code> itself if nothing changed, else a rewritten copy - the same one on each
+     call, so statements of call graph edges and of later passes over the body match</dd>
+</dl>
 </section>
 </li>
 </ul>

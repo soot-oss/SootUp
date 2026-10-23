@@ -45,7 +45,7 @@ loadScripts(document, 'script');</script>
 <div>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
-<li><a href="#nested-class-summary">Nested</a>&nbsp;|&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
 <li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
@@ -88,29 +88,11 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">LambdaAllocNode</span>
 <span class="extends-implements">extends <a href="AllocNode.html" title="class in qilin.core.pag">AllocNode</a></span></div>
 <div class="block">An allocation site standing in for the object a <code>LambdaMetafactory</code>-bootstrapped
- invokedynamic call site produces (a lambda or method reference). Unlike a plain <a href="AllocNode.html" title="class in qilin.core.pag"><code>AllocNode</code></a>, its true implementation is known statically from the bootstrap's <a href="../../../sootup/core/jimple/common/constant/MethodHandle.html" title="class in sootup.core.jimple.common.constant"><code>MethodHandle</code></a>
- constant - <a href="#getTargetMethod()"><code>getTargetMethod()</code></a>/<a href="#getTargetKind()"><code>getTargetKind()</code></a> let call-dispatch resolve calls on
- it directly instead of through the (nonexistent) functional-interface vtable.</div>
+ invokedynamic call site produces (a lambda or method reference). Unlike a plain <a href="AllocNode.html" title="class in qilin.core.pag"><code>AllocNode</code></a>, its implementation is known statically: calls on it that <a href="../../../sootup/callgraph/invokedynamic/FunctionalObject.html#answers(sootup.core.signatures.MethodSignature,sootup.core.typehierarchy.TypeHierarchy)"><code>answer</code></a> the <a href="#getFunctionalObject()"><code>functional object</code></a> dispatch
+ straight to that implementation instead of through the (nonexistent) functional-interface vtable.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
-<!-- ======== NESTED CLASS SUMMARY ======== -->
-<li>
-<section class="nested-class-summary" id="nested-class-summary">
-<h2>Nested Class Summary</h2>
-<div class="caption"><span>Nested Classes</span></div>
-<div class="summary-table three-column-summary">
-<div class="table-header col-first">Modifier and Type</div>
-<div class="table-header col-second">Class</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static final record&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="LambdaAllocNode.Target.html" class="type-name-link" title="class in qilin.core.pag">LambdaAllocNode.Target</a></code></div>
-<div class="col-last even-row-color">
-<div class="block">The resolved target of a lambda/method-reference alloc, as read off its bootstrap args.</div>
-</div>
-</div>
-</section>
-</li>
 <!-- =========== FIELD SUMMARY =========== -->
 <li>
 <section class="field-summary" id="field-summary">
@@ -131,11 +113,10 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.Object,sootup.core.types.Type,sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.constant.MethodHandle.Kind)" class="member-name-link">LambdaAllocNode</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;newExpr,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.Object,sootup.core.types.Type,sootup.core.model.SootMethod,sootup.callgraph.invokedynamic.FunctionalObject)" class="member-name-link">LambdaAllocNode</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;newExpr,
  <a href="../../../sootup/core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;type,
  <a href="../../../sootup/core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;m,
- <a href="../../../sootup/core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;targetMethod,
- <a href="../../../sootup/core/jimple/common/constant/MethodHandle.Kind.html" title="enum class in sootup.core.jimple.common.constant">MethodHandle.Kind</a>&nbsp;targetKind)</code></div>
+ <a href="../../../sootup/callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;functionalObject)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -151,12 +132,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../sootup/core/jimple/common/constant/MethodHandle.Kind.html" title="enum class in sootup.core.jimple.common.constant">MethodHandle.Kind</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTargetKind()" class="member-name-link">getTargetKind</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../sootup/callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFunctionalObject()" class="member-name-link">getFunctionalObject</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../sootup/core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTargetMethod()" class="member-name-link">getTargetMethod</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -187,13 +165,12 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(java.lang.Object,sootup.core.types.Type,sootup.core.model.SootMethod,sootup.core.signatures.MethodSignature,sootup.core.jimple.common.constant.MethodHandle.Kind)">
+<section class="detail" id="&lt;init&gt;(java.lang.Object,sootup.core.types.Type,sootup.core.model.SootMethod,sootup.callgraph.invokedynamic.FunctionalObject)">
 <h3>LambdaAllocNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">LambdaAllocNode</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;newExpr,
  <a href="../../../sootup/core/types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;type,
  <a href="../../../sootup/core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a>&nbsp;m,
- <a href="../../../sootup/core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;targetMethod,
- <a href="../../../sootup/core/jimple/common/constant/MethodHandle.Kind.html" title="enum class in sootup.core.jimple.common.constant">MethodHandle.Kind</a>&nbsp;targetKind)</span></div>
+ <a href="../../../sootup/callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;functionalObject)</span></div>
 </section>
 </li>
 </ul>
@@ -205,15 +182,9 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="getTargetMethod()">
-<h3>getTargetMethod</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../sootup/core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a></span>&nbsp;<span class="element-name">getTargetMethod</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="getTargetKind()">
-<h3>getTargetKind</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../sootup/core/jimple/common/constant/MethodHandle.Kind.html" title="enum class in sootup.core.jimple.common.constant">MethodHandle.Kind</a></span>&nbsp;<span class="element-name">getTargetKind</span>()</div>
+<section class="detail" id="getFunctionalObject()">
+<h3>getFunctionalObject</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../sootup/callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a></span>&nbsp;<span class="element-name">getFunctionalObject</span>()</div>
 </section>
 </li>
 </ul>

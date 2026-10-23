@@ -153,6 +153,18 @@ loadScripts(document, 'script');</script>
 <div class="block">Installs the receiver/parameter/return PAG edges connecting one call site to one resolved
  target method.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#installLambdaCallEdges(sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr,java.util.Optional,sootup.core.jimple.common.stmt.InvokableStmt,sootup.callgraph.invokedynamic.FunctionalObject,sootup.core.signatures.MethodSignature)" class="member-name-link">installLambdaCallEdges</a><wbr>(<a href="../core/jimple/common/expr/AbstractInstanceInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInstanceInvokeExpr</a>&nbsp;expr,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../core/jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a>&gt;&nbsp;lhs,
+ <a href="../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;stmt,
+ <a href="../callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
+ <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;targetMethodSig)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Installs the PAG edges of a call that reaches the body of <code>fo</code> (<code>targetMethodSig</code>):
+ the call's arguments go to the parameters / receiver <a href="../callgraph/invokedynamic/FunctionalObject.html#samArgumentIndex(int)"><code>FunctionalObject.samArgumentIndex(int)</code></a>
+ names; the result flows to <code>lhs</code>: the body's return value or, for a constructor
+ reference, a fresh object (also bound to the constructor's receiver).</div>
+</div>
 </div>
 </div>
 </div>
@@ -224,6 +236,21 @@ loadScripts(document, 'script');</script>
 <div class="block">Installs the receiver/parameter/return PAG edges connecting one call site to one resolved
  target method. Public so the OTF driver can invoke it after virtual dispatch resolves a new
  target on a previously-deferred call site.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="installLambdaCallEdges(sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr,java.util.Optional,sootup.core.jimple.common.stmt.InvokableStmt,sootup.callgraph.invokedynamic.FunctionalObject,sootup.core.signatures.MethodSignature)">
+<h3>installLambdaCallEdges</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">installLambdaCallEdges</span><wbr><span class="parameters">(<a href="../core/jimple/common/expr/AbstractInstanceInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInstanceInvokeExpr</a>&nbsp;expr,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../core/jimple/common/Value.html" title="interface in sootup.core.jimple.common">Value</a>&gt;&nbsp;lhs,
+ <a href="../core/jimple/common/stmt/InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;stmt,
+ <a href="../callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
+ <a href="../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;targetMethodSig)</span></div>
+<div class="block">Installs the PAG edges of a call that reaches the body of <code>fo</code> (<code>targetMethodSig</code>):
+ the call's arguments go to the parameters / receiver <a href="../callgraph/invokedynamic/FunctionalObject.html#samArgumentIndex(int)"><code>FunctionalObject.samArgumentIndex(int)</code></a>
+ names; the result flows to <code>lhs</code>: the body's return value or, for a constructor
+ reference, a fresh object (also bound to the constructor's receiver). Captured values are bound
+ at the creation site (<code>installCaptureEdges(sootup.core.jimple.common.expr.JDynamicInvokeExpr, sootup.callgraph.invokedynamic.DynamicInvokeTarget, sootup.core.signatures.MethodSignature)</code>).</div>
 </section>
 </li>
 </ul>

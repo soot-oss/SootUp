@@ -69,8 +69,10 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><a href="#sootup.interceptors">sootup.interceptors</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.interceptors.typeresolving">sootup.interceptors.typeresolving</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.interceptors.invokedynamic">sootup.interceptors.invokedynamic</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#sootup.interceptors.typeresolving">sootup.interceptors.typeresolving</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -263,62 +265,84 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><span class="type-name-label">EmptySwitchEliminator.</span><code><a href="../../../interceptors/EmptySwitchEliminator.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
  @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>abstract void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">JimpleSemanticsChecker.</span><code><a href="../../../interceptors/JimpleSemanticsChecker.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">InvokeDynamicDesugarer.</span><code><a href="../../../interceptors/InvokeDynamicDesugarer.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
  @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">JimpleSemanticsChecker.LoggingJimpleChecker.</span><code><a href="../../../interceptors/JimpleSemanticsChecker.LoggingJimpleChecker.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+<div class="col-first even-row-color"><code>abstract void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JimpleSemanticsChecker.</span><code><a href="../../../interceptors/JimpleSemanticsChecker.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
  @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">JimpleSemanticsChecker.ThrowingJimpleChecker.</span><code><a href="../../../interceptors/JimpleSemanticsChecker.ThrowingJimpleChecker.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+<div class="col-second odd-row-color"><span class="type-name-label">JimpleSemanticsChecker.LoggingJimpleChecker.</span><code><a href="../../../interceptors/JimpleSemanticsChecker.LoggingJimpleChecker.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
  @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">LocalNameStandardizer.</span><code><a href="../../../interceptors/LocalNameStandardizer.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+<div class="col-second even-row-color"><span class="type-name-label">JimpleSemanticsChecker.ThrowingJimpleChecker.</span><code><a href="../../../interceptors/JimpleSemanticsChecker.ThrowingJimpleChecker.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
  @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">LocalPacker.</span><code><a href="../../../interceptors/LocalPacker.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+<div class="col-second odd-row-color"><span class="type-name-label">LocalNameStandardizer.</span><code><a href="../../../interceptors/LocalNameStandardizer.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
  @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">LocalSplitter.</span><code><a href="../../../interceptors/LocalSplitter.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+<div class="col-second even-row-color"><span class="type-name-label">LocalPacker.</span><code><a href="../../../interceptors/LocalPacker.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
  @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">NopEliminator.</span><code><a href="../../../interceptors/NopEliminator.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
- @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Removes <a href="../../jimple/common/stmt/JNopStmt.html" title="class in sootup.core.jimple.common.stmt"><code>JNopStmt</code></a>s from the given <a href="../Body.html" title="class in sootup.core.model"><code>Body</code></a>.</div>
-</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">StaticSingleAssignmentFormer.</span><code><a href="../../../interceptors/StaticSingleAssignmentFormer.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
- @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TrapTightener.</span><code><a href="../../../interceptors/TrapTightener.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+<div class="col-second odd-row-color"><span class="type-name-label">LocalSplitter.</span><code><a href="../../../interceptors/LocalSplitter.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
  @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TypeAssigner.</span><code><a href="../../../interceptors/TypeAssigner.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
- @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnreachableCodeEliminator.</span><code><a href="../../../interceptors/UnreachableCodeEliminator.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
- @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnusedLocalEliminator.</span><code><a href="../../../interceptors/UnusedLocalEliminator.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+<div class="col-second even-row-color"><span class="type-name-label">NopEliminator.</span><code><a href="../../../interceptors/NopEliminator.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
  @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Removes unused locals while retaining the builder's local-chain order.</div>
+<div class="block">Removes <a href="../../jimple/common/stmt/JNopStmt.html" title="class in sootup.core.jimple.common.stmt"><code>JNopStmt</code></a>s from the given <a href="../Body.html" title="class in sootup.core.model"><code>Body</code></a>.</div>
 </div>
-<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../validation/ValidationException.html" title="class in sootup.core.validation">ValidationException</a>&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">JimpleSemanticsChecker.</span><code><a href="../../../interceptors/JimpleSemanticsChecker.html#validate(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">validate</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">StaticSingleAssignmentFormer.</span><code><a href="../../../interceptors/StaticSingleAssignmentFormer.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
  @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TrapTightener.</span><code><a href="../../../interceptors/TrapTightener.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+ @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TypeAssigner.</span><code><a href="../../../interceptors/TypeAssigner.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+ @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnreachableCodeEliminator.</span><code><a href="../../../interceptors/UnreachableCodeEliminator.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+ @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnusedLocalEliminator.</span><code><a href="../../../interceptors/UnusedLocalEliminator.html#interceptBody(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">interceptBody</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+ @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Removes unused locals while retaining the builder's local-chain order.</div>
+</div>
+<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../validation/ValidationException.html" title="class in sootup.core.validation">ValidationException</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JimpleSemanticsChecker.</span><code><a href="../../../interceptors/JimpleSemanticsChecker.html#validate(sootup.core.model.Body.BodyBuilder,sootup.core.views.View)" class="member-name-link">validate</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+ @NonNull <a href="../../views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="sootup.interceptors.invokedynamic">
+<h2>Uses of <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a> in <a href="../../../interceptors/invokedynamic/package-summary.html">sootup.interceptors.invokedynamic</a></h2>
+<div class="caption"><span>Methods in <a href="../../../interceptors/invokedynamic/package-summary.html">sootup.interceptors.invokedynamic</a> with parameters of type <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Fragment.</span><code><a href="../../../interceptors/invokedynamic/Fragment.html#replace(sootup.core.model.Body.BodyBuilder,sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">replace</a><wbr>(@NonNull <a href="../Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a>&nbsp;builder,
+ @NonNull <a href="../../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;replaced)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Puts this fragment in place of <code>replaced</code>, a statement with exactly one successor, and
+ adds its locals to <code>builder</code>.</div>
+</div>
 </div>
 </section>
 </li>

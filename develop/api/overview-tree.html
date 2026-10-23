@@ -144,6 +144,7 @@ loadScripts(document, 'script');</script>
 <li><a href="sootup/core/views/package-tree.html">sootup.core.views</a>, </li>
 <li><a href="sootup/examples/package-tree.html">sootup.examples</a>, </li>
 <li><a href="sootup/interceptors/package-tree.html">sootup.interceptors</a>, </li>
+<li><a href="sootup/interceptors/invokedynamic/package-tree.html">sootup.interceptors.invokedynamic</a>, </li>
 <li><a href="sootup/interceptors/typeresolving/package-tree.html">sootup.interceptors.typeresolving</a>, </li>
 <li><a href="sootup/interceptors/typeresolving/types/package-tree.html">sootup.interceptors.typeresolving.types</a>, </li>
 <li><a href="sootup/java/bytecode/frontend/conversion/package-tree.html">sootup.java.bytecode.frontend.conversion</a>, </li>
@@ -720,6 +721,8 @@ loadScripts(document, 'script');</script>
 <li class="circle">sootup.apk.frontend.tag.<a href="sootup/apk/frontend/tag/FloatOpTag.html" class="type-name-link" title="class in sootup.apk.frontend.tag">FloatOpTag</a> (implements sootup.apk.frontend.main.<a href="sootup/apk/frontend/main/Tag.html" title="interface in sootup.apk.frontend.main">Tag</a>)</li>
 <li class="circle">qilin.pta.toolkits.zipper.flowgraph.<a href="qilin/pta/toolkits/zipper/flowgraph/FlowAnalysis.html" class="type-name-link" title="class in qilin.pta.toolkits.zipper.flowgraph">FlowAnalysis</a></li>
 <li class="circle">sootup.core.graph.<a href="sootup/core/graph/ForwardingBasicBlock.html" class="type-name-link" title="class in sootup.core.graph">ForwardingBasicBlock</a>&lt;V&gt; (implements sootup.core.graph.<a href="sootup/core/graph/BasicBlock.html" title="interface in sootup.core.graph">BasicBlock</a>&lt;V&gt;)</li>
+<li class="circle">sootup.interceptors.invokedynamic.<a href="sootup/interceptors/invokedynamic/Fragment.html" class="type-name-link" title="class in sootup.interceptors.invokedynamic">Fragment</a></li>
+<li class="circle">sootup.interceptors.invokedynamic.<a href="sootup/interceptors/invokedynamic/Fragment.Label.html" class="type-name-link" title="class in sootup.interceptors.invokedynamic">Fragment.Label</a></li>
 <li class="circle">sootup.core.cache.<a href="sootup/core/cache/FullCache.html" class="type-name-link" title="class in sootup.core.cache">FullCache</a> (implements sootup.core.cache.<a href="sootup/core/cache/ClassCache.html" title="interface in sootup.core.cache">ClassCache</a>)
 <ul>
 <li class="circle">sootup.core.cache.<a href="sootup/core/cache/MutableFullCache.html" class="type-name-link" title="class in sootup.core.cache">MutableFullCache</a> (implements sootup.core.cache.<a href="sootup/core/cache/MutableClassCache.html" title="interface in sootup.core.cache">MutableClassCache</a>)</li>
@@ -762,6 +765,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">sootup.apk.frontend.tag.<a href="sootup/apk/frontend/tag/IntOpTag.html" class="type-name-link" title="class in sootup.apk.frontend.tag">IntOpTag</a> (implements sootup.apk.frontend.main.<a href="sootup/apk/frontend/main/Tag.html" title="interface in sootup.apk.frontend.main">Tag</a>)</li>
 <li class="circle">qilin.pta.toolkits.debloaterx.<a href="qilin/pta/toolkits/debloaterx/IntraFlowAnalysis.html" class="type-name-link" title="class in qilin.pta.toolkits.debloaterx">IntraFlowAnalysis</a></li>
 <li class="circle">sootup.core.validation.<a href="sootup/core/validation/InvokeArgumentValidator.html" class="type-name-link" title="class in sootup.core.validation">InvokeArgumentValidator</a> (implements sootup.core.validation.<a href="sootup/core/validation/BodyValidator.html" title="interface in sootup.core.validation">BodyValidator</a>)</li>
+<li class="circle">sootup.interceptors.<a href="sootup/interceptors/InvokeDynamicDesugarer.html" class="type-name-link" title="class in sootup.interceptors">InvokeDynamicDesugarer</a> (implements sootup.core.interceptor.<a href="sootup/core/interceptor/BodyInterceptor.html" title="interface in sootup.core.interceptor">BodyInterceptor</a>)</li>
 <li class="circle">sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JArrayRef.html" class="type-name-link" title="class in sootup.core.jimple.common.ref">JArrayRef</a> (implements sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/ConcreteRef.html" title="interface in sootup.core.jimple.common.ref">ConcreteRef</a>, sootup.core.jimple.common.<a href="sootup/core/jimple/common/LValue.html" title="interface in sootup.core.jimple.common">LValue</a>)</li>
 <li class="circle">sootup.java.core.<a href="sootup/java/core/JavaClassFileMetadata.html" class="type-name-link" title="class in sootup.java.core">JavaClassFileMetadata</a></li>
 <li class="circle">sootup.java.bytecode.frontend.inputlocation.<a href="sootup/java/bytecode/frontend/inputlocation/JavaClassPathAnalysisInputLocation.html" class="type-name-link" title="class in sootup.java.bytecode.frontend.inputlocation">JavaClassPathAnalysisInputLocation</a> (implements sootup.core.inputlocation.<a href="sootup/core/inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>)</li>
@@ -897,7 +901,11 @@ loadScripts(document, 'script');</script>
 <li class="circle">qilin.pta.toolkits.mahjong.automata.<a href="qilin/pta/toolkits/mahjong/automata/NFA.html" class="type-name-link" title="class in qilin.pta.toolkits.mahjong.automata">NFA</a></li>
 <li class="circle">sootup.spark.node.<a href="sootup/spark/node/Node.html" class="type-name-link" title="class in sootup.spark.node">Node</a>
 <ul>
-<li class="circle">sootup.spark.node.<a href="sootup/spark/node/AllocationNode.html" class="type-name-link" title="class in sootup.spark.node">AllocationNode</a></li>
+<li class="circle">sootup.spark.node.<a href="sootup/spark/node/AllocationNode.html" class="type-name-link" title="class in sootup.spark.node">AllocationNode</a>
+<ul>
+<li class="circle">sootup.spark.node.<a href="sootup/spark/node/LambdaAllocationNode.html" class="type-name-link" title="class in sootup.spark.node">LambdaAllocationNode</a></li>
+</ul>
+</li>
 <li class="circle">sootup.spark.node.<a href="sootup/spark/node/InstanceFieldRefNode.html" class="type-name-link" title="class in sootup.spark.node">InstanceFieldRefNode</a></li>
 <li class="circle">sootup.spark.node.<a href="sootup/spark/node/StaticFieldRefNode.html" class="type-name-link" title="class in sootup.spark.node">StaticFieldRefNode</a></li>
 <li class="circle">sootup.spark.node.<a href="sootup/spark/node/VariableNode.html" class="type-name-link" title="class in sootup.spark.node">VariableNode</a></li>
@@ -1139,8 +1147,8 @@ loadScripts(document, 'script');</script>
 <li class="circle">sootup.callgraph.reflection.<a href="sootup/callgraph/reflection/AbstractReflectionModel.MethodContext.html" class="type-name-link" title="class in sootup.callgraph.reflection">AbstractReflectionModel.MethodContext</a></li>
 <li class="circle">sootup.callgraph.<a href="sootup/callgraph/CallGraph.Call.html" class="type-name-link" title="class in sootup.callgraph">CallGraph.Call</a></li>
 <li class="circle">sootup.callgraph.invokedynamic.<a href="sootup/callgraph/invokedynamic/DynamicInvokeTarget.html" class="type-name-link" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a></li>
+<li class="circle">sootup.callgraph.invokedynamic.<a href="sootup/callgraph/invokedynamic/FunctionalObject.html" class="type-name-link" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a></li>
 <li class="circle">sootup.spark.<a href="sootup/spark/IncrementalPointsToAnalysis.HeapKey.html" class="type-name-link" title="class in sootup.spark">IncrementalPointsToAnalysis.HeapKey</a></li>
-<li class="circle">qilin.core.pag.<a href="qilin/core/pag/LambdaAllocNode.Target.html" class="type-name-link" title="class in qilin.core.pag">LambdaAllocNode.Target</a></li>
 <li class="circle">sootup.spark.<a href="sootup/spark/MethodPAGStmtVisitor.OtfContext.html" class="type-name-link" title="class in sootup.spark">MethodPAGStmtVisitor.OtfContext</a></li>
 <li class="circle">sootup.spark.<a href="sootup/spark/MethodPAGStmtVisitor.PendingVirtualCall.html" class="type-name-link" title="class in sootup.spark">MethodPAGStmtVisitor.PendingVirtualCall</a></li>
 <li class="circle">qilin.pta.toolkits.moon.support.<a href="qilin/pta/toolkits/moon/support/MoonDataConstructor.MoonDataStructure.html" class="type-name-link" title="class in qilin.pta.toolkits.moon.support">MoonDataConstructor.MoonDataStructure</a></li>
@@ -1148,6 +1156,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">qilin.util.<a href="qilin/util/Triple.html" class="type-name-link" title="class in qilin.util">Triple</a>&lt;T1,<wbr>T2,<wbr>T3&gt;</li>
 </ul>
 </li>
+<li class="circle">sootup.interceptors.invokedynamic.<a href="sootup/interceptors/invokedynamic/RecordMethodsDesugarizer.html" class="type-name-link" title="class in sootup.interceptors.invokedynamic">RecordMethodsDesugarizer</a> (implements sootup.interceptors.invokedynamic.<a href="sootup/interceptors/invokedynamic/InvokeDynamicDesugarizer.html" title="interface in sootup.interceptors.invokedynamic">InvokeDynamicDesugarizer</a>)</li>
 <li class="circle">qilin.core.effect.<a href="qilin/core/effect/ReflectionEffectModel.html" class="type-name-link" title="class in qilin.core.effect">ReflectionEffectModel</a> (implements qilin.core.effect.<a href="qilin/core/effect/MethodEffectModel.html" title="interface in qilin.core.effect">MethodEffectModel</a>)</li>
 <li class="circle">sootup.core.graph.<a href="sootup/core/graph/ReversePostOrderBlockIterator.html" class="type-name-link" title="class in sootup.core.graph">ReversePostOrderBlockIterator</a> (implements sootup.core.graph.<a href="sootup/core/graph/BlockIterator.html" title="interface in sootup.core.graph">BlockIterator</a>)</li>
 <li class="circle">sootup.core.graph.<a href="sootup/core/graph/ReversePostOrderBlockTraversal.html" class="type-name-link" title="class in sootup.core.graph">ReversePostOrderBlockTraversal</a> (implements sootup.core.graph.<a href="sootup/core/graph/BlockTraversalStrategy.html" title="interface in sootup.core.graph">BlockTraversalStrategy</a>)</li>
@@ -1275,6 +1284,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">qilin.util.<a href="qilin/util/Stopwatch.html" class="type-name-link" title="class in qilin.util">Stopwatch</a></li>
 <li class="circle">qilin.pta.toolkits.moon.traversal.<a href="qilin/pta/toolkits/moon/traversal/StoredVarTraverser.html" class="type-name-link" title="class in qilin.pta.toolkits.moon.traversal">StoredVarTraverser</a></li>
 <li class="circle">sootup.core.util.<a href="sootup/core/util/StreamUtils.html" class="type-name-link" title="class in sootup.core.util">StreamUtils</a></li>
+<li class="circle">sootup.interceptors.invokedynamic.<a href="sootup/interceptors/invokedynamic/StringConcatDesugarizer.html" class="type-name-link" title="class in sootup.interceptors.invokedynamic">StringConcatDesugarizer</a> (implements sootup.interceptors.invokedynamic.<a href="sootup/interceptors/invokedynamic/InvokeDynamicDesugarizer.html" title="interface in sootup.interceptors.invokedynamic">InvokeDynamicDesugarizer</a>)</li>
 <li class="circle">sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/StringConstant.html" class="type-name-link" title="class in sootup.core.jimple.common.constant">StringConstant</a> (implements sootup.core.jimple.common.constant.<a href="sootup/core/jimple/common/constant/Constant.html" title="interface in sootup.core.jimple.common.constant">Constant</a>)</li>
 <li class="circle">sootup.core.util.<a href="sootup/core/util/StringTools.html" class="type-name-link" title="class in sootup.core.util">StringTools</a></li>
 <li class="circle">qilin.util.graph.<a href="qilin/util/graph/StronglyConnectedComponents.html" class="type-name-link" title="class in qilin.util.graph">StronglyConnectedComponents</a>&lt;N&gt;</li>
@@ -1649,6 +1659,7 @@ loadScripts(document, 'script');</script>
 </ul>
 </li>
 <li class="circle">qilin.util.<a href="qilin/util/Invalidatable.html" class="type-name-link" title="interface in qilin.util">Invalidatable</a></li>
+<li class="circle">sootup.interceptors.invokedynamic.<a href="sootup/interceptors/invokedynamic/InvokeDynamicDesugarizer.html" class="type-name-link" title="interface in sootup.interceptors.invokedynamic">InvokeDynamicDesugarizer</a></li>
 <li class="circle">qilin.pta.toolkits.zipper.flowgraph.<a href="qilin/pta/toolkits/zipper/flowgraph/IObjectFlowGraph.html" class="type-name-link" title="interface in qilin.pta.toolkits.zipper.flowgraph">IObjectFlowGraph</a></li>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" class="type-name-link external-link" title="class or interface in java.lang">Iterable</a>&lt;T&gt;
 <ul>

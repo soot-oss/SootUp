@@ -90,6 +90,7 @@ sootup.core.validation
 sootup.core.views
 sootup.examples
 sootup.interceptors
+sootup.interceptors.invokedynamic
 sootup.interceptors.typeresolving
 sootup.interceptors.typeresolving.types
 sootup.java.bytecode.frontend.conversion

@@ -69,8 +69,10 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><a href="#sootup.core.jimple.common.stmt">sootup.core.jimple.common.stmt</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.spark">sootup.spark</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.interceptors.invokedynamic">sootup.interceptors.invokedynamic</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#sootup.spark">sootup.spark</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -237,6 +239,36 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../../stmt/JInvokeStmt.html#%3Cinit%3E(sootup.core.jimple.common.expr.AbstractInvokeExpr,sootup.core.jimple.basic.StmtPositionInfo)" class="member-name-link">JInvokeStmt</a><wbr>(@NonNull <a href="../AbstractInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInvokeExpr</a>&nbsp;invokeExpr,
  @NonNull <a href="../../../basic/StmtPositionInfo.html" title="class in sootup.core.jimple.basic">StmtPositionInfo</a>&nbsp;positionInfo)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="sootup.interceptors.invokedynamic">
+<h2>Uses of <a href="../AbstractInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInvokeExpr</a> in <a href="../../../../../interceptors/invokedynamic/package-summary.html">sootup.interceptors.invokedynamic</a></h2>
+<div class="caption"><span>Methods in <a href="../../../../../interceptors/invokedynamic/package-summary.html">sootup.interceptors.invokedynamic</a> that return <a href="../AbstractInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInvokeExpr</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="../AbstractInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInvokeExpr</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Fragment.</span><code><a href="../../../../../interceptors/invokedynamic/Fragment.html#instanceCall(sootup.core.jimple.common.Local,sootup.core.types.ClassType,java.lang.String,sootup.core.types.Type,java.util.List,java.util.List)" class="member-name-link">instanceCall</a><wbr>(@NonNull <a href="../../Local.html" title="interface in sootup.core.jimple.common">Local</a>&nbsp;base,
+ @NonNull <a href="../../../../types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringType,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ @NonNull <a href="../../../../types/Type.html" title="class in sootup.core.types">Type</a>&nbsp;returnType,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../types/Type.html" title="class in sootup.core.types">Type</a>&gt;&nbsp;parameterTypes,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../Immediate.html" title="interface in sootup.core.jimple.common">Immediate</a>&gt;&nbsp;args)</code></div>
+<div class="col-last even-row-color">
+<div class="block"><code>base.name(args)</code>: an interface or virtual invoke, as <code>declaringType</code> demands.</div>
+</div>
+</div>
+<div class="caption"><span>Methods in <a href="../../../../../interceptors/invokedynamic/package-summary.html">sootup.interceptors.invokedynamic</a> with parameters of type <a href="../AbstractInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInvokeExpr</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Fragment.</span><code><a href="../../../../../interceptors/invokedynamic/Fragment.html#invoke(sootup.core.jimple.common.expr.AbstractInvokeExpr)" class="member-name-link">invoke</a><wbr>(@NonNull <a href="../AbstractInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInvokeExpr</a>&nbsp;call)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>

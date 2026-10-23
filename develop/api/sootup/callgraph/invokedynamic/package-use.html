@@ -61,11 +61,18 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><a href="#qilin.core.invokedynamic">qilin.core.invokedynamic</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.callgraph">sootup.callgraph</a></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#sootup.callgraph.config">sootup.callgraph.config</a></div>
+<div class="col-first odd-row-color"><a href="#qilin.core.pag">qilin.core.pag</a></div>
+<div class="col-last odd-row-color">
+<div class="block">Points-to analysis graph (PAG) data structures, based on Soot/jimple/spark/pag with significant
+ modifications.</div>
+</div>
+<div class="col-first even-row-color"><a href="#sootup.callgraph">sootup.callgraph</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.callgraph.invokedynamic">sootup.callgraph.invokedynamic</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.callgraph.config">sootup.callgraph.config</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#sootup.callgraph.invokedynamic">sootup.callgraph.invokedynamic</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#sootup.spark">sootup.spark</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <section class="package-uses">
@@ -106,9 +113,24 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Decides which methods an invokedynamic call site transfers control to.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/DynamicInvokeTarget.html#qilin.core.invokedynamic">DynamicInvokeTarget</a></div>
+<div class="col-first odd-row-color"><a href="class-use/FunctionalObject.html#qilin.core.invokedynamic">FunctionalObject</a></div>
 <div class="col-last odd-row-color">
-<div class="block">A method an invokedynamic call site transfers control to.</div>
+<div class="block">The object a <code>LambdaMetafactory</code> call site creates (lambda / method reference): an
+ anonymous implementation of <a href="FunctionalObject.html#functionalInterface()"><code>FunctionalObject.functionalInterface()</code></a> whose single abstract method <a href="FunctionalObject.html#sam()"><code>FunctionalObject.sam()</code></a> forwards to <a href="FunctionalObject.html#implementation()"><code>FunctionalObject.implementation()</code></a>.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="qilin.core.pag">
+<div class="caption"><span>Classes in <a href="package-summary.html">sootup.callgraph.invokedynamic</a> used by <a href="../../../qilin/core/pag/package-summary.html">qilin.core.pag</a></span></div>
+<div class="summary-table two-column-summary">
+<div class="table-header col-first">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><a href="class-use/FunctionalObject.html#qilin.core.pag">FunctionalObject</a></div>
+<div class="col-last even-row-color">
+<div class="block">The object a <code>LambdaMetafactory</code> call site creates (lambda / method reference): an
+ anonymous implementation of <a href="FunctionalObject.html#functionalInterface()"><code>FunctionalObject.functionalInterface()</code></a> whose single abstract method <a href="FunctionalObject.html#sam()"><code>FunctionalObject.sam()</code></a> forwards to <a href="FunctionalObject.html#implementation()"><code>FunctionalObject.implementation()</code></a>.</div>
 </div>
 </div>
 </section>
@@ -122,6 +144,11 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><a href="class-use/DynamicInvokeResolver.html#sootup.callgraph">DynamicInvokeResolver</a></div>
 <div class="col-last even-row-color">
 <div class="block">Decides which methods an invokedynamic call site transfers control to.</div>
+</div>
+<div class="col-first odd-row-color"><a href="class-use/FunctionalObject.html#sootup.callgraph">FunctionalObject</a></div>
+<div class="col-last odd-row-color">
+<div class="block">The object a <code>LambdaMetafactory</code> call site creates (lambda / method reference): an
+ anonymous implementation of <a href="FunctionalObject.html#functionalInterface()"><code>FunctionalObject.functionalInterface()</code></a> whose single abstract method <a href="FunctionalObject.html#sam()"><code>FunctionalObject.sam()</code></a> forwards to <a href="FunctionalObject.html#implementation()"><code>FunctionalObject.implementation()</code></a>.</div>
 </div>
 </div>
 </section>
@@ -152,6 +179,25 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><a href="class-use/DynamicInvokeTarget.html#sootup.callgraph.invokedynamic">DynamicInvokeTarget</a></div>
 <div class="col-last odd-row-color">
 <div class="block">A method an invokedynamic call site transfers control to.</div>
+</div>
+<div class="col-first even-row-color"><a href="class-use/FunctionalObject.html#sootup.callgraph.invokedynamic">FunctionalObject</a></div>
+<div class="col-last even-row-color">
+<div class="block">The object a <code>LambdaMetafactory</code> call site creates (lambda / method reference): an
+ anonymous implementation of <a href="FunctionalObject.html#functionalInterface()"><code>FunctionalObject.functionalInterface()</code></a> whose single abstract method <a href="FunctionalObject.html#sam()"><code>FunctionalObject.sam()</code></a> forwards to <a href="FunctionalObject.html#implementation()"><code>FunctionalObject.implementation()</code></a>.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="sootup.spark">
+<div class="caption"><span>Classes in <a href="package-summary.html">sootup.callgraph.invokedynamic</a> used by <a href="../../spark/package-summary.html">sootup.spark</a></span></div>
+<div class="summary-table two-column-summary">
+<div class="table-header col-first">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><a href="class-use/FunctionalObject.html#sootup.spark">FunctionalObject</a></div>
+<div class="col-last even-row-color">
+<div class="block">The object a <code>LambdaMetafactory</code> call site creates (lambda / method reference): an
+ anonymous implementation of <a href="FunctionalObject.html#functionalInterface()"><code>FunctionalObject.functionalInterface()</code></a> whose single abstract method <a href="FunctionalObject.html#sam()"><code>FunctionalObject.sam()</code></a> forwards to <a href="FunctionalObject.html#implementation()"><code>FunctionalObject.implementation()</code></a>.</div>
 </div>
 </div>
 </section>

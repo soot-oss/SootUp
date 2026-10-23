@@ -59,25 +59,23 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><a href="#qilin.core.builder.callgraph">qilin.core.builder.callgraph</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#qilin.core.invokedynamic">qilin.core.invokedynamic</a></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#qilin.core.pag">qilin.core.pag</a></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><a href="#qilin.core.pag">qilin.core.pag</a></div>
+<div class="col-last even-row-color">
 <div class="block">Points-to analysis graph (PAG) data structures, based on Soot/jimple/spark/pag with significant
  modifications.</div>
 </div>
-<div class="col-first even-row-color"><a href="#qilin.util">qilin.util</a></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.callgraph">sootup.callgraph</a></div>
+<div class="col-first odd-row-color"><a href="#qilin.util">qilin.util</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#sootup.callgraph.reflection">sootup.callgraph.reflection</a></div>
+<div class="col-first even-row-color"><a href="#sootup.callgraph">sootup.callgraph</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.callgraph.scope">sootup.callgraph.scope</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.callgraph.reflection">sootup.callgraph.reflection</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#sootup.core.jimple.common.stmt">sootup.core.jimple.common.stmt</a></div>
+<div class="col-first even-row-color"><a href="#sootup.callgraph.scope">sootup.callgraph.scope</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#sootup.spark">sootup.spark</a></div>
+<div class="col-first odd-row-color"><a href="#sootup.core.jimple.common.stmt">sootup.core.jimple.common.stmt</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#sootup.spark">sootup.spark</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -174,24 +172,6 @@ loadScripts(document, 'script');</script>
  <a href="../../../../../../qilin/core/pag/ContextMethod.html" title="class in qilin.core.pag">ContextMethod</a>&nbsp;tgt,
  <a href="../../../../../../qilin/core/builder/callgraph/Kind.html" title="class in qilin.core.builder.callgraph">Kind</a>&nbsp;kind)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="qilin.core.invokedynamic">
-<h2>Uses of <a href="../InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a> in <a href="../../../../../../qilin/core/invokedynamic/package-summary.html">qilin.core.invokedynamic</a></h2>
-<div class="caption"><span>Methods in <a href="../../../../../../qilin/core/invokedynamic/package-summary.html">qilin.core.invokedynamic</a> with parameters of type <a href="../InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a></span></div>
-<div class="summary-table three-column-summary">
-<div class="table-header col-first">Modifier and Type</div>
-<div class="table-header col-second">Method</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static boolean</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">LambdaMetafactoryModel.</span><code><a href="../../../../../../qilin/core/invokedynamic/LambdaMetafactoryModel.html#handles(sootup.core.jimple.common.stmt.InvokableStmt,sootup.callgraph.invokedynamic.DynamicInvokeTarget)" class="member-name-link">handles</a><wbr>(<a href="../InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;stmt,
- <a href="../../../../../callgraph/invokedynamic/DynamicInvokeTarget.html" title="class in sootup.callgraph.invokedynamic">DynamicInvokeTarget</a>&nbsp;target)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Whether this model handles <code>target</code> of the invokedynamic <code>stmt</code>: a non-capturing
- static lambda implementation whose functional object is assigned to a local.</div>
-</div>
 </div>
 </section>
 </li>
@@ -542,6 +522,24 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><span class="type-name-label">MethodPAGStmtVisitor.PendingVirtualCall.</span><code><a href="../../../../../spark/MethodPAGStmtVisitor.PendingVirtualCall.html#stmt()" class="member-name-link">stmt</a>()</code></div>
 <div class="col-last even-row-color">
 <div class="block">Returns the value of the <code>stmt</code> record component.</div>
+</div>
+</div>
+<div class="caption"><span>Methods in <a href="../../../../../spark/package-summary.html">sootup.spark</a> with parameters of type <a href="../InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">MethodPAGStmtVisitor.</span><code><a href="../../../../../spark/MethodPAGStmtVisitor.html#installLambdaCallEdges(sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr,java.util.Optional,sootup.core.jimple.common.stmt.InvokableStmt,sootup.callgraph.invokedynamic.FunctionalObject,sootup.core.signatures.MethodSignature)" class="member-name-link">installLambdaCallEdges</a><wbr>(<a href="../../expr/AbstractInstanceInvokeExpr.html" title="class in sootup.core.jimple.common.expr">AbstractInstanceInvokeExpr</a>&nbsp;expr,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../Value.html" title="interface in sootup.core.jimple.common">Value</a>&gt;&nbsp;lhs,
+ <a href="../InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a>&nbsp;stmt,
+ <a href="../../../../../callgraph/invokedynamic/FunctionalObject.html" title="class in sootup.callgraph.invokedynamic">FunctionalObject</a>&nbsp;fo,
+ <a href="../../../../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;targetMethodSig)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Installs the PAG edges of a call that reaches the body of <code>fo</code> (<code>targetMethodSig</code>):
+ the call's arguments go to the parameters / receiver <a href="../../../../../callgraph/invokedynamic/FunctionalObject.html#samArgumentIndex(int)"><code>FunctionalObject.samArgumentIndex(int)</code></a>
+ names; the result flows to <code>lhs</code>: the body's return value or, for a constructor
+ reference, a fresh object (also bound to the constructor's receiver).</div>
 </div>
 </div>
 <div class="caption"><span>Constructors in <a href="../../../../../spark/package-summary.html">sootup.spark</a> with parameters of type <a href="../InvokableStmt.html" title="interface in sootup.core.jimple.common.stmt">InvokableStmt</a></span></div>
