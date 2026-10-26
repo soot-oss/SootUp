@@ -15,6 +15,7 @@ import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.common.Trap;
+import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.model.*;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
@@ -40,6 +41,148 @@ public class JimpleConverterTest {
             Collections.emptyList(),
             new JavaView(eagerInputLocation));
     return new JavaSootClass(scs, SourceType.Application);
+  }
+
+  /** the JimplePrinter appends a labeled nop to denote the end of a Trap covering the last Stmt */
+  private static final String trapUntilEndOfBodyClass =
+      "class DummyClass extends java.lang.Object {\n"
+          + "  java.lang.Object foo() {\n"
+          + "    DummyClass this;\n"
+          + "    java.lang.Throwable e;\n"
+          + "    this := @this: DummyClass;\n"
+          + "  label1:\n"
+          + "    return this;\n"
+          + "  label2:\n"
+          + "    e := @caughtexception;\n"
+          + "    throw e;\n"
+          + "  label3:\n"
+          + "    nop;\n"
+          + "  catch java.lang.Exception from label1 to label2 with label2;\n"
+          + "  catch java.lang.Throwable from label2 to label3 with label2;\n"
+          + "  }\n"
+          + "}";
+
+  @Test
+  public void parseTrapUntilEndOfBody() {
+    JavaSootClass clazz = parseJimpleClass(CharStreams.fromString(trapUntilEndOfBodyClass));
+    Body body = clazz.getMethodsByName("foo").iterator().next().getBody();
+
+    // the artificial nop is no part of the control flow
+    assertEquals(4, body.getStmts().size());
+    assertTrue(body.getStmts().stream().noneMatch(s -> s instanceof JNopStmt));
+
+    List<Trap> traps = new BriefStmtPrinter(body.getControlFlowGraph()).getTraps();
+    assertEquals(2, traps.size());
+    // the Trap covering the last Stmt ends with an (again artificial) nop
+    assertTrue(
+        traps.stream()
+            .anyMatch(
+                t ->
+                    t.getEndStmt() instanceof JNopStmt
+                        && !body.getControlFlowGraph().containsNode(t.getEndStmt())));
+
+    // print -> parse -> print is stable
+    String printed = body.toString();
+    JavaSootClass reparsedClass =
+        parseJimpleClass(
+            CharStreams.fromString(
+                "class DummyClass extends java.lang.Object {\n java.lang.Object foo()\n"
+                    + printed
+                    + "}"));
+    assertEquals(
+        printed, reparsedClass.getMethodsByName("foo").iterator().next().getBody().toString());
+  }
+
+  @Test
+  public void parseUnreachableTrailingBlocks() {
+    // unreachable, not connected Blocks at the end - the last one falls through
+    CharStream cs =
+        CharStreams.fromString(
+            "class DummyClass extends java.lang.Object {\n"
+                + "  int foo() {\n"
+                + "    DummyClass this;\n"
+                + "    java.lang.Throwable e;\n"
+                + "    int i;\n"
+                + "    this := @this: DummyClass;\n"
+                + "  label1:\n"
+                + "    i = 1;\n"
+                + "    return i;\n"
+                + "  label2:\n"
+                + "    e := @caughtexception;\n"
+                + "    throw e;\n"
+                + "  label3:\n"
+                + "    i = 2;\n"
+                + "    goto label3;\n"
+                + "  label4:\n"
+                + "    return i;\n"
+                + "  label5:\n"
+                + "    i = 3;\n"
+                + "  catch java.lang.Exception from label1 to label4 with label2;\n"
+                + "  catch java.lang.Error from label3 to label5 with label2;\n"
+                + "  }\n"
+                + "}");
+    Body body = parseJimpleClass(cs).getMethodsByName("foo").iterator().next().getBody();
+    assertEquals(5, body.getStmts().size());
+
+    // the Error trap covers only unreachable Stmts
+    List<Trap> traps = new BriefStmtPrinter(body.getControlFlowGraph()).getTraps();
+    assertEquals(1, traps.size());
+    assertEquals("java.lang.Exception", traps.get(0).getExceptionType().toString());
+  }
+
+  @Test
+  public void parseUnreachableBlockInTheMiddle() {
+    CharStream cs =
+        CharStreams.fromString(
+            "class DummyClass extends java.lang.Object {\n"
+                + "  int foo() {\n"
+                + "    DummyClass this;\n"
+                + "    java.lang.Throwable e;\n"
+                + "    int i;\n"
+                + "    this := @this: DummyClass;\n"
+                + "    goto label2;\n"
+                + "  label1:\n"
+                + "    i = 1;\n"
+                + "  label2:\n"
+                + "    i = 2;\n"
+                + "  label3:\n"
+                + "    i = 3;\n"
+                + "    goto label5;\n"
+                + "  label4:\n"
+                + "    e := @caughtexception;\n"
+                + "    throw e;\n"
+                + "  label5:\n"
+                + "    return i;\n"
+                + "  catch java.lang.Exception from label1 to label3 with label4;\n"
+                + "  }\n"
+                + "}");
+    Body body = parseJimpleClass(cs).getMethodsByName("foo").iterator().next().getBody();
+    // i = 1 is removed
+    assertEquals(8, body.getStmts().size());
+    assertTrue(body.getStmts().stream().noneMatch(stmt -> stmt.toString().equals("i = 1")));
+
+    // the Trap range shrinks to its reachable Block
+    List<Trap> traps = new BriefStmtPrinter(body.getControlFlowGraph()).getTraps();
+    assertEquals(1, traps.size());
+    assertEquals("i = 2", traps.get(0).getBeginStmt().toString());
+    assertEquals("i = 3", traps.get(0).getEndStmt().toString());
+  }
+
+  @Test
+  public void parseReachableTrailingNop() {
+    // a reachable nop at the end has no successor
+    CharStream cs =
+        CharStreams.fromString(
+            "class DummyClass extends java.lang.Object {\n"
+                + "  void foo() {\n"
+                + "    goto label1;\n"
+                + "  label1:\n"
+                + "    nop;\n"
+                + "  }\n"
+                + "}");
+    assertThrows(
+        ResolveException.class,
+        () -> parseJimpleClass(cs).getMethodsByName("foo").iterator().next().getBody());
   }
 
   @Test

@@ -29,6 +29,10 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.JimpleUtils;
+import sootup.core.jimple.common.Trap;
+import sootup.core.jimple.common.stmt.BranchingStmt;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.FullPosition;
 import sootup.core.model.Position;
 import sootup.core.signatures.FieldSignature;
@@ -213,6 +217,143 @@ public class JimpleConverterUtil {
               identifierFactory.getClassType(JimpleUtils.unescape(typeContext.getText())));
     }
     return set;
+  }
+
+  /**
+   * Removes the Blocks that are not reachable from the first Block - neither via fallthrough, a
+   * branch nor via the exceptional flow of a Trap covering a reachable Block. A ControlFlowGraph can
+   * not contain such unreachable Stmts, but serialized Jimple can - e.g. the JimplePrinter appends an
+   * artificial nop as the last Stmt to denote the (exclusive) end of a Trap that covers the last
+   * Stmt of the body.
+   *
+   * <p>The Traps are adapted accordingly: a Trap range shrinks to its reachable Blocks i.e. it begins
+   * at the first reachable Block in its range and ends at the next reachable Block after its range
+   * (or at the end of the body, denoted by an endStmt that is in no Block). A Trap without any
+   * reachable Block in its range is removed.
+   *
+   * @param blocks the linearized Blocks; the head of each Block is either the first Stmt, a labeled
+   *     Stmt or follows a branching Stmt
+   * @param traps the Traps whose begin, end and handler Stmts are Block heads
+   * @param labeledStmts maps label names to their Stmt
+   * @param unresolvedBranches maps each BranchingStmt to its target labels
+   */
+  public static void removeUnreachableBlocks(
+      @NonNull List<List<Stmt>> blocks,
+      @NonNull List<Trap> traps,
+      @NonNull Map<String, Stmt> labeledStmts,
+      @NonNull Map<BranchingStmt, List<String>> unresolvedBranches) {
+    final int blockCount = blocks.size();
+    if (blockCount == 0) {
+      return;
+    }
+
+    final Map<Stmt, Integer> headToBlockIdx = new IdentityHashMap<>();
+    for (int i = 0; i < blockCount; i++) {
+      headToBlockIdx.put(blocks.get(i).get(0), i);
+    }
+
+    // trap ranges as [beginIdx, endIdx) of Block indices, handlerIdx
+    final int[][] trapRanges = new int[traps.size()][];
+    for (int t = 0; t < traps.size(); t++) {
+      final Trap trap = traps.get(t);
+      final Integer beginIdx = headToBlockIdx.get(trap.getBeginStmt());
+      final Integer endIdx = headToBlockIdx.get(trap.getEndStmt());
+      final Integer handlerIdx = headToBlockIdx.get(trap.getHandlerStmt());
+      if (beginIdx == null || endIdx == null || handlerIdx == null) {
+        // invalid Trap: leave it to the ControlFlowGraph creation to report it
+        return;
+      }
+      trapRanges[t] = new int[] {beginIdx, endIdx, handlerIdx};
+    }
+
+    // determine reachable Blocks
+    final boolean[] reachable = new boolean[blockCount];
+    final Deque<Integer> worklist = new ArrayDeque<>();
+    reachable[0] = true;
+    worklist.add(0);
+    while (!worklist.isEmpty()) {
+      final int blockIdx = worklist.poll();
+      final List<Integer> successorIdxs = new ArrayList<>();
+
+      final List<Stmt> block = blocks.get(blockIdx);
+      final Stmt tail = block.get(block.size() - 1);
+      if (tail instanceof FallsThroughStmt && blockIdx + 1 < blockCount) {
+        successorIdxs.add(blockIdx + 1);
+      }
+      if (tail instanceof BranchingStmt) {
+        final List<String> targetLabels = unresolvedBranches.get(tail);
+        if (targetLabels != null) {
+          for (String targetLabel : targetLabels) {
+            final Integer targetIdx = headToBlockIdx.get(labeledStmts.get(targetLabel));
+            if (targetIdx != null) {
+              successorIdxs.add(targetIdx);
+            }
+          }
+        }
+      }
+      for (int[] trapRange : trapRanges) {
+        if (trapRange[0] <= blockIdx && blockIdx < trapRange[1]) {
+          successorIdxs.add(trapRange[2]);
+        }
+      }
+
+      for (int successorIdx : successorIdxs) {
+        if (!reachable[successorIdx]) {
+          reachable[successorIdx] = true;
+          worklist.add(successorIdx);
+        }
+      }
+    }
+
+    boolean allReachable = true;
+    for (boolean isReachable : reachable) {
+      allReachable &= isReachable;
+    }
+    if (allReachable) {
+      return;
+    }
+
+    // adapt the Trap ranges to the reachable Blocks
+    final List<Trap> adaptedTraps = new ArrayList<>(traps.size());
+    for (int t = 0; t < traps.size(); t++) {
+      final Trap trap = traps.get(t);
+      final int beginIdx = trapRanges[t][0];
+      final int endIdx = trapRanges[t][1];
+
+      int newBeginIdx = beginIdx;
+      while (newBeginIdx < endIdx && !reachable[newBeginIdx]) {
+        newBeginIdx++;
+      }
+      if (newBeginIdx >= endIdx) {
+        // the Trap covers no reachable Stmt
+        continue;
+      }
+
+      int newEndIdx = endIdx;
+      while (newEndIdx < blockCount && !reachable[newEndIdx]) {
+        newEndIdx++;
+      }
+      // no reachable Block after the range: the removed endStmt denotes the end of the body
+      final Stmt newEndStmt =
+          newEndIdx < blockCount ? blocks.get(newEndIdx).get(0) : trap.getEndStmt();
+
+      adaptedTraps.add(
+          new Trap(
+              trap.getExceptionType(),
+              blocks.get(newBeginIdx).get(0),
+              newEndStmt,
+              trap.getHandlerStmt()));
+    }
+    traps.clear();
+    traps.addAll(adaptedTraps);
+
+    // remove the unreachable Blocks
+    for (int i = blockCount - 1; i >= 0; i--) {
+      if (!reachable[i]) {
+        final List<Stmt> removedBlock = blocks.remove(i);
+        unresolvedBranches.remove(removedBlock.get(removedBlock.size() - 1));
+      }
+    }
   }
 
   @NonNull

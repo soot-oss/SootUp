@@ -233,6 +233,9 @@ public class LazyJimpleMethodSource implements BodySource {
         }
       }
 
+      JimpleConverterUtil.removeUnreachableBlocks(
+          blocks, traps, labeledStmts, unresolvedBranches);
+
       Position classPosition = JimpleConverterUtil.buildPositionFromCtx(methodContext);
 
       // associate labeled Stmts with Branching Stmts

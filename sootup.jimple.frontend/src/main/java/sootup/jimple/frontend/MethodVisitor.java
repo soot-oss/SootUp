@@ -219,6 +219,9 @@ public abstract class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
                   labeledStmts.get(handlerLabel)));
         }
       }
+
+      JimpleConverterUtil.removeUnreachableBlocks(
+          blocks, traps, labeledStmts, unresolvedBranches);
     }
   }
 
