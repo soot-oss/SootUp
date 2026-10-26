@@ -36,8 +36,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ConstantDynamic;
 import org.objectweb.asm.Handle;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypeReference;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
@@ -155,6 +158,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private final JavaIdentifierFactory identifierFactory;
   private final Supplier<MethodSignature> lazyMethodSignature;
 
+  /**
+   * Bytes of the declaring class file if this node was read with {@link ClassReader#SKIP_CODE}:
+   * code is then re-read on demand by {@link #resolveBody(Iterable)}, so unresolved methods don't
+   * hold an ASM instruction tree. {@code null}: code already present in this node.
+   */
+  @Nullable private final byte[] classBytes;
+
   AsmMethodSource(
       int access,
       @NonNull String name,
@@ -162,10 +172,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @NonNull String signature,
       @NonNull String[] exceptions,
       View view,
-      @NonNull List<BodyInterceptor> bodyInterceptors) {
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @Nullable byte[] classBytes) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
     this.bodyInterceptors = bodyInterceptors;
     this.view = view;
+    this.classBytes = classBytes;
 
     identifierFactory = (JavaIdentifierFactory) view.getIdentifierFactory();
     lazyMethodSignature =
@@ -207,6 +219,36 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Override
   @NonNull
   public Body resolveBody(@NonNull Iterable<MethodModifier> modifierIt) {
+    if (classBytes == null) {
+      return convertBody(modifierIt);
+    }
+    // fresh throwaway node per call: reentrant, and the instruction tree is garbage afterwards
+    AsmMethodSource withCode =
+        new AsmMethodSource(
+            access,
+            name,
+            desc,
+            signature,
+            exceptions.toArray(new String[0]),
+            view,
+            bodyInterceptors,
+            null);
+    withCode.setDeclaringClass(declaringClass);
+    new ClassReader(classBytes)
+        .accept(
+            new ClassVisitor(AsmUtil.SUPPORTED_ASM_OPCODE) {
+              @Override
+              public MethodVisitor visitMethod(
+                  int access, String name, String desc, String signature, String[] exceptions) {
+                return name.equals(withCode.name) && desc.equals(withCode.desc) ? withCode : null;
+              }
+            },
+            ClassReader.SKIP_FRAMES);
+    return withCode.convertBody(modifierIt);
+  }
+
+  @NonNull
+  private Body convertBody(@NonNull Iterable<MethodModifier> modifierIt) {
 
     /* initialize */
     nextLocal = maxLocals;
@@ -338,13 +380,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // the name is collision-free already (see LocalVariableTableLocals)
       return lvtLocals.getOrCreate(
           lvn,
-          name -> JavaJimple.newLocal(name, type, resolveLocalVariableAnnotations(idx, lvn.start)));
+          name ->
+              JavaJimple.newSlotLocal(
+                  name, type, idx, resolveLocalVariableAnnotations(idx, lvn.start)));
     }
 
     JavaLocal local = locals.get(idx);
     if (local == null) {
       String nameCandidate = determineLocalName(idx, atInsn);
-      local = createUniqueLocal(nameCandidate, type, resolveLocalVariableAnnotations(idx, atInsn));
+      local =
+          createUniqueLocal(nameCandidate, type, idx, resolveLocalVariableAnnotations(idx, atInsn));
       locals.set(idx, local);
     }
     return local;
@@ -386,15 +431,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return "l" + idx;
   }
 
-  private JavaLocal createUniqueLocal(@NonNull String nameCandidate, @NonNull Type type) {
-    return createUniqueLocal(nameCandidate, type, Collections.emptyList());
-  }
-
   private JavaLocal createUniqueLocal(
       @NonNull String nameCandidate,
       @NonNull Type type,
+      int slotIndex,
       @NonNull List<AnnotationUsage> annotations) {
-    return JavaJimple.newLocal(uniqueLocalName(nameCandidate), type, annotations);
+    return JavaJimple.newSlotLocal(uniqueLocalName(nameCandidate), type, slotIndex, annotations);
   }
 
   /**
@@ -507,7 +549,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @NonNull Local newStackLocal(@NonNull Type type) {
     int idx = nextLocal++;
-    JavaLocal l = createUniqueLocal("$stack" + idx, type);
+    JavaLocal l = JavaJimple.newStackLocal(uniqueLocalName("$stack" + idx), type);
     locals.set(idx, l);
     return l;
   }
@@ -1890,7 +1932,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(MethodModifier.STATIC)) {
-      JavaLocal thisLocal = JavaJimple.newLocal("this", declaringClass);
+      JavaLocal thisLocal = JavaJimple.newSlotLocal("this", declaringClass, localIdx);
       usedLocalNames.add("this");
       LocalVariableNode lvn = lvtLocals.resolvePreamble(localIdx);
       if (lvn != null) {
@@ -1914,11 +1956,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       collectFormalParameterTypeAnnotations(parameterAnnotations, i);
       LocalVariableNode lvn = lvtLocals.resolvePreamble(localIdx);
       JavaLocal local =
-          JavaJimple.newLocal(
+          JavaJimple.newSlotLocal(
               lvn != null
                   ? lvtLocals.nameOf(lvn)
                   : uniqueLocalName(determineLocalName(localIdx, null)),
               parameterType,
+              localIdx,
               parameterAnnotations);
       if (lvn != null) {
         lvtLocals.registerPreambleLocal(lvn, local);

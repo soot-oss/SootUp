@@ -13,6 +13,7 @@ import sootup.callgraph.CallGraphConfig;
 import sootup.callgraph.config.CallGraphConfigBuilder;
 import sootup.core.jimple.common.constant.MethodHandle;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
+import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -78,6 +79,74 @@ public class DynamicInvokeCallGraphTest {
   @Test
   public void constructorRef() {
     assertResolved(main("ConstructorRef"), main("ConstructorRef"), sig("Worker", "<init>", "void"));
+  }
+
+  @Test
+  public void lambdaIsCalledFromCallSiteNotCreationSite() {
+    MethodSignature entry = main("CapturingLambda");
+    MethodSignature body = sig("CapturingLambda", "lambda$main$0", "void", "indy.Payload");
+    for (boolean rta : new boolean[] {false, true}) {
+      List<CallGraph.Call> calls =
+          cg(entry, rta, null).callsFrom(entry).stream()
+              .filter(c -> c.targetMethodSignature().equals(body))
+              .toList();
+      assertEquals(1, calls.size(), "rta=" + rta);
+      assertTrue(
+          calls.get(0).invokableStmt().getInvokeExpr().get() instanceof JInterfaceInvokeExpr,
+          "rta=" + rta);
+    }
+  }
+
+  @Test
+  public void lambdaWithArguments() {
+    MethodSignature body = sig("LambdaArgs", "lambda$main$0", "indy.Payload", "indy.Payload");
+    assertResolved(main("LambdaArgs"), main("LambdaArgs"), body);
+    assertTrue(
+        cg(main("LambdaArgs"), true, null)
+            .callTargetsFrom(body)
+            .contains(sig("LambdaArgs", "id", "indy.Payload", "indy.Payload")));
+  }
+
+  @Test
+  public void unboundMethodRef() {
+    assertResolved(main("UnboundRef"), main("UnboundRef"), sig("Payload", "self", "indy.Payload"));
+  }
+
+  @Test
+  public void constructorRefWithResult() {
+    assertResolved(main("CtorRefResult"), main("CtorRefResult"), sig("Worker", "<init>", "void"));
+  }
+
+  @Test
+  public void stringConcatenationCallsToString() {
+    // "x" + p
+    assertResolved(main("Concat"), main("Concat"), sig("Payload", "toString", "java.lang.String"));
+  }
+
+  @Test
+  public void recordMethodsCallComponentMethods() {
+    MethodSignature entry = main("Rec");
+    assertResolved(
+        entry,
+        sig("Rec", "toString", "java.lang.String"),
+        sig("Payload", "toString", "java.lang.String"));
+    assertResolved(entry, sig("Rec", "hashCode", "int"), sig("Payload", "hashCode", "int"));
+    assertResolved(
+        entry,
+        sig("Rec", "equals", "boolean", "java.lang.Object"),
+        sig("Payload", "equals", "boolean", "java.lang.Object"));
+  }
+
+  @Test
+  public void neverCalledLambdaIsUnreachableUnlessCreationSiteEdges() {
+    MethodSignature entry = main("NeverCalled");
+    MethodSignature body = sig("NeverCalled", "lambda$main$0", "void");
+    DynamicInvokeResolver creationSite =
+        DynamicInvokeResolver.bootstrapMethodHandles().withCreationSiteEdges();
+    for (boolean rta : new boolean[] {false, true}) {
+      assertFalse(cg(entry, rta, null).containsMethod(body), "rta=" + rta);
+      assertTrue(cg(entry, rta, creationSite).callTargetsFrom(entry).contains(body), "rta=" + rta);
+    }
   }
 
   @Test

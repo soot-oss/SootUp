@@ -11,7 +11,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.callgraph.CallGraph;
-import sootup.core.jimple.common.Local;
+import sootup.core.jimple.Jimple;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.spark.Engine;
@@ -52,13 +52,14 @@ public class OnFlyCallGraphTest {
     AllocationNode newContainer = SparkTestUtil.alloc(containerType, 2L, mainSig);
 
     assertEquals(
-        Collections.singleton(newField), pta.reachingObjects(new Local("l2", fieldType), mainSig));
+        Collections.singleton(newField),
+        pta.reachingObjects(Jimple.newLocal("l2", fieldType), mainSig));
     assertEquals(
         Collections.singleton(newContainer),
-        pta.reachingObjects(new Local("l3", containerType), mainSig));
+        pta.reachingObjects(Jimple.newLocal("l3", containerType), mainSig));
     assertEquals(
         Collections.singleton(newContainer),
-        pta.reachingObjects(new Local("l4", containerType), mainSig));
+        pta.reachingObjects(Jimple.newLocal("l4", containerType), mainSig));
   }
 
   /**
@@ -110,8 +111,8 @@ public class OnFlyCallGraphTest {
     PointsToAnalysis pta = spark.getPointsToAnalysis();
     AllocationNode valueAlloc = SparkTestUtil.alloc(valueType, 2L, mainSig);
     boolean foundValueReach =
-        pta.reachingObjects(new Local("l2", valueType), mainSig).contains(valueAlloc)
-            || pta.reachingObjects(new Local("l3", valueType), mainSig).contains(valueAlloc);
+        pta.reachingObjects(Jimple.newLocal("l2", valueType), mainSig).contains(valueAlloc)
+            || pta.reachingObjects(Jimple.newLocal("l3", valueType), mainSig).contains(valueAlloc);
     assertTrue(foundValueReach, "Value allocation must reach at least one local in main");
   }
 
@@ -144,7 +145,7 @@ public class OnFlyCallGraphTest {
     AllocationNode newB = SparkTestUtil.alloc(nodeType, 2L, mainSig);
     AllocationNode newC = SparkTestUtil.alloc(nodeType, 3L, mainSig);
 
-    Set<AllocationNode> reachingX = pta.reachingObjects(new Local("l4", nodeType), mainSig);
+    Set<AllocationNode> reachingX = pta.reachingObjects(Jimple.newLocal("l4", nodeType), mainSig);
     assertTrue(reachingX.containsAll(Set.of(newA, newB, newC)), reachingX::toString);
   }
 

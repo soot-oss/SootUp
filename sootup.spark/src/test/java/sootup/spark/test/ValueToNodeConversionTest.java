@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.constant.BooleanConstant;
 import sootup.core.jimple.common.constant.DoubleConstant;
@@ -54,7 +55,7 @@ class ValueToNodeConversionTest {
   @Test
   void testLocalToNodeConversion() {
     // Local variable
-    val local = new Local("a", aType);
+    val local = Jimple.newLocal("a", aType);
     val varNodeOpt = nodeFactory.createNode(local, methodSig);
     assertTrue(varNodeOpt.isPresent());
     val varNode = varNodeOpt.get();
@@ -80,7 +81,7 @@ class ValueToNodeConversionTest {
   @Test
   void testInstanceFieldRefToNodeConversion() {
     // Instance FieldRef class A{B someB.f}
-    val base = new Local("someB", aType);
+    val base = Jimple.newLocal("someB", aType);
     val instanceFieldRef = new JInstanceFieldRef(base, fieldSig);
     val instanceFieldRefNodeOpt = nodeFactory.createNode(instanceFieldRef, methodSig);
     assertTrue(instanceFieldRefNodeOpt.isPresent());
@@ -112,7 +113,7 @@ class ValueToNodeConversionTest {
   void testArrayElementToNodeConversion() {
     // Array Element
     val arrayType = ArrayType.createArrayType(aType, 1);
-    val arrayRef = new JArrayRef(new Local("array", arrayType), IntConstant.getInstance(42));
+    val arrayRef = new JArrayRef(Jimple.newLocal("array", arrayType), IntConstant.getInstance(42));
     val arrayRefNodeOpt = nodeFactory.createNode(arrayRef, methodSig);
     assertTrue(arrayRefNodeOpt.isPresent());
     val arrayNode = arrayRefNodeOpt.get();
@@ -220,8 +221,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testAddExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val addExpr = JavaJimple.newAddExpr(local1, local2);
     val node = nodeFactory.createNode(addExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -229,8 +230,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testAndExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val andExpr = JavaJimple.newAndExpr(local1, local2);
     val node = nodeFactory.createNode(andExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -238,8 +239,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testCmpExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val cmpExpr = JavaJimple.newCmpExpr(local1, local2);
     val node = nodeFactory.createNode(cmpExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -247,8 +248,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testCmpgExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val cmpgExpr = JavaJimple.newCmpgExpr(local1, local2);
     val node = nodeFactory.createNode(cmpgExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -256,8 +257,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testCmplExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val cmplExpr = JavaJimple.newCmplExpr(local1, local2);
     val node = nodeFactory.createNode(cmplExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -265,8 +266,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testDivExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val divExpr = JavaJimple.newDivExpr(local1, local2);
     val node = nodeFactory.createNode(divExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -274,8 +275,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testEqExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val eqExpr = JavaJimple.newEqExpr(local1, local2);
     val node = nodeFactory.createNode(eqExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -283,8 +284,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testGeExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val geExpr = JavaJimple.newGeExpr(local1, local2);
     val node = nodeFactory.createNode(geExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -292,8 +293,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testGtExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val gtExpr = JavaJimple.newGtExpr(local1, local2);
     val node = nodeFactory.createNode(gtExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -301,7 +302,7 @@ class ValueToNodeConversionTest {
 
   @Test
   void testInstanceOfExprToNodeConversion() {
-    val local = new Local("a", aType);
+    val local = Jimple.newLocal("a", aType);
     val instanceOfExpr = JavaJimple.newInstanceOfExpr(local, bType);
     val node = nodeFactory.createNode(instanceOfExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -309,8 +310,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testLeExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val leExpr = JavaJimple.newLeExpr(local1, local2);
     val node = nodeFactory.createNode(leExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -319,7 +320,7 @@ class ValueToNodeConversionTest {
   @Test
   void testLengthExprToNodeConversion() {
     val arrayType = ArrayType.createArrayType(aType, 1);
-    val arrayLocal = new Local("array", arrayType);
+    val arrayLocal = Jimple.newLocal("array", arrayType);
     val lengthExpr = JavaJimple.newLengthExpr(arrayLocal);
     val node = nodeFactory.createNode(lengthExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -327,8 +328,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testLtExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val ltExpr = JavaJimple.newLtExpr(local1, local2);
     val node = nodeFactory.createNode(ltExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -336,8 +337,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testMulExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val mulExpr = JavaJimple.newMulExpr(local1, local2);
     val node = nodeFactory.createNode(mulExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -345,8 +346,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testNeExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val neExpr = JavaJimple.newNeExpr(local1, local2);
     val node = nodeFactory.createNode(neExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -354,7 +355,7 @@ class ValueToNodeConversionTest {
 
   @Test
   void testNegExprToNodeConversion() {
-    val local = new Local("a", aType);
+    val local = Jimple.newLocal("a", aType);
     val negExpr = JavaJimple.newNegExpr(local);
     val node = nodeFactory.createNode(negExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -362,8 +363,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testOrExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val orExpr = JavaJimple.newOrExpr(local1, local2);
     val node = nodeFactory.createNode(orExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -371,8 +372,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testRemExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val remExpr = JavaJimple.newRemExpr(local1, local2);
     val node = nodeFactory.createNode(remExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -380,8 +381,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testShlExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val shlExpr = JavaJimple.newShlExpr(local1, local2);
     val node = nodeFactory.createNode(shlExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -389,8 +390,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testShrExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val shrExpr = JavaJimple.newShrExpr(local1, local2);
     val node = nodeFactory.createNode(shrExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -398,8 +399,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testSubExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val subExpr = JavaJimple.newSubExpr(local1, local2);
     val node = nodeFactory.createNode(subExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -407,8 +408,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testUshrExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val ushrExpr = JavaJimple.newUshrExpr(local1, local2);
     val node = nodeFactory.createNode(ushrExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -416,8 +417,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testXorExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     val xorExpr = JavaJimple.newXorExpr(local1, local2);
     val node = nodeFactory.createNode(xorExpr, methodSig);
     assertTrue(node.isEmpty());
@@ -457,8 +458,8 @@ class ValueToNodeConversionTest {
 
   @Test
   void testPhiExprToNodeConversion() {
-    val local1 = new Local("a", aType);
-    val local2 = new Local("b", aType);
+    val local1 = Jimple.newLocal("a", aType);
+    val local2 = Jimple.newLocal("b", aType);
     List<Local> locals = new java.util.ArrayList<>();
     locals.add(local1);
     locals.add(local2);
@@ -480,7 +481,7 @@ class ValueToNodeConversionTest {
 
   @Test
   void testGetResult() {
-    val local = new Local("a", aType);
+    val local = Jimple.newLocal("a", aType);
     val varNodeOpt = nodeFactory.createNode(local, methodSig);
     assertTrue(varNodeOpt.isPresent());
   }

@@ -116,7 +116,7 @@ public class ConditionalBranchFolderTest {
                 .getMethodSignature(
                     "java.lang.Object", "toString", "String", Collections.emptyList());
         Local base =
-            new Local(
+            Jimple.newLocal(
                 "someObjectThatHasSomethingToString",
                 factory.getClassType("StringBuilder", "java.lang"));
         strToB =

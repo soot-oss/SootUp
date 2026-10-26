@@ -180,18 +180,16 @@ public class Solver extends Propagator {
   }
 
   /**
-   * Calls every target of the shared {@link DynamicInvokeResolver} from the invokedynamic
-   * statement, except those {@link LambdaMetafactoryModel} models precisely via a {@link
-   * LambdaAllocNode}.
+   * Calls the {@link DynamicInvokeResolver#creationSiteTargets creation-site targets} from the
+   * invokedynamic statement. Lambda bodies are called where their object is called ({@link
+   * LambdaMetafactoryModel}, {@code CallGraphBuilder#dispatch}).
    */
   private void recordDynamicInvoke(ContextMethod m, InvokableStmt s, JDynamicInvokeExpr die) {
     if (!pta.getConfig().isResolveDynamicInvoke()) {
       return;
     }
-    for (DynamicInvokeTarget target : pta.getConfig().getDynamicInvokeResolver().resolve(die)) {
-      if (LambdaMetafactoryModel.handles(s, target)) {
-        continue;
-      }
+    for (DynamicInvokeTarget target :
+        pta.getConfig().getDynamicInvokeResolver().creationSiteTargets(die)) {
       MethodSignature sig =
           AbstractCallGraphAlgorithm.resolveConcreteDispatch(pta.getView(), target.method())
               .orElse(target.method());

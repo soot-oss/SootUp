@@ -27,19 +27,19 @@ import sootup.core.jimple.JimpleUtils;
 import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.types.Type;
 
-public class StringConstant implements Constant {
+public final class StringConstant implements Constant {
 
   private final String value;
   private final Type type;
 
-  public StringConstant(@NonNull String str, @NonNull Type type) {
+  public StringConstant(@NonNull final String str, @NonNull final Type type) {
     this.type = type;
     this.value = str;
   }
 
   // In this case, equals should be structural equality.
   @Override
-  public boolean equals(Object c) {
+  public boolean equals(final Object c) {
     return (c instanceof StringConstant && ((StringConstant) c).value.equals(value));
   }
 
@@ -56,7 +56,7 @@ public class StringConstant implements Constant {
   }
 
   @Override
-  public <V extends ConstantVisitor> V accept(@NonNull V v) {
+  public <V extends ConstantVisitor> V accept(@NonNull final V v) {
     v.caseStringConstant(this);
     return v;
   }
@@ -70,6 +70,7 @@ public class StringConstant implements Constant {
     return escape;
   }
 
+  @Override
   public String getValue() {
     return value;
   }

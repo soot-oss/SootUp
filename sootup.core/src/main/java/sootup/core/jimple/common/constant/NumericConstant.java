@@ -47,4 +47,8 @@ public interface NumericConstant<N extends NumericConstant<N>>
   @NonNull BooleanConstant greaterThanOrEqual(@NonNull N c);
 
   @NonNull N negate();
+
+  @NonNull
+  @Override
+  Number getValue();
 }

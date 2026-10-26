@@ -50,6 +50,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.util.Modifiers;
 import sootup.java.core.AnnotationUsage;
+import sootup.java.core.ConstantUtil;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
@@ -65,7 +66,8 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
       ClassType classType,
       @NonNull ClassNode classNode,
       @NonNull IdentifierFactory identifierFactory) {
-    super(inputLocation, classType, sourcePath);
+    super(
+        inputLocation, classType, sourcePath, AsmClassMetadata.read(classNode, identifierFactory));
     this.classNode = classNode;
     this.identifierFactory = identifierFactory;
   }
@@ -91,7 +93,10 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
                           convertAnnotation(fieldNode.invisibleAnnotations, signatureFactory, false)
                               .stream())
                       .collect(Collectors.toList()),
-                  NoPositionInformation.getInstance());
+                  NoPositionInformation.getInstance(),
+                  fieldNode.value == null
+                      ? null
+                      : ConstantUtil.fromObject(fieldNode.value, signatureFactory));
             })
         .collect(Collectors.toSet());
   }
@@ -200,10 +205,7 @@ public class AsmAnnotationClassSource extends JavaSootClassSource {
 
   @NonNull
   public Optional<? extends ClassType> resolveOuterClass() {
-    if (classNode.outerClass == null) {
-      return Optional.empty();
-    }
-    return Optional.of(AsmUtil.toJimpleClassType(classNode.outerClass, identifierFactory));
+    return AsmClassMetadata.resolveOuterClass(getClassFileMetadata(), classSignature);
   }
 
   @NonNull
