@@ -42,7 +42,14 @@ public enum DexBodyInterceptors {
       new LocalSplitter(),
       new DexNumberTranformer(),
       new DexNullTransformer(),
-      new DexArrayIndexConstantInliner());
+      new DexArrayIndexConstantInliner()),
+
+  /**
+   * The dex transformers of {@link #Default} without its {@link LocalSplitter}, for callers that
+   * put their own in front of them, e.g. one with another {@link LocalSplitter.ExceptionalFlow}.
+   */
+  Transformers(
+      new DexNumberTranformer(), new DexNullTransformer(), new DexArrayIndexConstantInliner());
 
   @NonNull private final List<BodyInterceptor> bodyInterceptors;
 
