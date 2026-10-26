@@ -111,7 +111,7 @@ public class ConditionalBranchFolderTest {
         Arrays.asList(
             "ConditionalBranchFolderCases this",
             "int bool",
-            "java.io.PrintStream $stack2, $stack3, $stack4, $stack5",
+            "java.io.PrintStream $stack3, $stack4",
             "this := @this: ConditionalBranchFolderCases",
             "bool = 1",
             "goto label1",
@@ -137,7 +137,7 @@ public class ConditionalBranchFolderTest {
         Arrays.asList(
             "ConditionalBranchFolderCases this",
             "int bool",
-            "java.io.PrintStream $stack2, $stack3, $stack4, $stack5",
+            "java.io.PrintStream $stack2",
             "this := @this: ConditionalBranchFolderCases",
             "bool = 1",
             "goto label1",
@@ -186,7 +186,6 @@ public class ConditionalBranchFolderTest {
         Arrays.asList(
             "ConditionalBranchFolderCases this",
             "int bool",
-            "java.lang.Exception $stack3",
             "java.lang.Throwable e",
             "unknown $stack4",
             "this := @this: ConditionalBranchFolderCases",
