@@ -198,7 +198,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
         && Objects.equals(this.overriddenModifiers, that.overriddenModifiers)
         && Objects.equals(this.classSignature, that.classSignature)
         && Objects.equals(this.annotations, that.annotations)
-        && Objects.equals(this.methodAnnotations, that.methodAnnotations);
+        && Objects.equals(this.methodAnnotations, that.methodAnnotations)
+        && Objects.equals(this.delegate, that.delegate);
   }
 
   @Override
@@ -213,7 +214,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
         this.overriddenModifiers,
         this.classSignature,
         annotations,
-        methodAnnotations);
+        methodAnnotations,
+        delegate);
   }
 
   @Override
