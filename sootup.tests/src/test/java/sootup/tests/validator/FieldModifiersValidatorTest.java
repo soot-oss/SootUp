@@ -21,10 +21,10 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.validation.FieldModifiersValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 
 public class FieldModifiersValidatorTest {
@@ -90,7 +90,7 @@ public class FieldModifiersValidatorTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new OverridingJavaClassSource(
+            new InMemoryJavaClassSource(
                 new EagerInputLocation(),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),

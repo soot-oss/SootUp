@@ -40,8 +40,8 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.types.ModuleJavaClassType;
 
 /** A {@link PathbasedClassProvider} capable of handling Java bytecode */
@@ -71,7 +71,7 @@ public class AsmJavaClassProvider implements PathbasedClassProvider {
 
     // copy and load the complete class at once into memory so the newly created asmClassSource can
     // release the memory and structures from the asm library
-    return new OverridingJavaClassSource(
+    return new InMemoryJavaClassSource(
         asmClassSource.getAnalysisInputLocation(),
         asmClassSource.getSourcePath(),
         asmClassSource.getClassType(),

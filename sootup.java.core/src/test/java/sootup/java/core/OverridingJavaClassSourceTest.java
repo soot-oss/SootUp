@@ -86,8 +86,8 @@ class OverridingJavaClassSourceTest {
 
     Set<JavaSootMethod> methodSet = new LinkedHashSet<>(Arrays.asList(m1, m2, m3));
 
-    OverridingJavaClassSource initialSource =
-        new OverridingJavaClassSource(
+    InMemoryJavaClassSource initialSource =
+        new InMemoryJavaClassSource(
             new EagerInputLocation(),
             null,
             classType,
@@ -125,8 +125,8 @@ class OverridingJavaClassSourceTest {
 
     Set<JavaSootField> fieldSet = new LinkedHashSet<>(Arrays.asList(f1, f2, f3));
 
-    OverridingJavaClassSource initialSource =
-        new OverridingJavaClassSource(
+    InMemoryJavaClassSource initialSource =
+        new InMemoryJavaClassSource(
             new EagerInputLocation(),
             null,
             classType,

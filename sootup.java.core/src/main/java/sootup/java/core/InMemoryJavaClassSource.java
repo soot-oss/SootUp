@@ -1,0 +1,268 @@
+package sootup.java.core;
+
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2019-2026 Christian Brüggemann, Hasitha Rajapakse, Markus Schmidt, Ashik Mogasavara Ravikumar
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
+import java.nio.file.Path;
+import java.util.*;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.ClassModifier;
+import sootup.core.model.Position;
+import sootup.core.model.SootField;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
+import sootup.java.core.types.JavaClassType;
+
+/**
+ * A class source where all information is already available in memory, e.g. classes that are
+ * batchparsed (like .jimple files) or synthesized in tests.
+ *
+ * <p>To replace parts of an existing class source, wrap it in an {@link OverridingJavaClassSource}.
+ *
+ * @author Christian Brüggemann, Hasitha Rajapakse, Ashik Mogasavara Ravikumar
+ */
+public class InMemoryJavaClassSource extends JavaSootClassSource {
+
+  @NonNull private final Collection<JavaSootMethod> sootMethods;
+  @NonNull private final Collection<JavaSootField> sootFields;
+  @NonNull private final Set<ClassModifier> modifiers;
+  @NonNull private final Set<JavaClassType> interfaces;
+  @NonNull private final Optional<JavaClassType> superClass;
+  @NonNull private final Optional<JavaClassType> outerClass;
+  @NonNull private final Position position;
+
+  @NonNull private final Iterable<AnnotationUsage> annotations;
+  @NonNull private final Iterable<AnnotationUsage> methodAnnotations;
+  @Nullable private final Iterable<AnnotationUsage> fieldAnnotations;
+
+  public InMemoryJavaClassSource(
+      @NonNull AnalysisInputLocation srcNamespace,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classType,
+      @Nullable JavaClassType superClass,
+      @NonNull Set<JavaClassType> interfaces,
+      @Nullable JavaClassType outerClass,
+      @NonNull Set<JavaSootField> sootFields,
+      @NonNull Set<JavaSootMethod> sootMethods,
+      @NonNull Position position,
+      @NonNull EnumSet<ClassModifier> modifiers,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Iterable<AnnotationUsage> methodAnnotations,
+      @Nullable Iterable<AnnotationUsage> fieldAnnotations) {
+    this(
+        srcNamespace,
+        sourcePath,
+        classType,
+        superClass,
+        interfaces,
+        outerClass,
+        sootFields,
+        sootMethods,
+        position,
+        modifiers,
+        annotations,
+        methodAnnotations,
+        fieldAnnotations,
+        JavaClassFileMetadata.empty());
+  }
+
+  /**
+   * Creates a fully resolved class source with immutable source and nesting attributes.
+   *
+   * @param srcNamespace the input location containing the class
+   * @param sourcePath the path to the classfile
+   * @param classType the class type
+   * @param superClass the superclass, or {@code null} if absent
+   * @param interfaces the implemented interfaces
+   * @param outerClass the outer class, or {@code null} if absent
+   * @param sootFields the fields
+   * @param sootMethods the methods
+   * @param position the source position
+   * @param modifiers the class modifiers
+   * @param annotations the class annotations
+   * @param methodAnnotations the method annotations
+   * @param fieldAnnotations the field annotations
+   * @param classFileMetadata the source and nesting attributes
+   */
+  public InMemoryJavaClassSource(
+      @NonNull AnalysisInputLocation srcNamespace,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classType,
+      @Nullable JavaClassType superClass,
+      @NonNull Set<JavaClassType> interfaces,
+      @Nullable JavaClassType outerClass,
+      @NonNull Set<JavaSootField> sootFields,
+      @NonNull Set<JavaSootMethod> sootMethods,
+      @NonNull Position position,
+      @NonNull EnumSet<ClassModifier> modifiers,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Iterable<AnnotationUsage> methodAnnotations,
+      @Nullable Iterable<AnnotationUsage> fieldAnnotations,
+      @NonNull JavaClassFileMetadata classFileMetadata) {
+    super(srcNamespace, classType, sourcePath, classFileMetadata);
+    this.sootMethods = sootMethods;
+    this.sootFields = sootFields;
+    this.modifiers = modifiers;
+    this.interfaces = interfaces;
+    this.superClass = Optional.ofNullable(superClass);
+    this.outerClass = Optional.ofNullable(outerClass);
+    this.position = position;
+    this.annotations = annotations;
+    this.methodAnnotations = methodAnnotations;
+    this.fieldAnnotations = fieldAnnotations;
+  }
+
+  public InMemoryJavaClassSource(
+      @NonNull Set<JavaSootMethod> sootMethods,
+      @NonNull Set<JavaSootField> sootFields,
+      @NonNull EnumSet<ClassModifier> modifiers,
+      @NonNull Set<JavaClassType> interfaces,
+      @Nullable JavaClassType superClass,
+      @Nullable JavaClassType outerClass,
+      @NonNull Position position,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classType,
+      @NonNull AnalysisInputLocation inputLocation) {
+    this(
+        inputLocation,
+        sourcePath,
+        classType,
+        superClass,
+        interfaces,
+        outerClass,
+        sootFields,
+        sootMethods,
+        position,
+        modifiers,
+        Collections.emptyList(),
+        Collections.emptyList(),
+        Collections.emptyList());
+  }
+
+  @NonNull
+  @Override
+  public Collection<? extends SootMethod> resolveMethods() {
+    return sootMethods;
+  }
+
+  @NonNull
+  @Override
+  public Collection<? extends SootField> resolveFields() {
+    return sootFields;
+  }
+
+  @NonNull
+  @Override
+  public Set<ClassModifier> resolveModifiers() {
+    return modifiers;
+  }
+
+  @NonNull
+  @Override
+  public Set<? extends ClassType> resolveInterfaces() {
+    return interfaces;
+  }
+
+  @NonNull
+  @Override
+  public Optional<? extends ClassType> resolveSuperclass() {
+    return superClass;
+  }
+
+  @NonNull
+  @Override
+  public Optional<? extends ClassType> resolveOuterClass() {
+    return outerClass;
+  }
+
+  @NonNull
+  @Override
+  public Position resolvePosition() {
+    return position;
+  }
+
+  @Override
+  @NonNull
+  public Iterable<AnnotationUsage> resolveAnnotations() {
+    return annotations;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    InMemoryJavaClassSource that = (InMemoryJavaClassSource) o;
+    return Objects.equals(this.superClass, that.superClass)
+        && Objects.equals(this.interfaces, that.interfaces)
+        && Objects.equals(this.outerClass, that.outerClass)
+        && Objects.equals(this.sootFields, that.sootFields)
+        && Objects.equals(this.sootMethods, that.sootMethods)
+        && Objects.equals(this.position, that.position)
+        && Objects.equals(this.modifiers, that.modifiers)
+        && Objects.equals(this.classSignature, that.classSignature)
+        && Objects.equals(this.annotations, that.annotations)
+        && Objects.equals(this.methodAnnotations, that.methodAnnotations);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(
+        superClass,
+        interfaces,
+        outerClass,
+        sootFields,
+        sootMethods,
+        position,
+        modifiers,
+        classSignature,
+        annotations,
+        methodAnnotations);
+  }
+
+  @Override
+  public String toString() {
+    return "frontend.InMemoryJavaClassSource{"
+        + "superClass="
+        + superClass
+        + ", interfaces="
+        + interfaces
+        + ", outerClass="
+        + outerClass
+        + ", sootFields="
+        + sootFields
+        + ", sootMethods="
+        + sootMethods
+        + ", position="
+        + position
+        + ", modifiers="
+        + modifiers
+        + ", classType="
+        + classSignature
+        + '}';
+  }
+}
