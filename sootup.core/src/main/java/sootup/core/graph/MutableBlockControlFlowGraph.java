@@ -1111,17 +1111,27 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
 
     } else /* ==> if(oldStmt.branches() && newStmt.branches()) */ {
 
-      blockOfOldStmt.replaceStmt(oldStmt, newStmt);
-      stmtToBlock.put(newStmt, blockOfOldStmtPair);
       if (oldStmt.getExpectedSuccessorCount() != newStmt.getExpectedSuccessorCount()) {
-        // TODO: or should we just assume to use successorIdx:0
-        throw new IllegalArgumentException(
-            "We can't keep the flows if we replace a Stmt ("
-                + oldStmt.getExpectedSuccessorCount()
-                + ") by another Stmt which expects a different amount ("
-                + newStmt.getExpectedSuccessorCount()
-                + ") of successors.");
+        // keep remaining flows (in order) if they fit, e.g. JIfStmt with a removed edge ->
+        // JGotoStmt; missing flows can be added by the caller afterwards
+        List<MutableBasicBlock> remainingSuccessors = blockOfOldStmt.getSuccessors();
+        if (remainingSuccessors.size() > newStmt.getExpectedSuccessorCount()) {
+          throw new IllegalArgumentException(
+              "We can't keep the flows if we replace a Stmt ("
+                  + remainingSuccessors.size()
+                  + " remaining flows) by another Stmt which expects less ("
+                  + newStmt.getExpectedSuccessorCount()
+                  + ") successors.");
+        }
+        blockOfOldStmt.clearSuccessorBlocks();
+        blockOfOldStmt.replaceStmt(oldStmt, newStmt);
+        for (int i = 0; i < remainingSuccessors.size(); i++) {
+          blockOfOldStmt.linkSuccessor(i, remainingSuccessors.get(i));
+        }
+      } else {
+        blockOfOldStmt.replaceStmt(oldStmt, newStmt);
       }
+      stmtToBlock.put(newStmt, blockOfOldStmtPair);
     }
 
     stmtToBlock.remove(oldStmt);
