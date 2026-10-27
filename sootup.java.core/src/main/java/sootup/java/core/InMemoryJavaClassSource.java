@@ -267,18 +267,53 @@ public class InMemoryJavaClassSource extends JavaSootClassSource {
         + '}';
   }
 
+  /** Starts a stepwise builder: the input location and the class type are mandatory. */
   @NonNull
-  public static Builder builder(
-      @NonNull AnalysisInputLocation inputLocation, @NonNull ClassType classType) {
-    return new Builder(inputLocation, classType);
+  public static AnalysisInputLocationStep builder() {
+    return new Steps();
   }
 
-  /**
-   * Builds an {@link InMemoryJavaClassSource}; every part that is not set defaults to absent/empty.
-   */
-  public static class Builder {
-    @NonNull private final AnalysisInputLocation inputLocation;
-    @NonNull private final ClassType classType;
+  public interface AnalysisInputLocationStep {
+    @NonNull ClassTypeStep withAnalysisInputLocation(@NonNull AnalysisInputLocation inputLocation);
+  }
+
+  public interface ClassTypeStep {
+    @NonNull OptionalStep withClassType(@NonNull ClassType classType);
+  }
+
+  /** Optional parts; every part that is not set defaults to absent/empty. */
+  public interface OptionalStep {
+    @NonNull OptionalStep withSourcePath(@Nullable Path sourcePath);
+
+    @NonNull OptionalStep withSuperclass(@Nullable JavaClassType superClass);
+
+    @NonNull OptionalStep withOuterClass(@Nullable JavaClassType outerClass);
+
+    @NonNull OptionalStep withInterfaces(@NonNull Set<JavaClassType> interfaces);
+
+    @NonNull OptionalStep withFields(@NonNull Set<JavaSootField> fields);
+
+    @NonNull OptionalStep withMethods(@NonNull Set<JavaSootMethod> methods);
+
+    @NonNull OptionalStep withModifiers(@NonNull EnumSet<ClassModifier> modifiers);
+
+    @NonNull OptionalStep withPosition(@NonNull Position position);
+
+    @NonNull OptionalStep withAnnotations(@NonNull Iterable<AnnotationUsage> annotations);
+
+    @NonNull OptionalStep withMethodAnnotations(
+        @NonNull Iterable<AnnotationUsage> methodAnnotations);
+
+    @NonNull OptionalStep withFieldAnnotations(@NonNull Iterable<AnnotationUsage> fieldAnnotations);
+
+    @NonNull OptionalStep withClassFileMetadata(@NonNull JavaClassFileMetadata classFileMetadata);
+
+    @NonNull InMemoryJavaClassSource build();
+  }
+
+  private static class Steps implements AnalysisInputLocationStep, ClassTypeStep, OptionalStep {
+    private AnalysisInputLocation inputLocation;
+    private ClassType classType;
     @Nullable private Path sourcePath;
     @Nullable private JavaClassType superClass;
     @Nullable private JavaClassType outerClass;
@@ -292,73 +327,96 @@ public class InMemoryJavaClassSource extends JavaSootClassSource {
     @NonNull private Iterable<AnnotationUsage> fieldAnnotations = Collections.emptyList();
     @NonNull private JavaClassFileMetadata classFileMetadata = JavaClassFileMetadata.empty();
 
-    private Builder(@NonNull AnalysisInputLocation inputLocation, @NonNull ClassType classType) {
+    @Override
+    public @NonNull ClassTypeStep withAnalysisInputLocation(
+        @NonNull AnalysisInputLocation inputLocation) {
       this.inputLocation = inputLocation;
-      this.classType = classType;
+      return this;
     }
 
-    public Builder withSourcePath(@Nullable Path sourcePath) {
+    @Override
+    public @NonNull OptionalStep withClassType(@NonNull ClassType classType) {
+      this.classType = classType;
+      return this;
+    }
+
+    @Override
+    public @NonNull OptionalStep withSourcePath(@Nullable Path sourcePath) {
       this.sourcePath = sourcePath;
       return this;
     }
 
-    public Builder withSuperclass(@Nullable JavaClassType superClass) {
+    @Override
+    public @NonNull OptionalStep withSuperclass(@Nullable JavaClassType superClass) {
       this.superClass = superClass;
       return this;
     }
 
-    public Builder withOuterClass(@Nullable JavaClassType outerClass) {
+    @Override
+    public @NonNull OptionalStep withOuterClass(@Nullable JavaClassType outerClass) {
       this.outerClass = outerClass;
       return this;
     }
 
-    public Builder withInterfaces(@NonNull Set<JavaClassType> interfaces) {
+    @Override
+    public @NonNull OptionalStep withInterfaces(@NonNull Set<JavaClassType> interfaces) {
       this.interfaces = interfaces;
       return this;
     }
 
-    public Builder withFields(@NonNull Set<JavaSootField> fields) {
+    @Override
+    public @NonNull OptionalStep withFields(@NonNull Set<JavaSootField> fields) {
       this.fields = fields;
       return this;
     }
 
-    public Builder withMethods(@NonNull Set<JavaSootMethod> methods) {
+    @Override
+    public @NonNull OptionalStep withMethods(@NonNull Set<JavaSootMethod> methods) {
       this.methods = methods;
       return this;
     }
 
-    public Builder withModifiers(@NonNull EnumSet<ClassModifier> modifiers) {
+    @Override
+    public @NonNull OptionalStep withModifiers(@NonNull EnumSet<ClassModifier> modifiers) {
       this.modifiers = modifiers;
       return this;
     }
 
-    public Builder withPosition(@NonNull Position position) {
+    @Override
+    public @NonNull OptionalStep withPosition(@NonNull Position position) {
       this.position = position;
       return this;
     }
 
-    public Builder withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
+    @Override
+    public @NonNull OptionalStep withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
       this.annotations = annotations;
       return this;
     }
 
-    public Builder withMethodAnnotations(@NonNull Iterable<AnnotationUsage> methodAnnotations) {
+    @Override
+    public @NonNull OptionalStep withMethodAnnotations(
+        @NonNull Iterable<AnnotationUsage> methodAnnotations) {
       this.methodAnnotations = methodAnnotations;
       return this;
     }
 
-    public Builder withFieldAnnotations(@NonNull Iterable<AnnotationUsage> fieldAnnotations) {
+    @Override
+    public @NonNull OptionalStep withFieldAnnotations(
+        @NonNull Iterable<AnnotationUsage> fieldAnnotations) {
       this.fieldAnnotations = fieldAnnotations;
       return this;
     }
 
-    public Builder withClassFileMetadata(@NonNull JavaClassFileMetadata classFileMetadata) {
+    @Override
+    public @NonNull OptionalStep withClassFileMetadata(
+        @NonNull JavaClassFileMetadata classFileMetadata) {
       this.classFileMetadata = classFileMetadata;
       return this;
     }
 
-    @NonNull
-    public InMemoryJavaClassSource build() {
+    @Override
+    public @NonNull InMemoryJavaClassSource build() {
       return new InMemoryJavaClassSource(
           inputLocation,
           sourcePath,

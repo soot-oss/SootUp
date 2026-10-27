@@ -194,8 +194,9 @@ public class JimplePrinterTest {
     }
 
     InMemoryJavaClassSource overridingClassSource =
-        InMemoryJavaClassSource.builder(
-                new EagerInputLocation(), identifierFactory.getClassType(className))
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(new EagerInputLocation())
+            .withClassType(identifierFactory.getClassType(className))
             .withMethods(new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)))
             .withFields(Collections.singleton(sootField))
             .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
@@ -236,8 +237,9 @@ public class JimplePrinterTest {
             EnumSet.of(FieldModifier.PRIVATE),
             NoPositionInformation.getInstance());
     InMemoryJavaClassSource overridingClassSource =
-        InMemoryJavaClassSource.builder(
-                new EagerInputLocation(), identifierFactory.getClassType(className))
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(new EagerInputLocation())
+            .withClassType(identifierFactory.getClassType(className))
             .withMethods(new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)))
             .withFields(Collections.singleton(sootField))
             .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
