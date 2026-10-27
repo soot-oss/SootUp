@@ -35,10 +35,10 @@ import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SourceType;
 import sootup.core.types.VoidType;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaClassFileMetadata;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaInnerClassInfo;
-import sootup.java.core.OverridingJavaClassSource;
 
 class JavaClassFileMetadataTest {
   private final JavaIdentifierFactory factory = new JavaIdentifierFactory();
@@ -49,7 +49,7 @@ class JavaClassFileMetadataTest {
     var input = new EagerInputLocation();
     var path = Path.of("Example.class");
     var source =
-        new OverridingJavaClassSource(
+        new InMemoryJavaClassSource(
             input,
             path,
             type,
@@ -64,14 +64,10 @@ class JavaClassFileMetadataTest {
             Collections.emptyList(),
             Collections.emptyList());
     var built =
-        OverridingJavaClassSource.OverridingJavaClassSourceBuilder.builder()
+        InMemoryJavaClassSource.builder()
             .withAnalysisInputLocation(input)
-            .withSourcePath(path)
             .withClassType(type)
-            .withPosition(NoPositionInformation.getInstance())
-            .withAnnotation(Collections.emptyList())
-            .withMethodAnnotation(Collections.emptyList())
-            .withFieldAnnotation(Collections.emptyList())
+            .withSourcePath(path)
             .build();
     for (var candidate : List.of(source, built)) {
       assertSame(JavaClassFileMetadata.empty(), candidate.getClassFileMetadata());

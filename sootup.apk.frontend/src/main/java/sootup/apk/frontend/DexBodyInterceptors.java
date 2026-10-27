@@ -30,9 +30,26 @@ import sootup.apk.frontend.interceptors.DexArrayIndexConstantInliner;
 import sootup.apk.frontend.interceptors.DexNullTransformer;
 import sootup.apk.frontend.interceptors.DexNumberTranformer;
 import sootup.core.interceptor.BodyInterceptor;
+import sootup.interceptors.LocalSplitter;
 
 public enum DexBodyInterceptors {
-  Default(new DexNumberTranformer(), new DexNullTransformer(), new DexArrayIndexConstantInliner());
+  /**
+   * Splits the locals first, as Soot's dexpler does: dex code reuses registers for values of
+   * different types, and the number and null transformers decide per local whether its constants
+   * are floats or nulls.
+   */
+  Default(
+      new LocalSplitter(),
+      new DexNumberTranformer(),
+      new DexNullTransformer(),
+      new DexArrayIndexConstantInliner()),
+
+  /**
+   * The dex transformers of {@link #Default} without its {@link LocalSplitter}, for callers that
+   * put their own in front of them, e.g. one with another {@link LocalSplitter.ExceptionalFlow}.
+   */
+  Transformers(
+      new DexNumberTranformer(), new DexNullTransformer(), new DexArrayIndexConstantInliner());
 
   @NonNull private final List<BodyInterceptor> bodyInterceptors;
 

@@ -86,21 +86,13 @@ class OverridingJavaClassSourceTest {
 
     Set<JavaSootMethod> methodSet = new LinkedHashSet<>(Arrays.asList(m1, m2, m3));
 
-    OverridingJavaClassSource initialSource =
-        new OverridingJavaClassSource(
-            new EagerInputLocation(),
-            null,
-            classType,
-            null,
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            methodSet,
-            NoPositionInformation.getInstance(),
-            EnumSet.of(ClassModifier.PUBLIC),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList());
+    InMemoryJavaClassSource initialSource =
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(new EagerInputLocation())
+            .withClassType(classType)
+            .withMethods(methodSet)
+            .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+            .build();
 
     JavaSootClass sootClass = new JavaSootClass(initialSource, SourceType.Application);
     OverridingJavaClassSource source =
@@ -125,21 +117,13 @@ class OverridingJavaClassSourceTest {
 
     Set<JavaSootField> fieldSet = new LinkedHashSet<>(Arrays.asList(f1, f2, f3));
 
-    OverridingJavaClassSource initialSource =
-        new OverridingJavaClassSource(
-            new EagerInputLocation(),
-            null,
-            classType,
-            null,
-            Collections.emptySet(),
-            null,
-            fieldSet,
-            Collections.emptySet(),
-            NoPositionInformation.getInstance(),
-            EnumSet.of(ClassModifier.PUBLIC),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList());
+    InMemoryJavaClassSource initialSource =
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(new EagerInputLocation())
+            .withClassType(classType)
+            .withFields(fieldSet)
+            .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+            .build();
 
     JavaSootClass sootClass = new JavaSootClass(initialSource, SourceType.Application);
     OverridingJavaClassSource source =

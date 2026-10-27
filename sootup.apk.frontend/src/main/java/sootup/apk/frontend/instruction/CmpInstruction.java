@@ -52,11 +52,11 @@ public class CmpInstruction extends DexLibAbstractInstruction {
     switch (opcode) {
       case CMPL_DOUBLE:
         //        type = PrimitiveType.DoubleType.getInstance();
-        cmpExpr = Jimple.newCmpExpr(first, second);
+        cmpExpr = Jimple.newCmplExpr(first, second);
         break;
       case CMPL_FLOAT:
         //        type = PrimitiveType.FloatType.getInstance();
-        cmpExpr = Jimple.newCmpExpr(first, second);
+        cmpExpr = Jimple.newCmplExpr(first, second);
         break;
       case CMPG_DOUBLE:
         //        type = PrimitiveType.DoubleType.getInstance();

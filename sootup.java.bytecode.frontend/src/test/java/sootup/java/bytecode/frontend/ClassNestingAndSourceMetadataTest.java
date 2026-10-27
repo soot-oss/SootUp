@@ -46,6 +46,7 @@ import sootup.core.model.SourceType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaInnerClassInfo;
 import sootup.java.core.JavaSootClass;
@@ -239,7 +240,8 @@ class ClassNestingAndSourceMetadataTest {
         .visitEnd();
     JavaSootClass clazz = load(writer);
     assertEquals("Outer.java", clazz.getSourceFile().orElseThrow());
-    var source = assertInstanceOf(OverridingJavaClassSource.class, clazz.getClassSource());
+    var source = assertInstanceOf(InMemoryJavaClassSource.class, clazz.getClassSource());
+    var overriding = new OverridingJavaClassSource(source);
     var field = clazz.getField("value").orElseThrow();
     var method = clazz.getMethodsByName("declared").iterator().next();
     List<JavaSootClass> copies =
@@ -263,14 +265,14 @@ class ClassNestingAndSourceMetadataTest {
     }
     List<OverridingJavaClassSource> sourceCopies =
         List.of(
-            new OverridingJavaClassSource(source),
-            source.withFields(Collections.emptyList()),
-            source.withMethods(Collections.emptyList()),
-            source.withModifiers(EnumSet.of(ClassModifier.PUBLIC)),
-            source.withInterfaces(Collections.emptySet()),
-            source.withSuperclass(Optional.empty()),
-            source.withOuterClass(Optional.empty()),
-            source.withPosition(NoPositionInformation.getInstance()),
+            overriding,
+            overriding.withFields(Collections.emptyList()),
+            overriding.withMethods(Collections.emptyList()),
+            overriding.withModifiers(EnumSet.of(ClassModifier.PUBLIC)),
+            overriding.withInterfaces(Collections.emptySet()),
+            overriding.withSuperclass(Optional.empty()),
+            overriding.withOuterClass(Optional.empty()),
+            overriding.withPosition(NoPositionInformation.getInstance()),
             OverridingJavaClassSource.OverridingJavaClassSourceBuilder.builder()
                 .withSootClassSource(source)
                 .build());

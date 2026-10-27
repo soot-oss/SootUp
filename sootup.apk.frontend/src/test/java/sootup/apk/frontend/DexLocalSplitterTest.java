@@ -105,8 +105,8 @@ public class DexLocalSplitterTest {
     }
 
     List<BodyInterceptor> interceptors =
-        new ArrayList<>(DexBodyInterceptors.Default.bodyInterceptors());
-    interceptors.add(new LocalSplitter(exceptionalFlow));
+        new ArrayList<>(List.of(new LocalSplitter(exceptionalFlow)));
+    interceptors.addAll(DexBodyInterceptors.Transformers.bodyInterceptors());
     JavaView view =
         new JavaView(
             List.of(
