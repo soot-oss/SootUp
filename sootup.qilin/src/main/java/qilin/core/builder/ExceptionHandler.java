@@ -99,8 +99,8 @@ public class ExceptionHandler {
    * (see {@code MethodPAG.buildException()}), so the bytecode's first-match-wins order is
    * re-derived here by taking the most specific matching caught type - within one {@code try} that
    * is the same choice, since Java rejects a {@code catch} of a subtype after its supertype. Every
-   * candidate is a supertype of the thrown class type, so they form a chain and the minimum is
-   * well defined; the type-name comparison is only a defensive tie-break that keeps the result
+   * candidate is a supertype of the thrown class type, so they form a chain and the minimum is well
+   * defined; the type-name comparison is only a defensive tie-break that keeps the result
    * independent of map iteration order should two incomparable types ever both match.
    *
    * @return the handler's first statement, or null if nothing here catches the object.
