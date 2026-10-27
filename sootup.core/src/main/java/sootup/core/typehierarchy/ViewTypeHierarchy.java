@@ -656,7 +656,8 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   private static RawAdjacency buildRawAdjacency(@NonNull View view) {
-    RawAdjacency raw = new RawAdjacency();
+    RawAdjacency raw =
+        new RawAdjacency(view.getIdentifierFactory().getClassType("java.lang.Object"));
     view.getClasses().forEach(sootClass -> addSootClassToGraph(sootClass, raw));
     return raw;
   }
@@ -697,10 +698,12 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       Optional<? extends ClassType> superClass = sootClass.getSuperclass();
       if (superClass.isPresent()) {
         int superId = raw.getOrCreateId(superClass.get(), false);
-        if (!raw.isInterface.get(superId)) {
-          raw.superClassId.set(id, superId);
-          raw.directSubclasses.get(superId).add(id);
+        if (raw.isInterface.get(superId)) {
+          // like a class without an extends clause, it extends Object
+          superId = raw.getOrCreateId(raw.objectType, false);
         }
+        raw.superClassId.set(id, superId);
+        raw.directSubclasses.get(superId).add(id);
       }
     }
     return true;
@@ -921,6 +924,16 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   /** Dense ids + direct-edge adjacency only. Cheap to mutate incrementally in {@link #addType}. */
   static final class RawAdjacency {
+    /**
+     * {@code java.lang.Object}, the superclass of the classes whose declared superclass is an
+     * interface.
+     */
+    final ClassType objectType;
+
+    RawAdjacency(ClassType objectType) {
+      this.objectType = objectType;
+    }
+
     /** Assigns each {@link ClassType} the dense id used to index every array/list below. */
     final Map<ClassType, Integer> idOf = new HashMap<>();
 
@@ -995,10 +1008,13 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
      */
     void changeKind(int id, boolean asInterface) {
       if (asInterface) {
-        // classes do not extend an interface
+        // classes do not extend an interface: like classes without an extends clause, they
+        // extend Object
+        int objectId = getOrCreateId(objectType, false);
         IntArrayList subclasses = directSubclasses.get(id);
         for (int i = 0; i < subclasses.size(); i++) {
-          superClassId.set(subclasses.get(i), -1);
+          superClassId.set(subclasses.get(i), objectId);
+          directSubclasses.get(objectId).add(subclasses.get(i));
         }
         directSubclasses.set(id, new IntArrayList());
         isInterface.set(id);

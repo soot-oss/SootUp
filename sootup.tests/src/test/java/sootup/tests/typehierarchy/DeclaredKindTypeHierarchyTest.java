@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
@@ -71,7 +72,10 @@ public class DeclaredKindTypeHierarchyTest {
       assertFalse(hierarchy.isSubtype(y, c));
       assertEquals(0, hierarchy.implementedInterfacesOf(a).count());
       assertEquals(0, hierarchy.implementedInterfacesOf(b).count());
-      assertFalse(hierarchy.superClassOf(c).isPresent());
+      // like a class without an extends clause
+      assertEquals(
+          Optional.of(view.getIdentifierFactory().getClassType("java.lang.Object")),
+          hierarchy.superClassOf(c));
     }
   }
 
@@ -82,9 +86,10 @@ public class DeclaredKindTypeHierarchyTest {
       ClassType object = view.getIdentifierFactory().getClassType("java.lang.Object");
       ClassType x = view.getIdentifierFactory().getClassType("X");
       ClassType a = view.getIdentifierFactory().getClassType("A");
+      ClassType c = view.getIdentifierFactory().getClassType("C");
       assertTrue(hierarchy.isSubtype(object, x));
       assertTrue(hierarchy.isSubtype(object, a));
-      assertTrue(subtypes(hierarchy, object).containsAll(Arrays.asList(x, a)));
+      assertTrue(subtypes(hierarchy, object).containsAll(Arrays.asList(x, a, c)));
     }
   }
 }
