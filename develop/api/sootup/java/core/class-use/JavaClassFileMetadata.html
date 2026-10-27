@@ -77,21 +77,22 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns immutable source and nesting attributes, empty for sources that do not provide them.</div>
 </div>
 </div>
+<div class="caption"><span>Methods in <a href="../package-summary.html">sootup.java.core</a> with parameters of type <a href="../JavaClassFileMetadata.html" title="class in sootup.java.core">JavaClassFileMetadata</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>@NonNull <a href="../InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">InMemoryJavaClassSource.OptionalStep.</span><code><a href="../InMemoryJavaClassSource.OptionalStep.html#withClassFileMetadata(sootup.java.core.JavaClassFileMetadata)" class="member-name-link">withClassFileMetadata</a><wbr>(@NonNull <a href="../JavaClassFileMetadata.html" title="class in sootup.java.core">JavaClassFileMetadata</a>&nbsp;classFileMetadata)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
 <div class="caption"><span>Constructors in <a href="../package-summary.html">sootup.java.core</a> with parameters of type <a href="../JavaClassFileMetadata.html" title="class in sootup.java.core">JavaClassFileMetadata</a></span></div>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier</div>
 <div class="table-header col-second">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../JavaSootClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,sootup.core.types.ClassType,java.nio.file.Path,sootup.java.core.JavaClassFileMetadata)" class="member-name-link">JavaSootClassSource</a><wbr>(@NonNull <a href="../../../core/inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;inputLocation,
- @NonNull <a href="../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classSignature,
- @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;sourcePath,
- @NonNull <a href="../JavaClassFileMetadata.html" title="class in sootup.java.core">JavaClassFileMetadata</a>&nbsp;classFileMetadata)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Creates a class source with immutable source and nesting attributes.</div>
-</div>
-<div class="col-first odd-row-color"><code>&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="../OverridingJavaClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,java.nio.file.Path,sootup.core.types.ClassType,sootup.java.core.types.JavaClassType,java.util.Set,sootup.java.core.types.JavaClassType,java.util.Set,java.util.Set,sootup.core.model.Position,java.util.EnumSet,java.lang.Iterable,java.lang.Iterable,java.lang.Iterable,sootup.java.core.JavaClassFileMetadata)" class="member-name-link">OverridingJavaClassSource</a><wbr>(@NonNull <a href="../../../core/inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;srcNamespace,
+<div class="col-second even-row-color"><code><a href="../InMemoryJavaClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,java.nio.file.Path,sootup.core.types.ClassType,sootup.java.core.types.JavaClassType,java.util.Set,sootup.java.core.types.JavaClassType,java.util.Set,java.util.Set,sootup.core.model.Position,java.util.EnumSet,java.lang.Iterable,java.lang.Iterable,java.lang.Iterable,sootup.java.core.JavaClassFileMetadata)" class="member-name-link">InMemoryJavaClassSource</a><wbr>(@NonNull <a href="../../../core/inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;srcNamespace,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;sourcePath,
  @NonNull <a href="../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classType,
  @Nullable <a href="../types/JavaClassType.html" title="class in sootup.java.core.types">JavaClassType</a>&nbsp;superClass,
@@ -105,8 +106,16 @@ loadScripts(document, 'script');</script>
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;methodAnnotations,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a>&gt;&nbsp;fieldAnnotations,
  @NonNull <a href="../JavaClassFileMetadata.html" title="class in sootup.java.core">JavaClassFileMetadata</a>&nbsp;classFileMetadata)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Creates a fully resolved class source with immutable source and nesting attributes.</div>
+</div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../JavaSootClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,sootup.core.types.ClassType,java.nio.file.Path,sootup.java.core.JavaClassFileMetadata)" class="member-name-link">JavaSootClassSource</a><wbr>(@NonNull <a href="../../../core/inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a>&nbsp;inputLocation,
+ @NonNull <a href="../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;classSignature,
+ @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html" title="class or interface in java.nio.file" class="external-link">Path</a>&nbsp;sourcePath,
+ @NonNull <a href="../JavaClassFileMetadata.html" title="class in sootup.java.core">JavaClassFileMetadata</a>&nbsp;classFileMetadata)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a class source with immutable source and nesting attributes.</div>
 </div>
 </div>
 </section>
