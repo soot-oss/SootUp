@@ -63,18 +63,7 @@ class JavaClassFileMetadataTest {
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList());
-    var built =
-        new InMemoryJavaClassSource(
-            Collections.emptySet(),
-            Collections.emptySet(),
-            EnumSet.noneOf(ClassModifier.class),
-            Collections.emptySet(),
-            null,
-            null,
-            NoPositionInformation.getInstance(),
-            path,
-            type,
-            input);
+    var built = InMemoryJavaClassSource.builder(input, type).withSourcePath(path).build();
     for (var candidate : List.of(source, built)) {
       assertSame(JavaClassFileMetadata.empty(), candidate.getClassFileMetadata());
       var clazz = candidate.buildClass(SourceType.Application);

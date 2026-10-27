@@ -27,6 +27,7 @@ import java.util.*;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.Position;
 import sootup.core.model.SootField;
@@ -264,5 +265,115 @@ public class InMemoryJavaClassSource extends JavaSootClassSource {
         + ", classType="
         + classSignature
         + '}';
+  }
+
+  @NonNull
+  public static Builder builder(
+      @NonNull AnalysisInputLocation inputLocation, @NonNull ClassType classType) {
+    return new Builder(inputLocation, classType);
+  }
+
+  /**
+   * Builds an {@link InMemoryJavaClassSource}; every part that is not set defaults to absent/empty.
+   */
+  public static class Builder {
+    @NonNull private final AnalysisInputLocation inputLocation;
+    @NonNull private final ClassType classType;
+    @Nullable private Path sourcePath;
+    @Nullable private JavaClassType superClass;
+    @Nullable private JavaClassType outerClass;
+    @NonNull private Set<JavaClassType> interfaces = new LinkedHashSet<>();
+    @NonNull private Set<JavaSootField> fields = new LinkedHashSet<>();
+    @NonNull private Set<JavaSootMethod> methods = new LinkedHashSet<>();
+    @NonNull private EnumSet<ClassModifier> modifiers = EnumSet.noneOf(ClassModifier.class);
+    @NonNull private Position position = NoPositionInformation.getInstance();
+    @NonNull private Iterable<AnnotationUsage> annotations = Collections.emptyList();
+    @NonNull private Iterable<AnnotationUsage> methodAnnotations = Collections.emptyList();
+    @NonNull private Iterable<AnnotationUsage> fieldAnnotations = Collections.emptyList();
+    @NonNull private JavaClassFileMetadata classFileMetadata = JavaClassFileMetadata.empty();
+
+    private Builder(@NonNull AnalysisInputLocation inputLocation, @NonNull ClassType classType) {
+      this.inputLocation = inputLocation;
+      this.classType = classType;
+    }
+
+    public Builder withSourcePath(@Nullable Path sourcePath) {
+      this.sourcePath = sourcePath;
+      return this;
+    }
+
+    public Builder withSuperclass(@Nullable JavaClassType superClass) {
+      this.superClass = superClass;
+      return this;
+    }
+
+    public Builder withOuterClass(@Nullable JavaClassType outerClass) {
+      this.outerClass = outerClass;
+      return this;
+    }
+
+    public Builder withInterfaces(@NonNull Set<JavaClassType> interfaces) {
+      this.interfaces = interfaces;
+      return this;
+    }
+
+    public Builder withFields(@NonNull Set<JavaSootField> fields) {
+      this.fields = fields;
+      return this;
+    }
+
+    public Builder withMethods(@NonNull Set<JavaSootMethod> methods) {
+      this.methods = methods;
+      return this;
+    }
+
+    public Builder withModifiers(@NonNull EnumSet<ClassModifier> modifiers) {
+      this.modifiers = modifiers;
+      return this;
+    }
+
+    public Builder withPosition(@NonNull Position position) {
+      this.position = position;
+      return this;
+    }
+
+    public Builder withAnnotations(@NonNull Iterable<AnnotationUsage> annotations) {
+      this.annotations = annotations;
+      return this;
+    }
+
+    public Builder withMethodAnnotations(@NonNull Iterable<AnnotationUsage> methodAnnotations) {
+      this.methodAnnotations = methodAnnotations;
+      return this;
+    }
+
+    public Builder withFieldAnnotations(@NonNull Iterable<AnnotationUsage> fieldAnnotations) {
+      this.fieldAnnotations = fieldAnnotations;
+      return this;
+    }
+
+    public Builder withClassFileMetadata(@NonNull JavaClassFileMetadata classFileMetadata) {
+      this.classFileMetadata = classFileMetadata;
+      return this;
+    }
+
+    @NonNull
+    public InMemoryJavaClassSource build() {
+      return new InMemoryJavaClassSource(
+          inputLocation,
+          sourcePath,
+          classType,
+          superClass,
+          interfaces,
+          outerClass,
+          fields,
+          methods,
+          position,
+          modifiers,
+          annotations,
+          methodAnnotations,
+          fieldAnnotations,
+          classFileMetadata);
+    }
   }
 }
