@@ -57,15 +57,25 @@ public abstract class AbstractNullTransformer extends DexTransformer {
   }
 
   /**
-   * Replace 0 with null in the given unit.
+   * Replaces 0 with null in the given statement. Statements are immutable, so the caller has to put
+   * the returned statement into the body in place of the given one.
    *
-   * @param stmt the unit where 0 will be replaced with null.
+   * @param stmt the statement where 0 will be replaced with null.
+   * @return the statement with null instead of 0, or the given statement if there is no 0 to
+   *     replace
    */
-  protected void replaceWithNull(Stmt stmt) {
+  protected Stmt replaceWithNull(Stmt stmt) {
     if (stmt instanceof JIfStmt) {
       AbstractConditionExpr expr = ((JIfStmt) stmt).getCondition();
       if (isZeroComparison(expr)) {
-        expr.withOp2(NullConstant.getInstance());
+        if (expr instanceof JEqExpr) {
+          return ((JIfStmt) stmt)
+              .withCondition(((JEqExpr) expr).withOp2(NullConstant.getInstance()));
+        }
+        if (expr instanceof JNeExpr) {
+          return ((JIfStmt) stmt)
+              .withCondition(((JNeExpr) expr).withOp2(NullConstant.getInstance()));
+        }
       }
     } else if (stmt instanceof JAssignStmt) {
       JAssignStmt s = (JAssignStmt) stmt;
@@ -77,10 +87,11 @@ public abstract class AbstractNullTransformer extends DexTransformer {
         // being an int.
         if (!(s.getLeftOp() instanceof JInstanceFieldRef)
             || s.getLeftOp().getType() instanceof ReferenceType) {
-          s.withRValue(NullConstant.getInstance());
+          return s.withRValue(NullConstant.getInstance());
         }
       }
     }
+    return stmt;
   }
 
   protected static boolean isObject(Type t) {
