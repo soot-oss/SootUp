@@ -21,10 +21,10 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.core.util.Utils;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -69,21 +69,13 @@ public class SootMethodTest {
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
-    OverridingJavaClassSource overridingJavaClassSource =
-        new OverridingJavaClassSource(
-            new EagerInputLocation(),
-            null,
-            view.getIdentifierFactory().getClassType("dummyMain"),
-            null,
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.singleton(dummyMainMethod),
-            NoPositionInformation.getInstance(),
-            EnumSet.of(ClassModifier.PUBLIC),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList());
+    InMemoryJavaClassSource overridingJavaClassSource =
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(new EagerInputLocation())
+            .withClassType(view.getIdentifierFactory().getClassType("dummyMain"))
+            .withMethods(Collections.singleton(dummyMainMethod))
+            .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+            .build();
     JavaSootClass mainClass = new JavaSootClass(overridingJavaClassSource, SourceType.Application);
 
     JavaSootClass javaSootClassUsingBuilder =

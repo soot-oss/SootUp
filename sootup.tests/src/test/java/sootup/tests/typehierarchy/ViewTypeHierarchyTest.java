@@ -24,9 +24,9 @@ import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.frontend.inputlocation.DefaultRuntimeAnalysisInputLocation;
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -171,21 +171,13 @@ public class ViewTypeHierarchyTest {
   @Test
   public void addType() {
     JavaIdentifierFactory factory = view.getIdentifierFactory();
-    OverridingJavaClassSource classSource =
-        new OverridingJavaClassSource(
-            analysisInputLocation,
-            null,
-            factory.getClassType("adummytype.Type"),
-            factory.getClassType("ds.Employee"),
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.emptySet(),
-            null,
-            EnumSet.of(ClassModifier.FINAL),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList());
+    InMemoryJavaClassSource classSource =
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(analysisInputLocation)
+            .withClassType(factory.getClassType("adummytype.Type"))
+            .withSuperclass(factory.getClassType("ds.Employee"))
+            .withModifiers(EnumSet.of(ClassModifier.FINAL))
+            .build();
     SootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
 
     typeHierarchy.addType(sootClass);
@@ -206,21 +198,13 @@ public class ViewTypeHierarchyTest {
     // Populate subtypesOf()'s cache with the result BEFORE the new type exists.
     Set<ClassType> before = typeHierarchy.subclassesOf(baseType).collect(Collectors.toSet());
 
-    OverridingJavaClassSource classSource =
-        new OverridingJavaClassSource(
-            analysisInputLocation,
-            null,
-            factory.getClassType("adummytype.Type2"),
-            factory.getClassType("ds.Employee"),
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.emptySet(),
-            null,
-            EnumSet.of(ClassModifier.FINAL),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList());
+    InMemoryJavaClassSource classSource =
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(analysisInputLocation)
+            .withClassType(factory.getClassType("adummytype.Type2"))
+            .withSuperclass(factory.getClassType("ds.Employee"))
+            .withModifiers(EnumSet.of(ClassModifier.FINAL))
+            .build();
     SootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
 
     assertFalse(
@@ -262,21 +246,13 @@ public class ViewTypeHierarchyTest {
             .map(SootClass::getType)
             .collect(Collectors.toSet());
 
-    OverridingJavaClassSource classSource =
-        new OverridingJavaClassSource(
-            analysisInputLocation,
-            null,
-            factory.getClassType("adummytype.Type3"),
-            factory.getClassType("ds.Employee"),
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.emptySet(),
-            null,
-            EnumSet.of(ClassModifier.FINAL),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList());
+    InMemoryJavaClassSource classSource =
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(analysisInputLocation)
+            .withClassType(factory.getClassType("adummytype.Type3"))
+            .withSuperclass(factory.getClassType("ds.Employee"))
+            .withModifiers(EnumSet.of(ClassModifier.FINAL))
+            .build();
     SootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
 
     assertFalse(

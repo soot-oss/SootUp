@@ -38,7 +38,7 @@ import sootup.core.jimple.common.expr.*;
 import sootup.core.model.*;
 import sootup.core.types.*;
 import sootup.core.views.View;
-import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.jimple.JimpleParser;
 
 public class JimpleConverter {
@@ -53,7 +53,7 @@ public class JimpleConverter {
     this.visitorFactory = visitorFactory;
   }
 
-  public OverridingJavaClassSource run(
+  public InMemoryJavaClassSource run(
       @NonNull CharStream charStream,
       @NonNull AnalysisInputLocation inputlocation,
       @NonNull Path sourcePath,
@@ -67,7 +67,7 @@ public class JimpleConverter {
     return run(jimpleParser, inputlocation, sourcePath, bodyInterceptors, view);
   }
 
-  public OverridingJavaClassSource run(
+  public InMemoryJavaClassSource run(
       @NonNull JimpleParser parser,
       @NonNull AnalysisInputLocation inputlocation,
       @NonNull Path sourcePath,
@@ -82,16 +82,17 @@ public class JimpleConverter {
       throw new ResolveException("Syntax Error", sourcePath, ex);
     }
 
-    return new OverridingJavaClassSource(
-        classVisitor.methods,
-        classVisitor.fields,
-        classVisitor.modifiers,
-        classVisitor.interfaces,
-        classVisitor.superclass,
-        classVisitor.outerclass,
-        classVisitor.position,
-        sourcePath,
-        classVisitor.clazz,
-        inputlocation);
+    return InMemoryJavaClassSource.builder()
+        .withAnalysisInputLocation(inputlocation)
+        .withClassType(classVisitor.clazz)
+        .withSourcePath(sourcePath)
+        .withSuperclass(classVisitor.superclass)
+        .withInterfaces(classVisitor.interfaces)
+        .withOuterClass(classVisitor.outerclass)
+        .withFields(classVisitor.fields)
+        .withMethods(classVisitor.methods)
+        .withModifiers(classVisitor.modifiers)
+        .withPosition(classVisitor.position)
+        .build();
   }
 }
