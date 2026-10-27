@@ -23,6 +23,7 @@ package sootup.apk.frontend.interceptors;
  */
 
 import java.util.*;
+import java.util.function.UnaryOperator;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
@@ -60,6 +61,9 @@ public class DexNullTransformer extends AbstractNullTransformer {
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
+    // Statements are immutable: collect the changed statements of the body and replace them at
+    // the end, after all analyses of the original statements are done
+    final Map<Stmt, Stmt> replacements = new LinkedHashMap<>();
 
     AbstractStmtVisitor checkDef =
         new AbstractStmtVisitor() {
@@ -280,14 +284,14 @@ public class DexNullTransformer extends AbstractNullTransformer {
       // change values
       if (usedAsObject) {
         for (Stmt u : defs) {
-          replaceWithNull(u);
+          replace(replacements, u, this::replaceWithNull);
           Set<Value> defLocals = new HashSet<>(u.getUsesAndDefs());
 
           Local l = (Local) ((AbstractDefinitionStmt) u).getLeftOp();
           for (Stmt uuse : localDefs.getUsesOf(l)) {
             // If we have a[x] = 0 and a is an object, we may not conclude 0 -> null
             if (!uuse.containsArrayRef() || !defLocals.contains(uuse.getArrayRef().getBase())) {
-              replaceWithNull(uuse);
+              replace(replacements, uuse, this::replaceWithNull);
             }
           }
         }
@@ -295,93 +299,100 @@ public class DexNullTransformer extends AbstractNullTransformer {
     }
 
     // Check for inlined zero values
-
-    AbstractStmtVisitor inlinedZeroValues =
-        new AbstractStmtVisitor() {
-
-          final NullConstant nullConstant = NullConstant.getInstance();
-          Set<Value> objects = null;
-
-          @Override
-          public void caseAssignStmt(@NonNull JAssignStmt stmt) {
-            if (isObject(stmt.getLeftOp().getType()) && isConstZero(stmt.getRightOp())) {
-              stmt.withRValue(nullConstant);
-              return;
-            }
-
-            // Case a = (Object) 0
-            if (stmt.getRightOp() instanceof JCastExpr ce) {
-              if (isObject(ce.getType()) && isConstZero(ce.getOp())) {
-                stmt.withRValue(nullConstant);
-              }
-            }
-
-            // Case a[0] = 0
-            if (stmt.getLeftOp() instanceof JArrayRef ar && isConstZero(stmt.getRightOp())) {
-              if (objects == null) {
-                objects = getObjectArray(builder);
-              }
-              if (objects.contains(ar.getBase())) {
-                stmt.withRValue(nullConstant);
-              }
-            }
-          }
-
-          private boolean isConstZero(Value rightOp) {
-            return (rightOp instanceof IntConstant && ((IntConstant) rightOp).getValue() == 0)
-                || (rightOp instanceof LongConstant && ((LongConstant) rightOp).getValue() == 0);
-          }
-
-          @Override
-          public void caseEnterMonitorStmt(@NonNull JEnterMonitorStmt stmt) {
-            if (stmt.getOp() instanceof IntConstant
-                && ((IntConstant) stmt.getOp()).getValue() == 0) {
-              stmt.withOp(nullConstant);
-            }
-          }
-
-          @Override
-          public void caseExitMonitorStmt(@NonNull JExitMonitorStmt stmt) {
-            if (stmt.getOp() instanceof IntConstant
-                && ((IntConstant) stmt.getOp()).getValue() == 0) {
-              stmt.withOp(nullConstant);
-            }
-          }
-
-          @Override
-          public void caseReturnStmt(@NonNull JReturnStmt stmt) {
-            if (stmt.getOp() instanceof IntConstant iconst) {
-              assert builder.getMethodSignature() != null;
-              if (isObject(builder.getMethodSignature().getType())) {
-                assert iconst.getValue() == 0;
-                stmt.withReturnValue(nullConstant);
-              }
-            }
-          }
-        };
-
-    final NullConstant nullConstant = NullConstant.getInstance();
+    Set<Value> objects = getObjectArray(builder);
     for (Stmt stmt : builder.getStmts()) {
-      stmt.accept(inlinedZeroValues);
-      if (stmt.isInvokableStmt()) {
-        InvokableStmt invokableStmt = stmt.asInvokableStmt();
-        if (invokableStmt.getInvokeExpr().isPresent()) {
-          AbstractInvokeExpr invExpr = invokableStmt.getInvokeExpr().get();
-          for (int i = 0; i < invExpr.getArgCount(); i++) {
-            if (isObject(invExpr.getMethodSignature().getParameterTypes().get(i))) {
-              if (invExpr.getArg(i) instanceof IntConstant iconst) {
-                assert iconst.getValue() == 0;
-                if (invExpr instanceof AbstractInstanceInvokeExpr) {
-                  invExpr =
-                      ((AbstractInstanceInvokeExpr) invExpr)
-                          .withArgs(Collections.singletonList(nullConstant));
-                }
-              }
-            }
-          }
+      replace(replacements, stmt, s -> replaceInlinedZeros(s, builder, objects));
+    }
+
+    for (Map.Entry<Stmt, Stmt> replacement : replacements.entrySet()) {
+      if (replacement.getKey() != replacement.getValue()) {
+        builder.getControlFlowGraph().replaceNode(replacement.getKey(), replacement.getValue());
+      }
+    }
+  }
+
+  /**
+   * Applies the given change to the current version of the given statement of the body and records
+   * the result
+   */
+  private static void replace(
+      Map<Stmt, Stmt> replacements, Stmt original, UnaryOperator<Stmt> change) {
+    Stmt current = replacements.getOrDefault(original, original);
+    Stmt changed = change.apply(current);
+    if (changed != current) {
+      replacements.put(original, changed);
+    }
+  }
+
+  private static boolean isConstZero(Value value) {
+    return (value instanceof IntConstant && ((IntConstant) value).getValue() == 0)
+        || (value instanceof LongConstant && ((LongConstant) value).getValue() == 0);
+  }
+
+  /**
+   * Replaces the zeros that are used as objects without being stored in a local: assigned to an
+   * object, cast to an object, stored in an object array, used as monitor, returned from a method
+   * that returns an object, or passed for an object parameter
+   *
+   * @return the statement with null instead of these zeros, or the given statement
+   */
+  private static Stmt replaceInlinedZeros(
+      Stmt stmt, Body.BodyBuilder builder, Set<Value> objectArrays) {
+    final NullConstant nullConstant = NullConstant.getInstance();
+    Stmt result = stmt;
+    if (stmt instanceof JAssignStmt assign) {
+      Value right = assign.getRightOp();
+      if ((isObject(assign.getLeftOp().getType()) && isConstZero(right))
+          // Case a = (Object) 0
+          || (right instanceof JCastExpr ce && isObject(ce.getType()) && isConstZero(ce.getOp()))
+          // Case a[0] = 0
+          || (assign.getLeftOp() instanceof JArrayRef ar
+              && isConstZero(right)
+              && objectArrays.contains(ar.getBase()))) {
+        result = assign.withRValue(nullConstant);
+      }
+    } else if (stmt instanceof JEnterMonitorStmt monitor && isConstZero(monitor.getOp())) {
+      result = monitor.withOp(nullConstant);
+    } else if (stmt instanceof JExitMonitorStmt monitor && isConstZero(monitor.getOp())) {
+      result = monitor.withOp(nullConstant);
+    } else if (stmt instanceof JReturnStmt ret
+        && isConstZero(ret.getOp())
+        && builder.getMethodSignature() != null
+        && isObject(builder.getMethodSignature().getType())) {
+      result = ret.withReturnValue(nullConstant);
+    }
+
+    // Zeros that are passed for object parameters
+    if (result.isInvokableStmt() && result.asInvokableStmt().getInvokeExpr().isPresent()) {
+      AbstractInvokeExpr invExpr = result.asInvokableStmt().getInvokeExpr().get();
+      List<Type> parameterTypes = invExpr.getMethodSignature().getParameterTypes();
+      List<Immediate> args = new ArrayList<>(invExpr.getArgs());
+      boolean changed = false;
+      for (int i = 0; i < args.size(); i++) {
+        if (isObject(parameterTypes.get(i)) && isConstZero(args.get(i))) {
+          args.set(i, nullConstant);
+          changed = true;
+        }
+      }
+      if (changed) {
+        AbstractInvokeExpr newExpr;
+        if (invExpr instanceof AbstractInstanceInvokeExpr) {
+          newExpr = ((AbstractInstanceInvokeExpr) invExpr).withArgs(args);
+        } else if (invExpr instanceof JStaticInvokeExpr) {
+          newExpr = ((JStaticInvokeExpr) invExpr).withArgs(args);
+        } else if (invExpr instanceof JDynamicInvokeExpr) {
+          newExpr = ((JDynamicInvokeExpr) invExpr).withMethodArgs(args);
+        } else {
+          return result;
+        }
+        if (result instanceof JInvokeStmt) {
+          result = ((JInvokeStmt) result).withInvokeExpr(newExpr);
+        } else if (result instanceof JAssignStmt) {
+          result = ((JAssignStmt) result).withRValue(newExpr);
         }
       }
     }
+    return result;
   }
 
   private static Set<Value> getObjectArray(Body.BodyBuilder bodyBuilder) {
