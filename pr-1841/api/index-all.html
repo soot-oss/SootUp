@@ -2078,6 +2078,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/model/Body.BodyBuilder.html#build()" class="member-name-link">build()</a> - Method in class sootup.core.model.<a href="sootup/core/model/Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#build()" class="member-name-link">build()</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.Build.html#build()" class="member-name-link">build()</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.Build.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.Build</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootField.JavaSootFieldBuilder.BuildStep.html#build()" class="member-name-link">build()</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootField.JavaSootFieldBuilder.BuildStep.html" title="interface in sootup.java.core">JavaSootField.JavaSootFieldBuilder.BuildStep</a></dt>
@@ -2114,6 +2116,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/core/model/Body.html#builder()" class="member-name-link">builder()</a> - Static method in class sootup.core.model.<a href="sootup/core/model/Body.html" title="class in sootup.core.model">Body</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#builder()" class="member-name-link">builder()</a> - Static method in class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
+<dd>
+<div class="block">Starts a stepwise builder: the input location and the class type are mandatory.</div>
+</dd>
 <dt><a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.html#builder()" class="member-name-link">builder()</a> - Static method in class sootup.java.core.<a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.html" title="class in sootup.java.core">JavaSootClass.JavaSootClassBuilder</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootField.JavaSootFieldBuilder.html#builder()" class="member-name-link">builder()</a> - Static method in class sootup.java.core.<a href="sootup/java/core/JavaSootField.JavaSootFieldBuilder.html" title="class in sootup.java.core">JavaSootField.JavaSootFieldBuilder</a></dt>
@@ -4779,7 +4785,11 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/apk/frontend/dexpler/DexMethod.html#declaringclassType" class="member-name-link">declaringclassType</a> - Variable in class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexMethod.html" title="class in sootup.apk.frontend.dexpler">DexMethod</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/DexBodyInterceptors.html#Default" class="member-name-link">Default</a> - Enum constant in enum class sootup.apk.frontend.<a href="sootup/apk/frontend/DexBodyInterceptors.html" title="enum class in sootup.apk.frontend">DexBodyInterceptors</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Splits the locals first, as Soot's dexpler does: dex code reuses registers for values of
+ different types, and the number and null transformers decide per local whether its constants
+ are floats or nulls.</div>
+</dd>
 <dt><a href="sootup/interceptors/BytecodeBodyInterceptors.html#Default" class="member-name-link">Default</a> - Enum constant in enum class sootup.interceptors.<a href="sootup/interceptors/BytecodeBodyInterceptors.html" title="enum class in sootup.interceptors">BytecodeBodyInterceptors</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/config/PointerAnalysisConfig.TurnerConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Enum constant in enum class qilin.core.config.<a href="qilin/core/config/PointerAnalysisConfig.TurnerConfig.html" title="enum class in qilin.core.config">PointerAnalysisConfig.TurnerConfig</a></dt>
@@ -6128,6 +6138,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/java/bytecode/frontend/inputlocation/MultiReleaseJarAnalysisInputLocation.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class sootup.java.bytecode.frontend.inputlocation.<a href="sootup/java/bytecode/frontend/inputlocation/MultiReleaseJarAnalysisInputLocation.html" title="class in sootup.java.bytecode.frontend.inputlocation">MultiReleaseJarAnalysisInputLocation</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/AnnotationUsage.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class sootup.java.core.<a href="sootup/java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootMethod.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootMethod.html" title="class in sootup.java.core">JavaSootMethod</a></dt>
 <dd>&nbsp;</dd>
@@ -11128,6 +11140,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/AnnotationUsage.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class sootup.java.core.<a href="sootup/java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaInnerClassInfo.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaInnerClassInfo.html" title="class in sootup.java.core">JavaInnerClassInfo</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClassSource.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootClassSource.html" title="class in sootup.java.core">JavaSootClassSource</a></dt>
@@ -11880,6 +11894,27 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/util/MemoryWatcher.html#inMegaByte()" class="member-name-link">inMegaByte()</a> - Method in class qilin.util.<a href="qilin/util/MemoryWatcher.html" title="class in qilin.util">MemoryWatcher</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html" class="type-name-link" title="class in sootup.java.core">InMemoryJavaClassSource</a> - Class in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
+<dd>
+<div class="block">A class source where all information is already available in memory, e.g. classes that are
+ batchparsed (like .jimple files) or synthesized in tests.</div>
+</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#%3Cinit%3E(java.util.Set,java.util.Set,java.util.EnumSet,java.util.Set,sootup.java.core.types.JavaClassType,sootup.java.core.types.JavaClassType,sootup.core.model.Position,java.nio.file.Path,sootup.core.types.ClassType,sootup.core.inputlocation.AnalysisInputLocation)" class="member-name-link">InMemoryJavaClassSource(Set&lt;JavaSootMethod&gt;, Set&lt;JavaSootField&gt;, EnumSet&lt;ClassModifier&gt;, Set&lt;JavaClassType&gt;, JavaClassType, JavaClassType, Position, Path, ClassType, AnalysisInputLocation)</a> - Constructor for class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,java.nio.file.Path,sootup.core.types.ClassType,sootup.java.core.types.JavaClassType,java.util.Set,sootup.java.core.types.JavaClassType,java.util.Set,java.util.Set,sootup.core.model.Position,java.util.EnumSet,java.lang.Iterable,java.lang.Iterable,java.lang.Iterable)" class="member-name-link">InMemoryJavaClassSource(AnalysisInputLocation, Path, ClassType, JavaClassType, Set&lt;JavaClassType&gt;, JavaClassType, Set&lt;JavaSootField&gt;, Set&lt;JavaSootMethod&gt;, Position, EnumSet&lt;ClassModifier&gt;, Iterable&lt;AnnotationUsage&gt;, Iterable&lt;AnnotationUsage&gt;, Iterable&lt;AnnotationUsage&gt;)</a> - Constructor for class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,java.nio.file.Path,sootup.core.types.ClassType,sootup.java.core.types.JavaClassType,java.util.Set,sootup.java.core.types.JavaClassType,java.util.Set,java.util.Set,sootup.core.model.Position,java.util.EnumSet,java.lang.Iterable,java.lang.Iterable,java.lang.Iterable,sootup.java.core.JavaClassFileMetadata)" class="member-name-link">InMemoryJavaClassSource(AnalysisInputLocation, Path, ClassType, JavaClassType, Set&lt;JavaClassType&gt;, JavaClassType, Set&lt;JavaSootField&gt;, Set&lt;JavaSootMethod&gt;, Position, EnumSet&lt;ClassModifier&gt;, Iterable&lt;AnnotationUsage&gt;, Iterable&lt;AnnotationUsage&gt;, Iterable&lt;AnnotationUsage&gt;, JavaClassFileMetadata)</a> - Constructor for class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
+<dd>
+<div class="block">Creates a fully resolved class source with immutable source and nesting attributes.</div>
+</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.AnalysisInputLocationStep.html" class="type-name-link" title="interface in sootup.java.core">InMemoryJavaClassSource.AnalysisInputLocationStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.ClassTypeStep.html" class="type-name-link" title="interface in sootup.java.core">InMemoryJavaClassSource.ClassTypeStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" class="type-name-link" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
+<dd>
+<div class="block">Optional parts; every part that is not set defaults to absent/empty.</div>
+</dd>
 <dt><a href="qilin/pta/toolkits/debloaterx/DebloaterX.html#innerContainer" class="member-name-link">innerContainer</a> - Variable in class qilin.pta.toolkits.debloaterx.<a href="qilin/pta/toolkits/debloaterx/DebloaterX.html" title="class in qilin.pta.toolkits.debloaterx">DebloaterX</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/inputlocation/MultiReleaseJarAnalysisInputLocation.html#inputLocations" class="member-name-link">inputLocations</a> - Variable in class sootup.java.bytecode.frontend.inputlocation.<a href="sootup/java/bytecode/frontend/inputlocation/MultiReleaseJarAnalysisInputLocation.html" title="class in sootup.java.bytecode.frontend.inputlocation">MultiReleaseJarAnalysisInputLocation</a></dt>
@@ -16338,19 +16373,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html" class="type-name-link" title="class in sootup.java.core">OverridingJavaClassSource</a> - Class in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>
-<div class="block">Allows for replacing specific parts of a class, such as fields and methods or, allows to resolve
- classes that are batchparsed like .java files using wala java source frontend or in tests where
- all information is already existing.</div>
-</dd>
-<dt><a href="sootup/java/core/OverridingJavaClassSource.html#%3Cinit%3E(java.util.Set,java.util.Set,java.util.EnumSet,java.util.Set,sootup.java.core.types.JavaClassType,sootup.java.core.types.JavaClassType,sootup.core.model.Position,java.nio.file.Path,sootup.core.types.ClassType,sootup.core.inputlocation.AnalysisInputLocation)" class="member-name-link">OverridingJavaClassSource(Set&lt;JavaSootMethod&gt;, Set&lt;JavaSootField&gt;, EnumSet&lt;ClassModifier&gt;, Set&lt;JavaClassType&gt;, JavaClassType, JavaClassType, Position, Path, ClassType, AnalysisInputLocation)</a> - Constructor for class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/OverridingJavaClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,java.nio.file.Path,sootup.core.types.ClassType,sootup.java.core.types.JavaClassType,java.util.Set,sootup.java.core.types.JavaClassType,java.util.Set,java.util.Set,sootup.core.model.Position,java.util.EnumSet,java.lang.Iterable,java.lang.Iterable,java.lang.Iterable)" class="member-name-link">OverridingJavaClassSource(AnalysisInputLocation, Path, ClassType, JavaClassType, Set&lt;JavaClassType&gt;, JavaClassType, Set&lt;JavaSootField&gt;, Set&lt;JavaSootMethod&gt;, Position, EnumSet&lt;ClassModifier&gt;, Iterable&lt;AnnotationUsage&gt;, Iterable&lt;AnnotationUsage&gt;, Iterable&lt;AnnotationUsage&gt;)</a> - Constructor for class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
-<dd>
-<div class="block">Class source where all information already available</div>
-</dd>
-<dt><a href="sootup/java/core/OverridingJavaClassSource.html#%3Cinit%3E(sootup.core.inputlocation.AnalysisInputLocation,java.nio.file.Path,sootup.core.types.ClassType,sootup.java.core.types.JavaClassType,java.util.Set,sootup.java.core.types.JavaClassType,java.util.Set,java.util.Set,sootup.core.model.Position,java.util.EnumSet,java.lang.Iterable,java.lang.Iterable,java.lang.Iterable,sootup.java.core.JavaClassFileMetadata)" class="member-name-link">OverridingJavaClassSource(AnalysisInputLocation, Path, ClassType, JavaClassType, Set&lt;JavaClassType&gt;, JavaClassType, Set&lt;JavaSootField&gt;, Set&lt;JavaSootMethod&gt;, Position, EnumSet&lt;ClassModifier&gt;, Iterable&lt;AnnotationUsage&gt;, Iterable&lt;AnnotationUsage&gt;, Iterable&lt;AnnotationUsage&gt;, JavaClassFileMetadata)</a> - Constructor for class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
-<dd>
-<div class="block">Creates a fully resolved class source with immutable source and nesting attributes.</div>
+<div class="block">Allows for replacing specific parts of a class, such as fields and methods.</div>
 </dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#%3Cinit%3E(sootup.java.core.JavaSootClassSource)" class="member-name-link">OverridingJavaClassSource(JavaSootClassSource)</a> - Constructor for class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
@@ -16358,13 +16381,9 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Defines a <a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.html" title="class in sootup.java.core"><code>OverridingJavaClassSource.OverridingJavaClassSourceBuilder</code></a> builder.</div>
 </dd>
-<dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnalysisInputLocationStep.html" class="type-name-link" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnalysisInputLocationStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnnotationStep.html" class="type-name-link" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnnotationStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.Build.html" class="type-name-link" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.Build</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ClassTypeStep.html" class="type-name-link" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ClassTypeStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.CompleteStep.html" class="type-name-link" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.CompleteStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>&nbsp;</dd>
@@ -16385,8 +16404,6 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.PositionStep.html" class="type-name-link" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.PositionStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SootClassSourceStep.html" class="type-name-link" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SootClassSourceStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SourcePathStep.html" class="type-name-link" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SourcePathStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SuperclassStep.html" class="type-name-link" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SuperclassStep</a> - Interface in <a href="sootup/java/core/package-summary.html">sootup.java.core</a></dt>
 <dd>&nbsp;</dd>
@@ -17896,7 +17913,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/interceptors/AbstractNullTransformer.html#replaceWithNull(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">replaceWithNull(Stmt)</a> - Method in class sootup.apk.frontend.interceptors.<a href="sootup/apk/frontend/interceptors/AbstractNullTransformer.html" title="class in sootup.apk.frontend.interceptors">AbstractNullTransformer</a></dt>
 <dd>
-<div class="block">Replace 0 with null in the given unit.</div>
+<div class="block">Replaces 0 with null in the given statement.</div>
 </dd>
 <dt><a href="qilin/stat/Exporter.html#report()" class="member-name-link">report()</a> - Method in class qilin.stat.<a href="qilin/stat/Exporter.html" title="class in qilin.stat">Exporter</a></dt>
 <dd>&nbsp;</dd>
@@ -17974,6 +17991,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html#resolveAnnotations()" class="member-name-link">resolveAnnotations()</a> - Method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmAnnotationClassSource</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#resolveAnnotations()" class="member-name-link">resolveAnnotations()</a> - Method in class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClassSource.html#resolveAnnotations()" class="member-name-link">resolveAnnotations()</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootClassSource.html" title="class in sootup.java.core">JavaSootClassSource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#resolveAnnotations()" class="member-name-link">resolveAnnotations()</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
@@ -18046,6 +18065,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html#resolveFields()" class="member-name-link">resolveFields()</a> - Method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmAnnotationClassSource</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#resolveFields()" class="member-name-link">resolveFields()</a> - Method in class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#resolveFields()" class="member-name-link">resolveFields()</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/dexpler/DexClassSource.html#resolveInterfaces()" class="member-name-link">resolveInterfaces()</a> - Method in class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexClassSource.html" title="class in sootup.apk.frontend.dexpler">DexClassSource</a></dt>
@@ -18055,6 +18076,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Reads from the source to retrieve its directly implemented interfaces.</div>
 </dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html#resolveInterfaces()" class="member-name-link">resolveInterfaces()</a> - Method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmAnnotationClassSource</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#resolveInterfaces()" class="member-name-link">resolveInterfaces()</a> - Method in class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#resolveInterfaces()" class="member-name-link">resolveInterfaces()</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
@@ -18072,6 +18095,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html#resolveMethods()" class="member-name-link">resolveMethods()</a> - Method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmAnnotationClassSource</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#resolveMethods()" class="member-name-link">resolveMethods()</a> - Method in class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#resolveMethods()" class="member-name-link">resolveMethods()</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/dexpler/DexClassSource.html#resolveModifiers()" class="member-name-link">resolveModifiers()</a> - Method in class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexClassSource.html" title="class in sootup.apk.frontend.dexpler">DexClassSource</a></dt>
@@ -18081,6 +18106,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Reads from the source to retrieve its modifiers.</div>
 </dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html#resolveModifiers()" class="member-name-link">resolveModifiers()</a> - Method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmAnnotationClassSource</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#resolveModifiers()" class="member-name-link">resolveModifiers()</a> - Method in class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#resolveModifiers()" class="member-name-link">resolveModifiers()</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
@@ -18107,6 +18134,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html#resolveOuterClass()" class="member-name-link">resolveOuterClass()</a> - Method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmAnnotationClassSource</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#resolveOuterClass()" class="member-name-link">resolveOuterClass()</a> - Method in class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#resolveOuterClass()" class="member-name-link">resolveOuterClass()</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/dexpler/DexClassSource.html#resolvePosition()" class="member-name-link">resolvePosition()</a> - Method in class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexClassSource.html" title="class in sootup.apk.frontend.dexpler">DexClassSource</a></dt>
@@ -18116,6 +18145,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Reads from the source to retrieve its position in the source code.</div>
 </dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html#resolvePosition()" class="member-name-link">resolvePosition()</a> - Method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmAnnotationClassSource</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#resolvePosition()" class="member-name-link">resolvePosition()</a> - Method in class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#resolvePosition()" class="member-name-link">resolvePosition()</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
@@ -18132,6 +18163,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Reads from the source to retrieve its superclass, if present.</div>
 </dd>
 <dt><a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html#resolveSuperclass()" class="member-name-link">resolveSuperclass()</a> - Method in class sootup.java.bytecode.frontend.conversion.<a href="sootup/java/bytecode/frontend/conversion/AsmAnnotationClassSource.html" title="class in sootup.java.bytecode.frontend.conversion">AsmAnnotationClassSource</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#resolveSuperclass()" class="member-name-link">resolveSuperclass()</a> - Method in class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#resolveSuperclass()" class="member-name-link">resolveSuperclass()</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
@@ -20572,6 +20605,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/AnnotationUsage.html#toString()" class="member-name-link">toString()</a> - Method in class sootup.java.core.<a href="sootup/java/core/AnnotationUsage.html" title="class in sootup.java.core">AnnotationUsage</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.html#toString()" class="member-name-link">toString()</a> - Method in class sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.html" title="class in sootup.java.core">InMemoryJavaClassSource</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaModuleInfo.InterfaceReference.html#toString()" class="member-name-link">toString()</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaModuleInfo.InterfaceReference.html" title="class in sootup.java.core">JavaModuleInfo.InterfaceReference</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaModuleInfo.ModuleReference.html#toString()" class="member-name-link">toString()</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaModuleInfo.ModuleReference.html" title="class in sootup.java.core">JavaModuleInfo.ModuleReference</a></dt>
@@ -20789,6 +20824,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/reflection/TamiflexReflectionModel.html#transformConstructorNewInstance(sootup.callgraph.reflection.AbstractReflectionModel.MethodContext,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">transformConstructorNewInstance(AbstractReflectionModel.MethodContext, InvokableStmt)</a> - Method in class sootup.callgraph.reflection.<a href="sootup/callgraph/reflection/TamiflexReflectionModel.html" title="class in sootup.callgraph.reflection">TamiflexReflectionModel</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/DexBodyInterceptors.html#Transformers" class="member-name-link">Transformers</a> - Enum constant in enum class sootup.apk.frontend.<a href="sootup/apk/frontend/DexBodyInterceptors.html" title="enum class in sootup.apk.frontend">DexBodyInterceptors</a></dt>
+<dd>
+<div class="block">The dex transformers of <a href="sootup/apk/frontend/DexBodyInterceptors.html#Default"><code>DexBodyInterceptors.Default</code></a> without its <a href="sootup/interceptors/LocalSplitter.html" title="class in sootup.interceptors"><code>LocalSplitter</code></a>, for callers that
+ put their own in front of them, e.g. one with another <a href="sootup/interceptors/LocalSplitter.ExceptionalFlow.html" title="enum class in sootup.interceptors"><code>LocalSplitter.ExceptionalFlow</code></a>.</div>
+</dd>
 <dt><a href="sootup/callgraph/reflection/AbstractReflectionModel.html#transformFieldGet(sootup.callgraph.reflection.AbstractReflectionModel.MethodContext,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">transformFieldGet(AbstractReflectionModel.MethodContext, InvokableStmt)</a> - Method in class sootup.callgraph.reflection.<a href="sootup/callgraph/reflection/AbstractReflectionModel.html" title="class in sootup.callgraph.reflection">AbstractReflectionModel</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/reflection/TamiflexReflectionModel.html#transformFieldGet(sootup.callgraph.reflection.AbstractReflectionModel.MethodContext,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">transformFieldGet(AbstractReflectionModel.MethodContext, InvokableStmt)</a> - Method in class sootup.callgraph.reflection.<a href="sootup/callgraph/reflection/TamiflexReflectionModel.html" title="class in sootup.callgraph.reflection">TamiflexReflectionModel</a></dt>
@@ -22232,13 +22272,15 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/jimple/JimpleParser.Trap_clauseContext.html#WITH()" class="member-name-link">WITH()</a> - Method in class sootup.jimple.<a href="sootup/jimple/JimpleParser.Trap_clauseContext.html" title="class in sootup.jimple">JimpleParser.Trap_clauseContext</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnalysisInputLocationStep.html#withAnalysisInputLocation(sootup.core.inputlocation.AnalysisInputLocation)" class="member-name-link">withAnalysisInputLocation(AnalysisInputLocation)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnalysisInputLocationStep.html" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnalysisInputLocationStep</a></dt>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.AnalysisInputLocationStep.html#withAnalysisInputLocation(sootup.core.inputlocation.AnalysisInputLocation)" class="member-name-link">withAnalysisInputLocation(AnalysisInputLocation)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.AnalysisInputLocationStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.AnalysisInputLocationStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootField.JavaSootFieldBuilder.AnnotationsStep.html#withAnnotation(java.lang.Iterable)" class="member-name-link">withAnnotation(Iterable&lt;AnnotationUsage&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootField.JavaSootFieldBuilder.AnnotationsStep.html" title="interface in sootup.java.core">JavaSootField.JavaSootFieldBuilder.AnnotationsStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootMethod.JavaSootMethodBuilder.AnnotationsStep.html#withAnnotation(java.lang.Iterable)" class="member-name-link">withAnnotation(Iterable&lt;AnnotationUsage&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootMethod.JavaSootMethodBuilder.AnnotationsStep.html" title="interface in sootup.java.core">JavaSootMethod.JavaSootMethodBuilder.AnnotationsStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnnotationStep.html#withAnnotation(java.lang.Iterable)" class="member-name-link">withAnnotation(Iterable&lt;AnnotationUsage&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnnotationStep.html" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnnotationStep</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#withAnnotations(java.lang.Iterable)" class="member-name-link">withAnnotations(Iterable&lt;AnnotationUsage&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootField.html#withAnnotations(java.lang.Iterable)" class="member-name-link">withAnnotations(Iterable&lt;AnnotationUsage&gt;)</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootField.html" title="class in sootup.java.core">JavaSootField</a></dt>
 <dd>&nbsp;</dd>
@@ -22296,13 +22338,15 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JInstanceOfExpr.html#withCheckType(sootup.core.types.Type)" class="member-name-link">withCheckType(Type)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JInstanceOfExpr.html" title="class in sootup.core.jimple.common.expr">JInstanceOfExpr</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#withClassFileMetadata(sootup.java.core.JavaClassFileMetadata)" class="member-name-link">withClassFileMetadata(JavaClassFileMetadata)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.ClassSourceStep.html#withClassSource(sootup.core.frontend.SootClassSource)" class="member-name-link">withClassSource(SootClassSource)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.ClassSourceStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.ClassSourceStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.html#withClassSource(sootup.core.frontend.SootClassSource)" class="member-name-link">withClassSource(SootClassSource)</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootClass.html" title="class in sootup.java.core">JavaSootClass</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.ClassTypeStep.html#withClassType(sootup.core.types.ClassType)" class="member-name-link">withClassType(ClassType)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.ClassTypeStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.ClassTypeStep</a></dt>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.ClassTypeStep.html#withClassType(sootup.core.types.ClassType)" class="member-name-link">withClassType(ClassType)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.ClassTypeStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.ClassTypeStep</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ClassTypeStep.html#withClassType(sootup.core.types.ClassType)" class="member-name-link">withClassType(ClassType)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ClassTypeStep.html" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ClassTypeStep</a></dt>
+<dt><a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.ClassTypeStep.html#withClassType(sootup.core.types.ClassType)" class="member-name-link">withClassType(ClassType)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.ClassTypeStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.ClassTypeStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/stmt/JIfStmt.html#withCondition(sootup.core.jimple.common.expr.AbstractConditionExpr)" class="member-name-link">withCondition(AbstractConditionExpr)</a> - Method in class sootup.core.jimple.common.stmt.<a href="sootup/core/jimple/common/stmt/JIfStmt.html" title="class in sootup.core.jimple.common.stmt">JIfStmt</a></dt>
 <dd>&nbsp;</dd>
@@ -22324,9 +22368,13 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.FieldAnnotationStep.html#withFieldAnnotation(java.lang.Iterable)" class="member-name-link">withFieldAnnotation(Iterable&lt;AnnotationUsage&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.FieldAnnotationStep.html" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.FieldAnnotationStep</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#withFieldAnnotations(java.lang.Iterable)" class="member-name-link">withFieldAnnotations(Iterable&lt;AnnotationUsage&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.html#withFields(java.util.Collection)" class="member-name-link">withFields(Collection&lt;JavaSootField&gt;)</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootClass.html" title="class in sootup.java.core">JavaSootClass</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#withFields(java.util.Collection)" class="member-name-link">withFields(Collection&lt;JavaSootField&gt;)</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#withFields(java.util.Set)" class="member-name-link">withFields(Set&lt;JavaSootField&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.FieldStep.html#withFields(java.util.Set)" class="member-name-link">withFields(Set&lt;JavaSootField&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.FieldStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.FieldStep</a></dt>
 <dd>&nbsp;</dd>
@@ -22356,6 +22404,8 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.InterfaceStep.html#withInterfaces(java.util.Set)" class="member-name-link">withInterfaces(Set&lt;? extends ClassType&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.InterfaceStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.InterfaceStep</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#withInterfaces(java.util.Set)" class="member-name-link">withInterfaces(Set&lt;JavaClassType&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.InterfacesStep.html#withInterfaces(java.util.Set)" class="member-name-link">withInterfaces(Set&lt;JavaClassType&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.InterfacesStep.html" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.InterfacesStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#withInterfaces(java.util.Set)" class="member-name-link">withInterfaces(Set&lt;JavaClassType&gt;)</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
@@ -22374,11 +22424,15 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.MethodAnnotationStep.html#withMethodAnnotation(java.lang.Iterable)" class="member-name-link">withMethodAnnotation(Iterable&lt;AnnotationUsage&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.MethodAnnotationStep.html" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.MethodAnnotationStep</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#withMethodAnnotations(java.lang.Iterable)" class="member-name-link">withMethodAnnotations(Iterable&lt;AnnotationUsage&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JDynamicInvokeExpr.html#withMethodArgs(java.util.List)" class="member-name-link">withMethodArgs(List&lt;Immediate&gt;)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JDynamicInvokeExpr.html" title="class in sootup.core.jimple.common.expr">JDynamicInvokeExpr</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.html#withMethods(java.util.Collection)" class="member-name-link">withMethods(Collection&lt;JavaSootMethod&gt;)</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootClass.html" title="class in sootup.java.core">JavaSootClass</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#withMethods(java.util.Collection)" class="member-name-link">withMethods(Collection&lt;JavaSootMethod&gt;)</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#withMethods(java.util.Set)" class="member-name-link">withMethods(Set&lt;JavaSootMethod&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.MethodStep.html#withMethods(java.util.Set)" class="member-name-link">withMethods(Set&lt;JavaSootMethod&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.MethodStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.MethodStep</a></dt>
 <dd>&nbsp;</dd>
@@ -22411,6 +22465,8 @@ the order they are declared.</div>
 <dt><a href="sootup/core/model/SootMethod.html#withModifiers(java.lang.Iterable)" class="member-name-link">withModifiers(Iterable&lt;MethodModifier&gt;)</a> - Method in interface sootup.core.model.<a href="sootup/core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootMethod.html#withModifiers(java.lang.Iterable)" class="member-name-link">withModifiers(Iterable&lt;MethodModifier&gt;)</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootMethod.html" title="class in sootup.java.core">JavaSootMethod</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#withModifiers(java.util.EnumSet)" class="member-name-link">withModifiers(EnumSet&lt;ClassModifier&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ModifiersStep.html#withModifiers(java.util.EnumSet)" class="member-name-link">withModifiers(EnumSet&lt;ClassModifier&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ModifiersStep.html" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ModifiersStep</a></dt>
 <dd>&nbsp;</dd>
@@ -22566,6 +22622,8 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#withOuterClass(java.util.Optional)" class="member-name-link">withOuterClass(Optional&lt;JavaClassType&gt;)</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#withOuterClass(sootup.java.core.types.JavaClassType)" class="member-name-link">withOuterClass(JavaClassType)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootMethod.html#withOverridingMethodSource(java.util.function.Function)" class="member-name-link">withOverridingMethodSource(Function&lt;OverridingBodySource, OverridingBodySource&gt;)</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootMethod.html" title="class in sootup.java.core">JavaSootMethod</a></dt>
 <dd>
 <div class="block">Creates a new SootMethod based on a new <a href="sootup/core/frontend/OverridingBodySource.html" title="class in sootup.core.frontend"><code>OverridingBodySource</code></a>.</div>
@@ -22573,6 +22631,8 @@ the order they are declared.</div>
 <dt><a href="sootup/core/model/SootMethod.html#withOverridingMethodSource(java.util.function.Function)" class="member-name-link">withOverridingMethodSource(Function&lt;OverridingBodySource, OverridingBodySource&gt;)</a> - Method in interface sootup.core.model.<a href="sootup/core/model/SootMethod.html" title="interface in sootup.core.model">SootMethod</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JParameterRef.html#withParamType(sootup.core.types.Type)" class="member-name-link">withParamType(Type)</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JParameterRef.html" title="class in sootup.core.jimple.common.ref">JParameterRef</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#withPosition(sootup.core.model.Position)" class="member-name-link">withPosition(Position)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.PositionStep.html#withPosition(sootup.core.model.Position)" class="member-name-link">withPosition(Position)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.PositionStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.PositionStep</a></dt>
 <dd>&nbsp;</dd>
@@ -22652,7 +22712,7 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootMethod.html#withSource(sootup.core.frontend.BodySource)" class="member-name-link">withSource(BodySource)</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootMethod.html" title="class in sootup.java.core">JavaSootMethod</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SourcePathStep.html#withSourcePath(java.nio.file.Path)" class="member-name-link">withSourcePath(Path)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SourcePathStep.html" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SourcePathStep</a></dt>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#withSourcePath(java.nio.file.Path)" class="member-name-link">withSourcePath(Path)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.SourceTypeStep.html#withSourceType(sootup.core.model.SourceType)" class="member-name-link">withSourceType(SourceType)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/JavaSootClass.JavaSootClassBuilder.SourceTypeStep.html" title="interface in sootup.java.core">JavaSootClass.JavaSootClassBuilder.SourceTypeStep</a></dt>
 <dd>&nbsp;</dd>
@@ -22669,6 +22729,8 @@ the order they are declared.</div>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SuperclassStep.html#withSuperclass(java.util.Optional)" class="member-name-link">withSuperclass(Optional&lt;JavaClassType&gt;)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SuperclassStep.html" title="interface in sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SuperclassStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/java/core/OverridingJavaClassSource.html#withSuperclass(java.util.Optional)" class="member-name-link">withSuperclass(Optional&lt;JavaClassType&gt;)</a> - Method in class sootup.java.core.<a href="sootup/java/core/OverridingJavaClassSource.html" title="class in sootup.java.core">OverridingJavaClassSource</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html#withSuperclass(sootup.java.core.types.JavaClassType)" class="member-name-link">withSuperclass(JavaClassType)</a> - Method in interface sootup.java.core.<a href="sootup/java/core/InMemoryJavaClassSource.OptionalStep.html" title="interface in sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JThisRef.html#withThisType(sootup.core.types.ClassType)" class="member-name-link">withThisType(ClassType)</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JThisRef.html" title="class in sootup.core.jimple.common.ref">JThisRef</a></dt>
 <dd>&nbsp;</dd>

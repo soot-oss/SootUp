@@ -177,6 +177,19 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">
 <div class="block">Interface to mark Soot code objects that may contain annotations.</div>
 </div>
+<div class="col-first even-row-color"><a href="class-use/InMemoryJavaClassSource.html#sootup.java.core">InMemoryJavaClassSource</a></div>
+<div class="col-last even-row-color">
+<div class="block">A class source where all information is already available in memory, e.g. classes that are
+ batchparsed (like .jimple files) or synthesized in tests.</div>
+</div>
+<div class="col-first odd-row-color"><a href="class-use/InMemoryJavaClassSource.AnalysisInputLocationStep.html#sootup.java.core">InMemoryJavaClassSource.AnalysisInputLocationStep</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="class-use/InMemoryJavaClassSource.ClassTypeStep.html#sootup.java.core">InMemoryJavaClassSource.ClassTypeStep</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="class-use/InMemoryJavaClassSource.OptionalStep.html#sootup.java.core">InMemoryJavaClassSource.OptionalStep</a></div>
+<div class="col-last odd-row-color">
+<div class="block">Optional parts; every part that is not set defaults to absent/empty.</div>
+</div>
 <div class="col-first even-row-color"><a href="class-use/JavaClassFileMetadata.html#sootup.java.core">JavaClassFileMetadata</a></div>
 <div class="col-last even-row-color">
 <div class="block">Immutable source and nesting attributes of a Java classfile.</div>
@@ -273,17 +286,11 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><a href="class-use/OverridingJavaClassSource.html#sootup.java.core">OverridingJavaClassSource</a></div>
 <div class="col-last odd-row-color">
-<div class="block">Allows for replacing specific parts of a class, such as fields and methods or, allows to resolve
- classes that are batchparsed like .java files using wala java source frontend or in tests where
- all information is already existing.</div>
+<div class="block">Allows for replacing specific parts of a class, such as fields and methods.</div>
 </div>
-<div class="col-first even-row-color"><a href="class-use/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnalysisInputLocationStep.html#sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnalysisInputLocationStep</a></div>
+<div class="col-first even-row-color"><a href="class-use/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnnotationStep.html#sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnnotationStep</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="class-use/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnnotationStep.html#sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.AnnotationStep</a></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="class-use/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.Build.html#sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.Build</a></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="class-use/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ClassTypeStep.html#sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.ClassTypeStep</a></div>
+<div class="col-first odd-row-color"><a href="class-use/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.Build.html#sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.Build</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><a href="class-use/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.CompleteStep.html#sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.CompleteStep</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
@@ -305,10 +312,8 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><a href="class-use/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SootClassSourceStep.html#sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SootClassSourceStep</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="class-use/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SourcePathStep.html#sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SourcePathStep</a></div>
+<div class="col-first even-row-color"><a href="class-use/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SuperclassStep.html#sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SuperclassStep</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="class-use/OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SuperclassStep.html#sootup.java.core">OverridingJavaClassSource.OverridingJavaClassSourceBuilder.SuperclassStep</a></div>
-<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -384,14 +389,13 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><a href="class-use/JavaSootMethod.html#sootup.jimple.frontend">JavaSootMethod</a></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="class-use/OverridingJavaClassSource.html#sootup.jimple.frontend">OverridingJavaClassSource</a></div>
-<div class="col-last odd-row-color">
-<div class="block">Allows for replacing specific parts of a class, such as fields and methods or, allows to resolve
- classes that are batchparsed like .java files using wala java source frontend or in tests where
- all information is already existing.</div>
+<div class="col-first even-row-color"><a href="class-use/InMemoryJavaClassSource.html#sootup.jimple.frontend">InMemoryJavaClassSource</a></div>
+<div class="col-last even-row-color">
+<div class="block">A class source where all information is already available in memory, e.g. classes that are
+ batchparsed (like .jimple files) or synthesized in tests.</div>
 </div>
+<div class="col-first odd-row-color"><a href="class-use/JavaSootMethod.html#sootup.jimple.frontend">JavaSootMethod</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
