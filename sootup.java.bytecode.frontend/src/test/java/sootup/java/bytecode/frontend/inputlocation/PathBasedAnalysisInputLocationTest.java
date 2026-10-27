@@ -175,20 +175,12 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     // Build a soot class
     JavaSootClass c =
         new JavaSootClass(
-            new InMemoryJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                classSignature,
-                null,
-                null,
-                null,
-                Collections.singleton(field),
-                Collections.emptySet(),
-                null,
-                EnumSet.of(ClassModifier.PUBLIC),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
+            InMemoryJavaClassSource.builder()
+                .withAnalysisInputLocation(new EagerInputLocation())
+                .withClassType(classSignature)
+                .withFields(Collections.singleton(field))
+                .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+                .build(),
             SourceType.Application);
 
     assertEquals("java.lang.String", c.getField(nameFieldSubSignature).get().getType().toString());

@@ -172,20 +172,12 @@ public class ViewTypeHierarchyTest {
   public void addType() {
     JavaIdentifierFactory factory = view.getIdentifierFactory();
     InMemoryJavaClassSource classSource =
-        new InMemoryJavaClassSource(
-            analysisInputLocation,
-            null,
-            factory.getClassType("adummytype.Type"),
-            factory.getClassType("ds.Employee"),
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.emptySet(),
-            null,
-            EnumSet.of(ClassModifier.FINAL),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList());
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(analysisInputLocation)
+            .withClassType(factory.getClassType("adummytype.Type"))
+            .withSuperclass(factory.getClassType("ds.Employee"))
+            .withModifiers(EnumSet.of(ClassModifier.FINAL))
+            .build();
     SootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
 
     typeHierarchy.addType(sootClass);
@@ -207,20 +199,12 @@ public class ViewTypeHierarchyTest {
     Set<ClassType> before = typeHierarchy.subclassesOf(baseType).collect(Collectors.toSet());
 
     InMemoryJavaClassSource classSource =
-        new InMemoryJavaClassSource(
-            analysisInputLocation,
-            null,
-            factory.getClassType("adummytype.Type2"),
-            factory.getClassType("ds.Employee"),
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.emptySet(),
-            null,
-            EnumSet.of(ClassModifier.FINAL),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList());
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(analysisInputLocation)
+            .withClassType(factory.getClassType("adummytype.Type2"))
+            .withSuperclass(factory.getClassType("ds.Employee"))
+            .withModifiers(EnumSet.of(ClassModifier.FINAL))
+            .build();
     SootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
 
     assertFalse(
@@ -263,20 +247,12 @@ public class ViewTypeHierarchyTest {
             .collect(Collectors.toSet());
 
     InMemoryJavaClassSource classSource =
-        new InMemoryJavaClassSource(
-            analysisInputLocation,
-            null,
-            factory.getClassType("adummytype.Type3"),
-            factory.getClassType("ds.Employee"),
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.emptySet(),
-            null,
-            EnumSet.of(ClassModifier.FINAL),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList());
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(analysisInputLocation)
+            .withClassType(factory.getClassType("adummytype.Type3"))
+            .withSuperclass(factory.getClassType("ds.Employee"))
+            .withModifiers(EnumSet.of(ClassModifier.FINAL))
+            .build();
     SootClass sootClass = new JavaSootClass(classSource, SourceType.Application);
 
     assertFalse(

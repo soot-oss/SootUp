@@ -24,7 +24,6 @@ package sootup.java.bytecode.frontend.conversion;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.ClassReader;
@@ -71,21 +70,21 @@ public class AsmJavaClassProvider implements PathbasedClassProvider {
 
     // copy and load the complete class at once into memory so the newly created asmClassSource can
     // release the memory and structures from the asm library
-    return new InMemoryJavaClassSource(
-        asmClassSource.getAnalysisInputLocation(),
-        asmClassSource.getSourcePath(),
-        asmClassSource.getClassType(),
-        asmClassSource.resolveSuperclass().orElse(null),
-        asmClassSource.resolveInterfaces(),
-        asmClassSource.resolveOuterClass().orElse(null),
-        asmClassSource.resolveFields(),
-        asmClassSource.resolveMethods(),
-        asmClassSource.resolvePosition(),
-        asmClassSource.resolveModifiers(),
-        asmClassSource.resolveAnnotations(),
-        Collections.emptyList(), // TODO! implement
-        Collections.emptyList(),
-        asmClassSource.getClassFileMetadata());
+    return InMemoryJavaClassSource.builder()
+        .withAnalysisInputLocation(asmClassSource.getAnalysisInputLocation())
+        .withClassType(asmClassSource.getClassType())
+        .withSourcePath(asmClassSource.getSourcePath())
+        .withSuperclass(asmClassSource.resolveSuperclass().orElse(null))
+        .withInterfaces(asmClassSource.resolveInterfaces())
+        .withOuterClass(asmClassSource.resolveOuterClass().orElse(null))
+        .withFields(asmClassSource.resolveFields())
+        .withMethods(asmClassSource.resolveMethods())
+        .withModifiers(asmClassSource.resolveModifiers())
+        .withPosition(asmClassSource.resolvePosition())
+        .withAnnotations(asmClassSource.resolveAnnotations())
+        // TODO! implement method annotations
+        .withClassFileMetadata(asmClassSource.getClassFileMetadata())
+        .build();
 
     //    return asmClassSource;
   }

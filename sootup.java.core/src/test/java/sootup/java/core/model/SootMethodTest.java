@@ -70,20 +70,12 @@ public class SootMethodTest {
             NoPositionInformation.getInstance());
 
     InMemoryJavaClassSource overridingJavaClassSource =
-        new InMemoryJavaClassSource(
-            new EagerInputLocation(),
-            null,
-            view.getIdentifierFactory().getClassType("dummyMain"),
-            null,
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.singleton(dummyMainMethod),
-            NoPositionInformation.getInstance(),
-            EnumSet.of(ClassModifier.PUBLIC),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList());
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(new EagerInputLocation())
+            .withClassType(view.getIdentifierFactory().getClassType("dummyMain"))
+            .withMethods(Collections.singleton(dummyMainMethod))
+            .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+            .build();
     JavaSootClass mainClass = new JavaSootClass(overridingJavaClassSource, SourceType.Application);
 
     JavaSootClass javaSootClassUsingBuilder =

@@ -68,20 +68,12 @@ public class MutableSootClientTest {
   public void classAdditionTest() {
     JavaClassType addedClassType = mv.getIdentifierFactory().getClassType("AddedClass");
     InMemoryJavaClassSource newClass =
-        new InMemoryJavaClassSource(
-            location,
-            pathToJar,
-            addedClassType,
-            null,
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.emptySet(),
-            new FullPosition(0, 0, 0, 0),
-            EnumSet.noneOf(ClassModifier.class),
-            Collections.emptySet(),
-            Collections.emptySet(),
-            Collections.emptySet());
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(location)
+            .withClassType(addedClassType)
+            .withSourcePath(pathToJar)
+            .withPosition(new FullPosition(0, 0, 0, 0))
+            .build();
 
     long classesBeforeSize = mv.getClasses().count();
     mv.addClass(newClass.buildClass(SourceType.Application));
@@ -107,20 +99,12 @@ public class MutableSootClientTest {
     assertFalse(mv.getClass(addedClassType).isPresent());
 
     InMemoryJavaClassSource newClass =
-        new InMemoryJavaClassSource(
-            location,
-            pathToJar,
-            addedClassType,
-            null,
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.emptySet(),
-            new FullPosition(0, 0, 0, 0),
-            EnumSet.noneOf(ClassModifier.class),
-            Collections.emptySet(),
-            Collections.emptySet(),
-            Collections.emptySet());
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(location)
+            .withClassType(addedClassType)
+            .withSourcePath(pathToJar)
+            .withPosition(new FullPosition(0, 0, 0, 0))
+            .build();
     mv.addClass(newClass.buildClass(SourceType.Application));
 
     assertTrue(mv.getClass(addedClassType).isPresent());

@@ -82,16 +82,17 @@ public class JimpleConverter {
       throw new ResolveException("Syntax Error", sourcePath, ex);
     }
 
-    return new InMemoryJavaClassSource(
-        classVisitor.methods,
-        classVisitor.fields,
-        classVisitor.modifiers,
-        classVisitor.interfaces,
-        classVisitor.superclass,
-        classVisitor.outerclass,
-        classVisitor.position,
-        sourcePath,
-        classVisitor.clazz,
-        inputlocation);
+    return InMemoryJavaClassSource.builder()
+        .withAnalysisInputLocation(inputlocation)
+        .withClassType(classVisitor.clazz)
+        .withSourcePath(sourcePath)
+        .withSuperclass(classVisitor.superclass)
+        .withInterfaces(classVisitor.interfaces)
+        .withOuterClass(classVisitor.outerclass)
+        .withFields(classVisitor.fields)
+        .withMethods(classVisitor.methods)
+        .withModifiers(classVisitor.modifiers)
+        .withPosition(classVisitor.position)
+        .build();
   }
 }

@@ -49,20 +49,12 @@ public class JFieldRefTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new InMemoryJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                declaringClassSignature,
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.singleton(field),
-                Collections.emptySet(),
-                null,
-                EnumSet.of(ClassModifier.PUBLIC),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
+            InMemoryJavaClassSource.builder()
+                .withAnalysisInputLocation(new EagerInputLocation())
+                .withClassType(declaringClassSignature)
+                .withFields(Collections.singleton(field))
+                .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+                .build(),
             SourceType.Application);
     JStaticFieldRef ref = Jimple.newStaticFieldRef(fieldSig);
     assertEquals("<dummyMainClass: int dummyField>", ref.toString());
@@ -86,20 +78,12 @@ public class JFieldRefTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new InMemoryJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                declaringClassSignature,
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.singleton(field),
-                Collections.emptySet(),
-                null,
-                EnumSet.of(ClassModifier.PUBLIC),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
+            InMemoryJavaClassSource.builder()
+                .withAnalysisInputLocation(new EagerInputLocation())
+                .withClassType(declaringClassSignature)
+                .withFields(Collections.singleton(field))
+                .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+                .build(),
             SourceType.Application);
     Local base = Jimple.newLocal("obj", declaringClassSignature);
     JInstanceFieldRef ref = Jimple.newInstanceFieldRef(base, fieldSig);

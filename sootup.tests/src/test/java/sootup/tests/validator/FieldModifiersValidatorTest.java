@@ -90,20 +90,13 @@ public class FieldModifiersValidatorTest {
 
     JavaSootClass mainClass =
         new JavaSootClass(
-            new InMemoryJavaClassSource(
-                new EagerInputLocation(),
-                null,
-                view.getIdentifierFactory().getClassType("dummyMain"),
-                null,
-                Collections.emptySet(),
-                null,
-                Collections.singleton(dummyField),
-                Collections.singleton(dummyMainMethod),
-                NoPositionInformation.getInstance(),
-                classModifierEnumSet,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()),
+            InMemoryJavaClassSource.builder()
+                .withAnalysisInputLocation(new EagerInputLocation())
+                .withClassType(view.getIdentifierFactory().getClassType("dummyMain"))
+                .withFields(Collections.singleton(dummyField))
+                .withMethods(Collections.singleton(dummyMainMethod))
+                .withModifiers(classModifierEnumSet)
+                .build(),
             SourceType.Application);
     assertEquals(mainClass.getMethods().size(), 1);
 
