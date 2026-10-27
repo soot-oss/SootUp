@@ -159,7 +159,9 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends <a href="../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveOuterClass()" class="member-name-link">resolveOuterClass</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Reads from the source to retrieve its outer class, if this is an inner class.</div>
+<div class="block">Resolves the outer class from the system annotations of the dex file, like Soot's dex frontend:
+ <code>EnclosingClass</code> names the outer class of a member class, <code>EnclosingMethod
+ </code> the method that declares a local or anonymous class.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../../core/model/Position.html" title="class in sootup.core.model">Position</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolvePosition()" class="member-name-link">resolvePosition</a>()</code></div>
@@ -270,9 +272,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="resolveOuterClass()">
 <h3>resolveOuterClass</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends <a href="../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&gt;</span>&nbsp;<span class="element-name">resolveOuterClass</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../../../core/frontend/SootClassSource.html#resolveOuterClass()">SootClassSource</a></code></span></div>
-<div class="block">Reads from the source to retrieve its outer class, if this is an inner class. This may be an
- expensive operation.</div>
+<div class="block">Resolves the outer class from the system annotations of the dex file, like Soot's dex frontend:
+ <code>EnclosingClass</code> names the outer class of a member class, <code>EnclosingMethod
+ </code> the method that declares a local or anonymous class. If only an <code>InnerClass
+ </code> annotation exists, the outer class is derived from the name of the class.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 </dl>
