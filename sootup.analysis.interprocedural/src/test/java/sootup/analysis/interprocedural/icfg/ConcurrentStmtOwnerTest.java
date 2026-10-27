@@ -1,5 +1,6 @@
 package sootup.analysis.interprocedural.icfg;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -100,6 +101,7 @@ public class ConcurrentStmtOwnerTest {
     Stmt first = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
     Stmt second = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
     assertTrue(first.equivTo(second));
+    assertNotEquals(first, second);
 
     icfg.setOwnerStatement(first, entry.getBody());
     icfg.setOwnerStatement(second, constructor.getBody());
