@@ -1,6 +1,7 @@
 package sootup.analysis.interprocedural.icfg;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,19 +25,23 @@ import sootup.java.core.views.JavaView;
  */
 public class ConcurrentStmtOwnerTest {
 
+  private final JavaView view =
+      new JavaView(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
+
+  private SootMethod method(String name) {
+    return view
+        .getClass(view.getIdentifierFactory().getClassType("ICFGExample"))
+        .get()
+        .getMethods()
+        .stream()
+        .filter(m -> m.getName().equals(name))
+        .findFirst()
+        .get();
+  }
+
   @Test
   public void statementsRegisteredConcurrentlyAreAllKnown() throws Exception {
-    JavaView view =
-        new JavaView(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
-    SootMethod entry =
-        view
-            .getClass(view.getIdentifierFactory().getClassType("ICFGExample"))
-            .get()
-            .getMethods()
-            .stream()
-            .filter(m -> m.getName().equals("entryPoint"))
-            .findFirst()
-            .get();
+    SootMethod entry = method("entryPoint");
     JimpleBasedInterproceduralCFG icfg =
         new JimpleBasedInterproceduralCFG(
             view, Collections.singletonList(entry.getSignature()), false, false);
@@ -78,5 +83,28 @@ public class ConcurrentStmtOwnerTest {
         assertSame(body, icfg.getBodyOf(stmt));
       }
     }
+  }
+
+  /**
+   * The owner map compares statements by identity, as statements do not override {@code equals}
+   * (structural comparison is {@code equivTo}). Fails if statements get an {@code equals}: equal
+   * statements of different bodies would then share one owner.
+   */
+  @Test
+  public void equivalentStatementsKeepTheirOwnBodies() {
+    SootMethod entry = method("entryPoint");
+    SootMethod constructor = method("<init>");
+    JimpleBasedInterproceduralCFG icfg =
+        new JimpleBasedInterproceduralCFG(
+            view, Collections.singletonList(entry.getSignature()), false, false);
+    Stmt first = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    Stmt second = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    assertTrue(first.equivTo(second));
+
+    icfg.setOwnerStatement(first, entry.getBody());
+    icfg.setOwnerStatement(second, constructor.getBody());
+
+    assertSame(entry.getBody(), icfg.getBodyOf(first));
+    assertSame(constructor.getBody(), icfg.getBodyOf(second));
   }
 }
