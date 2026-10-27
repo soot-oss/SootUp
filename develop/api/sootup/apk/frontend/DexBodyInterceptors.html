@@ -106,7 +106,16 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Enum Constant</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="#Default" class="member-name-link">Default</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Splits the locals first, as Soot's dexpler does: dex code reuses registers for values of
+ different types, and the number and null transformers decide per local whether its constants
+ are floats or nulls.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="#Transformers" class="member-name-link">Transformers</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">The dex transformers of <a href="#Default"><code>Default</code></a> without its <a href="../../interceptors/LocalSplitter.html" title="class in sootup.interceptors"><code>LocalSplitter</code></a>, for callers that
+ put their own in front of them, e.g. one with another <a href="../../interceptors/LocalSplitter.ExceptionalFlow.html" title="enum class in sootup.interceptors"><code>LocalSplitter.ExceptionalFlow</code></a>.</div>
+</div>
 </div>
 </section>
 </li>
@@ -159,6 +168,17 @@ the order they are declared.</div>
 <section class="detail" id="Default">
 <h3>Default</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="DexBodyInterceptors.html" title="enum class in sootup.apk.frontend">DexBodyInterceptors</a></span>&nbsp;<span class="element-name">Default</span></div>
+<div class="block">Splits the locals first, as Soot's dexpler does: dex code reuses registers for values of
+ different types, and the number and null transformers decide per local whether its constants
+ are floats or nulls.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="Transformers">
+<h3>Transformers</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="DexBodyInterceptors.html" title="enum class in sootup.apk.frontend">DexBodyInterceptors</a></span>&nbsp;<span class="element-name">Transformers</span></div>
+<div class="block">The dex transformers of <a href="#Default"><code>Default</code></a> without its <a href="../../interceptors/LocalSplitter.html" title="class in sootup.interceptors"><code>LocalSplitter</code></a>, for callers that
+ put their own in front of them, e.g. one with another <a href="../../interceptors/LocalSplitter.ExceptionalFlow.html" title="enum class in sootup.interceptors"><code>LocalSplitter.ExceptionalFlow</code></a>.</div>
 </section>
 </li>
 </ul>

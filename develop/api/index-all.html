@@ -4785,7 +4785,11 @@ loadScripts(document, 'script');</script>
 <dt><a href="sootup/apk/frontend/dexpler/DexMethod.html#declaringclassType" class="member-name-link">declaringclassType</a> - Variable in class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexMethod.html" title="class in sootup.apk.frontend.dexpler">DexMethod</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/DexBodyInterceptors.html#Default" class="member-name-link">Default</a> - Enum constant in enum class sootup.apk.frontend.<a href="sootup/apk/frontend/DexBodyInterceptors.html" title="enum class in sootup.apk.frontend">DexBodyInterceptors</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Splits the locals first, as Soot's dexpler does: dex code reuses registers for values of
+ different types, and the number and null transformers decide per local whether its constants
+ are floats or nulls.</div>
+</dd>
 <dt><a href="sootup/interceptors/BytecodeBodyInterceptors.html#Default" class="member-name-link">Default</a> - Enum constant in enum class sootup.interceptors.<a href="sootup/interceptors/BytecodeBodyInterceptors.html" title="enum class in sootup.interceptors">BytecodeBodyInterceptors</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/config/PointerAnalysisConfig.TurnerConfig.html#DEFAULT" class="member-name-link">DEFAULT</a> - Enum constant in enum class qilin.core.config.<a href="qilin/core/config/PointerAnalysisConfig.TurnerConfig.html" title="enum class in qilin.core.config">PointerAnalysisConfig.TurnerConfig</a></dt>
@@ -17909,7 +17913,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/interceptors/AbstractNullTransformer.html#replaceWithNull(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">replaceWithNull(Stmt)</a> - Method in class sootup.apk.frontend.interceptors.<a href="sootup/apk/frontend/interceptors/AbstractNullTransformer.html" title="class in sootup.apk.frontend.interceptors">AbstractNullTransformer</a></dt>
 <dd>
-<div class="block">Replace 0 with null in the given unit.</div>
+<div class="block">Replaces 0 with null in the given statement.</div>
 </dd>
 <dt><a href="qilin/stat/Exporter.html#report()" class="member-name-link">report()</a> - Method in class qilin.stat.<a href="qilin/stat/Exporter.html" title="class in qilin.stat">Exporter</a></dt>
 <dd>&nbsp;</dd>
@@ -20820,6 +20824,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/reflection/TamiflexReflectionModel.html#transformConstructorNewInstance(sootup.callgraph.reflection.AbstractReflectionModel.MethodContext,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">transformConstructorNewInstance(AbstractReflectionModel.MethodContext, InvokableStmt)</a> - Method in class sootup.callgraph.reflection.<a href="sootup/callgraph/reflection/TamiflexReflectionModel.html" title="class in sootup.callgraph.reflection">TamiflexReflectionModel</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/DexBodyInterceptors.html#Transformers" class="member-name-link">Transformers</a> - Enum constant in enum class sootup.apk.frontend.<a href="sootup/apk/frontend/DexBodyInterceptors.html" title="enum class in sootup.apk.frontend">DexBodyInterceptors</a></dt>
+<dd>
+<div class="block">The dex transformers of <a href="sootup/apk/frontend/DexBodyInterceptors.html#Default"><code>DexBodyInterceptors.Default</code></a> without its <a href="sootup/interceptors/LocalSplitter.html" title="class in sootup.interceptors"><code>LocalSplitter</code></a>, for callers that
+ put their own in front of them, e.g. one with another <a href="sootup/interceptors/LocalSplitter.ExceptionalFlow.html" title="enum class in sootup.interceptors"><code>LocalSplitter.ExceptionalFlow</code></a>.</div>
+</dd>
 <dt><a href="sootup/callgraph/reflection/AbstractReflectionModel.html#transformFieldGet(sootup.callgraph.reflection.AbstractReflectionModel.MethodContext,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">transformFieldGet(AbstractReflectionModel.MethodContext, InvokableStmt)</a> - Method in class sootup.callgraph.reflection.<a href="sootup/callgraph/reflection/AbstractReflectionModel.html" title="class in sootup.callgraph.reflection">AbstractReflectionModel</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/callgraph/reflection/TamiflexReflectionModel.html#transformFieldGet(sootup.callgraph.reflection.AbstractReflectionModel.MethodContext,sootup.core.jimple.common.stmt.InvokableStmt)" class="member-name-link">transformFieldGet(AbstractReflectionModel.MethodContext, InvokableStmt)</a> - Method in class sootup.callgraph.reflection.<a href="sootup/callgraph/reflection/TamiflexReflectionModel.html" title="class in sootup.callgraph.reflection">TamiflexReflectionModel</a></dt>

@@ -129,10 +129,10 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Examine expr if it is a comparison with 0.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="../../../core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#replaceWithNull(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">replaceWithNull</a><wbr>(<a href="../../../core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmt)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Replace 0 with null in the given unit.</div>
+<div class="block">Replaces 0 with null in the given statement.</div>
 </div>
 </div>
 </div>
@@ -185,11 +185,15 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="replaceWithNull(sootup.core.jimple.common.stmt.Stmt)">
 <h3>replaceWithNull</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">replaceWithNull</span><wbr><span class="parameters">(<a href="../../../core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmt)</span></div>
-<div class="block">Replace 0 with null in the given unit.</div>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../../../core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a></span>&nbsp;<span class="element-name">replaceWithNull</span><wbr><span class="parameters">(<a href="../../../core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmt)</span></div>
+<div class="block">Replaces 0 with null in the given statement. Statements are immutable, so the caller has to put
+ the returned statement into the body in place of the given one.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>stmt</code> - the unit where 0 will be replaced with null.</dd>
+<dd><code>stmt</code> - the statement where 0 will be replaced with null.</dd>
+<dt>Returns:</dt>
+<dd>the statement with null instead of 0, or the given statement if there is no 0 to
+     replace</dd>
 </dl>
 </section>
 </li>
