@@ -30,7 +30,7 @@ jobs:
 
       - name: Deploy SNAPSHOT version
         if: endsWith(env.PROJECT_VERSION, '-SNAPSHOT')
-        uses: secure-software-engineering/actions/deployment/maven-deployment@7a286175a5ce134571e0228fc4da41885f2821e3 # develop
+        uses: secure-software-engineering/actions/deployment/maven-deployment@db13421e25aa6cd31b345ebfbac0c2c98f393aac # develop
         with:
           java-distribution: temurin
           java-version: 17
