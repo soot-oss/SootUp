@@ -165,7 +165,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="../Body.html" title="class in sootup.core.model">Body</a>&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">AbstractJimpleBasedICFG.</span><code><a href="../../../analysis/interprocedural/icfg/AbstractJimpleBasedICFG.html#createStmtToOwnerMap()" class="member-name-link">createStmtToOwnerMap</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Data flow solvers query the ICFG concurrently, while statements may be registered with <a href="../../../analysis/interprocedural/icfg/AbstractJimpleBasedICFG.html#setOwnerStatement(sootup.core.jimple.common.stmt.Stmt,sootup.core.model.Body)"><code>AbstractJimpleBasedICFG.setOwnerStatement(Stmt, Body)</code></a>.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../../analysis/interprocedural/icfg/package-summary.html">sootup.analysis.interprocedural.icfg</a> with parameters of type <a href="../Body.html" title="class in sootup.core.model">Body</a></span></div>
 <div class="summary-table three-column-summary">

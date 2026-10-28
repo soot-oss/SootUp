@@ -155,7 +155,9 @@ implements <a href="BiDiInterproceduralCFG.html" title="interface in sootup.anal
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="../../../core/model/Body.html" title="class in sootup.core.model">Body</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createStmtToOwnerMap()" class="member-name-link">createStmtToOwnerMap</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Data flow solvers query the ICFG concurrently, while statements may be registered with <a href="#setOwnerStatement(sootup.core.jimple.common.stmt.Stmt,sootup.core.model.Body)"><code>setOwnerStatement(Stmt, Body)</code></a>.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/model/Body.html" title="class in sootup.core.model">Body</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBodyOf(sootup.core.jimple.common.stmt.Stmt)" class="member-name-link">getBodyOf</a><wbr>(<a href="../../../core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&nbsp;stmt)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -320,6 +322,8 @@ implements <a href="BiDiInterproceduralCFG.html" title="interface in sootup.anal
 <section class="detail" id="createStmtToOwnerMap()">
 <h3>createStmtToOwnerMap</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="../../../core/model/Body.html" title="class in sootup.core.model">Body</a>&gt;</span>&nbsp;<span class="element-name">createStmtToOwnerMap</span>()</div>
+<div class="block">Data flow solvers query the ICFG concurrently, while statements may be registered with <a href="#setOwnerStatement(sootup.core.jimple.common.stmt.Stmt,sootup.core.model.Body)"><code>setOwnerStatement(Stmt, Body)</code></a>. Statements are compared by identity, so a concurrent hash map
+ keeps the identity semantics.</div>
 </section>
 </li>
 <li>
