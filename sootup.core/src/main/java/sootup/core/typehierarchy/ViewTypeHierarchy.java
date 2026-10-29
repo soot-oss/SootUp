@@ -68,13 +68,13 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   private static final int NO_ID = -1;
 
   /** The superclass id of {@code java.lang.Object}, interfaces and classes without a superclass. */
-  private static final int NO_SUPERCLASS = -1;
+  private static final int NO_SUPERCLASS = -2;
 
   /** The {@code rangeStart} of a class that the class-tree DFS did not reach, and of interfaces. */
-  private static final int NOT_IN_CLASS_TREE = -1;
+  private static final int NOT_IN_CLASS_TREE = -3;
 
   /** The dense interface id of a class. */
-  private static final int NOT_AN_INTERFACE = -1;
+  private static final int NOT_AN_INTERFACE = -4;
 
   private final View view;
 
@@ -842,7 +842,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     for (int i = 0; i < exts.size(); i++) {
       int targetId = exts.get(i);
       int targetDense = denseOfInterfaceId[targetId];
-      if (targetDense < 0) {
+      if (targetDense == NOT_AN_INTERFACE) {
         continue;
       }
       computeInterfaceAncestors(
