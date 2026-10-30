@@ -127,7 +127,6 @@ public abstract class QilinFrameworkTests {
         .enforceEmptyContextForIgnoreTypes(true)
         .heapAbstractionPolicy(PointerAnalysisConfig.HeapAbstractionPolicy.HEURISTIC_MERGE)
         .preciseArrayElement(true)
-        .preciseExceptions(true)
         .reflectionLogPath(refLogPath + File.separator + "Reflection.log")
         .analysisName(contextSensitivity.toString())
         // stats unused by assertions; alias stats are quadratic in #locals
