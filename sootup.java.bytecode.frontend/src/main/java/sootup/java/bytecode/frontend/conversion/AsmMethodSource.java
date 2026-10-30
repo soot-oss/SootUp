@@ -47,11 +47,10 @@ import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.*;
 import sootup.core.frontend.BodySource;
 import sootup.core.graph.MutableBlockControlFlowGraph;
+import sootup.core.inputlocation.AnalysisExtendedScope;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.jimple.basic.SimpleStmtPositionInfo;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.Immediate;
 import sootup.core.jimple.common.Local;
 import sootup.core.jimple.common.Trap;
@@ -65,6 +64,8 @@ import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.Body;
 import sootup.core.model.FullPosition;
+import sootup.core.model.LinePosition;
+import sootup.core.model.LocalVariableScope;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.Position;
 import sootup.core.signatures.FieldSignature;
@@ -112,6 +113,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   /** Locals of variables of the LocalVariableTable (for slots that can be split by it). */
   private LocalVariableTableLocals lvtLocals;
 
+  /** Shared debug scopes indexed in original bytecode order, only when LVT capture is enabled. */
+  @Nullable private Map<AbstractInsnNode, LocalVariableScope> variableScopesByInsn;
+
   /** Names of all Locals created so far, and the ones reserved for LVT variables. */
   private Set<String> usedLocalNames;
 
@@ -157,6 +161,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   private final JavaIdentifierFactory identifierFactory;
   private final Supplier<MethodSignature> lazyMethodSignature;
+  private final Set<AnalysisExtendedScope> extendedScope;
 
   /**
    * Bytes of the declaring class file if this node was read with {@link ClassReader#SKIP_CODE}:
@@ -172,11 +177,66 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @NonNull String signature,
       @NonNull String[] exceptions,
       View view,
+      @NonNull List<BodyInterceptor> bodyInterceptors) {
+    this(
+        access,
+        name,
+        desc,
+        signature,
+        exceptions,
+        view,
+        bodyInterceptors,
+        Collections.emptySet(),
+        null);
+  }
+
+  AsmMethodSource(
+      int access,
+      @NonNull String name,
+      @NonNull String desc,
+      @NonNull String signature,
+      @NonNull String[] exceptions,
+      View view,
       @NonNull List<BodyInterceptor> bodyInterceptors,
+      @Nullable byte[] classBytes) {
+    this(
+        access,
+        name,
+        desc,
+        signature,
+        exceptions,
+        view,
+        bodyInterceptors,
+        Collections.emptySet(),
+        classBytes);
+  }
+
+  AsmMethodSource(
+      int access,
+      @NonNull String name,
+      @NonNull String desc,
+      @NonNull String signature,
+      @NonNull String[] exceptions,
+      View view,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull Set<AnalysisExtendedScope> extendedScope) {
+    this(access, name, desc, signature, exceptions, view, bodyInterceptors, extendedScope, null);
+  }
+
+  AsmMethodSource(
+      int access,
+      @NonNull String name,
+      @NonNull String desc,
+      @NonNull String signature,
+      @NonNull String[] exceptions,
+      View view,
+      @NonNull List<BodyInterceptor> bodyInterceptors,
+      @NonNull Set<AnalysisExtendedScope> extendedScope,
       @Nullable byte[] classBytes) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
     this.bodyInterceptors = bodyInterceptors;
     this.view = view;
+    this.extendedScope = extendedScope;
     this.classBytes = classBytes;
 
     identifierFactory = (JavaIdentifierFactory) view.getIdentifierFactory();
@@ -210,10 +270,23 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   StmtPositionInfo getStmtPositionInfo(@NonNull AbstractInsnNode insn) {
     for (AbstractInsnNode node = insn; node != null; node = node.getPrevious()) {
       if (node instanceof LineNumberNode) {
-        return new SimpleStmtPositionInfo(((LineNumberNode) node).line);
+        return getStmtPositionInfo(new LinePosition(((LineNumberNode) node).line), insn);
       }
     }
-    return StmtPositionInfo.getNoStmtPositionInfo();
+    return getStmtPositionInfo(NoPositionInformation.getInstance(), insn);
+  }
+
+  /**
+   * Creates position info with the given statement position, attaching the debug variable scope
+   * active at {@code insn} when LocalVariableTable capture is enabled.
+   */
+  StmtPositionInfo getStmtPositionInfo(
+      @NonNull Position stmtPosition, @NonNull AbstractInsnNode insn) {
+    LocalVariableScope scope = variableScopesByInsn == null ? null : variableScopesByInsn.get(insn);
+    if (scope == null) {
+      return DefaultStmtPositionInfoFactory.create(stmtPosition);
+    }
+    return DefaultStmtPositionInfoFactory.create(stmtPosition, scope);
   }
 
   @Override
@@ -232,6 +305,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             exceptions.toArray(new String[0]),
             view,
             bodyInterceptors,
+            extendedScope,
             null);
     withCode.setDeclaringClass(declaringClass);
     new ClassReader(classBytes)
@@ -264,6 +338,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     lvtLocals =
         new LocalVariableTableLocals(
             localVariables, instructions, this::insnIndex, preambleSlots());
+    if (extendedScope.contains(AnalysisExtendedScope.LocalVariableTable)) {
+      variableScopesByInsn = lvtLocals.createScopes();
+    }
     usedLocalNames = new HashSet<>(lvtLocals.reservedNames());
 
     /* retrieve all trap handlers */
@@ -323,6 +400,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     /* clean up for gc */
     locals = null;
     lvtLocals = null;
+    variableScopesByInsn = null;
     usedLocalNames = null;
     stmtsThatBranchToLabel = null;
     insnToStmt = null;
@@ -1601,12 +1679,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       Stmt stmt = insnToStmt.get(ln.start);
       if (stmt instanceof JIdentityStmt identityStmt
           && identityStmt.getRightOp() instanceof JCaughtExceptionRef) {
-        setStmt(ln.start, identityStmt.withPositionInfo(new SimpleStmtPositionInfo(ln.line)));
+        setStmt(
+            ln.start,
+            identityStmt.withPositionInfo(
+                identityStmt.getPositionInfo().withStmtPosition(new LinePosition(ln.line))));
       }
       JIdentityStmt inlineHandler = inlineExceptionHandlers.get(ln.start);
       if (inlineHandler != null) {
         inlineExceptionHandlers.put(
-            ln.start, inlineHandler.withPositionInfo(new SimpleStmtPositionInfo(ln.line)));
+            ln.start,
+            inlineHandler.withPositionInfo(
+                inlineHandler.getPositionInfo().withStmtPosition(new LinePosition(ln.line))));
       }
     }
   }
@@ -1671,7 +1754,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         // Catch the exception
         JCaughtExceptionRef ref = JavaJimple.newCaughtExceptionRef(identifierFactory);
         Local local = newStackLocal();
-        JIdentityStmt as = Jimple.newIdentityStmt(local, ref, getStmtPositionInfo());
+        // No line is assigned here: searching backwards from the handler label would pick up the
+        // line of unrelated preceding code. convertLine() sets the line once a LineNumberNode
+        // starts at this handler; only the handler's variable scope is attached now.
+        JIdentityStmt as =
+            Jimple.newIdentityStmt(
+                local, ref, getStmtPositionInfo(NoPositionInformation.getInstance(), handlerNode));
 
         Operand opr = new Operand(handlerNode, ref, this);
         opr.stackLocal = local;

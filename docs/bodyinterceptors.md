@@ -184,3 +184,50 @@ Example:
 ![SSA Example_2](assets/figures/SSA%20Example_2.png)
 
 In the given example, the StaticSingleAssignmentFormer assigns each`IdentityStmt`and`AssignStmt`to a new local variable . And each use uses the local variable which is most recently defined. Sometimes, it is impossible to determine the most recently defined local variable for a use in a join block. In this case, the StaticSingleAssignmentFormer will insert a`PhiStmt`in the front of the join block to merge all most recently defined local variables and assign them a new local variable.
+
+## Preserving Debug Metadata During Mutations
+
+When `AnalysisExtendedScope.LocalVariableTable` is enabled, Jimple statements carry local variable debug scopes (`LocalVariableScope`) attached to `StmtPositionInfo`. Interceptors that mutate or replace statements should preserve or transfer this metadata depending on the transformation.
+
+`StmtPositionInfo` exposes statement coordinates. Check for `FullStmtPositionInfo` to read operand coordinates, and for `LocalVariableStmtPositionInfo` to read captured scopes; a statement can support both interfaces. Use `DefaultStmtPositionInfoFactory.create(position)` for statement coordinates and `create(position, scope)` to include a non-null captured scope. Its `withOperandPositions(info, positions)` method accepts any `StmtPositionInfo`; a non-null array attaches or replaces operand coordinates, while `null` removes them and preserves other metadata. A `null` scope means unavailable, while `LocalVariableScope.empty()` means capture found no visible variables.
+
+Copy methods and static facade helpers dispatch through `StmtPositionInfo.getFactory()`. Built-in variants use a shared default factory that rejects unknown types. Custom implementations, including subclasses of `SimpleStmtPositionInfo`, must return their own `StmtPositionInfoFactory` to preserve additional state and handle variants with and without operand positions or local variable metadata. Every returned variant must retain the appropriate factory; unsupported operations should throw `UnsupportedOperationException`.
+
+### Preserving existing metadata with position replacement
+
+To update the source position (e.g., line number) of an existing statement while preserving its attached debug metadata (such as variable scopes and operand coordinates), use `StmtPositionInfo.withStmtPosition(...)`:
+
+```java
+// Preserves existing scopes and operand positions while updating the statement position
+Stmt updated = stmt.withPositionInfo(
+    stmt.getPositionInfo().withStmtPosition(newPosition));
+```
+
+### Adopting metadata from another statement
+
+When transforming or replacing statements, distinguish between adopting the entire metadata versus adopting only specific attributes:
+
+- **Adopting entire metadata (Position and Scope)**:
+  When a new statement replaces an original statement entirely:
+  ```java
+  // Replaces both position and debug variable scope with sourceStmt's metadata
+  Stmt replacement = newStmt.withPositionInfo(sourceStmt.getPositionInfo());
+  ```
+
+- **Adopting position while preserving current scope (e.g., inlining / aggregation)**:
+  When a computation from a definition is inlined into a use site, the destination's in-scope variable bindings should be kept while attributing the source line of the definition:
+  ```java
+  // Keeps useStmt's variable scope, but attributes defStmt's line position
+  Stmt aggregated = useStmt.withPositionInfo(
+      useStmt.getPositionInfo().withStmtPosition(defStmt.getPositionInfo().getStmtPosition()));
+  ```
+
+- **Adopting scope while preserving current position**:
+  To transfer only the variable scope from another statement:
+  ```java
+  // Adopts variable scope from otherStmt, keeping currentStmt's position
+  Stmt updated = currentStmt.withPositionInfo(
+      DefaultStmtPositionInfoFactory.withLocalVariables(
+          currentStmt.getPositionInfo(),
+          LocalVariableStmtPositionInfo.getLocalVariables(otherStmt)));
+  ```
