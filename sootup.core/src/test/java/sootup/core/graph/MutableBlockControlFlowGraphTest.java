@@ -624,10 +624,11 @@ public class MutableBlockControlFlowGraphTest {
     {
       briefStmtPrinter.buildTraps(graph0);
       List<Trap> traps = briefStmtPrinter.getTraps();
-      assertEquals(2, traps.size()); // as @caughtexception gets currently in their way.
-      assertEquals(stmt2, traps.get(1).getBeginStmt());
-      assertEquals(returnStmt, traps.get(1).getEndStmt());
-      assertEquals(catchStmt1, traps.get(1).getHandlerStmt());
+      // stmt2 is exclusively reachable via stmt1 -> serialized directly after it -> one trap
+      assertEquals(1, traps.size());
+      assertEquals(stmt1, traps.get(0).getBeginStmt());
+      assertEquals(catchStmt1, traps.get(0).getEndStmt());
+      assertEquals(catchStmt1, traps.get(0).getHandlerStmt());
     }
 
     // test merging traps from sequential blocks with the same trap
@@ -704,7 +705,8 @@ public class MutableBlockControlFlowGraphTest {
     graph4.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
     briefStmtPrinter.buildTraps(graph4);
-    assertEquals(3, briefStmtPrinter.getTraps().size());
+    // stmt1..stmt3 serialized contiguous: exception1 merged, exception2 only stmt1
+    assertEquals(2, briefStmtPrinter.getTraps().size());
 
     // mixed 2
     MutableBlockControlFlowGraph graph5 = new MutableBlockControlFlowGraph();
@@ -740,7 +742,9 @@ public class MutableBlockControlFlowGraphTest {
 
     {
       briefStmtPrinter.buildTraps(graph5);
-      assertEquals(6, briefStmtPrinter.getTraps().size());
+      // exception2->catch1: stmt1..stmt3, exception1->catch1: stmt1, exception1->catch2:
+      // stmt2..stmt3
+      assertEquals(3, briefStmtPrinter.getTraps().size());
       assertEquals(6, graph5.getBlocks().size());
     }
 
@@ -777,7 +781,9 @@ public class MutableBlockControlFlowGraphTest {
     {
       briefStmtPrinter.buildTraps(graph6);
       List<Trap> traps = briefStmtPrinter.getTraps();
-      assertEquals(5, traps.size());
+      // exception1->catch1: stmt1, exception2->catch1: stmt1..stmt2, exception1->catch2:
+      // stmt2..stmt3
+      assertEquals(3, traps.size());
       assertEquals(6, graph6.getBlocks().size());
       assertEquals(
           "[Block [goto], Block [goto], Block [goto]]",
