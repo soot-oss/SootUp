@@ -64,6 +64,18 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   private static final Logger logger = LoggerFactory.getLogger(ViewTypeHierarchy.class);
 
+  /** A type id that denotes no type, e.g. for a type that cannot be resolved. */
+  private static final int NO_ID = -1;
+
+  /** The superclass id of {@code java.lang.Object}, interfaces and classes without a superclass. */
+  private static final int NO_SUPERCLASS = -2;
+
+  /** The {@code rangeStart} of a class that the class-tree DFS did not reach, and of interfaces. */
+  private static final int NOT_IN_CLASS_TREE = -3;
+
+  /** The dense interface id of a class. */
+  private static final int NOT_AN_INTERFACE = -4;
+
   private final View view;
 
   /**
@@ -120,8 +132,8 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
    * Looks up the dense id for the given type. If the type was not reached during the initial scan
    * (e.g. because it is only referenced from a method signature, cast, or catch clause rather than
    * declared as a super type), this attempts to resolve and add it to the hierarchy on demand via
-   * the {@link View}. Returns {@code -1} only if the type cannot be resolved at all, e.g. because
-   * it is an optional/vendor-provided type that is absent from the classpath.
+   * the {@link View}. Returns {@link #NO_ID} only if the type cannot be resolved at all, e.g.
+   * because it is an optional/vendor-provided type that is absent from the classpath.
    */
   private int resolveId(@NonNull ClassType type) {
     RawAdjacency raw = lazyRaw.get();
@@ -136,11 +148,11 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
             "Could not find '{}' in the type hierarchy - add the jar/classpath entry defining it to analyze it.",
             type);
       }
-      return -1;
+      return NO_ID;
     }
     addType(sootClass.get());
     Integer resolved = raw.idOf.get(type);
-    return resolved == null ? -1 : resolved;
+    return resolved == null ? NO_ID : resolved;
   }
 
   private TypeHierarchyEncoding getTypeHierarchyBacking() {
@@ -156,7 +168,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Stream<ClassType> implementersOf(@NonNull ClassType interfaceType) {
     int id = resolveId(interfaceType);
-    if (id == -1) {
+    if (id == NO_ID) {
       return Stream.empty();
     }
     if (!lazyRaw.get().isInterface.get(id)) {
@@ -169,7 +181,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Stream<ClassType> subclassesOf(@NonNull ClassType classType) {
     int id = resolveId(classType);
-    if (id == -1) {
+    if (id == NO_ID) {
       return Stream.empty();
     }
     if (lazyRaw.get().isInterface.get(id)) {
@@ -182,7 +194,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Stream<ClassType> subinterfacesOf(@NonNull ClassType interfaceType) {
     int id = resolveId(interfaceType);
-    if (id == -1) {
+    if (id == NO_ID) {
       return Stream.empty();
     }
     RawAdjacency raw = lazyRaw.get();
@@ -202,7 +214,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Stream<ClassType> subtypesOf(@NonNull ClassType type) {
     int id = resolveId(type);
-    if (id == -1) {
+    if (id == NO_ID) {
       return Stream.empty();
     }
 
@@ -232,7 +244,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Stream<ClassType> directSubtypesOf(@NonNull ClassType type) {
     int id = resolveId(type);
-    if (id == -1) {
+    if (id == NO_ID) {
       return Stream.empty();
     }
     RawAdjacency raw = lazyRaw.get();
@@ -247,7 +259,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Stream<ClassType> directlyImplementedInterfacesOf(@NonNull ClassType classType) {
     int id = resolveId(classType);
-    if (id == -1) {
+    if (id == NO_ID) {
       return Stream.empty();
     }
     RawAdjacency raw = lazyRaw.get();
@@ -261,7 +273,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Stream<ClassType> directlyExtendedInterfacesOf(@NonNull ClassType interfaceType) {
     int id = resolveId(interfaceType);
-    if (id == -1) {
+    if (id == NO_ID) {
       return Stream.empty();
     }
     RawAdjacency raw = lazyRaw.get();
@@ -273,7 +285,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Override
   public boolean contains(ClassType type) {
-    return resolveId(type) != -1;
+    return resolveId(type) != NO_ID;
   }
 
   /**
@@ -297,7 +309,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     TypeHierarchyEncoding d = getTypeHierarchyBacking();
 
     Set<ClassType> lcas;
-    if (idA == -1 || idB == -1) {
+    if (idA == NO_ID || idB == NO_ID) {
       lcas = Collections.singleton(objectClassType);
       lcaCache.put(pair, lcas);
       return lcas;
@@ -317,7 +329,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     // Class-side candidate: the nearest common element of both (proper-ancestor) class chains.
     // Since each chain is a single root-terminated path, the first element of ancA's chain that
     // also appears in ancB's chain is necessarily the nearest one.
-    int classPartLca = -1;
+    int classPartLca = NO_ID;
     if (ancA.classChain.size() > 0 && ancB.classChain.size() > 0) {
       Set<Integer> bChainSet = new HashSet<>();
       for (int i = 0; i < ancB.classChain.size(); i++) {
@@ -335,13 +347,13 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     long[] commonInterfaceBits = ancA.interfaceBits.clone();
     andInto(commonInterfaceBits, ancB.interfaceBits);
 
-    if (classPartLca != -1) {
+    if (classPartLca != NO_ID) {
       lcas.add(raw.classTypeOf.get(classPartLca));
       // Drop any interface candidate that classPartLca itself transitively implements - the
       // class always dominates an interface it implements.
       long[] lcaOwnInterfaceBits = new long[commonInterfaceBits.length];
       int cur = classPartLca;
-      while (cur != -1) {
+      while (cur != NO_SUPERCLASS) {
         unionImplementedInterfaces(cur, raw, d, lcaOwnInterfaceBits);
         cur = raw.superClassId.get(cur);
       }
@@ -382,7 +394,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Stream<ClassType> implementedInterfacesOf(@NonNull ClassType type) {
     int id = resolveId(type);
-    if (id == -1) {
+    if (id == NO_ID) {
       return Stream.empty();
     }
     RawAdjacency raw = lazyRaw.get();
@@ -393,7 +405,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       // the (self-inclusive, transitive) interfaces each one directly implements.
       Set<ClassType> result = new LinkedHashSet<>();
       int cur = id;
-      while (cur != -1) {
+      while (cur != NO_SUPERCLASS) {
         IntArrayList impls = raw.directImplementedInterfaces.get(cur);
         for (int i = 0; i < impls.size(); i++) {
           addInterfaceAndAncestors(impls.get(i), raw, d, result);
@@ -420,7 +432,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public Optional<ClassType> superClassOf(@NonNull ClassType classType) {
     int id = resolveId(classType);
-    if (id == -1) {
+    if (id == NO_ID) {
       return Optional.empty();
     }
     if (objectClassType == classType) {
@@ -428,7 +440,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     }
     RawAdjacency raw = lazyRaw.get();
     int superId = raw.superClassId.get(id);
-    if (superId != -1) {
+    if (superId != NO_SUPERCLASS) {
       return Optional.of(raw.classTypeOf.get(superId));
     }
     if (raw.isInterface.get(id)) {
@@ -440,12 +452,12 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Override
   public boolean isInterface(@NonNull ClassType type) {
     int id = resolveId(type);
-    return id != -1 && lazyRaw.get().isInterface.get(id);
+    return id != NO_ID && lazyRaw.get().isInterface.get(id);
   }
 
   public boolean isClass(@NonNull ClassType type) {
     int id = resolveId(type);
-    return id != -1 && !lazyRaw.get().isInterface.get(id);
+    return id != NO_ID && !lazyRaw.get().isInterface.get(id);
   }
 
   /**
@@ -462,7 +474,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
     int superId = resolveId(supertypeCt);
     int subId = resolveId(potentialSubtypeCt);
-    if (superId == -1 || subId == -1 || superId == subId) {
+    if (superId == NO_ID || subId == NO_ID || superId == subId) {
       return false;
     }
 
@@ -475,7 +487,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       if (raw.isInterface.get(subId)) {
         return false;
       }
-      if (d.rangeStart[superId] == -1 || d.rangeStart[subId] == -1) {
+      if (d.rangeStart[superId] == NOT_IN_CLASS_TREE || d.rangeStart[subId] == NOT_IN_CLASS_TREE) {
         return false;
       }
       return d.rangeStart[superId] <= d.rangeStart[subId]
@@ -491,7 +503,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     // supertype is an interface, subtype is a class: walk the class's chain (self + superclasses)
     // and test each ancestor's directly-implemented interfaces' transitive closure.
     int cur = subId;
-    while (cur != -1) {
+    while (cur != NO_SUPERCLASS) {
       IntArrayList impls = raw.directImplementedInterfaces.get(cur);
       for (int i = 0; i < impls.size(); i++) {
         int implDense = d.denseOfInterfaceId[impls.get(i)];
@@ -521,7 +533,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       int id, RawAdjacency raw, TypeHierarchyEncoding d) {
     int start = d.rangeStart[id];
     int end = d.rangeEnd[id];
-    if (start == -1 || start + 1 >= end) {
+    if (start == NOT_IN_CLASS_TREE || start + 1 >= end) {
       return Stream.empty();
     }
     return Arrays.stream(d.classHierarchyOrder, start + 1, end).mapToObj(raw.classTypeOf::get);
@@ -557,7 +569,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       int classId = implementers.get(i);
       int start = d.rangeStart[classId];
       int end = d.rangeEnd[classId];
-      if (start != -1) {
+      if (start != NOT_IN_CLASS_TREE) {
         intervals.add(new int[] {start, end});
       }
     }
@@ -642,7 +654,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (!raw.isInterface.get(id)) {
       unionImplementedInterfaces(id, raw, d, interfaceBits);
       int cur = raw.superClassId.get(id);
-      while (cur != -1) {
+      while (cur != NO_SUPERCLASS) {
         classChain.add(cur);
         unionImplementedInterfaces(cur, raw, d, interfaceBits);
         cur = raw.superClassId.get(cur);
@@ -656,7 +668,8 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   private static RawAdjacency buildRawAdjacency(@NonNull View view) {
-    RawAdjacency raw = new RawAdjacency();
+    RawAdjacency raw =
+        new RawAdjacency(view.getIdentifierFactory().getClassType("java.lang.Object"));
     view.getClasses().forEach(sootClass -> addSootClassToGraph(sootClass, raw));
     return raw;
   }
@@ -670,22 +683,37 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       return false;
     }
     raw.scanned.set(id);
+    if (raw.isInterface.get(id) != isInterface) {
+      // The type has been referenced with the other kind, e.g. by classes compiled against
+      // another version of it: its declaration decides the kind.
+      raw.changeKind(id, isInterface);
+    }
 
+    // References to a type of the other kind (which the JVM would reject) are no subtype
+    // relations
     if (isInterface) {
       for (ClassType extendedInterface : sootClass.getInterfaces()) {
         int extendedId = raw.getOrCreateId(extendedInterface, true);
-        raw.directExtendedInterfaces.get(id).add(extendedId);
-        raw.directSubinterfaces.get(extendedId).add(id);
+        if (raw.isInterface.get(extendedId)) {
+          raw.directExtendedInterfaces.get(id).add(extendedId);
+          raw.directSubinterfaces.get(extendedId).add(id);
+        }
       }
     } else {
       for (ClassType implementedInterface : sootClass.getInterfaces()) {
         int ifaceId = raw.getOrCreateId(implementedInterface, true);
-        raw.directImplementedInterfaces.get(id).add(ifaceId);
-        raw.directImplementers.get(ifaceId).add(id);
+        if (raw.isInterface.get(ifaceId)) {
+          raw.directImplementedInterfaces.get(id).add(ifaceId);
+          raw.directImplementers.get(ifaceId).add(id);
+        }
       }
       Optional<? extends ClassType> superClass = sootClass.getSuperclass();
       if (superClass.isPresent()) {
         int superId = raw.getOrCreateId(superClass.get(), false);
+        if (raw.isInterface.get(superId)) {
+          // like a class without an extends clause, it extends Object
+          superId = raw.getOrCreateId(raw.objectType, false);
+        }
         raw.superClassId.set(id, superId);
         raw.directSubclasses.get(superId).add(id);
       }
@@ -699,7 +727,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     // --- class tree: iterative L2R pre-order DFS -> contiguous [rangeStart,rangeEnd) per class id
     int[] rangeStart = new int[total];
     int[] rangeEnd = new int[total];
-    Arrays.fill(rangeStart, -1);
+    Arrays.fill(rangeStart, NOT_IN_CLASS_TREE);
     int classCount = 0;
     for (int i = 0; i < total; i++) {
       if (!raw.isInterface.get(i)) {
@@ -713,7 +741,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     int pos = 0;
 
     for (int root = 0; root < total; root++) {
-      if (raw.isInterface.get(root) || visited[root] || raw.superClassId.get(root) != -1) {
+      if (raw.isInterface.get(root)
+          || visited[root]
+          || raw.superClassId.get(root) != NO_SUPERCLASS) {
         continue;
       }
       int sp = 0;
@@ -748,7 +778,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     // --- interface DAG: dense sub-numbering + bottom-up transitive-closure bitsets
     int interfaceCount = 0;
     int[] denseOfInterfaceId = new int[total];
-    Arrays.fill(denseOfInterfaceId, -1);
+    Arrays.fill(denseOfInterfaceId, NOT_AN_INTERFACE);
     int[] interfaceIdOfDenseTmp = new int[total];
     for (int i = 0; i < total; i++) {
       if (raw.isInterface.get(i)) {
@@ -812,7 +842,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     for (int i = 0; i < exts.size(); i++) {
       int targetId = exts.get(i);
       int targetDense = denseOfInterfaceId[targetId];
-      if (targetDense < 0) {
+      if (targetDense == NOT_AN_INTERFACE) {
         continue;
       }
       computeInterfaceAncestors(
@@ -882,6 +912,17 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       data[index] = value;
     }
 
+    /** Removes all occurrences of the given value. */
+    void remove(int value) {
+      int kept = 0;
+      for (int i = 0; i < size; i++) {
+        if (data[i] != value) {
+          data[kept++] = data[i];
+        }
+      }
+      size = kept;
+    }
+
     int size() {
       return size;
     }
@@ -897,6 +938,16 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   /** Dense ids + direct-edge adjacency only. Cheap to mutate incrementally in {@link #addType}. */
   static final class RawAdjacency {
+    /**
+     * {@code java.lang.Object}, the superclass of the classes whose declared superclass is an
+     * interface.
+     */
+    final ClassType objectType;
+
+    RawAdjacency(ClassType objectType) {
+      this.objectType = objectType;
+    }
+
     /** Assigns each {@link ClassType} the dense id used to index every array/list below. */
     final Map<ClassType, Integer> idOf = new HashMap<>();
 
@@ -916,7 +967,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     final BitSet scanned = new BitSet();
 
     // class tree (single inheritance) - classes only
-    /** Direct superclass id per class id, or {@code -1} if none (root, or unresolved). */
+    /**
+     * Direct superclass id per class id, or {@link #NO_SUPERCLASS} if none (root, or unresolved).
+     */
     final IntArrayList superClassId = new IntArrayList();
 
     /** Direct subclass ids per class id; reverse of {@link #superClassId}. */
@@ -952,7 +1005,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       if (asInterface) {
         isInterface.set(id);
       }
-      superClassId.add(-1);
+      superClassId.add(NO_SUPERCLASS);
       directSubclasses.add(new IntArrayList());
       directImplementedInterfaces.add(new IntArrayList());
       directExtendedInterfaces.add(new IntArrayList());
@@ -964,14 +1017,46 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     int size() {
       return classTypeOf.size();
     }
+
+    /**
+     * Changes the kind of the type with the given id, which has only been referenced so far, and
+     * removes the references that need the previous kind.
+     */
+    void changeKind(int id, boolean asInterface) {
+      if (asInterface) {
+        // classes do not extend an interface: like classes without an extends clause, they
+        // extend Object
+        int objectId = getOrCreateId(objectType, false);
+        IntArrayList subclasses = directSubclasses.get(id);
+        for (int i = 0; i < subclasses.size(); i++) {
+          superClassId.set(subclasses.get(i), objectId);
+          directSubclasses.get(objectId).add(subclasses.get(i));
+        }
+        directSubclasses.set(id, new IntArrayList());
+        isInterface.set(id);
+      } else {
+        // classes do not implement or extend a class as an interface
+        IntArrayList implementers = directImplementers.get(id);
+        for (int i = 0; i < implementers.size(); i++) {
+          directImplementedInterfaces.get(implementers.get(i)).remove(id);
+        }
+        directImplementers.set(id, new IntArrayList());
+        IntArrayList subinterfaces = directSubinterfaces.get(id);
+        for (int i = 0; i < subinterfaces.size(); i++) {
+          directExtendedInterfaces.get(subinterfaces.get(i)).remove(id);
+        }
+        directSubinterfaces.set(id, new IntArrayList());
+        isInterface.clear(id);
+      }
+    }
   }
 
   /** The expensive, lazily-(re)built encoding derived from a {@link RawAdjacency} snapshot. */
   static final class TypeHierarchyEncoding {
     /**
-     * Per class id, its position in {@link #classHierarchyOrder} - or {@code -1} if the id was
-     * never reached by the class-tree DFS (e.g. it sits on a cyclic/dangling chain that never
-     * bottoms out at a root; not expected for real bytecode, handled defensively).
+     * Per class id, its position in {@link #classHierarchyOrder} - or {@link #NOT_IN_CLASS_TREE} if
+     * the id was never reached by the class-tree DFS (e.g. it sits on a cyclic/dangling chain that
+     * never bottoms out at a root; not expected for real bytecode, handled defensively).
      */
     final int[] rangeStart;
 
@@ -996,9 +1081,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     final int interfaceCount;
 
     /**
-     * Per (global) interface id, its dense 0..{@link #interfaceCount}-1 sub-id, or {@code -1} if
-     * that id is a class rather than an interface. Indexes {@link #ancestorsBitset} and {@link
-     * #descendants}.
+     * Per (global) interface id, its dense 0..{@link #interfaceCount}-1 sub-id, or {@link
+     * #NOT_AN_INTERFACE} if that id is a class rather than an interface. Indexes {@link
+     * #ancestorsBitset} and {@link #descendants}.
      */
     final int[] denseOfInterfaceId;
 
