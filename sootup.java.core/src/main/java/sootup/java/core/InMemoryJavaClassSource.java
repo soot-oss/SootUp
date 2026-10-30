@@ -85,6 +85,58 @@ public class InMemoryJavaClassSource extends JavaSootClassSource {
         annotations,
         methodAnnotations,
         fieldAnnotations,
+        null,
+        JavaClassFileMetadata.empty());
+  }
+
+  /**
+   * Creates a fully resolved class source with an optional classfile Signature attribute.
+   *
+   * @param srcNamespace the input location containing the class
+   * @param sourcePath the path to the classfile
+   * @param classType the class type
+   * @param superClass the superclass, or {@code null} if absent
+   * @param interfaces the implemented interfaces
+   * @param outerClass the outer class, or {@code null} if absent
+   * @param sootFields the fields
+   * @param sootMethods the methods
+   * @param position the source position
+   * @param modifiers the class modifiers
+   * @param annotations the class annotations
+   * @param methodAnnotations the method annotations
+   * @param fieldAnnotations the field annotations
+   * @param genericSignature the Signature attribute, or {@code null} if absent
+   */
+  public InMemoryJavaClassSource(
+      @NonNull AnalysisInputLocation srcNamespace,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classType,
+      @Nullable JavaClassType superClass,
+      @NonNull Set<JavaClassType> interfaces,
+      @Nullable JavaClassType outerClass,
+      @NonNull Set<JavaSootField> sootFields,
+      @NonNull Set<JavaSootMethod> sootMethods,
+      @NonNull Position position,
+      @NonNull EnumSet<ClassModifier> modifiers,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Iterable<AnnotationUsage> methodAnnotations,
+      @Nullable Iterable<AnnotationUsage> fieldAnnotations,
+      @Nullable String genericSignature) {
+    this(
+        srcNamespace,
+        sourcePath,
+        classType,
+        superClass,
+        interfaces,
+        outerClass,
+        sootFields,
+        sootMethods,
+        position,
+        modifiers,
+        annotations,
+        methodAnnotations,
+        fieldAnnotations,
+        genericSignature,
         JavaClassFileMetadata.empty());
   }
 
@@ -121,7 +173,61 @@ public class InMemoryJavaClassSource extends JavaSootClassSource {
       @NonNull Iterable<AnnotationUsage> methodAnnotations,
       @Nullable Iterable<AnnotationUsage> fieldAnnotations,
       @NonNull JavaClassFileMetadata classFileMetadata) {
-    super(srcNamespace, classType, sourcePath, classFileMetadata);
+    this(
+        srcNamespace,
+        sourcePath,
+        classType,
+        superClass,
+        interfaces,
+        outerClass,
+        sootFields,
+        sootMethods,
+        position,
+        modifiers,
+        annotations,
+        methodAnnotations,
+        fieldAnnotations,
+        null,
+        classFileMetadata);
+  }
+
+  /**
+   * Creates a fully resolved class source with an optional classfile Signature attribute and
+   * immutable source and nesting attributes.
+   *
+   * @param srcNamespace the input location containing the class
+   * @param sourcePath the path to the classfile
+   * @param classType the class type
+   * @param superClass the superclass, or {@code null} if absent
+   * @param interfaces the implemented interfaces
+   * @param outerClass the outer class, or {@code null} if absent
+   * @param sootFields the fields
+   * @param sootMethods the methods
+   * @param position the source position
+   * @param modifiers the class modifiers
+   * @param annotations the class annotations
+   * @param methodAnnotations the method annotations
+   * @param fieldAnnotations the field annotations
+   * @param genericSignature the Signature attribute, or {@code null} if absent
+   * @param classFileMetadata the source and nesting attributes
+   */
+  public InMemoryJavaClassSource(
+      @NonNull AnalysisInputLocation srcNamespace,
+      @NonNull Path sourcePath,
+      @NonNull ClassType classType,
+      @Nullable JavaClassType superClass,
+      @NonNull Set<JavaClassType> interfaces,
+      @Nullable JavaClassType outerClass,
+      @NonNull Set<JavaSootField> sootFields,
+      @NonNull Set<JavaSootMethod> sootMethods,
+      @NonNull Position position,
+      @NonNull EnumSet<ClassModifier> modifiers,
+      @NonNull Iterable<AnnotationUsage> annotations,
+      @NonNull Iterable<AnnotationUsage> methodAnnotations,
+      @Nullable Iterable<AnnotationUsage> fieldAnnotations,
+      @Nullable String genericSignature,
+      @NonNull JavaClassFileMetadata classFileMetadata) {
+    super(srcNamespace, classType, sourcePath, genericSignature, classFileMetadata);
     this.sootMethods = sootMethods;
     this.sootFields = sootFields;
     this.modifiers = modifiers;
@@ -306,6 +412,8 @@ public class InMemoryJavaClassSource extends JavaSootClassSource {
 
     @NonNull OptionalStep withFieldAnnotations(@NonNull Iterable<AnnotationUsage> fieldAnnotations);
 
+    @NonNull OptionalStep withGenericSignature(@Nullable String genericSignature);
+
     @NonNull OptionalStep withClassFileMetadata(@NonNull JavaClassFileMetadata classFileMetadata);
 
     @NonNull InMemoryJavaClassSource build();
@@ -325,6 +433,7 @@ public class InMemoryJavaClassSource extends JavaSootClassSource {
     @NonNull private Iterable<AnnotationUsage> annotations = Collections.emptyList();
     @NonNull private Iterable<AnnotationUsage> methodAnnotations = Collections.emptyList();
     @NonNull private Iterable<AnnotationUsage> fieldAnnotations = Collections.emptyList();
+    @Nullable private String genericSignature;
     @NonNull private JavaClassFileMetadata classFileMetadata = JavaClassFileMetadata.empty();
 
     @Override
@@ -409,6 +518,12 @@ public class InMemoryJavaClassSource extends JavaSootClassSource {
     }
 
     @Override
+    public @NonNull OptionalStep withGenericSignature(@Nullable String genericSignature) {
+      this.genericSignature = genericSignature;
+      return this;
+    }
+
+    @Override
     public @NonNull OptionalStep withClassFileMetadata(
         @NonNull JavaClassFileMetadata classFileMetadata) {
       this.classFileMetadata = classFileMetadata;
@@ -431,6 +546,7 @@ public class InMemoryJavaClassSource extends JavaSootClassSource {
           annotations,
           methodAnnotations,
           fieldAnnotations,
+          genericSignature,
           classFileMetadata);
     }
   }
