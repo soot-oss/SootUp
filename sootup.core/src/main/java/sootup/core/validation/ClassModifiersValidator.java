@@ -24,6 +24,7 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.SootClass;
+import sootup.core.views.View;
 
 /**
  * Validator that checks for impossible combinations of class modifiers
@@ -33,7 +34,7 @@ import sootup.core.model.SootClass;
 public class ClassModifiersValidator implements ClassValidator {
 
   @Override
-  public void validate(SootClass sc, List<ValidationException> exceptions) {
+  public void validate(SootClass sc, List<ValidationException> exceptions, View view) {
 
     if (sc.isInterface()) {
       if (sc.isEnum()) {

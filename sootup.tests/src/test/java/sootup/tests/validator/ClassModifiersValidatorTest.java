@@ -92,7 +92,7 @@ public class ClassModifiersValidatorTest {
         testClassCreatorWithModifiers(
             EnumSet.of(ClassModifier.ANNOTATION, ClassModifier.INTERFACE, ClassModifier.ABSTRACT));
 
-    classModifiersValidator.validate(javaSootClass, validationExceptions_success);
+    classModifiersValidator.validate(javaSootClass, validationExceptions_success, view);
 
     assertEquals(0, validationExceptions_success.size());
   }
@@ -109,7 +109,7 @@ public class ClassModifiersValidatorTest {
                 ClassModifier.FINAL,
                 ClassModifier.SUPER));
 
-    classModifiersValidator.validate(javaSootClass, validationExceptions_fail1);
+    classModifiersValidator.validate(javaSootClass, validationExceptions_fail1, view);
 
     assertEquals(4, validationExceptions_fail1.size());
   }
@@ -121,7 +121,7 @@ public class ClassModifiersValidatorTest {
     JavaSootClass javaSootClass =
         testClassCreatorWithModifiers(EnumSet.of(ClassModifier.ANNOTATION));
 
-    classModifiersValidator.validate(javaSootClass, validationExceptions_fail2);
+    classModifiersValidator.validate(javaSootClass, validationExceptions_fail2, view);
 
     assertEquals(1, validationExceptions_fail2.size());
   }
