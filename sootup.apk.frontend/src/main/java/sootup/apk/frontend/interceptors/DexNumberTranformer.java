@@ -55,6 +55,12 @@ public class DexNumberTranformer extends DexTransformer {
 
   @Override
   public void interceptBody(Body.@NonNull BodyBuilder builder, @NonNull View view) {
+    // The fields hold the state of one body. The interceptors of an input location are shared by
+    // its bodies, which may be resolved concurrently, so each body gets its own instance.
+    new DexNumberTranformer().transform(builder, view);
+  }
+
+  private void transform(Body.@NonNull BodyBuilder builder, @NonNull View view) {
 
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
 
@@ -234,7 +240,7 @@ public class DexNumberTranformer extends DexTransformer {
    * @param bodyBuilder the bodyBuilder to analyze
    */
   private Set<Local> getNumCandidates(Body.BodyBuilder bodyBuilder) {
-    Set<Local> candidates = new HashSet<>();
+    Set<Local> candidates = new LinkedHashSet<>();
     for (Stmt u : bodyBuilder.getStmts()) {
       if (u instanceof JAssignStmt) {
         JAssignStmt a = (JAssignStmt) u;

@@ -226,10 +226,11 @@ public class DexLocalSplitterTest {
   }
 
   /**
-   * The iget throws before it writes v0, so the handler sees v0 from before the try.
+   * The iget throws before it writes v0, so the handler sees v0 from before the try: the constant,
+   * which the handler gets as its own copy ({@code DexSharedConstantSplitter}).
    *
    * <pre>{@code
-   *   $u0#0 = 0;
+   *   $u0#0 = null;
    * label1:
    *   $u0#1 = $u0#0.f;
    * label2:
@@ -237,7 +238,8 @@ public class DexLocalSplitterTest {
    *   return;
    * label3:
    *   $u1 := @caughtexception;
-   *   use($u0#0);
+   *   $u0#0#c1 = null;
+   *   use($u0#0#c1);
    *   return;
    * catch java.lang.Exception from label1 to label2 with label3;
    * }</pre>
@@ -246,7 +248,7 @@ public class DexLocalSplitterTest {
   public void fieldReadIntoItsObjectLeavesTheOldValueToItsHandler() {
     Body body = convert("FieldRead", 2, ExceptionalFlow.SYNCHRONOUS, fieldReadIntoItsObject(false));
     // handler, normal path
-    assertEquals(List.of("$u0#0", "$u0#1"), readsOfV0(body));
+    assertEquals(List.of("$u0#0#c1", "$u0#1"), readsOfV0(body));
   }
 
   /**
