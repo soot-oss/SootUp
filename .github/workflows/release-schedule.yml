@@ -12,7 +12,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    uses: secure-software-engineering/actions/.github/workflows/maven-release-schedule.yml@7458a0f725752b2bf928c2f9e42c818b6abad742 # develop
+    uses: secure-software-engineering/actions/.github/workflows/maven-release-schedule.yml@c98577761faae44108ba0ec2de7ebd67ddd4b40b # develop
     with:
       head_branch: develop
       java_version: '17'
