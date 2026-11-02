@@ -17,9 +17,9 @@ import sootup.core.model.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.frontend.inputlocation.PathBasedAnalysisInputLocation;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.MutableJavaView;
 
@@ -67,21 +67,13 @@ public class MutableSootClientTest {
   @Test
   public void classAdditionTest() {
     JavaClassType addedClassType = mv.getIdentifierFactory().getClassType("AddedClass");
-    OverridingJavaClassSource newClass =
-        new OverridingJavaClassSource(
-            location,
-            pathToJar,
-            addedClassType,
-            null,
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.emptySet(),
-            new FullPosition(0, 0, 0, 0),
-            EnumSet.noneOf(ClassModifier.class),
-            Collections.emptySet(),
-            Collections.emptySet(),
-            Collections.emptySet());
+    InMemoryJavaClassSource newClass =
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(location)
+            .withClassType(addedClassType)
+            .withSourcePath(pathToJar)
+            .withPosition(new FullPosition(0, 0, 0, 0))
+            .build();
 
     long classesBeforeSize = mv.getClasses().count();
     mv.addClass(newClass.buildClass(SourceType.Application));
@@ -106,21 +98,13 @@ public class MutableSootClientTest {
     // the failed lookup is what records the type as absent
     assertFalse(mv.getClass(addedClassType).isPresent());
 
-    OverridingJavaClassSource newClass =
-        new OverridingJavaClassSource(
-            location,
-            pathToJar,
-            addedClassType,
-            null,
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.emptySet(),
-            new FullPosition(0, 0, 0, 0),
-            EnumSet.noneOf(ClassModifier.class),
-            Collections.emptySet(),
-            Collections.emptySet(),
-            Collections.emptySet());
+    InMemoryJavaClassSource newClass =
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(location)
+            .withClassType(addedClassType)
+            .withSourcePath(pathToJar)
+            .withPosition(new FullPosition(0, 0, 0, 0))
+            .build();
     mv.addClass(newClass.buildClass(SourceType.Application));
 
     assertTrue(mv.getClass(addedClassType).isPresent());

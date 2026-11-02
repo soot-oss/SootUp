@@ -210,7 +210,7 @@ public class DexBodyEdgeCaseTest {
             });
 
     assertEquals(
-        List.of("$u0 = 0", "if $u0 == 0", "return", "nop", "nop", "$u0 = 1", "return"),
+        List.of("$u0#0 = 0", "if $u0#0 == 0", "return", "nop", "nop", "$u0#1 = 1", "return"),
         stmtsOf(body));
     // the second successor of the if is the branch target, which is the first of the two nops
     assertEquals(
@@ -816,7 +816,8 @@ public class DexBodyEdgeCaseTest {
               b.addInstruction(new BuilderInstruction10x(Opcode.NOP));
             });
 
-    assertEquals(List.of("$u0 = 0", "throw $u0"), stmtsOf(body));
+    // the thrown 0 is null (DexNullTransformer)
+    assertEquals(List.of("$u0 = null", "throw $u0"), stmtsOf(body));
   }
 
   /** Unreachable code that is not a nop is legal in dex too, and goes the same way. */

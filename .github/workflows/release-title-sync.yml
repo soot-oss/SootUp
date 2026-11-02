@@ -20,6 +20,6 @@ jobs:
       startsWith(github.head_ref, 'release/prep-') &&
       github.event.pull_request.head.repo.full_name == github.repository
     # Reusable workflow: secure-software-engineering/actions/release/README.md
-    uses: secure-software-engineering/actions/.github/workflows/maven-release-title-sync.yml@7a286175a5ce134571e0228fc4da41885f2821e3 # develop
+    uses: secure-software-engineering/actions/.github/workflows/maven-release-title-sync.yml@db13421e25aa6cd31b345ebfbac0c2c98f393aac # develop
     secrets:
       release_pat: ${{ secrets.AUTO_MERGE_PAT }} # default GITHUB_TOKEN is blocked by branch protection

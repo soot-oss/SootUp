@@ -193,20 +193,17 @@ public class JimplePrinterTest {
               NoPositionInformation.getInstance());
     }
 
-    OverridingJavaClassSource overridingClassSource =
-        OverridingJavaClassSource.OverridingJavaClassSourceBuilder.builder()
+    InMemoryJavaClassSource overridingClassSource =
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(new EagerInputLocation())
+            .withClassType(identifierFactory.getClassType(className))
             .withMethods(new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)))
-            .withField(sootField)
+            .withFields(Collections.singleton(sootField))
             .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
             .withInterfaces(
                 Collections.singleton(
                     (JavaClassType) identifierFactory.getClassType("some.great.Interface")))
-            .withSuperclass(
-                Optional.of(
-                    (JavaClassType) identifierFactory.getClassType("some.great.Superclass")))
-            .withPosition(NoPositionInformation.getInstance())
-            .withClassType(identifierFactory.getClassType(className))
-            .withAnalysisInputLocation(new EagerInputLocation())
+            .withSuperclass((JavaClassType) identifierFactory.getClassType("some.great.Superclass"))
             .build();
 
     if (buildWithClassMembers) {
@@ -239,19 +236,18 @@ public class JimplePrinterTest {
                 "counter", identifierFactory.getClassType(className), PrimitiveType.getInt()),
             EnumSet.of(FieldModifier.PRIVATE),
             NoPositionInformation.getInstance());
-    OverridingJavaClassSource overridingClassSource =
-        new OverridingJavaClassSource(
-            new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)),
-            Collections.singleton(sootField),
-            EnumSet.of(ClassModifier.PUBLIC),
-            Collections.singleton(
-                (JavaClassType) identifierFactory.getClassType("some.great.Interface")),
-            (JavaClassType) identifierFactory.getClassType("some.great.Superclass"),
-            null,
-            NoPositionInformation.getInstance(),
-            null,
-            identifierFactory.getClassType(className),
-            new EagerInputLocation());
+    InMemoryJavaClassSource overridingClassSource =
+        InMemoryJavaClassSource.builder()
+            .withAnalysisInputLocation(new EagerInputLocation())
+            .withClassType(identifierFactory.getClassType(className))
+            .withMethods(new LinkedHashSet<>(Arrays.asList(dummyMainMethod, anotherMethod)))
+            .withFields(Collections.singleton(sootField))
+            .withModifiers(EnumSet.of(ClassModifier.PUBLIC))
+            .withInterfaces(
+                Collections.singleton(
+                    (JavaClassType) identifierFactory.getClassType("some.great.Interface")))
+            .withSuperclass((JavaClassType) identifierFactory.getClassType("some.great.Superclass"))
+            .build();
     return new JavaSootClass(overridingClassSource, SourceType.Application);
   }
 }

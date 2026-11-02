@@ -31,6 +31,8 @@ import org.jf.dexlib2.dexbacked.raw.EncodedValue;
 import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
+import org.jf.dexlib2.iface.value.MethodEncodedValue;
+import org.jf.dexlib2.iface.value.TypeEncodedValue;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,10 +147,74 @@ public class DexClassSource extends JavaSootClassSource {
     }
   }
 
+  /**
+   * Resolves the outer class from the system annotations of the dex file, like Soot's dex frontend:
+   * <code>EnclosingClass</code> names the outer class of a member class, <code>EnclosingMethod
+   * </code> the method that declares a local or anonymous class. If only an <code>InnerClass
+   * </code> annotation exists, the outer class is derived from the name of the class.
+   */
   @NonNull
   @Override
   public Optional<? extends ClassType> resolveOuterClass() {
-    return Optional.empty();
+    if (classInformation == null) {
+      return Optional.empty();
+    }
+    String className = classInformation.classDefinition.getType();
+    String outerClass = null;
+    boolean isInnerClass = false;
+    for (Annotation annotation : classInformation.classDefinition.getAnnotations()) {
+      switch (annotation.getType()) {
+        case "Ldalvik/annotation/EnclosingClass;":
+          for (AnnotationElement element : annotation.getElements()) {
+            if (element.getValue() instanceof TypeEncodedValue) {
+              outerClass = ((TypeEncodedValue) element.getValue()).getValue();
+            }
+          }
+          break;
+        case "Ldalvik/annotation/EnclosingMethod;":
+          for (AnnotationElement element : annotation.getElements()) {
+            if (element.getValue() instanceof MethodEncodedValue) {
+              outerClass = ((MethodEncodedValue) element.getValue()).getValue().getDefiningClass();
+            }
+          }
+          break;
+        case "Ldalvik/annotation/InnerClass;":
+          isInnerClass = true;
+          break;
+        default:
+          break;
+      }
+    }
+
+    // An invalid outer class that names the class itself is repaired from the name, as is a
+    // missing outer class of an inner class
+    if (className.equals(outerClass) || (outerClass == null && isInnerClass)) {
+      outerClass = getOuterClassFromName(className);
+    }
+    if (outerClass == null || outerClass.equals(className)) {
+      return Optional.empty();
+    }
+    return Optional.of(DexUtil.stringToJimpleType(view, outerClass));
+  }
+
+  /**
+   * Derives the outer class from the name of an inner class
+   *
+   * @param className The name of the inner class, e.g., <code>La/b/C$D;</code>
+   * @return The name of the outer class, e.g., <code>La/b/C;</code>, or null if the name does not
+   *     denote an inner class
+   */
+  private static String getOuterClassFromName(String className) {
+    // Lambda classes of the Jack and Jill compiler contain a '$' followed by '-' in the name of
+    // the inner class, which may contain further '$' characters
+    int idx = className.indexOf("$-");
+    if (idx < 0) {
+      idx = className.lastIndexOf('$');
+    }
+    if (idx <= 0) {
+      return null;
+    }
+    return className.substring(0, idx) + ";";
   }
 
   @NonNull

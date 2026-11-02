@@ -20,9 +20,9 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
 import sootup.core.util.printer.BriefStmtPrinter;
+import sootup.java.core.InMemoryJavaClassSource;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
@@ -32,7 +32,7 @@ public class JimpleConverterTest {
   private JavaSootClass parseJimpleClass(CharStream cs) throws ResolveException {
     JimpleConverter jimpleVisitor = new JimpleConverter();
     EagerInputLocation eagerInputLocation = new EagerInputLocation();
-    final OverridingJavaClassSource scs =
+    final InMemoryJavaClassSource scs =
         jimpleVisitor.run(
             cs,
             eagerInputLocation,
