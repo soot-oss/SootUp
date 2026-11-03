@@ -20,6 +20,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.UnknownType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
@@ -153,6 +154,27 @@ class DexNumberTransformerTest {
     transform(builder);
 
     assertEquals(FloatConstant.getInstance(6500f), constantOfFirstStmt(builder));
+  }
+
+  @Test
+  void intBitsAddedToAFloatParameterOfTheMethodBecomeAFloat() {
+    // x := @parameter0: float; l = <bits of 1.5f>; r = l + x; return;
+    Local x = Jimple.newLocal("x", UnknownType.getInstance());
+    Local l = Jimple.newLocal("l", UnknownType.getInstance());
+    Local r = Jimple.newLocal("r", UnknownType.getInstance());
+    var builder =
+        builder(
+            "void",
+            List.of(x, l, r),
+            Jimple.newIdentityStmt(x, Jimple.newParameterRef(PrimitiveType.getFloat(), 0), POS),
+            Jimple.newAssignStmt(l, IntConstant.getInstance(Float.floatToIntBits(1.5f)), POS),
+            Jimple.newAssignStmt(r, Jimple.newAddExpr(l, x), POS),
+            Jimple.newReturnVoidStmt(POS));
+
+    transform(builder);
+
+    assertEquals(
+        FloatConstant.getInstance(1.5f), ((JAssignStmt) builder.getStmts().get(1)).getRightOp());
   }
 
   @Test

@@ -34,6 +34,7 @@ import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
+import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.model.Body;
@@ -251,8 +252,9 @@ public class DexNumberTranformer extends DexTransformer {
   /**
    * The locals that hold floats or doubles as far as arithmetic shows. The operands of {@code cmpl}
    * and {@code cmpg} are floats or doubles, and so are locals that a statement uses or defines as
-   * one: a field, parameter, return value or cast of such a type. The operands and the result of
-   * {@code + - * / %}, negation and copies have one type, so they are floating point together.
+   * one: a field, a parameter of the method or of a call, a return value or a cast of such a type.
+   * The operands and the result of {@code + - * / %}, negation and copies have one type, so they
+   * are floating point together.
    */
   private Set<Local> floatingPointLocals(Body.BodyBuilder bodyBuilder) {
     Map<Local, List<Local>> sameType = new HashMap<>();
@@ -277,6 +279,14 @@ public class DexNumberTranformer extends DexTransformer {
                 Objects.requireNonNull(bodyBuilder.getMethodSignature()).getType())) {
           work.add((Local) op);
         }
+      }
+      if (stmt instanceof JIdentityStmt) {
+        JIdentityStmt identity = (JIdentityStmt) stmt;
+        if (identity.getRightOp() instanceof JParameterRef
+            && isFloatingPointLike(identity.getRightOp().getType())) {
+          work.add(identity.getLeftOp());
+        }
+        continue;
       }
       if (!(stmt instanceof JAssignStmt)) {
         continue;
