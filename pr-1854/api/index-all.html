@@ -4958,6 +4958,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/DexBodyInterceptors.html" class="type-name-link" title="enum class in sootup.apk.frontend">DexBodyInterceptors</a> - Enum Class in <a href="sootup/apk/frontend/package-summary.html">sootup.apk.frontend</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/main/DexCastExpr.html" class="type-name-link" title="class in sootup.apk.frontend.main">DexCastExpr</a> - Class in <a href="sootup/apk/frontend/main/package-summary.html">sootup.apk.frontend.main</a></dt>
+<dd>
+<div class="block">A cast of a dex conversion instruction, which also names the type it converts from, e.g.</div>
+</dd>
+<dt><a href="sootup/apk/frontend/main/DexCastExpr.html#%3Cinit%3E(sootup.core.jimple.common.Immediate,sootup.core.types.Type,sootup.core.types.Type)" class="member-name-link">DexCastExpr(Immediate, Type, Type)</a> - Constructor for class sootup.apk.frontend.main.<a href="sootup/apk/frontend/main/DexCastExpr.html" title="class in sootup.apk.frontend.main">DexCastExpr</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/dexpler/DexClassProvider.html" class="type-name-link" title="class in sootup.apk.frontend.dexpler">DexClassProvider</a> - Class in <a href="sootup/apk/frontend/dexpler/package-summary.html">sootup.apk.frontend.dexpler</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/dexpler/DexClassProvider.html#%3Cinit%3E(sootup.core.views.View)" class="member-name-link">DexClassProvider(View)</a> - Constructor for class sootup.apk.frontend.dexpler.<a href="sootup/apk/frontend/dexpler/DexClassProvider.html" title="class in sootup.apk.frontend.dexpler">DexClassProvider</a></dt>
@@ -10174,6 +10180,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/apk/frontend/ApkAnalysisInputLocation.html#getSourceType()" class="member-name-link">getSourceType()</a> - Method in class sootup.apk.frontend.<a href="sootup/apk/frontend/ApkAnalysisInputLocation.html" title="class in sootup.apk.frontend">ApkAnalysisInputLocation</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/main/DexCastExpr.html#getSourceType()" class="member-name-link">getSourceType()</a> - Method in class sootup.apk.frontend.main.<a href="sootup/apk/frontend/main/DexCastExpr.html" title="class in sootup.apk.frontend.main">DexCastExpr</a></dt>
+<dd>
+<div class="block">The type the conversion instruction converts from</div>
+</dd>
 <dt><a href="sootup/core/inputlocation/AnalysisInputLocation.html#getSourceType()" class="member-name-link">getSourceType()</a> - Method in interface sootup.core.inputlocation.<a href="sootup/core/inputlocation/AnalysisInputLocation.html" title="interface in sootup.core.inputlocation">AnalysisInputLocation</a></dt>
 <dd>
 <div class="block">If the AnalysisInputLocation is initialized with the SourceType then this method should return
@@ -17862,6 +17872,12 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/core/model/Body.BodyBuilder.html#replaceLocal(sootup.core.jimple.common.Local,sootup.core.jimple.common.Local)" class="member-name-link">replaceLocal(Local, Local)</a> - Method in class sootup.core.model.<a href="sootup/core/model/Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/core/model/Body.BodyBuilder.html#replaceLocals(java.util.Map)" class="member-name-link">replaceLocals(Map&lt;Local, Local&gt;)</a> - Method in class sootup.core.model.<a href="sootup/core/model/Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a></dt>
+<dd>
+<div class="block">Replaces each key of the map by its value, like <a href="sootup/core/model/Body.BodyBuilder.html#replaceLocal(sootup.core.jimple.common.Local,sootup.core.jimple.common.Local)"><code>Body.BodyBuilder.replaceLocal(Local, Local)</code></a> for every
+ entry, but in a single pass over the statements: a statement is only rewritten for the locals
+ it uses or defines.</div>
+</dd>
 <dt><a href="sootup/java/core/views/MutableJavaView.html#replaceMethod(sootup.java.core.JavaSootMethod,sootup.java.core.JavaSootMethod)" class="member-name-link">replaceMethod(JavaSootMethod, JavaSootMethod)</a> - Method in class sootup.java.core.views.<a href="sootup/java/core/views/MutableJavaView.html" title="class in sootup.java.core.views">MutableJavaView</a></dt>
 <dd>
 <div class="block">Removes the provided oldMethod from the respective class within the view and adds the provided
@@ -22525,6 +22541,8 @@ the order they are declared.</div>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/ref/JParameterRef.html#withNumber(int)" class="member-name-link">withNumber(int)</a> - Method in class sootup.core.jimple.common.ref.<a href="sootup/core/jimple/common/ref/JParameterRef.html" title="class in sootup.core.jimple.common.ref">JParameterRef</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/main/DexCastExpr.html#withOp(sootup.core.jimple.common.Immediate)" class="member-name-link">withOp(Immediate)</a> - Method in class sootup.apk.frontend.main.<a href="sootup/apk/frontend/main/DexCastExpr.html" title="class in sootup.apk.frontend.main">DexCastExpr</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JCastExpr.html#withOp(sootup.core.jimple.common.Immediate)" class="member-name-link">withOp(Immediate)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JCastExpr.html" title="class in sootup.core.jimple.common.expr">JCastExpr</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JInstanceOfExpr.html#withOp(sootup.core.jimple.common.Immediate)" class="member-name-link">withOp(Immediate)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JInstanceOfExpr.html" title="class in sootup.core.jimple.common.expr">JInstanceOfExpr</a></dt>
@@ -22756,6 +22774,8 @@ the order they are declared.</div>
 <dt><a href="sootup/java/core/JavaSootMethod.html#withThrownExceptions(java.lang.Iterable)" class="member-name-link">withThrownExceptions(Iterable&lt;ClassType&gt;)</a> - Method in class sootup.java.core.<a href="sootup/java/core/JavaSootMethod.html" title="class in sootup.java.core">JavaSootMethod</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JNewExpr.html#withType(sootup.core.types.ClassType)" class="member-name-link">withType(ClassType)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JNewExpr.html" title="class in sootup.core.jimple.common.expr">JNewExpr</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="sootup/apk/frontend/main/DexCastExpr.html#withType(sootup.core.types.Type)" class="member-name-link">withType(Type)</a> - Method in class sootup.apk.frontend.main.<a href="sootup/apk/frontend/main/DexCastExpr.html" title="class in sootup.apk.frontend.main">DexCastExpr</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/expr/JCastExpr.html#withType(sootup.core.types.Type)" class="member-name-link">withType(Type)</a> - Method in class sootup.core.jimple.common.expr.<a href="sootup/core/jimple/common/expr/JCastExpr.html" title="class in sootup.core.jimple.common.expr">JCastExpr</a></dt>
 <dd>&nbsp;</dd>
