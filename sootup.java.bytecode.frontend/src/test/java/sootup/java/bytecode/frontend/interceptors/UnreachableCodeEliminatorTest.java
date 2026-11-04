@@ -114,6 +114,8 @@ public class UnreachableCodeEliminatorTest {
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getControlFlowGraph().getNodes());
+    // locals only occurring in unreachable stmts are removed
+    assertEquals(ImmutableUtils.immutableSet(l0, l1), builder.getLocals());
   }
 
   /**
