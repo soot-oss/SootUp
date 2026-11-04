@@ -22,10 +22,10 @@ package sootup.interceptors.typeresolving;
  * #L%
  */
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.jspecify.annotations.NonNull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.Immediate;
@@ -52,9 +52,10 @@ import sootup.core.types.Type;
  * locals into the typing as well.
  */
 public class CastCounter extends TypeChecker {
-  private final Map<Stmt, Set<JAssignStmt>> tempAssignments = new HashMap<>();
-  private final Map<Stmt, Stmt> stmt2NewStmt = new HashMap<>();
-  private final Map<Local, Type> tempLocalTypes = new HashMap<>();
+  // insertion-ordered, so that the casts and their locals follow the statement order
+  private final Map<Stmt, List<JAssignStmt>> tempAssignments = new LinkedHashMap<>();
+  private final Map<Stmt, Stmt> stmt2NewStmt = new LinkedHashMap<>();
+  private final Map<Local, Type> tempLocalTypes = new LinkedHashMap<>();
 
   private int castCount = 0;
   private int newLocalsCount = 0;
@@ -67,7 +68,9 @@ public class CastCounter extends TypeChecker {
     super(builder, evalFunction, hierarchy);
     setTyping(typing);
 
-    for (Stmt stmt : graph.getNodes()) {
+    // in statement order: getNodes() has no fixed order, and the temporary locals are numbered
+    // in the order they are created
+    for (Stmt stmt : graph.getStmts()) {
       stmt.accept(this);
     }
   }
@@ -82,7 +85,7 @@ public class CastCounter extends TypeChecker {
       getTyping().set(tempLocal.getKey(), tempLocal.getValue());
     }
 
-    for (Map.Entry<Stmt, Set<JAssignStmt>> casts : tempAssignments.entrySet()) {
+    for (Map.Entry<Stmt, List<JAssignStmt>> casts : tempAssignments.entrySet()) {
       for (JAssignStmt cast : casts.getValue()) {
         // FIXME this also places before labels, which is not correct
         graph.insertBefore(casts.getKey(), cast);
@@ -125,7 +128,7 @@ public class CastCounter extends TypeChecker {
       tempLocalTypes.put(tempLocal, stdType);
 
       JAssignStmt assignStmt = Jimple.newAssignStmt(tempLocal, cast, stmt.getPositionInfo());
-      tempAssignments.computeIfAbsent(stmt, _x -> new HashSet<>()).add(assignStmt);
+      tempAssignments.computeIfAbsent(stmt, _x -> new ArrayList<>()).add(assignStmt);
 
       newStmt = currentStmt.withNewUse(value, tempLocal);
     }

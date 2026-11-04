@@ -108,7 +108,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor {
         // allocation site.
         if (Type.isObjectLikeType(type_base)
             || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType)) {
-          Map<LValue, Collection<Stmt>> defs = Body.collectDefs(graph.getNodes());
+          Map<LValue, Collection<Stmt>> defs = Body.collectDefs(graph.getStmts());
           Collection<Stmt> defStmts = defs.get(base);
           boolean findDef = false;
           if (defStmts != null) {
@@ -171,7 +171,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor {
         arrayType = (ArrayType) type_base;
       } else {
         if (type_base instanceof NullType || Type.isObjectLikeType(type_base)) {
-          Map<LValue, Collection<Stmt>> defs = Body.collectDefs(graph.getNodes());
+          Map<LValue, Collection<Stmt>> defs = Body.collectDefs(graph.getStmts());
           Deque<StmtLocalPair> worklist = new ArrayDeque<>();
           Set<StmtLocalPair> visited = new HashSet<>();
           worklist.add(new StmtLocalPair(stmt, base));
