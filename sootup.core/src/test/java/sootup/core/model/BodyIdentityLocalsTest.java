@@ -95,6 +95,7 @@ public class BodyIdentityLocalsTest {
     assertSame(p1, body.getParameterLocal(1));
     assertEquals(Arrays.asList(p0, p1), new java.util.ArrayList<>(body.getParameterLocals()));
     assertThrows(IllegalArgumentException.class, () -> body.getParameterLocal(2));
+    assertThrows(IllegalArgumentException.class, () -> body.getParameterLocal(-1));
   }
 
   @Test
@@ -106,12 +107,13 @@ public class BodyIdentityLocalsTest {
     body.getThisLocal();
     body.getParameterLocal(0);
     body.getParameterLocal(1);
+    body.getParameterLocals();
 
     verify(graph, never()).iterator();
   }
 
   @Test
-  public void identityLocalsThatAreNotAtTheBeginningAreNotFound() {
+  public void identityLocalsThatAreNotAtTheBeginningAreRejected() {
     // an invalid body: the identity stmts must come first (see IdentityStmtsValidator)
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     JNopStmt nop = new JNopStmt(POS);
@@ -125,8 +127,25 @@ public class BodyIdentityLocalsTest {
     clearInvocations(graph);
 
     assertNull(body.getThisLocal());
-    assertThrows(IllegalArgumentException.class, () -> body.getParameterLocal(1));
+    assertThrows(IllegalStateException.class, () -> body.getParameterLocal(1));
+    assertThrows(IllegalStateException.class, body::getParameterLocals);
     verify(graph, never()).iterator();
+  }
+
+  @Test
+  public void parameterLocalsOutOfOrderAreRejected() {
+    // an invalid body: the parameters must be assigned in order (see IdentityStmtsValidator)
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
+    graph.setStartingStmt(thisStmt);
+    graph.putEdge(thisStmt, p1Stmt);
+    graph.putEdge(p1Stmt, p0Stmt);
+    graph.putEdge(p0Stmt, new JReturnVoidStmt(POS));
+    Body body = build(graph);
+
+    assertSame(thisLocal, body.getThisLocal());
+    assertThrows(IllegalStateException.class, () -> body.getParameterLocal(0));
+    assertThrows(IllegalStateException.class, () -> body.getParameterLocal(1));
+    assertThrows(IllegalStateException.class, body::getParameterLocals);
   }
 
   @Test
@@ -141,6 +160,8 @@ public class BodyIdentityLocalsTest {
 
     assertNull(body.getThisLocal());
     assertSame(p0, body.getParameterLocal(0));
+    assertSame(p1, body.getParameterLocal(1));
+    assertEquals(Arrays.asList(p0, p1), new java.util.ArrayList<>(body.getParameterLocals()));
     verify(graph, never()).iterator();
   }
 }

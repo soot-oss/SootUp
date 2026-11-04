@@ -80,4 +80,16 @@ public class IdentityStmtsValidator extends java.lang.Object
 
          return;
     }
+
+    public void testParameterRefsOutOfOrder(int, int)
+    {
+         IdentityStmtsValidator l0;
+         int l1, l2;
+
+         l0 := @this: IdentityStmtsValidator;
+         l2 := @parameter1: int;
+         l1 := @parameter0: int;
+
+         return;
+    }
  }

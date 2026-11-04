@@ -114,6 +114,16 @@ public class IdentityStmtsValidatorTest {
   }
 
   @Test
+  public void testParameterRefsOutOfOrder() {
+    List<ValidationException> validationExceptions =
+        identityStmtsValidator.validate(
+            getBody("<IdentityStmtsValidator: void testParameterRefsOutOfOrder(int,int)>"),
+            jimpleView);
+
+    assertEquals(2, validationExceptions.size());
+  }
+
+  @Test
   public void testParameterRefNoLocal() {
     List<ValidationException> validationExceptions_success =
         identityStmtsValidator.validate(
