@@ -136,21 +136,28 @@ implements <a href="HasPosition.html" title="interface in sootup.core.model">Has
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#replaceLocal(sootup.core.jimple.common.Local,sootup.core.jimple.common.Local)" class="member-name-link">replaceLocal</a><wbr>(@NonNull <a href="../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&nbsp;existingLocal,
  @NonNull <a href="../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&nbsp;newLocal)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLocals(java.util.Set)" class="member-name-link">setLocals</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&gt;&nbsp;locals)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMethodSignature(sootup.core.signatures.MethodSignature)" class="member-name-link">setMethodSignature</a><wbr>(@NonNull <a href="../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;methodSig)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#replaceLocals(java.util.Map)" class="member-name-link">replaceLocals</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>,<wbr><a href="../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&gt;&nbsp;replacements)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Replaces each key of the map by its value, like <a href="#replaceLocal(sootup.core.jimple.common.Local,sootup.core.jimple.common.Local)"><code>replaceLocal(Local, Local)</code></a> for every
+ entry, but in a single pass over the statements: a statement is only rewritten for the locals
+ it uses or defines.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLocals(java.util.Set)" class="member-name-link">setLocals</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&gt;&nbsp;locals)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setModifiers(java.util.Set)" class="member-name-link">setModifiers</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="MethodModifier.html" title="enum class in sootup.core.model">MethodModifier</a>&gt;&nbsp;modifiers)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMethodSignature(sootup.core.signatures.MethodSignature)" class="member-name-link">setMethodSignature</a><wbr>(@NonNull <a href="../signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;methodSig)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPosition(sootup.core.model.Position)" class="member-name-link">setPosition</a><wbr>(@NonNull <a href="Position.html" title="class in sootup.core.model">Position</a>&nbsp;position)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setModifiers(java.util.Set)" class="member-name-link">setModifiers</a><wbr>(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="MethodModifier.html" title="enum class in sootup.core.model">MethodModifier</a>&gt;&nbsp;modifiers)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="Body.BodyBuilder.html" title="class in sootup.core.model">Body.BodyBuilder</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPosition(sootup.core.model.Position)" class="member-name-link">setPosition</a><wbr>(@NonNull <a href="Position.html" title="class in sootup.core.model">Position</a>&nbsp;position)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -203,6 +210,20 @@ implements <a href="HasPosition.html" title="interface in sootup.core.model">Has
 <h3>replaceLocal</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">replaceLocal</span><wbr><span class="parameters">(@NonNull <a href="../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&nbsp;existingLocal,
  @NonNull <a href="../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&nbsp;newLocal)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="replaceLocals(java.util.Map)">
+<h3>replaceLocals</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">replaceLocals</span><wbr><span class="parameters">(@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>,<wbr><a href="../jimple/common/Local.html" title="interface in sootup.core.jimple.common">Local</a>&gt;&nbsp;replacements)</span></div>
+<div class="block">Replaces each key of the map by its value, like <a href="#replaceLocal(sootup.core.jimple.common.Local,sootup.core.jimple.common.Local)"><code>replaceLocal(Local, Local)</code></a> for every
+ entry, but in a single pass over the statements: a statement is only rewritten for the locals
+ it uses or defines. Calling <a href="#replaceLocal(sootup.core.jimple.common.Local,sootup.core.jimple.common.Local)"><code>replaceLocal(Local, Local)</code></a> for many locals scans the
+ whole body for each of them.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>replacements</code> - the locals to replace (compared by identity) and their replacements</dd>
+</dl>
 </section>
 </li>
 <li>
