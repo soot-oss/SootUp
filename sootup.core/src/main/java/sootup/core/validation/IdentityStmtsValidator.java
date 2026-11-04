@@ -23,8 +23,11 @@ package sootup.core.validation;
  */
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import sootup.core.graph.ControlFlowGraph;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
@@ -59,9 +62,6 @@ public class IdentityStmtsValidator implements BodyValidator {
     SootMethod method = sootMethodOpt.get();
     int paramCount = method.getParameterCount();
     boolean[] parameterRefs = new boolean[paramCount];
-
-    // TODO: enforce stmts[thisIdentityStmt?, parameterRefIdentityStmt*, ..., returnStmt], too -> or
-    // better create a preamble in the graph so that its not possible to insert it differently
 
     for (Stmt stmt : body.getControlFlowGraph().getNodes()) {
       if (stmt instanceof JIdentityStmt) {
@@ -100,6 +100,30 @@ public class IdentityStmtsValidator implements BodyValidator {
       }
     }
 
+    // the @this and @parameter identity stmts form the preamble of the body: they come first, @this
+    // before the parameters, and nowhere else
+    ControlFlowGraph<?> graph = body.getControlFlowGraph();
+    Set<Stmt> preamble = new HashSet<>();
+    Stmt stmt = graph.getStartingStmt();
+    while (isThisOrParameterAssignment(stmt) && preamble.add(stmt)) {
+      if (((JIdentityStmt) stmt).getRightOp() instanceof JThisRef && preamble.size() > 1) {
+        exceptions.add(
+            new ValidationException(stmt, "@this-assignment must precede all other statements"));
+      }
+      List<Stmt> successors = graph.successors(stmt);
+      if (successors.size() != 1) {
+        break;
+      }
+      stmt = successors.get(0);
+    }
+    for (Stmt node : graph.getNodes()) {
+      if (isThisOrParameterAssignment(node) && !preamble.contains(node)) {
+        exceptions.add(
+            new ValidationException(
+                node, "@this- and @parameter-assignments must precede all other statements"));
+      }
+    }
+
     if (method.isStatic() == hasThisLocal) {
       exceptions.add(
           new ValidationException(
@@ -119,5 +143,11 @@ public class IdentityStmtsValidator implements BodyValidator {
       }
     }
     return exceptions;
+  }
+
+  private static boolean isThisOrParameterAssignment(Stmt stmt) {
+    return stmt instanceof JIdentityStmt
+        && (((JIdentityStmt) stmt).getRightOp() instanceof JThisRef
+            || ((JIdentityStmt) stmt).getRightOp() instanceof JParameterRef);
   }
 }

@@ -94,6 +94,26 @@ public class IdentityStmtsValidatorTest {
   }
 
   @Test
+  public void testParameterRefAfterOtherStmt() {
+    List<ValidationException> validationExceptions =
+        identityStmtsValidator.validate(
+            getBody("<IdentityStmtsValidator: void testParameterRefAfterOtherStmt(int)>"),
+            jimpleView);
+
+    assertEquals(1, validationExceptions.size());
+  }
+
+  @Test
+  public void testThisRefAfterParameterRef() {
+    List<ValidationException> validationExceptions =
+        identityStmtsValidator.validate(
+            getBody("<IdentityStmtsValidator: void testThisRefAfterParameterRef(int)>"),
+            jimpleView);
+
+    assertEquals(1, validationExceptions.size());
+  }
+
+  @Test
   public void testParameterRefNoLocal() {
     List<ValidationException> validationExceptions_success =
         identityStmtsValidator.validate(
