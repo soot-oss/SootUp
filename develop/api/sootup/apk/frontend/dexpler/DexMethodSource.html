@@ -102,6 +102,15 @@ implements <a href="../../../core/frontend/BodySource.html" title="interface in 
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../core/interceptor/BodyInterceptor.html" title="interface in sootup.core.interceptor">BodyInterceptor</a>&gt;&nbsp;bodyInterceptors,
  @NonNull <a href="../../../core/views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(org.jf.dexlib2.iface.Method,org.jf.dexlib2.iface.MultiDexContainer.DexEntry,sootup.core.types.ClassType,sootup.core.signatures.MethodSignature,java.util.List,sootup.core.views.View)" class="member-name-link">DexMethodSource</a><wbr>(org.jf.dexlib2.iface.Method&nbsp;method,
+ org.jf.dexlib2.iface.MultiDexContainer.DexEntry&lt;? extends org.jf.dexlib2.iface.DexFile&gt;&nbsp;dexEntry,
+ <a href="../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClass,
+ <a href="../../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;methodSignature,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../core/interceptor/BodyInterceptor.html" title="interface in sootup.core.interceptor">BodyInterceptor</a>&gt;&nbsp;bodyInterceptors,
+ @NonNull <a href="../../../core/views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">A body source that converts the code of the method when the body is resolved.</div>
+</div>
 </div>
 </section>
 </li>
@@ -159,6 +168,18 @@ implements <a href="../../../core/frontend/BodySource.html" title="interface in 
  org.jf.dexlib2.iface.Method&nbsp;method,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../core/interceptor/BodyInterceptor.html" title="interface in sootup.core.interceptor">BodyInterceptor</a>&gt;&nbsp;bodyInterceptors,
  @NonNull <a href="../../../core/views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(org.jf.dexlib2.iface.Method,org.jf.dexlib2.iface.MultiDexContainer.DexEntry,sootup.core.types.ClassType,sootup.core.signatures.MethodSignature,java.util.List,sootup.core.views.View)">
+<h3>DexMethodSource</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">DexMethodSource</span><wbr><span class="parameters">(org.jf.dexlib2.iface.Method&nbsp;method,
+ org.jf.dexlib2.iface.MultiDexContainer.DexEntry&lt;? extends org.jf.dexlib2.iface.DexFile&gt;&nbsp;dexEntry,
+ <a href="../../../core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>&nbsp;declaringClass,
+ <a href="../../../core/signatures/MethodSignature.html" title="class in sootup.core.signatures">MethodSignature</a>&nbsp;methodSignature,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../core/interceptor/BodyInterceptor.html" title="interface in sootup.core.interceptor">BodyInterceptor</a>&gt;&nbsp;bodyInterceptors,
+ @NonNull <a href="../../../core/views/View.html" title="interface in sootup.core.views">View</a>&nbsp;view)</span></div>
+<div class="block">A body source that converts the code of the method when the body is resolved.</div>
 </section>
 </li>
 </ul>
