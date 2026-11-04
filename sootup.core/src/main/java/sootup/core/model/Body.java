@@ -117,30 +117,18 @@ public class Body implements HasPosition {
   /** Return unit containing the \@this-assignment * */
   @Nullable
   public Stmt getThisStmt() {
-    JIdentityStmt leading = findLeadingIdentityStmt(stmt -> stmt.getRightOp() instanceof JThisRef);
-    if (leading != null) {
-      return leading;
-    }
-    for (Stmt stmt : graph) {
-      if (stmt instanceof JIdentityStmt) {
-        if (((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
-          return stmt;
-        }
-      }
-    }
-    return null;
+    return findIdentityStmt(stmt -> stmt.getRightOp() instanceof JThisRef);
   }
 
   /**
-   * Finds an identity stmt among the identity stmts at the beginning of the body, where Jimple
-   * places them. This avoids iterating over the whole body; callers fall back to the whole body for
-   * bodies whose identity stmts are not at the beginning.
+   * Finds the first identity stmt that matches. Jimple places identity stmts at the beginning of
+   * the body, so these are tried first; bodies whose identity stmts are elsewhere are searched as a
+   * whole.
    *
-   * @return the first leading identity stmt that matches, or null if there is none
+   * @return the first matching identity stmt, or null if there is none
    */
   @Nullable
-  private JIdentityStmt findLeadingIdentityStmt(
-      java.util.function.Predicate<JIdentityStmt> filter) {
+  private JIdentityStmt findIdentityStmt(java.util.function.Predicate<JIdentityStmt> filter) {
     Stmt stmt = graph.getStartingStmt();
     Set<Stmt> visited = new HashSet<>();
     while (stmt instanceof JIdentityStmt && visited.add(stmt)) {
@@ -152,6 +140,11 @@ public class Body implements HasPosition {
         break;
       }
       stmt = successors.get(0);
+    }
+    for (Stmt s : graph) {
+      if (s instanceof JIdentityStmt && filter.test((JIdentityStmt) s)) {
+        return (JIdentityStmt) s;
+      }
     }
     return null;
   }
@@ -169,27 +162,15 @@ public class Body implements HasPosition {
   /** Return LHS of the first identity stmt assigning from \@parameter i. */
   @NonNull
   public Local getParameterLocal(int i) {
-    JIdentityStmt leading =
-        findLeadingIdentityStmt(
-            stmt ->
-                stmt.getRightOp() instanceof JParameterRef
-                    && ((JParameterRef) stmt.getRightOp()).getIndex() == i);
-    if (leading != null) {
-      return leading.getLeftOp();
+    JIdentityStmt stmt =
+        findIdentityStmt(
+            s ->
+                s.getRightOp() instanceof JParameterRef
+                    && ((JParameterRef) s.getRightOp()).getIndex() == i);
+    if (stmt == null) {
+      throw new IllegalArgumentException("There exists no Parameter Local with index " + i + "!");
     }
-    for (Stmt stmt : graph) {
-      // TODO: possible optimisation see getParameterLocals()
-      if (stmt instanceof JIdentityStmt) {
-        if (((JIdentityStmt) stmt).getRightOp() instanceof JParameterRef) {
-          JIdentityStmt idStmt = (JIdentityStmt) stmt;
-          JParameterRef pr = (JParameterRef) idStmt.getRightOp();
-          if (pr.getIndex() == i) {
-            return idStmt.getLeftOp();
-          }
-        }
-      }
-    }
-    throw new IllegalArgumentException("There exists no Parameter Local with index " + i + "!");
+    return stmt.getLeftOp();
   }
 
   /**
