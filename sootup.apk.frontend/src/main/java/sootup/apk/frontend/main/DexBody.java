@@ -39,11 +39,9 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.apk.frontend.Util.DexUtil;
-import sootup.apk.frontend.dexpler.DexMethodSource;
 import sootup.apk.frontend.instruction.*;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.MutableBlockControlFlowGraph;
-import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -57,7 +55,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 import sootup.core.views.View;
-import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
@@ -347,20 +344,6 @@ public class DexBody {
         + isStatic
         + "\n The parameters of this methods are "
         + parameterNames;
-  }
-
-  public JavaSootMethod makeSootMethod(
-      Method method, ClassType classType, List<BodyInterceptor> bodyInterceptors, View view) {
-    MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature(
-                classType,
-                method.getName(),
-                DexUtil.toSootType(method.getReturnType(), 0, identifierFactory),
-                parameterTypes);
-    MutableBlockControlFlowGraph graph = buildGraph(methodSignature);
-    return new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view)
-        .makeSootMethod();
   }
 
   /** The locals of the converted code; complete after {@link #buildGraph(MethodSignature)} */
