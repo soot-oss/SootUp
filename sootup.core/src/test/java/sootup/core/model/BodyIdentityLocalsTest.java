@@ -119,10 +119,14 @@ public class BodyIdentityLocalsTest {
     graph.putEdge(thisStmt, p0Stmt);
     graph.putEdge(p0Stmt, p1Stmt);
     graph.putEdge(p1Stmt, new JReturnVoidStmt(POS));
+    graph = spy(graph);
     Body body = build(graph);
+    clearInvocations(graph);
 
     assertSame(thisLocal, body.getThisLocal());
     assertSame(p1, body.getParameterLocal(1));
+    // not among the leading identity stmts, so the whole body is searched
+    verify(graph, times(2)).iterator();
   }
 
   @Test
@@ -131,9 +135,14 @@ public class BodyIdentityLocalsTest {
     graph.setStartingStmt(p0Stmt);
     graph.putEdge(p0Stmt, p1Stmt);
     graph.putEdge(p1Stmt, new JReturnVoidStmt(POS));
+    graph = spy(graph);
     Body body = build(graph);
+    clearInvocations(graph);
 
     assertNull(body.getThisLocal());
+    // a static body has no this stmt among the leading identity stmts or anywhere else
+    verify(graph, times(1)).iterator();
     assertSame(p0, body.getParameterLocal(0));
+    verify(graph, times(1)).iterator();
   }
 }
