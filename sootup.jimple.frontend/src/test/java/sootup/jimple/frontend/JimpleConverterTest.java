@@ -95,7 +95,8 @@ public class JimpleConverterTest {
 
   @Test
   public void parseUnreachableTrailingBlocks() {
-    // unreachable, not connected Blocks at the end - the last one falls through
+    // unlabeled Stmts after a non-fallsthrough Stmt and a trailing fallsthrough sequence of Blocks
+    // that is not entered via fallthrough are unreachable
     CharStream cs =
         CharStreams.fromString(
             "class DummyClass extends java.lang.Object {\n"
@@ -110,28 +111,29 @@ public class JimpleConverterTest {
                 + "  label2:\n"
                 + "    e := @caughtexception;\n"
                 + "    throw e;\n"
+                + "    i = 5;\n"
+                + "    goto label1;\n"
                 + "  label3:\n"
                 + "    i = 2;\n"
-                + "    goto label3;\n"
                 + "  label4:\n"
-                + "    return i;\n"
+                + "    if i == 0 goto label3;\n"
                 + "  label5:\n"
                 + "    i = 3;\n"
-                + "  catch java.lang.Exception from label1 to label4 with label2;\n"
-                + "  catch java.lang.Error from label3 to label5 with label2;\n"
+                + "  catch java.lang.Exception from label1 to label3 with label2;\n"
+                + "  catch java.lang.Error from label4 to label5 with label2;\n"
                 + "  }\n"
                 + "}");
     Body body = parseJimpleClass(cs).getMethodsByName("foo").iterator().next().getBody();
     assertEquals(5, body.getStmts().size());
 
-    // the Error trap covers only unreachable Stmts
+    // the Exception Trap reaches the end of the body, the Error Trap covers only unreachable Stmts
     List<Trap> traps = new BriefStmtPrinter(body.getControlFlowGraph()).getTraps();
     assertEquals(1, traps.size());
     assertEquals("java.lang.Exception", traps.get(0).getExceptionType().toString());
   }
 
   @Test
-  public void parseUnreachableBlockInTheMiddle() {
+  public void parseUnreachableStmtsInTheMiddle() {
     CharStream cs =
         CharStreams.fromString(
             "class DummyClass extends java.lang.Object {\n"
@@ -140,32 +142,26 @@ public class JimpleConverterTest {
                 + "    java.lang.Throwable e;\n"
                 + "    int i;\n"
                 + "    this := @this: DummyClass;\n"
-                + "    goto label2;\n"
                 + "  label1:\n"
                 + "    i = 1;\n"
-                + "  label2:\n"
-                + "    i = 2;\n"
+                + "    goto label2;\n"
+                + "    i = 7;\n"
+                + "    return i;\n"
                 + "  label3:\n"
-                + "    i = 3;\n"
-                + "    goto label5;\n"
-                + "  label4:\n"
                 + "    e := @caughtexception;\n"
                 + "    throw e;\n"
-                + "  label5:\n"
+                + "  label2:\n"
                 + "    return i;\n"
-                + "  catch java.lang.Exception from label1 to label3 with label4;\n"
+                + "  catch java.lang.Exception from label1 to label3 with label3;\n"
                 + "  }\n"
                 + "}");
     Body body = parseJimpleClass(cs).getMethodsByName("foo").iterator().next().getBody();
-    // i = 1 is removed
-    assertEquals(8, body.getStmts().size());
-    assertTrue(body.getStmts().stream().noneMatch(stmt -> stmt.toString().equals("i = 1")));
+    assertEquals(6, body.getStmts().size());
+    assertTrue(body.getStmts().stream().noneMatch(stmt -> stmt.toString().equals("i = 7")));
 
-    // the Trap range shrinks to its reachable Block
     List<Trap> traps = new BriefStmtPrinter(body.getControlFlowGraph()).getTraps();
     assertEquals(1, traps.size());
-    assertEquals("i = 2", traps.get(0).getBeginStmt().toString());
-    assertEquals("i = 3", traps.get(0).getEndStmt().toString());
+    assertEquals("i = 1", traps.get(0).getBeginStmt().toString());
   }
 
   @Test
