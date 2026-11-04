@@ -111,7 +111,8 @@ public class BodyIdentityLocalsTest {
   }
 
   @Test
-  public void findsIdentityLocalsThatAreNotAtTheBeginning() {
+  public void identityLocalsThatAreNotAtTheBeginningAreNotFound() {
+    // an invalid body: the identity stmts must come first (see IdentityStmtsValidator)
     MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     JNopStmt nop = new JNopStmt(POS);
     graph.setStartingStmt(nop);
@@ -123,10 +124,9 @@ public class BodyIdentityLocalsTest {
     Body body = build(graph);
     clearInvocations(graph);
 
-    assertSame(thisLocal, body.getThisLocal());
-    assertSame(p1, body.getParameterLocal(1));
-    // not among the leading identity stmts, so the whole body is searched
-    verify(graph, times(2)).iterator();
+    assertNull(body.getThisLocal());
+    assertThrows(IllegalArgumentException.class, () -> body.getParameterLocal(1));
+    verify(graph, never()).iterator();
   }
 
   @Test
@@ -140,9 +140,7 @@ public class BodyIdentityLocalsTest {
     clearInvocations(graph);
 
     assertNull(body.getThisLocal());
-    // a static body has no this stmt among the leading identity stmts or anywhere else
-    verify(graph, times(1)).iterator();
     assertSame(p0, body.getParameterLocal(0));
-    verify(graph, times(1)).iterator();
+    verify(graph, never()).iterator();
   }
 }

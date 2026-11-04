@@ -121,9 +121,9 @@ public class Body implements HasPosition {
   }
 
   /**
-   * Finds the first identity stmt that matches. Jimple places identity stmts at the beginning of
-   * the body, so these are tried first; bodies whose identity stmts are elsewhere are searched as a
-   * whole.
+   * Finds the first identity stmt that matches among the identity stmts at the beginning of the
+   * body: the \@this and \@parameter identity stmts come first (see {@link
+   * sootup.core.validation.IdentityStmtsValidator}).
    *
    * @return the first matching identity stmt, or null if there is none
    */
@@ -140,11 +140,6 @@ public class Body implements HasPosition {
         break;
       }
       stmt = successors.get(0);
-    }
-    for (Stmt s : graph) {
-      if (s instanceof JIdentityStmt && filter.test((JIdentityStmt) s)) {
-        return (JIdentityStmt) s;
-      }
     }
     return null;
   }
