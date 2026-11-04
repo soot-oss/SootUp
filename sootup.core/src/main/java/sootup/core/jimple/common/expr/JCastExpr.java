@@ -32,8 +32,12 @@ import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 
-/** An expression that casts a value to a certain type. */
-public final class JCastExpr implements Expr {
+/**
+ * An expression that casts a value to a certain type. Frontends may subclass it to keep what they
+ * know about the cast beyond Jimple's operand and type; such a subclass overrides {@link #withOp}
+ * and {@link #withType} so that rebuilding the expression keeps it.
+ */
+public class JCastExpr implements Expr {
 
   private final Immediate op;
   private final Type type;
