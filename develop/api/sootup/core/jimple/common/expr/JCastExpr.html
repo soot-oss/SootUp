@@ -80,11 +80,17 @@ loadScripts(document, 'script');</script>
 <dt>All Implemented Interfaces:</dt>
 <dd><code><a href="../../basic/EquivTo.html" title="interface in sootup.core.jimple.basic">EquivTo</a></code>, <code><a href="Expr.html" title="interface in sootup.core.jimple.common.expr">Expr</a></code>, <code><a href="../Value.html" title="interface in sootup.core.jimple.common">Value</a></code>, <code><a href="../../JimpleIR.html" title="interface in sootup.core.jimple">JimpleIR</a></code>, <code><a href="../../visitor/Acceptor.html" title="interface in sootup.core.jimple.visitor">Acceptor</a>&lt;<a href="../../visitor/ExprVisitor.html" title="interface in sootup.core.jimple.visitor">ExprVisitor</a>&gt;</code></dd>
 </dl>
+<dl class="notes">
+<dt>Direct Known Subclasses:</dt>
+<dd><code><a href="../../../../apk/frontend/main/DexCastExpr.html" title="class in sootup.apk.frontend.main">DexCastExpr</a></code></dd>
+</dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">JCastExpr</span>
+<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">JCastExpr</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="Expr.html" title="interface in sootup.core.jimple.common.expr">Expr</a></span></div>
-<div class="block">An expression that casts a value to a certain type.</div>
+<div class="block">An expression that casts a value to a certain type. Frontends may subclass it to keep what they
+ know about the cast beyond Jimple's operand and type; such a subclass overrides <a href="#withOp(sootup.core.jimple.common.Immediate)"><code>withOp(sootup.core.jimple.common.Immediate)</code></a>
+ and <a href="#withType(sootup.core.types.Type)"><code>withType(sootup.core.types.Type)</code></a> so that rebuilding the expression keeps it.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
