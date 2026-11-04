@@ -102,18 +102,19 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>protected final <a href="../config/PointerAnalysisConfig.html" title="class in qilin.core.config">PointerAnalysisConfig</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#config" class="member-name-link">config</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="PagNode.html" title="class in qilin.core.pag">PagNode</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../sootup/core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../sootup/core/jimple/common/Trap.html" title="class in sootup.core.jimple.common">Trap</a>&gt;&gt;&gt;</code></div>
-<div class="col-second even-row-color"><code><a href="#node2wrapperedTraps" class="member-name-link">node2wrapperedTraps</a></code></div>
+<div class="col-first even-row-color"><code>protected <a href="../builder/MethodNodeFactory.html" title="class in qilin.core.builder">MethodNodeFactory</a></code></div>
+<div class="col-second even-row-color"><code><a href="#nodeFactory" class="member-name-link">nodeFactory</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="../builder/MethodNodeFactory.html" title="class in qilin.core.builder">MethodNodeFactory</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#nodeFactory" class="member-name-link">nodeFactory</a></code></div>
+<div class="col-first odd-row-color"><code>protected final <a href="../PTAScene.html" title="class in qilin.core">PTAScene</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#ptaScene" class="member-name-link">ptaScene</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>protected final <a href="../PTAScene.html" title="class in qilin.core">PTAScene</a></code></div>
-<div class="col-second even-row-color"><code><a href="#ptaScene" class="member-name-link">ptaScene</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../sootup/core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../sootup/core/jimple/common/Trap.html" title="class in sootup.core.jimple.common">Trap</a>&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><code><a href="#stmt2wrapperedTraps" class="member-name-link">stmt2wrapperedTraps</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../sootup/core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../sootup/core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../../sootup/core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#stmt2Handlers" class="member-name-link">stmt2Handlers</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Every statement of this method that may raise an exception which the pointer analysis tracks
+ (an explicit <code>throw</code>, or a call whose callee may let one escape), mapped to the handlers
+ that are in scope for it: caught exception type -&gt; the handler's first statement.</div>
+</div>
 </div>
 </section>
 </li>
@@ -165,7 +166,10 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#buildException()" class="member-name-link">buildException</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Collects this method's throw sites and the catch handlers in scope for each of them into <a href="#stmt2Handlers"><code>stmt2Handlers</code></a>, from which <code>Solver.recordThrowStmts()</code> creates the throw sites and
+ <code>ExceptionHandler.dispatch()</code> routes each thrown object to a handler.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#buildNormal()" class="member-name-link">buildNormal</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -229,15 +233,16 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="stmt2wrapperedTraps">
-<h3>stmt2wrapperedTraps</h3>
-<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../sootup/core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../sootup/core/jimple/common/Trap.html" title="class in sootup.core.jimple.common">Trap</a>&gt;&gt;</span>&nbsp;<span class="element-name">stmt2wrapperedTraps</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="node2wrapperedTraps">
-<h3>node2wrapperedTraps</h3>
-<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="PagNode.html" title="class in qilin.core.pag">PagNode</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../sootup/core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../sootup/core/jimple/common/Trap.html" title="class in sootup.core.jimple.common">Trap</a>&gt;&gt;&gt;</span>&nbsp;<span class="element-name">node2wrapperedTraps</span></div>
+<section class="detail" id="stmt2Handlers">
+<h3>stmt2Handlers</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../sootup/core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../sootup/core/types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../../../sootup/core/jimple/common/stmt/Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;&gt;</span>&nbsp;<span class="element-name">stmt2Handlers</span></div>
+<div class="block">Every statement of this method that may raise an exception which the pointer analysis tracks
+ (an explicit <code>throw</code>, or a call whose callee may let one escape), mapped to the handlers
+ that are in scope for it: caught exception type -&gt; the handler's first statement. A
+ statement with no enclosing <code>try</code> is still registered, with an empty map - membership in
+ this map is what makes a statement a throw site for <code>Solver.recordThrowStmts</code>, and an
+ uncaught throw still has to reach <code>MethodNodeFactory.caseMethodThrow()</code>. Only filled when
+ <a href="../config/PointerAnalysisConfig.html#isPreciseExceptions()"><code>PointerAnalysisConfig.isPreciseExceptions()</code></a> is set; see <a href="#buildException()"><code>buildException()</code></a>.</div>
 </section>
 </li>
 </ul>
@@ -304,6 +309,18 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="buildException()">
 <h3>buildException</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">buildException</span>()</div>
+<div class="block">Collects this method's throw sites and the catch handlers in scope for each of them into <a href="#stmt2Handlers"><code>stmt2Handlers</code></a>, from which <code>Solver.recordThrowStmts()</code> creates the throw sites and
+ <code>ExceptionHandler.dispatch()</code> routes each thrown object to a handler.
+
+ <p>We use the same logic as doop (library/exceptions/precise.logic): only explicit <code>
+ throw</code>s and exceptions propagated out of callees are modelled, never implicit ones (NPE,
+ ArrayIndexOutOfBounds, ...).
+
+ <p>Unlike Soot, SootUp has no ordered exception table to read back: traps are stored in the
+ block graph as <a href="../../../sootup/core/graph/ControlFlowGraph.html#exceptionalSuccessors(sootup.core.jimple.common.stmt.Stmt)"><code>ControlFlowGraph.exceptionalSuccessors(Stmt)</code></a>, an unordered map keyed by
+ caught type. Handler priority is therefore re-derived at dispatch time by preferring the most
+ specific matching type, which reproduces the bytecode order for handlers of one <code>try</code>
+ (Java rejects catching a subtype after its supertype there).</div>
 </section>
 </li>
 <li>

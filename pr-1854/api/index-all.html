@@ -2149,7 +2149,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates a new instance of the <a href="sootup/core/model/BuilderException.html" title="class in sootup.core.model"><code>BuilderException</code></a> class.</div>
 </dd>
 <dt><a href="qilin/core/pag/MethodPAG.html#buildException()" class="member-name-link">buildException()</a> - Method in class qilin.core.pag.<a href="qilin/core/pag/MethodPAG.html" title="class in qilin.core.pag">MethodPAG</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Collects this method's throw sites and the catch handlers in scope for each of them into <a href="qilin/core/pag/MethodPAG.html#stmt2Handlers"><code>MethodPAG.stmt2Handlers</code></a>, from which <code>Solver.recordThrowStmts()</code> creates the throw sites and
+ <code>ExceptionHandler.dispatch()</code> routes each thrown object to a handler.</div>
+</dd>
 <dt><a href="qilin/pta/toolkits/mahjong/Mahjong.html#buildFPG(qilin.core.PTA)" class="member-name-link">buildFPG(PTA)</a> - Static method in class qilin.pta.toolkits.mahjong.<a href="qilin/pta/toolkits/mahjong/Mahjong.html" title="class in qilin.pta.toolkits.mahjong">Mahjong</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/pta/toolkits/turner/OCG.html#buildGraph()" class="member-name-link">buildGraph()</a> - Method in class qilin.pta.toolkits.turner.<a href="qilin/pta/toolkits/turner/OCG.html" title="class in qilin.pta.toolkits.turner">OCG</a></dt>
@@ -15892,8 +15895,6 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="sootup/spark/node/Node.html#%3Cinit%3E()" class="member-name-link">Node()</a> - Constructor for class sootup.spark.node.<a href="sootup/spark/node/Node.html" title="class in sootup.spark.node">Node</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="qilin/core/pag/MethodPAG.html#node2wrapperedTraps" class="member-name-link">node2wrapperedTraps</a> - Variable in class qilin.core.pag.<a href="qilin/core/pag/MethodPAG.html" title="class in qilin.core.pag">MethodPAG</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="qilin/core/pag/MethodPAG.html#nodeFactory" class="member-name-link">nodeFactory</a> - Variable in class qilin.core.pag.<a href="qilin/core/pag/MethodPAG.html" title="class in qilin.core.pag">MethodPAG</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="qilin/core/pag/MethodPAG.html#nodeFactory()" class="member-name-link">nodeFactory()</a> - Method in class qilin.core.pag.<a href="qilin/core/pag/MethodPAG.html" title="class in qilin.core.pag">MethodPAG</a></dt>
@@ -19409,8 +19410,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/core/jimple/common/stmt/Stmt.html" class="type-name-link" title="interface in sootup.core.jimple.common.stmt">Stmt</a> - Interface in <a href="sootup/core/jimple/common/stmt/package-summary.html">sootup.core.jimple.common.stmt</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="qilin/core/pag/MethodPAG.html#stmt2wrapperedTraps" class="member-name-link">stmt2wrapperedTraps</a> - Variable in class qilin.core.pag.<a href="qilin/core/pag/MethodPAG.html" title="class in qilin.core.pag">MethodPAG</a></dt>
-<dd>&nbsp;</dd>
+<dt><a href="qilin/core/pag/MethodPAG.html#stmt2Handlers" class="member-name-link">stmt2Handlers</a> - Variable in class qilin.core.pag.<a href="qilin/core/pag/MethodPAG.html" title="class in qilin.core.pag">MethodPAG</a></dt>
+<dd>
+<div class="block">Every statement of this method that may raise an exception which the pointer analysis tracks
+ (an explicit <code>throw</code>, or a call whose callee may let one escape), mapped to the handlers
+ that are in scope for it: caught exception type -&gt; the handler's first statement.</div>
+</dd>
 <dt><a href="sootup/codepropertygraph/propertygraph/edges/StmtAstEdge.html" class="type-name-link" title="class in sootup.codepropertygraph.propertygraph.edges">StmtAstEdge</a> - Class in <a href="sootup/codepropertygraph/propertygraph/edges/package-summary.html">sootup.codepropertygraph.propertygraph.edges</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="sootup/codepropertygraph/propertygraph/edges/StmtAstEdge.html#%3Cinit%3E(sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode,sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode)" class="member-name-link">StmtAstEdge(PropertyGraphNode, PropertyGraphNode)</a> - Constructor for class sootup.codepropertygraph.propertygraph.edges.<a href="sootup/codepropertygraph/propertygraph/edges/StmtAstEdge.html" title="class in sootup.codepropertygraph.propertygraph.edges">StmtAstEdge</a></dt>
