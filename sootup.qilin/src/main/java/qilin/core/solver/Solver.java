@@ -148,7 +148,7 @@ public class Solver extends Propagator {
             sm.getDeclaringClassType(), pta.parameterize(sm, pta.emptyContext()), Kind.CLINIT);
       }
       recordCallStmts(momc, mpag.getInvokeStmts());
-      recordThrowStmts(momc, mpag.stmt2wrapperedTraps.keySet());
+      recordThrowStmts(momc, mpag.stmt2Handlers.keySet());
     }
   }
 

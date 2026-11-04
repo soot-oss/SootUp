@@ -153,7 +153,13 @@ public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
         boolean isLastStmtCandidate = hasNoSuccessorStmts && isExceptionFree;
         // remember branching successors
         if (tailStmt instanceof JGotoStmt) {
-          if (isLastStmtCandidate) {
+          if (leaderOfFallsthroughBlocks == successorBlock
+              && successorBlock.getPredecessors().stream().allMatch(pred -> pred == currentBlock)
+              && sharesTrap(currentBlock, successorBlock)) {
+            // the target sequence is exclusively reachable via this goto and covered by the same
+            // trap -> continue with it to keep the trap range contiguous
+            nestedBlocks.addFirst(successorBlock);
+          } else if (isLastStmtCandidate) {
             nestedBlocks.removeFirstOccurrence(currentBlock);
             otherBlocks.addLast(leaderOfFallsthroughBlocks);
           } else {
@@ -169,6 +175,14 @@ public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
         }
       }
     }
+  }
+
+  /** true if both blocks have an exceptional flow of the same type to the same handler */
+  private static boolean sharesTrap(@NonNull BasicBlock<?> a, @NonNull BasicBlock<?> b) {
+    final Map<? extends ClassType, ? extends BasicBlock<?>> exceptionsOfB =
+        b.getExceptionalSuccessors();
+    return a.getExceptionalSuccessors().entrySet().stream()
+        .anyMatch(e -> exceptionsOfB.get(e.getKey()) == e.getValue());
   }
 
   @Override
