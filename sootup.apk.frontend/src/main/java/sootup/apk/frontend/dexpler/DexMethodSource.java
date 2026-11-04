@@ -144,7 +144,7 @@ public class DexMethodSource implements BodySource {
 
   @Override
   public Object resolveAnnotationsDefaultValue() {
-    // annotation default values of dex methods are not read
+    // only abstract methods of annotations have default values, and they do not use this source
     return null;
   }
 
