@@ -351,15 +351,6 @@ public class DexBody {
 
   public JavaSootMethod makeSootMethod(
       Method method, ClassType classType, List<BodyInterceptor> bodyInterceptors, View view) {
-    return makeMethodSource(method, classType, bodyInterceptors, view).makeSootMethod();
-  }
-
-  /** Converts the code of the method into a statement graph; the body source builds the body. */
-  public DexMethodSource makeMethodSource(
-      Method method, ClassType classType, List<BodyInterceptor> bodyInterceptors, View view) {
-    jimplify();
-    // All the statements are converted, it is time to create a mutable statement graph
-    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature(
@@ -367,6 +358,21 @@ public class DexBody {
                 method.getName(),
                 DexUtil.toSootType(method.getReturnType(), 0, identifierFactory),
                 parameterTypes);
+    MutableBlockControlFlowGraph graph = buildGraph(methodSignature);
+    return new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view)
+        .makeSootMethod();
+  }
+
+  /** The locals of the converted code; complete after {@link #buildGraph(MethodSignature)} */
+  public Set<Local> getLocals() {
+    return locals;
+  }
+
+  /** Converts the code of the method into a statement graph. */
+  public MutableBlockControlFlowGraph buildGraph(MethodSignature methodSignature) {
+    jimplify();
+    // All the statements are converted, it is time to create a mutable statement graph
+    MutableBlockControlFlowGraph graph = new MutableBlockControlFlowGraph();
     Map<BranchingStmt, List<Stmt>> branchingStmtListMap = convertMultimap(branchingMap);
     Set<Stmt> blockBegin = new HashSet<>();
     Set<Stmt> blockEnd = new HashSet<>();
@@ -414,7 +420,7 @@ public class DexBody {
     removeUnreachableBlocks(listList, branchingStmtListMap);
     checkNothingFallsIntoACaughtExceptionEntry(listList);
     graph.initializeWith(listList, branchingStmtListMap, traps);
-    return new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
+    return graph;
   }
 
   /**
