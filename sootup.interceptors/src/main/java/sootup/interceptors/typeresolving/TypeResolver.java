@@ -101,15 +101,17 @@ public class TypeResolver {
       }
     }
 
+    // Replace all retyped locals in one pass over the body
+    Map<Local, Local> retyped = new IdentityHashMap<>();
     locals.forEach(
         local -> {
           Type oldType = local.getType();
           Type type = minCastsTyping.getMap().getOrDefault(local, oldType);
           if (type != oldType) {
-            Local newLocal = local.withType(type);
-            builder.replaceLocal(local, newLocal);
+            retyped.put(local, local.withType(type));
           }
         });
+    builder.replaceLocals(retyped);
     return true;
   }
 
