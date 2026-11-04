@@ -208,12 +208,20 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../../../../qilin/core/pag/PagNode.html" title="class in qilin.core.pag">PagNode</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../Trap.html" title="class in sootup.core.jimple.common">Trap</a>&gt;&gt;&gt;</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">MethodPAG.</span><code><a href="../../../../../../qilin/core/pag/MethodPAG.html#node2wrapperedTraps" class="member-name-link">node2wrapperedTraps</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../Trap.html" title="class in sootup.core.jimple.common">Trap</a>&gt;&gt;</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">MethodPAG.</span><code><a href="../../../../../../qilin/core/pag/MethodPAG.html#stmt2wrapperedTraps" class="member-name-link">stmt2wrapperedTraps</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../../types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">MethodPAG.</span><code><a href="../../../../../../qilin/core/pag/MethodPAG.html#stmt2Handlers" class="member-name-link">stmt2Handlers</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Every statement of this method that may raise an exception which the pointer analysis tracks
+ (an explicit <code>throw</code>, or a call whose callee may let one escape), mapped to the handlers
+ that are in scope for it: caught exception type -&gt; the handler's first statement.</div>
+</div>
+<div class="col-first odd-row-color"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../../../types/ClassType.html" title="class in sootup.core.types">ClassType</a>,<wbr><a href="../Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a>&gt;&gt;</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">MethodPAG.</span><code><a href="../../../../../../qilin/core/pag/MethodPAG.html#stmt2Handlers" class="member-name-link">stmt2Handlers</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Every statement of this method that may raise an exception which the pointer analysis tracks
+ (an explicit <code>throw</code>, or a call whose callee may let one escape), mapped to the handlers
+ that are in scope for it: caught exception type -&gt; the handler's first statement.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../../../../../qilin/core/pag/package-summary.html">qilin.core.pag</a> that return <a href="../Stmt.html" title="interface in sootup.core.jimple.common.stmt">Stmt</a></span></div>
 <div class="summary-table three-column-summary">
