@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -13,9 +14,11 @@ import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JLeExpr;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.*;
+import sootup.core.model.Body;
 import sootup.core.signatures.PackageName;
 import sootup.core.signatures.SignatureInterner;
 import sootup.core.types.ClassType;
+import sootup.core.types.VoidType;
 
 /**
  * {@link MutableBlockControlFlowGraph#getStmts()} computes the order once until the graph changes
@@ -129,5 +132,29 @@ public class MutableBlockControlFlowGraphStmtsTest {
 
     graph.removeEdge(b, r);
     assertInIteratorOrder(graph);
+  }
+
+  @Test
+  void aBodyUsesTheOrderOfItsGraph() {
+    JNopStmt a = new JNopStmt(POS);
+    JReturnVoidStmt r = new JReturnVoidStmt(POS);
+    CountingGraph graph = new CountingGraph();
+    graph.setStartingStmt(a);
+    graph.putEdge(a, r);
+    Body body =
+        Body.builder(graph)
+            .setMethodSignature(
+                SignatureInterner.getMethodSignature(
+                    throwable,
+                    SignatureInterner.getMethodSubSignature(
+                        "m", VoidType.getInstance(), Collections.emptyList())))
+            .build();
+    graph.walks = 0;
+
+    assertEquals(List.of(a, r), body.getStmts());
+    assertEquals(List.of(a, r), body.getStmts());
+    assertEquals(List.of(a, r), body.getControlFlowGraph().getStmts());
+
+    assertEquals(1, graph.walks);
   }
 }
