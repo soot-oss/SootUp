@@ -199,11 +199,7 @@ public class Body implements HasPosition {
    */
   @NonNull
   public List<Stmt> getStmts() {
-    final ArrayList<Stmt> stmts = new ArrayList<>(graph.getNodes().size());
-    for (Stmt stmt : graph) {
-      stmts.add(stmt);
-    }
-    return stmts;
+    return graph.getStmts();
   }
 
   @NonNull
