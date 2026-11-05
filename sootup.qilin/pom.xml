@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.soot-oss</groupId>
         <artifactId>sootup</artifactId>
-        <version>3.0.2-SNAPSHOT</version>
+        <version>4.0.0</version>
     </parent>
 
     <dependencies>
