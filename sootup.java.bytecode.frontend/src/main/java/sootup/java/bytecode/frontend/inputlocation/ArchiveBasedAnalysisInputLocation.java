@@ -35,6 +35,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
+import sootup.core.inputlocation.AnalysisExtendedScope;
 import sootup.core.interceptor.BodyInterceptor;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
@@ -91,7 +92,29 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
       SourceType srcType,
       List<BodyInterceptor> bodyInterceptors,
       Collection<Path> ignoredPaths) {
-    super(path, srcType, bodyInterceptors, ignoredPaths);
+    this(path, srcType, bodyInterceptors, ignoredPaths, Collections.emptySet());
+  }
+
+  public ArchiveBasedAnalysisInputLocation(
+      Path path,
+      SourceType srcType,
+      List<BodyInterceptor> bodyInterceptors,
+      Set<AnalysisExtendedScope> extendedScope) {
+    super(
+        path,
+        srcType,
+        bodyInterceptors,
+        Collections.singletonList(Paths.get("/META-INF")),
+        extendedScope);
+  }
+
+  public ArchiveBasedAnalysisInputLocation(
+      Path path,
+      SourceType srcType,
+      List<BodyInterceptor> bodyInterceptors,
+      Collection<Path> ignoredPaths,
+      Set<AnalysisExtendedScope> extendedScope) {
+    super(path, srcType, bodyInterceptors, ignoredPaths, extendedScope);
   }
 
   @Override

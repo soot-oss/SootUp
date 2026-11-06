@@ -29,6 +29,7 @@ import sootup.core.graph.DominanceFinder;
 import sootup.core.graph.DominanceTree;
 import sootup.core.graph.MutableControlFlowGraph;
 import sootup.core.interceptor.BodyInterceptor;
+import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.LValue;
 import sootup.core.jimple.common.Local;
@@ -230,7 +231,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
             basicBlocks.add(df);
 
             // create an empty phiStmt
-            JAssignStmt phiStmt = createEmptyPhiStmt(local);
+            JAssignStmt phiStmt = createEmptyPhiStmt(local, df.getHead().getPositionInfo());
 
             // store phiStmt into map
             if (!blockToPhiStmts.containsKey(df)) {
@@ -347,9 +348,13 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     return false;
   }
 
-  private JAssignStmt createEmptyPhiStmt(Local local) {
+  private JAssignStmt createEmptyPhiStmt(Local local, StmtPositionInfo joinPositionInfo) {
     JPhiExpr phi = new JPhiExpr(Collections.emptyList(), Collections.emptyMap());
-    return new JAssignStmt(local, phi, StmtPositionInfo.getNoStmtPositionInfo());
+    // Preserve the original join metadata before inserting any phis, without assigning a source
+    // position to the synthetic statement.
+    StmtPositionInfo positionInfo =
+        joinPositionInfo.withStmtPosition(NoPositionInformation.getInstance());
+    return new JAssignStmt(local, phi, positionInfo);
   }
 
   private Local getOriginalLocal(Local local, Set<Local> oriLocals) {

@@ -26,68 +26,30 @@ import org.jspecify.annotations.NonNull;
 import sootup.core.model.Position;
 
 /**
- * This class stores position information stored for a statement. line number + information about
- * its operands
+ * Statement position information with precise operand coordinates. Instances can be created with
+ * {@link DefaultStmtPositionInfoFactory#create(Position, Position[])}.
  *
  * @author Linghui Luo, Markus Schmidt
  */
-public class FullStmtPositionInfo extends SimpleStmtPositionInfo {
-  @NonNull protected final Position[] operandPositions;
-
-  /**
-   * Create an instance from given statement position and operand positions.
-   *
-   * @param stmtPosition the position of the statement
-   * @param operandPositions the operand positions
-   */
-  public FullStmtPositionInfo(
-      @NonNull Position stmtPosition, @NonNull Position[] operandPositions) {
-    super(stmtPosition);
-    this.operandPositions = operandPositions;
-  }
-
-  /**
-   * Return the position of the statement.
-   *
-   * @return the position of the statement
-   */
-  @NonNull
-  public Position getStmtPosition() {
-    return this.stmtPosition;
-  }
+public interface FullStmtPositionInfo extends StmtPositionInfo {
 
   /**
    * Return the precise position of the given operand in the statement.
    *
    * @param index the operand index
-   * @return the position of the given operand
+   * @return the operand position, or {@link NoPositionInformation} if the index is out of bounds
    */
-  public Position getOperandPosition(int index) {
-    if (index >= 0 && index < this.operandPositions.length) {
-      return this.operandPositions[index];
-    } else {
-      return NoPositionInformation.getInstance();
-    }
-  }
+  @NonNull Position getOperandPosition(int index);
 
+  @NonNull
   @Override
-  public String toString() {
-    StringBuilder s = new StringBuilder();
-    s.append(super.toString());
-    s.append("operands at: ");
-    for (int i = 0; i < operandPositions.length; i++) {
-      s.append(i).append(": ").append(operandPositions[i]).append(" ");
-    }
-    return s.toString();
+  default FullStmtPositionInfo withStmtPosition(@NonNull Position stmtPosition) {
+    return (FullStmtPositionInfo) getFactory().withStmtPosition(this, stmtPosition);
   }
 
+  /** Returns a copy with different operand positions, retaining all other metadata. */
   @NonNull
-  public StmtPositionInfo withStmtPosition(@NonNull Position stmtPosition) {
-    return new FullStmtPositionInfo(stmtPosition, operandPositions);
-  }
-
-  @NonNull
-  public StmtPositionInfo withOperandPositions(@NonNull Position[] operandPositions) {
-    return new FullStmtPositionInfo(stmtPosition, operandPositions);
+  default FullStmtPositionInfo withOperandPositions(@NonNull Position[] operandPositions) {
+    return (FullStmtPositionInfo) getFactory().withOperandPositions(this, operandPositions);
   }
 }
