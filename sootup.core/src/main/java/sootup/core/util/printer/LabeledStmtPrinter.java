@@ -22,7 +22,6 @@ package sootup.core.util.printer;
  * #L%
  */
 
-import com.google.common.collect.ComparisonChain;
 import java.util.*;
 import org.jspecify.annotations.NonNull;
 import sootup.core.graph.*;
@@ -208,40 +207,17 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
    * BasicBlock.getExceptionalSuccessor()
    */
   /** hint: little expensive getter - its more of a build/create - currently no overlaps */
-  public JNopStmt buildTraps(ControlFlowGraph controlFlowGraph) {
-    // [ms] try to incorporate it into the serialisation of jimple printing so the other half of
-    // iteration information is not wasted..
-    BlockGraphIteratorAndTrapAggregator it =
-        new BlockGraphIteratorAndTrapAggregator(controlFlowGraph);
-    // it.getTraps() is valid/completely build when the iterator is done.
-    Map<Stmt, Integer> stmtsBlockIdx = new IdentityHashMap<>();
-    int i = 0;
-    // collect BlockIdx positions to sort the traps according to the numbering
-    while (it.hasNext()) {
-      final BasicBlock<?> nextBlock = it.next();
-      stmtsBlockIdx.put(nextBlock.getHead(), i);
-      stmtsBlockIdx.put(nextBlock.getTail(), i);
-      i++;
+  public JNopStmt buildTraps(ControlFlowGraph<?> controlFlowGraph) {
+    this.traps = controlFlowGraph.getTraps();
+    // a trap that extends to the end of the graph has an end stmt that is a synthetic stmt not
+    // part of the graph - remember it as it needs a label in initializeSootMethod()
+    JNopStmt needsNopAtEnd = null;
+    for (Trap trap : this.traps) {
+      if (!controlFlowGraph.containsNode(trap.getEndStmt())) {
+        needsNopAtEnd = (JNopStmt) trap.getEndStmt();
+      }
     }
-    final List<Trap> traps = it.getTraps();
-    boolean b = it.getLastStmt() != null;
-    if (b) {
-      stmtsBlockIdx.put(it.getLastStmt(), i);
-    }
-    traps.sort(getTrapComparator(stmtsBlockIdx));
-    this.traps = traps;
-    return it.getLastStmt();
-  }
-
-  /** Comparator which sorts the trap output in getTraps() */
-  public Comparator<Trap> getTrapComparator(@NonNull Map<Stmt, Integer> stmtsBlockIdx) {
-    return (a, b) ->
-        ComparisonChain.start()
-            .compare(stmtsBlockIdx.get(a.getBeginStmt()), stmtsBlockIdx.get(b.getBeginStmt()))
-            .compare(stmtsBlockIdx.get(a.getEndStmt()), stmtsBlockIdx.get(b.getEndStmt()))
-            // [ms] would be nice to have the traps ordered by exception hierarchy as well
-            .compare(a.getExceptionType().toString(), b.getExceptionType().toString())
-            .result();
+    return needsNopAtEnd;
   }
 
   /**
