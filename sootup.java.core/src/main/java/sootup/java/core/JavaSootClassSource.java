@@ -25,6 +25,7 @@ package sootup.java.core;
 import com.google.common.base.Objects;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import sootup.core.frontend.PathbasedClassProvider;
@@ -42,6 +43,7 @@ public abstract class JavaSootClassSource implements SootClassSource {
   // holds information about the specific data unit where the information about a class is stored
   protected final Path sourcePath;
 
+  @Nullable private final String genericSignature;
   @NonNull private final JavaClassFileMetadata classFileMetadata;
 
   /**
@@ -60,7 +62,24 @@ public abstract class JavaSootClassSource implements SootClassSource {
       @NonNull AnalysisInputLocation inputLocation,
       @NonNull ClassType classSignature,
       @NonNull Path sourcePath) {
-    this(inputLocation, classSignature, sourcePath, JavaClassFileMetadata.empty());
+    this(inputLocation, classSignature, sourcePath, null, JavaClassFileMetadata.empty());
+  }
+
+  /**
+   * Creates a class source with an optional classfile Signature attribute.
+   *
+   * @param inputLocation the input location containing the class
+   * @param classSignature the class type
+   * @param sourcePath the path to the source
+   * @param genericSignature the unparsed Signature attribute, or {@code null} if absent
+   */
+  public JavaSootClassSource(
+      @NonNull AnalysisInputLocation inputLocation,
+      @NonNull ClassType classSignature,
+      @NonNull Path sourcePath,
+      @Nullable String genericSignature) {
+    this(
+        inputLocation, classSignature, sourcePath, genericSignature, JavaClassFileMetadata.empty());
   }
 
   /** Creates a class source with immutable source and nesting attributes. */
@@ -69,9 +88,29 @@ public abstract class JavaSootClassSource implements SootClassSource {
       @NonNull ClassType classSignature,
       @NonNull Path sourcePath,
       @NonNull JavaClassFileMetadata classFileMetadata) {
+    this(inputLocation, classSignature, sourcePath, null, classFileMetadata);
+  }
+
+  /**
+   * Creates a class source with an optional classfile Signature attribute and immutable source and
+   * nesting attributes.
+   *
+   * @param inputLocation the input location containing the class
+   * @param classSignature the class type
+   * @param sourcePath the path to the source
+   * @param genericSignature the unparsed Signature attribute, or {@code null} if absent
+   * @param classFileMetadata the source and nesting attributes
+   */
+  public JavaSootClassSource(
+      @NonNull AnalysisInputLocation inputLocation,
+      @NonNull ClassType classSignature,
+      @NonNull Path sourcePath,
+      @Nullable String genericSignature,
+      @NonNull JavaClassFileMetadata classFileMetadata) {
     this.analysisInputLocation = inputLocation;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;
+    this.genericSignature = genericSignature;
     this.classFileMetadata = classFileMetadata;
   }
 
@@ -81,8 +120,17 @@ public abstract class JavaSootClassSource implements SootClassSource {
         delegate.getClassType(),
         delegate.getSourcePath(),
         delegate instanceof JavaSootClassSource
+            ? ((JavaSootClassSource) delegate).getGenericSignature().orElse(null)
+            : null,
+        delegate instanceof JavaSootClassSource
             ? ((JavaSootClassSource) delegate).getClassFileMetadata()
             : JavaClassFileMetadata.empty());
+  }
+
+  /** Returns the unparsed classfile Signature attribute, or an empty optional if absent. */
+  @NonNull
+  public Optional<String> getGenericSignature() {
+    return Optional.ofNullable(genericSignature);
   }
 
   /**

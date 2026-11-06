@@ -83,6 +83,7 @@ public class AsmJavaClassProvider implements PathbasedClassProvider {
         .withPosition(asmClassSource.resolvePosition())
         .withAnnotations(asmClassSource.resolveAnnotations())
         // TODO! implement method annotations
+        .withGenericSignature(asmClassSource.getGenericSignature().orElse(null))
         .withClassFileMetadata(asmClassSource.getClassFileMetadata())
         .build();
 
