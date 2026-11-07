@@ -52,6 +52,21 @@ public interface CallResolver {
   @NonNull ExplorationVerdict tryAdvance(
       @NonNull SootMethod caller, @NonNull InvokableStmt statement);
 
+  /**
+   * Decides, before the body of {@code caller} is loaded, whether any of its calls may be resolved.
+   * Anything but {@link ExplorationVerdict#EXPLORE_METHOD} excludes all statements of the method at
+   * once: its body is not loaded and {@link #tryAdvance} is not invoked for its statements. An
+   * implementation must only exclude a method here if {@link #tryAdvance} would exclude each of its
+   * statements. The default explores every method and leaves the decision to {@link #tryAdvance}.
+   *
+   * @param caller the method whose calls are about to be resolved
+   * @return the verdict for all statements of the method
+   */
+  @NonNull
+  default ExplorationVerdict tryAdvanceMethod(@NonNull SootMethod caller) {
+    return ExplorationVerdict.EXPLORE_METHOD;
+  }
+
   /** Returns a {@link CallResolver} that explores every statement. */
   @NonNull
   static CallResolver all() {

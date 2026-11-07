@@ -397,6 +397,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                 if (!currentMethod.hasBody()) {
                   return;
                 }
+                // a method whose calls are all excluded is not loaded only to exclude each of them
+                if (!explores(callResolver.tryAdvanceMethod(currentMethod))) {
+                  return;
+                }
                 // get all call targets of invocations in the method body
                 resolveAllCallsFromSourceMethod(currentMethod, cg, frontier);
 
