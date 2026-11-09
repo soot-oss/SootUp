@@ -497,8 +497,14 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
           "Stmt '" + node + "' is not contained in the BlockControlFlowGraph");
     }
     MutableBasicBlock block = blockPair.getRight();
-    block.removeExceptionalSuccessorBlock(exceptionType);
-    tryMergeIntoSurroundingBlocks(block);
+    if (!block.getExceptionalSuccessors().containsKey(exceptionType)) {
+      throw new IllegalArgumentException(
+          "Stmt '" + node + "' has no exceptional flow for the type " + exceptionType);
+    }
+    // the other Stmts of the block keep their exceptional flow
+    MutableBasicBlock separatedBlock = splitAndExcludeStmtFromBlock(node, block);
+    separatedBlock.removeExceptionalSuccessorBlock(exceptionType);
+    tryMergeIntoSurroundingBlocks(separatedBlock);
   }
 
   @Override
@@ -510,8 +516,13 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
           "Stmt '" + node + "' is not contained in the BlockControlFlowGraph");
     }
     MutableBasicBlock block = blockPair.getRight();
-    block.clearExceptionalSuccessorBlocks();
-    tryMergeIntoSurroundingBlocks(block);
+    if (block.getExceptionalSuccessors().isEmpty()) {
+      return;
+    }
+    // the other Stmts of the block keep their exceptional flows
+    MutableBasicBlock separatedBlock = splitAndExcludeStmtFromBlock(node, block);
+    separatedBlock.clearExceptionalSuccessorBlocks();
+    tryMergeIntoSurroundingBlocks(separatedBlock);
   }
 
   @Override
@@ -670,9 +681,8 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
    * @return the splitted block with the splitStmt as head
    */
   @NonNull
-  public MutableBasicBlock splitAndExcludeStmtFromBlock(
+  private MutableBasicBlock splitAndExcludeStmtFromBlock(
       @NonNull Stmt splitStmt, MutableBasicBlock block) {
-
     if (block.getStmtCount() <= 1) {
       // just a single stmt in the block -> e.g. it is already the block we want
       return block;
@@ -718,32 +728,25 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
         restOfOrigBlock.linkSuccessor(i, successor);
       }
       block.clearSuccessorBlocks();
-      if (block != excludedFromOrigBlock) {
-        block.linkSuccessor(0, excludedFromOrigBlock);
-      }
 
-      // link third/leftover block with previous stmts from the separated block
-      excludedFromOrigBlock.linkSuccessor(0, restOfOrigBlock);
-
-      // add blocks exceptional flows
-      block
-          .getExceptionalSuccessors()
-          .forEach(
-              (type, trapHandlerBlock) -> {
-                restOfOrigBlock.linkExceptionalSuccessorBlock(type, trapHandlerBlock);
-                trapHandlerBlock.addPredecessorBlock(restOfOrigBlock);
-              });
+      // add blocks exceptional flows (linking registers the predecessor at the handler block)
+      block.getExceptionalSuccessors().forEach(restOfOrigBlock::linkExceptionalSuccessorBlock);
 
       blocks.add(restOfOrigBlock);
 
-      // cleanup original block -> "beforeBlock" -> remove now copied Stmts
-      int toIdx = stmtIdx;
-      if (block == excludedFromOrigBlock) {
-        toIdx++;
-      }
-      for (int i = blockStmts.size() - 1; i >= toIdx; i--) {
+      // cleanup original block -> remove the now moved Stmts. If splitStmt is the head of block,
+      // block itself is the separated block and keeps splitStmt.
+      final int firstMovedIdx = excludedFromOrigBlock == block ? stmtIdx + 1 : stmtIdx;
+      for (int i = blockStmts.size() - 1; i >= firstMovedIdx; i--) {
         block.removeStmt(i);
       }
+
+      // link the parts: [beforeBlock ->] separatedBlock -> leftoverBlock. Linking has to happen
+      // after the cleanup as the number of successors depends on the (new) tail of a block.
+      if (excludedFromOrigBlock != block) {
+        block.linkSuccessor(0, excludedFromOrigBlock);
+      }
+      excludedFromOrigBlock.linkSuccessor(0, restOfOrigBlock);
 
     } else {
       // there are no more stmts after stmtIdx -> less than 3 blocks are necessary
@@ -765,7 +768,7 @@ public class MutableBlockControlFlowGraph extends MutableControlFlowGraph {
   }
 
   /** Merges block into Predecessor/Successor if possible. */
-  public void tryMergeIntoSurroundingBlocks(@NonNull MutableBasicBlock block) {
+  private void tryMergeIntoSurroundingBlocks(@NonNull MutableBasicBlock block) {
     // merge with predecessor if possible
     block = tryMergeWithPredecessorBlock(block);
     // and/or merge with successorBlock
